@@ -51,6 +51,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed AV rejecting to further load an asset once any loading error occured ([#5105](https://github.com/expo/expo/pull/5105)) by [@sjchmiela](https://github.com/sjchmiela))
 - fixed AV resetting player whenever props changed ([#5106](https://github.com/expo/expo/pull/5106)) by [@sjchmiela](https://github.com/sjchmiela))
 - fixed bar code scanning crash if the result couldn't be converted to string ([#5183](https://github.com/expo/expo/pull/5183)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed camera crash in standalone apps ([#5194](https://github.com/expo/expo/pull/5194)) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 33.0.0
 
