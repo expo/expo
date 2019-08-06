@@ -15,7 +15,7 @@ const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
 declare var __DEV__: boolean;
-declare var process: { env: any };
+declare var process: { env: any; browser: boolean };
 declare var navigator: Navigator;
 declare var location: Location;
 declare var localStorage: Storage;
@@ -47,7 +47,7 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: UAParser(navigator.userAgent) };
+    return { web: process.browser && UAParser(navigator.userAgent) };
   },
   get isHeadless(): false {
     return false;
@@ -63,8 +63,12 @@ export default {
     return getExpoPackage().version;
   },
   get linkingUri(): string {
-    // On native this is `exp://`
-    return location.origin + location.pathname;
+    if (process.browser) {
+      // On native this is `exp://`
+      return location.origin + location.pathname;
+    } else {
+      return '';
+    }
   },
   get expoRuntimeVersion(): string {
     return getExpoPackage().version;
@@ -92,17 +96,26 @@ export default {
     return null;
   },
   get manifest(): WebManifest {
-    // This is defined by @expo/webpack-config. 
+    // This is defined by @expo/webpack-config.
     // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
   },
   get experienceUrl(): string {
-    return location.origin + location.pathname;
+    if (process.browser) {
+      return location.origin + location.pathname;
+    } else {
+      console.log(process);
+      return '';
+    }
   },
   get debugMode(): boolean {
     return __DEV__;
   },
-  async getWebViewUserAgentAsync(): Promise<string> {
-    return navigator.userAgent;
+  async getWebViewUserAgentAsync(): Promise<string | null> {
+    if (process.browser) {
+      return navigator.userAgent;
+    } else {
+      return null;
+    }
   },
 } as NativeConstants;

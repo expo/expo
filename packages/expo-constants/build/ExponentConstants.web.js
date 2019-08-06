@@ -39,7 +39,7 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: UAParser(navigator.userAgent) };
+        return { web: process.browser && UAParser(navigator.userAgent) };
     },
     get isHeadless() {
         return false;
@@ -55,8 +55,13 @@ export default {
         return getExpoPackage().version;
     },
     get linkingUri() {
-        // On native this is `exp://`
-        return location.origin + location.pathname;
+        if (process.browser) {
+            // On native this is `exp://`
+            return location.origin + location.pathname;
+        }
+        else {
+            return '';
+        }
     },
     get expoRuntimeVersion() {
         return getExpoPackage().version;
@@ -83,18 +88,29 @@ export default {
         return null;
     },
     get manifest() {
-        // This is defined by @expo/webpack-config. 
+        // This is defined by @expo/webpack-config.
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
     get experienceUrl() {
-        return location.origin + location.pathname;
+        if (process.browser) {
+            return location.origin + location.pathname;
+        }
+        else {
+            console.log(process);
+            return '';
+        }
     },
     get debugMode() {
         return __DEV__;
     },
     async getWebViewUserAgentAsync() {
-        return navigator.userAgent;
+        if (process.browser) {
+            return navigator.userAgent;
+        }
+        else {
+            return null;
+        }
     },
 };
 //# sourceMappingURL=ExponentConstants.web.js.map
