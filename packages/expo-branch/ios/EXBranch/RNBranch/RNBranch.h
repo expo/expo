@@ -1,9 +1,7 @@
-#import "EXScopedBridgeModule.h"
-#import <Branch/Branch.h>
+#import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
 
-// EXPO CHANGES:
-// - inherit from EXScopedBridgeModule
-// - add EXBranchScopedModuleDelegate protocol
+#import <Branch/Branch.h>
 
 extern NSString * _Nonnull const RNBranchLinkOpenedNotification;
 extern NSString * _Nonnull const RNBranchLinkOpenedNotificationErrorKey;
@@ -12,13 +10,8 @@ extern NSString * _Nonnull const RNBranchLinkOpenedNotificationUriKey;
 extern NSString * _Nonnull const RNBranchLinkOpenedNotificationBranchUniversalObjectKey;
 extern NSString * _Nonnull const RNBranchLinkOpenedNotificationLinkPropertiesKey;
 
-@protocol EXBranchScopedModuleDelegate
 
-- (void)branchModuleDidInit:(id _Nonnull)branchModule;
-
-@end
-
-@interface RNBranch : EXScopedBridgeModule
+@interface RNBranch : NSObject <RCTBridgeModule>
 
 @property (class, readonly, nonnull) Branch *branch;
 

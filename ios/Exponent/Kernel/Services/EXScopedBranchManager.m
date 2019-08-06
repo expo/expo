@@ -1,13 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXBranchManager.h"
-
-#import <Branch/Branch.h>
+#import "EXScopedBranchManager.h"
+#import "EXScopedBranch.h"
 
 #import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
-#import "RNBranch.h"
+#import "EXScopedBranch.h"
 
 // These constants need to stay in sync with the ones in RNBranch.
 NSString * const EXBranchLinkOpenedNotificationErrorKey = @"error";
@@ -15,63 +14,36 @@ NSString * const EXBranchLinkOpenedNotificationParamsKey = @"params";
 NSString * const EXBranchLinkOpenedNotificationUriKey = @"uri";
 NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotification";
 
-@interface RNBranchModuleAvoidWarnings
+@interface EXScopedBranchModuleAvoidWarnings
 - (void)onInitSessionFinished:(NSNotification *)notification;
 @end
 
-@interface EXBranchManager () <EXBranchScopedModuleDelegate>
-
-@end
-
-@implementation EXBranchManager
+@implementation EXScopedBranchManager
 {
   NSDictionary *_launchOptions;
   BOOL _isInitialized;
   NSURL *_url;
 }
 
-+ (instancetype)sharedInstance
-{
-  static EXBranchManager *theManager;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    if (!theManager) {
-      theManager = [EXBranchManager new];
-    }
-  });
-  return theManager;
-}
-
-+ (BOOL)isBranchEnabled
-{
-  id branchKey = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"branch_key"];
-  return (branchKey != nil);
-}
-
-#pragma mark - linking hooks
+UM_REGISTER_SINGLETON_MODULE(BranchManager);
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _launchOptions = launchOptions;
   _url = launchOptions[UIApplicationLaunchOptionsURLKey];
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-  if (![[self class] isBranchEnabled]) {
-    return NO;
-  }
   _url = userActivity.webpageURL;
-  return [[Branch getInstance] continueUserActivity:userActivity];
+  return [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if (![[self class] isBranchEnabled]) {
-    return NO;
-  }
   _url = url;
-  return [[Branch getInstance] handleDeepLink:url];
+  return [super application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (void)branchModuleDidInit:(id)versionedBranchModule
@@ -79,11 +51,12 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   if (_isInitialized || ![[self class] isBranchEnabled]) {
     return;
   }
-  RNBranch *branchModule = (RNBranch *)versionedBranchModule;
+
+  EXScopedBranch *branchModule = (EXScopedBranch *)versionedBranchModule;
   EXKernelAppRecord *appForModule = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:branchModule.experienceId];
   if (appForModule && appForModule == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
     _isInitialized = YES;
-    
+
     // branch is going to retain the init callback
     __block typeof(self) blockSelf = self;
 
