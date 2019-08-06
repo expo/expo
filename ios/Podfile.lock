@@ -792,8 +792,6 @@ PODS:
   - EXBarCodeScanner (6.0.0):
     - UMCore
     - UMImageLoaderInterface
-  - EXBattery (0.0.1):
-    - UMCore
   - EXBlur (6.0.0):
     - UMCore
   - EXBrightness (6.0.0):
@@ -878,6 +876,8 @@ PODS:
   - EXMediaLibrary (6.1.0-rc.0):
     - UMCore
     - UMPermissionsInterface
+  - EXNetwork (0.0.1):
+    - UMCore
   - EXPermissions (6.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -1543,7 +1543,6 @@ DEPENDENCIES:
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
-  - EXBattery (from `../packages/expo-battery/ios`)
   - EXBlur (from `../packages/expo-blur/ios`)
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
@@ -1570,6 +1569,7 @@ DEPENDENCIES:
   - EXLocation (from `../packages/expo-location/ios`)
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
+  - EXNetwork (from `../packages/expo-network/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
@@ -2107,9 +2107,6 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     :path: !ruby/object:Pathname
     path: "../packages/expo-barcode-scanner/ios"
-  EXBattery:
-    :path: !ruby/object:Pathname
-    path: "../packages/expo-battery/ios"
   EXBlur:
     :path: !ruby/object:Pathname
     path: "../packages/expo-blur/ios"
@@ -2188,6 +2185,9 @@ EXTERNAL SOURCES:
   EXMediaLibrary:
     :path: !ruby/object:Pathname
     path: "../packages/expo-media-library/ios"
+  EXNetwork:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-network/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../packages/expo-permissions/ios"
@@ -2489,7 +2489,6 @@ SPEC CHECKSUMS:
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
   EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
   EXBarCodeScanner: 3b36378bfc891b6fd3518e244784eb8d3ab00653
-  EXBattery: bcbc50cec59b94ac92bbc6068818173c359ef3f3
   EXBlur: 628f8d08e6e4891aac0a8dea4e48d43ffd3c570d
   EXBrightness: 5937628feed854e35525a50b105167b33c851f44
   EXCalendar: 910966393455a6d7d1ea246b01009124fecc7d60
@@ -2516,6 +2515,7 @@ SPEC CHECKSUMS:
   EXLocation: 4eb76115832f08b1e78003b335c210e18fa60424
   EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
   EXMediaLibrary: 207c50e6d09c0d498ae293f59de28daf67a33076
+  EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
   EXRandom: 805938db37fa1d66833cb9c0cf44fb54cd208b5a
