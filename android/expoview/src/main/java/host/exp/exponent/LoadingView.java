@@ -2,12 +2,16 @@
 
 package host.exp.exponent;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -175,6 +179,38 @@ public class LoadingView extends RelativeLayout {
 
     setBackgroundImage(manifest);
     setBackgroundColor(manifest);
+    setStatusBar(manifest);
+  }
+
+  private void setStatusBar(final JSONObject manifest) {
+    JSONObject splash = null;
+    JSONObject statusBar = null;
+
+    if (manifest.has("android")) {
+      final JSONObject android = manifest.optJSONObject("android");
+      if (android.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+        if (splash.has(ExponentManifest.MANIFEST_SPLASH_STATUS_BAR)) {
+          statusBar = splash.optJSONObject(ExponentManifest.MANIFEST_SPLASH_STATUS_BAR);
+        }
+      }
+    }
+
+    if (statusBar != null) {
+      boolean visible = false;
+      if (statusBar.has("visible")) {
+        visible = statusBar.optBoolean("visible");
+        if (!visible) {
+          View decorView = ((Activity) getContext()).getWindow().getDecorView();
+          // Hide the status bar.
+          decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+          // Remember that you should never show the action bar if the
+          // status bar is hidden, so hide that too if necessary.
+          ActionBar actionBar = ((Activity) getContext()).getActionBar();
+          if (actionBar != null) actionBar.hide();
+        }
+      }
+    }
   }
 
   private void setBackgroundImage(final JSONObject manifest) {
@@ -349,7 +385,7 @@ public class LoadingView extends RelativeLayout {
     mStatusBarView.setVisibility(VISIBLE);
     mStatusTextView.setText(status != null ? status : "Building JavaScript bundle...");
     if (done != null && total != null && total > 0) {
-      float percent = ((float)done / (float)total * 100.f);
+      float percent = ((float) done / (float) total * 100.f);
       mPercentageTextView.setText(String.format(Locale.getDefault(), "%.2f%%", percent));
     }
   }

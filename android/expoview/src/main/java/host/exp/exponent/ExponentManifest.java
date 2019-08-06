@@ -117,6 +117,7 @@ public class ExponentManifest {
   public static final String MANIFEST_SPLASH_IMAGE_URL = "imageUrl";
   public static final String MANIFEST_SPLASH_RESIZE_MODE = "resizeMode";
   public static final String MANIFEST_SPLASH_BACKGROUND_COLOR = "backgroundColor";
+  public static final String MANIFEST_SPLASH_STATUS_BAR = "statusBar";
 
   // Updates
   public static final String MANIFEST_UPDATES_INFO_KEY = "updates";
