@@ -19,6 +19,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🐛 Bug fixes
 
 - fixed MediaLibrary assets' width and height were sometimes equal to 0. ([#4935](https://github.com/expo/expo/pull/4935) by [@lukmccall](https://github.com/lukmccall))
+- fixed location background mode was required to use geofencing. ([#5198](https://github.com/expo/expo/pull/5198) by [@tsapeta](https://github.com/tsapeta))
 
 ## 34.0.0
 
