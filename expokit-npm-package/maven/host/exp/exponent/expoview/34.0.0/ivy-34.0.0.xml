@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expoview" revision="34.0.0" status="integration" publication="20190731122750"/>
+  <info organisation="host.exp.exponent" module="expoview" revision="34.0.0" status="integration" publication="20190806154456"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -242,6 +242,7 @@
     <dependency org="host.exp.exponent" name="expo-av" rev="6.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-background-fetch" rev="6.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-barcode-scanner" rev="6.0.0" conf="compileOnly-&gt;default"/>
+    <dependency org="host.exp.exponent" name="expo-branch" rev="1.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-brightness" rev="6.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-calendar" rev="6.0.0" conf="compileOnly-&gt;default"/>
     <dependency org="host.exp.exponent" name="expo-camera" rev="6.0.0" conf="compileOnly-&gt;default"/>
