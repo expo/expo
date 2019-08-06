@@ -1,5 +1,4 @@
 #import "RNBranch.h"
-#import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
 #import "BranchEvent+RNBranch.h"
@@ -8,18 +7,6 @@
 #import "RNBranchAgingDictionary.h"
 #import "RNBranchConfig.h"
 #import "RNBranchEventEmitter.h"
-#import "EXScopedModuleRegistry.h"
-#import "EXModuleRegistryBinding.h"
-#import "EXConstantsBinding.h"
-
-#import <UMConstantsInterface/UMConstantsInterface.h>
-
-// EXPO CHANGES:
-// - Add #import "EXConstants.h"
-// - Use EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager); instead of RCT_EXPORT_MODULE
-// - Add scoped module init (initWithExperienceId)
-// - Add setBridge
-// - Move code from init to setBridge and delete init
 
 NSString * const RNBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotification";
 NSString * const RNBranchLinkOpenedNotificationErrorKey = @"error";
@@ -42,7 +29,7 @@ static NSString * const IdentFieldName = @"ident";
 static NSString * const RNBranchErrorDomain = @"RNBranchErrorDomain";
 static NSInteger const RNBranchUniversalObjectNotFoundError = 1;
 
-static NSString * const REQUIRED_BRANCH_SDK = @"0.27.0";
+static NSString * const REQUIRED_BRANCH_SDK = @"0.27.1";
 
 #pragma mark - Private RNBranch declarations
 
@@ -55,9 +42,7 @@ static NSString * const REQUIRED_BRANCH_SDK = @"0.27.0";
 
 @implementation RNBranch
 
-@synthesize bridge = _bridge;
-
-EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
+RCT_EXPORT_MODULE();
 
 + (Branch *)branch
 {
@@ -112,8 +97,8 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
     return @{
              // RN events transmitted to JS by event emitter
-             @"INIT_SESSION_SUCCESS": RNBranchInitSessionSuccess,
-             @"INIT_SESSION_ERROR": RNBranchInitSessionError,
+             @"INIT_SESSION_SUCCESS": kRNBranchInitSessionSuccess,
+             @"INIT_SESSION_ERROR": kRNBranchInitSessionError,
 
              // constants for use with userCompletedAction
              @"ADD_TO_CART_EVENT": BNCAddToCartEvent,
@@ -198,7 +183,7 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
         if (error) result[RNBranchLinkOpenedNotificationErrorKey] = error;
         if (params) {
             result[RNBranchLinkOpenedNotificationParamsKey] = params;
-            BOOL clickedBranchLink = [params[@"+clicked_branch_link"] boolValue];
+            BOOL clickedBranchLink = params[@"+clicked_branch_link"];
 
             if (clickedBranchLink) {
                 BranchUniversalObject *branchUniversalObject = [BranchUniversalObject objectWithDictionary:params];
@@ -235,24 +220,16 @@ EX_EXPORT_SCOPED_MODULE(RNBranch, BranchManager);
 
 #pragma mark - Object lifecycle
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
-{
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
-    [kernelServiceInstance branchModuleDidInit:self];
-  }
-  return self;
-}
+- (instancetype)init {
+    self = [super init];
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
-  EXConstantsBinding *constants = [_bridge.scopedModules.moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
+    if (self) {
+        _universalObjectMap = [RNBranchAgingDictionary dictionaryWithTtl:3600.0];
 
-  if ([constants.appOwnership isEqualToString:@"standalone"]) {
-    _universalObjectMap = [RNBranchAgingDictionary dictionaryWithTtl:3600.0];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onInitSessionFinished:) name:RNBranchLinkOpenedNotification object:nil];
+    }
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onInitSessionFinished:) name:RNBranchLinkOpenedNotification object:nil];
-  }
+    return self;
 }
 
 - (void) dealloc {
@@ -372,10 +349,14 @@ RCT_EXPORT_METHOD(
 
 #pragma mark getLatestReferringParams
 RCT_EXPORT_METHOD(
-                  getLatestReferringParams:(RCTPromiseResolveBlock)resolve
+                  getLatestReferringParams:(NSNumber* __nonnull)synchronous
+                  resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject
                   ) {
-    resolve([self.class.branch getLatestReferringParams]);
+    if (synchronous.boolValue)
+        resolve([self.class.branch getLatestReferringParamsSynchronous]);
+    else
+        resolve([self.class.branch getLatestReferringParams]);
 }
 
 #pragma mark getFirstReferringParams

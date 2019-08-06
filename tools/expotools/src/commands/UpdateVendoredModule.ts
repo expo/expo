@@ -27,6 +27,7 @@ interface VendoredModuleUpdateStep {
   sourceAndroidPackage?: string;
   targetAndroidPackage?: string;
   recursive?: boolean;
+  updatePbxproj?: boolean;
 }
 
 interface VendoredModuleConfig {
@@ -127,12 +128,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     steps: [
       {
         sourceIosPath: 'ios',
-        targetIosPath: 'Api/Standalone/Branch',
+        targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
         sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-        targetAndroidPath: 'modules/api/standalone/branch',
+        targetAndroidPath: '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
         sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.standalone.branch',
+        targetAndroidPackage: 'expo.modules.branch.vendored',
         recursive: false,
+        updatePbxproj: false,
       },
     ],
   },
@@ -408,6 +410,7 @@ async function action(options: ActionOptions) {
     const executeIOS = ['all', 'ios'].includes(options.platform);
 
     step.recursive = step.recursive === true;
+    step.updatePbxproj = !(step.updatePbxproj === false);
 
     // iOS
     if (executeIOS && step.sourceIosPath && step.targetIosPath) {
@@ -427,7 +430,7 @@ async function action(options: ActionOptions) {
 
       await copyFilesAsync(objcFiles, sourceDir, targetDir);
 
-      if (options.pbxproj) {
+      if (options.pbxproj && step.updatePbxproj) {
         console.log(`\nUpdating pbxproj configuration ...`);
 
         for (const file of objcFiles) {

@@ -1,0 +1,1 @@
+../../../../../packages/expo-branch/ios/EXBranch/RNBranch/BranchLinkProperties+RNBranch.h
