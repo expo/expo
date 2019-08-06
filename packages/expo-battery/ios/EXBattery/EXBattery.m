@@ -27,23 +27,9 @@ UM_EXPORT_MODULE(ExpoBattery);
   }
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  
+
   if (moduleRegistry) {
     [UIDevice.currentDevice setBatteryMonitoringEnabled:YES];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(batteryLevelDidChange:)
-                                                 name:UIDeviceBatteryLevelDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(batteryStateDidChange:)
-                                                 name:UIDeviceBatteryStateDidChangeNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(powerModeDidChange:)
-                                                 name:NSProcessInfoPowerStateDidChangeNotification
-                                               object:nil];
   }
 }
 
@@ -54,18 +40,24 @@ UM_EXPORT_MODULE(ExpoBattery);
 
 - (void)startObserving {
   _hasListeners = YES;
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(batteryLevelDidChange:)
+                                               name:UIDeviceBatteryLevelDidChangeNotification
+                                             object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(batteryStateDidChange:)
+                                               name:UIDeviceBatteryStateDidChangeNotification
+                                             object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(powerModeDidChange:)
+                                               name:NSProcessInfoPowerStateDidChangeNotification
+                                             object:nil];
+
 }
 
 - (void)stopObserving {
   _hasListeners = NO;
-}
-
-
-- (void)dealloc {}
-
-- (void)invalidate {
-  _eventEmitter = nil;
-  [UIDevice currentDevice].batteryMonitoringEnabled = NO;
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:UIDeviceBatteryLevelDidChangeNotification
                                                 object:nil];
@@ -75,6 +67,14 @@ UM_EXPORT_MODULE(ExpoBattery);
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:NSProcessInfoPowerStateDidChangeNotification
                                                 object:nil];
+}
+
+
+- (void)dealloc {}
+
+- (void)invalidate {
+  _eventEmitter = nil;
+  [UIDevice currentDevice].batteryMonitoringEnabled = NO;
 }
 
 // Called at most once every minute
