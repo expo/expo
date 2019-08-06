@@ -164,7 +164,7 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     if([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
       AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
-        if ([metadata.type isEqualToString:barcodeType]) {
+        if (codeMetadata.stringValue && [codeMetadata.type isEqualToString:barcodeType]) {
           
           NSDictionary *event = @{
                                   @"type" : codeMetadata.type,
