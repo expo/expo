@@ -34,9 +34,9 @@ const OrientationWebToAPI: {
 
 declare const window: Window;
 
-const { screen } = window;
+let { screen } = process.browser && window;
 const orientation: ScreenOrientation | null =
-  screen.orientation || (screen as any).msOrientation || null;
+  process.browser && (screen.orientation || (screen as any).msOrientation || null);
 
 async function emitOrientationEvent() {
   const [orientationLock, orientationInfo] = await Promise.all([
@@ -49,10 +49,12 @@ async function emitOrientationEvent() {
   });
 }
 
-if (orientation) {
-  orientation.addEventListener('change', emitOrientationEvent);
-} else {
-  window.addEventListener('orientationchange', emitOrientationEvent);
+if (process.browser) {
+  if (orientation) {
+    orientation.addEventListener('change', emitOrientationEvent);
+  } else {
+    window.addEventListener('orientationchange', emitOrientationEvent);
+  }
 }
 
 function _convertToLegacyOrientationLock(orientationLock: WebOrientationLock): string | string[] {

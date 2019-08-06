@@ -17,8 +17,8 @@ const OrientationWebToAPI = {
     [WebOrientation.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
     [WebOrientation.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
-const { screen } = window;
-const orientation = screen.orientation || screen.msOrientation || null;
+let { screen } = process.browser && window;
+const orientation = process.browser && (screen.orientation || screen.msOrientation || null);
 async function emitOrientationEvent() {
     const [orientationLock, orientationInfo] = await Promise.all([
         getOrientationLockAsync(),
@@ -29,11 +29,13 @@ async function emitOrientationEvent() {
         orientationInfo,
     });
 }
-if (orientation) {
-    orientation.addEventListener('change', emitOrientationEvent);
-}
-else {
-    window.addEventListener('orientationchange', emitOrientationEvent);
+if (process.browser) {
+    if (orientation) {
+        orientation.addEventListener('change', emitOrientationEvent);
+    }
+    else {
+        window.addEventListener('orientationchange', emitOrientationEvent);
+    }
 }
 function _convertToLegacyOrientationLock(orientationLock) {
     switch (orientationLock) {
