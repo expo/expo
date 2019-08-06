@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 
@@ -583,7 +582,7 @@ public class FileSystemModule extends ExportedModule {
   private Uri contentUriFromFile(File file) {
     try {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
-      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+      return FileSystemFileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
     } catch (Exception e) {
       throw e;
     }
