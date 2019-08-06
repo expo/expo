@@ -769,11 +769,60 @@ PODS:
   - Crashlytics (3.13.1):
     - Fabric (~> 1.10.1)
   - DoubleConversion (1.1.6)
+  - EXAdsAdMob (6.0.0):
+    - Google-Mobile-Ads-SDK
+    - UMCore
+  - EXAdsFacebook (6.0.0):
+    - FBAudienceNetwork
+    - UMCore
+  - EXAmplitude (6.0.0):
+    - Amplitude-iOS
+    - UMConstantsInterface
+    - UMCore
+  - EXAppAuth (6.0.0):
+    - AppAuth
+    - UMCore
   - EXAppLoaderProvider (6.0.0)
+  - EXAV (6.0.0):
+    - UMCore
+    - UMPermissionsInterface
+  - EXBackgroundFetch (6.0.0):
+    - UMCore
+    - UMTaskManagerInterface
   - EXBarCodeScanner (6.0.0):
     - UMCore
     - UMImageLoaderInterface
+  - EXBlur (6.0.0):
+    - UMCore
+  - EXBrightness (6.0.0):
+    - UMCore
+  - EXCalendar (6.0.0):
+    - UMCore
+    - UMPermissionsInterface
+  - EXCamera (6.0.0):
+    - UMBarCodeScannerInterface
+    - UMCore
+    - UMFaceDetectorInterface
+    - UMFileSystemInterface
+    - UMImageLoaderInterface
+    - UMPermissionsInterface
   - EXConstants (6.0.0):
+    - UMConstantsInterface
+    - UMCore
+  - EXContacts (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
+    - UMPermissionsInterface
+  - EXCrypto (6.0.0):
+    - UMCore
+  - EXDevice (0.0.1):
+    - UMCore
+  - EXDocumentPicker (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXFacebook (6.0.0):
+    - FBSDKCoreKit (~> 4.0)
+    - FBSDKLoginKit (~> 4.0)
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (6.0.0):
@@ -785,6 +834,9 @@ PODS:
   - EXFileSystem (6.0.1):
     - UMCore
     - UMFileSystemInterface
+  - EXFont (6.0.1):
+    - UMCore
+    - UMFontInterface
   - EXGL (6.0.0):
     - EXGL-CPP
     - UMCameraInterface
@@ -793,21 +845,77 @@ PODS:
   - EXGL-CPP (6.0.0):
     - EXGL-CPP/UEXGL (= 6.0.0)
   - EXGL-CPP/UEXGL (6.0.0)
+  - EXGoogleSignIn (6.0.0):
+    - GoogleSignIn (~> 4.4)
+    - UMCore
+  - EXHaptics (6.0.0):
+    - UMCore
+  - EXImageManipulator (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
+    - UMImageLoaderInterface
+  - EXImagePicker (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
   - EXKeepAwake (6.0.0):
+    - UMCore
+  - EXLinearGradient (6.0.0):
+    - UMCore
+  - EXLocalAuthentication (6.0.0):
+    - UMConstantsInterface
+    - UMCore
+  - EXLocalization (6.0.0):
+    - UMCore
+  - EXLocation (6.0.0):
+    - UMCore
+    - UMPermissionsInterface
+    - UMTaskManagerInterface
+  - EXMailComposer (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXMediaLibrary (6.1.0-rc.0):
+    - UMCore
+    - UMPermissionsInterface
+  - EXNetwork (0.0.1):
     - UMCore
   - EXPermissions (6.0.0):
     - UMCore
     - UMPermissionsInterface
+  - EXPrint (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXRandom (6.0.0):
+    - UMCore
   - EXSecureStore (6.0.0):
+    - UMCore
+  - EXSegment (6.0.0):
+    - Analytics (~> 3.5)
+    - UMConstantsInterface
     - UMCore
   - EXSensors (6.0.0):
     - UMCore
     - UMSensorsInterface
+  - EXSharing (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXSMS (6.0.0):
+    - UMCore
+    - UMPermissionsInterface
+  - EXSpeech (6.0.0):
+    - UMCore
+  - EXSQLite (6.0.0):
+    - UMCore
+    - UMFileSystemInterface
   - EXTaskManager (6.0.0):
     - EXAppLoaderProvider
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
+  - EXVideoThumbnails (2.0.0):
+    - UMCore
+    - UMFileSystemInterface
+  - EXWebBrowser (6.0.0):
+    - UMCore
   - Fabric (1.10.1)
   - FBAudienceNetwork (5.1.1)
   - FBSDKCoreKit (4.40.0):
@@ -1427,18 +1535,54 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.2.1)
   - Crashlytics (~> 3.8)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
+  - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
+  - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
+  - EXAppAuth (from `../packages/expo-app-auth/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
+  - EXAV (from `../packages/expo-av/ios`)
+  - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
+  - EXBlur (from `../packages/expo-blur/ios`)
+  - EXBrightness (from `../packages/expo-brightness/ios`)
+  - EXCalendar (from `../packages/expo-calendar/ios`)
+  - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
+  - EXContacts (from `../packages/expo-contacts/ios`)
+  - EXCrypto (from `../packages/expo-crypto/ios`)
+  - EXDevice (from `../packages/expo-device/ios`)
+  - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
+  - EXFacebook (from `../packages/expo-facebook/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
+  - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
+  - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
+  - EXHaptics (from `../packages/expo-haptics/ios`)
+  - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
+  - EXImagePicker (from `../packages/expo-image-picker/ios`)
   - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
+  - EXLinearGradient (from `../packages/expo-linear-gradient/ios`)
+  - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
+  - EXLocalization (from `../packages/expo-localization/ios`)
+  - EXLocation (from `../packages/expo-location/ios`)
+  - EXMailComposer (from `../packages/expo-mail-composer/ios`)
+  - EXMediaLibrary (from `../packages/expo-media-library/ios`)
+  - EXNetwork (from `../packages/expo-network/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
+  - EXPrint (from `../packages/expo-print/ios`)
+  - EXRandom (from `../packages/expo-random/ios`)
   - EXSecureStore (from `../packages/expo-secure-store/ios`)
+  - EXSegment (from `../packages/expo-analytics-segment/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
+  - EXSharing (from `../packages/expo-sharing/ios`)
+  - EXSMS (from `../packages/expo-sms/ios`)
+  - EXSpeech (from `../packages/expo-speech/ios`)
+  - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
+  - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
+  - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.6)
   - FBAudienceNetwork (= 5.1.1)
   - FBSDKCoreKit (= 4.40.0)
@@ -1939,42 +2083,150 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI34_0_0/UMTaskManagerInterface"
   DoubleConversion:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXAdsAdMob:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-ads-admob/ios"
+  EXAdsFacebook:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-ads-facebook/ios"
+  EXAmplitude:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-analytics-amplitude/ios"
+  EXAppAuth:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-app-auth/ios"
   EXAppLoaderProvider:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-loader-provider/ios"
+  EXAV:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-av/ios"
+  EXBackgroundFetch:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
     :path: !ruby/object:Pathname
     path: "../packages/expo-barcode-scanner/ios"
+  EXBlur:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-blur/ios"
+  EXBrightness:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-brightness/ios"
+  EXCalendar:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-calendar/ios"
+  EXCamera:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-camera/ios"
   EXConstants:
     :path: !ruby/object:Pathname
     path: "../packages/expo-constants/ios"
+  EXContacts:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-contacts/ios"
+  EXCrypto:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-crypto/ios"
+  EXDevice:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-device/ios"
+  EXDocumentPicker:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-document-picker/ios"
+  EXFacebook:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-facebook/ios"
   EXFaceDetector:
     :path: !ruby/object:Pathname
     path: "../packages/expo-face-detector/ios"
   EXFileSystem:
     :path: !ruby/object:Pathname
     path: "../packages/expo-file-system/ios"
+  EXFont:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-font/ios"
   EXGL:
     :path: !ruby/object:Pathname
     path: "../packages/expo-gl/ios"
   EXGL-CPP:
     :path: !ruby/object:Pathname
     path: "../packages/expo-gl-cpp/cpp"
+  EXGoogleSignIn:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-google-sign-in/ios"
+  EXHaptics:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-haptics/ios"
+  EXImageManipulator:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-image-manipulator/ios"
+  EXImagePicker:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-image-picker/ios"
   EXKeepAwake:
     :path: !ruby/object:Pathname
     path: "../packages/expo-keep-awake/ios"
+  EXLinearGradient:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-linear-gradient/ios"
+  EXLocalAuthentication:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-local-authentication/ios"
+  EXLocalization:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-localization/ios"
+  EXLocation:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-location/ios"
+  EXMailComposer:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-mail-composer/ios"
+  EXMediaLibrary:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-media-library/ios"
+  EXNetwork:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-network/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../packages/expo-permissions/ios"
+  EXPrint:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-print/ios"
+  EXRandom:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-random/ios"
   EXSecureStore:
     :path: !ruby/object:Pathname
     path: "../packages/expo-secure-store/ios"
+  EXSegment:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-analytics-segment/ios"
   EXSensors:
     :path: !ruby/object:Pathname
     path: "../packages/expo-sensors/ios"
+  EXSharing:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-sharing/ios"
+  EXSMS:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-sms/ios"
+  EXSpeech:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-speech/ios"
+  EXSQLite:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-sqlite/ios"
   EXTaskManager:
     :path: !ruby/object:Pathname
     path: "../packages/expo-task-manager/ios"
+  EXVideoThumbnails:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-video-thumbnails/ios"
+  EXWebBrowser:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-web-browser/ios"
   Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   glog:
@@ -2229,18 +2481,54 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
   Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  EXAdsAdMob: bbdb1922a9474cd9118e03576077ea594e4d409b
+  EXAdsFacebook: e80bc258520c71bce17cb4c1f984391b4a8940b8
+  EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
+  EXAppAuth: a5e758845e701381b5a7bedafe29e83f9cd165eb
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
+  EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
+  EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
   EXBarCodeScanner: 3b36378bfc891b6fd3518e244784eb8d3ab00653
+  EXBlur: 628f8d08e6e4891aac0a8dea4e48d43ffd3c570d
+  EXBrightness: 5937628feed854e35525a50b105167b33c851f44
+  EXCalendar: 910966393455a6d7d1ea246b01009124fecc7d60
+  EXCamera: 54623e310d33bccbb8d8fbc84a0081523d0436be
   EXConstants: 5d81e84ca71b9a552529889cc798b4a04e9e22b3
+  EXContacts: fc25ebc07706984813a997400d88c00d2959401e
+  EXCrypto: 0b51b301dc3748114a18752d2533e4167bad1730
+  EXDevice: d08fdca5e11432c4389f04a3ecec51d31f1c160d
+  EXDocumentPicker: 043c0521b52ae061070fd84b405459e0b7cba940
+  EXFacebook: b71969e92a4d76632ee743d26e88c61b4d9a3e45
   EXFaceDetector: badb48d40de77184aabcc8bc9cbd9b2e6d5e14ee
   EXFileSystem: 8a7c20589ad1c6b631040bcbbc5e29d945630625
+  EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXGL: dc4ae6520b142a74e28e6f4472d27a26fc211f37
   EXGL-CPP: 06949fa99656c36b488ff51155ca865c871f3d3d
+  EXGoogleSignIn: c1338c16b0d4592d00cec09e1a43e9486df0dba0
+  EXHaptics: f84c93d605e0905c47654e4a6e5dfbff78ed6906
+  EXImageManipulator: b2e17bdbd0872cc59b43b76756f76fdb8a849831
+  EXImagePicker: ec641e97b73db0fb1ef58b818cffaf7ff6d3c96c
   EXKeepAwake: e7cb6516675052b12a7d23291e33078b4239653a
+  EXLinearGradient: 40781b77e58f844c8dc4ad310dc9755b4d3792a7
+  EXLocalAuthentication: ad4754360d739c82b68a2d3c13e9b8579a255ecc
+  EXLocalization: 1abab86f9e7f09c96ca19ea695606f81230fedcf
+  EXLocation: 4eb76115832f08b1e78003b335c210e18fa60424
+  EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
+  EXMediaLibrary: 207c50e6d09c0d498ae293f59de28daf67a33076
+  EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
+  EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
+  EXRandom: 805938db37fa1d66833cb9c0cf44fb54cd208b5a
   EXSecureStore: e929213a8a5e8c55cdd4615e52e283c11cba975e
+  EXSegment: da1b9e10a5a47525c989ee0892205ed422817894
   EXSensors: d6878e6848acfb67a93b8bf7f790a93f9a47008b
+  EXSharing: 24827f8a72433117fb9469b80105bf582902d49b
+  EXSMS: cb30013923b89b795840634ba486a79f29eee368
+  EXSpeech: f540155550a79e861a411d3a02b3d6e6dc1ed9c8
+  EXSQLite: 8dab6a5ab1b78be7925073d6071eb22095d4dda6
   EXTaskManager: 2cff8c104c212fa67cab08a10946ba268a4cf5e5
+  EXVideoThumbnails: 3c3b2231e6b6c19af2ac32c7b5f398b1a8948a5e
+  EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
   Fabric: f6f21452846788bb44595d73e9909d79d328e617
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
@@ -2291,6 +2579,6 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
 
-PODFILE CHECKSUM: 90d36012443c63c929243a562a5adb9166c7dc4b
+PODFILE CHECKSUM: 9a5974b3440a63c3a02566809aeeb4b9c4c439cf
 
 COCOAPODS: 1.7.3
