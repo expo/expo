@@ -1,0 +1,4 @@
+{
+  "name": "expo-ota",
+  "platforms": ["ios", "android"]
+}

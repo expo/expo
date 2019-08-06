@@ -1,0 +1,31 @@
+{
+  "name": "expo-ota",
+  "version": "1.0.0",
+  "description": "ExpoOta standalone module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {},
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-ota"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ota",
+  "peerDependencies": {
+    "@unimodules/core": "~1.0.0"
+  },
+  "gitHead": "f213c9be2a909dae42a0a27d8aa4b9eac8e97be1"
+
+,"_resolved": ""
+,"_integrity": ""
+,"_from": "expo-ota@latest"
+}
