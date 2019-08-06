@@ -50,7 +50,7 @@
     "expo-localization": "~6.0.0",
     "expo-location": "~6.0.0",
     "expo-mail-composer": "~6.0.0",
-    "expo-media-library": "~6.1.0-rc.0",
+    "expo-media-library": "~6.1.0-rc.1",
     "expo-permissions": "~6.0.0",
     "expo-print": "~6.0.0",
     "expo-processing": "*",

@@ -875,7 +875,7 @@ PODS:
   - EXMailComposer (6.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (6.1.0-rc.0):
+  - EXMediaLibrary (6.1.0-rc.1):
     - UMCore
     - UMPermissionsInterface
   - EXNetwork (0.0.1):
@@ -2521,7 +2521,7 @@ SPEC CHECKSUMS:
   EXLocalization: 1abab86f9e7f09c96ca19ea695606f81230fedcf
   EXLocation: 4eb76115832f08b1e78003b335c210e18fa60424
   EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
-  EXMediaLibrary: 207c50e6d09c0d498ae293f59de28daf67a33076
+  EXMediaLibrary: 0b9e6c90cd40f5d5df8b58c9f68665039a485146
   EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
