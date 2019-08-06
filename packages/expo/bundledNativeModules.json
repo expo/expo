@@ -23,7 +23,7 @@
   "expo-document-picker": "~6.0.0",
   "expo-face-detector": "~6.0.0",
   "expo-facebook": "~6.0.0",
-  "expo-file-system": "~6.0.1",
+  "expo-file-system": "~6.0.2",
   "expo-font": "~6.0.1",
   "expo-gl": "~6.0.0",
   "expo-gl-cpp": "~6.0.0",
