@@ -1,0 +1,1 @@
+{"version":3,"file":"MapView.js","sourceRoot":"","sources":["../../src/Maps/MapView.ts"],"names":[],"mappings":"AAAA,OAAO,OAAO,MAAM,mBAAmB,CAAC;AACxC,eAAe,OAAO,CAAC","sourcesContent":["import MapView from 'react-native-maps';\nexport default MapView;\n"]}
