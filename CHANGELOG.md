@@ -41,6 +41,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed `Calendar.getEventsAsync` crashing if `calendarId` is SQL keyword by [@lukmccall](https://github.com/lukmccall) ([#4836](https://github.com/expo/expo/pull/4836))
 - fixed `BOOL` interpretation on 32-bit iOS devices by [@lukmccall](https://github.com/lukmccall) ([#4862](https://github.com/expo/expo/pull/4862))
 - fixed AV rejecting to further load an asset once any loading error occured ([#5105](https://github.com/expo/expo/pull/5105)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed AV resetting player whenever props changed ([#5106](https://github.com/expo/expo/pull/5106)) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 33.0.0
 
