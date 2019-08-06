@@ -276,7 +276,6 @@ Geofencing API notifies your app when the device enters or leaves geographical r
 To make it work in the background, it uses [TaskManager](../task-manager) Native API under the hood. There are some requirements in order to use Geofencing API:
 
 - `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (_iOS only_)
 - Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
