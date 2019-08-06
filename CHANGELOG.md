@@ -44,6 +44,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed picking images over 2000px on Android by [@bbarthec](https://github.com/bbarthec) ([#4731](https://github.com/expo/expo/pull/4731))
 - fixed `Calendar.getEventsAsync` crashing if `calendarId` is SQL keyword by [@lukmccall](https://github.com/lukmccall) ([#4836](https://github.com/expo/expo/pull/4836))
 - fixed `BOOL` interpretation on 32-bit iOS devices by [@lukmccall](https://github.com/lukmccall) ([#4862](https://github.com/expo/expo/pull/4862))
+- fixed `Calendar.createEventAsync` crashing with relativeOffSet due to invalid type conversion from double to integer by [@vivianzzhu91](https://github.com/vivianzzhu91) ([#5134](https://github.com/expo/expo/pull/5134))
 
 ## 33.0.0
 
