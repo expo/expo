@@ -194,7 +194,7 @@ ABI34_0_0UM_EXPORT_METHOD_AS(getInfoAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     [ABI34_0_0EXFileSystemLocalFileHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
-  } else if ([uri.scheme isEqualToString:@"assets-library"]) {
+  } else if ([uri.scheme isEqualToString:@"assets-library"] || [uri.scheme isEqualToString:@"ph"]) {
     [ABI34_0_0EXFileSystemAssetLibraryHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -453,7 +453,7 @@ ABI34_0_0UM_EXPORT_METHOD_AS(copyAsync,
   
   if ([from.scheme isEqualToString:@"file"]) {
     [ABI34_0_0EXFileSystemLocalFileHandler copyFrom:from to:to resolver:resolve rejecter:reject];
-  } else if ([from.scheme isEqualToString:@"assets-library"]) {
+  } else if ([from.scheme isEqualToString:@"assets-library"] || [from.scheme isEqualToString:@"ph"]) {
     [ABI34_0_0EXFileSystemAssetLibraryHandler copyFrom:from to:to resolver:resolve rejecter:reject];
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -765,6 +765,7 @@ ABI34_0_0UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                             @"assets-library",
                             @"http",
                             @"https",
+                            @"ph",
                             ];
   if ([validSchemas containsObject:uri.scheme]) {
     return ABI34_0_0UMFileSystemPermissionRead;

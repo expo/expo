@@ -352,6 +352,15 @@ Configuration for how and when the app should request OTA JavaScript updates
     "supportsTablet": BOOLEAN,
 
     /*
+      If true, indicates that your standalone iOS app does not support Slide Over
+      and Split View on iPad.
+      Defaults to `true` currently, but will change to `false` in a future SDK version.
+
+      ExpoKit: use Xcode to set `UIRequiresFullScreen`.
+    */
+    "requireFullScreen": BOOLEAN,
+
+    /*
       If true, indicates that your standalone iOS app does not support handsets.
       Your app will only support tablets.
 
