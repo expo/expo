@@ -217,7 +217,7 @@ export async function test(t) {
         });      
       });
 
-      t.it('check size - vide', async () => {
+      t.it('check size - video', async () => {
         const mediaType = MediaLibrary.MediaType.video;
         const options = { mediaType, album };
         const { assets } = await MediaLibrary.getAssetsAsync(options);
