@@ -19,7 +19,7 @@
     "@react-native-community/netinfo": "~3.2.1",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
-    "expo": "~34.0.3",
+    "expo": "~34.0.4",
     "expo-ads-admob": "~6.0.0",
     "expo-ads-facebook": "~6.0.0",
     "expo-app-auth": "~6.0.0",
