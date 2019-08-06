@@ -7,6 +7,8 @@ export type OpenBrowserOptions = {
   browserPackage?: string;
   enableBarCollapsing?: boolean;
   showTitle?: boolean;
+  /** iOS only */
+  controlsColor?: string;
 
   // Web
   windowName?: string;

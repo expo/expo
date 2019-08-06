@@ -21,6 +21,8 @@ final class MediaLibraryConstants {
   static final String ERROR_IO_EXCEPTION = "E_IO_EXCEPTION";
   static final String ERROR_NO_PERMISSIONS = "E_NO_PERMISSIONS";
   static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing CAMERA_ROLL permissions.";
+  static final String ERROR_NO_PERMISSIONS_MODULE = "E_NO_PERMISSIONS_MODULE";
+  static final String ERROR_NO_PERMISSIONS_MODULE_MESSAGE = "Permissions module not found. Are you sure that Expo modules are properly linked?";
 
   static final String MEDIA_TYPE_AUDIO = "audio";
   static final String MEDIA_TYPE_PHOTO = "photo";

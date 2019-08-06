@@ -1,7 +1,7 @@
-import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
+import * as Permissions from 'expo-permissions';
+import * as MediaLibrary from 'expo-media-library';
 
 export const name = 'MediaLibrary';
 
@@ -91,6 +91,11 @@ export async function test(t) {
       album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
       if (album == null) album = await createAlbum(testAssets, ALBUM_NAME);
       else await MediaLibrary.addAssetsToAlbumAsync(testAssets, album, true);
+    });
+
+    t.afterAll(async () => {
+      await MediaLibrary.deleteAssetsAsync(testAssets);
+      await MediaLibrary.deleteAlbumsAsync(album);
     });
 
     t.describe('Every return value has proper shape', async () => {
@@ -226,6 +231,37 @@ export async function test(t) {
           t.expect(asset.width).not.toEqual(0);
           t.expect(asset.height).not.toEqual(0);
         });      
+      });
+
+      t.it('supports getting assets from specified time range', async () => {
+        const assetsToCheck = 7;
+
+        // Get some assets with the biggest creation time.
+        const { assets } = await MediaLibrary.getAssetsAsync({
+          first: assetsToCheck,
+          sortBy: MediaLibrary.SortBy.creationTime,
+        });
+
+        // Set time range based on the newest and oldest creation times.
+        const createdAfter = assets[assets.length - 1].creationTime;
+        const createdBefore = assets[0].creationTime;
+
+        // Repeat assets request but with the time range.
+        const { assets: filteredAssets } = await MediaLibrary.getAssetsAsync({
+          first: assetsToCheck,
+          sortBy: MediaLibrary.SortBy.creationTime,
+          createdAfter,
+          createdBefore,
+        });
+
+        // We can't get more assets than previously, but they could be equal if there are multiple assets with the same timestamp.
+        t.expect(filteredAssets.length).toBeLessThanOrEqual(assets.length);
+
+        // Check if every asset was created within the time range.
+        for (const asset of filteredAssets) {
+          t.expect(asset.creationTime).toBeLessThanOrEqual(createdBefore);
+          t.expect(asset.creationTime).toBeGreaterThanOrEqual(createdAfter);
+        }
       });
     });
 

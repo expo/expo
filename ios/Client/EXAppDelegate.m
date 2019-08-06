@@ -30,7 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
   CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
-  [FIRApp configure];
+  // TODO: to be removed after sdk 35 release
+  if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"host.exp.Exponent"]) {
+    [FIRApp configure];
+  }
 
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground

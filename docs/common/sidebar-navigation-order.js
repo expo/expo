@@ -5,8 +5,8 @@ const GROUPS = {
   ExpoKit: 'Managed Workflow',
   'Expo SDK': 'API Reference',
   'React Native': 'API Reference',
-  'Introduction': 'Get Started',
-  'Essentials': 'Bare Workflow',
+  Introduction: 'Get Started',
+  Essentials: 'Bare Workflow',
 };
 
 const ROOT = [
@@ -32,9 +32,10 @@ const INTRODUCTION = [
   'Project Lifecycle',
   'Community',
   'Additional Resources',
-  'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
+  'Why not Expo?',
+  'Troubleshooting Proxies',
 ];
 
 const GUIDES = [
@@ -50,6 +51,7 @@ const GUIDES = [
   'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
+  'Account Permissions',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',
@@ -66,6 +68,7 @@ const GUIDES = [
 ];
 
 const FUNDAMENTALS = [
+  'Managed Workflow Walkthrough',
   'Up and Running',
   'Expo CLI',
   'Viewing Logs',
@@ -109,8 +112,12 @@ const EXPOKIT = [
 ];
 
 const ESSENTIALS = [
-  'Hello World',
-  'Unimodules Full List'
+  'Bare Workflow Walkthrough',
+  'Up and Running',
+  'Supported Expo SDK APIs',
+  'Using Expo client',
+  'Using Expo for web',
+  'Migrating from ExpoKit',
 ];
 
 const REACT_NATIVE = [

@@ -11,7 +11,6 @@ If this button doesn't look right for your app, you can build your own button us
 
 Example usage:
 
-
 ```javascript
 
 import { Button } from 'react-native';
@@ -25,7 +24,6 @@ import { Button } from 'react-native';
 />
 
 ```
-
 
 ### Props
 
@@ -42,9 +40,6 @@ import { Button } from 'react-native';
 - [`testID`](../button/#testid)
 - [`title`](../button/#title)
 - [`touchSoundDisabled`](../button/#touchSoundDisabled)
-
-
-
 
 ---
 
@@ -86,8 +81,8 @@ Text to display for blindness accessibility features
 
 Color of the text (iOS), or background color of the button (Android)
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -120,7 +115,6 @@ _(Apple TV only)_ TV preferred focus (see documentation for the View component).
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
 
-
 ### `nextFocusDown`
 
 Designates the next view to receive focus when the user navigates down. See the [Android documentation](https://developer.android.com/reference/android/view/View.html#attr_android:nextFocusDown).
@@ -129,9 +123,7 @@ Designates the next view to receive focus when the user navigates down. See the 
 | ------ | -------- | -------- |
 | number | No       | Android  |
 
-
 ---
-
 
 ### `nextFocusForward`
 
@@ -140,7 +132,6 @@ Designates the next view to receive focus when the user navigates forward. See t
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | number | No       | Android  |
-
 
 ---
 
@@ -152,7 +143,6 @@ Designates the next view to receive focus when the user navigates left. See the 
 | ------ | -------- | -------- |
 | number | No       | Android  |
 
-
 ---
 
 ### `nextFocusRight`
@@ -162,7 +152,6 @@ Designates the next view to receive focus when the user navigates right. See the
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | number | No       | Android  |
-
 
 ---
 
@@ -174,7 +163,6 @@ Designates the next view to receive focus when the user navigates up. See the [A
 | ------ | -------- | -------- |
 | number | No       | Android  |
 
-
 ---
 
 ### `touchSoundDisabled`
@@ -182,6 +170,5 @@ Designates the next view to receive focus when the user navigates up. See the [A
 If true, doesn't play system sound on touch.
 
 | Type    | Required | Platform |
-| ------  | -------- | -------- |
+| ------- | -------- | -------- |
 | boolean | No       | Android  |
-

@@ -144,7 +144,9 @@ ABI34_0_0UM_EXPORT_METHOD_AS(askAsync,
     ABI34_0_0UM_ENSURE_STRONGIFY(self);
     
     // save results for permission
+    BOOL isGranted = [ABI34_0_0EXPermissions statusForPermissions:permission] == ABI34_0_0EXPermissionStatusGranted;
     permissions[permissionType] = [NSMutableDictionary dictionaryWithDictionary:permission];
+    permissions[permissionType][@"granted"] = @(isGranted);
     
     askForNextPermission();
   };

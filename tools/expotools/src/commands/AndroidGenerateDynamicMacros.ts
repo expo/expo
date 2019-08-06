@@ -1,5 +1,5 @@
 import path from 'path';
-import { Command } from 'commander/typings';
+import { Command } from '@expo/commander';
 
 import { Directories } from '../expotools';
 import { generateDynamicMacrosAsync } from '../dynamic-macros/generateDynamicMacros'
@@ -11,7 +11,7 @@ const TEMPLATE_FILES_DIR = path.join(EXPO_DIR, 'template-files');
 
 async function generateAction(options): Promise<void> {
   const buildConstantsPath = options.buildConstantsPath || path.join(GENERATED_DIR, 'ExponentBuildConstants.java');
-  const configuration = options.configuration || process.env.CONFIGURATION || 'debug';
+  const configuration = options.configuration || process.env.CONFIGURATION || 'release';
 
   await generateDynamicMacrosAsync({
     buildConstantsPath,

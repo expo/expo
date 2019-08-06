@@ -9,12 +9,10 @@ Do not use unless you have a very good reason. All elements that respond to pres
 
 ### Usage Example
 
-
 ```javascript
-
 function MyComponent(props) {
   return (
-    <View {...props} style={{flex: 1, backgroundColour: '#fff'}}>
+    <View {...props} style={{ flex: 1, backgroundColour: '#fff' }}>
       <Text>My Component</Text>
     </View>
   );
@@ -23,9 +21,7 @@ function MyComponent(props) {
 <TouchableWithoutFeedback onPress={() => alert('Pressed!')}>
   <MyComponent />
 </TouchableWithoutFeedback>;
-
 ```
-
 
 ### Props
 
@@ -268,4 +264,3 @@ Used to locate this view in end-to-end tests.
 | Type   |
 | ------ |
 | Object |
-

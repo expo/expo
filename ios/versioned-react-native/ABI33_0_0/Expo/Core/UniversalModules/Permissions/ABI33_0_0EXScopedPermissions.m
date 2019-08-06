@@ -17,15 +17,17 @@
 @property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, weak) id<ABI33_0_0EXPermissionsScopedModuleDelegate> permissionsService;
 @property (nonatomic, weak) id<ABI33_0_0UMUtilitiesInterface> utils;
+@property (nonatomic, weak) ABI33_0_0EXConstantsBinding *constantsBinding;
 
 @end
 
 @implementation ABI33_0_0EXScopedPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(ABI33_0_0EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
     _experienceId = experienceId;
+    _constantsBinding = constantsBinding;
   }
   return self;
 }
@@ -128,6 +130,26 @@
   if (permissionsTypes.count == 0) {
     return resolver(@{});
   }
+  
+  // not in Expo Client - invoke allow action for each permission type
+  if (![_constantsBinding.appOwnership isEqualToString:@"expo"]) {
+    NSMutableDictionary *results = [NSMutableDictionary new];
+    
+    for (NSString *permissionType in permissionsTypes) {
+      
+      // initilize as global permission
+      results[permissionType] = [NSMutableDictionary dictionaryWithDictionary:[self getPermissionsForResource:permissionType]];
+      
+      // try to save scoped permissions - if fails than permission is denied
+      if (![self.permissionsService savePermission:results[permissionType] ofType:permissionType forExperience:self.experienceId]) {
+        results[permissionType][@"status"] = [[self class] permissionStringForStatus:ABI33_0_0EXPermissionStatusDenied];
+        results[@"granted"] = @(NO);
+      }
+    }
+    
+    return resolver(results);
+  }
+
 
   __block NSMutableDictionary *permissions = [NSMutableDictionary new];
   __block NSMutableSet *permissionsToBeAsked = [NSMutableSet setWithArray:permissionsTypes];

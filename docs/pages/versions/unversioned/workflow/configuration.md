@@ -41,7 +41,11 @@ A short description of what your app is and why it is great.
 
 ### `"slug"`
 
-**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
+**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+
+### `"owner"`
+
+The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
@@ -216,6 +220,14 @@ Configuration for remote (push) notifications.
     "color": STRING,
 
     /*
+      Whether or not to display notifications when the app is in the foreground on iOS.
+      `_displayInForeground` option in the individual push notification message overrides this option.
+      Learn more: https://docs.expo.io/versions/latest/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Defaults to `false`.
+    */
+    "iosDisplayInForeground": BOOLEAN,
+
+    /*
       Show each push notification individually "default" or collapse into one "collapse".
       Valid values: "default", "collapse"
     */
@@ -280,7 +292,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+> **ExpoKit**: To change the value of `enabled`, edit the `areRemoteUpdatesEnabled` key in `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and the `ARE_REMOTE_UPDATES_ENABLED` variable in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
 
 ### `"ios"`
 
@@ -338,6 +350,15 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "supportsTablet": BOOLEAN,
+
+    /*
+      If true, indicates that your standalone iOS app does not support Slide Over
+      and Split View on iPad.
+      Defaults to `true` currently, but will change to `false` in a future SDK version.
+
+      ExpoKit: use Xcode to set `UIRequiresFullScreen`.
+    */
+    "requireFullScreen": BOOLEAN,
 
     /*
       If true, indicates that your standalone iOS app does not support handsets.

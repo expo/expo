@@ -6,7 +6,7 @@ import JsonFile from '@expo/json-file';
 import semver from 'semver';
 import inquirer from 'inquirer';
 import spawnAsync from '@expo/spawn-async';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
 import { Package, getListOfPackagesAsync } from '../Packages';
@@ -36,6 +36,12 @@ interface Options {
 }
 
 type PipelineAction = ((pipeline: PipelineConfig, configs: Map<string, PipelineConfig>, options: Options) => any);
+
+type WorkspaceProject = {
+  location: string;
+  workspaceDependencies: string[];
+  mismatchedWorkspaceDependencies: string[];
+};
 
 const defaultOptions = {
   tag: 'latest',
@@ -76,7 +82,7 @@ const publishPipeline: PipelineAction[] = [
 const getWorkspacesInfoAsync = (() => {
   let cache;
 
-  return async () => {
+  return async (): Promise<{ [key: string]: WorkspaceProject }> => {
     if (!cache) {
       const child = await spawnAsync('yarn', ['workspaces', 'info', '--json'], {
         cwd: EXPO_DIR,
@@ -152,21 +158,23 @@ async function _runPipelineAsync(
 }
 
 async function _getPackageViewFromRegistryAsync(packageName: string): Promise<PackageView | null> {
-  const json = await _spawnJSONCommandAsync('npm', ['view', packageName, '--json']);
+  try {
+    const json = await _spawnJSONCommandAsync('npm', ['view', packageName, '--json']);
 
-  if (json && !json.error) {
-    const currentVersion = json.versions[json.versions.length - 1];
-    const publishedDate = json.time[currentVersion];
+    if (json && !json.error) {
+      const currentVersion = json.versions[json.versions.length - 1];
+      const publishedDate = json.time[currentVersion];
 
-    if (!publishedDate || !currentVersion) {
-      return null;
+      if (!publishedDate || !currentVersion) {
+        return null;
+      }
+
+      json.currentVersion = currentVersion;
+      json.publishedDate = new Date(publishedDate);
+
+      return json;
     }
-
-    json.currentVersion = currentVersion;
-    json.publishedDate = new Date(publishedDate);
-
-    return json;
-  }
+  } catch (error) {}
   return null;
 }
 
@@ -189,7 +197,11 @@ async function _gitLogWithFormatAsync(pkg: Package, sinceDate: Date, format: str
 }
 
 async function _gitAddAsync(pathToAdd: string): Promise<void> {
-  return await _spawnAsync('git', ['add', pathToAdd]);
+  try {
+    return await _spawnAsync('git', ['add', pathToAdd]);
+  } catch (error) {
+    // Nothing: sometimes gitignored files might throw errors here, but we don't care.
+  }
 }
 
 async function _checkNativeChangesSinceAsync(pkg: Package, date: Date): Promise<boolean> {
@@ -396,13 +408,10 @@ async function _preparePublishAsync(pipelineConfig: PipelineConfig, allConfigs: 
           chalk.red(`Looks like you are not an owner of ${chalk.green(pkg.packageName)} package. You will not be able to publish it.`)
         );
 
-        if (await _promptAsync('Do you want to retry?')) {
-          return _preparePublishAsync(pipelineConfig, allConfigs, options);
+        if (await _promptAsync('Ask someone to give you an access and type `y` to retry. Otherwise, the package will be skipped.', false)) {
+          return await _preparePublishAsync(pipelineConfig, allConfigs, options);
         }
-        if (!await _promptAsync('Do you want to skip this package and continue the script?')) {
-          process.exit(0);
-          return;
-        }
+        console.log();
       } else {
         console.log(
           `${chalk.green(pkg.packageName)}@${chalk.red(currentVersion)} was published at ${chalk.cyan(packageView.publishedDate.toISOString())}`
@@ -583,6 +592,7 @@ async function _publishAsync({ pkg, tarballFilename, shouldPublish, newVersion }
     console.log(chalk.gray(`Publishing skipped because of --dry flag.`));
   } else {
     await _spawnAsync('yarn', ['publish', tarballFilename, '--tag', options.tag, '--new-version', newVersion], {
+      cwd: pkg.path,
       env: {
         ...process.env,
         'npm_config_tag': options.tag,
@@ -663,6 +673,10 @@ async function _gitCommitAsync(allConfigs: Map<string, PipelineConfig>): Promise
       }
     }
 
+    for (const project of Object.values(await getWorkspacesInfoAsync())) {
+      await _gitAddAsync(path.join(EXPO_DIR, project.location, 'package.json'));
+    }
+
     const description = publishedPackages.join('\n');
     const { message } = await inquirer.prompt<{ message: string }>([
       {
@@ -734,7 +748,9 @@ async function publishPackagesAsync(argv: any): Promise<void> {
   const packages = await getListOfPackagesAsync();
 
   packages.forEach(pkg => {
-    publishConfigs.set(pkg.packageName, { pkg });
+    if (pkg.packageName !== 'test_suite_flutter') {
+      publishConfigs.set(pkg.packageName, { pkg });
+    }
   });
 
   // --list-packages option is just to debug the config with packages used by the script
@@ -805,7 +821,7 @@ export default (program: Command) => {
     .option('-l, --list-packages', 'Lists all packages the script can publish.')
     .option('-t, --tag [string]', 'NPM tag to use when publishing packages. Defaults to `latest`. Use `next` if you\'re publishing release candidates.', 'latest')
     .option('-r, --release [string]', 'Specifies how to bump current versions to the new one. Possible values: `patch`, `minor`, `major`. Defaults to `patch`.', 'patch')
-    .option('-p, --prerelease [string]', 'If used, the default new version will be a prerelease version like `1.0.0-rc.0`. You can pass another string if you want prerelease identifier other than `rc`.', '')
+    .option('-p, --prerelease [string]', 'If used, the default new version will be a prerelease version like `1.0.0-rc.0`. You can pass another string if you want prerelease identifier other than `rc`.')
     .option('-v, --version [string]', 'Imposes given version as a default version for all packages.', '')
     .option('-s, --scope [string]', 'Comma-separated names of packages to be published. By default, it\'s trying to publish all packages defined in `dev/xdl/src/modules/config.js`.', '')
     .option('-e, --exclude [string]', 'Comma-separated names of packages to be excluded from publish. It has a higher precedence than `scope` flag.', '')

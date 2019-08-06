@@ -34,7 +34,7 @@ Run `pod install` in the ios directory after installing the npm package.
 <!--- remove for interfaces --->
 
 <!--- remove for no-package --->
-No additional set up necessary.
+No additional setup necessary.
 
 <!--- end remove for no-package --->
 <!--- end remove for interfaces --->

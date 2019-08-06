@@ -3,9 +3,10 @@ import semver from 'semver';
 import set from 'lodash/set';
 import inquirer from 'inquirer';
 import unset from 'lodash/unset';
+import cloneDeep from 'lodash/cloneDeep';
 import { Config, Versions } from '@expo/xdl';
 import * as jsondiffpatch from 'jsondiffpatch';
-import { Command } from '@expo/commander/typings';
+import { Command } from '@expo/commander';
 
 type ActionOptions = {
   sdkVersion: string;
@@ -67,7 +68,8 @@ async function action(options: ActionOptions) {
     }
   }
 
-  const sdkVersionConfig = containsSdk ? { ...versions.sdkVersions[sdkVersion] } : {};
+  // If SDK is already there, make a deep clone of the sdkVersion config so we can calculate a diff later.
+  const sdkVersionConfig = containsSdk ? cloneDeep(versions.sdkVersions[sdkVersion]) : {};
 
   console.log(`\nUsing ${chalk.blue(STAGING_HOST)} host ...`);
   console.log(`Using SDK ${chalk.cyan(sdkVersion)} ...`);

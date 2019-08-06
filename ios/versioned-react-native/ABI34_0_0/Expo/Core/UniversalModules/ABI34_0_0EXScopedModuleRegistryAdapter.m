@@ -72,7 +72,7 @@
 #endif
 
 #if __has_include(<ABI34_0_0EXPermissions/ABI34_0_0EXPermissions.h>)
-  ABI34_0_0EXScopedPermissions *permissionsModule = [[ABI34_0_0EXScopedPermissions alloc] initWithExperienceId:experienceId];
+  ABI34_0_0EXScopedPermissions *permissionsModule = [[ABI34_0_0EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
 #endif

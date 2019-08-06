@@ -164,7 +164,6 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
-      - web_storybook
       - babel_preset
 
   # Android and iOS clients
@@ -257,20 +256,6 @@ jobs:
       - yarn:
           command: test:web:ci
           working_directory: ~/expo/apps/test-suite
-
-  web_storybook:
-    executor: web
-    steps:
-      - install_nix
-      - setup
-      - update_submodules
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/expo
-      - save_yarn_cache
-      - yarn:
-          command: test:web:ci
-          working_directory: ~/expo/apps/storybook
 
   babel_preset:
     executor: js

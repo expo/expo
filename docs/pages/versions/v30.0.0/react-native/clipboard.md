@@ -7,8 +7,8 @@ title: Clipboard
 
 ### Methods
 
-* [`getString`](../clipboard/#getstring)
-* [`setString`](../clipboard/#setstring)
+- [`getString`](../clipboard/#getstring)
+- [`setString`](../clipboard/#setstring)
 
 ---
 
@@ -18,16 +18,13 @@ title: Clipboard
 
 ### `getString()`
 
-
 ```javascript
 
 static getString()
 
 ```
 
-
 Get content of string type, this method returns a `Promise`, so you can use following code to get clipboard content
-
 
 ```javascript
 
@@ -37,11 +34,9 @@ async _getContent() {
 
 ```
 
-
 ---
 
 ### `setString()`
-
 
 ```javascript
 
@@ -49,9 +44,7 @@ static setString(content)
 
 ```
 
-
 Set content of string type. You can use following code to set clipboard content
-
 
 ```javascript
 
@@ -61,6 +54,4 @@ _setContent() {
 
 ```
 
-
 @param the content to be stored in the clipboard.
-

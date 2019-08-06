@@ -11,7 +11,6 @@ Although the Toolbar supports remote images for the logo, navigation and action 
 
 Example:
 
-
 ```javascript
 
 render: function() {
@@ -31,27 +30,26 @@ onActionSelected: function(position) {
 
 ```
 
-
 [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`overflowIcon`](../toolbarandroid/#overflowicon)
-- [`actions`](../toolbarandroid/#actions)
-- [`contentInsetStart`](../toolbarandroid/#contentinsetstart)
-- [`logo`](../toolbarandroid/#logo)
-- [`navIcon`](../toolbarandroid/#navicon)
-- [`onActionSelected`](../toolbarandroid/#onactionselected)
-- [`onIconClicked`](../toolbarandroid/#oniconclicked)
-- [`contentInsetEnd`](../toolbarandroid/#contentinsetend)
-- [`rtl`](../toolbarandroid/#rtl)
-- [`subtitle`](../toolbarandroid/#subtitle)
-- [`subtitleColor`](../toolbarandroid/#subtitlecolor)
-- [`testID`](../toolbarandroid/#testid)
-- [`title`](../toolbarandroid/#title)
-- [`titleColor`](../toolbarandroid/#titlecolor)
+* [`overflowIcon`](../toolbarandroid/#overflowicon)
+* [`actions`](../toolbarandroid/#actions)
+* [`contentInsetStart`](../toolbarandroid/#contentinsetstart)
+* [`logo`](../toolbarandroid/#logo)
+* [`navIcon`](../toolbarandroid/#navicon)
+* [`onActionSelected`](../toolbarandroid/#onactionselected)
+* [`onIconClicked`](../toolbarandroid/#oniconclicked)
+* [`contentInsetEnd`](../toolbarandroid/#contentinsetend)
+* [`rtl`](../toolbarandroid/#rtl)
+* [`subtitle`](../toolbarandroid/#subtitle)
+* [`subtitleColor`](../toolbarandroid/#subtitlecolor)
+* [`testID`](../toolbarandroid/#testid)
+* [`title`](../toolbarandroid/#title)
+* [`titleColor`](../toolbarandroid/#titlecolor)
 
 ---
 
@@ -75,10 +73,10 @@ Sets possible actions on the toolbar as part of the action menu. These are displ
 
 This property takes an array of objects, where each object has the following keys:
 
-* `title`: **required**, the title of this action
-* `icon`: the icon for this action, e.g. `require('./some_icon.png')`
-* `show`: when to show this action as an icon or hide it in the overflow menu: `always`, `ifRoom` or `never`
-* `showWithText`: boolean, whether to show text alongside the icon or not
+- `title`: **required**, the title of this action
+- `icon`: the icon for this action, e.g. `require('./some_icon.png')`
+- `show`: when to show this action as an icon or hide it in the overflow menu: `always`, `ifRoom` or `never`
+- `showWithText`: boolean, whether to show text alongside the icon or not
 
 | Type                                                                                                                  | Required |
 | --------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -178,8 +176,8 @@ Sets the toolbar subtitle.
 
 Sets the toolbar subtitle color.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -208,7 +206,6 @@ Sets the toolbar title.
 
 Sets the toolbar title color.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
-

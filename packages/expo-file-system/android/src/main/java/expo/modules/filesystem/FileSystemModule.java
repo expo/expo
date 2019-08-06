@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.CookieHandler;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -517,6 +520,42 @@ public class FileSystemModule extends ExportedModule {
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void getTotalDiskCapacityAsync(Promise promise) {
+    try {
+      StatFs root = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long blockCount = root.getBlockCountLong();
+      long blockSize = root.getBlockSizeLong();
+      BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
+      //cast down to avoid overflow
+      Double capacityDouble = Math.max(capacity.doubleValue(), Math.pow(2, 53) - 1);
+      promise.resolve(capacityDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getFreeDiskStorageAsync(Promise promise) {
+    try {
+      StatFs external = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long availableBlocks = external.getAvailableBlocksLong();
+      long blockSize = external.getBlockSizeLong();
+
+      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
+      Double storageDouble = Math.max(storage.doubleValue(), Math.pow(2, 53) - 1);
+      //cast down to avoid overflow
+      if (storage.longValue() > Math.pow(2, 53) - 1) {
+        storageDouble = Math.pow(2, 53) - 1;
+      }
+      promise.resolve(storageDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
     }
   }
 
