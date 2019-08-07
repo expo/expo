@@ -179,38 +179,6 @@ public class LoadingView extends RelativeLayout {
 
     setBackgroundImage(manifest);
     setBackgroundColor(manifest);
-    setStatusBar(manifest);
-  }
-
-  private void setStatusBar(final JSONObject manifest) {
-    JSONObject splash = null;
-    JSONObject statusBar = null;
-
-    if (manifest.has("android")) {
-      final JSONObject android = manifest.optJSONObject("android");
-      if (android.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
-        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
-        if (splash.has(ExponentManifest.MANIFEST_SPLASH_STATUS_BAR)) {
-          statusBar = splash.optJSONObject(ExponentManifest.MANIFEST_SPLASH_STATUS_BAR);
-        }
-      }
-    }
-
-    if (statusBar != null) {
-      boolean visible = false;
-      if (statusBar.has("visible")) {
-        visible = statusBar.optBoolean("visible");
-        if (!visible) {
-          View decorView = ((Activity) getContext()).getWindow().getDecorView();
-          // Hide the status bar.
-          decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-          // Remember that you should never show the action bar if the
-          // status bar is hidden, so hide that too if necessary.
-          ActionBar actionBar = ((Activity) getContext()).getActionBar();
-          if (actionBar != null) actionBar.hide();
-        }
-      }
-    }
   }
 
   private void setBackgroundImage(final JSONObject manifest) {
@@ -434,6 +402,10 @@ public class LoadingView extends RelativeLayout {
   public void setDoneLoading() {
     mIsLoading = false;
     AsyncCondition.remove(ASYNC_CONDITION_KEY);
+  }
+
+  public void resetStatusBar(){
+    mStatusBarView.setVisibility(VISIBLE);
   }
 
   private void revealView(View view) {

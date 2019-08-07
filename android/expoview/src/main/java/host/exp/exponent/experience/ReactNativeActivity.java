@@ -51,6 +51,7 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.kernel.services.SplashScreenKernelService;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
@@ -113,6 +114,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected JSONObject mManifest;
   protected boolean mIsInForeground = false;
   protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
+  protected static ExperienceActivity mActivity;
 
   @Inject
   protected ExponentSharedPreferences mExponentSharedPreferences;
@@ -159,6 +161,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     // Can't call this here because subclasses need to do other initialization
     // before their listener methods are called.
     // EventBus.getDefault().registerSticky(this);
+  }
+
+  public void setActivity(ExperienceActivity activity){
+    mActivity = activity;
   }
 
   protected void setView(final View view) {
@@ -226,6 +232,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   public void showLoadingScreen(JSONObject manifest) {
+    if(mManifest == null){
+      mManifest = manifest;
+    }
     mLoadingView.setManifest(manifest);
     mLoadingView.setShowIcon(true);
     mLoadingView.clearAnimation();
@@ -252,7 +261,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       layoutParams.height = mLayout.getHeight();
       mContainer.setLayoutParams(layoutParams);
     }
-
+    if(mManifest != null && mActivity != null){
+      mActivity.setGeneralStatusBar(mManifest, mActivity);
+    }
     if (mLoadingView != null && mLoadingView.getParent() == mLayout) {
       mLoadingView.setAlpha(0.0f);
       mLoadingView.setShowIcon(false);

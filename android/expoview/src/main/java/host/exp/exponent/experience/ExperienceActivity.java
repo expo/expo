@@ -107,6 +107,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private NotificationCompat.Builder mNotificationBuilder;
   private boolean mIsLoadExperienceAllowedToRun = false;
   private boolean mShouldShowLoadingScreenWithOptimisticManifest = false;
+  private static JSONObject mManifest;
+  private static String mSdkVersion;
 
   @Inject
   ExponentManifest mExponentManifest;
@@ -321,10 +323,18 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           return;
         }
 
-        // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
-        String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-        ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
+        if(ExperienceActivityUtils.hasStatusBarInSplash(manifest)){
+          ExperienceActivityUtils.setStatusBarInSplash(manifest, ExperienceActivity.this);
+          mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+          mManifest = manifest;
+        }
+        else{
+          // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
+          String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+          ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
+        }
 
+        setActivity(ExperienceActivity.this);
         showLoadingScreen(manifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
@@ -344,7 +354,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // twice otherwise. Turn on "Don't keep activites", trigger a notification, background the app, and then
     // press on the notification in a shell app to see this happen.
     mIsLoadExperienceAllowedToRun = false;
-
     mIsReadyForBundle = false;
 
     mManifestUrl = manifestUrl;
@@ -466,14 +475,25 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           AsyncCondition.notify(READY_FOR_BUNDLE);
         }
 
-        ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
-
+        if(ExperienceActivityUtils.hasStatusBarInSplash(manifest)){
+          ExperienceActivityUtils.setStatusBarInSplash(manifest, ExperienceActivity.this);
+          mSdkVersion = mDetachSdkVersion;
+          mManifest = manifest;
+        }
+        else{
+          ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
+        }
+        setActivity(ExperienceActivity.this);
         showLoadingScreen(manifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
         handleExperienceOptions(kernelOptions);
       }
     });
+  }
+
+  public void setGeneralStatusBar(JSONObject manifest, ExperienceActivity activity){
+    ExperienceActivityUtils.setWindowTransparency(mSdkVersion, manifest , activity);
   }
 
   public void setBundle(final String localBundlePath) {

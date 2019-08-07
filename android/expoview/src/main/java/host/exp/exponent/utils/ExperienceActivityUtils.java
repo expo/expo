@@ -2,6 +2,7 @@
 
 package host.exp.exponent.utils;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.pm.ActivityInfo;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 public class ExperienceActivityUtils {
 
   private static final String TAG = ExperienceActivityUtils.class.getSimpleName();
+  private static JSONObject mStatusBar = null;
 
   public static void updateOrientation(JSONObject manifest, Activity activity) {
     if (manifest == null) {
@@ -47,6 +49,11 @@ public class ExperienceActivityUtils {
     JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
 
     String statusBarColor;
+
+    boolean fullScreen = (activity.getWindow().getDecorView().getSystemUiVisibility() == View.SYSTEM_UI_FLAG_FULLSCREEN);
+    if(fullScreen){
+      activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
 
     if (statusBarOptions != null) {
       statusBarColor = statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR);
@@ -103,4 +110,72 @@ public class ExperienceActivityUtils {
       }
     });
   }
+
+  public static boolean hasStatusBarInSplash(final JSONObject manifest){
+    JSONObject splash = null;
+    boolean hasStatusBarInSplash = false;
+    if (manifest.has("android")) {
+      final JSONObject android = manifest.optJSONObject("android");
+      if (android.has(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)) {
+        splash = android.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY);
+        if (splash.has(ExponentManifest.MANIFEST_SPLASH_STATUS_BAR)) {
+          mStatusBar = splash.optJSONObject(ExponentManifest.MANIFEST_SPLASH_STATUS_BAR);
+          hasStatusBarInSplash = true;
+        }
+      }
+    }
+    return hasStatusBarInSplash;
+  }
+
+  public static void setStatusBarInSplash(final JSONObject manifest, final Activity activity) {
+    String statusBarColor;
+
+    if (mStatusBar != null) {
+      statusBarColor = mStatusBar.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR);
+      boolean visible = false;
+      if (mStatusBar.has("visible")) {
+        visible = mStatusBar.optBoolean("visible");
+        if (!visible) {
+          View decorView = activity.getWindow().getDecorView();
+          // Hide the status bar.
+          decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+          // Remember that you should never show the action bar if the
+          // status bar is hidden, so hide that too if necessary.
+          ActionBar actionBar = activity.getActionBar();
+          if (actionBar != null) actionBar.hide();
+        }
+      }
+    } else {
+      statusBarColor = manifest.optString(ExponentManifest.MANIFEST_STATUS_BAR_COLOR);
+    }
+
+    if (statusBarColor != null && ColorParser.isValid(statusBarColor)) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        activity.getWindow().setStatusBarColor(Color.parseColor(statusBarColor));
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+
+    if (mStatusBar == null) {
+      return;
+    }
+
+    String statusBarAppearance = mStatusBar.optString(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE);
+
+    if (statusBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        if (statusBarAppearance.equals("dark-content")) {
+          activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+  }
+
 }
