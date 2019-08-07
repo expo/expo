@@ -27,6 +27,7 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
   public GetAlbums(Context context, Map<String, Object> assetOptions, Promise promise) {
     mContext = context;
     mPromise = promise;
+    mAlbumOptions = assetOptions;
   }
 
   @Override
