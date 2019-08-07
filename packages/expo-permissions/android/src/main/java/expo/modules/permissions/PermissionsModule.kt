@@ -15,7 +15,8 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
 
   @Throws(IllegalStateException::class)
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mPermissions = moduleRegistry.getModule(Permissions::class.java) ?: throw IllegalStateException("Couldn't find implementation for Permissions interface.")
+    mPermissions = moduleRegistry.getModule(Permissions::class.java)
+        ?: throw IllegalStateException("Couldn't find implementation for Permissions interface.")
   }
 
   override fun getName(): String = "ExpoPermissions"

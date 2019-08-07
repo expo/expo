@@ -11,28 +11,26 @@ import expo.modules.permissions.PermissionsTypes.LOCATION
 import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 
-class LocationRequester : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> {
-    return arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
-  }
+class LocationRequester(private val permissionsService: PermissionsService) : PermissionRequester {
+  override fun getPermissionToAsk(): Array<String> = arrayOf(
+      Manifest.permission.ACCESS_FINE_LOCATION,
+      Manifest.permission.ACCESS_COARSE_LOCATION
+  )
 
   override fun getPermission(): Bundle {
     return Bundle().apply {
       var scope = "none"
       try {
         when {
-          PermissionRequester.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+          permissionsService.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) -> {
             putString(STATUS_KEY, GRANTED_VALUE)
             scope = "fine"
           }
-          PermissionRequester.isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
+          permissionsService.isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
             putString(STATUS_KEY, GRANTED_VALUE)
             scope = "coarse"
           }
-          PermissionsService.didAsk(LOCATION.type) -> {
+          permissionsService.didAsk(LOCATION.type) -> {
             putString(STATUS_KEY, DENIED_VALUE)
           }
           else -> {

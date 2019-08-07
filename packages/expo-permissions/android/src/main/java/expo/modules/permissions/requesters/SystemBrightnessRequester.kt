@@ -13,7 +13,7 @@ import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 import org.unimodules.core.interfaces.ActivityProvider
 
-class SystemBrightnessRequester(private val activityProvider: ActivityProvider) : PermissionRequester {
+class SystemBrightnessRequester(private val permissionsService: PermissionsService, private val activityProvider: ActivityProvider) : PermissionRequester {
   override fun getPermissionToAsk(): Array<String> = emptyArray() // this permission is handled in different way
 
   // checkSelfPermission does not return accurate status of WRITE_SETTINGS
@@ -24,7 +24,7 @@ class SystemBrightnessRequester(private val activityProvider: ActivityProvider) 
         writePermissionsCheck() -> {
           GRANTED_VALUE
         }
-        PermissionsService.didAsk(SYSTEM_BRIGHTNESS.type) -> {
+        permissionsService.didAsk(SYSTEM_BRIGHTNESS.type) -> {
           DENIED_VALUE
         }
         else -> {

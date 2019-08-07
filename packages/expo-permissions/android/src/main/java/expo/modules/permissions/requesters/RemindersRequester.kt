@@ -9,7 +9,6 @@ import expo.modules.permissions.STATUS_KEY
 class RemindersRequester : PermissionRequester {
   override fun getPermissionToAsk(): Array<String> = emptyArray()
 
-
   override fun getPermission(): Bundle {
     return Bundle().apply {
       putString(STATUS_KEY, GRANTED_VALUE)

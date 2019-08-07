@@ -40,7 +40,7 @@ internal const val ERROR_TAG = "E_PERMISSIONS"
 
 internal const val PERMISSION_EXPIRES_NEVER = "never"
 
-class PermissionsService(val context: Context): InternalModule, Permissions, LifecycleEventListener {
+class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private lateinit var mActivityProvider: ActivityProvider
   private lateinit var mRequesters: Map<String, PermissionRequester>
 
@@ -50,41 +50,38 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
   private var mAskAsyncRequestedPermissionsTypes: Array<out String>? = null
   private var mAskAsyncPermissionsTypesToBeAsked: ArrayList<String>? = null
 
-  companion object {
-    private val mPermissionsAskedFor = HashSet<String>()
-    fun didAsk(permission: String): Boolean = mPermissionsAskedFor.contains(permission)
+  private val mPermissionsAskedFor = HashSet<String>()
 
-    private lateinit var mPermissions: Permissions
-    fun getPermissionService(): Permissions = mPermissions
-  }
+  fun didAsk(permission: String): Boolean = mPermissionsAskedFor.contains(permission)
 
   override fun getExportedInterfaces(): List<Class<out Any>> = listOf(Permissions::class.java)
 
   @Throws(IllegalStateException::class)
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java) ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
+        ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    mPermissions = this
 
     val notificationRequester = NotificationRequester(context)
     mRequesters = mapOf(
-        PermissionsTypes.LOCATION.type to LocationRequester(),
-        PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
-        PermissionsTypes.CONTACTS.type to SimpleRequester(Manifest.permission.READ_CONTACTS),
-        PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),
-        PermissionsTypes.CAMERA_ROLL.type to CameraRollRequester(),
-        PermissionsTypes.CALENDAR.type to CalendarRequester(),
-        PermissionsTypes.SMS.type to SimpleRequester(Manifest.permission.READ_SMS),
+        PermissionsTypes.LOCATION.type to LocationRequester(this),
+        PermissionsTypes.CAMERA.type to SimpleRequester(this, Manifest.permission.CAMERA),
+        PermissionsTypes.CONTACTS.type to SimpleRequester(this, Manifest.permission.READ_CONTACTS),
+        PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(this, Manifest.permission.RECORD_AUDIO),
+        PermissionsTypes.CAMERA_ROLL.type to CameraRollRequester(this),
+        PermissionsTypes.CALENDAR.type to CalendarRequester(this),
+        PermissionsTypes.SMS.type to SimpleRequester(this, Manifest.permission.READ_SMS),
         PermissionsTypes.REMINDERS.type to RemindersRequester(),
         PermissionsTypes.NOTIFICATIONS.type to notificationRequester,
         PermissionsTypes.USER_FACING_NOTIFICATIONS.type to notificationRequester,
-        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(mActivityProvider)
+        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(this, mActivityProvider)
     )
   }
 
   @Throws(IllegalStateException::class)
   private fun getRequester(permissionType: String): PermissionRequester {
-    return mRequesters[permissionType] ?: throw IllegalStateException("Unrecognized permission type: $permissionType")
+    return mRequesters[permissionType]
+        ?: throw IllegalStateException("Unrecognized permission type: $permissionType")
   }
 
   override fun getPermissionsBundle(permissionTypes: Array<out String>?): Bundle {
@@ -113,7 +110,7 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
   }
 
   override fun askForPermissionsBundle(permissionsTypes: Array<out String>?, listener: Permissions.PermissionsRequesterListenerBundle?) {
-    if (permissionsTypes == null || listener == null){
+    if (permissionsTypes == null || listener == null) {
       throw NullPointerException("permissionsTypes or listener can not be null")
     }
 
@@ -195,8 +192,7 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
     askForPermissions(arrayOf(permission)) { listener.onPermissionResult(it[0]) }
   }
 
-  override fun hasPermissions(permissions: Array<String>): Boolean
-    = getPermissions(permissions).all { it == PackageManager.PERMISSION_GRANTED }
+  override fun hasPermissions(permissions: Array<String>): Boolean = getPermissions(permissions).all { it == PackageManager.PERMISSION_GRANTED }
 
 
   /**
@@ -212,6 +208,23 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
       return false
     } catch (e: PackageManager.NameNotFoundException) {
       return false
+    }
+  }
+
+  /**
+   * Checks status for Android built-in permission
+   *
+   * @param permission [android.Manifest.permission]
+   */
+  fun isPermissionGranted(permission: String): Boolean = getPermission(permission) == PackageManager.PERMISSION_GRANTED
+
+  /**
+   * Checks whether all given permissions are granted or not.
+   * Throws IllegalStateException there's no Permissions module present.
+   */
+  fun arePermissionsGranted(permissions: Array<String>): Boolean {
+    with(getPermissions(permissions)) {
+      return count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
     }
   }
 

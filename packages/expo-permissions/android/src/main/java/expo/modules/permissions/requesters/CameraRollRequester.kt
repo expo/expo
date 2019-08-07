@@ -11,22 +11,21 @@ import expo.modules.permissions.PermissionsService
 import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 
-class CameraRollRequester : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> {
-    return arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
-  }
+class CameraRollRequester(private val permissionsService: PermissionsService) : PermissionRequester {
+  override fun getPermissionToAsk(): Array<String> = arrayOf(
+      Manifest.permission.READ_EXTERNAL_STORAGE,
+      Manifest.permission.WRITE_EXTERNAL_STORAGE
+  )
+
 
   override fun getPermission(): Bundle {
     return Bundle().apply {
       try {
         when {
-          PermissionRequester.arePermissionsGranted(getPermissionToAsk()) -> {
+          permissionsService.arePermissionsGranted(getPermissionToAsk()) -> {
             putString(STATUS_KEY, GRANTED_VALUE)
           }
-          PermissionsService.didAsk(CAMERA.type) -> {
+          permissionsService.didAsk(CAMERA.type) -> {
             putString(STATUS_KEY, DENIED_VALUE)
           }
           else -> {
