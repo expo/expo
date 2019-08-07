@@ -47,6 +47,7 @@
     "connect": "^3.6.3",
     "cwait": "^1.1.2",
     "express": "^4.16.0",
+    "find-in-files": "^0.5.0",
     "folder-hash": "^3.0.0",
     "freeport-async": "^1.1.1",
     "fs-extra": "^7.0.1",
