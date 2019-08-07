@@ -34,6 +34,8 @@ export interface AppManifest {
   slug?: string;
   sdkVersion?: string;
   version?: string;
+  /** Published Apps Only */
+  revisionId?: string;
   orientation?: string;
   primaryColor?: string;
   icon?: string;

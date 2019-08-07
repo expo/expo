@@ -12,28 +12,24 @@
   "workspaces": {
     "packages": [
       "apps/*",
+      "apps/test-suite/puppeteer-test",
       "expokit-npm-package",
       "home",
       "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
-    ],
-    "nohoist": [
-      "**/@storybook/**",
-      "**/@emotion/**",
-      "apps/storybook/webpack-manifest-plugin"
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.3.0"
+    "react-native-unimodules": "~0.5.0"
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
     "eslint": "^6.0.1",
     "eslint-config-universe": "^2.0.0-alpha.0",
-    "expo-cli": "^2.21.2",
-    "expo-yarn-workspaces": "^1.1.0",
+    "expo-cli": "^3.0.4",
+    "expo-yarn-workspaces": "^1.2.0",
     "prettier": "^1.18.2"
   },
   "resolutions": {}

@@ -1,59 +1,61 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
+
 import ExpoDevice from './ExpoDevice';
-
 import { deviceNamesByCode } from './DeviceNameByCode';
-import { DeviceType as _DeviceType } from './Device.types';
 
-export{
-  _DeviceType as DeviceType
+export enum DeviceType {
+  PHONE = 'PHONE',
+  TABLET = 'TABLET',
+  DESKTOP = 'DESKTOP',
+  TV = 'TV',
+  UNKNOWN = 'UNKNOWN',
 }
 
-export const brand = ExpoDevice ? ExpoDevice.brand : null;
-export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
-let model;
-let fingerprint;
-let platformModelId;
-let platformDesignName;
-let platformProductName;
-let platformApi;
+export let modelName;
 if (Platform.OS === 'ios') {
-  let deviceName;
-  let iOSmodelId = ExpoDevice.modelId;
-  if (iOSmodelId) {
-    deviceName = deviceNamesByCode[iOSmodelId];
-    if (!deviceName) {
+  let IosDeviceName;
+  let IosModelId = ExpoDevice.modelId;
+  if (IosModelId) {
+    IosDeviceName = deviceNamesByCode[IosModelId];
+    if (!IosDeviceName) {
       // Not found on database. At least guess main device type from string contents:
-      if (iOSmodelId.startsWith('iPod')) {
-        deviceName = 'iPod Touch';
-      } else if (iOSmodelId.startsWith('iPad')) {
-        deviceName = 'iPad';
-      } else if (iOSmodelId.startsWith('iPhone')) {
-        deviceName = 'iPhone';
-      } else if (iOSmodelId.startsWith('AppleTV')) {
-        deviceName = 'Apple TV';
+      if (IosModelId.startsWith('iPod')) {
+        IosDeviceName = 'iPod Touch';
+      } else if (IosModelId.startsWith('iPad')) {
+        IosDeviceName = 'iPad';
+      } else if (IosModelId.startsWith('iPhone')) {
+        IosDeviceName = 'iPhone';
+      } else if (IosModelId.startsWith('AppleTV')) {
+        IosDeviceName = 'Apple TV';
       }
     }
   }
-  model = deviceName;
-  fingerprint = null;
-  platformModelId = ExpoDevice ? ExpoDevice.modelId : null;
-  platformDesignName = null;
-  platformProductName = null;
-  platformApi = null;
-} else {
-  model = ExpoDevice ? ExpoDevice.modelName : null;
-  fingerprint = ExpoDevice ? ExpoDevice.osBuildFingerprint : null;
-  platformModelId = null;
-  platformDesignName = ExpoDevice ? ExpoDevice.designName : null;
-  platformProductName = ExpoDevice ? ExpoDevice.productName : null;
-  platformApi = ExpoDevice ? ExpoDevice.platformApiLevel : null;
+  modelName = IosDeviceName;
 }
-export const osBuildFingerprint = fingerprint;
-export const modelName = model;
-export const modelId = platformModelId;
-export const designName = platformDesignName;
-export const productName = platformProductName;
-export const platformApiLevel = platformApi;
+if (!modelName) modelName = ExpoDevice ? ExpoDevice.modelName : null;
+export const modelId = ExpoDevice ? (ExpoDevice.modelId ? ExpoDevice.modelId : null) : null;
+export const osBuildFingerprint = ExpoDevice
+  ? ExpoDevice.osBuildFingerprint
+    ? ExpoDevice.osBuildFingerprint
+    : null
+  : null;
+export const designName = ExpoDevice
+  ? ExpoDevice.designName
+    ? ExpoDevice.designName
+    : null
+  : null;
+export const productName = ExpoDevice
+  ? ExpoDevice.productName
+    ? ExpoDevice.productName
+    : null
+  : null;
+export const platformApiLevel = ExpoDevice
+  ? ExpoDevice.platformApiLevel
+    ? ExpoDevice.platformApiLevel
+    : null
+  : null;
+export const brand = ExpoDevice ? ExpoDevice.brand : null;
+export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 export const osName = ExpoDevice ? ExpoDevice.osName : null;
 export const totalMemory = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : null;
@@ -62,7 +64,7 @@ export const osBuildId = ExpoDevice ? ExpoDevice.osBuildId : null;
 export const osVersion = ExpoDevice ? ExpoDevice.osVersion : null;
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
 export const osInternalBuildId = ExpoDevice ? ExpoDevice.osInternalBuildId : null;
-export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass: null;
+export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass : null;
 
 export async function hasPlatformFeatureAsync(feature: string): Promise<boolean> {
   if (!ExpoDevice.hasPlatformFeatureAsync) {
@@ -89,11 +91,11 @@ export async function getMaxMemoryAsync(): Promise<number> {
   return Promise.resolve(maxMemory);
 }
 
-export async function isSideLoadingEnabled(): Promise<boolean> {
-  if (!ExpoDevice.isSideLoadingEnabled) {
-    throw new UnavailabilityError('expo-device', 'isSideLoadingEnabled');
+export async function isSideLoadingEnabledAsync(): Promise<boolean> {
+  if (!ExpoDevice.isSideLoadingEnabledAsync) {
+    throw new UnavailabilityError('expo-device', 'isSideLoadingEnabledAsync');
   }
-  return await ExpoDevice.isSideLoadingEnabled();
+  return await ExpoDevice.isSideLoadingEnabledAsync();
 }
 
 export async function getUptimeAsync(): Promise<number> {
@@ -110,21 +112,21 @@ export async function isRootedExperimentalAsync(): Promise<boolean> {
   return await ExpoDevice.isRootedExperimentalAsync();
 }
 
-export async function getDeviceTypeAsync(): Promise<_DeviceType> {
+export async function getDeviceTypeAsync(): Promise<DeviceType> {
   if (!ExpoDevice.getDeviceTypeAsync) {
     throw new UnavailabilityError('expo-device', 'getDeviceTypeAsync');
   }
   const deviceType = await ExpoDevice.getDeviceTypeAsync();
   switch (deviceType) {
-    case _DeviceType.PHONE:
-      return Promise.resolve(_DeviceType.PHONE);
-    case _DeviceType.TABLET:
-      return Promise.resolve(_DeviceType.TABLET);
-    case _DeviceType.TV:
-      return Promise.resolve(_DeviceType.TV);
-    case _DeviceType.DESKTOP:
-      return Promise.resolve(_DeviceType.DESKTOP);
+    case DeviceType.PHONE:
+      return DeviceType.PHONE;
+    case DeviceType.TABLET:
+      return DeviceType.TABLET;
+    case DeviceType.TV:
+      return DeviceType.TV;
+    case DeviceType.DESKTOP:
+      return DeviceType.DESKTOP;
     default:
-      return Promise.resolve(_DeviceType.UNKNOWN);
+      return DeviceType.UNKNOWN;
   }
 }

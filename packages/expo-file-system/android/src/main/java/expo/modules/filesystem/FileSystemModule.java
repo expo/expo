@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 
@@ -530,15 +529,12 @@ public class FileSystemModule extends ExportedModule {
       long blockCount = root.getBlockCountLong();
       long blockSize = root.getBlockSizeLong();
       BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
-      Double capacityDouble = capacity.doubleValue();
       //cast down to avoid overflow
-      if(capacity.longValue() > Math.pow(2,53) - 1){
-        capacityDouble =  Math.pow(2,53) - 1;
-      }
+      Double capacityDouble = Math.max(capacity.doubleValue(), Math.pow(2, 53) - 1);
       promise.resolve(capacityDouble);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity");
+      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
     }
   }
 
@@ -550,15 +546,15 @@ public class FileSystemModule extends ExportedModule {
       long blockSize = external.getBlockSizeLong();
 
       BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      Double storageDouble = storage.doubleValue();
+      Double storageDouble = Math.max(storage.doubleValue(), Math.pow(2, 53) - 1);
       //cast down to avoid overflow
-      if(storage.longValue() > Math.pow(2,53) - 1){
-        storageDouble =  Math.pow(2,53) - 1;
+      if (storage.longValue() > Math.pow(2, 53) - 1) {
+        storageDouble = Math.pow(2, 53) - 1;
       }
       promise.resolve(storageDouble);
-    } catch (NullPointerException e) {
+    } catch (Exception e) {
       Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM", "No available free disk storage.");
+      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
     }
   }
 
@@ -586,7 +582,7 @@ public class FileSystemModule extends ExportedModule {
   private Uri contentUriFromFile(File file) {
     try {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
-      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+      return FileSystemFileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
     } catch (Exception e) {
       throw e;
     }

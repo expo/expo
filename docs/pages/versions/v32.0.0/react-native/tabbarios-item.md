@@ -5,19 +5,19 @@ title: TabBarIOS.Item
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`selected`](../tabbarios-item/#selected)
-- [`badge`](../tabbarios-item/#badge)
-- [`icon`](../tabbarios-item/#icon)
-- [`onPress`](../tabbarios-item/#onpress)
-- [`renderAsOriginal`](../tabbarios-item/#renderasoriginal)
-- [`badgeColor`](../tabbarios-item/#badgecolor)
-- [`selectedIcon`](../tabbarios-item/#selectedicon)
-- [`style`](../tabbarios-item/#style)
-- [`systemIcon`](../tabbarios-item/#systemicon)
-- [`title`](../tabbarios-item/#title)
-- [`isTVSelectable`](../tabbarios-item/#istvselectable)
+* [`selected`](../tabbarios-item/#selected)
+* [`badge`](../tabbarios-item/#badge)
+* [`icon`](../tabbarios-item/#icon)
+* [`onPress`](../tabbarios-item/#onpress)
+* [`renderAsOriginal`](../tabbarios-item/#renderasoriginal)
+* [`badgeColor`](../tabbarios-item/#badgecolor)
+* [`selectedIcon`](../tabbarios-item/#selectedicon)
+* [`style`](../tabbarios-item/#style)
+* [`systemIcon`](../tabbarios-item/#systemicon)
+* [`title`](../tabbarios-item/#title)
+* [`isTVSelectable`](../tabbarios-item/#istvselectable)
 
 ---
 
@@ -79,8 +79,8 @@ If set to true it renders the image as original, it defaults to being displayed 
 
 Background color for the badge. Available since iOS 10.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -132,4 +132,3 @@ Text that appears under the icon. It is ignored when a system icon is defined.
 | Type | Required | Platform |
 | ---- | -------- | -------- |
 | bool | No       | iOS      |
-

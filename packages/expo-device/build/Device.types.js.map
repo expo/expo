@@ -1,1 +1,1 @@
-{"version":3,"file":"Device.types.js","sourceRoot":"","sources":["../src/Device.types.ts"],"names":[],"mappings":"AAAA,MAAM,CAAN,IAAY,UAMX;AAND,WAAY,UAAU;IACpB,6BAAe,CAAA;IACf,+BAAiB,CAAA;IACjB,iCAAmB,CAAA;IACnB,uBAAS,CAAA;IACT,iCAAmB,CAAA;AACrB,CAAC,EANW,UAAU,KAAV,UAAU,QAMrB","sourcesContent":["export enum DeviceType {\n  PHONE = 'PHONE',\n  TABLET = 'TABLET',\n  DESKTOP = 'DESKTOP',\n  TV = 'TV',\n  UNKNOWN = 'UNKNOWN',\n}\n"]}
+{"version":3,"file":"Device.types.js","sourceRoot":"","sources":["../src/Device.types.ts"],"names":[],"mappings":"","sourcesContent":[""]}

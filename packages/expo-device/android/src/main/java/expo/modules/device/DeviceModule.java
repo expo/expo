@@ -82,7 +82,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     constants.put("modelName", Build.MODEL);
     constants.put("osName", this.getSystemName());
     String[] supported_abis = Build.SUPPORTED_ABIS;
-    if(supported_abis != null && supported_abis.length == 0){
+    if (supported_abis != null && supported_abis.length == 0) {
       supported_abis = null;
     }
     constants.put("supportedCpuArchitectures", supported_abis);
@@ -149,7 +149,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     }
 
     // Get display metrics to see if we can differentiate handsets and tablets.
-    // NOTE: for API level 16 the metrics will exclude window decor.
     DisplayMetrics metrics = new DisplayMetrics();
     windowManager.getDefaultDisplay().getMetrics(metrics);
 
@@ -187,7 +186,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
-  public void isSideLoadingEnabled(Promise promise) {
+  public void isSideLoadingEnabledAsync(Promise promise) {
     boolean enabled;
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       if (Settings.Global.getInt(mContext.getApplicationContext().getContentResolver(), Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1) {
@@ -217,18 +216,28 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public void isRootedExperimentalAsync(Promise promise) {
     boolean isRooted = false;
     boolean isDevice = !isRunningOnGenymotion() && !isRunningOnStockEmulator();
-    String buildTags = Build.TAGS;
-    if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
-      isRooted = true;
-    } else {
-      File file = new File("/system/app/Superuser.apk");
-      if (file.exists()) {
+
+    try {
+      String buildTags = Build.TAGS;
+      if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
         isRooted = true;
       } else {
-        file = new File("/system/xbin/su");
-        isRooted = isDevice && file.exists();
+        File file = new File("/system/app/Superuser.apk");
+        if (file.exists()) {
+          isRooted = true;
+        } else {
+          file = new File("/system/xbin/su");
+          isRooted = isDevice && file.exists();
+        }
       }
+    } catch (SecurityException se) {
+      promise.reject(
+        "ERR_DEVICE_ROOT_DETECTION",
+        "Could not access the file system to determine if the device is rooted.",
+        se);
+      return;
     }
+
     promise.resolve(isRooted);
   }
 

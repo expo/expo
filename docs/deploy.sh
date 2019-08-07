@@ -31,6 +31,10 @@ redirects[versions/latest/sdk/index.html]=versions/latest/sdk/overview/
 redirects[versions/latest/workflow/upgrading-expo]=versions/latest/workflow/upgrading-expo-sdk-walkthrough/
 # rename
 redirects[versions/latest/sdk/haptic/index.html]=versions/latest/sdk/haptics/
+# duplicate docs file, consolidate into one page
+redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overview/
+# project-lifecycle is now covered by managed-vs-bare
+redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/introduction/managed-vs-bare/
 
 for i in "${!redirects[@]}" # iterate over keys
 do

@@ -13,7 +13,6 @@ import './menu/MenuView';
 
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
-import ProfileActions from './redux/ProfileActions';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import Store from './redux/Store';
@@ -60,7 +59,6 @@ export default class App extends React.Component {
     try {
       Store.dispatch(SettingsActions.loadSettings());
       Store.dispatch(HistoryActions.loadHistory());
-      Store.dispatch(ProfileActions.load());
       const storedSession = await LocalStorage.getSessionAsync();
 
       if (storedSession) {

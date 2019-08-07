@@ -72,7 +72,8 @@ platform :ios do
   before_all do
     FileUtils.mkdir_p(output_directory)
     Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
-      xcodeproj: "./ios/Exponent.xcodeproj"
+      xcodeproj: "./ios/Exponent.xcodeproj",
+      target: "Exponent"
     )
     save_original_info_plist
     set_bundle_version_from_commit_count
@@ -130,6 +131,7 @@ platform :ios do
     )
 
     sigh(
+      app_identifier: "host.exp.Exponent",
       output_path: output_directory,
       filename: "Exponent-distribution.mobileprovision",
     )
@@ -153,7 +155,9 @@ platform :ios do
       output_name: "Exponent.ipa",
     )
 
-    deliver()
+    deliver(
+      team_id: "17102800",
+    )
   end
 
   after_all do |lane|

@@ -7,16 +7,9 @@ Android-only React component used to indicate that the app is loading or there i
 
 Example:
 
-
 ```javascript
-
-import React, { Component } from "react";
-import {
-  ProgressBarAndroid,
-  AppRegistry,
-  StyleSheet,
-  View
-} from "react-native";
+import React, { Component } from 'react';
+import { ProgressBarAndroid, StyleSheet, View } from 'react-native';
 
 export default class App extends Component {
   render() {
@@ -25,11 +18,7 @@ export default class App extends Component {
         <ProgressBarAndroid />
         <ProgressBarAndroid styleAttr="Horizontal" />
         <ProgressBarAndroid styleAttr="Horizontal" color="#2196F3" />
-        <ProgressBarAndroid
-          styleAttr="Horizontal"
-          indeterminate={false}
-          progress={0.5}
-        />
+        <ProgressBarAndroid styleAttr="Horizontal" indeterminate={false} progress={0.5} />
       </View>
     );
   }
@@ -38,26 +27,22 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-evenly",
-    padding: 10
-  }
+    justifyContent: 'space-evenly',
+    padding: 10,
+  },
 });
-
-AppRegistry.registerComponent("App", () => App);
-
 ```
-
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`animating`](../progressbarandroid/#animating)
-- [`color`](../progressbarandroid/#color)
-- [`indeterminate`](../progressbarandroid/#indeterminate)
-- [`progress`](../progressbarandroid/#progress)
-- [`styleAttr`](../progressbarandroid/#styleattr)
-- [`testID`](../progressbarandroid/#testid)
+* [`animating`](../progressbarandroid/#animating)
+* [`color`](../progressbarandroid/#color)
+* [`indeterminate`](../progressbarandroid/#indeterminate)
+* [`progress`](../progressbarandroid/#progress)
+* [`styleAttr`](../progressbarandroid/#styleattr)
+* [`testID`](../progressbarandroid/#testid)
 
 ---
 
@@ -79,8 +64,8 @@ Whether to show the ProgressBar (true, the default) or hide it (false).
 
 Color of the progress bar.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -109,13 +94,13 @@ The progress value (between 0 and 1).
 
 Style of the ProgressBar. One of:
 
-* Horizontal
-* Normal (default)
-* Small
-* Large
-* Inverse
-* SmallInverse
-* LargeInverse
+- Horizontal
+- Normal (default)
+- Small
+- Large
+- Inverse
+- SmallInverse
+- LargeInverse
 
 | Type                                                                                      | Required |
 | ----------------------------------------------------------------------------------------- | -------- |
@@ -130,4 +115,3 @@ Used to locate this view in end-to-end tests.
 | Type   | Required |
 | ------ | -------- |
 | string | No       |
-

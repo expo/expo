@@ -224,8 +224,6 @@ Registers for receiving location updates that can also come when the app is in t
 
 > Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
-> Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
-
 #### Returns
 
 A promise resolving once the task with location updates is registered.
@@ -276,7 +274,6 @@ Geofencing API notifies your app when the device enters or leaves geographical r
 To make it work in the background, it uses [TaskManager](../task-manager) Native API under the hood. There are some requirements in order to use Geofencing API:
 
 - `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (_iOS only_)
 - Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
 
 ### `Location.startGeofencingAsync(taskName, regions)`

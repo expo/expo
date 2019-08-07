@@ -7,10 +7,10 @@ title: Settings
 
 ### Methods
 
-* [`get`](../settings/#get)
-* [`set`](../settings/#set)
-* [`watchKeys`](../settings/#watchkeys)
-* [`clearWatch`](../settings/#clearwatch)
+- [`get`](../settings/#get)
+- [`set`](../settings/#set)
+- [`watchKeys`](../settings/#watchkeys)
+- [`clearWatch`](../settings/#clearwatch)
 
 ---
 
@@ -20,13 +20,11 @@ title: Settings
 
 ### `get()`
 
-
 ```javascript
 
 static get(key)
 
 ```
-
 
 Get the current value for a key in `NSUserDefaults`.
 
@@ -34,13 +32,11 @@ Get the current value for a key in `NSUserDefaults`.
 
 ### `set()`
 
-
 ```javascript
 
 static set(settings)
 
 ```
-
 
 Set one or more values in `NSUserDefaults`.
 
@@ -48,13 +44,11 @@ Set one or more values in `NSUserDefaults`.
 
 ### `watchKeys()`
 
-
 ```javascript
 
 static watchKeys(keys, callback)
 
 ```
-
 
 Subscribe to be notified when the value for any of the keys specified by the `keys` array changes in `NSUserDefaults`. Returns a `watchId` number that may be used with `clearWatch()` to unsubscribe.
 
@@ -62,13 +56,10 @@ Subscribe to be notified when the value for any of the keys specified by the `ke
 
 ### `clearWatch()`
 
-
 ```javascript
 
 static clearWatch(watchId)
 
 ```
 
-
 `watchId` is the number returned by `watchKeys()` when the subscription was originally configured.
-

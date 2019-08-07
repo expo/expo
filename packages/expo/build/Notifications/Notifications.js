@@ -2,15 +2,14 @@ import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
-import { UnavailabilityError } from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
 function _maybeInitEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
-        DeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+        RCTDeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
     }
 }
 function _emitNotification(notification) {
@@ -44,6 +43,7 @@ function _processNotification(notification) {
         }
         if (notification.ios) {
             notification = Object.assign(notification, notification.ios);
+            notification.data._displayInForeground = notification.ios._displayInForeground;
             delete notification.ios;
         }
     }
@@ -285,6 +285,9 @@ export default {
     },
     /* Cancel scheduled notification notification with ID */
     cancelScheduledNotificationAsync(notificationId) {
+        if (Platform.OS === 'android' && typeof notificationId === 'string') {
+            return ExponentNotifications.cancelScheduledNotificationWithStringIdAsync(notificationId);
+        }
         return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
     },
     /* Cancel all scheduled notifications */
@@ -315,5 +318,27 @@ export default {
         }
         return ExponentNotifications.setBadgeNumberAsync(number);
     },
+    async scheduleNotificationWithCalendarAsync(notification, options = {}) {
+        const areOptionsValid = (options.month == null || isInRangeInclusive(options.month, 1, 12)) &&
+            (options.day == null || isInRangeInclusive(options.day, 1, 31)) &&
+            (options.hour == null || isInRangeInclusive(options.hour, 0, 23)) &&
+            (options.minute == null || isInRangeInclusive(options.minute, 0, 59)) &&
+            (options.second == null || isInRangeInclusive(options.second, 0, 59)) &&
+            (options.weekDay == null || isInRangeInclusive(options.weekDay, 1, 7)) &&
+            (options.weekDay == null || options.day == null);
+        if (!areOptionsValid) {
+            throw new CodedError('WRONG_OPTIONS', 'Options in scheduleNotificationWithCalendarAsync call were incorrect!');
+        }
+        return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
+    },
+    async scheduleNotificationWithTimerAsync(notification, options) {
+        if (options.interval < 1) {
+            throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
+        }
+        return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
+    },
 };
+function isInRangeInclusive(variable, min, max) {
+    return (variable >= min && variable <= max);
+}
 //# sourceMappingURL=Notifications.js.map

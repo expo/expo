@@ -7,11 +7,9 @@ Opens the standard Android date picker dialog.
 
 ### Example
 
-
 ```javascript
-
 try {
-  const {action, year, month, day} = await DatePickerAndroid.open({
+  const { action, year, month, day } = await DatePickerAndroid.open({
     // Use `new Date()` for current date.
     // May 25 2020. Month 0 is January.
     date: new Date(2020, 4, 25),
@@ -19,12 +17,10 @@ try {
   if (action !== DatePickerAndroid.dismissedAction) {
     // Selected year, month (0-11), day
   }
-} catch ({code, message}) {
+} catch ({ code, message }) {
   console.warn('Cannot open date picker', message);
 }
-
 ```
-
 
 ### Methods
 
@@ -40,13 +36,11 @@ try {
 
 ### `open()`
 
-
 ```javascript
 
 static open(options)
 
 ```
-
 
 Opens the standard Android date picker dialog.
 
@@ -68,13 +62,11 @@ Note the native date picker dialog has some UI glitches on Android 4 and lower w
 
 ### `dateSetAction()`
 
-
 ```javascript
 
 static dateSetAction()
 
 ```
-
 
 A date has been selected.
 
@@ -82,13 +74,10 @@ A date has been selected.
 
 ### `dismissedAction()`
 
-
 ```javascript
 
 static dismissedAction()
 
 ```
 
-
 The dialog has been dismissed.
-

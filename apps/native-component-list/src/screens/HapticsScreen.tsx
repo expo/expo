@@ -8,6 +8,7 @@ import MonoText from '../components/MonoText';
 
 const sections = [
   {
+    methodName: 'notificationAsync',
     method: Haptics.notificationAsync,
     data: [
       {
@@ -25,6 +26,7 @@ const sections = [
     ],
   },
   {
+    methodName: 'impactAsync',
     method: Haptics.impactAsync,
     data: [
       {
@@ -42,6 +44,7 @@ const sections = [
     ],
   },
   {
+    methodName: 'selectionAsync',
     method: Haptics.selectionAsync,
     data: [{}],
   },
@@ -60,8 +63,8 @@ export default class HapticsScreen extends React.Component {
     section: { method: (type: string) => void };
   }) => <Item method={method} type={item} />
 
-  renderSectionHeader = ({ section: { method } }: { section: { method: () => void } }) => (
-    <Header title={method.name} />
+  renderSectionHeader = ({ section: { methodName } }: { section: { methodName: string } }) => (
+    <Header title={methodName} />
   )
 
   keyExtractor = ({ accessor, value }: { accessor: string; value: any }) => `key-${accessor}-${value}`;
@@ -81,7 +84,10 @@ export default class HapticsScreen extends React.Component {
   }
 }
 
-class Item extends React.Component<{ method: (type: string) => void; type: { accessor: string; value: any } }> {
+class Item extends React.Component<{
+  method: (type: string) => void;
+  type: { accessor: string; value: any }
+}> {
   get code() {
     const {
       method,

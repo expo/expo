@@ -26,5 +26,19 @@ declare const _default: {
     addListener(listener: (notification: Notification) => unknown): EventSubscription;
     getBadgeNumberAsync(): Promise<number>;
     setBadgeNumberAsync(number: number): Promise<void>;
+    scheduleNotificationWithCalendarAsync(notification: LocalNotification, options?: {
+        year?: number | undefined;
+        month?: number | undefined;
+        hour?: number | undefined;
+        day?: number | undefined;
+        minute?: number | undefined;
+        second?: number | undefined;
+        weekDay?: number | undefined;
+        repeat?: boolean | undefined;
+    }): Promise<string>;
+    scheduleNotificationWithTimerAsync(notification: LocalNotification, options: {
+        interval: number;
+        repeat?: boolean | undefined;
+    }): Promise<string>;
 };
 export default _default;

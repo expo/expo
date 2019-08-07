@@ -342,7 +342,7 @@ Returns a Promise that resolves to the number of bytes available on the internal
 
 ### `FileSystem.getTotalDiskCapacityAsync()`
 
-Gets total internal disk storage size, in bytes. This will get you the total capacity on the data partition where hosts all the internal storage for all apps on the device.
+Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
 
 #### Example
 
