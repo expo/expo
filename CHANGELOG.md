@@ -8,6 +8,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 - added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
