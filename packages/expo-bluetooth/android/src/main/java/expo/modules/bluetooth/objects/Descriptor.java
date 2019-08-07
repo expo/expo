@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import java.util.UUID;
 
-import expo.core.Promise;
+import org.unimodules.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothModule;
 import expo.modules.bluetooth.Serialize;

@@ -1,6 +1,6 @@
 package expo.modules.bluetooth;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 public class BondingPromise {
   protected String uuid;

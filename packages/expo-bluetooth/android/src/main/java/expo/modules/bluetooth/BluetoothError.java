@@ -4,8 +4,8 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.le.ScanCallback;
 import android.os.Bundle;
 
-import expo.core.Promise;
-import expo.core.interfaces.CodedThrowable;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.CodedThrowable;
 
 public class BluetoothError {
 

@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.services.UIManager;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 import expo.modules.bluetooth.objects.Peripheral;
 

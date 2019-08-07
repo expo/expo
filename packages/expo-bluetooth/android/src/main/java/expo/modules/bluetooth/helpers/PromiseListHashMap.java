@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 public class PromiseListHashMap<K, V> extends HashMap<K, V> {
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import expo.core.Promise;
+import org.unimodules.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 

@@ -36,16 +36,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.permissions.Permissions;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 import expo.modules.bluetooth.objects.Characteristic;
 import expo.modules.bluetooth.objects.Descriptor;
@@ -453,7 +453,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
         if (shouldEnable) {
           getCurrentActivity().startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), ENABLE_REQUEST);
         } else {
-          // TODO: Bacon: This prolly isn't allowed
+          // TODO: Bacon: This may not be allowed
           getCurrentActivity().startActivityForResult(new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE"), ENABLE_REQUEST);
         }
         return;
