@@ -199,13 +199,13 @@ public class MediaLibraryModule extends ExportedModule {
 
 
   @ExpoMethod
-  public void getAlbumsAsync(Map<String, Object> options /* unused on android atm */, Promise promise) {
+  public void getAlbumsAsync(Map<String, Object> albumOptions, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
 
-    new GetAlbums(mContext, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    new GetAlbums(mContext, albumOptions, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
 
