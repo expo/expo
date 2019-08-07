@@ -45,12 +45,12 @@ A short description of what your app is and why it is great.
 
 ### `"owner"`
 
-The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
+The primary user to use for publishing and creating builds. If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
 Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
- Valid values: `public`, `unlisted`
+Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
@@ -73,7 +73,7 @@ If you would like to share the source code of your app on Github, enter the URL 
 ### `"orientation"`
 
 Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- Valid values: 'default', 'portrait', 'landscape'
+Valid values: 'default', 'portrait', 'landscape'
 
 ### `"primaryColor"`
 
@@ -192,7 +192,31 @@ Configuration for loading and splash screen for standalone apps.
       Will fill the background of the loading/splash screen.
       Image size and aspect ratio are up to you. Must be a .png.
     */
-    "image": STRING
+    "image": STRING,
+
+    /*
+      Status bar configuration in splash screen.
+      If no androidStatusBar key is present, this status bar configuration will last throughout the app.
+    */
+    "statusBar": {
+      /*
+        Determines to show or hide status bar in splash screen.
+        "true" to show, "false" to hide.
+      */
+      "visible": BOOLEAN,
+
+      /*
+      Configure the statusbar icons to have light or dark color.
+      Valid values: "light-content", "dark-content".
+      */
+      "barStyle": STRING,
+
+      /*
+        Configuration for android statusbar.
+        6 character long hex color string, eg: "#000000"
+      */
+      "backgroundColor": STRING
+    }
   }
 }
 
@@ -316,10 +340,10 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Corresponds to `CFBundleVersion` 
+      Build number for your iOS standalone app. Corresponds to `CFBundleVersion`
       and must match Apple's specified format.
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
-      
+
       Note- Application loader will pull the value for "Version Number" from `expo.version` and NOT from `expo.ios.buildNumber`
 
       ExpoKit: use Xcode to set this.

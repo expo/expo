@@ -6,7 +6,13 @@ Expo and React Native provide APIs and configuration options for Android to conf
 
 ## Configuration (Android)
 
-The configuration for Android status bar lives under the `androidStatusBar` key in `app.json`. It exposes the following options:
+The configuration for Android status bar lives under the `androidStatusBar` key and `android.splash.statusBar` in `app.json`. It exposes the following options:
+
+### `visible` (`android.splash.statusBar` only)
+
+This option can be used to show or hide status bar in splash screen when the app first launches. By default, the status bar is visible in splash screen.
+
+Valid values are `true`(show) or `false`(hide).
 
 ### `barStyle`
 
@@ -64,7 +70,7 @@ import { Constants } from 'expo';
 
 const styles = StyleSheet.create({
   statusBar: {
-    backgroundColor: "#C2185B",
+    backgroundColor: '#C2185B',
     height: Constants.statusBarHeight,
   },
 
@@ -75,8 +81,8 @@ const MyComponent = () => {
   <View>
     <View style={styles.statusBar} />
     {/* rest of the content */}
-  </View>
-}
+  </View>;
+};
 ```
 
 If you don't need to set the background color, you can just set a top padding on the wrapping `View` instead.
