@@ -327,13 +327,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           ExperienceActivityUtils.setStatusBarInSplash(manifest, ExperienceActivity.this);
           mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
           mManifest = manifest;
+          setActivity(ExperienceActivity.this);
         } else {
           // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
           String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
           ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
         }
 
-        setActivity(ExperienceActivity.this);
         showLoadingScreen(manifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
@@ -479,10 +479,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
           ExperienceActivityUtils.setStatusBarInSplash(manifest, ExperienceActivity.this);
           mSdkVersion = mDetachSdkVersion;
           mManifest = manifest;
+          setActivity(ExperienceActivity.this);
         } else {
           ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
         }
-        setActivity(ExperienceActivity.this);
         showLoadingScreen(manifest);
 
         ExperienceActivityUtils.setTaskDescription(mExponentManifest, manifest, ExperienceActivity.this);
