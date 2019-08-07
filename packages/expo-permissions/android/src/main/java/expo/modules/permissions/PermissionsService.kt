@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -30,6 +31,7 @@ import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
 
 private const val PERMISSIONS_REQUEST: Int = 13
+private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
 
 internal const val EXPIRES_KEY = "expires"
 internal const val STATUS_KEY = "status"
@@ -50,9 +52,16 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   private var mAskAsyncRequestedPermissionsTypes: Array<out String>? = null
   private var mAskAsyncPermissionsTypesToBeAsked: ArrayList<String>? = null
 
-  private val mPermissionsAskedFor = HashSet<String>()
+  private lateinit var mPermissionsAskedStorage: SharedPreferences
 
-  fun didAsk(permission: String): Boolean = mPermissionsAskedFor.contains(permission)
+  fun didAsk(permission: String): Boolean = mPermissionsAskedStorage.getBoolean(permission, false)
+
+  private fun addToAskedPreferences(permissions: List<String>) {
+    with(mPermissionsAskedStorage.edit()) {
+      permissions.forEach { putBoolean(it, true) }
+      apply()
+    }
+  }
 
   override fun getExportedInterfaces(): List<Class<out Any>> = listOf(Permissions::class.java)
 
@@ -61,6 +70,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
         ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
+    mPermissionsAskedStorage = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
 
     val notificationRequester = NotificationRequester(context)
     mRequesters = mapOf(
@@ -145,12 +155,12 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
       mAskAsyncListener = listener
       mAskAsyncRequestedPermissionsTypes = permissionsTypes
       mAskAsyncPermissionsTypesToBeAsked = permissionsToBeAsked
-      mPermissionsAskedFor.add("systemBrightness")
+      addToAskedPreferences(listOf(PermissionsTypes.SYSTEM_BRIGHTNESS.type))
       askForWriteSettingsPermissionFirst()
       return
     }
 
-    mPermissionsAskedFor.addAll(permissionsToBeAsked)
+    addToAskedPreferences(permissionsToBeAsked)
     askForPermissions(permissionsToBeAsked.toTypedArray()) { listener.onPermissionsResult(getPermissionsBundle(permissionsTypes)) }
   }
 
@@ -265,7 +275,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     mAskAsyncPermissionsTypesToBeAsked = null
 
     // invoke actual asking for permissions
-    mPermissionsAskedFor.addAll(askAsyncPermissionsTypesToBeAsked!!)
+    addToAskedPreferences(askAsyncPermissionsTypesToBeAsked!!)
     askForPermissions(askAsyncPermissionsTypesToBeAsked.toTypedArray()) { askAsyncListener!!.onPermissionsResult(getPermissionsBundle(askAsyncRequestedPermissionsTypes)) }
   }
 
