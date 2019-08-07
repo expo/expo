@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,14 +67,19 @@ public class ExponentNetwork {
     mLongTimeoutClient = new ExponentHttpClient(mContext, exponentSharedPreferences, new OkHttpClientFactory() {
       @Override
       public OkHttpClient getNewClient() {
-        OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
-            .readTimeout(2, TimeUnit.MINUTES)
-            .build();
-        return longTimeoutHttpClient;
+        return longTimeoutClient();
       }
     });
 
     mNoCacheClient = new OkHttpClient.Builder().build();
+  }
+
+  @NotNull
+  public OkHttpClient longTimeoutClient() {
+    OkHttpClient longTimeoutHttpClient = createHttpClientBuilder()
+        .readTimeout(2, TimeUnit.MINUTES)
+        .build();
+    return longTimeoutHttpClient;
   }
 
   private OkHttpClient.Builder createHttpClientBuilder() {

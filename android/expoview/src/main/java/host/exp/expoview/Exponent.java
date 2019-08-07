@@ -43,6 +43,7 @@ import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -52,9 +53,12 @@ import javax.inject.Inject;
 
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
+
+import expo.modules.ota.BundleDownloader;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import host.exp.exponent.ABIVersion;
@@ -370,14 +374,21 @@ public class Exponent {
       }
       Request request = requestBuilder.build();
       // Use OkHttpClient with long read timeout for dev bundles
-      ExponentHttpClient.SafeCallback callback = new ExponentHttpClient.SafeCallback() {
+      BundleDownloader.BundleDownloadCallback callback = new BundleDownloader.BundleDownloadCallback() {
+
         @Override
-        public void onFailure(IOException e) {
-          bundleListener.onError(e);
+        public void onError(Exception error) {
+          bundleListener.onError(error);
         }
 
         @Override
-        public void onResponse(ExpoResponse response) {
+        public void onSuccess(Response response, BundleDownloader.ResponseSource source) {
+          switch (source) {
+            case CACHE:
+            case EMBEDDED:
+              EXL.d(TAG, "Using cached or embedded response.");
+              break;
+          }
           if (!response.isSuccessful()) {
             String body = "(could not render body)";
             try {
@@ -459,21 +470,24 @@ public class Exponent {
             bundleListener.onError(e);
           }
         }
-
-        @Override
-        public void onCachedResponse(ExpoResponse response, boolean isEmbedded) {
-          EXL.d(TAG, "Using cached or embedded response.");
-          onResponse(response);
-        }
       };
 
-      if (shouldForceCache) {
-        mExponentNetwork.getLongTimeoutClient().tryForcedCachedResponse(request.url().toString(), request, callback, null, null);
-      } else if (shouldForceNetwork) {
-        mExponentNetwork.getLongTimeoutClient().callSafe(request, callback);
-      } else {
-        mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, callback);
+      LinkedList<BundleDownloader.FallbackResponse> fallbackResponses = new LinkedList<>();
+      for(Constants.EmbeddedResponse response: Constants.EMBEDDED_RESPONSES) {
+        fallbackResponses.addLast(new BundleDownloader.FallbackResponse(response.url, response.mediaType, response.responseFilePath));
       }
+
+      BundleDownloader bundleDownloader = new BundleDownloader(mContext, mExponentNetwork.longTimeoutClient(), fallbackResponses);
+      // TODO: Looks like there is at least one more case to be considered from below if :|
+      bundleDownloader.downloadBundle(request, shouldForceNetwork, null, callback);
+
+//      if (shouldForceCache) {
+//        mExponentNetwork.getLongTimeoutClient().tryForcedCachedResponse(request.url().toString(), request, callback, null, null);
+//      } else if (shouldForceNetwork) {
+//        mExponentNetwork.getLongTimeoutClient().callSafe(request, callback);
+//      } else {
+//        mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, callback);
+//      }
     } catch (Exception e) {
       bundleListener.onError(e);
     }
