@@ -16,7 +16,11 @@
   "preserve_paths": "EXMediaLibrary/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "UMCore": [],
-    "UMPermissionsInterface": []
+    "UMCore": [
+
+    ],
+    "UMPermissionsInterface": [
+
+    ]
   }
 }

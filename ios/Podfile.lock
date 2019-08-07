@@ -792,10 +792,8 @@ PODS:
   - EXBarCodeScanner (6.0.0):
     - UMCore
     - UMImageLoaderInterface
-  - EXBattery (0.0.1):
-    - UMCore
   - EXBluetooth (1.0.0):
-    - EXCore
+    - UMCore
   - EXBlur (6.0.0):
     - UMCore
   - EXBranch (1.0.0):
@@ -1552,7 +1550,6 @@ DEPENDENCIES:
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBluetooth (from `../packages/expo-bluetooth/ios`)
-  - EXBattery (from `../packages/expo-battery/ios`)
   - EXBlur (from `../packages/expo-blur/ios`)
   - EXBranch (from `../packages/expo-branch/ios`)
   - EXBrightness (from `../packages/expo-brightness/ios`)
@@ -2119,10 +2116,8 @@ EXTERNAL SOURCES:
     :path: !ruby/object:Pathname
     path: "../packages/expo-barcode-scanner/ios"
   EXBluetooth:
-    :path: "../packages/expo-bluetooth/ios"
-  EXBattery:
     :path: !ruby/object:Pathname
-    path: "../packages/expo-battery/ios"
+    path: "../packages/expo-bluetooth/ios"
   EXBlur:
     :path: !ruby/object:Pathname
     path: "../packages/expo-blur/ios"
@@ -2508,8 +2503,7 @@ SPEC CHECKSUMS:
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
   EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
   EXBarCodeScanner: 3b36378bfc891b6fd3518e244784eb8d3ab00653
-  EXBluetooth: 0018cda1a6acc7aff112c06cf38e155048dad5ab
-  EXBattery: bcbc50cec59b94ac92bbc6068818173c359ef3f3
+  EXBluetooth: 9600be8656fa874217f168b6dc8b879f8f288c82
   EXBlur: 628f8d08e6e4891aac0a8dea4e48d43ffd3c570d
   EXBranch: bcc7743589564f70cb20045e88a84df461be8747
   EXBrightness: 5937628feed854e35525a50b105167b33c851f44

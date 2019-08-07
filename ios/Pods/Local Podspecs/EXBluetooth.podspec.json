@@ -16,7 +16,7 @@
   "preserve_paths": "EXBluetooth/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ]
   }
