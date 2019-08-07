@@ -832,7 +832,7 @@ PODS:
   - EXFileSystem (6.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFont (6.0.0):
+  - EXFont (6.0.1):
     - UMCore
     - UMFontInterface
   - EXGL (6.0.0):
@@ -2488,7 +2488,7 @@ SPEC CHECKSUMS:
   EXFacebook: b71969e92a4d76632ee743d26e88c61b4d9a3e45
   EXFaceDetector: badb48d40de77184aabcc8bc9cbd9b2e6d5e14ee
   EXFileSystem: a5a7b8409e7d11f3948804e674ea91720fa84cd5
-  EXFont: 6f94bf63ddd4fe9f1c5ea80045309a07d95642cd
+  EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXGL: dc4ae6520b142a74e28e6f4472d27a26fc211f37
   EXGL-CPP: 06949fa99656c36b488ff51155ca865c871f3d3d
   EXGoogleSignIn: c1338c16b0d4592d00cec09e1a43e9486df0dba0
