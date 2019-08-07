@@ -1,7 +1,9 @@
 package expo.modules.medialibrary;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,6 +31,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -94,6 +98,47 @@ public class MediaLibraryModule extends ExportedModule {
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+  }
+
+  // TODO(@tsapeta): refactor together with expo-permissions
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
+
+    if (permissionsModule == null) {
+      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
+      return;
+    }
+    String[] permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    permissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
+      @Override
+      public void onPermissionsResult(int[] results) {
+        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
+        Bundle response = new Bundle();
+
+        response.putString("status", isGranted ? "granted" : "denied");
+        response.putBoolean("granted", isGranted);
+        promise.resolve(response);
+      }
+    });
+  }
+
+  // TODO(@tsapeta): refactor together with expo-permissions
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
+
+    if (permissionsModule == null) {
+      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
+      return;
+    }
+    boolean isGranted = !isMissingPermissions();
+    Bundle response = new Bundle();
+
+    response.putString("status", isGranted ? "granted" : "denied");
+    response.putBoolean("granted", isGranted);
+    promise.resolve(response);
   }
 
   @ExpoMethod
@@ -306,6 +351,4 @@ public class MediaLibraryModule extends ExportedModule {
       return countCursor.getInt(0);
     }
   }
-
-
 }

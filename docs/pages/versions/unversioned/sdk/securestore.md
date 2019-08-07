@@ -14,7 +14,7 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-secure-store`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
 
-> **Note**: Not compatible with web.
+> **Note**: This API is not compatible on web or on devices running Android 5 or older.
 
 ## API
 

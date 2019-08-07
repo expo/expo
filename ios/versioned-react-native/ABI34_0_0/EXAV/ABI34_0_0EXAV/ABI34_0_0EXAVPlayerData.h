@@ -8,6 +8,7 @@
 
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
 

@@ -5,13 +5,13 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.unimodules.adapters.react.views.SimpleViewManagerAdapter;
 import org.unimodules.adapters.react.views.ViewGroupManagerAdapter;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
@@ -45,13 +45,18 @@ public class ModuleRegistryAdapter implements ReactPackage {
     // Add listener that will notify org.unimodules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
 
+    ReactPackagesProvider reactPackagesProvider = moduleRegistry.getModule(ReactPackagesProvider.class);
+    for (ReactPackage reactPackage : reactPackagesProvider.getReactPackages()) {
+      nativeModulesList.addAll(reactPackage.createNativeModules(reactContext));
+    }
+
     return nativeModulesList;
   }
 
   @Override
   @SuppressWarnings("unchecked")
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    List<ViewManager> viewManagerList = new ArrayList<>();
+    List<ViewManager> viewManagerList = new ArrayList<>(mModuleRegistryProvider.getReactViewManagers(reactContext));
 
     for (org.unimodules.core.ViewManager viewManager : mModuleRegistryProvider.getViewManagers(reactContext)) {
       switch (viewManager.getViewManagerType()) {
