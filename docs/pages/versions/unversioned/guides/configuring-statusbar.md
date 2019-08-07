@@ -4,9 +4,6 @@ title: Configuring StatusBar
 
 Expo and React Native provide APIs and configuration options for Android to configure the status bar for your app. These can be used to control the appearance of the status bar in your app.
 
-## Installation
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-constants`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-constants).
-
 ## Configuration (Android)
 
 The configuration for Android status bar lives under the `androidStatusBar` key in `app.json`. It exposes the following options:
