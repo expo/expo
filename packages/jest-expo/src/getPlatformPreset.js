@@ -22,12 +22,13 @@ function getPlatformPreset(displayOptions, extensions) {
   const moduleFileExtensions = getModuleFileExtensions(...extensions);
   const testMatch = ['', ...extensions].reduce((arr, cur) => {
     const platformExtension = cur ? `.${cur}` : '';
-    const anyExtension = `.[jt]s?(x)`;
-    return arr.concat([
-      `**/__tests__/**/*spec${platformExtension}${anyExtension}`,
-      `**/__tests__/**/*test${platformExtension}${anyExtension}`,
-      `**/?(*.)+(spec|test)${platformExtension}${anyExtension}`,
-    ]);
+    const sourceExtension = `.[jt]s?(x)`;
+    return [
+      ...arr,
+      `**/__tests__/**/*spec${platformExtension}${sourceExtension}`,
+      `**/__tests__/**/*test${platformExtension}${sourceExtension}`,
+      `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
+    ];
   }, []);
   return {
     displayName: displayOptions,
