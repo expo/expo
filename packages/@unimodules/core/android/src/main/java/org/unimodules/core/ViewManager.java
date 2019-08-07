@@ -10,9 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.ExpoProp;
 
-public abstract class ViewManager<V extends View> {
+public abstract class ViewManager<V extends View> implements RegistryLifecycleListener {
   /**
    * A helper class for passing information about prop setter so that
    * eg. adapter can infer the expected class of the property value.

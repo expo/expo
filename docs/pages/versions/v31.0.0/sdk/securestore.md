@@ -2,11 +2,13 @@
 title: SecureStore
 ---
 
-Provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects. 
+Provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
 
 iOS: Values are stored using the [keychain services](https://developer.apple.com/documentation/security/keychain_services) as `kSecClassGenericPassword`. iOS has the additional option of being able to set the value's `kSecAttrAccessible` attribute, which controls when the value is available to be fetched.
 
 Android: Values are stored in [`SharedPreferences`](https://developer.android.com/training/basics/data-storage/shared-preferences.html), encrypted with [Android's Keystore system](https://developer.android.com/training/articles/keystore.html).
+
+Size limit for a value is 2048 bytes. An attempt to store larger values may fail.
 
 ### `Expo.SecureStore.setItemAsync(key, value, options)`
 
@@ -16,7 +18,7 @@ Store a key–value pair.
 
 - **key (_string_)** -- The key to associate with the stored value. Keys may contain alphanumeric characters `.`, `-`, and `_`.
 
-- **value (_string_)** -- The value to store.
+- **value (_string_)** -- The value to store. Size limit is 2048 bytes.
 
 -   **options (_object_)** (optional) -- A map of options:
 
@@ -50,11 +52,11 @@ Fetch the stored value associated with the provided key.
 -   **key (_string_)** -- The key that was used to store the associated value.
 
 -   **options (_object_)** (optional) -- A map of options:
-  
-    -   **keychainService (_string_)** -- 
+
+    -   **keychainService (_string_)** --
       iOS: The item's service, equivalent to `kSecAttrService`.
-      Android: Equivalent of the public/private key pair `Alias`.  
-      
+      Android: Equivalent of the public/private key pair `Alias`.
+
       **NOTE** If the item is set with the `keychainService` option, it will be required to later fetch the value.
 
 #### Returns
@@ -70,7 +72,7 @@ Delete the value associated with the provided key.
 -   **key (_string_)** -- The key that was used to store the associated value.
 
 -   **options (_object_)** (optional) -- A map of options:
-  
+
     -   **keychainService (_string_)** -- iOS: The item's service, equivalent to `kSecAttrService`.  Android: Equivalent of the public/private key pair `Alias`.  If the item is set with a keychainService, it will be required to later fetch the value.
 
 #### Returns

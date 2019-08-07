@@ -1,15 +1,7 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform, CodedError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
-;
-;
-;
-;
-;
-;
-;
-;
 var LocationAccuracy;
 (function (LocationAccuracy) {
     LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
@@ -19,7 +11,15 @@ var LocationAccuracy;
     LocationAccuracy[LocationAccuracy["Highest"] = 5] = "Highest";
     LocationAccuracy[LocationAccuracy["BestForNavigation"] = 6] = "BestForNavigation";
 })(LocationAccuracy || (LocationAccuracy = {}));
-export { LocationAccuracy as Accuracy };
+var LocationActivityType;
+(function (LocationActivityType) {
+    LocationActivityType[LocationActivityType["Other"] = 1] = "Other";
+    LocationActivityType[LocationActivityType["AutomotiveNavigation"] = 2] = "AutomotiveNavigation";
+    LocationActivityType[LocationActivityType["Fitness"] = 3] = "Fitness";
+    LocationActivityType[LocationActivityType["OtherNavigation"] = 4] = "OtherNavigation";
+    LocationActivityType[LocationActivityType["Airborne"] = 5] = "Airborne";
+})(LocationActivityType || (LocationActivityType = {}));
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
 export var GeofencingEventType;
 (function (GeofencingEventType) {
     GeofencingEventType[GeofencingEventType["Enter"] = 1] = "Enter";
@@ -162,7 +162,7 @@ export async function geocodeAsync(address) {
         const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
         if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
             if (!googleApiKey) {
-                throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+                throw new CodedError(error.code, `${error.message} Please set a Google API Key to use geocoding.`);
             }
             return _googleGeocodeAsync(address);
         }
@@ -177,7 +177,7 @@ export async function reverseGeocodeAsync(location) {
         const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
         if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
             if (!googleApiKey) {
-                throw new Error(error.message + ' Please set a Google API Key to use geocoding.');
+                throw new CodedError(error.code, `${error.message} Please set a Google API Key to use geocoding.`);
             }
             return _googleReverseGeocodeAsync(location);
         }
@@ -190,13 +190,10 @@ export function setApiKey(apiKey) {
 async function _googleGeocodeAsync(address) {
     const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
     const resultObject = await result.json();
-    const { status } = resultObject;
-    if (status === 'ZERO_RESULTS') {
+    if (resultObject.status === 'ZERO_RESULTS') {
         return [];
     }
-    else if (status !== 'OK') {
-        throw new Error(`An error occurred during geocoding. ${status}`);
-    }
+    assertGeocodeResults(resultObject);
     return resultObject.results.map(result => {
         let location = result.geometry.location;
         // TODO: This is missing a lot of props
@@ -209,9 +206,10 @@ async function _googleGeocodeAsync(address) {
 async function _googleReverseGeocodeAsync(options) {
     const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&latlng=${options.latitude},${options.longitude}`);
     const resultObject = await result.json();
-    if (resultObject.status !== 'OK') {
-        throw new Error('An error occurred during geocoding.');
+    if (resultObject.status === 'ZERO_RESULTS') {
+        return [];
     }
+    assertGeocodeResults(resultObject);
     return resultObject.results.map(result => {
         const address = {};
         result.address_components.forEach(component => {
@@ -236,6 +234,19 @@ async function _googleReverseGeocodeAsync(options) {
         });
         return address;
     });
+}
+// https://developers.google.com/maps/documentation/geocoding/intro
+function assertGeocodeResults(resultObject) {
+    const { status, error_message } = resultObject;
+    if (status !== 'ZERO_RESULTS' && status !== 'OK') {
+        if (error_message) {
+            throw new CodedError(status, error_message);
+        }
+        else if (status === 'UNKNOWN_ERROR') {
+            throw new CodedError(status, 'the request could not be processed due to a server error. The request may succeed if you try again.');
+        }
+        throw new CodedError(status, `An error occurred during geocoding.`);
+    }
 }
 // Polyfill: navigator.geolocation.watchPosition
 function watchPosition(success, error, options) {
@@ -302,6 +313,10 @@ export async function hasServicesEnabledAsync() {
 // --- Background location updates
 function _validateTaskName(taskName) {
     invariant(taskName && typeof taskName === 'string', '`taskName` must be a non-empty string.');
+}
+export async function isBackgroundLocationAvailableAsync() {
+    const providerStatus = await getProviderStatusAsync();
+    return providerStatus.backgroundModeEnabled;
 }
 export async function startLocationUpdatesAsync(taskName, options = { accuracy: LocationAccuracy.Balanced }) {
     _validateTaskName(taskName);

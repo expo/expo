@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI27_0_0/Expo/Core/Api/Components/Svg/Shapes/ABI27_0_0RNSVGEllipse.h

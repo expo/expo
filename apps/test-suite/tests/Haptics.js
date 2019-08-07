@@ -1,4 +1,4 @@
-import { Haptics } from 'expo';
+import * as Haptics from 'expo-haptics';
 
 export const name = 'Haptics';
 

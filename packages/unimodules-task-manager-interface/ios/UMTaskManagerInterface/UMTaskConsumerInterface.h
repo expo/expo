@@ -8,7 +8,7 @@
 
 @protocol UMTaskConsumerInterface <NSObject>
 
-@property (nonatomic, strong) id<UMTaskInterface> task;
+@property (nonatomic, strong) id<UMTaskInterface> __nullable task;
 
 @required
 
@@ -20,7 +20,7 @@
 /**
  *  Called by UMTaskService when the task is created and associated with the consumer.
  */
-- (void)didRegisterTask:(id<UMTaskInterface>)task;
+- (void)didRegisterTask:(nonnull id<UMTaskInterface>)task;
 
 @optional
 
@@ -58,6 +58,6 @@
 /**
  *  Method used to normalize task result that comes from JS app.
  */
-- (NSUInteger)normalizeTaskResult:(id)result;
+- (NSUInteger)normalizeTaskResult:(nullable id)result;
 
 @end

@@ -1,12 +1,19 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
 
+import { isSensorEnabledAsync } from './utils/isSensorEnabledAsync.web';
+
 const scalar = Math.PI / 180;
+const eventName = 'deviceorientation';
+
 export default {
   get name(): string {
     return 'ExponentAccelerometer';
   },
   async isAvailableAsync(): Promise<boolean> {
-    return typeof DeviceOrientationEvent !== 'undefined';
+    if (typeof DeviceOrientationEvent === 'undefined') {
+      return false;
+    }
+    return await isSensorEnabledAsync(eventName);
   },
   _handleMotion({ alpha, beta, gamma }) {
     SyntheticPlatformEmitter.emit('accelerometerDidUpdate', {
@@ -16,9 +23,9 @@ export default {
     });
   },
   startObserving() {
-    window.addEventListener('deviceorientation', this._handleMotion);
+    window.addEventListener(eventName, this._handleMotion);
   },
   stopObserving() {
-    window.removeEventListener('deviceorientation', this._handleMotion);
+    window.removeEventListener(eventName, this._handleMotion);
   },
 };

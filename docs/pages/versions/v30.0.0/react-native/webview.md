@@ -5,9 +5,7 @@ title: WebView
 
 `WebView` renders web content in a native view.
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { WebView } from 'react-native';
 
@@ -15,15 +13,13 @@ class MyWeb extends Component {
   render() {
     return (
       <WebView
-        source={{uri: 'https://github.com/facebook/react-native'}}
-        style={{marginTop: 20}}
+        source={{ uri: 'https://github.com/facebook/react-native' }}
+        style={{ marginTop: 20 }}
       />
     );
   }
 }
-
 ```
-
 
 You can use this component to navigate back and forth in the web view's history and configure various properties for the web content.
 
@@ -31,51 +27,51 @@ You can use this component to navigate back and forth in the web view's history 
 
 ### Props
 
-* [View props...](../view/#props)
+- [View props...](../view/#props)
 
-- [`source`](../webview/#source)
-- [`automaticallyAdjustContentInsets`](../webview/#automaticallyadjustcontentinsets)
-- [`injectJavaScript`](../webview/#injectjavascript)
-- [`injectedJavaScript`](../webview/#injectedjavascript)
-- [`mediaPlaybackRequiresUserAction`](../webview/#mediaplaybackrequiresuseraction)
-- [`nativeConfig`](../webview/#nativeconfig)
-- [`onError`](../webview/#onerror)
-- [`onLoad`](../webview/#onload)
-- [`onLoadEnd`](../webview/#onloadend)
-- [`onLoadStart`](../webview/#onloadstart)
-- [`onMessage`](../webview/#onmessage)
-- [`onNavigationStateChange`](../webview/#onnavigationstatechange)
-- [`originWhitelist`](../webview/#originwhitelist)
-- [`renderError`](../webview/#rendererror)
-- [`renderLoading`](../webview/#renderloading)
-- [`scalesPageToFit`](../webview/#scalespagetofit)
-- [`initialScale`](../webview/#initialScale)
-- [`onShouldStartLoadWithRequest`](../webview/#onshouldstartloadwithrequest)
-- [`startInLoadingState`](../webview/#startinloadingstate)
-- [`style`](../webview/#style)
-- [`decelerationRate`](../webview/#decelerationrate)
-- [`domStorageEnabled`](../webview/#domstorageenabled)
-- [`javaScriptEnabled`](../webview/#javascriptenabled)
-- [`mixedContentMode`](../webview/#mixedcontentmode)
-- [`thirdPartyCookiesEnabled`](../webview/#thirdpartycookiesenabled)
-- [`userAgent`](../webview/#useragent)
-- [`allowsInlineMediaPlayback`](../webview/#allowsinlinemediaplayback)
-- [`bounces`](../webview/#bounces)
-- [`contentInset`](../webview/#contentinset)
-- [`dataDetectorTypes`](../webview/#datadetectortypes)
-- [`scrollEnabled`](../webview/#scrollenabled)
-- [`geolocationEnabled`](../webview/#geolocationenabled)
-- [`allowUniversalAccessFromFileURLs`](../webview/#allowUniversalAccessFromFileURLs)
-- [`url`](../webview/#url)
-- [`html`](../webview/#html)
+* [`source`](../webview/#source)
+* [`automaticallyAdjustContentInsets`](../webview/#automaticallyadjustcontentinsets)
+* [`injectJavaScript`](../webview/#injectjavascript)
+* [`injectedJavaScript`](../webview/#injectedjavascript)
+* [`mediaPlaybackRequiresUserAction`](../webview/#mediaplaybackrequiresuseraction)
+* [`nativeConfig`](../webview/#nativeconfig)
+* [`onError`](../webview/#onerror)
+* [`onLoad`](../webview/#onload)
+* [`onLoadEnd`](../webview/#onloadend)
+* [`onLoadStart`](../webview/#onloadstart)
+* [`onMessage`](../webview/#onmessage)
+* [`onNavigationStateChange`](../webview/#onnavigationstatechange)
+* [`originWhitelist`](../webview/#originwhitelist)
+* [`renderError`](../webview/#rendererror)
+* [`renderLoading`](../webview/#renderloading)
+* [`scalesPageToFit`](../webview/#scalespagetofit)
+* [`initialScale`](../webview/#initialScale)
+* [`onShouldStartLoadWithRequest`](../webview/#onshouldstartloadwithrequest)
+* [`startInLoadingState`](../webview/#startinloadingstate)
+* [`style`](../webview/#style)
+* [`decelerationRate`](../webview/#decelerationrate)
+* [`domStorageEnabled`](../webview/#domstorageenabled)
+* [`javaScriptEnabled`](../webview/#javascriptenabled)
+* [`mixedContentMode`](../webview/#mixedcontentmode)
+* [`thirdPartyCookiesEnabled`](../webview/#thirdpartycookiesenabled)
+* [`userAgent`](../webview/#useragent)
+* [`allowsInlineMediaPlayback`](../webview/#allowsinlinemediaplayback)
+* [`bounces`](../webview/#bounces)
+* [`contentInset`](../webview/#contentinset)
+* [`dataDetectorTypes`](../webview/#datadetectortypes)
+* [`scrollEnabled`](../webview/#scrollenabled)
+* [`geolocationEnabled`](../webview/#geolocationenabled)
+* [`allowUniversalAccessFromFileURLs`](../webview/#allowUniversalAccessFromFileURLs)
+* [`url`](../webview/#url)
+* [`html`](../webview/#html)
 
 ### Methods
 
-* [`extraNativeComponentConfig`](../webview/#extranativecomponentconfig)
-* [`goForward`](../webview/#goforward)
-* [`goBack`](../webview/#goback)
-* [`reload`](../webview/#reload)
-* [`stopLoading`](../webview/#stoploading)
+- [`extraNativeComponentConfig`](../webview/#extranativecomponentconfig)
+- [`goForward`](../webview/#goforward)
+- [`goBack`](../webview/#goback)
+- [`reload`](../webview/#reload)
+- [`stopLoading`](../webview/#stoploading)
 
 ---
 
@@ -289,8 +285,8 @@ The style to apply to the `WebView`.
 
 A floating-point number that determines how quickly the scroll view decelerates after the user lifts their finger. You may also use the string shortcuts `"normal"` and `"fast"` which match the underlying iOS settings for `UIScrollViewDecelerationRateNormal` and `UIScrollViewDecelerationRateFast` respectively:
 
-* normal: 0.998
-* fast: 0.99 (the default for iOS web view)
+- normal: 0.998
+- fast: 0.99 (the default for iOS web view)
 
 | Type                                  | Required | Platform |
 | ------------------------------------- | -------- | -------- |
@@ -324,9 +320,9 @@ Specifies the mixed content mode. i.e WebView will allow a secure origin to load
 
 Possible values for `mixedContentMode` are:
 
-* `'never'` (default) - WebView will not allow a secure origin to load content from an insecure origin.
-* `'always'` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
-* `'compatibility'` - WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
+- `'never'` (default) - WebView will not allow a secure origin to load content from an insecure origin.
+- `'always'` - WebView will allow a secure origin to load content from any other origin, even if that origin is insecure.
+- `'compatibility'` - WebView will attempt to be compatible with the approach of a modern web browser with regard to mixed content.
 
 | Type                                     | Required | Platform |
 | ---------------------------------------- | -------- | -------- |
@@ -394,12 +390,12 @@ You can provide one type or an array of many types.
 
 Possible values for `dataDetectorTypes` are:
 
-* `'phoneNumber'`
-* `'link'`
-* `'address'`
-* `'calendarEvent'`
-* `'none'`
-* `'all'`
+- `'phoneNumber'`
+- `'link'`
+- `'address'`
+- `'calendarEvent'`
+- `'none'`
+- `'all'`
 
 | Type                                                                                                                                                     | Required | Platform |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------- |
@@ -459,59 +455,40 @@ Boolean that sets whether JavaScript running in the context of a file scheme URL
 
 ### `extraNativeComponentConfig()`
 
-
 ```javascript
 
 static extraNativeComponentConfig()
 
 ```
 
-
 ### `goForward()`
 
-
 ```javascript
-
 goForward();
-
 ```
-
 
 Go forward one page in the web view's history.
 
 ### `goBack()`
 
-
 ```javascript
-
 goBack();
-
 ```
-
 
 Go back one page in the web view's history.
 
 ### `reload()`
 
-
 ```javascript
-
 reload();
-
 ```
-
 
 Reloads the current page.
 
 ### `stopLoading()`
 
-
 ```javascript
-
 stopLoading();
-
 ```
 
-
 Stop loading the current page.
-

@@ -1,5 +1,7 @@
 import { coalesceExpirations, coalesceStatuses } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
+import { PermissionStatus, } from './Permissions.types';
+export { PermissionStatus, };
 export const CAMERA = 'camera';
 export const CAMERA_ROLL = 'cameraRoll';
 export const AUDIO_RECORDING = 'audioRecording';

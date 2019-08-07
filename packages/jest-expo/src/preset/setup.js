@@ -4,14 +4,7 @@
  */
 'use strict';
 
-const { Response, Request, Headers, fetch } = require('whatwg-fetch');
-global.Response = Response;
-global.Request = Request;
-global.Headers = Headers;
-global.fetch = fetch;
-
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
-
 const createMockConstants = require('./createMockConstants');
 
 // window isn't defined as of react-native 0.45+ it seems
@@ -30,6 +23,12 @@ const mockImageLoader = {
 };
 Object.defineProperty(mockNativeModules, 'ImageLoader', mockImageLoader);
 Object.defineProperty(mockNativeModules, 'ImageViewManager', mockImageLoader);
+
+Object.defineProperty(mockNativeModules, 'LinkingManager', {
+  configurable: true,
+  enumerable: true,
+  get: () => mockNativeModules.Linking,
+});
 
 const mockPlatformConstants = {
   configurable: true,
@@ -113,14 +112,11 @@ mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName
   });
 });
 
-// Needed for `react-native-gesture-handler` as of 10/29/2018
-// Otherwise the following line fails with "cannot read property directEventTypes of undefined"
-// https://github.com/kmagiera/react-native-gesture-handler/blob/master/GestureHandler.js#L46
-Object.defineProperty(mockNativeModules.UIManager, 'RCTView', {
-  get: () => ({
-    NativeProps: {},
-    directEventTypes: [],
-  }),
+Object.defineProperty(mockNativeModules.UIManager, 'takeSnapshot', {
+  configurable: true,
+  enumerable: true,
+  writable: true,
+  value: jest.fn(),
 });
 
 const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
@@ -133,18 +129,16 @@ mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
 };
 
 jest.mock('expo-file-system', () => ({
-  FileSystem: {
-    downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
-    getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
-    readAsStringAsync: jest.fn(),
-    writeAsStringAsync: jest.fn(),
-    deleteAsync: jest.fn(),
-    moveAsync: jest.fn(),
-    copyAsync: jest.fn(),
-    makeDirectoryAsync: jest.fn(),
-    readDirectoryAsync: jest.fn(),
-    createDownloadResumable: jest.fn(),
-  },
+  downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
+  readAsStringAsync: jest.fn(() => Promise.resolve()),
+  writeAsStringAsync: jest.fn(() => Promise.resolve()),
+  deleteAsync: jest.fn(() => Promise.resolve()),
+  moveAsync: jest.fn(() => Promise.resolve()),
+  copyAsync: jest.fn(() => Promise.resolve()),
+  makeDirectoryAsync: jest.fn(() => Promise.resolve()),
+  readDirectoryAsync: jest.fn(() => Promise.resolve()),
+  createDownloadResumable: jest.fn(() => Promise.resolve()),
 }));
 
 jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
@@ -163,40 +157,6 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
     height: 1,
   })),
 }));
-
-jest.mock('react-native-gesture-handler', () => {
-  const View = require('react-native/Libraries/Components/View/View');
-  return {
-    Swipeable: View,
-    DrawerLayout: View,
-    State: {},
-    ScrollView: View,
-    Slider: View,
-    Switch: View,
-    TextInput: View,
-    ToolbarAndroid: View,
-    ViewPagerAndroid: View,
-    DrawerLayoutAndroid: View,
-    WebView: View,
-    NativeViewGestureHandler: View,
-    TapGestureHandler: View,
-    FlingGestureHandler: View,
-    ForceTouchGestureHandler: View,
-    LongPressGestureHandler: View,
-    PanGestureHandler: View,
-    PinchGestureHandler: View,
-    RotationGestureHandler: View,
-    /* Buttons */
-    RawButton: View,
-    BaseButton: View,
-    RectButton: View,
-    BorderlessButton: View,
-    /* Other */
-    FlatList: View,
-    gestureHandlerRootHOC: jest.fn(),
-    Directions: {},
-  };
-});
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
@@ -221,4 +181,14 @@ jest.mock('@unimodules/react-native-adapter', () => {
   }
 
   return ReactNativeAdapter;
+});
+
+// The UIManager module is not idempotent and causes issues if we load it again after resetting
+// the modules with Jest.
+let UIManager;
+jest.doMock('react-native/Libraries/ReactNative/UIManager', () => {
+  if (!UIManager) {
+    UIManager = require.requireActual('react-native/Libraries/ReactNative/UIManager');
+  }
+  return UIManager;
 });

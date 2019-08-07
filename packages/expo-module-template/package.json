@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "4.0.0",
+  "version": "6.0.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -23,5 +23,5 @@
   "peerDependencies": {
     "@unimodules/core": "~1.0.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }

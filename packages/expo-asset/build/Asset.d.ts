@@ -30,9 +30,6 @@ export declare class Asset {
     static fromModule(virtualAssetModule: number | string): Asset;
     static fromMetadata(meta: AssetMetadata): Asset;
     static fromURI(uri: string): Asset;
-    _downloadAsyncWeb(): Promise<void>;
-    _downloadAsyncManagedEnv(): Promise<void>;
-    _downloadAsyncUnmanagedEnv(): Promise<void>;
     downloadAsync(): Promise<void>;
 }
 export {};

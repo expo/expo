@@ -8,11 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import <GoogleMobileVision/GoogleMobileVision.h>
+#import <EXFaceDetector/EXFaceDetectorUtils.h>
+#import <Firebase/Firebase.h>
 
 @interface EXFaceEncoder : NSObject
 
 - (instancetype)initWithTransform:(CGAffineTransform)transform;
+- (instancetype)initWithRotationTransform:(EXFaceDetectionAngleTransformBlock)transform;
+- (instancetype)initWithTransform:(CGAffineTransform)transform withRotationTransform:(EXFaceDetectionAngleTransformBlock)rotationTransform;
 
-- (NSDictionary *)encode:(GMVFaceFeature *)face;
+- (NSDictionary *)encode:(FIRVisionFace *)face;
 
 @end

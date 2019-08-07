@@ -27,17 +27,27 @@ export declare type FaceFeature = {
     noseBasePosition?: Point;
     yawAngle?: number;
     rollAngle?: number;
+    faceID?: number;
 };
 declare type ValuesOf<T extends any[]> = T[number];
 export declare type FaceDetectorMode = string[];
 export declare type FaceDetectorLandmarks = ValuesOf<typeof ExpoFaceDetector.Landmarks>;
 export declare type FaceDetectorClassifications = ValuesOf<typeof ExpoFaceDetector.Classifications>;
+export interface Image {
+    uri: string;
+    width: number;
+    height: number;
+    orientation: number;
+}
 export declare type DetectionOptions = {
     mode?: FaceDetectorMode;
     detectLandmarks?: FaceDetectorLandmarks;
     runClassifications?: FaceDetectorClassifications;
 };
-export declare function detectFacesAsync(uri: string, options?: DetectionOptions): Promise<FaceFeature[]>;
+export declare function detectFacesAsync(uri: string, options?: DetectionOptions): Promise<{
+    faces: FaceFeature[];
+    image: Image;
+}>;
 export declare const Constants: {
     Mode: any;
     Landmarks: any;

@@ -10,6 +10,7 @@ import java.util.List;
 import org.unimodules.adapters.react.services.CookieManagerModule;
 import org.unimodules.adapters.react.services.EventEmitterModule;
 import org.unimodules.adapters.react.services.FontManagerModule;
+import org.unimodules.adapters.react.services.RuntimeEnvironmentModule;
 import org.unimodules.adapters.react.services.UIManagerModuleWrapper;
 import org.unimodules.core.BasePackage;
 import org.unimodules.core.interfaces.InternalModule;
@@ -27,7 +28,8 @@ public class ReactAdapterPackage extends BasePackage {
         new CookieManagerModule(reactContext),
         new UIManagerModuleWrapper(reactContext),
         new EventEmitterModule(reactContext),
-        new FontManagerModule()
+        new FontManagerModule(),
+        new RuntimeEnvironmentModule()
     );
   }
 }

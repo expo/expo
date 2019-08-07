@@ -2275,6 +2275,10 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
       (originalScheme != nil && [originalScheme caseInsensitiveCompare:@"http"] == NSOrderedSame &&
        redirectScheme != nil && [redirectScheme caseInsensitiveCompare:@"https"] == NSOrderedSame);
 
+  // This can't really be nil for the inputs, but to keep the analyzer happy
+  // for the -caseInsensitiveCompare: call below, give it a value if it were.
+  if (!originalScheme) originalScheme = @"https";
+
   // Check for changes to the scheme and disallow any changes except for http to https.
   if (!insecureToSecureRedirect &&
       (redirectScheme.length != originalScheme.length ||

@@ -23,18 +23,15 @@ npm install expo-ads-admob
 
 Run `pod install` in the ios directory after installing the npm package.
 
+In your app's `Info.plist` file, add a `GADApplicationIdentifier` key with a string value of your AdMob app ID, as shown in Google's [Mobile Ads SDK iOS docs](https://developers.google.com/admob/ios/quick-start#update_your_infoplist).
+```xml
+<key>GADApplicationIdentifier</key>
+<string>ca-app-pub-3940256099942544~1458002511</string>
+```
+
 ### Configure for Android
 
-In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.ads.admob.AdMobPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new AdMobPackage()
-), Arrays.<SingletonModule>asList());
-```
+No additional set up necessary.
 
 # Contributing
 

@@ -237,9 +237,6 @@ export async function shareContactAsync(
   message: string,
   shareOptions: Object = {}
 ): Promise<any> {
-  if (!ExpoContacts.shareContactAsync) {
-    throw new UnavailabilityError('Contacts', 'shareContactAsync');
-  }
   if (Platform.OS === 'ios') {
     const url = await writeContactToFileAsync({
       id: contactId,
@@ -249,11 +246,13 @@ export async function shareContactAsync(
         url,
         message,
       },
-      shareOptions
+      shareOptions,
     );
-  } else {
-    return await ExpoContacts.shareContactAsync(contactId, message);
+  } else if (!ExpoContacts.shareContactAsync) {
+    throw new UnavailabilityError('Contacts', 'shareContactAsync');
   }
+  return await ExpoContacts.shareContactAsync(contactId, message);
+
 }
 
 export async function getContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
@@ -325,7 +324,7 @@ export async function removeContactAsync(contactId: string): Promise<any> {
 
 export async function writeContactToFileAsync(
   contactQuery: ContactQuery = {}
-): Promise<string | null> {
+): Promise<string | undefined> {
   if (!ExpoContacts.writeContactToFileAsync) {
     throw new UnavailabilityError('Contacts', 'writeContactToFileAsync');
   }

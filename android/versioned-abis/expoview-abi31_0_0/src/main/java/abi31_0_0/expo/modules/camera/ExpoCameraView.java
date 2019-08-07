@@ -37,8 +37,8 @@ import abi31_0_0.expo.interfaces.facedetector.FaceDetectorProvider;
 import abi31_0_0.expo.interfaces.permissions.Permissions;
 import abi31_0_0.expo.modules.camera.tasks.BarCodeScannerAsyncTask;
 import abi31_0_0.expo.modules.camera.tasks.BarCodeScannerAsyncTaskDelegate;
-import abi31_0_0.expo.modules.camera.tasks.FaceDetectorAsyncTask;
 import abi31_0_0.expo.modules.camera.tasks.FaceDetectorAsyncTaskDelegate;
+import abi31_0_0.expo.modules.camera.tasks.FaceDetectorTask;
 import abi31_0_0.expo.modules.camera.tasks.PictureSavedDelegate;
 import abi31_0_0.expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import abi31_0_0.expo.modules.camera.utils.FileSystemUtils;
@@ -136,7 +136,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
           double scaleY = (double) cameraView.getHeight() / (dimensions.getHeight() * density);
 
           FaceDetectorAsyncTaskDelegate delegate = (FaceDetectorAsyncTaskDelegate) cameraView;
-          new FaceDetectorAsyncTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing(), scaleX, scaleY).execute();
+          FaceDetectorTask task = new FaceDetectorTask(delegate, mFaceDetector, data, width, height, correctRotation, getFacing() == CameraView.FACING_FRONT, scaleX, scaleY);
+          task.execute();
         }
       }
     });
@@ -332,6 +333,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   @Override
   public void onFaceDetectionError(FaceDetector faceDetector) {
+    faceDetectorTaskLock = false;
     if (!mShouldDetectFaces) {
       return;
     }

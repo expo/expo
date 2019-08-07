@@ -1,6 +1,6 @@
 {
   "name": "Folly",
-  "version": "2016.10.31.00",
+  "version": "2018.10.22.00",
   "license": {
     "type": "Apache License, Version 2.0"
   },
@@ -9,7 +9,7 @@
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/folly.git",
-    "tag": "v2016.10.31.00"
+    "tag": "v2018.10.22.00"
   },
   "module_name": "folly",
   "dependencies": {
@@ -25,19 +25,32 @@
   },
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
   "source_files": [
-    "folly/Bits.cpp",
+    "folly/String.cpp",
     "folly/Conv.cpp",
     "folly/Demangle.cpp",
-    "folly/StringBase.cpp",
+    "folly/Format.cpp",
+    "folly/ScopeGuard.cpp",
     "folly/Unicode.cpp",
     "folly/dynamic.cpp",
     "folly/json.cpp",
-    "folly/portability/BitsFunctexcept.cpp",
-    "folly/detail/MallocImpl.cpp"
+    "folly/json_pointer.cpp",
+    "folly/container/detail/F14Table.cpp",
+    "folly/detail/Demangle.cpp",
+    "folly/hash/SpookyHashV2.cpp",
+    "folly/lang/Assume.cpp",
+    "folly/lang/ColdClass.cpp",
+    "folly/memory/detail/MallocImpl.cpp"
   ],
   "preserve_paths": [
     "folly/*.h",
+    "folly/container/*.h",
+    "folly/container/detail/*.h",
     "folly/detail/*.h",
+    "folly/functional/*.h",
+    "folly/hash/*.h",
+    "folly/lang/*.h",
+    "folly/memory/*.h",
+    "folly/memory/detail/*.h",
     "folly/portability/*.h"
   ],
   "libraries": "stdc++",

@@ -1,4 +1,4 @@
-import * as Errors from '../Errors';
+import { CodedError, deprecate } from '@unimodules/core';
 
 const packageName = '@unimodules/core';
 
@@ -13,7 +13,7 @@ describe('deprecate', () => {
     it(`warns of a future replacement`, async () => {
       console.warn = jest.fn();
 
-      Errors.deprecate(packageName, 'foo', {
+      deprecate(packageName, 'foo', {
         replacement: 'bar',
         currentVersion: '1.0.0',
         versionToRemove: '2.0.0',
@@ -26,7 +26,7 @@ describe('deprecate', () => {
     it(`warns of a future deprecation`, async () => {
       console.warn = jest.fn();
 
-      Errors.deprecate(packageName, 'foo', {
+      deprecate(packageName, 'foo', {
         currentVersion: '1.0.0',
         versionToRemove: '2.0.0',
       });
@@ -38,18 +38,18 @@ describe('deprecate', () => {
 
   describe('errors', () => {
     it(`throws a deprecation error without expiration`, async () => {
-      expect(() => Errors.deprecate(packageName, 'foo')).toThrowErrorMatchingSnapshot();
+      expect(() => deprecate(packageName, 'foo')).toThrowErrorMatchingSnapshot();
     });
 
     it(`throws an error with the replacement`, async () => {
       expect(() =>
-        Errors.deprecate(packageName, 'foo', { replacement: 'bar' })
+        deprecate(packageName, 'foo', { replacement: 'bar' })
       ).toThrowErrorMatchingSnapshot();
     });
 
     it(`throws an error with the replacement after the expiration`, async () => {
       expect(() =>
-        Errors.deprecate(packageName, 'foo', {
+        deprecate(packageName, 'foo', {
           replacement: 'bar',
           currentVersion: '2.0.0',
           versionToRemove: '1.0.0',
@@ -59,7 +59,7 @@ describe('deprecate', () => {
 
     it(`throws a deprecation error after expiration`, async () => {
       expect(() =>
-        Errors.deprecate(packageName, 'foo', {
+        deprecate(packageName, 'foo', {
           currentVersion: '2.0.0',
           versionToRemove: '1.0.0',
         })
@@ -70,7 +70,7 @@ describe('deprecate', () => {
       const libraries = ['expo-camera', 'Expo.Camera'];
       for (const library of libraries) {
         const error = await getErrorAsync(() => {
-          Errors.deprecate(library, 'foo');
+          deprecate(library, 'foo');
         });
         expect(error).toBeDefined();
         expect(error!.code).toBe('ERR_DEPRECATED_API');
@@ -79,7 +79,7 @@ describe('deprecate', () => {
   });
 });
 
-function getErrorAsync(runnable): Promise<Errors.CodedError | null> {
+function getErrorAsync(runnable): Promise<CodedError | null> {
   return new Promise(async resolve => {
     try {
       await runnable();

@@ -1,7 +1,8 @@
 'use strict';
 
 import { Platform } from 'react-native';
-import { Audio, Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
+import { Audio } from 'expo-av';
 
 import * as TestUtils from '../TestUtils';
 import { retryForStatus, waitFor } from './helpers';

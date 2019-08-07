@@ -10,18 +10,14 @@
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
+@property (nonatomic, readonly) NSString *bundleDirectory;
+
+- (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory bundleDirectory:(NSString *)bundleDirectory;
 
 - (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
-- (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
-- (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
 - (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
-
-+ (BOOL)ensureDirExistsWithPath:(NSString *)path;
-+ (NSString *)documentDirectoryForExperienceId:(NSString *)experienceId;
-+ (NSString *)cachesDirectoryForExperienceId:(NSString *)experienceId;
-+ (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 
 @end
 

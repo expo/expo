@@ -2,9 +2,9 @@
  * @flow
  */
 
+import Constants from 'expo-constants';
 import React from 'react';
-import { AppState, Clipboard, Platform, View } from 'react-native';
-import { Constants } from 'expo';
+import { AppState, Clipboard, View } from 'react-native';
 
 import Environment from '../utils/Environment';
 

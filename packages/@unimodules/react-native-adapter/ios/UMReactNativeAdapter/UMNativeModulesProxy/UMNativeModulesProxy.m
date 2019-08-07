@@ -54,7 +54,11 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
   for (UMExportedModule *exportedModule in [_moduleRegistry getAllExportedModules]) {
-    exportedModulesConstants[[[exportedModule class] exportedModuleName]] = [exportedModule constantsToExport];
+    @try {
+      exportedModulesConstants[[[exportedModule class] exportedModuleName]] = [exportedModule constantsToExport] ?: [NSNull null];
+    } @catch (NSException *exception) {
+      continue;
+    }
   }
   
   // Also add `exportedMethodsNames`

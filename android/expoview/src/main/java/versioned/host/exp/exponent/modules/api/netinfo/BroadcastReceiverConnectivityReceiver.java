@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 package versioned.host.exp.exponent.modules.api.netinfo;
 
 import android.annotation.SuppressLint;
@@ -18,12 +17,12 @@ import android.net.NetworkInfo;
 import com.facebook.react.bridge.ReactApplicationContext;
 
 /**
- * This gets the connectivity status using a BroadcastReceiver. This method was deprecated
- * on Android from API level 24 (N) but we use this method still for any devices running below
- * level 24.
+ * This gets the connectivity status using a BroadcastReceiver. This method was deprecated on
+ * Android from API level 24 (N) but we use this method still for any devices running below level
+ * 24.
  *
- * It has a few differences from the new NetworkCallback method:
- * - Changes to the cellular network effective type (eg. from 2g to 3g) will not trigger a callback
+ * <p>It has a few differences from the new NetworkCallback method: - Changes to the cellular
+ * network effective type (eg. from 2g to 3g) will not trigger a callback
  */
 @SuppressWarnings("deprecation")
 public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver {
@@ -53,8 +52,8 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
 
   @SuppressLint("MissingPermission")
   private void updateAndSendConnectionType() {
-    String connectionType = CONNECTION_TYPE_UNKNOWN;
-    String effectiveConnectionType = EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+    String connectionType = CONNECTION_TYPE_OTHER;
+    String cellularGeneration = null;
 
     try {
       NetworkInfo networkInfo = getConnectivityManager().getActiveNetworkInfo();
@@ -72,7 +71,7 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
           case ConnectivityManager.TYPE_MOBILE:
           case ConnectivityManager.TYPE_MOBILE_DUN:
             connectionType = CONNECTION_TYPE_CELLULAR;
-            effectiveConnectionType = getEffectiveConnectionType(networkInfo);
+            cellularGeneration = getEffectiveConnectionType(networkInfo);
             break;
           case ConnectivityManager.TYPE_WIFI:
             connectionType = CONNECTION_TYPE_WIFI;
@@ -80,6 +79,8 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
           case ConnectivityManager.TYPE_WIMAX:
             connectionType = CONNECTION_TYPE_WIMAX;
             break;
+          case ConnectivityManager.TYPE_VPN:
+            connectionType = CONNECTION_TYPE_VPN;
         }
       }
     } catch (SecurityException e) {
@@ -87,16 +88,16 @@ public class BroadcastReceiverConnectivityReceiver extends ConnectivityReceiver 
       connectionType = CONNECTION_TYPE_UNKNOWN;
     }
 
-    updateConnectivity(connectionType, effectiveConnectionType);
+    updateConnectivity(connectionType, cellularGeneration);
   }
 
   /**
-   * Class that receives intents whenever the connection type changes.
-   * NB: It is possible on some devices to receive certain connection type changes multiple times.
+   * Class that receives intents whenever the connection type changes. NB: It is possible on some
+   * devices to receive certain connection type changes multiple times.
    */
   private class ConnectivityBroadcastReceiver extends BroadcastReceiver {
 
-    //TODO: Remove registered check when source of crash is found. t9846865
+    // TODO: Remove registered check when source of crash is found. t9846865
     private boolean isRegistered = false;
 
     public boolean isRegistered() {

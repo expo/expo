@@ -78,19 +78,34 @@ export type FaceGeometry = {
   triangleIndices: number[];
 };
 
-export type Anchor = {
+export type BaseAnchor = {
   type: AnchorType;
   transform: Matrix;
   id: string;
-  center?: Vector3;
-  extent?: { width: number; length: number };
+};
+
+export type PlaneAnchor = BaseAnchor & {
+  type: AnchorType.Plane;
+  center: Vector3;
+  extent: { width: number; length: number };
+};
+
+export type ImageAnchor = BaseAnchor & {
+  type: AnchorType.Image;
   image?: {
     name: string | null;
     size: Size;
   };
+};
+
+export type FaceAnchor = BaseAnchor & {
+  type: AnchorType.Face;
+  isTracked: boolean;
   geometry?: FaceGeometry;
   blendShapes?: { [shape in BlendShape]?: number };
 };
+
+export type Anchor = BaseAnchor | PlaneAnchor | ImageAnchor | FaceAnchor;
 
 export type HitTest = {
   type: number;
@@ -101,7 +116,7 @@ export type HitTest = {
 };
 
 export type HitTestResults = {
-  hitTest: HitTest;
+  hitTest: HitTest[];
 };
 
 export type DetectionImage = {
@@ -256,7 +271,7 @@ export enum PlaneDetection {
    */
   Horizontal = 'horizontal',
   /**
-   * Plane detection determines horizontal planes in the scene
+   * Plane detection determines vertical planes in the scene
    */
   Vertical = 'vertical',
 }
@@ -657,3 +672,51 @@ export function isFrontCameraAvailable(): boolean {
 export function isRearCameraAvailable(): boolean {
   return isConfigurationAvailable(TrackingConfiguration.World);
 }
+
+/* Legacy constants */
+
+/**
+ * A deprecated alias for `PlaneDetection`
+ * July 8, 2019
+ */
+export const PlaneDetectionTypes = PlaneDetection;
+/**
+ * A deprecated alias for `WorldAlignment`
+ * July 8, 2019
+ */
+export const WorldAlignmentTypes = WorldAlignment;
+/**
+ * A deprecated alias for `EventType`
+ * July 8, 2019
+ */
+export const EventTypes = EventType;
+/**
+ * A deprecated alias for `AnchorType`
+ * July 8, 2019
+ */
+export const AnchorTypes = AnchorType;
+/**
+ * A deprecated alias for `AnchorEventType`
+ * July 8, 2019
+ */
+export const AnchorEventTypes = AnchorEventType;
+/**
+ * A deprecated alias for `FrameAttribute`
+ * July 8, 2019
+ */
+export const FrameAttributes = FrameAttribute;
+/**
+ * A deprecated alias for `TrackingState`
+ * July 8, 2019
+ */
+export const TrackingStates = TrackingState;
+/**
+ * A deprecated alias for `TrackingStateReason`
+ * July 8, 2019
+ */
+export const TrackingStateReasons = TrackingStateReason;
+/**
+ * A deprecated alias for `TrackingConfiguration`
+ * July 8, 2019
+ */
+export const TrackingConfigurations = TrackingConfiguration;

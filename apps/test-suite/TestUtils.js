@@ -1,9 +1,9 @@
 'use strict';
 
-import { Platform, NativeModules } from 'react-native';
-import { Constants } from 'expo';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-const { ExponentTest } = NativeModules;
+import ExponentTest from './ExponentTest';
 
 function browserSupportsWebGL() {
   try {
@@ -22,22 +22,30 @@ function browserSupportsWebGL() {
 export function getTestModules() {
   if (Platform.OS === 'web') {
     const modules = [
-      require('./tests/Import1'),
+      require('./tests/Asset'),
+      require('./tests/SVG'),
+      require('./tests/Basic'),
+      require('./tests/Constants'),
+      require('./tests/SVG'),
+      require('./tests/Contacts'),
       require('./tests/Crypto'),
+      require('./tests/Font'),
       require('./tests/Random'),
+      require('./tests/Localization'),
     ];
 
     if (browserSupportsWebGL()) {
       modules.push(require('./tests/GLView'));
+    }
+
+    if (ExponentTest && !ExponentTest.isInCI) {
+      // modules.push(require('./tests/Speech'));
     }
     return modules;
   }
 
   const modules = [
     require('./tests/Basic'),
-    require('./tests/Import1'),
-    require('./tests/Import2'),
-    require('./tests/Import3'),
     require('./tests/Asset'),
     require('./tests/Constants'),
     require('./tests/Crypto'),
@@ -59,7 +67,7 @@ export function getTestModules() {
     require('./tests/AdMobRewarded'),
     require('./tests/FBBannerAd'),
   ];
-  if (!ExponentTest.isInCI) {
+  if (ExponentTest && !ExponentTest.isInCI) {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
     // Requires interaction (sign in popup)

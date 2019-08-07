@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,12 +101,11 @@ inline constexpr T divRoundAwayBranchful(T num, T denom) {
 template <typename N, typename D>
 using IdivResultType = typename std::enable_if<
     std::is_integral<N>::value && std::is_integral<D>::value &&
-        !std::is_same<N, bool>::value &&
-        !std::is_same<D, bool>::value,
+        !std::is_same<N, bool>::value && !std::is_same<D, bool>::value,
     decltype(N{1} / D{1})>::type;
-}
+} // namespace detail
 
-#if defined(__arm__) && !FOLLY_A64
+#if defined(__arm__) && !FOLLY_AARCH64
 constexpr auto kIntegerDivisionGivesRemainder = false;
 #else
 constexpr auto kIntegerDivisionGivesRemainder = true;
@@ -132,9 +131,10 @@ constexpr auto kIntegerDivisionGivesRemainder = true;
 template <typename N, typename D>
 inline constexpr detail::IdivResultType<N, D> divFloor(N num, D denom) {
   using R = decltype(num / denom);
-  return kIntegerDivisionGivesRemainder && std::is_signed<R>::value
-      ? detail::divFloorBranchless<R>(num, denom)
-      : detail::divFloorBranchful<R>(num, denom);
+  return detail::IdivResultType<N, D>(
+      kIntegerDivisionGivesRemainder && std::is_signed<R>::value
+          ? detail::divFloorBranchless<R>(num, denom)
+          : detail::divFloorBranchful<R>(num, denom));
 }
 
 /**
@@ -151,9 +151,10 @@ inline constexpr detail::IdivResultType<N, D> divFloor(N num, D denom) {
 template <typename N, typename D>
 inline constexpr detail::IdivResultType<N, D> divCeil(N num, D denom) {
   using R = decltype(num / denom);
-  return kIntegerDivisionGivesRemainder && std::is_signed<R>::value
-      ? detail::divCeilBranchless<R>(num, denom)
-      : detail::divCeilBranchful<R>(num, denom);
+  return detail::IdivResultType<N, D>(
+      kIntegerDivisionGivesRemainder && std::is_signed<R>::value
+          ? detail::divCeilBranchless<R>(num, denom)
+          : detail::divCeilBranchful<R>(num, denom));
 }
 
 /**
@@ -175,7 +176,7 @@ inline constexpr detail::IdivResultType<N, D> divCeil(N num, D denom) {
  */
 template <typename N, typename D>
 inline constexpr detail::IdivResultType<N, D> divTrunc(N num, D denom) {
-  return num / denom;
+  return detail::IdivResultType<N, D>(num / denom);
 }
 
 /**
@@ -193,9 +194,10 @@ inline constexpr detail::IdivResultType<N, D> divTrunc(N num, D denom) {
 template <typename N, typename D>
 inline constexpr detail::IdivResultType<N, D> divRoundAway(N num, D denom) {
   using R = decltype(num / denom);
-  return kIntegerDivisionGivesRemainder && std::is_signed<R>::value
-      ? detail::divRoundAwayBranchless<R>(num, denom)
-      : detail::divRoundAwayBranchful<R>(num, denom);
+  return detail::IdivResultType<N, D>(
+      kIntegerDivisionGivesRemainder && std::is_signed<R>::value
+          ? detail::divRoundAwayBranchless<R>(num, denom)
+          : detail::divRoundAwayBranchful<R>(num, denom));
 }
 
 } // namespace folly

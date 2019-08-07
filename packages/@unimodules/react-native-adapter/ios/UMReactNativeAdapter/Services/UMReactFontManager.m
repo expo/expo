@@ -3,6 +3,7 @@
 #import <UMReactNativeAdapter/UMReactFontManager.h>
 #import <UMFontInterface/UMFontProcessorInterface.h>
 #import <React/RCTFont.h>
+#import <UMFontInterface/UMFontManagerInterface.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <objc/runtime.h>
 

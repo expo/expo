@@ -25,7 +25,7 @@ Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-1. Adjust the `android/build.gradle` to add a new `maven` block after all other repositories as described below:
+Adjust the `android/build.gradle` to add a new `maven` block after all other repositories as described below:
 ```gradle
 allprojects {
     repositories {
@@ -39,17 +39,6 @@ allprojects {
         }
     }
 }
-```
-
-2. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.camera.CameraPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new CameraPackage()
-), Arrays.<SingletonModule>asList());
 ```
 
 # Contributing

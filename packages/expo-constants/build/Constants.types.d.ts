@@ -29,6 +29,8 @@ export interface AppManifest {
     slug?: string;
     sdkVersion?: string;
     version?: string;
+    /** Published Apps Only */
+    revisionId?: string;
     orientation?: string;
     primaryColor?: string;
     icon?: string;
@@ -92,6 +94,8 @@ export interface NativeConstants {
     isDevice: boolean;
     isHeadless: boolean;
     linkingUri: string;
+    nativeAppVersion: null;
+    nativeBuildVersion: null;
     manifest: AppManifest;
     sessionId: string;
     statusBarHeight: number;

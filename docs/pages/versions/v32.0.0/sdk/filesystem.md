@@ -58,7 +58,7 @@ Get metadata information about a file or directory.
 
 #### Returns
 
-If no item exists at this URI, returns `{ exists: false, isDirectory: false }`. Else returns an object with the following fields:
+If no item exists at this URI, returns a Promise that resolves to `{ exists: false, isDirectory: false }`. Else returns an object with the following fields:
 
 -   **exists (_boolean_)** -- `true`.
 
@@ -91,7 +91,7 @@ Read the entire contents of a file as a string. Binary will be returned in raw f
 
 #### Returns
 
-A string containing the entire contents of the file.
+A Promise that resolves to a string containing the entire contents of the file.
 
 ### `FileSystem.writeAsStringAsync(fileUri, contents, options)`
 
@@ -165,7 +165,7 @@ Enumerate the contents of a directory.
 
 #### Returns
 
-An array of strings, each containing the name of a file or directory contained in the directory at `fileUri`.
+A Promise that resolves to an array of strings, each containing the name of a file or directory contained in the directory at `fileUri`.
 
 ### `FileSystem.downloadAsync(uri, fileUri, options)`
 
@@ -198,7 +198,7 @@ FileSystem.downloadAsync(
 
 #### Returns
 
-Returns an object with the following fields:
+Returns a Promise that resolves to an object with the following fields:
 
 -   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
@@ -237,7 +237,7 @@ Download the contents at a remote URI to a file in the app's file system.
 
 #### Returns
 
-Returns an object with the following fields:
+Returns a Promise that resolves to an object with the following fields:
 
 -   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
@@ -253,7 +253,7 @@ Pause the current download operation.  `resumeData` is added to the `DownloadRes
 
 #### Returns
 
-Returns an object with the following fields:
+Returns a Promise that resolves to an object with the following fields:
 
 -   **url (_string_)** -- The remote URI to download from.
 
@@ -271,7 +271,7 @@ Resume a paused download operation.
 
 #### Returns
 
-Returns an object with the following fields:
+Returns a Promise that resolves to an object with the following fields:
 
 -   **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 

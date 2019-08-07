@@ -1,8 +1,8 @@
 /* @flow */
 
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { LinearGradient } from 'expo';
 
 export class FormInput extends React.Component {
   state = {

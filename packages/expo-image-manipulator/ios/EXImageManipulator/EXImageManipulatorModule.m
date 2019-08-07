@@ -13,14 +13,14 @@
 
 @end
 
-NSString* const ACTION_KEY_RESIZE = @"resize";
-NSString* const ACTION_KEY_ROTATE = @"rotate";
-NSString* const ACTION_KEY_FLIP = @"flip";
-NSString* const ACTION_KEY_CROP = @"crop";
+static NSString* const ACTION_KEY_RESIZE = @"resize";
+static NSString* const ACTION_KEY_ROTATE = @"rotate";
+static NSString* const ACTION_KEY_FLIP = @"flip";
+static NSString* const ACTION_KEY_CROP = @"crop";
 
-NSString* const SAVE_OPTIONS_KEY_FORMAT = @"format";
-NSString* const SAVE_OPTIONS_KEY_COMPRESS = @"compress";
-NSString* const SAVE_OPTIONS_KEY_BASE64 = @"base64";
+static NSString* const SAVE_OPTIONS_KEY_FORMAT = @"format";
+static NSString* const SAVE_OPTIONS_KEY_COMPRESS = @"compress";
+static NSString* const SAVE_OPTIONS_KEY_BASE64 = @"base64";
 
 @implementation EXImageManipulatorModule
 

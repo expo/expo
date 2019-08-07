@@ -2,12 +2,9 @@
 
 @protocol UMConstantsInterface
 
-@property (nonatomic, readonly) NSString *appOwnership;
-@property (nonatomic, readonly) NSString *experienceId;
-
 - (NSDictionary *)constants;
 
-- (NSString *)buildNumber;
+- (NSString *)buildVersion;
 - (CGFloat)statusBarHeight;
 - (NSString *)iosVersion;
 - (NSString *)userInterfaceIdiom;

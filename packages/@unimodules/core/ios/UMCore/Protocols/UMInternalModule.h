@@ -6,16 +6,11 @@
 // Register a class implementing this protocol in UMModuleClasses
 // of UMModuleRegistryProvider (macros defined in UMDefines.h should help you)
 // to make the module available under any of `exportedInterfaces`
-// via UMModuleRegistry. UMModuleRegistryProvider will initialize your class
-// `initWithExperienceId:` if you implement this method.
+// via UMModuleRegistry.
 
 @protocol UMInternalModule <NSObject>
 
 - (instancetype)init;
 + (const NSArray<Protocol *> *)exportedInterfaces;
-
-@optional
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
 
 @end

@@ -1,51 +1,63 @@
+import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { VoiceQuality } from './Speech.types';
 export default {
     get name() {
         return 'ExponentSpeech';
     },
     async speak(id, text, options) {
-        // @ts-ignore
-        const { SpeechSynthesisUtterance } = global.window;
         const message = new SpeechSynthesisUtterance();
-        if ('rate' in options) {
+        if (typeof options.rate === 'number') {
             message.rate = options.rate;
         }
-        if ('pitch' in options) {
+        if (typeof options.pitch === 'number') {
             message.pitch = options.pitch;
         }
-        if ('language' in options) {
+        if (typeof options.language === 'string') {
             message.lang = options.language;
         }
-        if ('volume' in options) {
+        if (typeof options.volume === 'number') {
             message.volume = options.volume;
         }
         if ('_voiceIndex' in options && options._voiceIndex != null) {
             const voices = window.speechSynthesis.getVoices();
             message.voice = voices[Math.min(voices.length - 1, Math.max(0, options._voiceIndex))];
         }
-        if ('onStart' in options) {
-            message.onstart = options.onStart;
-        }
-        if ('onDone' in options) {
-            message.onend = options.onDone;
-        }
-        if ('onError' in options) {
-            message.onerror = options.onError;
-        }
-        if ('onPause' in options) {
-            message.onpause = options.onPause;
-        }
-        if ('onResume' in options) {
+        if (typeof options.onResume === 'function') {
             message.onresume = options.onResume;
         }
-        if ('onMark' in options) {
+        if (typeof options.onMark === 'function') {
             message.onmark = options.onMark;
         }
-        if ('onBoundary' in options) {
+        if (typeof options.onBoundary === 'function') {
             message.onboundary = options.onBoundary;
         }
+        message.onstart = (nativeEvent) => {
+            SyntheticPlatformEmitter.emit('Exponent.speakingStarted', { id, nativeEvent });
+        };
+        message.onend = (nativeEvent) => {
+            SyntheticPlatformEmitter.emit('Exponent.speakingDone', { id, nativeEvent });
+        };
+        message.onpause = (nativeEvent) => {
+            SyntheticPlatformEmitter.emit('Exponent.speakingStopped', { id, nativeEvent });
+        };
+        message.onerror = (nativeEvent) => {
+            SyntheticPlatformEmitter.emit('Exponent.speakingError', { id, nativeEvent });
+        };
         message.text = text;
         window.speechSynthesis.speak(message);
         return message;
+    },
+    getVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        return voices.map(voice => ({
+            identifier: voice.voiceURI,
+            quality: VoiceQuality.Default,
+            isDefault: voice.default,
+            language: voice.lang,
+            localService: voice.localService,
+            name: voice.name,
+            voiceURI: voice.voiceURI,
+        }));
     },
     async isSpeaking() {
         return window.speechSynthesis.speaking;

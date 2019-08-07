@@ -290,7 +290,7 @@ CGFloat const RNSVG_DEFAULT_FONT_SIZE = 12;
         if (_clipMask) {
             CGImageRelease(_clipMask);
         }
-        if ([_clipNode isSimpleClipPath]) {
+        if ([_clipNode isSimpleClipPath] || _clipNode.clipRule == kRNSVGCGFCRuleEvenodd) {
             _clipMask = nil;
         } else {
             CGRect bounds = CGContextGetClipBoundingBox(context);

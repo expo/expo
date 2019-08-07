@@ -112,7 +112,7 @@
   // if we are adding new active screen, we perform remounting of all already marked as active
   // this is done to mimick the effect UINavigationController has when willMoveToWindow:nil is
   // triggered before the animation starts
-  if ((activeScreenRemoved || activeScreenAdded) && _activeScreens.count == 1) {
+  if (activeScreenAdded) {
     for (ABI32_0_0RNSScreenView *screen in _ReactABI32_0_0Subviews) {
       if (screen.active && [_activeScreens containsObject:screen]) {
         [self detachScreen:screen];
@@ -131,7 +131,7 @@
 
   // if we are down to one active screen it means the transitioning is over and we want to notify
   // the transition has finished
-  if (activeScreenRemoved && _activeScreens.count == 1) {
+  if ((activeScreenRemoved || activeScreenAdded) && _activeScreens.count == 1) {
     ABI32_0_0RNSScreenView *singleActiveScreen = [_activeScreens anyObject];
     // restore interactions
     singleActiveScreen.userInteractionEnabled = YES;

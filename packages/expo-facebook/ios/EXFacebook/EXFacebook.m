@@ -25,20 +25,9 @@
 NSString * const EXFacebookLoginErrorDomain = @"E_FBLOGIN";
 NSString * const EXFacebookLoginBehaviorErrorDomain = @"E_FBLOGIN_BEHAVIOR";
 
-@interface EXFacebook ()
-
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-
-@end
-
 @implementation EXFacebook
 
 UM_EXPORT_MODULE(ExponentFacebook)
-
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
-}
 
 UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                     logInWithReadPermissionsWithAppId:(NSString *)appId
@@ -78,13 +67,12 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
     }
 
     if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      id<UMConstantsInterface> constants = [self->_moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-
-      if (![constants.appOwnership isEqualToString:@"expo"] && ![[self class] facebookAppIdFromNSBundle]) {
-        // standalone: non-web requires native config
+      if (![[self class] facebookAppIdFromNSBundle]) {
+        // We can't reliably execute non-web login
+        // without an appId in Info.plist.
         NSString *message = [NSString stringWithFormat:
                              @"Tried to perform Facebook login with behavior `%@`, but "
-                             "no Facebook app id was provided. Specify Facebook app id in app.json "
+                             "no Facebook app id was provided. Specify Facebook app id in Info.plist "
                              "or switch to `web` behavior.", behavior];
         reject(EXFacebookLoginBehaviorErrorDomain, message, UMErrorWithMessage(message));
         return;

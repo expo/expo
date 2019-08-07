@@ -143,7 +143,7 @@ UM_EXPORT_METHOD_AS(createCameraTextureAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     EXGLContext *glContext = [self getContextWithId:exglCtxId];
     id<UMCameraInterface> cameraView = (id<UMCameraInterface>)view;
     

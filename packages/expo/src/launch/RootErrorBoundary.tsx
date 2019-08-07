@@ -5,7 +5,7 @@ import { getAppLoadingLifecycleEmitter } from './AppLoading';
 
 const { ExponentAppLoadingManager } = NativeModules;
 
-async function finishedAsync() {
+async function finishedAsync(): Promise<any> {
   if (ExponentAppLoadingManager && ExponentAppLoadingManager.finishedAsync) {
     return await ExponentAppLoadingManager.finishedAsync();
   }

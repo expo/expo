@@ -1,10 +1,10 @@
 import DeviceSensor from './DeviceSensor';
 import ExpoBarometer from './ExpoBarometer';
 
-type BarometerMeasurement = {
+export interface BarometerMeasurement {
   pressure: number;
   relativeAltitude?: number;
-};
+}
 
 class BarometerSensor extends DeviceSensor<BarometerMeasurement> {}
 

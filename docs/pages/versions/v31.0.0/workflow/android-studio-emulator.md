@@ -48,10 +48,10 @@ This is because the adb version on your system is different from the adb version
 
 - And from the Android SDK platform-tool directory:
 
-`$cd ~/Android/Sdk/platform-tools`
+`$cd ~/Android/sdk/platform-tools`
 
 `$./adb version`
 
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
-`$sudo cp ~/Android/Sdk/platform-tools/adb /usr/bin`
+`$sudo cp ~/Android/sdk/platform-tools/adb /usr/bin`

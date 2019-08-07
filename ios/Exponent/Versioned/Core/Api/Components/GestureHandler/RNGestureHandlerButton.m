@@ -38,6 +38,9 @@
   self = [super init];
   if (self) {
     _hitTestEdgeInsets = UIEdgeInsetsZero;
+#if !TARGET_OS_TV
+    [self setExclusiveTouch:YES];
+#endif
   }
   return self;
 }

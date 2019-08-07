@@ -58,7 +58,7 @@ export declare type PlaybackStatusToSet = {
 };
 export declare const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number;
 export declare const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet;
-export declare function getNativeSourceFromSource(source: PlaybackSource | null): PlaybackNativeSource | null;
+export declare function getNativeSourceFromSource(source?: PlaybackSource | null): PlaybackNativeSource | null;
 export declare function assertStatusValuesInBounds(status: PlaybackStatusToSet): void;
 export declare function getNativeSourceAndFullInitialStatusForLoadAsync(source: PlaybackSource | null, initialStatus: PlaybackStatusToSet | null, downloadFirst: boolean): Promise<{
     nativeSource: PlaybackNativeSource;

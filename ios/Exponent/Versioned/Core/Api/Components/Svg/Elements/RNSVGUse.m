@@ -89,6 +89,9 @@
     } else if (self.href) {
         // TODO: calling yellow box here
         RCTLogWarn(@"`Use` element expected a pre-defined svg template as `href` prop, template named: %@ is not defined.", self.href);
+        return;
+    } else {
+        return;
     }
     CGRect bounds = template.clientRect;
     self.clientRect = bounds;
@@ -118,6 +121,17 @@
         return self;
     }
     return nil;
+}
+
+- (CGPathRef)getPath: (CGContextRef)context
+{
+    CGAffineTransform transform = CGAffineTransformMakeTranslation([self relativeOnWidth:self.x], [self relativeOnHeight:self.y]);
+    RNSVGNode const* template = [self.svgView getDefinedTemplate:self.href];
+    if (!template) {
+        return nil;
+    }
+    CGPathRef path = [template getPath:context];
+    return CGPathCreateCopyByTransformingPath(path, &transform);
 }
 
 @end

@@ -10,11 +10,10 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
-public class TaskManagerModule extends ExportedModule implements ModuleRegistryConsumer {
+public class TaskManagerModule extends ExportedModule {
   static String EVENT_NAME = "TaskManager.executeTask";
   static String E_TASK_SERVICE_NOT_FOUND = "E_TASK_SERVICE_NOT_FOUND";
 
@@ -38,7 +37,7 @@ public class TaskManagerModule extends ExportedModule implements ModuleRegistryC
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
     mTaskManagerInternal = moduleRegistry.getModule(TaskManagerInterface.class);
   }

@@ -1,1 +1,0 @@
-{"version":3,"file":"FirebaseNotifications.js","sourceRoot":"","sources":["../../src/notifications/FirebaseNotifications.ts"],"names":[],"mappings":"AAAA,OAAO,6BAA6B,CAAC","sourcesContent":["import 'expo-firebase-notifications';\n"]}

@@ -37,6 +37,13 @@ export declare class GLView extends React.Component<GLViewProps> {
         accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
+        isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
+        hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
+        tvParallaxProperties?: PropTypes.Validator<import("react-native").TVParallaxProperties | undefined> | undefined;
+        tvParallaxShiftDistanceX?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxShiftDistanceY?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxTiltAngle?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxMagnification?: PropTypes.Validator<number | undefined> | undefined;
         onStartShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onMoveShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onResponderEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
@@ -75,8 +82,8 @@ export declare class GLView extends React.Component<GLViewProps> {
         msaaSamples: number;
     };
     static createContextAsync(): Promise<ExpoWebGLRenderingContext>;
-    static destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean>;
-    static takeSnapshotAsync(exgl?: WebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
+    static destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean>;
+    static takeSnapshotAsync(exgl?: ExpoWebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
     render(): JSX.Element;
@@ -86,9 +93,6 @@ export declare class GLView extends React.Component<GLViewProps> {
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
-}
-declare class WebGLRenderingContext {
-    __exglCtxId?: number;
 }
 declare type WebGLObjectId = any;
 declare class WebGLObject {

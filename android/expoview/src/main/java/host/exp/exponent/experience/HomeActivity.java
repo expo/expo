@@ -14,17 +14,21 @@ import android.view.View;
 import com.facebook.soloader.SoLoader;
 import com.squareup.leakcanary.LeakCanary;
 
+import org.unimodules.core.interfaces.Package;
+
 import java.util.Arrays;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import org.unimodules.core.interfaces.Package;
 import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
+import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.keepawake.KeepAwakePackage;
+import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import host.exp.exponent.Constants;
@@ -108,6 +112,9 @@ public class HomeActivity extends BaseExperienceActivity {
         new BarCodeScannerPackage(),
         new KeepAwakePackage(),
         new AmplitudePackage(),
+        new CameraPackage(),
+        new FaceDetectorPackage(),
+        new MediaLibraryPackage(),
         new TaskManagerPackage() // load expo-task-manager to restore tasks once the client is opened
     );
   }

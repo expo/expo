@@ -13,7 +13,7 @@ let _originalConsole;
 
 beforeEach(() => {
   _originalConsole = global.console;
-  ({ enableExpoCliLogging, disableExpoCliLogging } = require('../Logs').default);
+  ({ enableExpoCliLogging, disableExpoCliLogging } = require('../Logs'));
 });
 
 afterEach(() => {

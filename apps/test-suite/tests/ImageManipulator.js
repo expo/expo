@@ -1,4 +1,6 @@
-import { Asset, FileSystem, ImageManipulator } from 'expo';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
 
 export const name = 'ImageManipulator';
 

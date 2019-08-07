@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -19,8 +18,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import expo.modules.payments.stripe.dialog.AddCardDialogFragment;
 import expo.modules.payments.stripe.util.ArgCheck;
@@ -54,7 +51,7 @@ import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PA
 import static expo.modules.payments.stripe.util.InitializationOptions.PUBLISHABLE_KEY;
 import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_TEST;
 
-public class StripeModule extends ExportedModule implements ModuleRegistryConsumer {
+public class StripeModule extends ExportedModule {
   private static final String META_DATA_SCHEME_KEY = "standaloneStripeScheme";
   private static final String MODULE_NAME = StripeModule.class.getSimpleName();
   private static HashMap<Integer, WeakReference<StripeModule>> sMapOfInstances = new HashMap<>();
@@ -460,7 +457,7 @@ public class StripeModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     this.mModuleRegistry = moduleRegistry;
 
     // Add the listener for `onActivityResult`

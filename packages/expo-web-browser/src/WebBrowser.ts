@@ -1,26 +1,19 @@
-import { Linking, Platform } from 'react-native';
+import { AppState, Linking, Platform, AppStateStatus } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentWebBrowser from './ExpoWebBrowser';
 
-type RedirectEvent = {
-  url: string;
-};
-
-type OpenBrowserParams = {
-  toolbarColor?: string;
-  browserPackage?: string;
-  enableBarCollapsing?: boolean;
-  showTitle?: boolean;
-};
-
-type AuthSessionResult = RedirectResult | BrowserResult;
-
-type CustomTabsBrowsersResults = {
-  defaultBrowserPackage?: string;
-  preferredBrowserPackage?: string;
-  browserPackages: string[];
-  servicePackages: string[];
-};
+import {
+  RedirectEvent,
+  OpenBrowserOptions,
+  AuthSessionResult,
+  CustomTabsBrowsersResults,
+  BrowserResult,
+  RedirectResult,
+  ServiceActionResult,
+  MayInitWithUrlResult,
+  WarmUpResult,
+  CoolDownResult,
+} from './WebBrowser.types';
 
 const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
   defaultBrowserPackage: undefined,
@@ -28,23 +21,6 @@ const emptyCustomTabsPackages: CustomTabsBrowsersResults = {
   browserPackages: [],
   servicePackages: [],
 };
-
-type BrowserResult = {
-  type: 'cancel' | 'dismiss';
-};
-
-type RedirectResult = {
-  type: 'success';
-  url: string;
-};
-
-type ServiceActionResult = {
-  servicePackage?: string;
-};
-
-type MayInitWithUrlResult = ServiceActionResult;
-type WarmUpResult = ServiceActionResult;
-type CoolDownResult = ServiceActionResult;
 
 export async function getCustomTabsSupportingBrowsersAsync(): Promise<CustomTabsBrowsersResults> {
   if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
@@ -95,7 +71,7 @@ export async function coolDownAsync(browserPackage?: string): Promise<CoolDownRe
 
 export async function openBrowserAsync(
   url: string,
-  browserParams: OpenBrowserParams = {}
+  browserParams: OpenBrowserOptions = {}
 ): Promise<BrowserResult> {
   if (!ExponentWebBrowser.openBrowserAsync) {
     throw new UnavailabilityError('WebBrowser', 'openBrowserAsync');
@@ -151,6 +127,40 @@ function _authSessionIsNativelySupported(): boolean {
 
 let _redirectHandler: ((event: RedirectEvent) => void) | null = null;
 
+/*
+ * openBrowserAsync on Android doesn't wait until closed, so we need to polyfill
+ * it with AppState
+ */
+
+// Store the `resolve` function from a Promise to fire when the AppState
+// returns to active
+let _onWebBrowserCloseAndroid: null | (() => void) = null;
+
+function _onAppStateChangeAndroid(state: AppStateStatus) {
+  if (state === 'active' && _onWebBrowserCloseAndroid) {
+    _onWebBrowserCloseAndroid();
+  }
+}
+
+async function _openBrowserAndWaitAndroidAsync(startUrl: string): Promise<BrowserResult> {
+  let appStateChangedToActive = new Promise(resolve => {
+    _onWebBrowserCloseAndroid = resolve;
+    AppState.addEventListener('change', _onAppStateChangeAndroid);
+  });
+
+  let result: BrowserResult = { type: 'cancel' };
+  let { type } = await openBrowserAsync(startUrl);
+
+  if (type === 'opened') {
+    await appStateChangedToActive;
+    result = { type: 'dismiss' };
+  }
+
+  AppState.removeEventListener('change', _onAppStateChangeAndroid);
+  _onWebBrowserCloseAndroid = null;
+  return result;
+}
+
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
   returnUrl: string
@@ -161,18 +171,39 @@ async function _openAuthSessionPolyfillAsync(
     );
   }
 
-  try {
-    return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
-  } finally {
-    dismissBrowser();
-    if (!_redirectHandler) {
-      throw new Error(
-        `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
-      );
-    }
-    Linking.removeEventListener('url', _redirectHandler);
-    _redirectHandler = null;
+  if (_onWebBrowserCloseAndroid) {
+    throw new Error(`WebBrowser is already open, only one can be open at a time`);
   }
+
+  try {
+    if (Platform.OS === 'android') {
+      return await Promise.race([
+        _openBrowserAndWaitAndroidAsync(startUrl),
+        _waitForRedirectAsync(returnUrl),
+      ]);
+    } else {
+      return await Promise.race([openBrowserAsync(startUrl), _waitForRedirectAsync(returnUrl)]);
+    }
+  } finally {
+    // We can't dismiss the browser on Android, only call this when it's available.
+    // Users on Android need to manually press the 'x' button in Chrome Custom Tabs, sadly.
+    if (ExponentWebBrowser.dismissBrowser) {
+      ExponentWebBrowser.dismissBrowser();
+    }
+
+    _stopWaitingForRedirect();
+  }
+}
+
+function _stopWaitingForRedirect() {
+  if (!_redirectHandler) {
+    throw new Error(
+      `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
+    );
+  }
+
+  Linking.removeEventListener('url', _redirectHandler);
+  _redirectHandler = null;
 }
 
 function _waitForRedirectAsync(returnUrl: string): Promise<RedirectResult> {

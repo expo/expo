@@ -10,9 +10,8 @@ import java.util.List;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
 import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class BannerViewManager extends ViewManager<BannerView> implements ModuleRegistryConsumer {
+public class BannerViewManager extends ViewManager<BannerView> {
   private ModuleRegistry mModuleRegistry;
 
   @ExpoProp(name = "placementId")
@@ -58,7 +57,7 @@ public class BannerViewManager extends ViewManager<BannerView> implements Module
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

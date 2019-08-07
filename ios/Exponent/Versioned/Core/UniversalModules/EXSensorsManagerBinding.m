@@ -116,6 +116,11 @@
   [_kernelService setBarometerUpdateInterval:intervalMs];
 }
 
+- (BOOL)isBarometerAvailable {
+  return [_kernelService isBarometerAvailable];
+}
+
+
 + (const NSArray<Protocol *> *)exportedInterfaces {
   return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface),  @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
 }

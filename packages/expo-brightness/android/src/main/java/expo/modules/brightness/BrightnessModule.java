@@ -12,9 +12,8 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class BrightnessModule extends ExportedModule implements ModuleRegistryConsumer {
+public class BrightnessModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;
 
   public BrightnessModule(Context reactContext) {
@@ -27,7 +26,7 @@ public class BrightnessModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

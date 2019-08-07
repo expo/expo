@@ -7,13 +7,12 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.filesystem.FilePermissionModule;
 import org.unimodules.interfaces.filesystem.Permission;
 import host.exp.exponent.utils.ScopedContext;
 
-public class ScopedFilePermissionModule extends FilePermissionModule implements ModuleRegistryConsumer {
+public class ScopedFilePermissionModule extends FilePermissionModule {
   private ScopedContext mScopedContext;
   private ModuleRegistry mModuleRegistry;
 
@@ -48,7 +47,7 @@ public class ScopedFilePermissionModule extends FilePermissionModule implements 
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

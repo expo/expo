@@ -16,7 +16,7 @@ interface TaskBody {
   },
 }
 
-interface RegisteredTask {
+export interface RegisteredTask {
   taskName: string,
   taskType: string,
   options: any,

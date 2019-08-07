@@ -15,6 +15,8 @@ export const WHEN_UNLOCKED: KeychainAccessibilityConstant = ExpoSecureStore.WHEN
 export const WHEN_UNLOCKED_THIS_DEVICE_ONLY: KeychainAccessibilityConstant =
   ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
 
+const VALUE_BYTES_LIMIT = 2048;
+
 export type SecureStoreOptions = {
   keychainService?: string;
   keychainAccessible?: KeychainAccessibilityConstant;
@@ -70,5 +72,37 @@ function _isValidKey(key: string) {
 }
 
 function _isValidValue(value: string) {
-  return typeof value === 'string';
+  if (typeof value !== 'string') {
+    return false;
+  }
+  if (_byteCount(value) > VALUE_BYTES_LIMIT) {
+    console.warn('Provided value to SecureStore is larger than 2048 bytes. An attempt to store such a value will throw an error in SDK 35.');
+  }
+  return true;
+}
+
+// copy-pasted from https://stackoverflow.com/a/39488643
+function _byteCount(value: string) {
+  let bytes = 0;
+
+  for (let i = 0; i < value.length; i++) {
+    const codePoint = value.charCodeAt(i);
+
+    // Lone surrogates cannot be passed to encodeURI
+    if (codePoint >= 0xD800 && codePoint < 0xE000) {
+      if (codePoint < 0xDC00 && i + 1 < value.length) {
+        const next = value.charCodeAt(i + 1);
+
+        if (next >= 0xDC00 && next < 0xE000) {
+          bytes += 4;
+          i++;
+          continue;
+        }
+      }
+    }
+
+    bytes += (codePoint < 0x80 ? 1 : (codePoint < 0x800 ? 2 : 3));
+  }
+
+  return bytes;
 }

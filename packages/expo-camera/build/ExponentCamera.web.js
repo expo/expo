@@ -89,7 +89,6 @@ export default class ExponentCamera extends React.Component {
     }
     render() {
         const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-        const reactStyle = StyleSheet.flatten(this.props.style);
         const style = {
             position: 'absolute',
             top: 0,
@@ -101,10 +100,16 @@ export default class ExponentCamera extends React.Component {
             objectFit: 'cover',
             transform,
         };
-        return (<View style={{ flex: 1, alignItems: 'stretch', ...reactStyle }}>
+        return (<View style={[styles.videoWrapper, this.props.style]}>
         <video ref={this._setRef} style={style} autoPlay playsInline/>
         {this.props.children}
       </View>);
     }
 }
+const styles = StyleSheet.create({
+    videoWrapper: {
+        flex: 1,
+        alignItems: 'stretch',
+    },
+});
 //# sourceMappingURL=ExponentCamera.web.js.map

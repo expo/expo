@@ -6,7 +6,7 @@ import AdsManager from './NativeAdsManager';
 declare type AdContainerProps<P> = {
     adsManager: AdsManager;
     onAdLoaded?: ((ad: NativeAd) => void) | null;
-} & P;
+} & Pick<P, Exclude<keyof P, keyof AdProps>>;
 declare type AdProps = {
     nativeAd: NativeAd;
 };

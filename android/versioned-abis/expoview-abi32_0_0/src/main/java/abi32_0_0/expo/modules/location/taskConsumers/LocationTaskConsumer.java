@@ -79,9 +79,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     LocationResult result = LocationResult.extractResult(intent);
 
     if (result != null) {
-      PersistableBundle data = new PersistableBundle();
+      List<PersistableBundle> data = new ArrayList<>();
       List<Location> locations = result.getLocations();
-      int length = 0;
 
       for (Location location : locations) {
         long timestamp = location.getTime();
@@ -90,16 +89,13 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
         // so only one location at the specific timestamp can schedule a job.
         if (timestamp > sLastTimestamp) {
           PersistableBundle bundle = LocationModule.locationToBundle(location, PersistableBundle.class);
-          data.putPersistableBundle(Integer.valueOf(length).toString(), bundle);
 
+          data.add(bundle);
           sLastTimestamp = timestamp;
-          ++length;
         }
       }
 
-      data.putInt("length", length);
-
-      if (length > 0) {
+      if (data.size() > 0) {
         // Schedule new job.
         getTaskManagerUtils().scheduleJob(context, mTask, data);
       }
@@ -108,14 +104,11 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
 
   @Override
   public boolean didExecuteJob(final JobService jobService, final JobParameters params) {
-    PersistableBundle data = params.getExtras().getPersistableBundle("data");
+    List<PersistableBundle> data = getTaskManagerUtils().extractDataFromJobParams(params);
     Bundle bundleData = new Bundle();
     ArrayList<Bundle> locationBundles = new ArrayList<>();
 
-    Integer length = data.getInt("length", 0);
-
-    for (int i = 0; i < length; i++) {
-      PersistableBundle persistableLocationBundle = data.getPersistableBundle(String.valueOf(i));
+    for (PersistableBundle persistableLocationBundle : data) {
       Bundle locationBundle = new Bundle();
       Bundle coordsBundle = new Bundle();
 

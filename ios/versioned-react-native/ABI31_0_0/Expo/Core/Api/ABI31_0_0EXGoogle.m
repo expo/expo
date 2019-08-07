@@ -4,9 +4,10 @@
 #import "ABI31_0_0EXOAuthViewController.h"
 #import "ABI31_0_0EXScopedModuleRegistry.h"
 
-#import <GoogleSignIn/GoogleSignIn.h>
 #import <AppAuth.h>
 #import <ReactABI31_0_0/ABI31_0_0RCTUtils.h>
+
+@import GoogleSignIn;
 
 NSString *ABI31_0_0EXGoogleErrorCode = @"GOOGLE_ERROR";
 

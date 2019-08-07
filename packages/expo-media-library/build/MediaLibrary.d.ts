@@ -1,6 +1,6 @@
 import { Subscription } from '@unimodules/core';
 export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';
-export declare type SortByKey = 'default' | 'id' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
+export declare type SortByKey = 'default' | 'mediaType' | 'width' | 'height' | 'creationTime' | 'modificationTime' | 'duration';
 export declare type SortByValue = [SortByKey, boolean] | SortByKey;
 export declare type MediaTypeObject = {
     audio: 'audio';
@@ -10,7 +10,6 @@ export declare type MediaTypeObject = {
 };
 export declare type SortByObject = {
     default: 'default';
-    id: 'id';
     mediaType: 'mediaType';
     width: 'width';
     height: 'height';
@@ -60,6 +59,8 @@ export declare type AssetsOptions = {
     album?: AlbumRef;
     sortBy?: Array<SortByValue> | SortByValue;
     mediaType?: Array<MediaTypeValue> | MediaTypeValue;
+    createdAfter?: Date | number;
+    createdBefore?: Date | number;
 };
 export declare type PagedInfo<T> = {
     assets: Array<T>;
@@ -67,10 +68,21 @@ export declare type PagedInfo<T> = {
     hasNextPage: boolean;
     totalCount: number;
 };
+export declare enum PermissionStatus {
+    UNDETERMINED = "undetermined",
+    GRANTED = "granted",
+    DENIED = "denied"
+}
+export declare type PermissionInfo = {
+    status: 'granted' | 'denied' | 'undetermined';
+    granted: boolean;
+};
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;
 export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
+export declare function requestPermissionsAsync(): Promise<PermissionInfo>;
+export declare function getPermissionsAsync(): Promise<PermissionInfo>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function addAssetsToAlbumAsync(assets: Array<AssetRef> | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;
 export declare function removeAssetsFromAlbumAsync(assets: Array<AssetRef> | AssetRef, album: AlbumRef): Promise<any>;

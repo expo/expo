@@ -26,7 +26,12 @@
 RCT_EXPORT_MODULE(RNGestureHandlerButton)
 
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
-
+#if !TARGET_OS_TV
+RCT_CUSTOM_VIEW_PROPERTY(exclusive, BOOL, RNGestureHandlerButton)
+{
+  [view setExclusiveTouch: json == nil ? YES : [RCTConvert BOOL: json]];
+}
+#endif
 RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
 {
   if (json) {

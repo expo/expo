@@ -44,5 +44,6 @@
 - (void)pushContext:(RNSVGGroup*)node
                              font:(NSDictionary *)font;
 
+- (NSArray*)getFontContext;
 
 @end

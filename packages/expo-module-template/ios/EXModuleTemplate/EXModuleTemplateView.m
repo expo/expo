@@ -8,7 +8,7 @@
 
 @implementation EXModuleTemplateView
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if ((self = [super init])) {
     // some logic here

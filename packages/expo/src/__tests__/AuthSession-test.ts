@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
 import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
+import * as WebBrowser from 'expo-web-browser';
 
 import AuthSession from '../AuthSession';
-import { WebBrowser } from '../Expo';
 
 function applyMocks() {
   mockProperty(Constants.manifest, 'id', '@example/abc');

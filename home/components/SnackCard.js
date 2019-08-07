@@ -18,7 +18,7 @@ import { withNavigation } from 'react-navigation';
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from '@expo/react-native-fade-in-image';
+import FadeIn from 'react-native-fade-in-image';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 function isDescriptionEmpty(description) {
@@ -77,9 +77,8 @@ export default class SnackCard extends React.PureComponent {
   };
 }
 
-// note(brentvatne): we need to know this value so we can set the width of
-// extra info container so it properly sizes the url / likes, otherwise it
-// just overflows. I think this is a yoga bug
+// note(brentvatne): we need to know this value so we can set the width of extra info container so
+// it properly sizes the url, otherwise it just overflows. I think this is a yoga bug
 const IconPaddingLeft = 15;
 const IconPaddingRight = 10;
 const IconWidth = 40;

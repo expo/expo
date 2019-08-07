@@ -2,7 +2,7 @@ import LocalStorage from '../storage/LocalStorage';
 
 export default {
   loadHistory() {
-    return async (dispatch) => {
+    return async dispatch => {
       const history = await LocalStorage.getHistoryAsync();
       return dispatch({
         type: 'loadHistory',
@@ -12,7 +12,7 @@ export default {
   },
 
   clearHistory() {
-    return async (dispatch) => {
+    return async dispatch => {
       await LocalStorage.clearHistoryAsync();
       return dispatch({
         type: 'clearHistory',
@@ -21,7 +21,7 @@ export default {
   },
 
   addHistoryItem(manifestUrl, manifest) {
-    return async (dispatch) => {
+    return async dispatch => {
       const historyItem = {
         bundleUrl: manifest.bundleUrl,
         manifestUrl,
@@ -39,6 +39,6 @@ export default {
         type: 'loadHistory',
         payload: { history },
       });
-    }
+    };
   },
-}
+};

@@ -8,8 +8,6 @@
 
 @interface UMModuleRegistry : NSObject
 
-@property (nonatomic, readonly) NSString *experienceId;
-
 - (instancetype)initWithInternalModules:(NSSet<id<UMInternalModule>> *)internalModules
                         exportedModules:(NSSet<UMExportedModule *> *)exportedModules
                            viewManagers:(NSSet<UMViewManager *> *)viewManagers

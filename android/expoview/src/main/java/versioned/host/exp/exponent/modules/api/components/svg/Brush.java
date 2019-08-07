@@ -12,7 +12,6 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -32,7 +31,7 @@ class Brush {
     private final boolean mUseObjectBoundingBox;
 
     // TODO implement pattern units
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    @SuppressWarnings({"unused"})
     private boolean mUseContentObjectBoundingBoxUnits;
 
     private Matrix mMatrix;

@@ -42,7 +42,6 @@ public class FullscreenVideoPlayer extends Dialog {
               window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
           }
-          fullscreenVideoPlayer.mModuleRegistry.getModule(KeepAwakeManager.class).isActivated();
         }
         fullscreenVideoPlayer.mKeepScreenOnHandler.postDelayed(this, UPDATE_KEEP_SCREEN_ON_FLAG_MS);
       }

@@ -18,8 +18,9 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMFaceDetectorInterface'
-  s.dependency 'GoogleMobileVision/FaceDetector', '~> 1.1.0'
-  s.dependency 'GoogleMobileVision/MVDataOutput', '~> 1.1.0'
+  s.dependency 'Firebase/Core'
+  s.dependency 'Firebase/MLVision'
+  s.dependency 'Firebase/MLVisionFaceModel'
 
 end
 

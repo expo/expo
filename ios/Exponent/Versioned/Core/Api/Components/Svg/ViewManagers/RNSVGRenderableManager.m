@@ -31,6 +31,7 @@ RCT_EXPORT_VIEW_PROPERTY(strokeLinejoin, CGLineJoin)
 RCT_EXPORT_VIEW_PROPERTY(strokeDasharray, NSArray<RNSVGLength *>)
 RCT_EXPORT_VIEW_PROPERTY(strokeDashoffset, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(strokeMiterlimit, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(vectorEffect, int)
 RCT_EXPORT_VIEW_PROPERTY(propList, NSArray<NSString *>)
 
 @end

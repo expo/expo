@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -56,6 +57,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             mName = name;
         }
 
+        @Nonnull
         public String toString() {
             return mName;
         }
@@ -101,8 +103,19 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         if (mBitmap == null) {
             mBitmap = drawOutput();
         }
-        if (mBitmap != null)
+        if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
+            if (toDataUrlTask != null) {
+                toDataUrlTask.run();
+                toDataUrlTask = null;
+            }
+        }
+    }
+
+    private Runnable toDataUrlTask = null;
+
+    void setToDataUrlTask(Runnable task) {
+        toDataUrlTask = task;
     }
 
     @Override
@@ -137,6 +150,10 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private boolean mInvertible = true;
     private boolean mRendered = false;
     int mTintColor = 0;
+
+    boolean notRendered() {
+        return !mRendered;
+    }
 
     private void clearChildCache() {
         if (!mRendered) {
@@ -238,7 +255,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         return mCanvas.getClipBounds();
     }
 
-    void drawChildren(final Canvas canvas) {
+    synchronized void drawChildren(final Canvas canvas) {
         mRendered = true;
         mCanvas = canvas;
         if (mAlign != null) {
@@ -298,7 +315,27 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
                 getHeight(),
                 Bitmap.Config.ARGB_8888);
 
+        clearChildCache();
         drawChildren(new Canvas(bitmap));
+        clearChildCache();
+        this.invalidate();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.recycle();
+        byte[] bitmapBytes = stream.toByteArray();
+        return Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+    }
+
+    String toDataURL(int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(
+                width,
+                height,
+                Bitmap.Config.ARGB_8888);
+
+        clearChildCache();
+        drawChildren(new Canvas(bitmap));
+        clearChildCache();
+        this.invalidate();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         bitmap.recycle();

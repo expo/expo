@@ -25,20 +25,19 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 
 @protocol EXAVScopedModuleDelegate
 
-- (void)scopedModuleDidBackground:(id)scopedModule;
-- (void)scopedModuleDidForeground:(id)scopedModule;
-- (void)scopedModuleWillDeallocate:(id)scopedModule;
-- (BOOL)isActiveForScopedModule:(id)scopedModule;
+// Call this when your module knows it won't use the audio session now
+// but may do in the future (settings persist).
+- (void)moduleDidBackground:(id)module;
+// Call this when your module knows it will use the audio session now.
+- (void)moduleDidForeground:(id)module;
+// Call this when your module knows it won't use the audio session now
+// or in the future (forget settings).
+- (void)moduleWillDeallocate:(id)module;
+- (BOOL)isActiveForModule:(id)module;
 - (NSString *)activeCategory;
 - (AVAudioSessionCategoryOptions)activeCategoryOptions;
-- (NSError *)setActive:(BOOL)active forScopedModule:(id)scopedModule;
-- (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forScopedModule:(id)scopedModule;
-
-@end
-
-@protocol EXAVScopedModule
-
-- (NSString *)experienceId;
+- (NSError *)setActive:(BOOL)active forModule:(id)module;
+- (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forModule:(id)module;
 
 @end
 
@@ -54,7 +53,7 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 
 @end
 
-@interface EXAV : UMExportedModule <UMEventEmitter, EXAVScopedModule, UMAppLifecycleListener, UMModuleRegistryConsumer, EXAVInterface>
+@interface EXAV : UMExportedModule <UMEventEmitter, UMAppLifecycleListener, UMModuleRegistryConsumer, EXAVInterface>
 
 - (void)handleMediaServicesReset:(NSNotification *)notification;
 - (void)handleAudioSessionInterruption:(NSNotification *)notification;

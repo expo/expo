@@ -3,21 +3,24 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <UMReactNativeAdapter/UMReactNativeAdapter.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTAppState.h>
 #import <React/RCTImageLoader.h>
+#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 
 @interface UMReactNativeAdapter ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, weak) UMNativeModulesProxy *modulesProxy;
 @property (nonatomic, assign) BOOL isForegrounded;
-@property (nonatomic, strong) NSMutableSet<id<UMAppLifecycleListener>> *lifecycleListeners;
+@property (nonatomic, strong) NSPointerArray *lifecycleListeners;
 
 @end
 
 @interface RCTBridge ()
 
 - (JSGlobalContextRef)jsContextRef;
+- (void *)runtime;
 - (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
 
 @end
@@ -42,7 +45,7 @@ UM_REGISTER_MODULE();
 {
   if (self = [super init]) {
     _isForegrounded = false;
-    _lifecycleListeners = [NSMutableSet set];
+    _lifecycleListeners = [NSPointerArray weakObjectsPointerArray];
   }
   return self;
 }
@@ -101,6 +104,42 @@ UM_REGISTER_MODULE();
   [self.bridge dispatchBlock:block queue:RCTJSThread];
 }
 
+- (void)executeUIBlock:(void (^)(NSDictionary<id,UIView *> *))block {
+  __weak UMReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong UMReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        block(viewRegistry);
+      }];
+      [strongSelf.bridge.uiManager setNeedsLayout];
+    }
+  });
+}
+
+
+- (void)executeUIBlock:(void (^)(id))block forView:(id)viewId implementingProtocol:(Protocol *)protocol {
+  [self executeUIBlock:^(UIView *view) {
+    if (![view.class conformsToProtocol:protocol]) {
+      block(nil);
+    } else {
+      block(view);
+    }
+  } forView:viewId];
+}
+
+
+- (void)executeUIBlock:(void (^)(id))block forView:(id)viewId ofClass:(Class)klass {
+  [self executeUIBlock:^(UIView *view) {
+    if (![view isKindOfClass:klass]) {
+      block(nil);
+    } else {
+      block(view);
+    }
+  } forView:viewId];
+}
+
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
@@ -108,19 +147,36 @@ UM_REGISTER_MODULE();
 
 - (void)registerAppLifecycleListener:(id<UMAppLifecycleListener>)listener
 {
-  [_lifecycleListeners addObject:listener];
+  [_lifecycleListeners addPointer:(__bridge void * _Nullable)(listener)];
 }
 
 - (void)unregisterAppLifecycleListener:(id<UMAppLifecycleListener>)listener
 {
-  [_lifecycleListeners removeObject:listener];
+  for (int i = 0; i < _lifecycleListeners.count; i++) {
+    id pointer = [_lifecycleListeners pointerAtIndex:i];
+    if (pointer == (__bridge void * _Nullable)(listener) || !pointer) {
+      [_lifecycleListeners removePointerAtIndex:i];
+      i--;
+    }
+  }
+  // -(void)compact doesn't work, that's why we have this `|| !pointer` above
+  // http://www.openradar.me/15396578
+  [_lifecycleListeners compact];
 }
 
 # pragma mark - UMJavaScriptContextProvider
 
 - (JSGlobalContextRef)javaScriptContextRef
 {
-  return _bridge.jsContextRef;
+  if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
+    return _bridge.jsContextRef;
+  } else { 
+    // In react-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
+    // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
+    // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
+    // WARNING: This is temporary solution that may break with new react-native releases.
+    return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
+  }
 }
 
 # pragma mark - UMImageLoader
@@ -169,7 +225,7 @@ UM_REGISTER_MODULE();
 - (void)setAppStateToBackground
 {
   if (_isForegrounded) {
-    [_lifecycleListeners enumerateObjectsUsingBlock:^(id<UMAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
+    [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
       [obj onAppBackgrounded];
     }];
     _isForegrounded = false;
@@ -179,7 +235,7 @@ UM_REGISTER_MODULE();
 - (void)setAppStateToForeground
 {
   if (!_isForegrounded) {
-    [_lifecycleListeners enumerateObjectsUsingBlock:^(id<UMAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
+    [[_lifecycleListeners allObjects] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
       [obj onAppForegrounded];
     }];
     _isForegrounded = true;
@@ -207,40 +263,19 @@ UM_REGISTER_MODULE();
   });
 }
 
+- (void)executeUIBlock:(void (^)(UIView *view))block forView:(id)viewId
+{
+  __weak UMReactNativeAdapter *weakSelf = self;
+  dispatch_async(_bridge.uiManager.methodQueue, ^{
+    __strong UMReactNativeAdapter *strongSelf = weakSelf;
+    if (strongSelf) {
+      [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        UIView *view = viewRegistry[viewId];
+        block(view);
+      }];
+      [strongSelf.bridge.uiManager setNeedsLayout];
+    }
+  });
+}
+
 @end
-
-extern void UMLogInfo(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  RCTLogInfo(@"%@", message);
-}
-
-extern void UMLogWarn(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  RCTLogWarn(@"%@", message);
-}
-
-extern void UMLogError(NSString *format, ...) {
-  va_list args;
-  va_start(args, format);
-  NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-  va_end(args);
-  RCTLogError(@"%@", message);
-}
-
-extern void UMFatal(NSError *error) {
-  RCTFatal(error);
-}
-
-extern NSError * UMErrorWithMessage(NSString *message) {
-  return RCTErrorWithMessage(message);
-}
-
-extern UIApplication *UMSharedApplication() {
-  return RCTSharedApplication();
-}

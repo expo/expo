@@ -68,4 +68,16 @@ RCT_CUSTOM_VIEW_PROPERTY(baselineShift, id, RNSVGText)
 RCT_EXPORT_VIEW_PROPERTY(lengthAdjust, NSString)
 RCT_EXPORT_VIEW_PROPERTY(alignmentBaseline, NSString)
 
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, id, RNSVGGroup)
+{
+    if ([json isKindOfClass:[NSString class]]) {
+        NSString *stringValue = (NSString *)json;
+        view.font = @{ @"fontSize": stringValue };
+    } else {
+        NSNumber* number = (NSNumber*)json;
+        double num = [number doubleValue];
+        view.font = @{@"fontSize": [NSNumber numberWithDouble:num] };
+    }
+}
+
 @end

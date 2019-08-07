@@ -22,7 +22,7 @@ import SharedStyles from '../constants/SharedStyles';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
-  Get out of the subway tunnel or connect to a better wifi network and check back.
+  Get out of the subway tunnel or connect to a better Wi-Fi network and check back.
 `;
 
 const SERVER_ERROR_TEXT = dedent`
@@ -122,8 +122,6 @@ export default class ExploreTab extends React.Component {
     return (
       <ProjectCard
         key={index.toString()}
-        isLikedByMe={app.isLikedByMe}
-        likeCount={app.likeCount}
         id={app.id}
         iconUrl={app.iconUrl}
         projectName={app.name}

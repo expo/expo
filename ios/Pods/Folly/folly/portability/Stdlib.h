@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,13 @@
 
 #include <cstdlib>
 
+#if defined(__APPLE__)
+#if __has_include(<crt_externs.h>)
+#include <crt_externs.h> // @manual
+#endif
+#endif
+
+extern "C" {
 #ifdef _WIN32
 // These are technically supposed to be defined linux/limits.h and
 // sys/param.h respectively, but Windows defines _MAX_PATH in stdlib.h,
@@ -27,10 +34,21 @@
 #define PATH_MAX _MAX_PATH
 #define MAXPATHLEN _MAX_PATH
 
-extern "C" {
 char* mktemp(char* tn);
 char* mkdtemp(char* tn);
 int mkstemp(char* tn);
 char* realpath(const char* path, char* resolved_path);
-}
+int setenv(const char* name, const char* value, int overwrite);
+int unsetenv(const char* name);
+#elif defined(__APPLE__)
+// environ doesn't work well with dylibs, so use _NSGetEnviron instead.
+#if !__has_include(<crt_externs.h>)
+char*** _NSGetEnviron(void);
 #endif
+#define environ (*_NSGetEnviron())
+#endif
+
+#if !__linux__ && !FOLLY_MOBILE
+int clearenv();
+#endif
+}

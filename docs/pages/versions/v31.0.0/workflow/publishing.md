@@ -20,7 +20,7 @@ turn off your laptop or stop Expo CLI, you won’t be able to load your
 project from that URL. "Publish" is the term we use for deploying your
 project. It makes your project available at a persistent URL, for
 example https://expo.io/@community/native-component-list, which can be
-opened with the Expo Client app. It also uploads all of your app images,
+opened with the Expo client app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
 here](../how-expo-works/#publishingdeploying-an-expo-app-in-production)).
 
@@ -70,13 +70,14 @@ re-build the binaries for your app for the change to take effect:
 - Change your app `splash`
 - Change your app `icon`
 - Change your app `name`
+- Change your app `owner`
 - Change your app `scheme`
 - Change your `facebookScheme`
 - Change your bundled assets under `assetBundlePatterns`
 
 ### On iOS, you can't share your published link
 
-When you publish, any Android user can open your app inside Expo Client immediately.
+When you publish, any Android user can open your app inside Expo client immediately.
 
 Due to restrictions imposed by Apple, the best way to share your published app is
 to build a native binary with Expo's build service. You can use Apple TestFlight to

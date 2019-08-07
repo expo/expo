@@ -1,10 +1,15 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { isSensorEnabledAsync } from './utils/isSensorEnabledAsync.web';
+const eventName = 'devicemotion';
 export default {
     get name() {
         return 'ExponentGyroscope';
     },
     async isAvailableAsync() {
-        return typeof DeviceMotionEvent !== 'undefined';
+        if (typeof DeviceMotionEvent === 'undefined') {
+            return false;
+        }
+        return await isSensorEnabledAsync(eventName);
     },
     _handleMotion({ accelerationIncludingGravity }) {
         SyntheticPlatformEmitter.emit('gyroscopeDidUpdate', {
@@ -14,10 +19,10 @@ export default {
         });
     },
     startObserving() {
-        window.addEventListener('devicemotion', this._handleMotion);
+        window.addEventListener(eventName, this._handleMotion);
     },
     stopObserving() {
-        window.removeEventListener('devicemotion', this._handleMotion);
+        window.removeEventListener(eventName, this._handleMotion);
     },
 };
 //# sourceMappingURL=ExponentGyroscope.web.js.map

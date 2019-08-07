@@ -11,31 +11,19 @@ typedef NS_ENUM(NSInteger, EXAuthenticationType) {
   EXAuthenticationTypeFacialRecognition = 2,
 };
 
-@interface EXLocalAuthentication ()
-
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-
-@end
-
 @implementation EXLocalAuthentication
 
 UM_EXPORT_MODULE(ExpoLocalAuthentication)
-
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
-}
-
 
 UM_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
                     supportedAuthenticationTypesAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSMutableArray *results = [NSMutableArray array];
-  if (EXIsTouchIDDevice()) {
+  if ([[self class] isTouchIdDevice]) {
     [results addObject:@(EXAuthenticationTypeFingerprint)];
   }
-  if (EXIsFaceIDDevice()) {
+  if ([[self class] isFaceIdDevice]) {
     [results addObject:@(EXAuthenticationTypeFacialRecognition)];
   }
   resolve(results);
@@ -74,28 +62,27 @@ UM_EXPORT_METHOD_AS(isEnrolledAsync,
 }
 
 UM_EXPORT_METHOD_AS(authenticateAsync,
-                    authenticateAsync:(NSString *)reason
+                    authenticateWithOptions:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSString *warningMessage;
+  NSString *reason = options[@"promptMessage"];
+  NSString *fallbackLabel = options[@"fallbackLabel"];
 
-  if (EXIsFaceIDDevice()) {
+  if ([[self class] isFaceIdDevice]) {
     NSString *usageDescription = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"NSFaceIDUsageDescription"];
 
     if (!usageDescription) {
-      id<UMConstantsInterface> constants = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-
-      // it works fine if there is no module implementing `expo-constants-interface` because in that case we know it isn't Expo Client
-      if ([constants.appOwnership isEqualToString:@"expo"]) {
-        warningMessage = @"FaceID is not available in Expo Client. You can use it in a standalone Expo app by providing `NSFaceIDUsageDescription`.";
-      } else {
-        warningMessage = @"FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`.";
-      }
+      warningMessage = @"FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`.";
     }
   }
 
   LAContext *context = [LAContext new];
+
+  if (fallbackLabel != nil) {
+    context.localizedFallbackTitle = fallbackLabel;
+  }
 
   if (@available(iOS 11.0, *)) {
     context.interactionNotAllowed = false;
@@ -136,11 +123,11 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
     case LAErrorAuthenticationFailed:
       return @"authentication_failed";
     default:
-      return [@"unknown: " stringByAppendingFormat:@"%ld, %@", error.code, error.localizedDescription];
+      return [@"unknown: " stringByAppendingFormat:@"%ld, %@", (long) error.code, error.localizedDescription];
   }
 }
 
-static BOOL EXIsFaceIDDevice()
++ (BOOL)isFaceIdDevice
 {
   static BOOL isFaceIDDevice = NO;
 
@@ -157,7 +144,7 @@ static BOOL EXIsFaceIDDevice()
   return isFaceIDDevice;
 }
 
-static BOOL EXIsTouchIDDevice()
++ (BOOL)isTouchIdDevice
 {
   static BOOL isTouchIDDevice = NO;
   static dispatch_once_t onceToken;

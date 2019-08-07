@@ -38,9 +38,7 @@ UM_EXPORT_METHOD_AS(shareAsync,
   NSURL *url = [NSURL URLWithString:fileUrl];
 
   id<UMFilePermissionModuleInterface> filePermissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFilePermissionModuleInterface)];
-  id<UMFileSystemInterface> fileSystemModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-  NSArray<NSString *> *scopedDirs = @[fileSystemModule.cachesDirectory, fileSystemModule.documentDirectory];
-  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path scopedDirs:scopedDirs] & UMFileSystemPermissionRead)) {
+  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path] & UMFileSystemPermissionRead)) {
     NSString *errorMessage = @"You don't have access to provided file.";
     reject(@"E_SHARING_PERM", errorMessage, UMErrorWithMessage(errorMessage));
     return;

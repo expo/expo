@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI26_0_0/Libraries/Text/TextInput/ABI26_0_0RCTBackedTextInputDelegateAdapter.h

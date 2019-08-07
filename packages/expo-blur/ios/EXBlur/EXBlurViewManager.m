@@ -31,11 +31,13 @@ UM_EXPORT_MODULE(ExpoBlurViewManager);
 UM_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 {
   [view setTint:value];
+  [view didSetProps:@[@"tint"]];
 }
 
 UM_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
   [view setIntensity:value];
+  [view didSetProps:@[@"intensity"]];
 }
 
 UM_EXPORT_METHOD_AS(updateProps,
@@ -44,7 +46,7 @@ UM_EXPORT_METHOD_AS(updateProps,
                     resolve:(UMPromiseResolveBlock)resolver
                     reject:(UMPromiseRejectBlock)rejecter)
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] addUIBlock:^(id view) {
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXBlurView class]]) {
       EXBlurView *blurView = view;
       NSMutableArray *changedProps = [NSMutableArray new];

@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash.mapvalues';
+import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Platform, ViewPropTypes } from 'react-native';

@@ -46,8 +46,8 @@ Commands:
   fetch:android:keystore [options] [project-dir]  Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
   fetch:android:hashes [options] [project-dir]    Fetch this project's Android key hashes needed to setup Google/Facebook authentication.
   init|i [options] [project-dir]                  Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
-  install:ios [options]                           Install the latest version of Expo Client for iOS on the simulator
-  install:android [options]                       Install the latest version of Expo Client for Android on a connected device or emulator
+  install:ios [options]                           Install the latest version of Expo client for iOS on the simulator
+  install:android [options]                       Install the latest version of Expo client for Android on a connected device or emulator
   ios [options] [project-dir]                     Opens your app in Expo in an iOS simulator on your computer
   login|signin [options]                          Login with your Expo account
   logout [options]                                Logout from your Expo account

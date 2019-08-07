@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,4 +22,12 @@
 #include <folly/portability/Unistd.h>
 #include <folly/portability/Windows.h>
 
+#include <folly/Portability.h>
+
+// Disable a couple of warnings due to GTest exporting classes
+// that derive from stdlib classes which aren't explicitly exported.
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4251)
+FOLLY_MSVC_DISABLE_WARNING(4275)
 #include <gtest/gtest.h>
+FOLLY_POP_WARNING

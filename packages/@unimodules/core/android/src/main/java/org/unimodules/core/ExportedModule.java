@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 /**
@@ -20,7 +21,7 @@ import org.unimodules.core.interfaces.ExpoMethod;
  * to export specific methods to client code and then {@link ExportedModule#invokeExportedMethod(String, Collection)}
  * to support them.
  */
-public abstract class ExportedModule {
+public abstract class ExportedModule implements RegistryLifecycleListener {
   public class MethodInfo {
     private Class<?>[] mParameterTypes;
 

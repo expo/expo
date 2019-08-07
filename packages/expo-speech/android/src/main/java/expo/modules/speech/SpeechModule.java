@@ -18,11 +18,10 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class SpeechModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
+public class SpeechModule extends ExportedModule implements LifecycleEventListener {
 
   private TextToSpeech mTextToSpeech;
   private boolean mTtsReady = false;
@@ -166,17 +165,21 @@ public class SpeechModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    // Unregister from old UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
-    }
-
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
 
     // Register to new UIManager
     if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
     }
+  }
+
+  @Override
+  public void onDestroy() {
+    // Unregister from old UIManager
+    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
+      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+    }
+    mModuleRegistry = null;
   }
 }

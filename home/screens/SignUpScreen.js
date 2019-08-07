@@ -8,7 +8,7 @@ import SessionActions from '../redux/SessionActions';
 
 import Analytics from '../api/Analytics';
 import Alerts from '../constants/Alerts';
-import Auth0Api from '../api/Auth0Api';
+import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
@@ -226,25 +226,15 @@ export default class SignUpScreen extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      let signUpResult = await Auth0Api.signUpAsync(this.state);
-
-      if (signUpResult.errors) {
-        this._isMounted && this._handleError(signUpResult);
-        return;
-      }
-
+      let signUpResult = await AuthApi.signUpAsync(this.state);
       Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
-      let signInResult = await Auth0Api.signInAsync(this.state.email, this.state.password);
+      let signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);
 
       if (this._isMounted) {
-        if (signInResult.error) {
-          this._handleError(signInResult);
-        } else {
-          this.props.dispatch(
-            SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
-          );
-        }
+        this.props.dispatch(
+          SessionActions.setSession({ sessionSecret: signInResult.sessionSecret })
+        );
       }
     } catch (e) {
       this._isMounted && this._handleError(e);
@@ -253,49 +243,8 @@ export default class SignUpScreen extends React.Component {
     }
   };
 
-  _handleError = (result: any) => {
-    // Our signup endpoint has this format for result object if there
-    // is an error:
-    // {
-    //  "errors":[
-    //    {
-    //      "code":"AUTHENTICATION_ERROR",
-    //      "message":"Error creating user.",
-    //      "details":{
-    //        "statusCode":400,
-    //        "error":"Bad Request",
-    //        "message":"The user already exists (username: notbrent).",
-    //        "errorCode":"auth0_idp_error"
-    //      }
-    //    }
-    //  ]
-    // }
-    //
-    // NOTE(jim): On September 20th 2017, ben helped me discover that
-    // some messages were not returning 'details', but just a message.
-    // therefore I performed a hotfix for the following shape.
-    //
-    // { errors:
-    //  [
-    //    {
-    //      code: 'API_ERROR',
-    //      message: 'Please provide us with a username.'
-    //    }
-    //  ]
-    // }
-    //
-    // TODO(jim) Since I am inheriting the maintenance of these
-    // endpoints, It would be reasonable to take some spare time to
-    // make sure the shape of all errors are consistent for all clients.
-
-    let errorMessage = 'Sorry, something went wrong.';
-    if (result.errors) {
-      const { details, message } = result.errors[0];
-      errorMessage = details ? details.message : message;
-    } else if (result.error_description || result.message) {
-      errorMessage = result.error_description || result.message;
-    }
-
+  _handleError = (error: Error) => {
+    let errorMessage = error.message || 'Sorry, something went wrong.';
     alert(errorMessage);
   };
 }

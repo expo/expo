@@ -21,7 +21,6 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.sensors.SensorService;
@@ -32,7 +31,7 @@ import org.unimodules.interfaces.sensors.services.GyroscopeService;
 import org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService;
 import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
 
-public class DeviceMotionModule extends ExportedModule implements SensorEventListener2, ModuleRegistryConsumer {
+public class DeviceMotionModule extends ExportedModule implements SensorEventListener2 {
   private long mLastUpdate = 0;
   private int mUpdateInterval = 100;
   private float[] mRotationMatrix = new float[9];
@@ -123,7 +122,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mUiManager = moduleRegistry.getModule(UIManager.class);
     mModuleRegistry = moduleRegistry;

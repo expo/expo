@@ -1,6 +1,6 @@
 'use strict';
 
-import { FacebookAds } from 'expo';
+import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
 import { View, Text } from 'react-native';
 

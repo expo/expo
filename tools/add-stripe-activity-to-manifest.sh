@@ -4,5 +4,5 @@
 MANIFEST_PATH=$1
 ABI_VERSION=$2
 sed 's/$PREFIX/'$ABI_VERSION'/g' < template-stripe-activity.xml > tempFileStripe.txt
-sed '/<!-- Versioned Activity for Stripe -->/r tempFileStripe.txt' $MANIFEST_PATH
+sed -i '' '/<!-- Versioned Activity for Stripe -->/r tempFileStripe.txt' $MANIFEST_PATH
 rm tempFileStripe.txt

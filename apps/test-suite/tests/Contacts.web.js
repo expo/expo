@@ -1,4 +1,4 @@
-import { Contacts } from 'expo';
+import * as Contacts from 'expo-contacts';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 
 export const name = 'Contacts';

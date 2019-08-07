@@ -617,6 +617,10 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       AirMapUrlTile urlTileView = (AirMapUrlTile) child;
       urlTileView.addToMap(map);
       features.add(index, urlTileView);
+    } else if (child instanceof AirMapWMSTile) {
+      AirMapWMSTile urlTileView = (AirMapWMSTile) child;
+      urlTileView.addToMap(map);
+      features.add(index, urlTileView);
     } else if (child instanceof AirMapLocalTile) {
       AirMapLocalTile localTileView = (AirMapLocalTile) child;
       localTileView.addToMap(map);
@@ -1110,7 +1114,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
         options.title(title);
         options.snippet(snippet);
 
-        AirMapMarker marker = new AirMapMarker(context, options);
+        AirMapMarker marker = new AirMapMarker(context, options, this.manager.getMarkerManager());
 
         if (placemark.getInlineStyle() != null
             && placemark.getInlineStyle().getIconUrl() != null) {

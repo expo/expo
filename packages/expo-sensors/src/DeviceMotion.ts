@@ -1,7 +1,7 @@
 import DeviceSensor from './DeviceSensor';
 import ExponentDeviceMotion from './ExponentDeviceMotion';
 
-type Measurement = {
+export interface DeviceMotionMeasurement {
   acceleration: {
     x: number;
     y: number;
@@ -23,9 +23,9 @@ type Measurement = {
     gamma: number;
   };
   orientation: number;
-};
+}
 
-class DeviceMotionSensor extends DeviceSensor<Measurement> {
+class DeviceMotionSensor extends DeviceSensor<DeviceMotionMeasurement> {
   Gravity = ExponentDeviceMotion.Gravity;
 }
 

@@ -17,14 +17,6 @@
 
 UM_REGISTER_MODULE();
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-{
-  if (self = [super init]) {
-    _experienceId = experienceId;
-  }
-  return self;
-}
-
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(UMConstantsInterface)];
@@ -404,5 +396,6 @@ UM_REGISTER_MODULE();
 {
   return [UIDevice currentDevice].name;
 }
+
 
 @end

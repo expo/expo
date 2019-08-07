@@ -41,7 +41,11 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
         NSMutableDictionary<NSString *, id> *nextSettings = [[NSMutableDictionary alloc] initWithDictionary:_settings];
         nextSettings[EX_BARCODE_TYPES_KEY] = value;
         _settings = nextSettings;
-        [self maybeStartBarCodeScanning];
+        UM_WEAKIFY(self);
+        [self _runBlockIfQueueIsPresent:^{
+          UM_ENSURE_STRONGIFY(self);
+          [self maybeStartBarCodeScanning];
+        }];
       }
     }
   }
@@ -160,7 +164,7 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     if([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
       AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
-        if ([metadata.type isEqualToString:barcodeType]) {
+        if (codeMetadata.stringValue && [codeMetadata.type isEqualToString:barcodeType]) {
           
           NSDictionary *event = @{
                                   @"type" : codeMetadata.type,

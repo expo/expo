@@ -60,7 +60,7 @@ class NativeAdsManager {
    * callers will be notified of a change
    */
   _listenForStateChanges() {
-    nativeAdEmitter.addListener('CTKNativeAdsManagersChanged', managers => {
+    nativeAdEmitter.addListener('CTKNativeAdsManagersChanged', (managers: any) => {
       const isValidNew = managers[this.placementId];
       const isValid = this.isValid;
 

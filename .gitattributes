@@ -6,3 +6,4 @@ ios/Pods/GoogleInterchangeUtilities/Frameworks/frameworks/GoogleInterchangeUtili
 ios/Pods/GoogleMobileVision/Detector/Frameworks/frameworks/GoogleMobileVision.framework/GoogleMobileVision filter=lfs diff=lfs merge=lfs -text
 ios/Pods/GoogleMobileVision/FaceDetector/Frameworks/frameworks/FaceDetector.framework/FaceDetector filter=lfs diff=lfs merge=lfs -text
 ios/Pods/FBAudienceNetwork/Static/FBAudienceNetwork.framework/FBAudienceNetwork filter=lfs diff=lfs merge=lfs -text
+ios/Pods/GoogleMobileVision/FaceDetector/Frameworks/FaceDetector.framework/FaceDetector filter=lfs diff=lfs merge=lfs -text

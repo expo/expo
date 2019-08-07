@@ -2,23 +2,15 @@
 
 #import <EXAmplitude/EXAmplitude.h>
 
-#import <UMConstantsInterface/UMConstantsInterface.h>
 #import <Amplitude-iOS/Amplitude.h>
-
-@interface EXAmplitude ()
-
-@property (nonatomic, strong) NSString *escapedExperienceId;
-
-@end
 
 @implementation EXAmplitude
 
 UM_EXPORT_MODULE(ExpoAmplitude);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (Amplitude *)amplitudeInstance
 {
-  id<UMConstantsInterface> constants = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
-  _escapedExperienceId = [self escapedExperienceId:constants.experienceId];
+  return [Amplitude instance];
 }
 
 UM_EXPORT_METHOD_AS(initialize,
@@ -29,7 +21,7 @@ UM_EXPORT_METHOD_AS(initialize,
   // TODO: remove the UIApplicationWillEnterForegroundNotification and
   // UIApplicationDidEnterBackgroundNotification observers and call enterForeground
   // and enterBackground manually.
-  [[Amplitude instanceWithName:_escapedExperienceId] initializeApiKey:apiKey];
+  [[self amplitudeInstance] initializeApiKey:apiKey];
   resolve(nil);
 }
 
@@ -38,7 +30,7 @@ UM_EXPORT_METHOD_AS(setUserId,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  [[Amplitude instanceWithName:_escapedExperienceId] setUserId:userId];
+  [[self amplitudeInstance] setUserId:userId];
   resolve(nil);
 }
 
@@ -47,7 +39,7 @@ UM_EXPORT_METHOD_AS(setUserProperties,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  [[Amplitude instanceWithName:_escapedExperienceId] setUserProperties:properties];
+  [[self amplitudeInstance] setUserProperties:properties];
   resolve(nil);
 }
 
@@ -55,7 +47,7 @@ UM_EXPORT_METHOD_AS(clearUserProperties,
                     clearUserPropertiesWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [[Amplitude instanceWithName:_escapedExperienceId] clearUserProperties];
+  [[self amplitudeInstance] clearUserProperties];
   resolve(nil);
 }
 
@@ -64,7 +56,7 @@ UM_EXPORT_METHOD_AS(logEvent,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  [[Amplitude instanceWithName:_escapedExperienceId] logEvent:eventName];
+  [[self amplitudeInstance] logEvent:eventName];
   resolve(nil);
 }
 
@@ -74,7 +66,7 @@ UM_EXPORT_METHOD_AS(logEventWithProperties,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  [[Amplitude instanceWithName:_escapedExperienceId] logEvent:eventName withEventProperties:properties];
+  [[self amplitudeInstance] logEvent:eventName withEventProperties:properties];
   resolve(nil);
 }
 
@@ -84,15 +76,8 @@ UM_EXPORT_METHOD_AS(setGroup,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  [[Amplitude instanceWithName:_escapedExperienceId] setGroup:groupType groupName:groupNames];
+  [[self amplitudeInstance] setGroup:groupType groupName:groupNames];
   resolve(nil);
-}
-
-- (NSString *)escapedExperienceId:(NSString *)experienceId
-{
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [experienceId stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
 @end

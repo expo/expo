@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -13,17 +12,18 @@ import com.google.android.gms.ads.InterstitialAd;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class AdMobInterstitialAdModule extends ExportedModule implements ModuleRegistryConsumer {
+public class AdMobInterstitialAdModule extends ExportedModule {
   private InterstitialAd mInterstitialAd;
   private String mTestDeviceID;
   private String mAdUnitID;
   private Promise mRequestAdPromise;
   private Promise mShowAdPromise;
   private EventEmitter mEventEmitter;
+  private ActivityProvider mActivityProvider;
 
   public enum Events {
     DID_LOAD("interstitialDidLoad"),
@@ -54,8 +54,9 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
   }
 
   private void sendEvent(String eventName, Bundle params) {
@@ -78,7 +79,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   public void requestAd(final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         recreateInterstitialAdWithAdUnitID(mAdUnitID);
         if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
           promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
@@ -103,7 +104,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   public void showAd(final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
           mShowAdPromise = promise;
           mInterstitialAd.show();
@@ -118,7 +119,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   public void dismissAd(final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
           mShowAdPromise = promise;
 
@@ -134,7 +135,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   public void getIsReady(final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         promise.resolve(mInterstitialAd != null && mInterstitialAd.isLoaded());
       }
     });
@@ -145,7 +146,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
       mInterstitialAd = null;
     }
 
-    mInterstitialAd = new InterstitialAd(getContext());
+    mInterstitialAd = new InterstitialAd(mActivityProvider.getCurrentActivity());
     mInterstitialAd.setAdUnitId(adUnitID);
 
     new Handler(Looper.getMainLooper()).post(new Runnable() {

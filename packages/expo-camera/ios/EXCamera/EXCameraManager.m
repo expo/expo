@@ -191,7 +191,7 @@ UM_EXPORT_METHOD_AS(takePicture,
 #if TARGET_IPHONE_SIMULATOR
   __weak EXCameraManager *weakSelf = self;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
 #if TARGET_IPHONE_SIMULATOR
       __strong EXCameraManager *strongSelf = weakSelf;
@@ -240,11 +240,13 @@ UM_EXPORT_METHOD_AS(record,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_RECORDING_FAILED", @"Video recording is not supported on a simulator.", nil);
   return;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view record:options resolve:resolve reject:reject];
     } else {
@@ -252,6 +254,7 @@ UM_EXPORT_METHOD_AS(record,
       reject(@"E_INVALID_VIEW", reason, nil);
     }
   } forView:reactTag ofClass:[EXCamera class]];
+#pragma clang diagnostic pop
 }
 
 UM_EXPORT_METHOD_AS(stopRecording,
@@ -259,7 +262,7 @@ UM_EXPORT_METHOD_AS(stopRecording,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view stopRecording];
       resolve(nil);
@@ -274,11 +277,13 @@ UM_EXPORT_METHOD_AS(resumePreview,
                          resolver:(UMPromiseResolveBlock)resolve
                          rejecter:(UMPromiseRejectBlock)reject)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_SIM_PREVIEW", @"Resuming preview is not supported on simulator.", nil);
   return;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view resumePreview];
       resolve(nil);
@@ -286,6 +291,7 @@ UM_EXPORT_METHOD_AS(resumePreview,
       UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
+#pragma clang diagnostic pop
 }
 
 UM_EXPORT_METHOD_AS(pausePreview,
@@ -293,11 +299,13 @@ UM_EXPORT_METHOD_AS(pausePreview,
                         resolver:(UMPromiseResolveBlock)resolve
                          rejecter:(UMPromiseRejectBlock)reject)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
 #if TARGET_IPHONE_SIMULATOR
   reject(@"E_SIM_PREVIEW", @"Pausing preview is not supported on simulator.", nil);
   return;
 #endif
-  [_uiManager addUIBlock:^(id view) {
+  [_uiManager executeUIBlock:^(id view) {
     if (view != nil) {
       [view pausePreview];
       resolve(nil);
@@ -305,6 +313,7 @@ UM_EXPORT_METHOD_AS(pausePreview,
       UMLogError(@"Invalid view returned from registry, expected EXCamera, got: %@", view);
     }
   } forView:tag ofClass:[EXCamera class]];
+#pragma clang diagnostic pop
 }
 
 UM_EXPORT_METHOD_AS(getAvailablePictureSizes,

@@ -7,14 +7,13 @@
 //
 
 #import <EXFaceDetector/EXFaceDetectorModule.h>
-#import <EXFaceDetector/EXFaceEncoder.h>
+#import <EXFaceDetector/EXFaceDetector.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <UMCore/UMModuleRegistry.h>
-
-static const NSString *kModeOptionName = @"mode";
-static const NSString *kDetectLandmarksOptionName = @"detectLandmarks";
-static const NSString *kRunClassificationsOptionName = @"runClassifications";
+#import <EXFaceDetector/EXFaceEncoder.h>
+#import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
+#import <Firebase/Firebase.h>
 
 @interface EXFaceDetectorModule ()
 
@@ -49,7 +48,8 @@ UM_EXPORT_MODULE(ExpoFaceDetector);
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject) {
+UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
   NSString *uri = options[@"uri"];
   if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
@@ -72,86 +72,48 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   }
   
   @try {
-    GMVDetector *detector = [[self class] detectorForOptions:options];
-
-    // This check was failing, probably because of some race condition
-    // see note at https://developer.apple.com/documentation/foundation/nsfilemanager/1415645-fileexistsatpath?language=objc
-//    if (![fileManager fileExistsAtPath:path]) {
-//      reject(@"E_FACE_DETECTION_FAILED", [NSString stringWithFormat:@"The file does not exist. Given path: `%@`.", path], nil);
-//      return;
-//    }
-
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
-
-    NSDictionary *detectionOptions = [[self class] detectionOptionsForImage:image];
-    NSArray<GMVFaceFeature *> *faces = [detector featuresInImage:image options:detectionOptions];
-    EXFaceEncoder *faceEncoder = [[EXFaceEncoder alloc] init];
-    NSMutableArray<NSDictionary *> *encodedFaces = [NSMutableArray arrayWithCapacity:[faces count]];
-    [faces enumerateObjectsUsingBlock:^(GMVFaceFeature * _Nonnull face, NSUInteger _idx, BOOL * _Nonnull _stop) {
-      [encodedFaces addObject:[faceEncoder encode:face]];
-    }];
+    CIImage *ciImage = image.CIImage;
+    if(!ciImage) {
+      ciImage = [CIImage imageWithCGImage:image.CGImage];
+    }
+    ciImage = [ciImage imageByApplyingOrientation:[EXFaceDetectorUtils toCGImageOrientation:image.imageOrientation]];
+    CIContext *context = [CIContext contextWithOptions:@{}];
+    UIImage *temporaryImage = [UIImage imageWithCIImage:ciImage];
+    CGRect tempImageRect = CGRectMake(0, 0, temporaryImage.size.width, temporaryImage.size.height);
+    CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
     
-    resolve(@{
-              @"faces" : encodedFaces,
-              @"image" : @{
-                  @"uri" : options[@"uri"],
-                  @"width" : @(image.size.width),
-                  @"height" : @(image.size.height),
-                  @"orientation" : @([EXFaceDetectorModule exifOrientationFor:image.imageOrientation])
-                  }
-              });
+    UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
+    EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options]];
+    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
+      NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
+      
+      if(faces.count > 0) {
+        EXFaceEncoder *encoder = [[EXFaceEncoder alloc] init];
+        for(FIRVisionFace* face in faces)
+      {
+          [reportableFaces addObject:[encoder encode:face]];
+        }
+      }
+      if (error != nil) {
+        reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
+      } else {
+        resolve(@{
+                  @"faces" : reportableFaces,
+                  @"image" : @{
+                      @"uri" : options[@"uri"],
+                      @"width" : @(image.size.width),
+                      @"height" : @(image.size.height),
+                      @"orientation" : @([EXFaceDetectorModule exifOrientationFor:image.imageOrientation])
+                      }
+                  });
+      }}];
   } @catch (NSException *exception) {
     reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
   }
 }
 
-+ (GMVDetector *)detectorForOptions:(NSDictionary *)options
-{
-  NSMutableDictionary *parsedOptions = [[NSMutableDictionary alloc] initWithDictionary:[self getDefaultDetectorOptions]];
-  
-  if (options[kDetectLandmarksOptionName]) {
-    [parsedOptions setObject:options[kDetectLandmarksOptionName] forKey:GMVDetectorFaceLandmarkType];
-  }
-  
-  if (options[kModeOptionName]) {
-    [parsedOptions setObject:options[kModeOptionName] forKey:GMVDetectorFaceMode];
-  }
-  
-  if (options[kRunClassificationsOptionName]) {
-    [parsedOptions setObject:options[kRunClassificationsOptionName] forKey:GMVDetectorFaceClassificationType];
-  }
-
-  return [GMVDetector detectorOfType:GMVDetectorTypeFace options:parsedOptions];
-}
-
-# pragma mark: - Detector default options getter and initializer
-
-+ (NSDictionary *)getDefaultDetectorOptions
-{
-  if (defaultDetectorOptions == nil) {
-    [self initDefaultDetectorOptions];
-  }
-  
-  return defaultDetectorOptions;
-}
-
-+ (void)initDefaultDetectorOptions
-{
-  defaultDetectorOptions = @{
-                             GMVDetectorFaceMode : @(GMVDetectorFaceAccurateMode),
-                             GMVDetectorFaceLandmarkType : @(GMVDetectorFaceLandmarkAll),
-                             GMVDetectorFaceClassificationType : @(GMVDetectorFaceClassificationAll)
-                             };
-}
-
 # pragma mark: - Utility methods
-
-+ (NSDictionary *)detectionOptionsForImage:(UIImage *)image
-{
-  return @{
-           GMVDetectorImageOrientation : @([[self class] gmvImageOrientationFor:image.imageOrientation]),
-           };
-}
 
 // As the documentation (http://cocoadocs.org/docsets/GoogleMobileVision/1.0.2/Constants/GMVImageOrientation.html) suggests
 // the value of GMVImageOrientation is the same as the value defined by EXIF specifications, so we can adapt

@@ -54,9 +54,9 @@ Use `// line`  comments in most places. Use `/** block */` comments above classe
 ```js
 // CORRECT
 /**
-  * Gets the latest version of Android that's been released. This is a version
-  * string like 7.1 instead of the code name Nougat.
-  */
+ * Gets the latest version of Android that's been released. This is a version
+ * string like 7.1 instead of the code name Nougat.
+ */
 function getLatestAndroidVersion() {
   // Keep this logic in sync with Google's versioning scheme
   return maxBy(

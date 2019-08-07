@@ -1,5 +1,8 @@
 import { Platform } from 'react-native';
-import { Constants, Linking, WebBrowser } from 'expo';
+import { Linking } from 'expo';
+
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 
 import { waitFor } from './helpers';
 

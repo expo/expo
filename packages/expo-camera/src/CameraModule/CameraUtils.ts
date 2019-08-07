@@ -4,6 +4,13 @@ import { PictureOptions } from './../Camera.types';
 import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
 
+interface ConstrainLongRange {
+  max?: number;
+  min?: number;
+  exact?: number;
+  ideal?: number;
+}
+
 export function getImageSize(videoWidth: number, videoHeight: number, scale: number): ImageSize {
   const width = videoWidth * scale;
   const ratio = videoWidth / width;

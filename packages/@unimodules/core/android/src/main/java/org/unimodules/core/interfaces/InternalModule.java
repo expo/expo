@@ -13,6 +13,6 @@ import java.util.List;
  * will be able to pick it up and register as a provider for this interface, in case some other module
  * asks for `org.unimodules.interfaces.filesystem.FileSystem` provider.
  */
-public interface InternalModule {
+public interface InternalModule extends RegistryLifecycleListener {
   List<? extends Class> getExportedInterfaces();
 }

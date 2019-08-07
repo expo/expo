@@ -5,13 +5,13 @@
 
 @interface EXModuleTemplateViewManager ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXModuleTemplateViewManager
 
-EX_EXPORT_MODULE(ExpoModuleTemplateViewManager);
+UM_EXPORT_MODULE(ExpoModuleTemplateViewManager);
 
 - (UIView *)view
 {
@@ -28,7 +28,7 @@ EX_EXPORT_MODULE(ExpoModuleTemplateViewManager);
   return @[@"onSomethingHappened"];
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

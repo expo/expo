@@ -1,10 +1,13 @@
 {
   "name": "expo-asset",
-  "version": "4.0.0",
+  "version": "6.0.0",
   "description": "An Expo universal module to download assets and pass them into other APIs",
-  "main": "build/Asset.js",
-  "types": "build/Asset.d.ts",
-  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": [
+    "*.fx.js",
+    "*.fx.web.js"
+  ],
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -37,6 +40,7 @@
     "expo-file-system": "*"
   },
   "dependencies": {
+    "blueimp-md5": "^2.10.0",
     "path-browserify": "^1.0.0",
     "url-parse": "^1.4.4"
   },
@@ -44,5 +48,5 @@
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "8413e821076a2eca36b302e68dd628ce2e1f591a"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }

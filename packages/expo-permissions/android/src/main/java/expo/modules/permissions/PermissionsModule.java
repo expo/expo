@@ -20,7 +20,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
 import org.unimodules.interfaces.permissions.PermissionsListener;
@@ -31,7 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
+public class PermissionsModule extends ExportedModule implements LifecycleEventListener {
   private static final String EXPIRES_KEY = "expires";
   private static final String STATUS_KEY = "status";
   private static final String GRANTED_VALUE = "granted";
@@ -56,7 +55,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mPermissionsRequester = new PermissionsRequester(moduleRegistry);
     mPermissions = moduleRegistry.getModule(Permissions.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);

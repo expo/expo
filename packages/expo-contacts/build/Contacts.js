@@ -3,9 +3,6 @@ import { Platform, Share } from 'react-native';
 import UUID from 'uuid-js';
 import ExpoContacts from './ExpoContacts';
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
-    if (!ExpoContacts.shareContactAsync) {
-        throw new UnavailabilityError('Contacts', 'shareContactAsync');
-    }
     if (Platform.OS === 'ios') {
         const url = await writeContactToFileAsync({
             id: contactId,
@@ -15,9 +12,10 @@ export async function shareContactAsync(contactId, message, shareOptions = {}) {
             message,
         }, shareOptions);
     }
-    else {
-        return await ExpoContacts.shareContactAsync(contactId, message);
+    else if (!ExpoContacts.shareContactAsync) {
+        throw new UnavailabilityError('Contacts', 'shareContactAsync');
     }
+    return await ExpoContacts.shareContactAsync(contactId, message);
 }
 export async function getContactsAsync(contactQuery = {}) {
     if (!ExpoContacts.getContactsAsync) {

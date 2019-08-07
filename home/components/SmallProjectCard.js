@@ -18,7 +18,7 @@ import { withNavigation } from 'react-navigation';
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from '@expo/react-native-fade-in-image';
+import FadeIn from 'react-native-fade-in-image';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 @withNavigation
@@ -26,8 +26,8 @@ export default class SmallProjectCard extends React.PureComponent {
   render() {
     let {
       hideUsername,
-      likeCount,
       projectName,
+      platform,
       projectUrl,
       username,
       privacy,
@@ -36,7 +36,6 @@ export default class SmallProjectCard extends React.PureComponent {
     } = this.props;
 
     const isUnlisted = privacy === 'unlisted';
-    const renderLikes = typeof likeCount === 'number' && !isUnlisted;
 
     return (
       <TouchableNativeFeedbackSafe
@@ -49,7 +48,8 @@ export default class SmallProjectCard extends React.PureComponent {
 
         <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
           <View style={styles.projectNameContainer}>
-            <View style={{ flex: 1, flexGrow: 4 }}>
+            <View style={{ flex: 1, flexDirection: 'row', flexGrow: 4 }}>
+              {platform ? <PlatformIcon platform={platform} /> : null}
               <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
                 {projectName}
               </Text>
@@ -68,10 +68,7 @@ export default class SmallProjectCard extends React.PureComponent {
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={[
-                styles.projectExtraInfoText,
-                (renderLikes || isUnlisted) && { flexShrink: 4 },
-              ]}
+              style={[styles.projectExtraInfoText, isUnlisted && { flexShrink: 4 }]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
@@ -85,15 +82,6 @@ export default class SmallProjectCard extends React.PureComponent {
                 </View>
 
                 <Text style={styles.unlistedText}>Unlisted</Text>
-              </View>
-            )}
-
-            {renderLikes && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.bullet} />
-                <Text onPress={() => {}} numberOfLines={1} style={styles.projectExtraInfoText}>
-                  {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-                </Text>
               </View>
             )}
           </View>
@@ -138,9 +126,23 @@ export default class SmallProjectCard extends React.PureComponent {
   };
 }
 
-// note(brentvatne): we need to know this value so we can set the width of
-// extra info container so it properly sizes the url / likes, otherwise it
-// just overflows. I think this is a yoga bug
+function PlatformIcon({ platform }) {
+  let icon = null;
+  if (platform === 'native') {
+    icon = Platform.select({
+      android: <Ionicons name="logo-android" size={17} style={{ marginTop: 1 }} />,
+      ios: <Ionicons name="logo-apple" size={17} style={{ marginTop: 0.5 }} />,
+      default: <Ionicons name="md-tablet-portrait" size={15} style={{ marginTop: 1.5 }} />,
+    });
+  } else if (platform === 'web') {
+    icon = <Ionicons name="ios-globe" size={15} style={{ marginTop: 2 }} />;
+  }
+
+  return <View style={styles.platformIconContainer}>{icon}</View>;
+}
+
+// note(brentvatne): we need to know this value so we can set the width of extra info container so
+// it properly sizes the url, otherwise it just overflows. I think this is a yoga bug
 const IconPaddingLeft = 15;
 const IconPaddingRight = 10;
 const IconWidth = 40;
@@ -200,6 +202,9 @@ const styles = StyleSheet.create({
         marginTop: 1,
       },
     }),
+  },
+  platformIconContainer: {
+    width: 17,
   },
   releaseChannelContainer: {
     alignSelf: 'flex-end',

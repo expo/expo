@@ -15,7 +15,8 @@ In order to send a push notification to somebody, we need to know about their de
 ![Diagram explaining saving tokens](/static/images/saving-token.png)
 
 ```javascript
-import { Permissions, Notifications } from 'expo';
+import { Permissions } from 'expo';
+import * as Permissions from 'expo-permissions';
 
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
@@ -78,7 +79,7 @@ Push notifications have to come from somewhere, and that somewhere is your serve
 
 Check out the source if you would like to implement it in another language.
 
-> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo Client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
+> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
 
 The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
@@ -86,7 +87,7 @@ The [Expo push notification tool](https://expo.io/dashboard/notifications) is al
 
 For Android, this step is entirely optional -- if your notifications are purely informational and you have no desire to handle them when they are received or selected, you're already done. Notifications will appear in the system notification tray as you've come to expect, and tapping them will open/foreground the app.
 
-For iOS, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
+For iOS, if you do not set `notification.iosDisplayInForeground` (in your `app.json`) or `_displayInForeground` (in your push message) to `true`, you would be wise to handle push notifications that are received while the app is foregrounded, because otherwise the user will never see them. Notifications that arrive while the app are foregrounded on iOS do not show up in the system notification list. A common solution is to just show the notification manually. For example, if you get a message on Messenger for iOS, have the app foregrounded, but do not have that conversation open, you will see the notification slide down from the top of the screen with a custom notification UI.
 
 Thankfully, handling push notifications is straightforward with Expo, all you need to do is add a listener using the `Notifications` API.
 
@@ -175,7 +176,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends two messages:
+The HTTP request body must be JSON. It may either be a single message object or an array of up to 100 messages. **We recommend using an array when you want to send multiple messages to efficiently minimize the number of requests you need to make to Expo servers.** This is an example request body that sends four messages:
 
 ```json
 [{
@@ -186,6 +187,12 @@ The HTTP request body must be JSON. It may either be a single message object or 
   "to": "ExponentPushToken[yyyyyyyyyyyyyyyyyyyyyy]",
   "badge": 1,
   "body": "You've got mail"
+}, {
+  "to": [
+    "ExponentPushToken[zzzzzzzzzzzzzzzzzzzzzz]",
+    "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]"
+  ],
+  "body": "Breaking news!"
 }]
 ```
 
@@ -195,12 +202,14 @@ Upon success, the HTTP response will be a JSON object whose `data` field is an a
 {
   "data": [
     {"status": "ok", "id": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"},
-    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY}
+    {"status": "ok", "id": "YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY"},
+    {"status": "ok", "id": "ZZZZZZZZ-ZZZZ-ZZZZ-ZZZZ-ZZZZZZZZZZZZ"},
+    {"status": "ok", "id": "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"}
   ]
 }
 ```
 
-If you send a single message that isn't wrapped in an array, the `data` field will be the push ticket also not wrapped in an array.
+If you send a single message that isn't wrapped in an array to a single recipient, the `data` field will be the push ticket also not wrapped in an array.
 
 #### Push tickets
 
@@ -242,9 +251,10 @@ Each message must be a JSON object with the given fields:
 ```javascript
 type PushMessage = {
   /**
-   * An Expo push token specifying the recipient of this message.
+   * An Expo push token or an array of Expo push tokens specifying the recipient(s)
+   * of this message.
    */
-  to: string,
+  to: string | string[],
 
   /**
    * A JSON object delivered to your app. It may be up to about 4KiB; the total
@@ -267,14 +277,111 @@ type PushMessage = {
 
   /**
    * Time to Live: the number of seconds for which the message may be kept
-   * around for redelivery if it hasn't been delivered yet. Defaults to 0.
+   * around for redelivery if it hasn't been delivered yet. Defaults to
+   * `undefined` in order to use the respective defaults of each provider.
+   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM.
    *
    * On Android, we make a best effort to deliver messages with zero TTL
-   * immediately and do not throttle them
+   * immediately and do not throttle them.
+   *
+   * However, note that setting TTL to a low value (e.g. zero) can prevent
+   * normal-priority notifications from ever reaching Android devices that are
+   * in doze mode. In order to guarantee that a notification will be delivered,
+   * TTL must be long enough for the device to wake from doze mode.
    *
    * This field takes precedence over `expiration` when both are specified.
    */
   ttl?: number,
+
+  /**
+   * Rich content that accomplishes the push notification.
+   * Note that for iOS, the displaying priority is video > audio > image.
+   * In other words, if the message specifies both `video` and `image`,
+   * the video will be displayed on iOS devices (and the image will be
+   * displayed on Android devices).
+   */
+  richContent?: {
+    /**
+     * Remote https url of an image that will be displayed with the notification.
+     * The image should not have an alpha channel.
+     * Image restrictions on iOS: https://developer.apple.com/documentation/usernotifications/unnotificationattachment.
+     * Image formats supported on Android: JPEG, PNG, and GIF (will not be animated).
+     *
+     * (Note that an animated GIF will not be animated on Android devices. If you
+     * wish to use an animated GIF for iOS and a static image for Android, put the
+     * GIF as a `video` (see below) and the static image as an `image`.)
+     */
+    image?: string | {
+      url: string,
+      options?: {
+        /**
+         * Whether the image's thumbnail will be displayed.
+         * Defaults to `false`.
+         */
+        thumbnailHidden?: boolean,
+
+        /**
+         * (iOS-specific field)
+         * The clipping rectangle for a thumbnail image. Each value in this key
+         * is a dictionary containing a unit rectangle whose values are in the
+         * range 0.0 to 1.0 and represent the portion of the original image that
+         * you want to display.
+         * For example, specifying `x: 0.25, y: 0.25, width: 0.5, height: 0.5`
+         * defines a clipping rectangle that shows only the center portion of
+         * the image.
+         * Learn more: https://developer.apple.com/documentation/usernotifications/unnotificationattachmentoptionsthumbnailclippingrectkey
+         */
+        thumbnailClippingRect?: {
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        }
+      }
+    },
+
+    /**
+     * (iOS-specific field)
+     * Remote https url of an audio file that will be played with the notification.
+     * Audio restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+     */
+    audio?: string,
+
+    /**
+     * (iOS-specific field)
+     * Remote https url of a video that will be displayed with the notification.
+     * Video restrictions: https://developer.apple.com/documentation/usernotifications/unnotificationattachment
+     */
+    video?: string | {
+      url: string,
+      options?: {
+        /**
+         * Whether the image's thumbnail will be displayed.
+         * Defaults to `false`.
+         */
+        thumbnailHidden?: boolean,
+
+        /**
+         * The clipping rectangle for a thumbnail image. Refer to the option
+         * `image.options.thumbnailClippingRect` above.
+         */
+        thumbnailClippingRect?: {
+          x: number,
+          y: number,
+          width: number,
+          height: number
+        },
+
+        /**
+         * For a video, it is the time (in seconds) into the video from which to
+         * grab the thumbnail image. For an animated image (i.e. a GIF file),
+         * it is the frame number of the animation to use as a thumbnail image.
+         * Learn more: https://developer.apple.com/documentation/usernotifications/unnotificationattachmentoptionsthumbnailtimekey
+         */
+        thumbnailTime?: number
+      }
+    }
+  },
 
   /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
@@ -328,13 +435,24 @@ type PushMessage = {
   /**
    * ID of the Notification Category through which to display this notification.
    *
-   * To send a notification with category to the Expo Client, prefix the string
+   * To send a notification with category to the Expo client, prefix the string
    * with the experience ID (`@user/experienceId:yourCategoryId`). For standalone/ejected
    * applications, use plain `yourCategoryId`.
    */
-  _category?: string
+  _category?: string,
+
+  /**
+   * Displays the notification when the app is foreground.
+   * Defaults to `false`.
+   */
+  _displayInForeground?: boolean
 
   // Android-specific fields
+
+  /**
+   * Remote url of a custom icon that replaces the default notification icon.
+  */
+  icon?: string,
 
   /**
    * ID of the Notification Channel through which to display this notification

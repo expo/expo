@@ -16,7 +16,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.List;
 import expo.modules.webbrowser.error.NoPreferredPackageFound;
 import expo.modules.webbrowser.error.PackageManagerNotFoundException;
 
-public class WebBrowserModule extends ExportedModule implements ModuleRegistryConsumer {
+public class WebBrowserModule extends ExportedModule {
 
   private final static String BROWSER_PACKAGE_KEY = "browserPackage";
   private final static String SERVICE_PACKAGE_KEY = "servicePackage";
@@ -54,7 +53,7 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
   }
@@ -130,6 +129,9 @@ public class WebBrowserModule extends ExportedModule implements ModuleRegistryCo
   public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
 
     Intent intent = createCustomTabsIntent(arguments);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
     intent.setData(Uri.parse(url));
 
     try {
