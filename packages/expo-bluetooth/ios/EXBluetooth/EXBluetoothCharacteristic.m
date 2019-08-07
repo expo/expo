@@ -91,7 +91,7 @@
 }
 
 - (EXBluetoothDescriptor *)getDescriptorOrReject:(NSString *)UUIDString
-                                          reject:(EXPromiseRejectBlock)reject
+                                          reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothDescriptor *descriptor = [self descriptorFromUUID:UUIDString];
   if (!descriptor) {

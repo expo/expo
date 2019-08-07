@@ -1,10 +1,10 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXEventEmitter.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMEventEmitter.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@interface EXBluetooth : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
+@interface EXBluetooth : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter>
 
 @end

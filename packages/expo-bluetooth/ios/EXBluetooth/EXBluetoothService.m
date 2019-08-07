@@ -73,7 +73,7 @@
 
 - (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString
                                 characteristicProperties:(CBCharacteristicProperties)characteristicProperties
-                                                  reject:(EXPromiseRejectBlock)reject
+                                                  reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothCharacteristic *characteristic = [self characteristicFromUUID:UUIDString prop:characteristicProperties];
   
@@ -105,7 +105,7 @@
   return nil;
 }
 
-- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
+- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothCharacteristic *characteristic = [self characteristicFromUUID:UUIDString];
   if (!characteristic) {

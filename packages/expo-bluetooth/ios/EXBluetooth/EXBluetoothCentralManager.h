@@ -4,7 +4,7 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <EXBluetooth/EXBluetoothBlocks.h>
 #import <EXBluetooth/EXBluetoothPeripheral.h>
-#import <EXCore/EXExportedModule.h>
+#import <UMCore/UMExportedModule.h>
 
 @interface EXBluetoothCentralManager : NSObject
 
@@ -41,9 +41,9 @@
 - (NSDictionary *)getJSON;
 
 - (EXBluetoothPeripheral *)getPeripheralOrReject:(NSString *)UUIDString
-                                          reject:(EXPromiseRejectBlock)reject;
+                                          reject:(UMPromiseRejectBlock)reject;
 
-- (BOOL)guardEnabled:(EXPromiseRejectBlock)reject;
+- (BOOL)guardEnabled:(UMPromiseRejectBlock)reject;
 
 - (void)updateLocalPeripheralStore:(CBPeripheral *)peripheral;
 

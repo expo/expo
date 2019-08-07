@@ -3,7 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <EXBluetooth/EXBluetoothBlocks.h>
-#import <EXCore/EXExportedModule.h>
+#import <UMCore/UMExportedModule.h>
 
 @class EXBluetoothPeripheral;
 @class EXBluetoothCharacteristic;
@@ -32,8 +32,8 @@
 
 - (EXBluetoothCharacteristic *)characteristicFromUUID:(NSString *)UUID;
 - (EXBluetoothCharacteristic *)characteristicFromUUID:(NSString *)UUID prop:(CBCharacteristicProperties)prop;
-- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject;
-- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString characteristicProperties:(CBCharacteristicProperties)characteristicProperties reject:(EXPromiseRejectBlock)reject;
+- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString reject:(UMPromiseRejectBlock)reject;
+- (EXBluetoothCharacteristic *)getCharacteristicOrReject:(NSString *)UUIDString characteristicProperties:(CBCharacteristicProperties)characteristicProperties reject:(UMPromiseRejectBlock)reject;
 
 - (NSDictionary *)getJSON;
 

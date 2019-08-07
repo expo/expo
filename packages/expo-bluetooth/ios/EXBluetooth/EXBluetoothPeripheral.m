@@ -321,7 +321,7 @@
   [_onWriteValueForDescriptors removeObjectForKey:descriptor.UUID.UUIDString];
 }
 
-- (BOOL)guardIsConnected:(EXPromiseRejectBlock)reject
+- (BOOL)guardIsConnected:(UMPromiseRejectBlock)reject
 {
   if (_peripheral.state != CBPeripheralStateConnected) {
     NSString *state = [EXBluetooth CBPeripheralStateNativeToJSON:_peripheral.state];
@@ -333,7 +333,7 @@
 }
 
 - (EXBluetoothService *)getServiceOrReject:(NSString *)UUIDString
-                                    reject:(EXPromiseRejectBlock)reject
+                                    reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothService *service = [self serviceFromUUID:UUIDString];
   if (!service) {

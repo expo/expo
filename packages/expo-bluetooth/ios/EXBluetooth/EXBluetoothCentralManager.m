@@ -288,7 +288,7 @@ withDidDisconnectPeripheralCallback:(EXBluetoothCentralDidDisconnectPeripheral)o
   return [EXBluetooth EXBluetoothCentralManagerNativeToJSON:self];
 }
 
-- (EXBluetoothPeripheral *)getPeripheralOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject
+- (EXBluetoothPeripheral *)getPeripheralOrReject:(NSString *)UUIDString reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothPeripheral *exPeripheral = discoveredPeripherals[UUIDString];
   if (!exPeripheral) {
@@ -298,7 +298,7 @@ withDidDisconnectPeripheralCallback:(EXBluetoothCentralDidDisconnectPeripheral)o
   return exPeripheral;
 }
 
-- (BOOL)guardEnabled:(EXPromiseRejectBlock)reject
+- (BOOL)guardEnabled:(UMPromiseRejectBlock)reject
 {
   if (self.state < CBManagerStatePoweredOff) {
     NSString *state = [EXBluetooth CBManagerStateNativeToJSON:self.state];

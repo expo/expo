@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXExportedModule.h>
+#import <UMCore/UMExportedModule.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <EXBluetooth/EXBluetooth+JSON.h>
 #import <EXBluetooth/EXBluetoothBlocks.h>
@@ -35,7 +35,7 @@
 - (void)discoverDescriptorsWithDiscoverDescriptorsForCharacteristicCallback:(EXBluetoothPeripheralDiscoverDescriptorsForCharacteristic)onDiscoverDescriptorsForCharacteristic;
 
 - (EXBluetoothDescriptor *)getDescriptorOrReject:(NSString *)UUIDString
-                                          reject:(EXPromiseRejectBlock)reject;
+                                          reject:(UMPromiseRejectBlock)reject;
 
 - (EXBluetoothDescriptor *)descriptorFromUUID:(NSString *)UUID;
 

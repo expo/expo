@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXBluetooth/EXBluetooth+JSON.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXBluetooth/EXBluetoothConstants.h>
 
 @implementation EXBluetooth (JSON)
@@ -64,7 +64,7 @@
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothService *value in input) {
     NSDictionary *serializedValue = [EXBluetooth EXBluetoothServiceNativeToJSON:value];
-    [output addObject:EXNullIfNil(serializedValue)];
+    [output addObject:UMNullIfNil(serializedValue)];
   }
   return output;
 }
@@ -74,7 +74,7 @@
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothCharacteristic *value in input) {
     NSDictionary *serializedValue = [EXBluetooth EXBluetoothCharacteristicNativeToJSON:value];
-    [output addObject:EXNullIfNil(serializedValue)];
+    [output addObject:UMNullIfNil(serializedValue)];
   }
   return output;
 }
@@ -193,7 +193,7 @@
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothDescriptor *value in input) {
     NSDictionary *serializedValue = [EXBluetooth EXBluetoothDescriptorNativeToJSON:value];
-    [output addObject:EXNullIfNil(serializedValue)];
+    [output addObject:UMNullIfNil(serializedValue)];
   }
   return output;
 }
@@ -203,7 +203,7 @@
   NSMutableArray *output = [NSMutableArray new];
   for (EXBluetoothPeripheral *value in input) {
     NSDictionary *serializedValue = [EXBluetooth EXBluetoothPeripheralNativeToJSON:value];
-    [output addObject:EXNullIfNil(serializedValue)];
+    [output addObject:UMNullIfNil(serializedValue)];
   }
   return output;
 }
@@ -219,10 +219,10 @@
   return @{
            @"code": errorCode,
            @"domain": input.domain,
-           @"message": EXNullIfEmpty(input.localizedDescription),
-           @"reason": EXNullIfEmpty(input.localizedFailureReason),
-           @"suggestion": EXNullIfEmpty(input.localizedRecoverySuggestion),
-           @"underlayingError": EXNullIfEmpty(underlyingError),
+           @"message": UMNullIfEmpty(input.localizedDescription),
+           @"reason": UMNullIfEmpty(input.localizedFailureReason),
+           @"suggestion": UMNullIfEmpty(input.localizedRecoverySuggestion),
+           @"underlayingError": UMNullIfEmpty(underlyingError),
            @"type": @"error",
            };
 }
@@ -246,14 +246,14 @@
   NSArray *solicitedServiceUUIDs = [EXBluetooth CBUUIDList_NativeToJSON:input[CBAdvertisementDataSolicitedServiceUUIDsKey]];
   
   return @{
-           @"localName": EXNullIfEmpty(localNameKey),
-           @"txPowerLevel": EXNullIfNil(txPowerLevel),
+           @"localName": UMNullIfEmpty(localNameKey),
+           @"txPowerLevel": UMNullIfNil(txPowerLevel),
            @"isConnectable": @([isConnectable boolValue]),
-           @"manufacturerData": EXNullIfEmpty(manufacturerDataValue),
-           @"serviceData": EXNullIfNil(serviceData),
-           @"serviceUUIDs": EXNullIfNil(serviceUUIDs),
-           @"overflowServiceUUIDs": EXNullIfNil(overflowServiceUUIDs),
-           @"solicitedServiceUUIDs": EXNullIfNil(solicitedServiceUUIDs)
+           @"manufacturerData": UMNullIfEmpty(manufacturerDataValue),
+           @"serviceData": UMNullIfNil(serviceData),
+           @"serviceUUIDs": UMNullIfNil(serviceUUIDs),
+           @"overflowServiceUUIDs": UMNullIfNil(overflowServiceUUIDs),
+           @"solicitedServiceUUIDs": UMNullIfNil(solicitedServiceUUIDs)
            };
 }
 
@@ -271,7 +271,7 @@
   NSMutableArray *output = [NSMutableArray new];
   for (CBUUID *value in input) {
     NSString *serializedValue = [EXBluetooth CBUUID_NativeToJSON:value];
-    [output addObject:EXNullIfEmpty(serializedValue)];
+    [output addObject:UMNullIfEmpty(serializedValue)];
   }
   return output;
 }
@@ -301,7 +301,7 @@
   NSMutableDictionary *output = [NSMutableDictionary new];
   for (CBUUID *key in input.allKeys) {
     NSData *value = input[key];
-    [output setObject:EXNullIfEmpty([EXBluetooth NSData_NativeToJSON:value]) forKey:key.UUIDString];
+    [output setObject:UMNullIfEmpty([EXBluetooth NSData_NativeToJSON:value]) forKey:key.UUIDString];
   }
   return output;
 }
@@ -338,16 +338,16 @@
   if([descriptorUUIDString isEqualToString:CBUUIDCharacteristicExtendedPropertiesString]  ||
      [descriptorUUIDString isEqualToString:CBUUIDClientCharacteristicConfigurationString] ||
      [descriptorUUIDString isEqualToString:CBUUIDServerCharacteristicConfigurationString]) {
-    outputData = EXNullIfNil(input.value);
+    outputData = UMNullIfNil(input.value);
     if (input.value != nil) {
       parsedValue = [outputData stringValue];
     }
   } else if ([descriptorUUIDString isEqualToString:CBUUIDCharacteristicUserDescriptionString]) {
-    outputData = EXNullIfNil(input.value);
+    outputData = UMNullIfNil(input.value);
     parsedValue = input.value;
   } else if ([descriptorUUIDString isEqualToString:CBUUIDCharacteristicFormatString] ||
              [descriptorUUIDString isEqualToString:CBUUIDCharacteristicAggregateFormatString]) {
-    outputData = EXNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]);
+    outputData = UMNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]);
     // Bacon: Because we know the format upfront, we should parse it here - the format could be different on Android.
     parsedValue = [[NSString alloc] initWithData:input.value encoding:NSUTF8StringEncoding];
   }
@@ -357,7 +357,7 @@
            @"uuid": descriptorUUIDString,
            @"characteristicUUID": characteristicUUIDString,
            @"value": outputData,
-           @"parsedValue": EXNullIfEmpty(parsedValue),
+           @"parsedValue": UMNullIfEmpty(parsedValue),
            @"type": @"descriptor",
            };
 }
@@ -376,7 +376,7 @@
            @"serviceUUID": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
            @"properties": [EXBluetooth CBCharacteristicPropertiesNativeToJSON:input.properties],
-           @"value": EXNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
+           @"value": UMNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
            @"descriptors": [EXBluetooth EXBluetoothDescriptorArrayNativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
            @"type": @"characteristic",
@@ -405,14 +405,14 @@
   if (!input) return nil;
   
   return @{
-           EXBluetoothRSSIKey: EXNullIfNil(input.RSSI),
+           EXBluetoothRSSIKey: UMNullIfNil(input.RSSI),
            @"id": input.identifier.UUIDString,
            @"uuid": input.identifier.UUIDString,
-           @"name": EXNullIfEmpty(input.name),
+           @"name": UMNullIfEmpty(input.name),
            @"state": [EXBluetooth CBPeripheralStateNativeToJSON:input.state],
            @"services": [EXBluetooth EXBluetoothServiceArrayNativeToJSON:input.services],
            @"canSendWriteWithoutResponse": @(input.canSendWriteWithoutResponse),
-           @"advertisementData": EXNullIfNil([EXBluetooth advertisementDataNativeToJSON:input.advertisementData]),
+           @"advertisementData": UMNullIfNil([EXBluetooth advertisementDataNativeToJSON:input.advertisementData]),
            @"type": @"peripheral",
            };
 }

@@ -4,7 +4,7 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <EXBluetooth/EXBluetoothBlocks.h>
-#import <EXCore/EXExportedModule.h>
+#import <UMCore/UMExportedModule.h>
 
 @class EXBluetoothPeripheral;
 @class EXBluetoothCharacteristic;
@@ -65,8 +65,8 @@ withReadValueForCharacteristicCallback:(EXBluetoothPeripheralReadValueForCharact
 
 - (NSDictionary *)getJSON;
 
-- (BOOL)guardIsConnected:(EXPromiseRejectBlock)reject;
+- (BOOL)guardIsConnected:(UMPromiseRejectBlock)reject;
 
-- (EXBluetoothService *)getServiceOrReject:(NSString *)UUIDString reject:(EXPromiseRejectBlock)reject;
+- (EXBluetoothService *)getServiceOrReject:(NSString *)UUIDString reject:(UMPromiseRejectBlock)reject;
 
 @end

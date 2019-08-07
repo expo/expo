@@ -2,14 +2,14 @@
 
 #import <EXBluetooth/EXBluetooth.h>
 #import <EXBluetooth/EXBluetooth+JSON.h>
-#import <EXCore/EXEventEmitterService.h>
+#import <UMCore/UMEventEmitterService.h>
 #import <EXBluetooth/EXBluetoothConstants.h>
 #import <EXBluetooth/EXBluetoothCentralManager.h>
 
 @interface EXBluetooth()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, assign) BOOL isObserving;
 @property (nonatomic, strong) EXBluetoothCentralManager *manager;
 
@@ -36,19 +36,19 @@
 
 #pragma mark - Expo
 
-EX_EXPORT_MODULE(ExpoBluetooth);
+UM_EXPORT_MODULE(ExpoBluetooth);
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   // TODO: Bacon: Maybe add restoration ID
   _manager = [[EXBluetoothCentralManager alloc] initWithQueue:[self methodQueue] options:nil];
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   [self updateStateListener];
 }
 
@@ -62,7 +62,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
       [weakSelf
        emit:EXBluetoothEvent_CENTRAL_STATE_CHANGED
        data:@{
-              EXBluetoothCentralKey: EXNullIfNil([EXBluetooth EXBluetoothCentralManagerNativeToJSON:centralManager])
+              EXBluetoothCentralKey: UMNullIfNil([EXBluetooth EXBluetoothCentralManagerNativeToJSON:centralManager])
               }];
     }
   }];
@@ -115,7 +115,7 @@ EX_EXPORT_MODULE(ExpoBluetooth);
 - (void)emitFullState
 {
   [self emit:EXBluetoothEvent_UPDATE_STATE data:@{
-                              EXBluetoothCentralKey: EXNullIfNil([_manager getJSON]),
+                              EXBluetoothCentralKey: UMNullIfNil([_manager getJSON]),
                               EXBluetoothPeripheralsKey: [EXBluetooth EXBluetoothPeripheralListNativeToJSON:[_manager getDiscoveredPeripherals]]
                               }];
 }
@@ -128,15 +128,15 @@ EX_EXPORT_MODULE(ExpoBluetooth);
      sendEventWithName:EXBluetoothEvent
      body:@{
             EXBluetoothEventKey: eventName,
-            EXBluetoothDataKey: EXNullIfNil(data)
+            EXBluetoothDataKey: UMNullIfNil(data)
             }];
   }
 }
 
-EX_EXPORT_METHOD_AS(initAsync,
+UM_EXPORT_METHOD_AS(initAsync,
                     initAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSDictionary *nativeOptions = [EXBluetooth centralManagerOptionsJSONToNative:options];
   _manager = [[EXBluetoothCentralManager alloc] initWithQueue:[self methodQueue] options:nativeOptions];
@@ -144,9 +144,9 @@ EX_EXPORT_METHOD_AS(initAsync,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(deallocateManagerAsync,
-                    deallocateManagerAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(deallocateManagerAsync,
+                    deallocateManagerAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -155,9 +155,9 @@ EX_EXPORT_METHOD_AS(deallocateManagerAsync,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(getPeripheralsAsync,
-                    getPeripheralsAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getPeripheralsAsync,
+                    getPeripheralsAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -168,10 +168,10 @@ EX_EXPORT_METHOD_AS(getPeripheralsAsync,
 }
 
 // TODO: Bacon: Use serviceUUIDStrings for Android parity
-EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
+UM_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
                     getConnectedPeripheralsAsync:(NSArray<NSString *> *)serviceUUIDStrings
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -192,20 +192,20 @@ EX_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
 }
 
 
-EX_EXPORT_METHOD_AS(getCentralAsync,
-                    getCentralAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getCentralAsync,
+                    getCentralAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
   }
-  resolve(EXNullIfNil([_manager getJSON]));
+  resolve(UMNullIfNil([_manager getJSON]));
 }
 
-EX_EXPORT_METHOD_AS(getPeripheralAsync,
+UM_EXPORT_METHOD_AS(getPeripheralAsync,
                     getPeripheralAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothPeripheral *peripheral = [self getPeripheralFromOptionsOrReject:options reject:reject];
   if (!peripheral) {
@@ -215,10 +215,10 @@ EX_EXPORT_METHOD_AS(getPeripheralAsync,
   resolve([EXBluetooth EXBluetoothPeripheralNativeToJSON:peripheral]);
 }
 
-EX_EXPORT_METHOD_AS(getServiceAsync,
+UM_EXPORT_METHOD_AS(getServiceAsync,
                     getServiceAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothService *service = [self getServiceFromOptionsOrReject:options reject:reject];
   if (!service) {
@@ -228,37 +228,37 @@ EX_EXPORT_METHOD_AS(getServiceAsync,
   resolve([EXBluetooth EXBluetoothServiceNativeToJSON:service]);
 }
 
-EX_EXPORT_METHOD_AS(getCharacteristicAsync,
+UM_EXPORT_METHOD_AS(getCharacteristicAsync,
                     getCharacteristicAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
   if (!characteristic) {
     return;
   }
   
-  resolve(EXNullIfNil([EXBluetooth EXBluetoothCharacteristicNativeToJSON:characteristic]));
+  resolve(UMNullIfNil([EXBluetooth EXBluetoothCharacteristicNativeToJSON:characteristic]));
 }
 
-EX_EXPORT_METHOD_AS(getDescriptorAsync,
+UM_EXPORT_METHOD_AS(getDescriptorAsync,
                     getDescriptorAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothDescriptor *descriptor = [self getDescriptorFromOptionsOrReject:options reject:reject];
   if (!descriptor) {
     return;
   }
   
-  resolve(EXNullIfNil([EXBluetooth EXBluetoothDescriptorNativeToJSON:descriptor]));
+  resolve(UMNullIfNil([EXBluetooth EXBluetoothDescriptorNativeToJSON:descriptor]));
 }
 
-EX_EXPORT_METHOD_AS(startScanningAsync,
+UM_EXPORT_METHOD_AS(startScanningAsync,
                     startScanningAsync:(NSArray<NSString *> *)serviceUUIDStrings
                     options:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -291,20 +291,20 @@ EX_EXPORT_METHOD_AS(startScanningAsync,
       NSDictionary *peripheralData = [peripheral getJSON];
       
       [weakSelf emit:EXBluetoothEvent_CENTRAL_DISCOVERED_PERIPHERAL data:@{
-                                                                           EXBluetoothCentralKey: EXNullIfNil([EXBluetooth EXBluetoothCentralManagerNativeToJSON:centralManager]),
-                                                                           EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-                                                                           EXBluetoothAdvertisementDataKey: EXNullIfNil([EXBluetooth advertisementDataNativeToJSON:advertisementData]),
+                                                                           EXBluetoothCentralKey: UMNullIfNil([EXBluetooth EXBluetoothCentralManagerNativeToJSON:centralManager]),
+                                                                           EXBluetoothPeripheralKey: UMNullIfNil(peripheralData),
+                                                                           EXBluetoothAdvertisementDataKey: UMNullIfNil([EXBluetooth advertisementDataNativeToJSON:advertisementData]),
                                                                            // The current received signal strength indicator (RSSI) of the peripheral, in decibels.
-                                                                           EXBluetoothRSSIKey: EXNullIfNil(RSSI)
+                                                                           EXBluetoothRSSIKey: UMNullIfNil(RSSI)
                                                                            }];
       [weakSelf emitFullState];
     }
   }];
 }
 
-EX_EXPORT_METHOD_AS(stopScanningAsync,
-                    stopScanningAsync:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(stopScanningAsync,
+                    stopScanningAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -315,11 +315,11 @@ EX_EXPORT_METHOD_AS(stopScanningAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(connectPeripheralAsync,
+UM_EXPORT_METHOD_AS(connectPeripheralAsync,
                     connectPeripheralAsync:(NSString *)peripheralUUID
                     options:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -339,7 +339,7 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
     if (error) {
       reject(EXBluetoothErrorKey, error.localizedDescription, error);
     } else {
-      resolve(EXNullIfNil(peripheralData));
+      resolve(UMNullIfNil(peripheralData));
     }
     
   } withDidDisconnectPeripheralCallback:^(EXBluetoothCentralManager *centralManager, EXBluetoothPeripheral *peripheral, NSError *error) {
@@ -351,17 +351,17 @@ EX_EXPORT_METHOD_AS(connectPeripheralAsync,
     [self
      emit:EXBluetoothEvent_PERIPHERAL_DISCONNECTED
      data:@{
-            EXBluetoothCentralKey: EXNullIfNil([centralManager getJSON]),
-            EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-            EXBluetoothErrorKey: EXNullIfNil([EXBluetooth NSErrorNativeToJSON:error])
+            EXBluetoothCentralKey: UMNullIfNil([centralManager getJSON]),
+            EXBluetoothPeripheralKey: UMNullIfNil(peripheralData),
+            EXBluetoothErrorKey: UMNullIfNil([EXBluetooth NSErrorNativeToJSON:error])
             }];
   }];
 }
 
-EX_EXPORT_METHOD_AS(readRSSIAsync,
+UM_EXPORT_METHOD_AS(readRSSIAsync,
                     readRSSIAsync:(NSString *)peripheralUUID
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -380,13 +380,13 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
     if (error) {
       reject(EXBluetoothErrorKey, error.localizedDescription, error);
     } else {
-      resolve(EXNullIfNil(peripheralData));
+      resolve(UMNullIfNil(peripheralData));
     }
   }];
   
 }
 
--(EXBluetoothPeripheral *)getPeripheralFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+-(EXBluetoothPeripheral *)getPeripheralFromOptionsOrReject:(NSDictionary *)options reject:(UMPromiseRejectBlock)reject
 {
   if ([_manager guardEnabled:reject]) {
     return nil;
@@ -398,7 +398,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   return peripheral;
 }
 
--(EXBluetoothService *)getServiceFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+-(EXBluetoothService *)getServiceFromOptionsOrReject:(NSDictionary *)options reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothPeripheral *peripheral = [self getPeripheralFromOptionsOrReject:options reject:reject];
   if (!peripheral || [peripheral guardIsConnected:reject]) {
@@ -412,7 +412,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   return service;
 }
 
--(EXBluetoothCharacteristic *)getCharacteristicFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+-(EXBluetoothCharacteristic *)getCharacteristicFromOptionsOrReject:(NSDictionary *)options reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothService *service = [self getServiceFromOptionsOrReject:options reject:reject];
   if (!service) {
@@ -434,7 +434,7 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   return characteristic;
 }
 
--(EXBluetoothDescriptor *)getDescriptorFromOptionsOrReject:(NSDictionary *)options reject:(EXPromiseRejectBlock)reject
+-(EXBluetoothDescriptor *)getDescriptorFromOptionsOrReject:(NSDictionary *)options reject:(UMPromiseRejectBlock)reject
 {
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
   if (!characteristic) {
@@ -448,10 +448,10 @@ EX_EXPORT_METHOD_AS(readRSSIAsync,
   return descriptor;
 }
 
-EX_EXPORT_METHOD_AS(readDescriptorAsync,
+UM_EXPORT_METHOD_AS(readDescriptorAsync,
                     readDescriptorAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothDescriptor *descriptor = [self getDescriptorFromOptionsOrReject:options reject:reject];
   if (descriptor == nil) {
@@ -467,16 +467,16 @@ EX_EXPORT_METHOD_AS(readDescriptorAsync,
         [weakSelf emitFullState];
       }
       resolve(@{
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON]),
-                EXBluetoothDescriptorKey: EXNullIfNil([descriptor getJSON])
+                EXBluetoothPeripheralKey: UMNullIfNil([peripheral getJSON]),
+                EXBluetoothDescriptorKey: UMNullIfNil([descriptor getJSON])
                 });
     }
   }];
 }
-EX_EXPORT_METHOD_AS(writeDescriptorAsync,
+UM_EXPORT_METHOD_AS(writeDescriptorAsync,
                     writeDescriptorAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   // TODO: CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
   EXBluetoothDescriptor *descriptor = [self getDescriptorFromOptionsOrReject:options reject:reject];
@@ -499,17 +499,17 @@ EX_EXPORT_METHOD_AS(writeDescriptorAsync,
         [weakSelf emitFullState];
       }
       resolve(@{
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON]),
-                EXBluetoothDescriptorKey: EXNullIfNil([descriptor getJSON])
+                EXBluetoothPeripheralKey: UMNullIfNil([peripheral getJSON]),
+                EXBluetoothDescriptorKey: UMNullIfNil([descriptor getJSON])
                 });
     }
   }];
 }
 
-EX_EXPORT_METHOD_AS(writeCharacteristicAsync,
+UM_EXPORT_METHOD_AS(writeCharacteristicAsync,
                     writeCharacteristicAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   // TODO: CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
@@ -531,17 +531,17 @@ EX_EXPORT_METHOD_AS(writeCharacteristicAsync,
         [weakSelf emitFullState];
       }
       resolve(@{
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON]),
-                EXBluetoothCharacteristicKey: EXNullIfNil([characteristic getJSON])
+                EXBluetoothPeripheralKey: UMNullIfNil([peripheral getJSON]),
+                EXBluetoothCharacteristicKey: UMNullIfNil([characteristic getJSON])
                 });
     }
   }];
 }
 
-EX_EXPORT_METHOD_AS(readCharacteristicAsync,
+UM_EXPORT_METHOD_AS(readCharacteristicAsync,
                     readCharacteristicAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
   if (characteristic == nil) {
@@ -558,17 +558,17 @@ EX_EXPORT_METHOD_AS(readCharacteristicAsync,
         [weakSelf emitFullState];
       }
       resolve(@{
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON]),
-                EXBluetoothCharacteristicKey: EXNullIfNil([characteristic getJSON])
+                EXBluetoothPeripheralKey: UMNullIfNil([peripheral getJSON]),
+                EXBluetoothCharacteristicKey: UMNullIfNil([characteristic getJSON])
                 });
     }
   }];
 }
 
-EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
+UM_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
                     setNotifyCharacteristicAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   // TODO: CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
@@ -587,8 +587,8 @@ EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
         [weakSelf emitFullState];
       }
       resolve(@{
-                EXBluetoothPeripheralKey: EXNullIfNil([peripheral getJSON]),
-                EXBluetoothCharacteristicKey: EXNullIfNil([characteristic getJSON])
+                EXBluetoothPeripheralKey: UMNullIfNil([peripheral getJSON]),
+                EXBluetoothCharacteristicKey: UMNullIfNil([characteristic getJSON])
                 });
     }
   }];
@@ -613,7 +613,7 @@ EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
 
 // Bacon: Predict the following, and throw an error without crashing the app.
 // TODO: Bacon: Can we try to auto-resolve this
-- (BOOL)guardCharacteristicConfiguration:(CBDescriptor *)descriptor reject:(EXPromiseRejectBlock)reject
+- (BOOL)guardCharacteristicConfiguration:(CBDescriptor *)descriptor reject:(UMPromiseRejectBlock)reject
 {
   if ([descriptor.UUID.UUIDString isEqualToString:CBUUIDClientCharacteristicConfigurationString]) {
     reject(EXBluetoothErrorWrite, [NSString stringWithFormat:@"Client Characteristic Configuration descriptors must be configured using setNotifyValue:forCharacteristic: | Descriptor UUID: %@ | Expected: %@", descriptor.UUID.UUIDString, CBUUIDClientCharacteristicConfigurationString], nil);
@@ -622,10 +622,10 @@ EX_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
   return NO;
 }
 
-EX_EXPORT_METHOD_AS(discoverDescriptorsForCharacteristicAsync,
+UM_EXPORT_METHOD_AS(discoverDescriptorsForCharacteristicAsync,
                     discoverDescriptorsForCharacteristicAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
   if (characteristic == nil) {
@@ -647,10 +647,10 @@ EX_EXPORT_METHOD_AS(discoverDescriptorsForCharacteristicAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(discoverCharacteristicsForServiceAsync,
+UM_EXPORT_METHOD_AS(discoverCharacteristicsForServiceAsync,
                     discoverCharacteristicsForServiceAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothService *service = [self getServiceFromOptionsOrReject:options reject:reject];
   if (service == nil) {
@@ -674,10 +674,10 @@ EX_EXPORT_METHOD_AS(discoverCharacteristicsForServiceAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(discoverIncludedServicesForServiceAsync,
+UM_EXPORT_METHOD_AS(discoverIncludedServicesForServiceAsync,
                     discoverIncludedServicesForServiceAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   EXBluetoothService *service = [self getServiceFromOptionsOrReject:options reject:reject];
   if (service == nil) {
@@ -700,10 +700,10 @@ EX_EXPORT_METHOD_AS(discoverIncludedServicesForServiceAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(discoverServicesForPeripheralAsync,
+UM_EXPORT_METHOD_AS(discoverServicesForPeripheralAsync,
                     discoverServicesForPeripheralAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -729,10 +729,10 @@ EX_EXPORT_METHOD_AS(discoverServicesForPeripheralAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
+UM_EXPORT_METHOD_AS(disconnectPeripheralAsync,
                     disconnectPeripheralAsync:(NSString *)peripheralUUID
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if ([_manager guardEnabled:reject]) {
     return;
@@ -746,14 +746,14 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
     if (error) {
       reject(EXBluetoothErrorKey, error.localizedDescription, error);
     } else {
-      resolve(EXNullIfNil([peripheral getJSON]));
+      resolve(UMNullIfNil([peripheral getJSON]));
     }
   }];
 }
 
 #pragma mark - Get Async
 
-- (NSData *)_getDataOrReject:(NSString *)dataString reject:(EXPromiseRejectBlock)reject
+- (NSData *)_getDataOrReject:(NSString *)dataString reject:(UMPromiseRejectBlock)reject
 {
   if (dataString != nil) {
     NSData *data = [[NSData alloc] initWithBase64EncodedString:dataString options:NSDataBase64DecodingIgnoreUnknownCharacters];
@@ -768,7 +768,7 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
   }
 }
 
-- (BOOL)guardBluetoothEnabled:(EXPromiseRejectBlock)reject
+- (BOOL)guardBluetoothEnabled:(UMPromiseRejectBlock)reject
 {
   if (_manager.state < CBManagerStatePoweredOff) {
     NSString *state = [EXBluetooth CBManagerStateNativeToJSON:_manager.state];
@@ -831,8 +831,8 @@ EX_EXPORT_METHOD_AS(disconnectPeripheralAsync,
   //   emit:EXBluetoothEvent_PERIPHERAL_DISCOVERED_SERVICES
   //   data:@{
   //          EXBluetoothTransactionIdKey: [NSString stringWithFormat:@"%@|%@", @"scan", peripheralData[@"id"]],
-  //          EXBluetoothPeripheralKey: EXNullIfNil(peripheralData),
-  //          EXBluetoothErrorKey: EXNullIfNil([EXBluetooth NSErrorNativeToJSON:error])
+  //          EXBluetoothPeripheralKey: UMNullIfNil(peripheralData),
+  //          EXBluetoothErrorKey: UMNullIfNil([EXBluetooth NSErrorNativeToJSON:error])
   //          }];
 }
 
