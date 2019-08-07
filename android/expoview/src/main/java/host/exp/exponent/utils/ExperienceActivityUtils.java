@@ -11,11 +11,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
-
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
-
 import org.json.JSONObject;
 
 public class ExperienceActivityUtils {
