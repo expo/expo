@@ -11,15 +11,17 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
+
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+
 import org.json.JSONObject;
 
 public class ExperienceActivityUtils {
 
   private static final String TAG = ExperienceActivityUtils.class.getSimpleName();
-  private static JSONObject mStatusBar = null;
+  private static JSONObject mStatusBar;
 
   public static void updateOrientation(JSONObject manifest, Activity activity) {
     if (manifest == null) {
@@ -50,10 +52,8 @@ public class ExperienceActivityUtils {
 
     String statusBarColor;
 
-    boolean fullScreen = (activity.getWindow().getDecorView().getSystemUiVisibility() == View.SYSTEM_UI_FLAG_FULLSCREEN);
-    if(fullScreen){
-      activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-    }
+    //always show status bar
+    activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
 
     if (statusBarOptions != null) {
       statusBarColor = statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR);
@@ -82,7 +82,9 @@ public class ExperienceActivityUtils {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
         if (statusBarAppearance.equals("dark-content")) {
-          activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+          int flags = activity.getWindow().getDecorView().getSystemUiVisibility();
+          flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+          activity.getWindow().getDecorView().setSystemUiVisibility(flags);
         }
       } catch (Throwable e) {
         EXL.e(TAG, e);
@@ -111,7 +113,7 @@ public class ExperienceActivityUtils {
     });
   }
 
-  public static boolean hasStatusBarInSplash(final JSONObject manifest){
+  public static boolean hasStatusBarInSplash(final JSONObject manifest) {
     JSONObject splash = null;
     boolean hasStatusBarInSplash = false;
     if (manifest.has("android")) {
@@ -143,6 +145,7 @@ public class ExperienceActivityUtils {
           // status bar is hidden, so hide that too if necessary.
           ActionBar actionBar = activity.getActionBar();
           if (actionBar != null) actionBar.hide();
+          return;
         }
       }
     } else {

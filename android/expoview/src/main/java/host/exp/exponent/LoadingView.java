@@ -2,16 +2,12 @@
 
 package host.exp.exponent;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -402,10 +398,6 @@ public class LoadingView extends RelativeLayout {
   public void setDoneLoading() {
     mIsLoading = false;
     AsyncCondition.remove(ASYNC_CONDITION_KEY);
-  }
-
-  public void resetStatusBar(){
-    mStatusBarView.setVisibility(VISIBLE);
   }
 
   private void revealView(View view) {
