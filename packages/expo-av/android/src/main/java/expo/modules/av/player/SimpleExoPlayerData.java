@@ -317,7 +317,11 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onLoadError(final IOException error) {
-    onFatalError(error);
+    if (mLoadCompletionListener != null) {
+      final LoadCompletionListener listener = mLoadCompletionListener;
+      mLoadCompletionListener = null;
+      listener.onLoadError(error.toString());
+    }
   }
 
   private void onFatalError(final Throwable error) {
@@ -398,7 +402,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public void onLoadError(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, LoadEventInfo loadEventInfo, MediaLoadData mediaLoadData, IOException error, boolean wasCanceled) {
-    onLoadError(error);
+
   }
 
   @Override
