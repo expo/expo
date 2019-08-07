@@ -11,10 +11,11 @@ import org.unimodules.interfaces.permissions.Permissions
 
 
 class PermissionsModule(context: Context) : ExportedModule(context) {
-  private var mPermissions: Permissions? = null
+  private lateinit var mPermissions: Permissions
 
+  @Throws(IllegalStateException::class)
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mPermissions = moduleRegistry.getModule(Permissions::class.java)
+    mPermissions = moduleRegistry.getModule(Permissions::class.java) ?: throw IllegalStateException("Couldn't find implementation for Permissions interface.")
   }
 
   override fun getName(): String = "ExpoPermissions"
@@ -22,7 +23,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
-      promise.resolve(mPermissions!!.getPermissionsBundle(requestedPermissionsTypes.toTypedArray()))
+      promise.resolve(mPermissions.getPermissionsBundle(requestedPermissionsTypes.toTypedArray()))
     } catch (e: IllegalStateException) {
       promise.reject(ERROR_TAG + "_UNKNOWN", e)
     }
@@ -31,7 +32,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun askAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
-      mPermissions!!.askForPermissionsBundle(requestedPermissionsTypes.toTypedArray()) {
+      mPermissions.askForPermissionsBundle(requestedPermissionsTypes.toTypedArray()) {
         promise.resolve(it)
       }
     } catch (e: IllegalStateException) {

@@ -13,7 +13,14 @@ import android.support.v4.content.ContextCompat
 
 import com.facebook.react.modules.core.PermissionAwareActivity
 
-import expo.modules.permissions.requesters.*
+import expo.modules.permissions.requesters.CalendarRequester
+import expo.modules.permissions.requesters.CameraRollRequester
+import expo.modules.permissions.requesters.LocationRequester
+import expo.modules.permissions.requesters.NotificationRequester
+import expo.modules.permissions.requesters.PermissionRequester
+import expo.modules.permissions.requesters.RemindersRequester
+import expo.modules.permissions.requesters.SimpleRequester
+import expo.modules.permissions.requesters.SystemBrightnessRequester
 
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.interfaces.ActivityProvider
@@ -21,8 +28,6 @@ import org.unimodules.core.interfaces.InternalModule
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
-
-import kotlin.properties.Delegates
 
 private const val PERMISSIONS_REQUEST: Int = 13
 
@@ -36,8 +41,8 @@ internal const val ERROR_TAG = "E_PERMISSIONS"
 internal const val PERMISSION_EXPIRES_NEVER = "never"
 
 class PermissionsService(val context: Context): InternalModule, Permissions, LifecycleEventListener {
-  private var mActivityProvider: ActivityProvider? = null
-  private var mRequesters: Map<String, PermissionRequester> by Delegates.notNull()
+  private lateinit var mActivityProvider: ActivityProvider
+  private lateinit var mRequesters: Map<String, PermissionRequester>
 
   // state holders for asking for writing permissions
   private var mWritingPermissionBeingAsked = false // change this directly before calling corresponding startActivity
@@ -47,20 +52,17 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
 
   companion object {
     private val mPermissionsAskedFor = HashSet<String>()
-    fun didAsk(permission: String): Boolean {
-      return mPermissionsAskedFor.contains(permission)
-    }
+    fun didAsk(permission: String): Boolean = mPermissionsAskedFor.contains(permission)
 
-    private var mPermissions: Permissions? = null
-    fun getPermissionService(): Permissions {
-      return mPermissions ?: throw IllegalStateException("No Permissions module present.")
-    }
+    private lateinit var mPermissions: Permissions
+    fun getPermissionService(): Permissions = mPermissions
   }
 
-  override fun getExportedInterfaces(): List<Class<out Any>> = listOf<Class<out Any>>(Permissions::class.java)
+  override fun getExportedInterfaces(): List<Class<out Any>> = listOf(Permissions::class.java)
 
+  @Throws(IllegalStateException::class)
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
+    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java) ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     mPermissions = this
 
@@ -76,12 +78,13 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
         PermissionsTypes.REMINDERS.type to RemindersRequester(),
         PermissionsTypes.NOTIFICATIONS.type to notificationRequester,
         PermissionsTypes.USER_FACING_NOTIFICATIONS.type to notificationRequester,
-        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(mActivityProvider!!)
+        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(mActivityProvider)
     )
   }
 
+  @Throws(IllegalStateException::class)
   private fun getRequester(permissionType: String): PermissionRequester {
-    return mRequesters[permissionType] ?: throw IllegalStateException(String.format("Unrecognized permission type: %s", permissionType))
+    return mRequesters[permissionType] ?: throw IllegalStateException("Unrecognized permission type: $permissionType")
   }
 
   override fun getPermissionsBundle(permissionTypes: Array<out String>?): Bundle {
@@ -108,7 +111,6 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
     }
     return true
   }
-
 
   override fun askForPermissionsBundle(permissionsTypes: Array<out String>?, listener: Permissions.PermissionsRequesterListenerBundle?) {
     if (permissionsTypes == null || listener == null){
@@ -160,7 +162,7 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
   }
 
   override fun getPermission(permission: String): Int {
-    with(mActivityProvider?.currentActivity) {
+    with(mActivityProvider.currentActivity) {
       if (this != null && this is PermissionAwareActivity) {
         return ContextCompat.checkSelfPermission(this, permission)
       }
@@ -169,7 +171,7 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
   }
 
   override fun askForPermissions(permissions: Array<String>, listener: Permissions.PermissionsRequestListener) {
-    with(mActivityProvider?.currentActivity) {
+    with(mActivityProvider.currentActivity) {
       if (this != null && this is PermissionAwareActivity) {
         requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
           when (PERMISSIONS_REQUEST) {
@@ -248,7 +250,6 @@ class PermissionsService(val context: Context): InternalModule, Permissions, Lif
     mAskAsyncListener = null
     mAskAsyncRequestedPermissionsTypes = null
     mAskAsyncPermissionsTypesToBeAsked = null
-
 
     // invoke actual asking for permissions
     mPermissionsAskedFor.addAll(askAsyncPermissionsTypesToBeAsked!!)
