@@ -61,7 +61,7 @@ async function _handleMultiPermissionsRequestIOSAsync(
   }
 
   let permissions = {}
-  for(let type of types) {
+  for (let type of types) {
     permissions[type] = await _handleSinglePermissionRequestIOSAsync(type, handlePermission);    
   }
 

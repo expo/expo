@@ -5,34 +5,52 @@
 #import <EXPermissions/EXPermissions.h>
 #import <UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h>
 
+@interface EXUserNotificationRequester ()
+
+@property (nonatomic, weak) id<UMUserNotificationCenterProxyInterface> notificationCenter;
+@property (nonatomic, weak) dispatch_queue_t methodQueue;
+
+@end
+
 @implementation EXUserNotificationRequester
 
-- (id<UMUserNotificationCenterProxyInterface>)getNotificationCenter {
-  return [[self.permissionsModule getModuleRegistry] getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)];
++ (NSString *)permissionType
+{
+  return @"userFacingNotifications";
 }
 
-- (NSDictionary *)permissions
+- (instancetype)initWithNotificationProxy:(id<UMUserNotificationCenterProxyInterface>)proxy withMetodQueqe:(dispatch_queue_t)queue
+{
+  if (self = [super init]){
+    _notificationCenter = proxy;
+    _methodQueue = queue;
+    return self;
+  }
+  return nil;
+}
+
+- (NSDictionary *)getPermissions
 {
   dispatch_assert_queue_not(dispatch_get_main_queue());
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
   __block BOOL allowsSound;
   __block BOOL allowsAlert;
   __block BOOL allowsBadge;
-  __block EXPermissionStatus status;
+  __block UMPermissionStatus status;
 
-  [[self getNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+  [_notificationCenter getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
     allowsSound = settings.soundSetting == UNNotificationSettingEnabled;
     allowsAlert = settings.alertSetting == UNNotificationSettingEnabled;
     allowsBadge = settings.badgeSetting == UNNotificationSettingEnabled;
 
-    status = EXPermissionStatusUndetermined;
+    status = UMPermissionStatusUndetermined;
 
     if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
     } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
     } else {
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
     }
     dispatch_semaphore_signal(sem);
   }];
@@ -40,7 +58,7 @@
   dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
 
   return @{
-           @"status": [EXPermissions permissionStringForStatus:status],
+           @"status": @(status),
            @"allowsSound": @(allowsSound),
            @"allowsAlert": @(allowsAlert),
            @"allowsBadge": @(allowsBadge),
@@ -53,11 +71,10 @@
   UM_WEAKIFY(self)
   
   UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge;
-  id<UMUserNotificationCenterProxyInterface> notificationCenter = [self getNotificationCenter];
-  [notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
+  [_notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
     UM_STRONGIFY(self)
-    NSAssert(self.permissionsModule, @"Permissions module is required to properly consume result.");
-    dispatch_async(self.permissionsModule.methodQueue, ^{
+    NSAssert(self->_methodQueue, @"Permissions module is required to properly consume result.");
+    dispatch_async(self->_methodQueue, ^{
       if (error) {
         reject(@"E_PERM_REQ", error.description, error);
       } else {
@@ -70,7 +87,7 @@
 - (void)_consumeResolverWithCurrentPermissions:(UMPromiseResolveBlock)resolver
 {
   if (resolver) {
-    resolver([self permissions]);
+    resolver([self getPermissions]);
   }
 }
 

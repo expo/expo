@@ -3,30 +3,22 @@
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <EXPermissions/EXPermissionBaseRequester.h>
 
 FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
-typedef enum EXPermissionStatus {
-  EXPermissionStatusDenied,
-  EXPermissionStatusGranted,
-  EXPermissionStatusUndetermined,
-} EXPermissionStatus;
-
 @interface EXPermissions : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
 
-- (NSDictionary *)getPermissionsForResource:(NSString *)resource;
-
-+ (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
-
-- (id<EXPermissionRequester>)getPermissionRequesterForType:(NSString *)type;
-
-+ (EXPermissionStatus)statusForPermissions:(NSDictionary *)permissions;
-
+// TODO: Remove once SDK34 is phased out
 - (void)askForGlobalPermission:(NSString *)permissionType
                   withResolver:(void (^)(NSDictionary *))resolver
                   withRejecter:(UMPromiseRejectBlock)reject;
 
-- (UMModuleRegistry *)getModuleRegistry;
++ (UMPermissionStatus)statusForPermission:(NSDictionary *)permissions;
+
++ (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
+
+- (void)askForGlobalPermissionWithRequesterClass:(Class)requesterClass
+                                    withResolver:(void (^)(NSDictionary *))resolver
+                                    withRejecter:(UMPromiseRejectBlock)reject;
 
 @end

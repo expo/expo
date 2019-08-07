@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXPermissions.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
-@interface EXContactsRequester : EXPermissionBaseRequester
+@interface EXContactsRequester : NSObject<UMPermissionsRequester>
 
 @end
