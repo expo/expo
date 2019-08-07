@@ -37,6 +37,15 @@ The recommended way to test your project is with `jest-expo/universal` which run
 
 For quick debugging you can run a single platform with `jest-expo/ios`, `jest-expo/android`, `jest-expo/web`, and `jest-expo/node`.
 
+### Extensions
+
+To test specific platforms you can use the following extensions:
+
+- iOS: `-test.ios.*`, `-test.native.*`
+- Android: `-test.android.*`, `-test.native.*`
+- web: `-test.web.*`
+- Node: `-test.node.*`, `-test.web.*`
+
 ### Learning Jest
 
 [Read the excellent documentation](https://facebook.github.io/jest/)
