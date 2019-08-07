@@ -9,7 +9,7 @@ function getModuleFileExtensions(...platforms) {
   // Support both TypeScript and JavaScript
   for (const extension of ['ts', 'tsx', 'js', 'jsx']) {
     // Ensure order is correct: [platformA.js, platformB.js, js]
-    for (const platform of platforms.concat([''])) {
+    for (const platform of [...platforms, '']) {
       fileExtensions.push([platform, extension].filter(Boolean).join('.'));
     }
   }
