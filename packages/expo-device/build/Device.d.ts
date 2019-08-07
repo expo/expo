@@ -1,31 +1,25 @@
-export declare enum DeviceType {
-    PHONE = "PHONE",
-    TABLET = "TABLET",
-    DESKTOP = "DESKTOP",
-    TV = "TV",
-    UNKNOWN = "UNKNOWN"
-}
-export declare let modelName: any;
+import { DeviceType } from './Device.types';
+export declare const isDevice: boolean;
+export declare const brand: string | null;
+export declare const manufacturer: string | null;
 export declare const modelId: any;
-export declare const osBuildFingerprint: any;
-export declare const designName: any;
-export declare const productName: any;
-export declare const platformApiLevel: any;
-export declare const brand: any;
-export declare const manufacturer: any;
-export declare const osName: any;
-export declare const totalMemory: any;
-export declare const isDevice: any;
-export declare const supportedCpuArchitectures: any;
-export declare const osBuildId: any;
-export declare const osVersion: any;
-export declare const deviceName: any;
-export declare const osInternalBuildId: any;
-export declare const deviceYearClass: any;
-export declare function hasPlatformFeatureAsync(feature: string): Promise<boolean>;
-export declare function getPlatformFeaturesAsync(): Promise<string[]>;
-export declare function getMaxMemoryAsync(): Promise<number>;
-export declare function isSideLoadingEnabledAsync(): Promise<boolean>;
-export declare function getUptimeAsync(): Promise<number>;
-export declare function isRootedExperimentalAsync(): Promise<boolean>;
+export declare const modelName: string | null;
+export declare const designName: string | null;
+export declare const productName: string | null;
+export declare const deviceYearClass: number | null;
+export declare const totalMemory: number | null;
+export declare const supportedCpuArchitectures: string[] | null;
+export declare const osName: string | null;
+export declare const osVersion: string | null;
+export declare const osBuildId: string | null;
+export declare const osInternalBuildId: string | null;
+export declare const osBuildFingerprint: string | null;
+export declare const platformApiLevel: number | null;
+export declare const deviceName: string | null;
 export declare function getDeviceTypeAsync(): Promise<DeviceType>;
+export declare function getUptimeAsync(): Promise<number>;
+export declare function getMaxMemoryAsync(): Promise<number>;
+export declare function isRootedExperimentalAsync(): Promise<boolean>;
+export declare function isSideLoadingEnabledAsync(): Promise<boolean>;
+export declare function getPlatformFeaturesAsync(): Promise<string[]>;
+export declare function hasPlatformFeatureAsync(feature: string): Promise<boolean>;

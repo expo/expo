@@ -1,11 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXDevice/EXDevice.h>
-#import <UMCore/UMUtilities.h>
 
-#import <mach-o/arch.h>
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
+#import <mach-o/arch.h>
 #import <sys/utsname.h>
 
 #import <UMCore/UMUtilitiesInterface.h>
@@ -14,6 +13,8 @@
 #if !(TARGET_OS_TV)
 @import Darwin.sys.sysctl;
 #endif
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface EXDevice()
 
@@ -28,23 +29,50 @@ UM_EXPORT_MODULE(ExpoDevice);
   return dispatch_get_main_queue();
 }
 
-
-UM_EXPORT_METHOD_AS(getUptimeAsync, getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+- (NSDictionary *)constantsToExport
 {
-  resolve([self systemUptime]);
+  UIDevice *currentDevice = UIDevice.currentDevice;
+  NSString * _Nullable osBuildId = [[self class] osBuildId];
+
+  return @{
+           @"isDevice": @([[self class] isDevice]),
+           @"brand": @"Apple",
+           @"manufacturer": @"Apple",
+           @"modelId": UMNullIfNil([[self class] modelId]),
+           @"deviceYearClass": [[self class] deviceYear],
+           @"totalMemory": @(NSProcessInfo.processInfo.physicalMemory),
+           @"supportedCpuArchitectures": UMNullIfNil([[self class] cpuArchitectures]),
+           @"osName": currentDevice.systemName,
+           @"osVersion": currentDevice.systemVersion,
+           @"osBuildId": osBuildId,
+           @"osInternalBuildId": osBuildId,
+           @"deviceName": currentDevice.name,
+           };
 }
 
-UM_EXPORT_METHOD_AS(isRootedExperimentalAsync, isRootedExperimentalAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getDeviceTypeAsync,
+                    getDeviceTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(@([self isRooted]));
+  resolve(@([[self class] deviceType]));
 }
 
-UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getUptimeAsync,
+                    getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(UMNullIfNil([self deviceType]));
+  double uptimeMs = NSProcessInfo.processInfo.systemUptime * 1000;
+  resolve(@(uptimeMs));
 }
 
-- (BOOL)isRooted
+UM_EXPORT_METHOD_AS(isRootedExperimentalAsync,
+                    isRootedExperimentalAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@([[self class] isRooted]));
+}
+
++ (BOOL)isRooted
 {
 #if !(TARGET_IPHONE_SIMULATOR)
   NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -99,68 +127,67 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
   }
   
   // Check if the app can open a Cydia's URL scheme
-  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"cydia://package/com.example.package"]]) {
+  if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:@"cydia://package/com.example.package"]]) {
     return YES;
   }
 #endif
   return NO;
 }
 
-- (NSNumber *)systemUptime
-{ // returns the systemUptime in milliseconds
-  return [NSNumber numberWithDouble:[NSProcessInfo processInfo].systemUptime * 1000];
-}
-
-- (NSString *)deviceId
++ (NSString *)modelId
 {
   struct utsname systemInfo;
-  
+
   uname(&systemInfo);
-  
-  NSString* deviceId = [NSString stringWithCString:systemInfo.machine
-                                          encoding:NSUTF8StringEncoding];
-  
-  if ([deviceId isEqualToString:@"i386"] || [deviceId isEqualToString:@"x86_64"] ) {
-    deviceId = [NSString stringWithFormat:@"%s", getenv("SIMULATOR_MODEL_IDENTIFIER")];
+
+  NSString *modelId = [NSString stringWithCString:systemInfo.machine
+                                         encoding:NSUTF8StringEncoding];
+
+  if ([modelId isEqualToString:@"i386"] || [modelId isEqualToString:@"x86_64"] ) {
+    modelId = [NSString stringWithFormat:@"%s", getenv("SIMULATOR_MODEL_IDENTIFIER")];
   }
-  
-  return deviceId;
+
+  return modelId;
 }
 
-- (NSString *)deviceType
++ (EXDeviceType)deviceType
 {
-  switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
-    case UIUserInterfaceIdiomPhone: return @"PHONE";
-    case UIUserInterfaceIdiomPad: return @"TABLET";
-    case UIUserInterfaceIdiomTV: return @"TV";
-    default: return @"UNKNOWN";
+  switch (UIDevice.currentDevice.userInterfaceIdiom) {
+    case UIUserInterfaceIdiomPhone:
+      return EXDeviceTypePhone;
+    case UIUserInterfaceIdiomPad:
+      return EXDeviceTypeTablet;
+    case UIUserInterfaceIdiomTV:
+      return EXDeviceTypeTV;
+    default:
+      // NOTE: in the future for macOS, return Desktop
+      return EXDeviceTypeUnknown;
   }
 }
 
-- (nullable NSArray<NSString *> *)cpuType {
-  /* https://stackoverflow.com/questions/19859388/how-can-i-get-the-ios-device-cpu-architecture-in-runtime */
-  const NXArchInfo *info = NXGetLocalArchInfo(); // NXGetLocalArchInfo() returns the NXArchInfo for the local host, or NULL if none is known
++ (nullable NSArray<NSString *> *)cpuArchitectures
+{
+  // NXGetLocalArchInfo() returns the NXArchInfo for the local host, or NULL if none is known
+  // https://stackoverflow.com/questions/19859388/how-can-i-get-the-ios-device-cpu-architecture-in-runtime
+  const NXArchInfo *info = NXGetLocalArchInfo(); 
   if (!info) {
     return nil;
   }
-  NSString *typeOfCpu = [NSString stringWithUTF8String:info->description];
-  return @[typeOfCpu];
+  NSString *cpuType = [NSString stringWithUTF8String:info->description];
+  return @[cpuType];
 }
 
-
-- (NSNumber *)totalMemory {
-  return [NSNumber numberWithUnsignedLongLong:[NSProcessInfo processInfo].physicalMemory];
-}
-
-- (BOOL)isDevice
++ (BOOL)isDevice
 {
 #if TARGET_IPHONE_SIMULATOR
   return NO;
-#endif
+#else
   return YES;
+#endif
 }
 
-- (NSString *)osBuildId {
++ (nullable NSString *)osBuildId
+{
 #if TARGET_OS_TV
   return nil;
 #else
@@ -178,7 +205,7 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
 {
   NSString *platform = [self devicePlatform];
   
-  // TODO: apple TV and apple watch
+  // TODO: Apple TV and Apple watch
   NSDictionary *mapping = @{
                             // iPhone 1
                             @"iPhone1,1": @2007,
@@ -296,7 +323,7 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
     return deviceYear;
   }
   
-  // Simulator or unknown - just assume newest device.
+  // Simulator or unknown - assume this is the newest device
   NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
   [formatter setDateFormat:@"yyyy"];
   NSString *yearString = [formatter stringFromDate:[NSDate date]];
@@ -317,25 +344,6 @@ UM_EXPORT_METHOD_AS(getDeviceTypeAsync, getDeviceTypeAsyncWithResolver:(UMPromis
   return platform;
 }
 
-
-- (NSDictionary *)constantsToExport
-{
-  UIDevice *currentDevice = [UIDevice currentDevice];
-  
-  return @{
-           @"brand": @"Apple",
-           @"deviceName": currentDevice.name,
-           @"modelId": UMNullIfNil([self deviceId]),
-           @"isDevice": @([self isDevice]),
-           @"manufacturer": @"Apple",
-           @"supportedCpuArchitectures": UMNullIfNil([self cpuType]),
-           @"osName": currentDevice.systemName,
-           @"totalMemory": [self totalMemory] ?: @(0),
-           @"osVersion": currentDevice.systemVersion,
-           @"osBuildId": [self osBuildId],
-           @"osInternalBuildId": [self osBuildId],
-           @"deviceYearClass": [[self class] deviceYear],
-           };
-}
-
 @end
+
+NS_ASSUME_NONNULL_END

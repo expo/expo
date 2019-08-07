@@ -1,4 +1,30 @@
-export const deviceNamesByCode = {
+export function getIosModelName(modelId: string): string | null {
+  const knownModelName = iosModelNames[modelId];
+  if (knownModelName) {
+    return knownModelName;
+  }
+
+  // Infer the main type of model from the ID
+  if (modelId.startsWith('iPod')) {
+    return 'iPod Touch';
+  }
+
+  if (modelId.startsWith('iPad')) {
+    return 'iPad';
+  }
+
+  if (modelId.startsWith('iPhone')) {
+    return 'iPhone';
+  }
+
+  if (modelId.startsWith('AppleTV')) {
+    return 'Apple TV';
+  }
+
+  return null;
+}
+
+export const iosModelNames = {
   'iPod1,1': 'iPod Touch', // (Original)
   'iPod2,1': 'iPod Touch', // (Second Generation)
   'iPod3,1': 'iPod Touch', // (Third Generation)
