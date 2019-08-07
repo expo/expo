@@ -26,7 +26,7 @@ export async function loadSingleFontAsync(name, input) {
     }
     // Guard for SSR
     if (canUseDOM) {
-        await ExpoFontLoader.loadAsync(name, asset);
+        await ExpoFontLoader.loadAsync(name, input);
     }
 }
 export function getNativeFontName(name) {

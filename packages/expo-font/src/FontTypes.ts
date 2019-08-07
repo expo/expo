@@ -6,11 +6,11 @@ import { Asset } from 'expo-asset';
 export type FontSource = string | number | Asset | FontResource;
 
 export enum FontDisplay {
-  Auto = 'auto',
-  Block = 'block',
-  Swap = 'swap',
-  Fallback = 'fallback',
-  Optional = 'optional',
+  AUTO = 'auto',
+  BLOCK = 'block',
+  SWAP = 'swap',
+  FALLBACK = 'fallback',
+  OPTIONAL = 'optional',
 }
 
 export interface FontResource {

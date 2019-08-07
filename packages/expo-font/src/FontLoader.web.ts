@@ -39,7 +39,7 @@ export async function loadSingleFontAsync(
 
   // Guard for SSR
   if (canUseDOM) {
-    await ExpoFontLoader.loadAsync(name, asset);
+    await ExpoFontLoader.loadAsync(name, input);
   }
 }
 
