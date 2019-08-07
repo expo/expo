@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 export const name = 'Device';
 export async function test(t) {
-  t.describe(`getDeviceType tests`, () => {
+  t.describe(`Device.getDeviceType()`, () => {
     t.it(`returns enum values`, async () => {
       let deviceType = await Device.getDeviceTypeAsync();
       let include;
@@ -16,28 +16,28 @@ export async function test(t) {
     });
   });
 
-  t.describe(`getUptimeAsync tests`, () => {
-    t.it(`do call getUptimeAsync and returns number`, async () => {
+  t.describe(`Device.getUptimeAsync()`, () => {
+    t.it(`calls getUptimeAsync() and returns number`, async () => {
       let uptime = await Device.getUptimeAsync();
       t.expect(uptime).toBeDefined();
       t.expect(typeof uptime).toEqual('number');
     });
-  })
+  });
 
   if (Platform.OS === 'ios') {
-    t.describe(`iOS device tests`, () => {
-      t.it(`do get most constants and correct types`, async () => {
-        let brand = await Device.brand;
-        let manufacturer = await Device.manufacturer;
-        let modelName = await Device.modelName;
-        let osName = await Device.osName;
-        let totalMemory = await Device.totalMemory;
-        let isDevice = await Device.isDevice;
-        let osBuildId = await Device.osBuildId;
-        let osInternalBuildId = await Device.osInternalBuildId;
-        let osVersion = await Device.osVersion;
-        let deviceName = await Device.deviceName;
-        let deviceYearClass = await Device.deviceYearClass;
+    t.describe(`Device on iOS`, () => {
+      t.it(`gets most constants and correct types`, async () => {
+        let brand = Device.brand;
+        let manufacturer = Device.manufacturer;
+        let modelName = Device.modelName;
+        let osName = Device.osName;
+        let totalMemory = Device.totalMemory;
+        let isDevice = Device.isDevice;
+        let osBuildId = Device.osBuildId;
+        let osInternalBuildId = Device.osInternalBuildId;
+        let osVersion = Device.osVersion;
+        let deviceName = Device.deviceName;
+        let deviceYearClass = Device.deviceYearClass;
         t.expect(brand).toBeDefined();
         t.expect(typeof brand).toEqual('string');
         t.expect(manufacturer).toBeDefined();
@@ -63,17 +63,17 @@ export async function test(t) {
       });
 
       t.it(`doesn't get Android-only constants`, async () => {
-        let osBuildFingerprint = await Device.osBuildFingerprint;
-        let designName = await Device.designName;
-        let productName = await Device.productName;
-        let platformApiLevel = await Device.platformApiLevel;
+        let osBuildFingerprint = Device.osBuildFingerprint;
+        let designName = Device.designName;
+        let productName = Device.productName;
+        let platformApiLevel = Device.platformApiLevel;
         t.expect(designName).toBeNull();
         t.expect(productName).toBeNull();
         t.expect(platformApiLevel).toBeNull();
         t.expect(osBuildFingerprint).toBeNull();
       });
 
-      t.it(`doesn't call getPlatformFeaturesAsync`, async () => {
+      t.it(`doesn't call getPlatformFeaturesAsync()`, async () => {
         let error;
         let allFeatures;
         try {
@@ -85,7 +85,7 @@ export async function test(t) {
         t.expect(typeof allFeatures).toEqual('undefined');
       });
 
-      t.it(`doesn't call hasPlatformFeatureAsync`, async () => {
+      t.it(`doesn't call hasPlatformFeatureAsync()`, async () => {
         let error;
         let hasFeature;
         try {
@@ -97,7 +97,7 @@ export async function test(t) {
         t.expect(typeof hasFeature).toEqual('undefined');
       });
 
-      t.it(`doesn't call getMaxMemoryAsync`, async () => {
+      t.it(`doesn't call getMaxMemoryAsync()`, async () => {
         let error;
         let maxMemory;
         try {
@@ -109,7 +109,7 @@ export async function test(t) {
         t.expect(typeof maxMemory).toEqual('undefined');
       });
 
-      t.it(`doesn't call sideLoadingAsync`, async () => {
+      t.it(`doesn't call sideLoadingAsync()`, async () => {
         let error;
         let isSideLoading;
         try {
@@ -121,7 +121,7 @@ export async function test(t) {
         t.expect(typeof isSideLoading).toEqual('undefined');
       });
 
-      t.it(`osBuildId same as osInternalBuildId`, async () => {
+      t.it(`gets osBuildId same as osInternalBuildId`, async () => {
         let osBuildId = await Device.osBuildId;
         let osInternalBuildId = await Device.osInternalBuildId;
         t.expect(Device.osBuildId).toBeTruthy();
@@ -130,8 +130,8 @@ export async function test(t) {
       });
     });
   } else if (Platform.OS === 'android') {
-    t.describe(`Android device tests`, () => {
-      t.it(`do get constants and correct types`, async () => {
+    t.describe(`Device on Android`, () => {
+      t.it(`gets constants and correct types`, async () => {
         let designName = await Device.designName;
         let productName = await Device.productName;
         let brand = await Device.brand;
@@ -188,7 +188,7 @@ export async function test(t) {
         t.expect(Device.modelId).toBeNull();
       });
 
-      t.it(`hasPlatformFeatureAsync returns boolean`, async () => {
+      t.it(`calls hasPlatformFeatureAsync() with valid string and returns boolean`, async () => {
         let error;
         let hasFeature;
         try {
@@ -199,12 +199,27 @@ export async function test(t) {
         t.expect(hasFeature).toEqual(t.jasmine.any(Boolean));
       });
 
-      t.it(`do call getMaxMemoryAsync and under integer limit`, async () => {
+      t.it(
+        `calls hasPlatformFeatureAsync() with invalid string format and returns false`,
+        async () => {
+          let error;
+          let hasFeature;
+          try {
+            hasFeature = await Device.hasPlatformFeatureAsync('camera');
+          } catch (e) {
+            error = e;
+          }
+          t.expect(hasFeature).toEqual(t.jasmine.any(Boolean));
+          t.expect(hasFeature).toEqual(false);
+        }
+      );
+
+      t.it(`calls getMaxMemoryAsync() and returns a number under integer limit`, async () => {
         let maxMemory = await Device.getMaxMemoryAsync();
         t.expect(maxMemory).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER);
       });
 
-      t.it(`do call getPlatformFeaturesAsync`, async () => {
+      t.it(`calls getPlatformFeaturesAsync()`, async () => {
         let allFeatures = await Device.getPlatformFeaturesAsync();
         t.expect(allFeatures).toBeDefined();
       });
