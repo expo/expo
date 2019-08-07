@@ -349,7 +349,7 @@ public class LoadingView extends RelativeLayout {
     mStatusBarView.setVisibility(VISIBLE);
     mStatusTextView.setText(status != null ? status : "Building JavaScript bundle...");
     if (done != null && total != null && total > 0) {
-      float percent = ((float) done / (float) total * 100.f);
+      float percent = ((float)done / (float)total * 100.f);
       mPercentageTextView.setText(String.format(Locale.getDefault(), "%.2f%%", percent));
     }
   }
