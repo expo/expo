@@ -17,24 +17,19 @@ class CameraRollRequester(private val permissionsService: PermissionsService) : 
       Manifest.permission.WRITE_EXTERNAL_STORAGE
   )
 
-
   override fun getPermission(): Bundle {
     return Bundle().apply {
-      try {
-        when {
-          permissionsService.arePermissionsGranted(getPermissionToAsk()) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-          }
-          permissionsService.didAsk(CAMERA.type) -> {
-            putString(STATUS_KEY, DENIED_VALUE)
-          }
-          else -> {
-            putString(STATUS_KEY, UNDETERMINED_VALUE)
-          }
+      putString(STATUS_KEY, when {
+        permissionsService.arePermissionsGranted(getPermissionToAsk()) -> {
+          GRANTED_VALUE
         }
-      } catch (e: IllegalStateException) {
-        putString(STATUS_KEY, UNDETERMINED_VALUE)
-      }
+        permissionsService.didAsk(CAMERA.type) -> {
+          DENIED_VALUE
+        }
+        else -> {
+          UNDETERMINED_VALUE
+        }
+      })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
     }
   }

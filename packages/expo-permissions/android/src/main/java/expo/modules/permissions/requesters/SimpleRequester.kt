@@ -17,21 +17,17 @@ class SimpleRequester(private val permissionsService: PermissionsService, privat
 
   override fun getPermission(): Bundle {
     return Bundle().apply {
-      try {
-        when {
-          permissionsService.isPermissionGranted(permission) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-          }
-          permissionsService.didAsk(permission) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-          }
-          else -> {
-            putString(STATUS_KEY, UNDETERMINED_VALUE)
-          }
+      putString(STATUS_KEY, when {
+        permissionsService.isPermissionGranted(permission) -> {
+          GRANTED_VALUE
         }
-      } catch (e: IllegalStateException) {
-        putString(STATUS_KEY, UNDETERMINED_VALUE)
-      }
+        permissionsService.didAsk(permission) -> {
+          GRANTED_VALUE
+        }
+        else -> {
+          UNDETERMINED_VALUE
+        }
+      })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
     }
   }

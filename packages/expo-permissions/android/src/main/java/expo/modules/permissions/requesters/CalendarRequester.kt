@@ -19,21 +19,17 @@ class CalendarRequester(private val permissionsService: PermissionsService) : Pe
 
   override fun getPermission(): Bundle {
     return Bundle().apply {
-      try {
-        when {
-          permissionsService.arePermissionsGranted(getPermissionToAsk()) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-          }
-          permissionsService.didAsk(CALENDAR.type) -> {
-            putString(STATUS_KEY, DENIED_VALUE)
-          }
-          else -> {
-            putString(STATUS_KEY, UNDETERMINED_VALUE)
-          }
+      putString(STATUS_KEY, when {
+        permissionsService.arePermissionsGranted(getPermissionToAsk()) -> {
+          GRANTED_VALUE
         }
-      } catch (e: IllegalStateException) {
-        putString(STATUS_KEY, DENIED_VALUE)
-      }
+        permissionsService.didAsk(CALENDAR.type) -> {
+          DENIED_VALUE
+        }
+        else -> {
+          UNDETERMINED_VALUE
+        }
+      })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
     }
   }

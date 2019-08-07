@@ -20,27 +20,22 @@ class LocationRequester(private val permissionsService: PermissionsService) : Pe
   override fun getPermission(): Bundle {
     return Bundle().apply {
       var scope = "none"
-      try {
-        when {
-          permissionsService.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-            scope = "fine"
-          }
-          permissionsService.isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
-            putString(STATUS_KEY, GRANTED_VALUE)
-            scope = "coarse"
-          }
-          permissionsService.didAsk(LOCATION.type) -> {
-            putString(STATUS_KEY, DENIED_VALUE)
-          }
-          else -> {
-            putString(STATUS_KEY, UNDETERMINED_VALUE)
-          }
+      putString(STATUS_KEY, when {
+        permissionsService.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+          scope = "fine"
+          GRANTED_VALUE
         }
-      } catch (e: IllegalStateException) {
-        putString(STATUS_KEY, UNDETERMINED_VALUE)
-      }
-
+        permissionsService.isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION) -> {
+          scope = "coarse"
+          GRANTED_VALUE
+        }
+        permissionsService.didAsk(LOCATION.type) -> {
+          DENIED_VALUE
+        }
+        else -> {
+          UNDETERMINED_VALUE
+        }
+      })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
       putBundle("android", Bundle().apply { putString("scope", scope) })
     }
