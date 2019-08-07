@@ -38,7 +38,7 @@ Lastly, you will also see a QR code in terminal and Dev Tools. One fast way to o
 
 ## Making your first change
 
-Open up `screens/HomeScreen.js` in your new project and change any of the text in the `render()` function. You should see your app reload with your changes.
+Open up `screens/HomeScreen.js` in your new project and change any of the text in the `HomeScreen()` component. You should see your app reload with your changes after saving.
 
 ### Can't see your changes?
 
