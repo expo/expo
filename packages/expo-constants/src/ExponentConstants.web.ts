@@ -52,6 +52,10 @@ export default {
   get isHeadless(): false {
     return false;
   },
+  get isDevice(): true {
+    // TODO: Bacon: Possibly want to add information regarding simulators
+    return true;
+  },
   get isDetached(): false {
     return false;
   },
@@ -65,6 +69,11 @@ export default {
   get expoRuntimeVersion(): string {
     return getExpoPackage().version;
   },
+  get deviceName(): string | undefined {
+    const { browser, engine, os: OS } = parser.getResult();
+
+    return browser.name || engine.name || OS.name || undefined;
+  },
   get nativeAppVersion(): null {
     return null;
   },
@@ -77,6 +86,10 @@ export default {
   },
   get statusBarHeight(): number {
     return 0;
+  },
+  get deviceYearClass(): number | null {
+    // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
+    return null;
   },
   get manifest(): WebManifest {
     // This is defined by @expo/webpack-config. 

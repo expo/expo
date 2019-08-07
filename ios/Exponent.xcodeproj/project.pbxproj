@@ -2248,7 +2248,7 @@
 				TargetAttributes = {
 					78CEE2BF1ACD07D70095B124 = {
 						CreatedOnToolsVersion = 6.2;
-						DevelopmentTeam = NP8CJVK39M;
+						DevelopmentTeam = C8D8QTF339;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplePay = {
@@ -2389,8 +2389,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -exo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/generate-dynamic-macros-cli.js --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/EXBuildConstants.plist\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios --configuration ${CONFIGURATION}\n";
-			shellScript = "set -eo pipefail\n\nif [ -z \"$EXPONENT_TOOLS_DIR\" ]; then\n    EXPONENT_TOOLS_DIR=\"${SRCROOT}/../tools-public\"\nfi\n\nsource ${EXPONENT_TOOLS_DIR}/source-login-scripts.sh\nexport PATH=\"${SRCROOT}/../bin:$PATH\"\n${EXPONENT_TOOLS_DIR}/generate-dynamic-macros-cli.js --buildConstantsPath \"${SRCROOT}/Exponent/Supporting/EXBuildConstants.plist\" --infoPlistPath \"${SRCROOT}/Exponent/Supporting\" --platform ios --configuration ${CONFIGURATION}\n";
 			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
 		};
 		78F81D401B70746F000E5595 /* Fabric */ = {
@@ -2951,7 +2949,7 @@
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = NP8CJVK39M;
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
@@ -3004,7 +3002,6 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = hhost.exp.Exponent;
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -3022,7 +3019,7 @@
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = NP8CJVK39M;
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				EX_BUNDLE_NAME = Expo;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Exponent/Supporting/Exponent-Prefix.pch";
@@ -3075,7 +3072,6 @@
 					"-Xlinker",
 					"-no_objc_category_merging",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = hhost.exp.Exponent;
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Exponent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
