@@ -50,7 +50,7 @@ static NSInteger const ABI32_0_0RNBranchUniversalObjectNotFoundError = 1;
 
 @synthesize bridge = _bridge;
 
-ABI32_0_0EX_EXPORT_SCOPED_MODULE(ABI32_0_0RNBranch, BranchManager);
+ABI32_0_0EX_EXPORT_SCOPED_MODULE(ABI32_0_0RNBranch, ScopedBranchManager);
 
 + (Branch *)branch
 {
