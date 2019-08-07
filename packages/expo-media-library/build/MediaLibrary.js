@@ -130,11 +130,17 @@ export async function getAssetInfoAsync(asset) {
     }
     return assetInfo;
 }
-export async function getAlbumsAsync({ includeSmartAlbums = false } = {}) {
+export async function getAlbumsAsync(albumOptions = {}) {
     if (!MediaLibrary.getAlbumsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
     }
-    return await MediaLibrary.getAlbumsAsync({ includeSmartAlbums });
+    const { includeSmartAlbums = false, mediaType } = albumOptions;
+    const options = {
+        includeSmartAlbums,
+        mediaType: arrayize(mediaType || [MediaType.photo]),
+    };
+    options.mediaType.forEach(checkMediaType);
+    return await MediaLibrary.getAlbumsAsync(options);
 }
 export async function getAlbumAsync(title) {
     if (!MediaLibrary.getAlbumAsync) {

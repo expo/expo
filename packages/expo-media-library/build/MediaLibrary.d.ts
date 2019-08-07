@@ -52,6 +52,7 @@ export declare type Album = {
 };
 export declare type AlbumsOptions = {
     includeSmartAlbums?: boolean;
+    mediaType?: Array<MediaTypeValue> | MediaTypeValue;
 };
 export declare type AssetsOptions = {
     first?: number;
@@ -88,7 +89,7 @@ export declare function addAssetsToAlbumAsync(assets: Array<AssetRef> | AssetRef
 export declare function removeAssetsFromAlbumAsync(assets: Array<AssetRef> | AssetRef, album: AlbumRef): Promise<any>;
 export declare function deleteAssetsAsync(assets: Array<AssetRef> | AssetRef): Promise<any>;
 export declare function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo>;
-export declare function getAlbumsAsync({ includeSmartAlbums }?: AlbumsOptions): Promise<Array<Album>>;
+export declare function getAlbumsAsync(albumOptions?: AlbumsOptions): Promise<Array<Album>>;
 export declare function getAlbumAsync(title: string): Promise<Album>;
 export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;
 export declare function deleteAlbumsAsync(albums: Array<AlbumRef> | AlbumRef, assetRemove?: boolean): Promise<any>;

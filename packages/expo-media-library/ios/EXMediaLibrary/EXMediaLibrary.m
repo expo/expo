@@ -227,6 +227,16 @@ UM_EXPORT_METHOD_AS(getAlbumsAsync,
   fetchOptions.includeHiddenAssets = NO;
   fetchOptions.includeAllBurstAssets = NO;
   
+  NSArray<NSString *> *mediaType = options[@"mediaType"];
+
+  if (mediaType && [mediaType count] > 0) {
+    NSMutableArray<NSNumber *> *assetTypes = [EXMediaLibrary _convertMediaTypes:mediaType];
+    
+    if ([assetTypes count] > 0) {
+      fetchOptions.predicate = [NSPredicate predicateWithFormat:@"mediaType IN %@", assetTypes];
+    }
+  }
+  
   PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
   [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult]];
 

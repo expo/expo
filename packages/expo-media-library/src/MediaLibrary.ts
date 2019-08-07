@@ -76,6 +76,7 @@ export type Album = {
 export type AlbumsOptions = {
   // iOS only
   includeSmartAlbums?: boolean;
+  mediaType?: Array<MediaTypeValue> | MediaTypeValue;
 };
 
 export type AssetsOptions = {
@@ -266,13 +267,21 @@ export async function getAssetInfoAsync(asset: AssetRef): Promise<AssetInfo> {
   return assetInfo;
 }
 
-export async function getAlbumsAsync({ includeSmartAlbums = false }: AlbumsOptions = {}): Promise<
+export async function getAlbumsAsync(albumOptions: AlbumsOptions = {}): Promise<
   Array<Album>
 > {
   if (!MediaLibrary.getAlbumsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getAlbumsAsync');
   }
-  return await MediaLibrary.getAlbumsAsync({ includeSmartAlbums });
+
+  const { includeSmartAlbums = false, mediaType } = albumOptions;
+
+  const options = {
+    includeSmartAlbums,
+    mediaType: arrayize(mediaType || [MediaType.photo]),
+  }
+  options.mediaType.forEach(checkMediaType);
+  return await MediaLibrary.getAlbumsAsync(options);
 }
 
 export async function getAlbumAsync(title: string): Promise<Album> {
