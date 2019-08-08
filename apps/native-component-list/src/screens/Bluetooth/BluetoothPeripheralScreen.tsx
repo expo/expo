@@ -1,4 +1,24 @@
+import { Subscription } from '@unimodules/core';
+import { Notifications } from 'expo';
 import * as Bluetooth from 'expo-bluetooth';
+import * as Permissions from 'expo-permissions';
+import { Base64 } from 'js-base64';
+import React from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  View,
+} from 'react-native';
+
+import MonoText from '../../components/MonoText';
+import Colors from '../../constants/Colors';
+import BluetoothListItem from './BluetoothListItem';
+
 // import {
 //   Characteristics,
 //   Descriptors,
@@ -6,31 +26,12 @@ import * as Bluetooth from 'expo-bluetooth';
 //   nativeToJSON,
 //   Services,
 // } from 'expo-bluetooth-utils';
-import React from 'react';
-import {
-  ScrollView,
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-  ActivityIndicator,
-  TextInput,
-} from 'react-native';
-import { Base64 } from 'js-base64';
-import * as Permissions from 'expo-permissions';
-import MonoText from '../../components/MonoText';
-import Colors from '../../constants/Colors';
-import BluetoothListItem from './BluetoothListItem';
-import { Subscription } from '@unimodules/core';
-import { Notifications } from 'expo';
-
 const Characteristics = {};
 const Descriptors = {};
-const JSONToNative = (value) => {
+const JSONToNative = value => {
   const input = encodeURIComponent(value).replace(/%([0-9A-F]{2})/g, (m, p) => `0x${p}`);
   return Base64.btoa(input);
-}
+};
 const nativeToJSON = value => {
   const binary = Base64.atob(value);
   const modifiedBinaryString = binary
@@ -38,10 +39,13 @@ const nativeToJSON = value => {
     .map(c => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
     .join('');
   return decodeURIComponent(modifiedBinaryString);
-}
+};
 const Services = {};
 
-export default class BluetoothPeripheralScreen extends React.Component<any, { peripheral: Bluetooth.Peripheral | null, services: Bluetooth.Service[], sections: any[] }>  {
+export default class BluetoothPeripheralScreen extends React.Component<
+  any,
+  { peripheral: Bluetooth.Peripheral | null; services: Bluetooth.Service[]; sections: any[] }
+> {
   static navigationOptions = ({ navigation }: any) => ({
     title: navigation.getParam('peripheral').name,
   });
@@ -81,13 +85,13 @@ export default class BluetoothPeripheralScreen extends React.Component<any, { pe
     }
     // @ts-ignore
     return peripheral;
-  }
+  };
 
   render() {
     if (!this.state.peripheral) {
       return null;
     }
-    //TODO: Bacon: disconnect button
+    // TODO: Bacon: disconnect button
     const { state, name, uuid, RSSI } = this.getPeripheral();
     const isConnected = state === 'connected';
 
@@ -98,11 +102,7 @@ export default class BluetoothPeripheralScreen extends React.Component<any, { pe
         </DataContainer>
         {isConnected && (
           <DataContainer>
-            <RSSIButton
-              RSSI={RSSI}
-              onPress={this.onPress}
-              peripheralUUID={uuid}
-            />
+            <RSSIButton RSSI={RSSI} onPress={this.onPress} peripheralUUID={uuid} />
           </DataContainer>
         )}
         <PeripheralView {...this.state.peripheral} />
@@ -262,35 +262,35 @@ class DisconnectPeripheralButton extends React.Component {
   }
 }
 
-function RSSIButton({ peripheralUUID, RSSI }: { peripheralUUID: string, RSSI: string }) {
-  const [isUpdating, setUpdate ] = React.useState(false);
-  
-    return (
-      <BluetoothListItem
-        disabled={isUpdating}
-        title={isUpdating ? 'Refreshing RSSI...' : 'Refresh RSSI'}
-        onPress={async () => {
-          if (isUpdating) {
-            return;
-          }
-          setUpdate(true);
-      
-          try {
-            await Bluetooth.readRSSIAsync(peripheralUUID);
-          } catch (error) {
-            Alert.alert('RSSI Error!', error.message);
-          } finally {
-            setUpdate(false);
-          }
-        }}
-        renderAction={() => {
-          if (isUpdating) {
-            return <ActivityIndicator />;
-          }
-          return <Text>{RSSI}</Text>;
-        }}
-      />
-    );
+function RSSIButton({ peripheralUUID, RSSI }: { peripheralUUID: string; RSSI: string }) {
+  const [isUpdating, setUpdate] = React.useState(false);
+
+  return (
+    <BluetoothListItem
+      disabled={isUpdating}
+      title={isUpdating ? 'Refreshing RSSI...' : 'Refresh RSSI'}
+      onPress={async () => {
+        if (isUpdating) {
+          return;
+        }
+        setUpdate(true);
+
+        try {
+          await Bluetooth.readRSSIAsync(peripheralUUID);
+        } catch (error) {
+          Alert.alert('RSSI Error!', error.message);
+        } finally {
+          setUpdate(false);
+        }
+      }}
+      renderAction={() => {
+        if (isUpdating) {
+          return <ActivityIndicator />;
+        }
+        return <Text>{RSSI}</Text>;
+      }}
+    />
+  );
 }
 
 class PeripheralView extends React.Component {
@@ -408,149 +408,130 @@ class ItemListView extends React.Component {
 }
 
 function CharacteristicsView(props) {
-  
   const [sentValues, updateSentValues] = React.useState([]);
 
-    // const gatt: Bluetooth.CharacteristicInterface = this.props.gatt;
-    const {
-      properties = [],
-      uuid,
-      descriptors = [],
-      value,
-      isNotifying,
-      parsedValue,
-      specForGATT = {},
-    } = getStaticInfoFromGATT(props);
+  // const gatt: Bluetooth.CharacteristicInterface = this.props.gatt;
+  const {
+    properties = [],
+    uuid,
+    descriptors = [],
+    value,
+    isNotifying,
+    parsedValue,
+    specForGATT = {},
+  } = getStaticInfoFromGATT(props);
 
-    const canRead = properties.includes('read');
-    const canWrite = properties.includes('write');
+  const canRead = properties.includes('read');
+  const canWrite = properties.includes('write');
 
-    const title = specForGATT.name || parsedValue || value;
+  const title = specForGATT.name || parsedValue || value;
 
-    return (
-      <DataContainer
-        title={title}
-        style={props.style}
-      >
+  return (
+    <DataContainer title={title} style={props.style}>
+      {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
+      {!specForGATT.name && <BluetoothListItem title={'GATT Number'} value={uuid} />}
+      {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}
+      {value && <BluetoothListItem title={'Raw Value'} value={value} />}
+      {isNotifying && <BluetoothListItem title={'isNotifying'} value={isNotifying} />}
+      {specForGATT.format && (
+        <BluetoothListItem title={'Decoding Format'} value={specForGATT.format} />
+      )}
+      {properties.length && <BluetoothListItem title={'Properties'} values={properties} />}
 
-     
-        {specForGATT.name && <BluetoothListItem title={'Name'} value={specForGATT.name} />}
-        {!specForGATT.name && <BluetoothListItem title={'GATT Number'} value={uuid} />}
-        {parsedValue && <BluetoothListItem title={'Value'} value={parsedValue} />}
-        {value && <BluetoothListItem title={'Raw Value'} value={value} />}
-        {isNotifying && <BluetoothListItem title={'isNotifying'} value={isNotifying} />}
-        {specForGATT.format && (
-          <BluetoothListItem title={'Decoding Format'} value={specForGATT.format} />
-        )}
-        {properties.length && <BluetoothListItem title={'Properties'} values={properties} />}
-
-        {canRead && <DataContainer
-        title={"Tap to read this characteristic"}
-        style={{}}
-        onPress={async () => {
-          if (!isNotifying && properties.includes('notify')) {
-            // await Bluetooth.shouldNotifyDescriptorAsync({
-            //   ...getGATTNumbersFromID(this.props.id),
-            //   shouldNotify: true,
-            // });
-          }
-         
-          try {
-            // if (properties.includes('write')) {
-            //   await Bluetooth.writeCharacteristicAsync({
-            //     ...getGATTNumbersFromID(this.props.id),
-            //     data: JSONToNative('bacon'),
-            //   });
-            // }
-
-            const some = await Bluetooth.readCharacteristicAsync(
-              getGATTNumbersFromID(props.id)
-            );
-            console.log('Update SOME', some);
-          } catch (error) {
-            Alert.alert('Error!', error.message);
-            console.log(error);
-          }
-        }}/>}
-      {canWrite && <TextInputDataContainer
-        title={"Write to this characteristic"}
-        style={{}}
-        onSubmit={async (value) => {
-          console.log('Send value', value);
-          // Enable notifications
-          if (!isNotifying && properties.includes('notify')) {
-            await Bluetooth.setNotifyCharacteristicAsync({
-              ...getGATTNumbersFromID(props.id),
-              shouldNotify: true,
-            });
-          }
-
-          let sent = false;
-          const data = JSONToNative(value);
-          try {
-            const nextData = await Bluetooth.writeCharacteristicAsync({
-              ...getGATTNumbersFromID(props.id),
-              data,
-            });
-            sent = true;
-
-            console.log('Returned: ', nextData);
-            const {status} = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-            if (status === 'granted') {
-              Notifications.presentLocalNotificationAsync({
-                title: 'callback success',
-                body: (nextData.value ? nextData.value : "No value")
-              })
+      {canRead && (
+        <DataContainer
+          title={'Tap to read this characteristic'}
+          style={{}}
+          onPress={async () => {
+            try {
+              const value = await Bluetooth.readCharacteristicAsync(getGATTNumbersFromID(props.id));
+              console.log('Updated value', value);
+            } catch (error) {
+              Alert.alert('Error!', error.message);
+              console.log(error);
             }
-          } catch (error) {
-            if (error.toJSON) {
-              console.error(error.toJSON())
-            }
-            alert("failed to write to characteristic: " + error.message);
-          } finally {
-            console.log('Update sent values', data, sent);
-
-            updateSentValues([
-              ...sentValues,
-              { text: `[${value}]: ${data}`, style: !sent && { color: 'red' }  }
-            ]);
-          }
-            
-        }}> 
-        {sentValues.length > 0 && <BluetoothListItem title={'Sent Values'} values={sentValues} />}
-        </TextInputDataContainer>}
-
-
-        <ItemListView
-          title={'Descriptors'}
-          data={descriptors}
-          renderItem={(item, index) => <DescriptorsView key={item.id} gatt={item} />}
+          }}
         />
-      </DataContainer>
-    );
-  
+      )}
+      {canWrite && (
+        <TextInputDataContainer
+          title={'Write to this characteristic'}
+          style={{}}
+          onSubmit={async (value: string) => {
+            console.log('Send value', value);
+            // Enable notifications
+            if (!isNotifying && properties.includes('notify')) {
+              await Bluetooth.setNotifyCharacteristicAsync({
+                ...getGATTNumbersFromID(props.id),
+                shouldNotify: true,
+              });
+            }
+
+            let sent = false;
+            const data = JSONToNative(value);
+            try {
+              const nextData = await Bluetooth.writeCharacteristicAsync({
+                ...getGATTNumbersFromID(props.id),
+                data,
+              });
+              sent = true;
+
+              console.log('Returned: ', nextData);
+              const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+              if (status === 'granted') {
+                Notifications.presentLocalNotificationAsync({
+                  title: 'callback success',
+                  body: nextData.value ? nextData.value : 'No value',
+                });
+              }
+            } catch (error) {
+              if (error.toJSON) {
+                console.error(error.toJSON());
+              }
+              alert('failed to write to characteristic: ' + error.message);
+            } finally {
+              console.log('Update sent values', data, sent);
+              updateSentValues([
+                ...sentValues,
+                { text: `[${value}]: ${data}`, style: !sent && { color: 'red' } },
+              ]);
+            }
+          }}>
+          {sentValues.length > 0 && <BluetoothListItem title={'Sent Values'} values={sentValues} />}
+        </TextInputDataContainer>
+      )}
+
+      <ItemListView
+        title={'Descriptors'}
+        data={descriptors}
+        renderItem={item => <DescriptorsView key={item.id} gatt={item} />}
+      />
+    </DataContainer>
+  );
 }
 
-
 function TextInputDataContainer(props) {
-  const [value, onChangeText] = React.useState("");
-  
+  const [value, onChangeText] = React.useState('');
+
   const { onSubmit, children, ...containerProps } = props;
   return (
     <DataContainer {...containerProps}>
       <TextInput
-        style={{paddingVertical: 8, paddingHorizontal: 16 }}
+        style={{ paddingVertical: 8, paddingHorizontal: 16 }}
         placeholder="Send a value"
         placeholderTextColor={Colors.tintColor}
         onEndEditing={() => {
-          onSubmit(value)
-          onChangeText("");
+          onSubmit(value);
+          onChangeText('');
         }}
         onChangeText={onChangeText}
         returnKeyType="send"
         autoCorrect={false}
-        value={value}/>{children}</DataContainer>
-  )
+        value={value}
+      />
+      {children}
+    </DataContainer>
+  );
 }
 
 class DescriptorsView extends React.Component {
@@ -579,8 +560,8 @@ class DescriptorsView extends React.Component {
   }
 }
 
-function getGATTNumbersFromID(id) {
-  if (!id || id === '') {
+function getGATTNumbersFromID(id: string) {
+  if (!id) {
     throw new Error('getGATTNumbersFromID(): Cannot get static data for null GATT number');
   }
   const [peripheralUUID, serviceUUID, characteristicUUID, descriptorUUID] = id.split('|');
@@ -593,7 +574,7 @@ function getGATTNumbersFromID(id) {
 }
 
 function getStaticDataFromGATT({ id }) {
-  if (!id || id === '') {
+  if (!id) {
     throw new Error('getStaticDataFromGATT(): Cannot get static data for null GATT number');
   }
   const inputValues = [{}, Services, Characteristics, Descriptors];
@@ -644,7 +625,6 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
-    // paddingHorizontal: 12,
   },
   headerContainer: {
     alignItems: 'stretch',
