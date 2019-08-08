@@ -9,30 +9,29 @@ export async function test({ describe, it, expect, jasmine }) {
         const applicationName = Application.applicationName;
         expect(applicationName).toEqual(jasmine.any(String));
       });
-      it('gets Application.bundleId as a String', () => {
+      it('gets Application.applicationId as a String', () => {
         //e.g. iOS: 'host.exp.Exponent', Android: 'host.exp.exponent'
-        const bundleId = Application.bundleId;
-        expect(bundleId).toBeDefined();
-        expect(bundleId).toEqual(jasmine.any(String));
+        const applicationId = Application.applicationId;
+        expect(applicationId).toBeDefined();
+        expect(applicationId).toEqual(jasmine.any(String));
       });
       it('gets nativeApplicationVersion as a String', () => {
         const nativeApplicationVersion = Application.nativeApplicationVersion;
         expect(nativeApplicationVersion).toBeDefined();
         expect(nativeApplicationVersion).toEqual(jasmine.any(String));
       });
-      it('gets Application.nativeBuildVersion as a Number on Android and String on iOS', () => {
+      it('gets Application.nativeBuildVersion as a String', () => {
         //this will return a `number` on Android and a `string` on iOS
         const nativeBuildVersion = Application.nativeBuildVersion;
         expect(nativeBuildVersion).toBeDefined();
-        if (Platform.OS === 'ios') expect(nativeBuildVersion).toEqual(jasmine.any(String));
-        else if (Platform.OS === 'android') expect(nativeBuildVersion).toEqual(jasmine.any(Number));
+        expect(nativeBuildVersion).toEqual(jasmine.any(String));
       });
     });
-    describe(`Application.getFirstInstallTimeAsync()`, () => {
-      it(`does returns a Date object`, async () => {
-        let firstInstallTime = await Application.getFirstInstallTimeAsync();
-        expect(firstInstallTime).toBeDefined();
-        expect(firstInstallTime).toEqual(jasmine.any(Date));
+    describe(`Application.getInstallationTimeAsync()`, () => {
+      it(`returns a Date object`, async () => {
+        let installationTime = await Application.getInstallationTimeAsync();
+        expect(installationTime).toBeDefined();
+        expect(installationTime).toEqual(jasmine.any(Date));
       });
     });
   });
@@ -74,7 +73,7 @@ export async function test({ describe, it, expect, jasmine }) {
           let installReferrer;
           let error = null;
           try {
-            installReferrer = await Application.getinstallReferrerAsync();
+            installReferrer = await Application.getInstallReferrerAsync();
           } catch (e) {
             error = e;
           }
