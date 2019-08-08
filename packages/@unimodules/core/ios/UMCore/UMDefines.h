@@ -66,9 +66,6 @@ if (var == nil) { return; }
 // Converts nil -> [NSNull null]
 #define UMNullIfNil(value) (value ?: [NSNull null])
 
-// Converts "" -> [NSNull null]
-#define UMNullIfEmpty(value) (value == (id)[NSNull null] || value.length == 0 ? [NSNull null] : value)
-
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
