@@ -782,8 +782,6 @@ PODS:
   - EXAppAuth (6.0.0):
     - AppAuth
     - UMCore
-  - EXApplication (0.0.1):
-    - UMCore
   - EXAppLoaderProvider (6.0.0)
   - EXAV (6.0.0):
     - UMCore
@@ -794,7 +792,13 @@ PODS:
   - EXBarCodeScanner (6.0.0):
     - UMCore
     - UMImageLoaderInterface
+  - EXBattery (0.0.1):
+    - UMCore
   - EXBlur (6.0.0):
+    - UMCore
+  - EXBranch (1.0.0):
+    - Branch
+    - React
     - UMCore
   - EXBrightness (6.0.0):
     - UMCore
@@ -833,7 +837,7 @@ PODS:
     - Firebase/MLVisionFaceModel
     - UMCore
     - UMFaceDetectorInterface
-  - EXFileSystem (6.0.1):
+  - EXFileSystem (6.0.2):
     - UMCore
     - UMFileSystemInterface
   - EXFont (6.0.1):
@@ -875,9 +879,11 @@ PODS:
   - EXMailComposer (6.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (6.1.0-rc.0):
+  - EXMediaLibrary (6.1.0-rc.1):
     - UMCore
     - UMPermissionsInterface
+  - EXNetwork (0.0.1):
+    - UMCore
   - EXPermissions (6.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -1539,12 +1545,13 @@ DEPENDENCIES:
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
-  - EXApplication (from `../packages/expo-application/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
+  - EXBattery (from `../packages/expo-battery/ios`)
   - EXBlur (from `../packages/expo-blur/ios`)
+  - EXBranch (from `../packages/expo-branch/ios`)
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
@@ -1570,6 +1577,7 @@ DEPENDENCIES:
   - EXLocation (from `../packages/expo-location/ios`)
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
+  - EXNetwork (from `../packages/expo-network/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
@@ -2095,9 +2103,6 @@ EXTERNAL SOURCES:
   EXAppAuth:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-auth/ios"
-  EXApplication:
-    :path: !ruby/object:Pathname
-    path: "../packages/expo-application/ios"
   EXAppLoaderProvider:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-loader-provider/ios"
@@ -2110,9 +2115,15 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     :path: !ruby/object:Pathname
     path: "../packages/expo-barcode-scanner/ios"
+  EXBattery:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-battery/ios"
   EXBlur:
     :path: !ruby/object:Pathname
     path: "../packages/expo-blur/ios"
+  EXBranch:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-branch/ios"
   EXBrightness:
     :path: !ruby/object:Pathname
     path: "../packages/expo-brightness/ios"
@@ -2188,6 +2199,9 @@ EXTERNAL SOURCES:
   EXMediaLibrary:
     :path: !ruby/object:Pathname
     path: "../packages/expo-media-library/ios"
+  EXNetwork:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-network/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../packages/expo-permissions/ios"
@@ -2485,12 +2499,13 @@ SPEC CHECKSUMS:
   EXAdsFacebook: e80bc258520c71bce17cb4c1f984391b4a8940b8
   EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
   EXAppAuth: a5e758845e701381b5a7bedafe29e83f9cd165eb
-  EXApplication: 79926cde236e05302805c31581000bcfa352049a
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
   EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
   EXBarCodeScanner: 3b36378bfc891b6fd3518e244784eb8d3ab00653
+  EXBattery: bcbc50cec59b94ac92bbc6068818173c359ef3f3
   EXBlur: 628f8d08e6e4891aac0a8dea4e48d43ffd3c570d
+  EXBranch: bcc7743589564f70cb20045e88a84df461be8747
   EXBrightness: 5937628feed854e35525a50b105167b33c851f44
   EXCalendar: 910966393455a6d7d1ea246b01009124fecc7d60
   EXCamera: 54623e310d33bccbb8d8fbc84a0081523d0436be
@@ -2501,7 +2516,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 043c0521b52ae061070fd84b405459e0b7cba940
   EXFacebook: b71969e92a4d76632ee743d26e88c61b4d9a3e45
   EXFaceDetector: badb48d40de77184aabcc8bc9cbd9b2e6d5e14ee
-  EXFileSystem: 8a7c20589ad1c6b631040bcbbc5e29d945630625
+  EXFileSystem: 091907902fcec9f9182b656fdead41a82f30986a
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXGL: dc4ae6520b142a74e28e6f4472d27a26fc211f37
   EXGL-CPP: 06949fa99656c36b488ff51155ca865c871f3d3d
@@ -2515,7 +2530,8 @@ SPEC CHECKSUMS:
   EXLocalization: 1abab86f9e7f09c96ca19ea695606f81230fedcf
   EXLocation: 4eb76115832f08b1e78003b335c210e18fa60424
   EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
-  EXMediaLibrary: 207c50e6d09c0d498ae293f59de28daf67a33076
+  EXMediaLibrary: 0b9e6c90cd40f5d5df8b58c9f68665039a485146
+  EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
   EXRandom: 805938db37fa1d66833cb9c0cf44fb54cd208b5a

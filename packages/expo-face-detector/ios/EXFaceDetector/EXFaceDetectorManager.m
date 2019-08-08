@@ -130,10 +130,10 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
                                                name:UIApplicationDidChangeStatusBarOrientationNotification
                                              object:nil];
   [_session beginConfiguration];
-  self.faceDetector = [[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions];
   
   if ([self isDetectingFaceEnabled]) {
     @try {
+      self.faceDetector = [[EXFaceDetector alloc] initWithOptions:_faceDetectorOptions];
       AVCaptureVideoDataOutput* output = [[AVCaptureVideoDataOutput alloc] init];
       output.alwaysDiscardsLateVideoFrames = YES;
       [output setSampleBufferDelegate:self queue:_sessionQueue];

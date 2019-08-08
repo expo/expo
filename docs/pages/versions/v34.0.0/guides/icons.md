@@ -9,7 +9,7 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using the [@expo/vector-icons directory](https://expo.github.io/vector-icons/).
 
 ```javascript
-import React from 'react';
+import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 
 export default class IconExample extends React.Component {
@@ -33,28 +33,19 @@ First, make sure you import your custom icon font. [Read more about loading cust
 
 ### createIconSet
 
-Returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code. `fontFamily` is the name of the font **NOT** the filename. See [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons/blob/master/README.md#custom-fonts) for more details.
+Returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code. `fontFamily` is the name of the font **NOT** the filename. The `expoAssetId` can be anything that you can pass in to [Font.loadAsync](../../sdk/font/#fontloadasyncobject). See [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons/blob/master/README.md#custom-fonts) for more details.
 
 ```javascript
-import { Font } from 'expo';
+import * as React from 'react';
+import * as Font from 'expo-font';
 import { createIconSet } from '@expo/vector-icons';
+
 const glyphMap = { 'icon-name': 1234, test: '∆' };
-const CustomIcon = createIconSet(glyphMap, 'FontName');
+const expoAssetId = require("assets/fonts/custom-icon-font.ttf");
+const CustomIcon = createIconSet(glyphMap, 'FontName', expoAssetId);
 
-export default class CustomIconExample extends React.Component {
-  state = {
-    fontLoaded: false
-  }
-  async componentDidMount() {
-    await Font.loadAsync({
-      'FontName': require('assets/fonts/custom-icon-font.ttf')
-    });
-
-    this.setState({fontLoaded: true});
-  }
+export default class CustomIconExample extends React.Component {  
   render() {
-    if (!this.state.fontLoaded) { return null;}
-
     return (
       <CustomIcon name="icon-name" size={32} color="red" />
     );
@@ -70,7 +61,8 @@ Convenience method to create a custom font based on a [Fontello](http://fontello
 // Once your custom font has been loaded...
 import { createIconSetFromFontello } from '@expo/vector-icons';
 import fontelloConfig from './config.json';
-const Icon = createIconSetFromFontello(fontelloConfig, 'FontName');
+const expoAssetId = require("assets/fonts/custom-icon-font.ttf");
+const Icon = createIconSetFromFontello(fontelloConfig, 'FontName', expoAssetId);
 ```
 
 ### createIconSetFromIcoMoon
@@ -81,7 +73,8 @@ Convenience method to create a custom font based on an [IcoMoon](https://icomoon
 // Once your custom font has been loaded...
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 import icoMoonConfig from './config.json';
-const Icon = createIconSetFromIcoMoon(icoMoonConfig, 'FontName');
+const expoAssetId = require("assets/fonts/custom-icon-font.ttf");
+const Icon = createIconSetFromIcoMoon(icoMoonConfig, 'FontName', expoAssetId);
 ```
 
 ## Icon images
