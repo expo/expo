@@ -20,19 +20,24 @@ static SEL whenInUseAuthorizationSelector;
 
 @implementation EXLocationRequester
 
++ (NSString *)permissionType
+{
+  return @"location";
+}
+
 + (void)load
 {
   alwaysAuthorizationSelector = NSSelectorFromString([@"request" stringByAppendingString:@"AlwaysAuthorization"]);
   whenInUseAuthorizationSelector = NSSelectorFromString([@"request" stringByAppendingString:@"WhenInUseAuthorization"]);
 }
 
-+ (NSDictionary *)permissions
+- (NSDictionary *)getPermissions
 {
-  EXPermissionStatus status;
+  UMPermissionStatus status;
   NSString *scope = @"none";
   
   CLAuthorizationStatus systemStatus;
-  if (![self isConfiguredForAlwaysAuthorization] && ![self isConfiguredForWhenInUseAuthorization]) {
+  if (![[self class] isConfiguredForAlwaysAuthorization] && ![[self class] isConfiguredForWhenInUseAuthorization]) {
     UMFatal(UMErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
@@ -41,28 +46,27 @@ static SEL whenInUseAuthorizationSelector;
   
   switch (systemStatus) {
     case kCLAuthorizationStatusAuthorizedWhenInUse: {
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       scope = @"whenInUse";
       break;
     }
     case kCLAuthorizationStatusAuthorizedAlways: {
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       scope = @"always";
       break;
     }
     case kCLAuthorizationStatusDenied: case kCLAuthorizationStatusRestricted: {
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
       break;
     }
     case kCLAuthorizationStatusNotDetermined: default: {
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
       break;
     }
   }
   
   return @{
-           @"status": [EXPermissions permissionStringForStatus:status],
-           @"expires": EXPermissionExpiresNever,
+           @"status": @(status),
            @"ios": @{
                @"scope": scope,
                },
@@ -71,14 +75,11 @@ static SEL whenInUseAuthorizationSelector;
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  NSDictionary *existingPermissions = [[self class] permissions];
-  if (existingPermissions && ![existingPermissions[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusUndetermined]]) {
+  NSDictionary *existingPermissions = [self getPermissions];
+  if (existingPermissions && [existingPermissions[@"status"] intValue] != UMPermissionStatusUndetermined) {
     // since permissions are already determined, the iOS request methods will be no-ops.
     // just resolve with whatever existing permissions.
     resolve(existingPermissions);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
   } else {
     _resolve = resolve;
     _reject = reject;
@@ -124,9 +125,6 @@ static SEL whenInUseAuthorizationSelector;
       ((void (*)(id, SEL))objc_msgSend)(_locMgr, whenInUseAuthorizationSelector);
     } else {
       _reject(@"E_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
-      if (self.delegate) {
-        [self.delegate permissionRequesterDidFinish:self];
-      }
     }
   }
 }
@@ -157,9 +155,6 @@ static SEL whenInUseAuthorizationSelector;
     _resolve = nil;
     _reject = nil;
   }
-  if (self.delegate) {
-    [self.delegate permissionRequesterDidFinish:self];
-  }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
@@ -175,12 +170,9 @@ static SEL whenInUseAuthorizationSelector;
     return;
   }
   if (_resolve) {
-    _resolve([[self class] permissions]);
+    _resolve([self getPermissions]);
     _resolve = nil;
     _reject = nil;
-  }
-  if (self.delegate) {
-    [self.delegate permissionRequesterDidFinish:self];
   }
 }
 

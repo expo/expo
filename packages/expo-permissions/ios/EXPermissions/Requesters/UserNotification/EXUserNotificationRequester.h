@@ -1,12 +1,11 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXPermissions.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UserNotifications/UserNotifications.h>
+#import <UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h>
 
-@interface EXUserNotificationRequester : EXPermissionBaseRequester
+@interface EXUserNotificationRequester : NSObject<UMPermissionsRequester>
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
-
-+ (NSDictionary *)permissionsWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
+- (instancetype)initWithNotificationProxy:(id<UMUserNotificationCenterProxyInterface>)proxy withMetodQueqe:(dispatch_queue_t)queue;
 
 @end

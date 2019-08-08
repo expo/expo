@@ -4,9 +4,14 @@
 
 @implementation EXCalendarRequester
 
-+ (NSDictionary *)permissions
++ (NSString *)permissionType
 {
-  EXPermissionStatus status;
+  return @"calendar";
+}
+
+- (NSDictionary *)getPermissions
+{
+  UMPermissionStatus status;
   EKAuthorizationStatus permissions;
   
   NSString *calendarUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCalendarsUsageDescription"];
@@ -18,19 +23,18 @@
   }
   switch (permissions) {
     case EKAuthorizationStatusAuthorized:
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       break;
     case EKAuthorizationStatusRestricted:
     case EKAuthorizationStatusDenied:
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
       break;
     case EKAuthorizationStatusNotDetermined:
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
       break;
   }
   return @{
-    @"status": [EXPermissions permissionStringForStatus:status],
-    @"expires": EXPermissionExpiresNever,
+    @"status": @(status)
   };
 }
 
@@ -44,11 +48,7 @@
     if (error && error.code != 100) {
       reject(@"E_CALENDAR_ERROR_UNKNOWN", error.localizedDescription, error);
     } else {
-      resolve([[self class] permissions]);
-    }
-
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
+      resolve([self getPermissions]);
     }
   }];
 }

@@ -10,24 +10,20 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
-@property (nonatomic, weak) id<EXPermissionRequesterDelegate> delegate;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
 @property (nonatomic, strong) EXUserNotificationRequester *localNotificationRequester;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-
 @end
 
 @implementation EXRemoteNotificationRequester
 
-- (instancetype)initWithModuleRegistry: (UMModuleRegistry *) moduleRegistry {
+- (instancetype)init {
   if (self = [super init]) {
     _remoteNotificationsRegistrationIsPending = NO;
-    _moduleRegistry = moduleRegistry;
   }
   return self;
 }
 
-+ (NSDictionary *)permissionsWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (NSDictionary *)permissions
 {
   __block EXPermissionStatus status;
   [UMUtilities performSynchronouslyOnMainThread:^{
@@ -35,7 +31,7 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
     EXPermissionStatusGranted :
     EXPermissionStatusUndetermined;
   }];
-  NSMutableDictionary *permissions = [[EXUserNotificationRequester permissionsWithModuleRegistry:moduleRegistry] mutableCopy];
+  NSMutableDictionary *permissions = [[self.permissionsModule getPermissionsForResource:@"userFacingNotifications"] mutableCopy]; // get permissions for user notifications
   [permissions setValuesForKeysWithDictionary:@{
                                                 @"status": [EXPermissions permissionStringForStatus:status],
                                                 @"expires": EXPermissionExpiresNever,
@@ -66,19 +62,29 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
                                              selector:@selector(_handleDidRegisterForRemoteNotifications:)
                                                  name:EXAppDidRegisterForRemoteNotificationsNotificationName
                                                object:nil];
-    _localNotificationRequester = [[EXUserNotificationRequester alloc] initWithModuleRegistry:_moduleRegistry];
-    [_localNotificationRequester setDelegate:self];
-    [_localNotificationRequester requestPermissionsWithResolver:nil rejecter:nil];
+    id<EXPermissionRequester> requester = [self.permissionsModule getPermissionRequesterForType:@"userFacingNotifications"];
+    UM_WEAKIFY(self)
+    [requester requestPermissionsWithResolver:^(NSDictionary *permission){
+      UM_STRONGIFY(self)
+      self->_localNotificationRequester = nil;
+      NSString *localNotificationsStatus = [permission objectForKey:@"status"];
+      // We may assume that `EXLocalNotificationRequester`'s permission request will always finish
+      // when the user responds to the dialog or has already responded in the past.
+      // However, `UIApplication.registerForRemoteNotification` results in calling
+      // `application:didRegisterForRemoteNotificationsWithDeviceToken:` or
+      // `application:didFailToRegisterForRemoteNotificationsWithError:` on the application delegate
+      // ONLY when the notifications are enabled in settings (by allowing sound, alerts or app badge).
+      // So, when the local notifications are disabled, the application delegate's callbacks will not be called instantly.
+      if ([localNotificationsStatus isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusDenied]]) {
+        [self _clearObserver];
+      }
+      [self _maybeConsumeResolverWithCurrentPermissions];
+    } rejecter:nil];
     _remoteNotificationsRegistrationIsPending = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       [UMSharedApplication() registerForRemoteNotifications];
     });
   }
-}
-
-- (void)setDelegate:(id<EXPermissionRequesterDelegate>)delegate
-{
-  _delegate = delegate;
 }
 
 - (void)dealloc
@@ -89,10 +95,9 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 - (void)_handleDidRegisterForRemoteNotifications:(__unused NSNotification *)notif
 {
   [self _clearObserver];
-  id<EXPermissionsModule> permissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsModule)];
-  NSAssert(permissionsModule, @"Permissions module is required to properly consume result.");
+  NSAssert(self.permissionsModule, @"Permissions module is required to properly consume result.");
   UM_WEAKIFY(self)
-  dispatch_async(permissionsModule.methodQueue, ^{
+  dispatch_async(self.permissionsModule.methodQueue, ^{
     UM_STRONGIFY(self)
     [self _maybeConsumeResolverWithCurrentPermissions];
   });
@@ -108,34 +113,10 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 {
   if (_localNotificationRequester == nil && !_remoteNotificationsRegistrationIsPending) {
     if (_resolve) {
-      _resolve([[self class] permissionsWithModuleRegistry:_moduleRegistry]);
+      _resolve([self permissions]);
       _resolve = nil;
       _reject = nil;
     }
-    if (_delegate) {
-      [_delegate permissionRequesterDidFinish:self];
-    }
-  }
-}
-
-# pragma mark - EXPermissionRequesterDelegate
-
-- (void)permissionRequesterDidFinish:(NSObject<EXPermissionRequester> *)requester
-{
-  if (requester == _localNotificationRequester) {
-    _localNotificationRequester = nil;
-    NSString *localNotificationsStatus = [[EXUserNotificationRequester permissionsWithModuleRegistry:_moduleRegistry] objectForKey:@"status"];
-    // We may assume that `EXLocalNotificationRequester`'s permission request will always finish
-    // when the user responds to the dialog or has already responded in the past.
-    // However, `UIApplication.registerForRemoteNotification` results in calling
-    // `application:didRegisterForRemoteNotificationsWithDeviceToken:` or
-    // `application:didFailToRegisterForRemoteNotificationsWithError:` on the application delegate
-    // ONLY when the notifications are enabled in settings (by allowing sound, alerts or app badge).
-    // So, when the local notifications are disabled, the application delegate's callbacks will not be called instantly.
-    if ([localNotificationsStatus isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusDenied]]) {
-      [self _clearObserver];
-    }
-    [self _maybeConsumeResolverWithCurrentPermissions];
   }
 }
 

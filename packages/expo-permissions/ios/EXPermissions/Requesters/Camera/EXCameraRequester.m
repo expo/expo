@@ -1,17 +1,22 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXCameraPermissionRequester.h>
+#import <EXPermissions/EXCameraRequester.h>
 #import <UMCore/UMDefines.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 #import <AVFoundation/AVFoundation.h>
 
 
-@implementation EXCameraPermissionRequester
+@implementation EXCameraRequester
 
-+ (NSDictionary *)permissions
++ (NSString *)permissionType {
+  return @"camera";
+}
+
+- (NSDictionary *)getPermissions
 {
   AVAuthorizationStatus systemStatus;
-  EXPermissionStatus status;  
+  UMPermissionStatus status;
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!(cameraUsageDescription && microphoneUsageDescription)) {
@@ -22,19 +27,18 @@
   }
   switch (systemStatus) {
     case AVAuthorizationStatusAuthorized:
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       break;
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
       break;
     case AVAuthorizationStatusNotDetermined:
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
       break;
   }
   return @{
-    @"status": [EXPermissions permissionStringForStatus:status],
-    @"expires": EXPermissionExpiresNever,
+    @"status": @(status)
   };
 }
 
@@ -43,10 +47,7 @@
   UM_WEAKIFY(self)
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
     UM_STRONGIFY(self)
-    resolve([[self class] permissions]);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
+    resolve([self getPermissions]);
   }];
 }
 

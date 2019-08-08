@@ -4,18 +4,20 @@
 
 @implementation EXSystemBrightnessRequester
 
-+ (NSDictionary *)permissions
++ (NSString *)permissionType {
+  return @"systemBrightness";
+}
+
+- (NSDictionary *)getPermissions
 {
   return @{
-           @"status": [EXPermissions permissionStringForStatus:EXPermissionStatusGranted],
-           @"expires": EXPermissionExpiresNever,
+           @"status": @(UMPermissionStatusGranted)
            };
 }
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  resolve([[self class] permissions]);
-  [self.delegate permissionRequesterDidFinish:self];
+  resolve([self getPermissions]);
 }
 
 @end

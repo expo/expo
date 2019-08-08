@@ -1,9 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXPermissions.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
-@interface EXRemindersRequester : EXPermissionBaseRequester
-
-+ (NSDictionary *)permissions;
+@interface EXRemindersRequester : NSObject<UMPermissionsRequester>
 
 @end
