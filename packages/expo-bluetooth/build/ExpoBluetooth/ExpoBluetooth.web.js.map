@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoBluetooth.web.js","sourceRoot":"","sources":["../../src/ExpoBluetooth/ExpoBluetooth.web.ts"],"names":[],"mappings":"AAAA,uCAAuC;AACvC,eAAe;IACb,IAAI,IAAI;QACN,OAAO,eAAe,CAAC;IACzB,CAAC;CACF,CAAC","sourcesContent":["// TODO(Bacon): Migrate react-bluetooth\nexport default {\n  get name(): string {\n    return 'ExpoBluetooth';\n  },\n};\n"]}

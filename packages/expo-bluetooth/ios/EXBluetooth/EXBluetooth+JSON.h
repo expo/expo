@@ -2,55 +2,7 @@
 
 #import <EXBluetooth/EXBluetooth.h>
 #import <CoreBluetooth/CoreBluetooth.h>
-#import <EXBluetooth/EXBluetoothPeripheral.h>
-#import <EXBluetooth/EXBluetoothService.h>
-#import <EXBluetooth/EXBluetoothCharacteristic.h>
-#import <EXBluetooth/EXBluetoothDescriptor.h>
-#import <EXBluetooth/EXBluetoothCentralManager.h>
 
 @interface EXBluetooth (JSON)
-
-+ (nullable NSDictionary *)peripheralConnectionOptionsJSONToNative:(nullable NSDictionary *)input;
-
-+ (nullable NSDictionary *)centralManagerOptionsJSONToNative:(nullable NSDictionary *)input;
-
-+ (NSDictionary *)ScanningOptionsJSONToNative:(nullable NSDictionary *)input;
-
-+ (nullable NSDictionary *)EXBluetoothPeripheralNativeToJSON:(EXBluetoothPeripheral *)input;
-
-+ (nullable NSDictionary *)EXBluetoothCentralManagerNativeToJSON:(EXBluetoothCentralManager *)input;
-
-+ (nullable NSDictionary *)EXBluetoothServiceNativeToJSON:(EXBluetoothService *)input;
-
-+ (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(nullable EXBluetoothCharacteristic *)input;
-
-+ (nullable NSDictionary *)EXBluetoothDescriptorNativeToJSON:(nullable EXBluetoothDescriptor *)input;
-
-+ (nullable NSMutableArray *)EXBluetoothPeripheralListNativeToJSON:(NSArray<EXBluetoothPeripheral *> *)input;
-
-+ (NSMutableArray *)EXBluetoothServiceArrayNativeToJSON:(NSArray<EXBluetoothService *> *)input;
-
-+ (NSMutableArray *)EXBluetoothCharacteristicArrayNativeToJSON:(NSArray<EXBluetoothCharacteristic *> *)input;
-
-+ (NSMutableArray *)EXBluetoothDescriptorArrayNativeToJSON:(NSArray<EXBluetoothDescriptor *> *)input;
-
-+ (nullable NSDictionary *)NSErrorNativeToJSON:(NSError *)input;
-
-+ (nullable NSDictionary *)advertisementDataNativeToJSON:(NSDictionary<NSString *,id> *)input;
-
-+ (nullable NSMutableArray<CBUUID *> *)CBUUIDListJSONToNative:(NSArray *)input;
-
-+ (CBCharacteristicProperties)CBCharacteristicPropertiesListJSONToNative:(NSString *)input;
-
-+ (CBCharacteristicProperties)CBCharacteristicPropertiesJSONToNative:(NSString *)input;
-
-+ (nullable NSMutableArray<NSString *> *)CBCharacteristicPropertiesNativeToJSON:(CBCharacteristicProperties)input;
-
-+ (NSString *)CBPeripheralStateNativeToJSON:(CBPeripheralState)input;
-
-+ (NSString *)CBManagerStateNativeToJSON:(CBManagerState)input;
-
-+ (nullable NSDictionary *)CBL2CAPChannelNativeToJSON:(CBL2CAPChannel *)input
-API_AVAILABLE(ios(11.0));
 
 @end
