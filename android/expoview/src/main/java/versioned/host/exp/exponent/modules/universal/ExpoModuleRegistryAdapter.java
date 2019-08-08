@@ -81,17 +81,6 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
   }
 
-  protected List<NativeModule> getNativeModulesFromModuleRegistry(ReactApplicationContext reactApplicationContext, ModuleRegistry moduleRegistry) {
-    List<NativeModule> nativeModulesList = new ArrayList<>(2);
-
-    nativeModulesList.add(new NativeModulesProxy(reactApplicationContext, moduleRegistry));
-
-    // Add listener that will notify org.unimodules.core.ModuleRegistry when all modules are ready
-    nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
-
-    return nativeModulesList;
-  }
-
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     throw new RuntimeException("Use createNativeModules(ReactApplicationContext, ExperienceId, JSONObject, List<NativeModule>) to get a list of native modules.");

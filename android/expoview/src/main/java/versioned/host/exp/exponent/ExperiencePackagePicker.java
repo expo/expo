@@ -14,6 +14,7 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.battery.BatteryPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
@@ -40,6 +41,7 @@ import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
+import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
@@ -61,6 +63,7 @@ public class ExperiencePackagePicker {
       new AdsFacebookPackage(),
       new AppAuthPackage(),
       new AmplitudePackage(),
+      new BatteryPackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
       new BrightnessPackage(),
@@ -89,6 +92,7 @@ public class ExperiencePackagePicker {
       new LocationPackage(),
       new MailComposerPackage(),
       new MediaLibraryPackage(),
+      new NetworkPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
       new RandomPackage(),
