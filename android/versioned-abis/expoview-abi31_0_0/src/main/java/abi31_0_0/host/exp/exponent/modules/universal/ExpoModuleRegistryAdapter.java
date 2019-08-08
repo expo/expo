@@ -78,7 +78,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
 
     nativeModulesList.add(new NativeModulesProxy(reactApplicationContext, moduleRegistry));
 
-    // Add listener that will notify expo.core.ModuleRegistry when all modules are ready
+    // Add listener that will notify org.unimodules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
 
     return nativeModulesList;

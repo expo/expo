@@ -1,25 +1,25 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXTaskManagerInterface/EXTaskManagerInterface.h>
-#import <EXTaskManagerInterface/EXTaskInterface.h>
-#import <EXTaskManagerInterface/EXTaskConsumerInterface.h>
+#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
+#import <UMTaskManagerInterface/UMTaskInterface.h>
+#import <UMTaskManagerInterface/UMTaskConsumerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXTaskDelegate <NSObject>
 
-- (void)executeTask:(nonnull id<EXTaskInterface>)task
+- (void)executeTask:(nonnull id<UMTaskInterface>)task
            withData:(nullable NSDictionary *)data
           withError:(nullable NSError *)error;
 
 @end
 
-@interface EXTask : NSObject <EXTaskInterface>
+@interface EXTask : NSObject <UMTaskInterface>
 
 @property (nonatomic, strong, readonly) NSString *name;
 @property (nonatomic, strong, readonly) NSString *appId;
 @property (nonatomic, strong, readonly) NSString *appUrl;
-@property (nonatomic, strong, readonly) id<EXTaskConsumerInterface> consumer;
+@property (nonatomic, strong, readonly) id<UMTaskConsumerInterface> consumer;
 @property (nonatomic, strong) NSDictionary *options;
 @property (nonatomic, weak) id<EXTaskDelegate> delegate;
 

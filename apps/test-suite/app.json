@@ -5,16 +5,19 @@
     "slug": "test-suite",
     "version": "1.0.0",
     "sdkVersion": "UNVERSIONED",
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
     "packagerOpts": {
-      "assetExts": ["db"],
-      "config": "rn-cli.config.js"
+      "assetExts": [
+        "db"
+      ],
+      "config": "metro.config.js"
     },
     "ios": {
       "bundleIdentifier": "io.expo.testsuite"
-    },
-    "web": {
-      "favicon": "web/favicon.ico",
-      "productionPath": "web-build"
     }
   }
 }

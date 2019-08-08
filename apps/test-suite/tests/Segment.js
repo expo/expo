@@ -1,6 +1,6 @@
 'use strict';
 
-import { Segment } from 'expo';
+import * as Segment from 'expo-analytics-segment';
 
 export const name = 'Segment';
 

@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.BasePackage;
-import expo.core.ViewManager;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ViewManager;
 
 public class LinearGradientPackage extends BasePackage {
   @Override

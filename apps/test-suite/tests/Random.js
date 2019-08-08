@@ -1,4 +1,4 @@
-import { Random } from 'expo';
+import * as Random from 'expo-random';
 
 export const name = 'Random';
 

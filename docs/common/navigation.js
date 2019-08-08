@@ -1,6 +1,7 @@
 const {
   ROOT,
   GROUPS,
+  ESSENTIALS,
   INTRODUCTION,
   FUNDAMENTALS,
   GUIDES,
@@ -30,6 +31,7 @@ const sections = [
   { name: 'Distributing Your App', reference: DISTRIBUTION },
   { name: 'ExpoKit', reference: EXPOKIT },
   { name: 'Fundamentals', reference: FUNDAMENTALS },
+  { name: 'Essentials', reference: ESSENTIALS },
   { name: 'React Native', reference: REACT_NATIVE },
   // { name: 'React Native Basics', reference: REACT_NATIVE_BASICS, },
   // { name: 'React Native Guides', reference: REACT_NATIVE_GUIDES, },

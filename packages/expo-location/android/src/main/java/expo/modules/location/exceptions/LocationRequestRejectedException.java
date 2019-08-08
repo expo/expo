@@ -1,7 +1,7 @@
 package expo.modules.location.exceptions;
 
-import expo.core.interfaces.CodedThrowable;
-import expo.errors.CodedException;
+import org.unimodules.core.interfaces.CodedThrowable;
+import org.unimodules.core.errors.CodedException;
 
 public class LocationRequestRejectedException extends CodedException implements CodedThrowable {
   public LocationRequestRejectedException(Exception cause) {

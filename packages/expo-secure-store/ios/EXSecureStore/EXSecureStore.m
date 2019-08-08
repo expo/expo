@@ -5,21 +5,7 @@
 #import <CommonCrypto/CommonHMAC.h>
 #import <Security/Security.h>
 
-@interface EXSecureStore ()
-
-@property (strong, nonatomic) NSString *experienceId;
-
-@end
-
 @implementation EXSecureStore
-
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-{
-  if (self = [super init]) {
-    _experienceId = experienceId;
-  }
-  return self;
-}
 
 #pragma mark - internal
 
@@ -152,15 +138,6 @@
   }
 }
 
-- (NSString *)_scopedKey:(NSString *)key {
-  NSString *trimmedKey = [key stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-  if (!key || trimmedKey.length == 0) {
-    return nil;
-  }
-
-  return [NSString stringWithFormat:@"%@-%@", _experienceId, key];
-}
-
 + (NSString *) _messageForError:(NSError *)error
 {
   switch (error.code) {
@@ -223,51 +200,51 @@
            };
 };
 
-EX_EXPORT_MODULE(ExpoSecureStore);
+UM_EXPORT_MODULE(ExpoSecureStore);
 
-EX_EXPORT_METHOD_AS(setValueWithKeyAsync,
+UM_EXPORT_METHOD_AS(setValueWithKeyAsync,
                     setValueWithKeyAsync:(NSString *)value
                     key:(NSString *)key
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSString *scopedKey = [self _scopedKey:key];
-  if (!scopedKey) {
-    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+  NSString *validatedKey = [self validatedKey:key];
+  if (!validatedKey) {
+    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, UMErrorWithMessage(@"Invalid key."));
   } else {
     NSError *error;
     BOOL setValue = [self _setValue:value
-                            withKey:scopedKey
+                            withKey:validatedKey
                         withOptions:options
                               error:&error];
     if (setValue) {
       resolve(nil);
     } else {
-      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
+      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, UMErrorWithMessage([[self class] _messageForError:error]));
     }
   }
 }
 
-EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
+UM_EXPORT_METHOD_AS(getValueWithKeyAsync,
                     getValueWithKeyAsync:(NSString *)key
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSString *scopedKey = [self _scopedKey:key];
-  if (!scopedKey) {
-    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+  NSString *validatedKey = [self validatedKey:key];
+  if (!validatedKey) {
+    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, UMErrorWithMessage(@"Invalid key."));
   } else {
     NSError *error;
-    NSString *value = [self _getValueWithKey:scopedKey
+    NSString *value = [self _getValueWithKey:validatedKey
                                  withOptions:options
                                        error:&error];
     if (error) {
       if (error.code == errSecItemNotFound) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
+        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, UMErrorWithMessage([[self class] _messageForError:error]));
       }
     } else {
       resolve(value);
@@ -275,20 +252,29 @@ EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
   }
 }
 
-EX_EXPORT_METHOD_AS(deleteValueWithKeyAsync,
+UM_EXPORT_METHOD_AS(deleteValueWithKeyAsync,
                     deleteValueWithKeyAsync:(NSString *)key
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSString *scopedKey = [self _scopedKey:key];
-  if (!scopedKey) {
-    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+  NSString *validatedKey = [self validatedKey:key];
+  if (!validatedKey) {
+    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, UMErrorWithMessage(@"Invalid key."));
   } else {
-    [self _deleteValueWithKey:scopedKey
+    [self _deleteValueWithKey:validatedKey
                   withOptions:options];
     resolve(nil);
   }
+}
+
+- (NSString *)validatedKey:(NSString *)key
+{
+  NSString *trimmedKey = [key stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  if (!key || trimmedKey.length == 0) {
+    return nil;
+  }
+  return key;
 }
 
 @end

@@ -7,10 +7,15 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)options
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject
+              resolver:(UMPromiseResolveBlock)resolve
+              rejecter:(UMPromiseRejectBlock)reject
 {
-  PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[fileUri] options:nil];
+  NSError *error;
+  PHFetchResult<PHAsset *> *fetchResult = [self fetchResultForUri:fileUri error:&error];
+  if (error) {
+    reject(@"E_UNSUPPORTED_ARG", error.description, error);
+    return;
+  }
   if (fetchResult.count > 0) {
     PHAsset *asset = fetchResult[0];
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
@@ -36,8 +41,8 @@
 
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(EXPromiseResolveBlock)resolve
-        rejecter:(EXPromiseRejectBlock)reject
+        resolver:(UMPromiseResolveBlock)resolve
+        rejecter:(UMPromiseRejectBlock)reject
 {
   NSString *toPath = [to.path stringByStandardizingPath];
   
@@ -52,8 +57,13 @@
       return;
     }
   }
-  
-  PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[from] options:nil];
+
+  PHFetchResult<PHAsset *> *fetchResult = [self fetchResultForUri:from error:&error];
+  if (error) {
+    reject(@"E_UNSUPPORTED_ARG", error.description, error);
+    return;
+  }
+
   if (fetchResult.count > 0) {
     PHAsset *asset = fetchResult[0];
     [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
@@ -70,6 +80,26 @@
            [NSString stringWithFormat:@"File '%@' could not be found.", from],
            error);
   }
+}
+
+// adapted from RCTImageLoader.m
++ (PHFetchResult<PHAsset *> *)fetchResultForUri:(NSURL *)url error:(NSError **)error
+{
+  if ([url.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame) {
+    // Fetch assets using PHAsset localIdentifier (recommended)
+    NSString *const localIdentifier = [url.absoluteString substringFromIndex:@"ph://".length];
+    return [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
+  } else if ([url.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
+    // This is the older, deprecated way of fetching assets from assets-library
+    // using the "assets-library://" protocol
+    return [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+  }
+
+  NSString *description = [NSString stringWithFormat:@"Invalid URL provided, expected scheme to be either 'ph' or 'assets-library', was '%@'.", url.scheme];
+  *error = [[NSError alloc] initWithDomain:NSURLErrorDomain
+                                      code:NSURLErrorUnsupportedURL
+                                  userInfo:@{NSLocalizedDescriptionKey: description}];
+  return nil;
 }
 
 @end

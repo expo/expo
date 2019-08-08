@@ -1,4 +1,4 @@
-import { Platform as PlatformExpo } from 'expo-core';
+import { Platform as PlatformExpo } from '@unimodules/core';
 import { Linking, Platform } from 'react-native';
 import { EventEmitter } from 'fbemitter';
 

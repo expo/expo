@@ -8,7 +8,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import java.net.CookieHandler;
 import java.util.Map;
 
-import expo.core.ModuleRegistry;
+import org.unimodules.core.ModuleRegistry;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 

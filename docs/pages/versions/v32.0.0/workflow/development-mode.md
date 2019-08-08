@@ -23,4 +23,4 @@ In the terminal with your project running in Expo CLI, press `p` to toggle the p
 
 ## Showing the Developer Menu
 
-When in Development Mode, depending on your settings of the Expo Client, you will either shake your device or use a two-finger force touch to reveal the Developer Menu. When using an emulator, use the key command ⌘+D for iOS and Ctrl+M for Android.
+When in Development Mode, depending on your settings of the Expo client, you will either shake your device or use a two-finger force touch to reveal the Developer Menu. When using an emulator, use the key command ⌘+D for iOS and Ctrl+M for Android.

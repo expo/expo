@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "32.0.0"
+  s.version = "34.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -26,6 +26,11 @@ Pod::Spec.new do |s|
     ss.dependency 'Crashlytics', '~> 3.8'
     ss.dependency 'FBAudienceNetwork', '5.1.1'
     ss.dependency 'FBSDKCoreKit', '4.40.0'
+    # We want to inhibit warnings in this pod and
+    # CocoaPods doesn't inhibit warnings for transient dependencies
+    # (it's a dependency of FBSDKCoreKit). Update when updating FBSDKCoreKit,
+    # remove once it stops depending on it.
+    ss.dependency 'Bolts', '1.9.0'
     ss.dependency 'FBSDKLoginKit', '4.40.0'
     ss.dependency 'Fabric', '~> 1.6'
     ss.dependency 'GoogleSignIn', '~> 4.1'
@@ -33,18 +38,18 @@ Pod::Spec.new do |s|
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
     ss.dependency 'JKBigInteger2', '0.0.5'
-    ss.dependency 'Branch', '~> 0.24.2'
+    ss.dependency 'Branch', '~> 0.27.1'
     ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.22.0'
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 
     # Universal modules required by ExpoKit so the code compiles
-    ss.dependency 'EXCore'
-    ss.dependency 'EXReactNativeAdapter'
-    ss.dependency 'EXSensorsInterface'
-    ss.dependency 'EXFileSystemInterface'
-    ss.dependency 'EXPermissionsInterface'
-    ss.dependency 'EXCameraInterface'
-    ss.dependency 'EXConstantsInterface'
+    ss.dependency 'UMCore'
+    ss.dependency 'UMReactNativeAdapter'
+    ss.dependency 'UMSensorsInterface'
+    ss.dependency 'UMFileSystemInterface'
+    ss.dependency 'UMPermissionsInterface'
+    ss.dependency 'UMCameraInterface'
+    ss.dependency 'UMConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|

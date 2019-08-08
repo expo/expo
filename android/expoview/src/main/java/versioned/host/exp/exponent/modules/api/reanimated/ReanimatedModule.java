@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.NativeViewHierarchyManager;
 import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleListener;
+import versioned.host.exp.exponent.modules.api.reanimated.transitions.TransitionModule;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
   private ArrayList<UIThreadOperation> mOperations = new ArrayList<>();
 
   private @Nullable NodesManager mNodesManager;
+  private @Nullable TransitionModule mTransitionManager;
 
   public ReanimatedModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -43,6 +45,7 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
     UIManagerModule uiManager = reactCtx.getNativeModule(UIManagerModule.class);
     reactCtx.addLifecycleEventListener(this);
     uiManager.addUIManagerListener(this);
+    mTransitionManager = new TransitionModule(uiManager);
   }
 
   @Override
@@ -93,6 +96,11 @@ public class ReanimatedModule extends ReactContextBaseJavaModule implements
     }
 
     return mNodesManager;
+  }
+
+  @ReactMethod
+  public void animateNextTransition(int tag, ReadableMap config) {
+    mTransitionManager.animateNextTransition(tag, config);
   }
 
   @ReactMethod

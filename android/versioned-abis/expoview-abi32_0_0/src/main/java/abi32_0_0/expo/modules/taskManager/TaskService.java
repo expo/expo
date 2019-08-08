@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.core.interfaces.SingletonModule;
-import expo.interfaces.taskManager.TaskExecutionCallback;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskServiceInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.core.interfaces.SingletonModule;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskServiceInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppRecordInterface;
@@ -296,9 +296,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
 
-    // remove job ID from pending jobs
-    TaskManagerUtils.removeFromPendingJobs(params.getJobId());
-
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
       return false;
@@ -323,9 +320,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     String taskName = extras.getString("taskName");
 
     TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
-
-    // remove job ID from pending jobs
-    TaskManagerUtils.removeFromPendingJobs(params.getJobId());
 
     if (consumer == null) {
       return false;

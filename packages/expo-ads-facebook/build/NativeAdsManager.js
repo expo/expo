@@ -1,4 +1,4 @@
-import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from 'expo-core';
+import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from '@unimodules/core';
 import { EventEmitter } from 'fbemitter';
 const { CTKNativeAdManager } = NativeModulesProxy;
 const nativeAdEmitter = new NativeEventEmitter(CTKNativeAdManager);
@@ -31,7 +31,7 @@ class NativeAdsManager {
      * callers will be notified of a change
      */
     _listenForStateChanges() {
-        nativeAdEmitter.addListener('CTKNativeAdsManagersChanged', managers => {
+        nativeAdEmitter.addListener('CTKNativeAdsManagersChanged', (managers) => {
             const isValidNew = managers[this.placementId];
             const isValid = this.isValid;
             if (isValid !== isValidNew && isValidNew) {

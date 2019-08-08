@@ -56,6 +56,11 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
     // don't register, because the detached app may not be built with APNS entitlements,
     // and in that case this method would actually be bad to call. (not just a no-op.)
     DDLogWarn(@"Expo Remote Notification services won't work in an ExpoKit app because Expo cannot manage your APNS certificates.");
+    
+    // when the app is eligible to register for remote notifications,
+    // we eventually call [self registerAPNSToken] and fulfill the pending promises,
+    // but in this code path we never register for notifications so we need to reject the pending promises manually
+    [self rejectPendingAPNSTokenHandlers];
   } else {
     dispatch_async(dispatch_get_main_queue(), ^{
       [RCTSharedApplication() registerForRemoteNotifications];
@@ -63,11 +68,27 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
   }
 }
 
+- (void)rejectPendingAPNSTokenHandlers
+{
+  dispatch_assert_queue(_queue);
+  
+  NSArray<EXRemoteNotificationAPNSTokenHandler> *apnsTokenHandlers = [_apnsTokenHandlers copy];
+  [_apnsTokenHandlers removeAllObjects];
+  [apnsTokenHandlers enumerateObjectsUsingBlock:^(EXRemoteNotificationAPNSTokenHandler handler,
+                                                  NSUInteger idx,
+                                                  BOOL *stop) {
+    NSError *error = [NSError errorWithDomain:kEXRemoteNotificationErrorDomain
+                                         code:EXRemoteNotificationErrorCodeAPNSRegistrationFailed
+                                     userInfo:@{
+                                                NSLocalizedDescriptionKey: @"The device was unable to register for remote notifications with Apple, because Expo cannot manage your APNS certificates"
+                                                }];
+    handler(nil, error);
+  }];
+}
+
 - (void)registerAPNSToken:(nullable NSData *)token registrationError:(nullable NSError *)error
 {
-
   dispatch_assert_queue(_queue);
-
 
   BOOL tokenDidChange = (token != _currentAPNSToken) && ![token isEqualToData:_currentAPNSToken];
   if (tokenDidChange) {
@@ -154,17 +175,6 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
       [self registerForRemoteNotifications];
     }];
   });
-}
-
-- (void)getExpoPushTokenForScopedModule:(id)scopedModule success:(void (^)(NSDictionary *))success failure:(void (^)(NSString *))failure
-{
-  [self getExpoPushTokenForScopedModule:scopedModule completionHandler:^(NSString * _Nullable pushToken, NSError * _Nullable error) {
-    if (error) {
-      failure(error.localizedDescription);
-    } else {
-      success(@{ @"exponentPushToken": pushToken });
-    }
-  }];
 }
 
 #pragma mark - Internal

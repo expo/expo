@@ -4,13 +4,13 @@
 
 @interface EXExpoUserNotificationCenterProxy ()
 
-@property (nonatomic, weak) id<EXUserNotificationCenterProxyInterface> userNotificationCenter;
+@property (nonatomic, weak) id<UMUserNotificationCenterProxyInterface> userNotificationCenter;
 
 @end
 
 @implementation EXExpoUserNotificationCenterProxy
 
-- (instancetype)initWithUserNotificationCenter:(id<EXUserNotificationCenterProxyInterface>)userNotificationCenter
+- (instancetype)initWithUserNotificationCenter:(id<UMUserNotificationCenterProxyInterface>)userNotificationCenter
 {
   if (self = [super init]) {
     _userNotificationCenter = userNotificationCenter;
@@ -20,7 +20,7 @@
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXUserNotificationCenterProxyInterface)];
+  return @[@protocol(UMUserNotificationCenterProxyInterface)];
 }
 
 - (void)getNotificationSettingsWithCompletionHandler:(void(^)(UNNotificationSettings *settings))completionHandler

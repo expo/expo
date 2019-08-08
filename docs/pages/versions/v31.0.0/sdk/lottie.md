@@ -6,7 +6,7 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
 
-<SnackEmbed snackId="Byu2WM2af" />
+<SnackEmbed snackId="@documentation/lottie-example" />
 
 
 ## Importing Lottie

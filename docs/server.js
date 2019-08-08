@@ -23,6 +23,6 @@ app.prepare().then(() => {
       throw err;
     }
 
-    console.log(`The documentation server is running on localhost:${port}`);
+    console.log(`The documentation server is running on http://localhost:${port}`);
   });
 });

@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from 'expo-core';
+import { EventEmitter, Subscription } from '@unimodules/core';
 declare type Listener<E> = (event: E) => void;
 declare type NativeSensorModule = any;
 /**

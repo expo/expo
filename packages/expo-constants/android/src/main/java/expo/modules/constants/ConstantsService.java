@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.core.interfaces.InternalModule;
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 
 public class ConstantsService implements InternalModule, ConstantsInterface {
   protected Context mContext;

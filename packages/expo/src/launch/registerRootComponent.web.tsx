@@ -1,12 +1,15 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
-import withExpoRoot, { InitialProps } from './withExpoRoot';
+import { AppRegistry } from 'react-native';
+
+import withExpoRoot from './withExpoRoot';
+import { InitialProps } from './withExpoRoot.types';
 
 export default function registerRootComponent<P extends InitialProps>(
-  component: React.ComponentClass<P>
+  component: React.ComponentType<P>
 ): void {
-  // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
   const App = withExpoRoot(component);
-  // @ts-ignore: TypeScript says ComponentClass<P> does not satisfy ComponentClass<any>
-  ReactDOM.render(<App exp={{}} />, global.document.getElementById('main'));
+  const RootComponent: React.FC<P> = props => <App exp={{}} {...props} />;
+  AppRegistry.registerComponent('main', () => RootComponent);
+  const rootTag = document.getElementById('root') || document.getElementById('main');
+  AppRegistry.runApplication('main', { rootTag });
 }

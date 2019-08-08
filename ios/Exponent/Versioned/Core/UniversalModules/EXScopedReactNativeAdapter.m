@@ -3,7 +3,7 @@
 #import "EXScopedReactNativeAdapter.h"
 #import "EXUnversioned.h"
 
-@interface EXReactNativeAdapter (Protected)
+@interface UMReactNativeAdapter (Protected)
 
 - (void)startObserving;
 

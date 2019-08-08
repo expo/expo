@@ -1,31 +1,58 @@
 import path from 'path';
+import fs from 'fs-extra';
+import chalk from 'chalk';
 import process from 'process';
 import JsonFile from '@expo/json-file';
-import spawnAsync from '@expo/spawn-async';
+import { Command } from '@expo/commander';
 
+import AppConfig from '../typings/AppConfig';
+import { getNewestSDKVersionAsync, getHomeSDKVersionAsync } from '../ProjectVersions';
 import { Directories, HashDirectory, Log, XDL } from '../expotools';
 
-async function action(options) {
-  let expoHomePath = Directories.getExpoHomeJSDir();
-  let expoHomeHash = await HashDirectory.hashDirectoryWithVersionsAsync(expoHomePath);
-  let slug = `expo-home-dev-${expoHomeHash}`;
+async function maybeUpdateHomeSdkVersionAsync(appJsonPath: string): Promise<void> {
+  const homeSdkVersion = await getHomeSDKVersionAsync();
+  const iosSdkVersion = await getNewestSDKVersionAsync('ios');
+  const androidSdkVersion = await getNewestSDKVersionAsync('android');
+
+  // If both platforms already contain versioned code for the new SDK, we can safely bump SDK version of home as well.
+  if (iosSdkVersion && iosSdkVersion === androidSdkVersion && homeSdkVersion !== iosSdkVersion) {
+    const appJsonContents = await fs.readFile(appJsonPath, 'utf8');
+
+    console.log(`Updating home's sdkVersion to ${chalk.cyan(iosSdkVersion)} ...`);
+
+    await fs.outputFile(
+      appJsonPath,
+      appJsonContents.replace(/"(sdkVersion|version)": "[^"]*"/g, `"$1": "${iosSdkVersion}"`),
+    );
+  }
+}
+
+async function action(): Promise<void> {
+  const expoHomePath = Directories.getExpoHomeJSDir();
+  const expoHomeHash = await HashDirectory.hashDirectoryWithVersionsAsync(expoHomePath);
+  const slug = `expo-home-dev-${expoHomeHash}`;
 
   Log.collapsed('Modifying slug...');
-  let appJsonFilePath = path.join(expoHomePath, 'app.json');
-  let appJsonBackupFilePath = path.join(expoHomePath, 'app.json-backup');
-  await spawnAsync('cp', [appJsonFilePath, appJsonBackupFilePath]);
+  const appJsonFilePath = path.join(expoHomePath, 'app.json');
+  const appJsonBackupFilePath = path.join(expoHomePath, 'app.json-backup');
 
-  let appJsonFile = new JsonFile(appJsonFilePath, {
+  await maybeUpdateHomeSdkVersionAsync(appJsonFilePath);
+
+  await fs.copy(appJsonFilePath, appJsonBackupFilePath);
+
+  const appJsonFile = new JsonFile(appJsonFilePath, {
     json5: true,
   });
-  let appJson = await appJsonFile.readAsync();
+
+  const appJson = await appJsonFile.readAsync() as unknown as AppConfig;
+
   appJson.expo.slug = slug;
   delete appJson.expo.kernel;
   delete appJson.expo.isKernel;
   delete appJson.expo.ios.publishBundlePath;
   delete appJson.expo.android.publishBundlePath;
 
-  await appJsonFile.writeAsync(appJson);
+  await appJsonFile.writeAsync(appJson as any);
 
   let username = process.env.EXPO_HOME_DEV_ACCOUNT_USERNAME;
   if (!username) {
@@ -45,8 +72,8 @@ async function action(options) {
     },
   });
 
-  await spawnAsync('rm', [appJsonFilePath]);
-  await spawnAsync('mv', [appJsonBackupFilePath, appJsonFilePath]);
+  await fs.remove(appJsonFilePath);
+  await fs.move(appJsonBackupFilePath, appJsonFilePath);
 
   let url = `exp://expo.io/@${username}/${slug}`;
   Log.collapsed(`Done publishing. Returning URL: ${url}`);
@@ -60,9 +87,10 @@ async function action(options) {
   Log.collapsed('Finished publishing.\nRemember to commit changes to `dev-home-config.json`.');
 }
 
-export default (program: any) => {
+export default (program: Command) => {
   program
     .command('publish-dev-expo-home')
-    .description('Publishes Expo Home for development')
-    .action(action);
+    .alias('publish-dev-home')
+    .description('Publishes Expo Home for development.')
+    .asyncAction(action);
 };

@@ -32,3 +32,13 @@ export const replaceVersionInUrl = (url, replaceWith) => {
 export const getVersionFromUrl = url => {
   return url.split('/')[2];
 };
+
+export const getUserFacingVersionString = version => {
+  if (version === 'latest') {
+    return 'latest';
+  } else if (version === 'unversioned') {
+    return 'unversioned';
+  } else {
+    return `SDK${version.substring(1, 3)}`
+  }
+}

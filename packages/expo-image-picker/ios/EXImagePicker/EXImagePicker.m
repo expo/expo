@@ -2,12 +2,9 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import <EXPermissions/EXPermissions.h>
-#import <EXCore/EXUtilitiesInterface.h>
-
-#import "EXCameraPermissionRequester.h"
-#import "EXCameraRollRequester.h"
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 @import MobileCoreServices;
 @import Photos;
@@ -19,21 +16,21 @@ const CGFloat EXDefaultImageQuality = 0.2;
 
 @property (nonatomic, strong) UIAlertController *alertController;
 @property (nonatomic, strong) UIImagePickerController *picker;
-@property (nonatomic, strong) EXPromiseResolveBlock resolve;
-@property (nonatomic, strong) EXPromiseRejectBlock reject;
+@property (nonatomic, strong) UMPromiseResolveBlock resolve;
+@property (nonatomic, strong) UMPromiseRejectBlock reject;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXPermissionsInterface> permissionsModule;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
 @property (nonatomic, assign) BOOL shouldRestoreStatusBarVisibility;
 
 @end
 
 @implementation EXImagePicker
 
-EX_EXPORT_MODULE(ExponentImagePicker);
+UM_EXPORT_MODULE(ExponentImagePicker);
 
 - (instancetype)init
 {
@@ -56,15 +53,15 @@ EX_EXPORT_MODULE(ExponentImagePicker);
   return NO;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
 }
 
-EX_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
-                  resolver:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
+                  resolver:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject)
 {
 
   BOOL permissionsAreGranted = [self.permissionsModule hasGrantedPermission:@"cameraRoll"] &&
@@ -79,9 +76,9 @@ EX_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
   [self launchImagePicker:EXImagePickerTargetCamera options:options];
 }
 
-EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
-                  resolver:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
+                  resolver:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![self.permissionsModule hasGrantedPermission:@"cameraRoll"]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
@@ -119,22 +116,9 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 #endif
   } else { // RNImagePickerTargetLibrarySingleImage
     self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-
-    NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
-    NSString *requestedMediaTypes = self.options[@"mediaTypes"];
-    if (requestedMediaTypes != nil) {
-      if ([requestedMediaTypes isEqualToString:@"Images"] || [requestedMediaTypes isEqualToString:@"All"]) {
-        [mediaTypes addObject:(NSString *)kUTTypeImage];
-      }
-      if ([requestedMediaTypes isEqualToString:@"Videos"] || [requestedMediaTypes isEqualToString:@"All"]) {
-        [mediaTypes addObject:(NSString*) kUTTypeMovie];
-      }
-    } else {
-      [mediaTypes addObject:(NSString *)kUTTypeImage];
-    }
-
-    self.picker.mediaTypes = mediaTypes;
   }
+
+  self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
 
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     self.picker.allowsEditing = true;
@@ -144,7 +128,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   dispatch_async(dispatch_get_main_queue(), ^{
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
-    id<EXUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+    id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
     [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
@@ -156,7 +140,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
     response[@"cancelled"] = @NO;
-    id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+    id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
     if (!fileSystem) {
       self.reject(@"E_MISSING_MODULE", @"No FileSystem module", nil);
       return;
@@ -183,6 +167,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
           completionHandler:(void (^)(void))completionHandler
 {
   NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
+  NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
   UIImage *image;
   if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
     image = [info objectForKey:UIImagePickerControllerEditedImage];
@@ -202,9 +187,37 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   if ([[imageURL absoluteString] containsString:@"ext=PNG"]) {
     extension = @".png";
     data = UIImagePNGRepresentation(image);
+  } else if ([[imageURL absoluteString] containsString:@"ext=BMP"]) {
+      if (([[self.options objectForKey:@"allowsEditing"] boolValue]) || (quality != nil)){
+        //switch to png if editing.
+        extension = @".png";
+        data = UIImagePNGRepresentation(image);
+      } else {
+        extension = @".bmp";
+        data = nil;
+      }
+  } else if ([[imageURL absoluteString] containsString:@"ext=GIF"]) {
+    extension = @".gif";
+    data = [NSMutableData data];
+    CGImageDestinationRef imageDestination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data, kUTTypeGIF, 1, NULL);
+    if (imageDestination == NULL) {
+      self.reject(@"E_CONV_ERR", @"Failed to create image destination for GIF export.", nil);
+      return;
+    }
+
+    NSMutableDictionary *mutableMetadata = [NSMutableDictionary dictionaryWithDictionary:metadata];
+    if (quality) {
+      mutableMetadata[(__bridge NSString *)kCGImageDestinationLossyCompressionQuality] = quality;
+    }
+    CGImageDestinationAddImage(imageDestination, image.CGImage, (__bridge CFDictionaryRef)mutableMetadata);
+    if (!CGImageDestinationFinalize(imageDestination)) {
+      self.reject(@"E_CONV_ERR", @"Failed to export requested GIF.", nil);
+      return;
+    }
+    CFRelease(imageDestination);
   }
 
-  id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
@@ -235,7 +248,6 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
   if ([[self.options objectForKey:@"exif"] boolValue]) {
     // Can easily get metadata only if from camera, else go through `PHAsset`
-    NSDictionary *metadata = [info objectForKey:UIImagePickerControllerMediaMetadata];
     if (metadata) {
       [self updateResponse:response withMetadata:metadata];
       completionHandler();
@@ -251,7 +263,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
           completionHandler();
         }];
       } else {
-        EXLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
+        UMLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
     }
@@ -282,16 +294,17 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 - (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
 {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-  PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[[info valueForKey:UIImagePickerControllerReferenceURL]] options:nil];
-  if (assets.count > 0) {
-    PHAsset *videoAsset = assets.firstObject;
-    response[@"width"] = @(videoAsset.pixelWidth);
-    response[@"height"] = @(videoAsset.pixelHeight);
-    response[@"duration"] = @(videoAsset.duration * 1000);
-  } else {
-    EXLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
+  if (info[UIImagePickerControllerReferenceURL]) { // video from gallery
+    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[[info valueForKey:UIImagePickerControllerReferenceURL]] options:nil];
+    if (assets.count > 0) {
+      PHAsset *videoAsset = assets.firstObject;
+      response[@"width"] = @(videoAsset.pixelWidth);
+      response[@"height"] = @(videoAsset.pixelHeight);
+      response[@"duration"] = @(videoAsset.duration * 1000);
+    } else {
+      UMLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
+    }
   }
-
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
     AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
     CMTime duration = [editedAsset duration];
@@ -300,7 +313,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   response[@"type"] = @"video";
   NSError *error = nil;
-  id<EXFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystem = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem) {
     self.reject(@"E_NO_MODULE", @"No FileSystem module.", nil);
     return;
@@ -316,6 +329,18 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
+  
+  // adding data to response if video came from camera
+  if (!info[UIImagePickerControllerReferenceURL]) {
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:fileURL options:nil];
+    CGSize size = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
+    response[@"width"] = @(size.width);
+    response[@"height"] = @(size.height);
+    if (!response[@"duration"]) {
+      CMTime duration = [asset duration];
+      response[@"duration"] = @(ceil((float) duration.value / duration.timescale * 1000));
+    }
+  }
   response[@"uri"] = filePath;
 }
 
@@ -356,7 +381,14 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   // Hiding StatusBar during picking process solves the displacement issue.
   // See https://forums.developer.apple.com/thread/98274
   if (editingEnabled && ![[UIApplication sharedApplication] isStatusBarHidden]) {
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:NO];
+    // Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
+    // that should be suppressable with -Wdeprecated-declarations, but is not.
+    // The warning suggests to use -[UIViewController prefersStatusBarHidden].
+    // Unfortunately until we stop presenting view controllers on detached VCs
+    // the setting doesn't have any effect and we need to set status bar like that.
+    SEL setStatusBarSelector = NSSelectorFromString(@"setStatusBarHidden:withAnimation:");
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    ((void (*)(id, SEL, BOOL, BOOL))[sharedApplication methodForSelector:setStatusBarSelector])(sharedApplication, setStatusBarSelector, YES, NO);
     _shouldRestoreStatusBarVisibility = YES;
   }
 }
@@ -365,7 +397,14 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 {
   if (_shouldRestoreStatusBarVisibility) {
     _shouldRestoreStatusBarVisibility = NO;
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:NO];
+    // Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
+    // that should be suppressable with -Wdeprecated-declarations, but is not.
+    // The warning suggests to use -[UIViewController prefersStatusBarHidden].
+    // Unfortunately until we stop presenting view controllers on detached VCs
+    // the setting doesn't have any effect and we need to set status bar like that.
+    SEL setStatusBarSelector = NSSelectorFromString(@"setStatusBarHidden:withAnimation:");
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    ((void (*)(id, SEL, BOOL, BOOL))[sharedApplication methodForSelector:setStatusBarSelector])(sharedApplication, setStatusBarSelector, NO, NO);
   }
 }
 
@@ -437,6 +476,23 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   CGContextRelease(ctx);
   CGImageRelease(cgimg);
   return img;
+}
+
+- (NSArray<NSString *> *)convertMediaTypes:(NSString *)requestedMediaTypes
+{
+  NSMutableArray *mediaTypes = [[NSMutableArray alloc] init];
+
+  if (requestedMediaTypes != nil) {
+    if ([requestedMediaTypes isEqualToString:@"Images"] || [requestedMediaTypes isEqualToString:@"All"]) {
+      [mediaTypes addObject:(NSString *)kUTTypeImage];
+    }
+    if ([requestedMediaTypes isEqualToString:@"Videos"] || [requestedMediaTypes isEqualToString:@"All"]) {
+      [mediaTypes addObject:(NSString*) kUTTypeMovie];
+    }
+  } else {
+    [mediaTypes addObject:(NSString *)kUTTypeImage];
+  }
+  return mediaTypes;
 }
 
 @end

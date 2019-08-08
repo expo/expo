@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXBranchManager.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXFileSystemManager.h"
@@ -17,11 +16,10 @@
 #import "EXUserNotificationManager.h"
 #import "EXUserNotificationCenter.h"
 
-#import <EXCore/EXModuleRegistryProvider.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
-@property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
 @property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
 @property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
@@ -44,7 +42,6 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
-    [self branchManager];
     [self cachedResourceManager];
     [self errorRecoveryManager];
     [self remoteNotificationManager];
@@ -59,14 +56,6 @@
     [self notificationCenter];
   }
   return self;
-}
-
-- (EXBranchManager *)branchManager
-{
-  if (!_branchManager) {
-    _branchManager = [[EXBranchManager alloc] init];
-  }
-  return _branchManager;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -173,10 +162,9 @@
     // EXVersionManagers pass these modules to scoped modules as an initializer argument
     //
     // New modules should access singleton modules via the module registry.
-    // New singleton modules should register themselves in EXModuleRegistryProvider's set
+    // New singleton modules should register themselves in UMModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
-                                  self.branchManager,
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
                                   self.fileSystemManager,
@@ -190,7 +178,7 @@
                                   self.notificationsManager,
                                   self.notificationCenter
                                   ];
-    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
+    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;

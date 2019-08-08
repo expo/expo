@@ -8,6 +8,7 @@
 
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
 
@@ -19,13 +20,13 @@
          withLoadFinishBlock:(void (^)(BOOL success, NSDictionary *successStatus, NSString *error))loadFinishBlock;
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject;
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject;
 
 - (NSDictionary *)getStatus;
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(EXPromiseResolveBlock)resolve
-                rejecter:(EXPromiseRejectBlock)reject;
+                resolver:(UMPromiseResolveBlock)resolve
+                rejecter:(UMPromiseRejectBlock)reject;
 
 @end

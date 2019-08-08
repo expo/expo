@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXAmplitude/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXConstantsInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMConstantsInterface'
   s.dependency 'Amplitude-iOS'
 
 end

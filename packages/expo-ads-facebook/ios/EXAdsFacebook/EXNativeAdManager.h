@@ -1,7 +1,7 @@
-#import <EXCore/EXViewManager.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
-#import <EXCore/EXEventEmitter.h>
+#import <UMCore/UMViewManager.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
+#import <UMCore/UMEventEmitter.h>
 
-@interface EXNativeAdManager : EXViewManager <EXModuleRegistryConsumer, EXEventEmitter>
+@interface EXNativeAdManager : UMViewManager <UMModuleRegistryConsumer, UMEventEmitter>
 
 @end

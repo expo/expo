@@ -1,5 +1,4 @@
-import { Platform } from 'expo-core';
-import { UnavailabilityError } from 'expo-errors';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import { Dimensions } from 'react-native';
 function getBasePath({ httpServerLocation }) {

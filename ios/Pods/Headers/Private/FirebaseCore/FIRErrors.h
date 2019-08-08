@@ -1,0 +1,1 @@
+../../../FirebaseCore/Firebase/Core/Private/FIRErrors.h

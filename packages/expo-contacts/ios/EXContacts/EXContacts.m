@@ -4,10 +4,10 @@
 #import <EXContacts/EXContactsViewController.h>
 #import <EXContacts/EXContacts+Serialization.h>
 
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import <EXPermissionsInterface/EXPermissionsInterface.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXCore/EXUtilities.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMCore/UMUtilities.h>
 
 #import <Contacts/Contacts.h>
 #import <ContactsUI/ContactsUI.h>
@@ -69,29 +69,29 @@ static NSString *const EXContactsKeyImageBase64 = @"imageBase64";
 
 @property (nonatomic, strong) CNContactStore *contactStore;
 @property (nonatomic, strong) UIViewController *presentingViewController;
-@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
-@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXContacts
 
-EX_EXPORT_MODULE(ExpoContacts);
+UM_EXPORT_MODULE(ExpoContacts);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
-  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
-EX_EXPORT_METHOD_AS(getDefaultContainerIdentifierAsync,
-                    getDefaultContainerIdentifierAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getDefaultContainerIdentifierAsync,
+                    getDefaultContainerIdentifierAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -99,10 +99,10 @@ EX_EXPORT_METHOD_AS(getDefaultContainerIdentifierAsync,
     resolve([contactStore defaultContainerIdentifier]);
 }
 
-EX_EXPORT_METHOD_AS(writeContactToFileAsync,
+UM_EXPORT_METHOD_AS(writeContactToFileAsync,
                     writeContactToFileAsync:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -154,11 +154,11 @@ EX_EXPORT_METHOD_AS(writeContactToFileAsync,
     }
 }
 
-EX_EXPORT_METHOD_AS(dismissFormAsync,
-                    dismissFormAsync:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(dismissFormAsync,
+                    dismissFormAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     if (self.presentingViewController != nil) {
       [self.presentingViewController dismissViewControllerAnimated:true completion:^{
         self.presentingViewController = nil;
@@ -170,17 +170,17 @@ EX_EXPORT_METHOD_AS(dismissFormAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(presentFormAsync,
+UM_EXPORT_METHOD_AS(presentFormAsync,
                     presentFormAsync:(NSString *)identifier
                     data:(NSDictionary *)data
                     options:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
   
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     
         EXContactsViewController *controller;
         CNMutableContact *contact;
@@ -246,11 +246,11 @@ EX_EXPORT_METHOD_AS(presentFormAsync,
     }];
 }
 
-EX_EXPORT_METHOD_AS(addExistingContactToGroupAsync,
+UM_EXPORT_METHOD_AS(addExistingContactToGroupAsync,
                     addExistingContactToGroupAsync:(NSString *)identifier
                     groupId:(NSString *)groupId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -271,11 +271,11 @@ EX_EXPORT_METHOD_AS(addExistingContactToGroupAsync,
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
-EX_EXPORT_METHOD_AS(addContactAsync,
+UM_EXPORT_METHOD_AS(addContactAsync,
                     addContactAsync:(NSDictionary *)data
                     containerId:(NSString *)containerId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -291,10 +291,10 @@ EX_EXPORT_METHOD_AS(addContactAsync,
     }
 }
 
-EX_EXPORT_METHOD_AS(updateContactAsync,
+UM_EXPORT_METHOD_AS(updateContactAsync,
                     updateContactAsync:(NSDictionary *)updates
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -312,10 +312,10 @@ EX_EXPORT_METHOD_AS(updateContactAsync,
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
-EX_EXPORT_METHOD_AS(removeContactAsync,
+UM_EXPORT_METHOD_AS(removeContactAsync,
                     removeContactAsync:(NSString *)identifier
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -332,11 +332,11 @@ EX_EXPORT_METHOD_AS(removeContactAsync,
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
-EX_EXPORT_METHOD_AS(updateGroupNameAsync,
+UM_EXPORT_METHOD_AS(updateGroupNameAsync,
                     updateGroupNameAsync:(NSString *)name
                     groupId:(NSString *)groupId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -349,11 +349,11 @@ EX_EXPORT_METHOD_AS(updateGroupNameAsync,
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
-EX_EXPORT_METHOD_AS(addExistingGroupToContainerAsync,
+UM_EXPORT_METHOD_AS(addExistingGroupToContainerAsync,
                     addExistingGroupToContainerAsync:(NSString *)groupId
                     containerId:(NSString *)containerId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -366,11 +366,11 @@ EX_EXPORT_METHOD_AS(addExistingGroupToContainerAsync,
     }
 }
 
-EX_EXPORT_METHOD_AS(createGroupAsync,
+UM_EXPORT_METHOD_AS(createGroupAsync,
                     createGroupAsync:(NSString *)name
                     containerId:(NSString *)containerId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -383,11 +383,11 @@ EX_EXPORT_METHOD_AS(createGroupAsync,
     }
 }
 
-EX_EXPORT_METHOD_AS(removeContactFromGroupAsync,
+UM_EXPORT_METHOD_AS(removeContactFromGroupAsync,
                     removeContactFromGroupAsync:(NSString *)identifier
                     groupId:(NSString *)groupId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -406,10 +406,10 @@ EX_EXPORT_METHOD_AS(removeContactFromGroupAsync,
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
-EX_EXPORT_METHOD_AS(removeGroupAsync,
+UM_EXPORT_METHOD_AS(removeGroupAsync,
                     removeGroupAsync:(NSString *)groupId
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -422,10 +422,10 @@ EX_EXPORT_METHOD_AS(removeGroupAsync,
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
-EX_EXPORT_METHOD_AS(getContainersAsync,
+UM_EXPORT_METHOD_AS(getContainersAsync,
                     getContainersAsync:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -455,10 +455,10 @@ EX_EXPORT_METHOD_AS(getContainersAsync,
     }
 }
 
-EX_EXPORT_METHOD_AS(getGroupsAsync,
+UM_EXPORT_METHOD_AS(getGroupsAsync,
                     getGroupsAsync:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -480,10 +480,10 @@ EX_EXPORT_METHOD_AS(getGroupsAsync,
     resolve(response);
 }
 
-EX_EXPORT_METHOD_AS(getContactsAsync,
+UM_EXPORT_METHOD_AS(getContactsAsync,
                     getContactsAsync:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
@@ -505,8 +505,8 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
 - (void)_serializeContactPayload:(NSDictionary *)payload
                      keysToFetch:(NSArray<NSString *> *)keysToFetch
                          options:(NSDictionary *)options
-                        resolver:(EXPromiseResolveBlock)resolve
-                        rejecter:(EXPromiseRejectBlock)reject
+                        resolver:(UMPromiseResolveBlock)resolve
+                        rejecter:(UMPromiseRejectBlock)reject
 {
     if (payload[@"error"]) {
         [EXContacts rejectWithError:@"Error while fetching contacts" error:payload[@"error"] rejecter:reject];
@@ -591,7 +591,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
 
 - (NSDictionary *)_serializeContact:(CNContact *)person
                         keysToFetch:(NSArray *)keysToFetch
-                           rejecter:(EXPromiseRejectBlock)reject
+                           rejecter:(UMPromiseRejectBlock)reject
 {
     if (keysToFetch == nil) {
         keysToFetch = [self _contactKeysToFetchFromFields:nil];
@@ -707,8 +707,8 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
 
 - (void)_mutateContact:(CNMutableContact *)contact
               withData:(NSDictionary *)data
-              resolver:(EXPromiseResolveBlock)resolve
-              rejecter:(EXPromiseRejectBlock)reject
+              resolver:(UMPromiseResolveBlock)resolve
+              rejecter:(UMPromiseRejectBlock)reject
 {
     if (data[EXContactsKeyFirstName]) contact.givenName = data[EXContactsKeyFirstName];
     if (data[EXContactsKeyLastName]) contact.familyName = data[EXContactsKeyLastName];
@@ -783,7 +783,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
 }
 
 - (nullable NSData *)_imageDataForPath:(NSString *)uri
-                              rejecter:(EXPromiseRejectBlock)reject
+                              rejecter:(UMPromiseRejectBlock)reject
 {
     NSURL *url = [NSURL URLWithString:uri];
     NSString *path = [url.path stringByStandardizingPath];
@@ -791,7 +791,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     if (!self.fileSystem) {
         reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
         return nil;
-    } else if (!([self.fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
+    } else if (!([self.fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
         reject(@"E_MISSING_PERMISSION", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
         return nil;
     }
@@ -805,7 +805,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return UIImagePNGRepresentation(image);
 }
 
-- (nullable CNContactStore *)_getContactStoreOrReject:(EXPromiseRejectBlock)reject {
+- (nullable CNContactStore *)_getContactStoreOrReject:(UMPromiseRejectBlock)reject {
     if(!_contactStore) {
         CNContactStore* store = [[CNContactStore alloc] init];
         
@@ -828,7 +828,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return _contactStore;
 }
 
-- (nullable NSDictionary *)_writeDataToUri:(NSString *)userId data:(NSData *)data imageKey:(NSString *)imageKey includeBase64:(BOOL)includeBase64 rejecter:(EXPromiseRejectBlock)reject
+- (nullable NSDictionary *)_writeDataToUri:(NSString *)userId data:(NSData *)data imageKey:(NSString *)imageKey includeBase64:(BOOL)includeBase64 rejecter:(UMPromiseRejectBlock)reject
 {
     
     if (!self.fileSystem) {
@@ -944,7 +944,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
 
 #pragma mark - Error Handling
 
-+ (void)rejectWithError:(NSString *)message error:(nullable NSError *)error rejecter:(EXPromiseRejectBlock)reject
++ (void)rejectWithError:(NSString *)message error:(nullable NSError *)error rejecter:(UMPromiseRejectBlock)reject
 {
     NSString *errorMessage = message;
     if (error != nil) {
@@ -977,7 +977,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return fetchRequest;
 }
 
-+ (BOOL)executeSaveRequest:(CNSaveRequest *)saveRequest contactStore:(CNContactStore *)contactStore resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
++ (BOOL)executeSaveRequest:(CNSaveRequest *)saveRequest contactStore:(CNContactStore *)contactStore resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
     NSError *error;
     [contactStore executeSaveRequest:saveRequest error:&error];
@@ -991,7 +991,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return true;
 }
 
-+ (NSString *)identifierFromData:(NSDictionary *)data rejecter:(EXPromiseRejectBlock)reject
++ (NSString *)identifierFromData:(NSDictionary *)data rejecter:(UMPromiseRejectBlock)reject
 {
     NSString *identifier = [data valueForKey:CNContactIdentifierKey];
     if (!identifier) {
@@ -1001,7 +1001,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return identifier;
 }
 
-+ (CNMutableContact *)getContactWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore keysToFetch:(NSArray<id<CNKeyDescriptor> > *)keys rejecter:(EXPromiseRejectBlock)reject
++ (CNMutableContact *)getContactWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore keysToFetch:(NSArray<id<CNKeyDescriptor> > *)keys rejecter:(UMPromiseRejectBlock)reject
 {
     NSError *error;
     
@@ -1014,7 +1014,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return contact;
 }
 
-+ (NSArray<CNGroup *> *)getGroupsWithData:(NSDictionary *)data contactStore:(CNContactStore *)contactStore rejecter:(EXPromiseRejectBlock)reject
++ (NSArray<CNGroup *> *)getGroupsWithData:(NSDictionary *)data contactStore:(CNContactStore *)contactStore rejecter:(UMPromiseRejectBlock)reject
 {
     NSPredicate *predicate;
     if (data[EXContactsOptionContainerId]) {
@@ -1032,7 +1032,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return groups;
 }
 
-- (nullable CNGroup *)_groupWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore rejecter:(EXPromiseRejectBlock)reject
+- (nullable CNGroup *)_groupWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore rejecter:(UMPromiseRejectBlock)reject
 {
     NSPredicate *predicate = [CNGroup predicateForGroupsWithIdentifiers:@[identifier]];
     NSError *error;
@@ -1044,7 +1044,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return groups[0];
 }
 
-- (nullable NSArray<NSDictionary *> *)_groupsWithName:(NSString *)name contactStore:(CNContactStore *)contactStore rejecter:(EXPromiseRejectBlock)reject
+- (nullable NSArray<NSDictionary *> *)_groupsWithName:(NSString *)name contactStore:(CNContactStore *)contactStore rejecter:(UMPromiseRejectBlock)reject
 {
     NSError *error;
     NSArray<CNGroup *> *groups = [contactStore groupsMatchingPredicate:nil error:&error];
@@ -1064,7 +1064,7 @@ EX_EXPORT_METHOD_AS(getContactsAsync,
     return response;
 }
 
-- (nullable CNContact *)_contactWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore rejecter:(EXPromiseRejectBlock)reject
+- (nullable CNContact *)_contactWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore rejecter:(UMPromiseRejectBlock)reject
 {
     NSError *error;
     CNContact *contact = [contactStore unifiedContactWithIdentifier:identifier keysToFetch:@[[CNContactViewController descriptorForRequiredKeys]] error:&error];

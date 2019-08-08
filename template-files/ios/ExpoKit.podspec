@@ -23,13 +23,13 @@ ${IOS_EXPOKIT_DEPS}
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 
     # Universal modules required by ExpoKit so the code compiles
-    ss.dependency 'EXCore'
-    ss.dependency 'EXReactNativeAdapter'
-    ss.dependency 'EXSensorsInterface'
-    ss.dependency 'EXFileSystemInterface'
-    ss.dependency 'EXPermissionsInterface'
-    ss.dependency 'EXCameraInterface'
-    ss.dependency 'EXConstantsInterface'
+    ss.dependency 'UMCore'
+    ss.dependency 'UMReactNativeAdapter'
+    ss.dependency 'UMSensorsInterface'
+    ss.dependency 'UMFileSystemInterface'
+    ss.dependency 'UMPermissionsInterface'
+    ss.dependency 'UMCameraInterface'
+    ss.dependency 'UMConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|

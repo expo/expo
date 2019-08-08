@@ -1,6 +1,6 @@
 import ExponentAV from './ExponentAV';
 import { Asset } from 'expo-asset';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 // TODO add:
 //  disableFocusOnAndroid
 //  audio routes (at least did become noisy on android)
@@ -91,7 +91,7 @@ export const _DEFAULT_INITIAL_PLAYBACK_STATUS: PlaybackStatusToSet = {
 };
 
 export function getNativeSourceFromSource(
-  source: PlaybackSource | null
+  source?: PlaybackSource | null
 ): PlaybackNativeSource | null {
   let uri: string | null = null;
   let overridingExtension: string | null = null;
@@ -141,7 +141,7 @@ export function getNativeSourceFromSource(
   return { uri, overridingExtension, headers };
 }
 
-function _getAssetFromPlaybackSource(source: PlaybackSource | null): Asset | null {
+function _getAssetFromPlaybackSource(source?: PlaybackSource | null): Asset | null {
   if (source == null) {
     return null;
   }

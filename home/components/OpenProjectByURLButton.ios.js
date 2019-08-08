@@ -1,13 +1,11 @@
 /* @flow */
-
-import React from 'react';
-import { AlertIOS, Linking, NativeModules, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { AlertIOS, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
+import * as Kernel from '../kernel/Kernel';
 import UrlUtils from '../utils/UrlUtils';
-
-let { ExponentKernel } = NativeModules;
 
 export default class OpenProjectByURLButton extends React.Component {
   render() {
@@ -25,8 +23,8 @@ export default class OpenProjectByURLButton extends React.Component {
         text: 'Open',
         onPress: text => {
           if (text) {
-            if (ExponentKernel && text.toLowerCase() === '^dm') {
-              ExponentKernel.addDevMenu();
+            if (text.toLowerCase() === '^dm') {
+              Kernel.addDevMenu();
             } else {
               let url = UrlUtils.normalizeUrl(text);
               Linking.canOpenURL(url) && Linking.openURL(url);

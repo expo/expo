@@ -28,13 +28,13 @@ Expo CLI starts Metro Bundler, which is an HTTP server that compiles the JavaScr
 
 ## Open the app on your phone or simulator
 
-The fastest way to see your app on your device is to log in to Expo CLI with an Expo account (you can sign up by pressing `s` in the terminal window with the development server running, or by running `expo register`) and then use the same account to log in to Expo Client mobile app. Once you log in, a link to your current project will automatically appear inside Expo Client on your phone.
+The fastest way to see your app on your device is to log in to Expo CLI with an Expo account (you can sign up by pressing `s` in the terminal window with the development server running, or by running `expo register`) and then use the same account to log in to Expo client mobile app. Once you log in, a link to your current project will automatically appear inside Expo client on your phone.
 
 Alternatively, press `e` in the terminal or `Send link with email/SMS…` in Dev Tools to send a message with a link you can tap on your phone to open the app. You can share this link with anybody else who has the Expo app installed, but it will only be available as long as you have the project running with Expo CLI.
 
 To open the app in the iOS simulator you can press the `i` in the terminal or `Run on iOS simulator` in Dev Tools. To open the app in the Android emulator, first boot it up and then press `a` in the terminal or `Run on Android device/emulator` in Dev Tools.
 
-Lastly, you will also see a QR code in terminal and Dev Tools. One fast way to open your project is to simply scan the QR code with the Expo Client app on Android or using the built-in QR code scanner of the Camera app on iOS.
+Lastly, you will also see a QR code in terminal and Dev Tools. One fast way to open your project is to simply scan the QR code with the Expo client app on Android or using the built-in QR code scanner of the Camera app on iOS.
 
 ## Making your first change
 

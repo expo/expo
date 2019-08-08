@@ -7,11 +7,9 @@ The Modal component is a simple way to present content above an enclosing view.
 
 > Note: If you need more control over how to present modals over the rest of your app, then consider using a top-level Navigator.
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {Modal, Text, TouchableHighlight, View, Alert} from 'react-native';
+import React, { Component } from 'react';
+import { Modal, Text, TouchableHighlight, View, Alert } from 'react-native';
 
 class ModalExample extends Component {
   state = {
@@ -19,12 +17,12 @@ class ModalExample extends Component {
   };
 
   setModalVisible(visible) {
-    this.setState({modalVisible: visible});
+    this.setState({ modalVisible: visible });
   }
 
   render() {
     return (
-      <View style={{marginTop: 22}}>
+      <View style={{ marginTop: 22 }}>
         <Modal
           animationType="slide"
           transparent={false}
@@ -32,7 +30,7 @@ class ModalExample extends Component {
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
           }}>
-          <View style={{marginTop: 22}}>
+          <View style={{ marginTop: 22 }}>
             <View>
               <Text>Hello World!</Text>
 
@@ -56,23 +54,21 @@ class ModalExample extends Component {
     );
   }
 }
-
 ```
-
 
 ### Props
 
-* [`visible`](../modal/#visible)
-* [`supportedOrientations`](../modal/#supportedorientations)
-* [`onRequestClose`](../modal/#onrequestclose)
-* [`onShow`](../modal/#onshow)
-* [`transparent`](../modal/#transparent)
-* [`animationType`](../modal/#animationtype)
-* [`hardwareAccelerated`](../modal/#hardwareaccelerated)
-* [`onDismiss`](../modal/#ondismiss)
-* [`onOrientationChange`](../modal/#onorientationchange)
-* [`presentationStyle`](../modal/#presentationstyle)
-* [`animated`](../modal/#animated)
+- [`visible`](../modal/#visible)
+- [`supportedOrientations`](../modal/#supportedorientations)
+- [`onRequestClose`](../modal/#onrequestclose)
+- [`onShow`](../modal/#onshow)
+- [`transparent`](../modal/#transparent)
+- [`animationType`](../modal/#animationtype)
+- [`hardwareAccelerated`](../modal/#hardwareaccelerated)
+- [`onDismiss`](../modal/#ondismiss)
+- [`onOrientationChange`](../modal/#onorientationchange)
+- [`presentationStyle`](../modal/#presentationstyle)
+- [`animated`](../modal/#animated)
 
 ---
 
@@ -135,9 +131,9 @@ The `transparent` prop determines whether your modal will fill the entire view. 
 
 The `animationType` prop controls how the modal animates.
 
-* `slide` slides in from the bottom
-* `fade` fades into view
-* `none` appears without an animation
+- `slide` slides in from the bottom
+- `fade` fades into view
+- `none` appears without an animation
 
 Default is set to `none`.
 
@@ -181,10 +177,10 @@ The `onOrientationChange` callback is called when the orientation changes while 
 
 The `presentationStyle` prop controls how the modal appears (generally on larger devices such as iPad or plus-sized iPhones). See https://developer.apple.com/reference/uikit/uimodalpresentationstyle for details.
 
-* `fullScreen` covers the screen completely
-* `pageSheet` covers portrait-width view centered (only on larger devices)
-* `formSheet` covers narrow-width view centered (only on larger devices)
-* `overFullScreen` covers the screen completely, but allows transparency
+- `fullScreen` covers the screen completely
+- `pageSheet` covers portrait-width view centered (only on larger devices)
+- `formSheet` covers narrow-width view centered (only on larger devices)
+- `overFullScreen` covers the screen completely, but allows transparency
 
 Default is set to `overFullScreen` or `fullScreen` depending on `transparent` property.
 
@@ -197,4 +193,3 @@ Default is set to `overFullScreen` or `fullScreen` depending on `transparent` pr
 ### `animated`
 
 Deprecated. Use the `animationType` prop instead.
-

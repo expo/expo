@@ -11,7 +11,7 @@ Provides GLView that acts as OpenGL ES render target and gives GL context object
 
 This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
 
-For bare React Native projects, you must ensure that you have [installed and configured the `@unimodules/core` package](https://github.com/unimodules/core) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
 ### Install expo-gl-cpp
 
@@ -23,38 +23,22 @@ expo-gl requires that you also install and configure [expo-gl-cpp](https://githu
 npm install expo-gl
 ```
 
+### Compatibility
+
+To use `expo-gl` with React Native 0.58.0 or newer you will need to use `5.x.x` version of `expo-gl` and at least `0.4.0` of `react-native-unimodules`. Here is the table showing compatibility between these three packages:
+
+| expo-gl | react-native-unimodules | react-native |
+| ------- | ----------------------- | ------------ |
+| <=4.x.x | 0.3.x                   | <=0.57.x     |
+| >=5.0.0 | >=0.4.0                 | *            |
+
 ### Configure for iOS
 
-Add the dependency to your `Podfile` and then run `pod install`.
-
-```ruby
-pod 'EXGL', path: '../node_modules/expo-gl/ios'
-```
+Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-gl'
-project(':expo-gl').projectDir = new File(rootProject.projectDir, '../node_modules/expo-gl/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-gl')
-```
-
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.gl.GLPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new GLPackage()
-), Arrays.<SingletonModule>asList());
-```
+No additional set up necessary.
 
 # Contributing
 

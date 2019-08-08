@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.BasePackage;
-import expo.core.ExportedModule;
-import expo.core.ViewManager;
-import expo.core.interfaces.InternalModule;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.InternalModule;
 
 public class AdsFacebookPackage extends BasePackage {
 
@@ -25,6 +25,13 @@ public class AdsFacebookPackage extends BasePackage {
 
   @Override
   public List<ViewManager> createViewManagers(Context context) {
-    return Arrays.asList(new AdIconViewManager(), new BannerViewManager(), new MediaViewManager(), new NativeAdViewManager());
+    return Arrays.asList(
+        new NativeAdLayoutManager(),
+        new AdIconViewManager(),
+        new BannerViewManager(),
+        new MediaViewManager(),
+        new NativeAdViewManager(),
+        new AdOptionsWrapperViewManager()
+    );
   }
 }

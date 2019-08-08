@@ -1,6 +1,5 @@
-#import <EXCore/EXViewManager.h>
-#import <FBAudienceNetwork/FBMediaView.h>
+#import <UMCore/UMViewManager.h>
 #import <UIKit/UIKit.h>
 
-@interface EXNativeMediaViewManager : EXViewManager
+@interface EXNativeMediaViewManager : UMViewManager
 @end

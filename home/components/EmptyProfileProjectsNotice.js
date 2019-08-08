@@ -1,8 +1,8 @@
 /* @flow */
 
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
-import { WebBrowser } from 'expo';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
@@ -39,7 +39,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
   }
 
   _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/publishing.html');
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/publishing/');
   };
 }
 

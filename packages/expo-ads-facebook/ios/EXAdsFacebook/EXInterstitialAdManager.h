@@ -1,6 +1,6 @@
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXInterstitialAdManager : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXInterstitialAdManager : UMExportedModule <UMModuleRegistryConsumer>
 
 @end

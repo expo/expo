@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.interfaces.taskManager.TaskConsumer;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumer;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 import abi32_0_0.expo.modules.location.LocationHelpers;
 import abi32_0_0.expo.modules.location.LocationModule;
 
@@ -92,35 +92,43 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
     // Get the geofences that were triggered. A single event can trigger multiple geofences.
     List<Geofence> triggeringGeofences = event.getTriggeringGeofences();
 
+    List<PersistableBundle> data = new ArrayList<>();
+
     for (Geofence geofence : triggeringGeofences) {
       PersistableBundle region = mRegions.get(geofence.getRequestId());
 
       if (region != null) {
-        PersistableBundle data = new PersistableBundle();
+        PersistableBundle bundle = new PersistableBundle();
 
         // Update region state in region bundle.
         region.putInt("state", regionState);
 
-        data.putInt("eventType", eventType);
-        data.putPersistableBundle("region", region);
+        bundle.putInt("eventType", eventType);
+        bundle.putPersistableBundle("region", region);
 
-        Context context = getContext().getApplicationContext();
-        getTaskManagerUtils().scheduleJob(context, mTask, data);
+        data.add(bundle);
       }
+    }
+    if (data.size() > 0) {
+      Context context = getContext().getApplicationContext();
+      getTaskManagerUtils().scheduleJob(context, mTask, data);
     }
   }
 
   @Override
   public boolean didExecuteJob(JobService jobService, JobParameters params) {
-    PersistableBundle data = params.getExtras().getPersistableBundle("data");
-    Bundle bundle = new Bundle();
-    Bundle region = new Bundle();
+    List<PersistableBundle> data = getTaskManagerUtils().extractDataFromJobParams(params);
 
-    region.putAll(data.getPersistableBundle("region"));
-    bundle.putInt("eventType", data.getInt("eventType"));
-    bundle.putBundle("region", region);
+    for (PersistableBundle item : data) {
+      Bundle bundle = new Bundle();
+      Bundle region = new Bundle();
 
-    mTask.execute(bundle, null);
+      region.putAll(item.getPersistableBundle("region"));
+      bundle.putInt("eventType", item.getInt("eventType"));
+      bundle.putBundle("region", region);
+
+      mTask.execute(bundle, null);
+    }
     return true;
   }
 

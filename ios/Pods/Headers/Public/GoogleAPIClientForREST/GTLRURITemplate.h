@@ -1,0 +1,1 @@
+../../../GoogleAPIClientForREST/Source/Utilities/GTLRURITemplate.h

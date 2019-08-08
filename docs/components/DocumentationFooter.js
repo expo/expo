@@ -17,8 +17,22 @@ const STYLES_FOOTER_LINK = css`
   margin-bottom: 12px;
 `;
 
+// Remove trailing slash and append .md
 function githubUrl(path) {
-  // Remove trailing slash and append .md
+  if (path.includes('/versions/latest/')) {
+    if (path === '/versions/latest') {
+      path = '/versions/unversioned/index';
+    } else {
+      path = path.replace('/versions/latest/', '/versions/unversioned/');
+    }
+  } else if (path.match(/v\d+\.\d+\.\d+\/?$/)) {
+    if (path[path.length - 1] === '/') {
+      path = `${path}index`;
+    } else {
+      path = `${path}/index`;
+    }
+  }
+
   let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
   if (pathAsMarkdown.startsWith('/versions/latest')) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');

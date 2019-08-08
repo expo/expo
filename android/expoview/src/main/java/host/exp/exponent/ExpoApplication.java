@@ -8,6 +8,7 @@ import android.support.multidex.MultiDexApplication;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.core.CrashlyticsListener;
+import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.soloader.SoLoader;
 
@@ -106,6 +107,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
     }
 
     BranchManager.initialize(this);
+    AudienceNetworkAds.initialize(this);
 
     try {
       // Remove the badge count on weird launchers

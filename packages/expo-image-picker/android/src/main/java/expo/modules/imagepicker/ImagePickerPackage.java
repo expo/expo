@@ -2,11 +2,11 @@ package expo.modules.imagepicker;
 
 import android.content.Context;
 
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
+
 import java.util.Collections;
 import java.util.List;
-
-import expo.core.BasePackage;
-import expo.core.ExportedModule;
 
 public class ImagePickerPackage extends BasePackage {
   @Override

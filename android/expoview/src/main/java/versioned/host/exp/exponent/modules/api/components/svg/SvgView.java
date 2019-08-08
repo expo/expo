@@ -21,6 +21,7 @@ import android.util.Base64;
 import android.view.View;
 import android.view.ViewParent;
 
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactCompoundView;
@@ -32,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -55,6 +57,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             mName = name;
         }
 
+        @Nonnull
         public String toString() {
             return mName;
         }
@@ -76,6 +79,15 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     @Override
     public void invalidate() {
         super.invalidate();
+        ViewParent parent = getParent();
+        if (parent instanceof VirtualView) {
+            if (!mRendered) {
+                return;
+            }
+            mRendered = false;
+            ((VirtualView) parent).getSvgView().invalidate();
+            return;
+        }
         if (mBitmap != null) {
             mBitmap.recycle();
         }
@@ -84,12 +96,26 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (getParent() instanceof VirtualView) {
+            return;
+        }
         super.onDraw(canvas);
         if (mBitmap == null) {
             mBitmap = drawOutput();
         }
-        if (mBitmap != null)
+        if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
+            if (toDataUrlTask != null) {
+                toDataUrlTask.run();
+                toDataUrlTask = null;
+            }
+        }
+    }
+
+    private Runnable toDataUrlTask = null;
+
+    void setToDataUrlTask(Runnable task) {
+        toDataUrlTask = task;
     }
 
     @Override
@@ -116,8 +142,8 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private float mMinY;
     private float mVbWidth;
     private float mVbHeight;
-    private String mbbWidth;
-    private String mbbHeight;
+    private SVGLength mbbWidth;
+    private SVGLength mbbHeight;
     private String mAlign;
     private int mMeetOrSlice;
     private final Matrix mInvViewBoxMatrix = new Matrix();
@@ -125,7 +151,11 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private boolean mRendered = false;
     int mTintColor = 0;
 
-    private void releaseCachedPath() {
+    boolean notRendered() {
+        return !mRendered;
+    }
+
+    private void clearChildCache() {
         if (!mRendered) {
             return;
         }
@@ -134,7 +164,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             View node = getChildAt(i);
             if (node instanceof VirtualView) {
                 VirtualView n = ((VirtualView)node);
-                n.releaseCachedPath();
+                n.clearChildCache();
             }
         }
     }
@@ -152,76 +182,64 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     public void setMinX(float minX) {
         mMinX = minX;
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "minY")
     public void setMinY(float minY) {
         mMinY = minY;
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "vbWidth")
     public void setVbWidth(float vbWidth) {
         mVbWidth = vbWidth;
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "vbHeight")
     public void setVbHeight(float vbHeight) {
         mVbHeight = vbHeight;
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "bbWidth")
-    public void setVbWidth(String bbWidth) {
-        mbbWidth = bbWidth;
+    public void setBbWidth(Dynamic bbWidth) {
+        mbbWidth = SVGLength.from(bbWidth);
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "bbHeight")
-    public void setVbHeight(String bbHeight) {
-        mbbHeight = bbHeight;
+    public void setBbHeight(Dynamic bbHeight) {
+        mbbHeight = SVGLength.from(bbHeight);
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "align")
     public void setAlign(String align) {
         mAlign = align;
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     @ReactProp(name = "meetOrSlice")
     public void setMeetOrSlice(int meetOrSlice) {
         mMeetOrSlice = meetOrSlice;
         invalidate();
-        releaseCachedPath();
+        clearChildCache();
     }
 
     private Bitmap drawOutput() {
         mRendered = true;
         float width = getWidth();
         float height = getHeight();
-        boolean early = Float.isNaN(width) || Float.isNaN(height) || width * height == 0 || (Math.log10(width) + Math.log10(height) > 42);
-        if (early) {
-            ViewParent viewParent = getParent();
-            View parent = null;
-            if ((viewParent instanceof View)) {
-                parent = (View)viewParent;
-            }
-            float parentWidth = parent == null ? 0 : parent.getWidth();
-            float parentHeight = parent == null ? 0 : parent.getHeight();
-            width = (float) PropHelper.fromRelative(mbbWidth, parentWidth, 0, mScale, 12);
-            height = (float) PropHelper.fromRelative(mbbHeight, parentHeight, 0, mScale, 12);
-            setMeasuredDimension((int)Math.ceil(width), (int)Math.ceil(height));
-        }
-        if (width == 0 || height == 0) {
+        boolean invalid = Float.isNaN(width) || Float.isNaN(height) || width < 1 || height < 1 || (Math.log10(width) + Math.log10(height) > 42);
+        if (invalid) {
             return null;
         }
         Bitmap bitmap = Bitmap.createBitmap(
@@ -237,7 +255,8 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         return mCanvas.getClipBounds();
     }
 
-    void drawChildren(final Canvas canvas) {
+    synchronized void drawChildren(final Canvas canvas) {
+        mRendered = true;
         mCanvas = canvas;
         if (mAlign != null) {
             RectF vbRect = getViewBox();
@@ -296,7 +315,27 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
                 getHeight(),
                 Bitmap.Config.ARGB_8888);
 
+        clearChildCache();
         drawChildren(new Canvas(bitmap));
+        clearChildCache();
+        this.invalidate();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.recycle();
+        byte[] bitmapBytes = stream.toByteArray();
+        return Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+    }
+
+    String toDataURL(int width, int height) {
+        Bitmap bitmap = Bitmap.createBitmap(
+                width,
+                height,
+                Bitmap.Config.ARGB_8888);
+
+        clearChildCache();
+        drawChildren(new Canvas(bitmap));
+        clearChildCache();
+        this.invalidate();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         bitmap.recycle();
@@ -308,6 +347,10 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         if (!mResponsible) {
             mResponsible = true;
         }
+    }
+
+    boolean isResponsible() {
+        return mResponsible;
     }
 
     private int hitTest(float touchX, float touchY) {
@@ -322,11 +365,11 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         int viewTag = -1;
         for (int i = count - 1; i >= 0; i--) {
             View child = getChildAt(i);
-            if (!(child instanceof VirtualView)) {
-                continue;
+            if (child instanceof VirtualView) {
+                viewTag = ((VirtualView) child).hitTest(transformed);
+            } else if (child instanceof SvgView) {
+                viewTag = ((SvgView) child).hitTest(touchX, touchY);
             }
-
-            viewTag = ((VirtualView) child).hitTest(transformed);
             if (viewTag != -1) {
                 break;
             }

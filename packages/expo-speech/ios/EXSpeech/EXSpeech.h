@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
-#import <EXCore/EXEventEmitter.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
+#import <UMCore/UMEventEmitter.h>
 
-@interface EXSpeech : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer>
+@interface EXSpeech : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer>
 
 @end

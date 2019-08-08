@@ -5,9 +5,9 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.BasePackage;
-import expo.core.ExportedModule;
-import expo.core.ViewManager;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ViewManager;
 
 public class AdMobPackage extends BasePackage {
   @Override

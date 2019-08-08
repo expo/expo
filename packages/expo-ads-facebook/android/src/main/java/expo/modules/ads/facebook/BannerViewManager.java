@@ -7,12 +7,11 @@ import com.facebook.ads.AdSize;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ExpoProp;
 
-public class BannerViewManager extends ViewManager<BannerView> implements ModuleRegistryConsumer {
+public class BannerViewManager extends ViewManager<BannerView> {
   private ModuleRegistry mModuleRegistry;
 
   @ExpoProp(name = "placementId")
@@ -58,7 +57,7 @@ public class BannerViewManager extends ViewManager<BannerView> implements Module
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

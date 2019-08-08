@@ -1,9 +1,8 @@
 /* @flow */
-
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   LayoutAnimation,
-  NativeModules,
   StyleSheet,
   Text,
   TextInput,
@@ -11,12 +10,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withNavigation, withNavigationFocus } from 'react-navigation';
 
 import Layout from '../constants/Layout';
-
-const { ExponentKernel } = NativeModules;
+import * as Kernel from '../kernel/Kernel';
 
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
@@ -128,8 +125,8 @@ export default class SearchBar extends React.Component {
 
   _handleSubmit = () => {
     let { text } = this.state;
-    if (ExponentKernel && (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')) {
-      ExponentKernel.addDevMenu();
+    if (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm') {
+      Kernel.addDevMenu();
     } else {
       this._textInput.blur();
     }
@@ -166,7 +163,6 @@ export default class SearchBar extends React.Component {
       });
     });
   };
-
 }
 
 const styles = StyleSheet.create({

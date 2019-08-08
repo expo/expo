@@ -5,13 +5,12 @@ import android.util.Base64;
 
 import java.security.SecureRandom;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.Promise;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.Promise;
 
-public class RandomModule extends ExportedModule implements ModuleRegistryConsumer {
+public class RandomModule extends ExportedModule {
 
   SecureRandom mRandom;
 
@@ -20,7 +19,7 @@ public class RandomModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (moduleRegistry != null) {
       mRandom = new SecureRandom();
     }

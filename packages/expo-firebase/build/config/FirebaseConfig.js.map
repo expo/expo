@@ -1,1 +1,0 @@
-{"version":3,"file":"FirebaseConfig.js","sourceRoot":"","sources":["../../src/config/FirebaseConfig.ts"],"names":[],"mappings":"AAAA,OAAO,6BAA6B,CAAC","sourcesContent":["import 'expo-firebase-remote-config';\n"]}

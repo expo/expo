@@ -2,7 +2,7 @@ package expo.modules.appauth;
 
 import net.openid.appauth.AuthorizationException;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 public class AuthTask {
   private Promise mPromise;
@@ -14,13 +14,15 @@ public class AuthTask {
       mTag = tag;
       return true;
     } else {
-      promise.reject("ERR_APP_AUTH", "cannot set promise - some async operation is still in progress");
+      promise.reject(AppAuthConstants.Error.CONCURRENT_TASK, "Cannot start a new task while another task is currently in progress: " + mTag);
       return false;
     }
   }
 
   public void resolve(Object value) {
-    if (mPromise == null) return;
+    if (mPromise == null) {
+      return;
+    }
     mPromise.resolve(value);
     clear();
   }
@@ -30,12 +32,14 @@ public class AuthTask {
       AuthorizationException authorizationException = (AuthorizationException) e;
       this.reject(String.valueOf(authorizationException.code), authorizationException.getLocalizedMessage());
     } else {
-      this.reject("ERR_APP_AUTH", e.getLocalizedMessage());
+      this.reject(AppAuthConstants.Error.DEFAULT, e.getLocalizedMessage());
     }
   }
 
   public void reject(String code, String message) {
-    if (mPromise == null) return;
+    if (mPromise == null) {
+      return;
+    }
     mPromise.reject(code, "ExpoAppAuth." + mTag + ": " + message);
     clear();
   }

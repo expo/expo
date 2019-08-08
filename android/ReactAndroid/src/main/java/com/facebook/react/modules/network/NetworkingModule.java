@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@ package com.facebook.react.modules.network;
 
 import android.net.Uri;
 import android.util.Base64;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -43,6 +44,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.ByteString;
+import okio.GzipSource;
+import okio.Okio;
 
 /**
  * Implements the XMLHttpRequest JavaScript interface.
@@ -100,6 +103,8 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     public static final String NAME = "Networking";
+
+    public static String TAG = "NetworkingModule";
 
     public static String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
 
@@ -167,7 +172,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
     public NetworkingModule(final ReactApplicationContext context) {
-        this(context, null, OkHttpClientProvider.createClient(), null);
+        this(context, null, OkHttpClientProvider.createClient(context), null);
     }
 
     /**
@@ -176,7 +181,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
    * methods would be called to attach the interceptors to the client.
    */
     public NetworkingModule(ReactApplicationContext context, List<NetworkInterceptorCreator> networkInterceptorCreators) {
-        this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
+        this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
     }
 
     /**
@@ -185,7 +190,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
     public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-        this(context, defaultUserAgent, OkHttpClientProvider.createClient(), null);
+        this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
     }
 
     @Override
@@ -234,10 +239,19 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public /**
+    public void sendRequest(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
+        try {
+            sendRequestInternal(method, url, requestId, headers, data, responseType, useIncrementalUpdates, timeout, withCredentials);
+        } catch (Throwable th) {
+            FLog.e(TAG, "Failed to send url request: " + url, th);
+            ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+        }
+    }
+
+    /**
    * @param timeout value of 0 results in no timeout
    */
-    void sendRequest(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
+    public void sendRequestInternal(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
         final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
         try {
             Uri uri = Uri.parse(url);
@@ -299,7 +313,7 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         }
         // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
         if (timeout != mClient.connectTimeoutMillis()) {
-            clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
+            clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         }
         OkHttpClient client = clientBuilder.build();
         Headers requestHeaders = extractHeaders(headers, data);
@@ -339,7 +353,11 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
                     return;
                 }
             } else {
-                requestBody = RequestBody.create(contentMediaType, body);
+                // Use getBytes() to convert the body into a byte[], preventing okhttp from
+                // appending the character set to the Content-Type header when otherwise unspecified
+                // https://github.com/facebook/react-native/issues/8237
+                Charset charset = contentMediaType == null ? StandardCharsets.UTF_8 : contentMediaType.charset(StandardCharsets.UTF_8);
+                requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
             }
         } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
             if (contentType == null) {
@@ -397,8 +415,21 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
                 removeRequest(requestId);
                 // Before we touch the body send headers to JS
                 ResponseUtil.onResponseReceived(eventEmitter, requestId, response.code(), translateHeaders(response.headers()), response.request().url().toString());
-                ResponseBody responseBody = response.body();
                 try {
+                    // OkHttp implements something called transparent gzip, which mean that it will
+                    // automatically add the Accept-Encoding gzip header and handle decoding internally.
+                    // The issue is that it won't handle decoding if the user provides a Accept-Encoding
+                    // header. This is also undesirable considering that iOS does handle the decoding even
+                    // when the header is provided. To make sure this works in all cases, handle gzip body
+                    // here also. This works fine since OKHttp will remove the Content-Encoding header if
+                    // it used transparent gzip.
+                    // See https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
+                    ResponseBody responseBody = response.body();
+                    if ("gzip".equalsIgnoreCase(response.header("Content-Encoding")) && responseBody != null) {
+                        GzipSource gzipSource = new GzipSource(responseBody.source());
+                        String contentType = response.header("Content-Type");
+                        responseBody = ResponseBody.create(contentType != null ? MediaType.parse(contentType) : null, -1L, Okio.buffer(gzipSource));
+                    }
                     // Check if a handler is registered
                     for (ResponseHandler handler : mResponseHandlers) {
                         if (handler.supports(responseType)) {
@@ -599,8 +630,8 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
             if (header == null || header.size() != 2) {
                 return null;
             }
-            String headerName = header.getString(0);
-            String headerValue = header.getString(1);
+            String headerName = HeaderUtil.stripHeaderName(header.getString(0));
+            String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
             if (headerName == null || headerValue == null) {
                 return null;
             }

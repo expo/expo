@@ -5,8 +5,8 @@ const GROUPS = {
   ExpoKit: 'Managed Workflow',
   'Expo SDK': 'API Reference',
   'React Native': 'API Reference',
-  'Introduction': 'Get Started',
-  'Essentials': 'Bare Workflow',
+  Introduction: 'Get Started',
+  Essentials: 'Bare Workflow',
 };
 
 const ROOT = [
@@ -32,9 +32,10 @@ const INTRODUCTION = [
   'Project Lifecycle',
   'Community',
   'Additional Resources',
-  'Troubleshooting Proxies',
   'Frequently Asked Questions',
   'Already used React Native?',
+  'Why not Expo?',
+  'Troubleshooting Proxies',
 ];
 
 const GUIDES = [
@@ -44,35 +45,42 @@ const GUIDES = [
   'Preloading & Caching Assets',
   'Icons',
   'Custom Fonts',
-  'Splash Screens',
   'Using Custom Fonts',
   'Routing & Navigation',
   'Configuring StatusBar',
+  'Create a Splash Screen',
   'Offline Support',
   'Configuring OTA Updates',
+  'Account Permissions',
   'Push Notifications',
   'Using FCM for Push Notifications',
   'Notification Channels',
+  'Testing with Jest',
+  'Using TypeScript',
   'Using Modern JavaScript',
   'Using ClojureScript',
-  'Using Firebase: Web SDK',
+  'Using Firebase',
   'Using GraphQL',
   'Using Sentry',
+  'Using Bugsnag',
+  'User Interface Component Libraries',
+  'Crafting Educational Materials',
 ];
 
 const FUNDAMENTALS = [
+  'Managed Workflow Walkthrough',
   'Up and Running',
   'Expo CLI',
   'Viewing Logs',
   'Debugging',
   'Development Mode',
+  'Common Development Errors',
+  'iOS Simulator',
   'Android Studio Emulator',
-  'Genymotion',
   'Configuration with app.json',
   'Publishing',
   'Release Channels',
   'Building Standalone Apps',
-  'Upgrading Expo',
   'Upgrading Expo SDK Walkthrough',
   'Linking',
   'How Expo Works',
@@ -91,6 +99,7 @@ const DISTRIBUTION = [
   'Building Standalone Apps on Your CI',
   'Uploading Apps to the Apple App Store and Google Play',
   'App Transfers',
+  'Security',
 ];
 
 const EXPOKIT = [
@@ -103,7 +112,12 @@ const EXPOKIT = [
 ];
 
 const ESSENTIALS = [
-  'Hello World'
+  'Bare Workflow Walkthrough',
+  'Up and Running',
+  'Supported Expo SDK APIs',
+  'Using Expo client',
+  'Using Expo for web',
+  'Migrating from ExpoKit',
 ];
 
 const REACT_NATIVE = [

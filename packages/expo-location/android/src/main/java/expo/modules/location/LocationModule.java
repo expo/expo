@@ -42,18 +42,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.permissions.Permissions;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationRequestTimeoutException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
@@ -70,7 +69,7 @@ import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
 import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.utils.LocationState;
 
-public class LocationModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener, SensorEventListener, ActivityEventListener {
+public class LocationModule extends ExportedModule implements LifecycleEventListener, SensorEventListener, ActivityEventListener {
   private static final String TAG = LocationModule.class.getSimpleName();
   private static final String LOCATION_EVENT_NAME = "Expo.locationChanged";
   private static final String HEADING_EVENT_NAME = "Expo.headingChanged";
@@ -129,7 +128,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mUIManager != null) {
       mUIManager.unregisterLifecycleEventListener(this);
     }
@@ -215,6 +214,7 @@ public class LocationModule extends ExportedModule implements ModuleRegistryCons
     map.putBoolean("gpsAvailable", state.isGpsAvailable()); // If GPS provider is enabled
     map.putBoolean("networkAvailable", state.isNetworkAvailable()); // If network provider is enabled
     map.putBoolean("passiveAvailable", state.isPassiveAvailable()); // If passive provider is enabled
+    map.putBoolean("backgroundModeEnabled", state.locationServicesEnabled()); // background mode is always available if location services are on
 
     promise.resolve(map);
   }

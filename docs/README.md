@@ -39,6 +39,17 @@ yarn run export-server
 
 You can find the source of the documentation inside the `pages/versions` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). The routes and navbar are automatically inferred from the directory structure within `versions`.
 
+### Redirects
+
+Server-side redirects are re-created on each run of `deploy.sh`.  See that file for 
+
+We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
+
+- `/` -> `/versions/latest/`
+- `/versions` -> `/versions/latest`
+
+This method is not great for accessibility and should be avoided where possible.
+
 ### Adding Images and Assets
 
 You can add images and assets to the `static` directory.  They'll be served by the production and staging servers at `/static`.

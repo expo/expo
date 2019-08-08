@@ -18,6 +18,7 @@
 
 - (void)parseReference
 {
+    self.dirty = false;
     [self traverseSubviews:^(RNSVGNode *node) {
         if ([node isKindOfClass:[RNSVGNode class]]) {
             [node parseReference];

@@ -1,13 +1,13 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXSensorsInterface/EXAccelerometerInterface.h>
-#import <EXSensorsInterface/EXBarometerInterface.h>
-#import <EXSensorsInterface/EXDeviceMotionInterface.h>
-#import <EXSensorsInterface/EXGyroscopeInterface.h>
-#import <EXSensorsInterface/EXMagnetometerInterface.h>
-#import <EXSensorsInterface/EXMagnetometerUncalibratedInterface.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMSensorsInterface/UMAccelerometerInterface.h>
+#import <UMSensorsInterface/UMBarometerInterface.h>
+#import <UMSensorsInterface/UMDeviceMotionInterface.h>
+#import <UMSensorsInterface/UMGyroscopeInterface.h>
+#import <UMSensorsInterface/UMMagnetometerInterface.h>
+#import <UMSensorsInterface/UMMagnetometerUncalibratedInterface.h>
 
 @protocol EXSensorsManagerBindingDelegate
 
@@ -46,7 +46,7 @@
 
 @end
 
-@interface EXSensorsManagerBinding : NSObject <EXInternalModule, EXAccelerometerInterface, EXBarometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
+@interface EXSensorsManagerBinding : NSObject <UMInternalModule, UMAccelerometerInterface, UMBarometerInterface, UMDeviceMotionInterface, UMGyroscopeInterface, UMMagnetometerInterface, UMMagnetometerUncalibratedInterface>
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andKernelService:(id<EXSensorsManagerBindingDelegate>)kernelService;
 

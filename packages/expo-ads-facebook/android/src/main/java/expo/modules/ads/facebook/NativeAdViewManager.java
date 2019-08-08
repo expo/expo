@@ -7,12 +7,11 @@ import com.facebook.ads.NativeAdsManager;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ExpoProp;
 
-public class NativeAdViewManager extends ViewManager<NativeAdView> implements ModuleRegistryConsumer {
+public class NativeAdViewManager extends ViewManager<NativeAdView> {
   private static String NAME = "CTKNativeAd";
   private ModuleRegistry mModuleRegistry;
 
@@ -43,7 +42,7 @@ public class NativeAdViewManager extends ViewManager<NativeAdView> implements Mo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

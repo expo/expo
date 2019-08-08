@@ -9,8 +9,7 @@ export default {
             navigator['browserLanguage'] ||
             navigator['userLanguage'] ||
             this.locales[0];
-        // The native format is en-US
-        return locale.replace('_', '-');
+        return locale;
     },
     get locales() {
         const { languages = [] } = navigator;

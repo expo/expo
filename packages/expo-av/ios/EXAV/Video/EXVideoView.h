@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXModuleRegistry.h>
+#import <UMCore/UMModuleRegistry.h>
 
 #import <EXAV/EXAVObject.h>
 #import <EXAV/EXVideoPlayerViewControllerDelegate.h>
@@ -19,30 +19,30 @@ typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
 @property (nonatomic, strong) NSDictionary *source;
 @property (nonatomic, assign) BOOL useNativeControls;
 @property (nonatomic, strong) NSString *nativeResizeMode;
-@property (nonatomic, copy) EXDirectEventBlock onLoadStart;
-@property (nonatomic, copy) EXDirectEventBlock onLoad;
-@property (nonatomic, copy) EXDirectEventBlock onError;
-@property (nonatomic, copy) EXDirectEventBlock onStatusUpdate;
-@property (nonatomic, copy) EXDirectEventBlock onReadyForDisplay;
-@property (nonatomic, copy) EXDirectEventBlock onFullscreenUpdate;
+@property (nonatomic, copy) UMDirectEventBlock onLoadStart;
+@property (nonatomic, copy) UMDirectEventBlock onLoad;
+@property (nonatomic, copy) UMDirectEventBlock onError;
+@property (nonatomic, copy) UMDirectEventBlock onStatusUpdate;
+@property (nonatomic, copy) UMDirectEventBlock onReadyForDisplay;
+@property (nonatomic, copy) UMDirectEventBlock onFullscreenUpdate;
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
 
 - (void)setStatus:(NSDictionary *)status
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject;
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(EXPromiseResolveBlock)resolve
-                rejecter:(EXPromiseRejectBlock)reject;
+                resolver:(UMPromiseResolveBlock)resolve
+                rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)setSource:(NSDictionary *)source
        withStatus:(NSDictionary *)initialStatus
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject;
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject;
 
 - (void)setFullscreen:(BOOL)value
-             resolver:(EXPromiseResolveBlock)resolve
-             rejecter:(EXPromiseRejectBlock)reject;
+             resolver:(UMPromiseResolveBlock)resolve
+             rejecter:(UMPromiseRejectBlock)reject;
 
 @end

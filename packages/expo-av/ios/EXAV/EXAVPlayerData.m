@@ -34,7 +34,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, weak) EXAV *exAV;
 
 @property (nonatomic, assign) BOOL isLoaded;
-@property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
 
 @property (nonatomic, strong) id <NSObject> timeObserver;
@@ -54,7 +53,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, assign) BOOL isLooping;
 @property (nonatomic, strong) NSArray<AVPlayerItem *> *items;
 
-@property (nonatomic, strong) EXPromiseResolveBlock replayResolve;
+@property (nonatomic, strong) UMPromiseResolveBlock replayResolve;
 
 @end
 
@@ -211,8 +210,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 }
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject
 {
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
@@ -322,7 +321,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           }
         } else if (!seekSucceeded) {
           if (reject) {
-            reject(@"E_AV_SEEKING", nil, EXErrorWithMessage(@"Seeking interrupted."));
+            reject(@"E_AV_SEEKING", nil, UMErrorWithMessage(@"Seeking interrupted."));
           }
         } else if (resolve) {
           resolve([strongSelf getStatus]);
@@ -444,6 +443,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                           
                                           EXAVPlayerDataStatusRateKeyPath: _rate,
                                           EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
+                                          EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
                                           EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
                                           EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
                                           EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
@@ -482,8 +482,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 #pragma mark - Replay
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(EXPromiseResolveBlock)resolve
-                rejecter:(EXPromiseRejectBlock)reject
+                resolver:(UMPromiseResolveBlock)resolve
+                rejecter:(UMPromiseRejectBlock)reject
 {
   [self _callStatusUpdateCallbackWithExtraFields:@{
                                                    EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath: @([self _isPlayerPlaying]),
@@ -697,7 +697,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
               break;
             case AVPlayerStatusFailed: {
               strongSelf.isLoaded = NO;
-              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", strongSelf.player.error.code, strongSelf.player.error.domain];
+              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayer instance has failed with the error code %li and domain \"%@\".", (long) strongSelf.player.error.code, strongSelf.player.error.domain];
               if (strongSelf.player.error.localizedFailureReason) {
                 NSString *reasonMessage = [strongSelf.player.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];
@@ -775,7 +775,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
               }
               break;
             case AVPlayerItemStatusFailed: {
-              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %li and domain \"%@\".", strongSelf.player.currentItem.error.code, strongSelf.player.currentItem.error.domain];
+              NSString *errorMessage = [NSString stringWithFormat:@"The AVPlayerItem instance has failed with the error code %li and domain \"%@\".", (long) strongSelf.player.currentItem.error.code, strongSelf.player.currentItem.error.domain];
               if (strongSelf.player.currentItem.error.localizedFailureReason) {
                 NSString *reasonMessage = [strongSelf.player.currentItem.error.localizedFailureReason stringByAppendingString:@" - "];
                 errorMessage = [reasonMessage stringByAppendingString:errorMessage];

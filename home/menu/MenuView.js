@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import React from 'react';
 import {
   Alert,
@@ -16,14 +17,10 @@ import {
   View,
 } from 'react-native';
 
-import { Constants } from 'expo';
-import ResponsiveImage from '@expo/react-native-responsive-image';
-
 import DevIndicator from '../components/DevIndicator';
+import * as Kernel from '../kernel/Kernel';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
-
-const { ExponentKernel } = NativeModules;
 
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 
@@ -58,9 +55,9 @@ export default class MenuView extends React.Component {
 
   _loadStateAsync = async () => {
     this.setState({ isLoading: true, isLoaded: false }, async () => {
-      const enableDevMenuTools = await ExponentKernel.doesCurrentTaskEnableDevtools();
-      const devMenuItems = await ExponentKernel.getDevMenuItemsToShow();
-      const isNuxFinished = await ExponentKernel.getIsNuxFinishedAsync();
+      const enableDevMenuTools = await Kernel.doesCurrentTaskEnableDevtoolsAsync();
+      const devMenuItems = await Kernel.getDevMenuItemsToShowAsync();
+      const isNuxFinished = await Kernel.isNuxFinishedAsync();
       if (this._mounted) {
         this.setState({
           enableDevMenuTools,
@@ -120,8 +117,8 @@ export default class MenuView extends React.Component {
           <View style={styles.buttonContainer}>
             {this._renderButton({
               key: 'refresh',
-              text: 'Refresh',
-              onPress: () => ExponentKernel.selectRefresh(),
+              text: 'Reload Manifest and JS Bundle',
+              onPress: () => Kernel.selectRefresh(),
               iconSource: require('../assets/ios-menu-refresh.png'),
             })}
             {copyUrlButton}
@@ -151,9 +148,9 @@ export default class MenuView extends React.Component {
   _renderNUXRow() {
     let tooltipMessage;
     if (Constants.isDevice) {
-      tooltipMessage = 'Shake your device to show this menu.';
+      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
     } else {
-      tooltipMessage = 'In iPhone Simulator, press \u2318D to show this menu.';
+      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
     }
     let headingStyles = MENU_NARROW_SCREEN
       ? [styles.nuxHeading, styles.nuxHeadingNarrow]
@@ -161,18 +158,7 @@ export default class MenuView extends React.Component {
     return (
       <View style={styles.nuxRow}>
         <View style={styles.nuxHeadingRow}>
-          <ResponsiveImage
-            sources={{
-              2: {
-                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
-              },
-              3: {
-                uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
-              },
-            }}
-            style={styles.nuxLogo}
-          />
-          <Text style={headingStyles}>Welcome to Expo!</Text>
+          <Text style={headingStyles}>Hello there, friend! 👋</Text>
         </View>
         <Text style={styles.nuxTooltip}>{tooltipMessage}</Text>
         <TouchableOpacity style={styles.nuxButton} onPress={this._onPressFinishNux}>
@@ -193,18 +179,7 @@ export default class MenuView extends React.Component {
     let icon = iconUrl ? (
       <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
     ) : (
-      <ResponsiveImage
-        resizeMode="contain"
-        sources={{
-          2: {
-            uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@2x.png',
-          },
-          3: {
-            uri: 'https://s3.amazonaws.com/exp-us-standard/exponent-icon@3x.png',
-          },
-        }}
-        style={styles.taskIcon}
-      />
+      <View style={[styles.taskIcon, { backgroundColor: '#eee' }]} />
     );
     let taskNameStyles = taskName ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
     return (
@@ -320,23 +295,23 @@ export default class MenuView extends React.Component {
 
   _onOpenQRCode = async () => {
     if (await requestCameraPermissionsAsync()) {
-      ExponentKernel.selectQRReader();
+      Kernel.selectQRReader();
     } else {
       alert('In order to use the QR Code scanner you need to provide camera permissions');
     }
   };
 
   _onPressFinishNux = () => {
-    ExponentKernel.setIsNuxFinishedAsync(true);
-    ExponentKernel.selectCloseMenu();
+    Kernel.setNuxFinishedAsync(true);
+    Kernel.selectCloseMenu();
   };
 
   _onPressClose = () => {
-    ExponentKernel.selectCloseMenu();
+    Kernel.selectCloseMenu();
   };
 
   _goToHome = () => {
-    ExponentKernel.selectGoToHome();
+    Kernel.selectGoToHome();
   };
 
   _copyTaskUrl = () => {
@@ -344,7 +319,7 @@ export default class MenuView extends React.Component {
   };
 
   _onPressDevMenuButton = key => {
-    ExponentKernel.selectDevMenuItemWithKey(key);
+    Kernel.selectDevMenuItemWithKey(key);
   };
 }
 

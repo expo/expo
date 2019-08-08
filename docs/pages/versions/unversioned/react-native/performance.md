@@ -33,12 +33,11 @@ Similarly, you can happily scroll up and down through a `ScrollView` when the Ja
 
 ### Running in development mode (`dev=true`)
 
-JavaScript thread performance suffers greatly when running in dev mode. This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in [release builds](../../guides/testing-on-devices/).
+JavaScript thread performance suffers greatly when running in dev mode. This is unavoidable: a lot more work needs to be done at runtime to provide you with good warnings and error messages, such as validating propTypes and various other assertions. Always make sure to test performance in [release builds](../running-on-device/#building-your-app-for-production).
 
 ### Using `console.log` statements
 
 When running a bundled app, these statements can cause a big bottleneck in the JavaScript thread. This includes calls from debugging libraries such as [redux-logger](https://github.com/evgenyrodionov/redux-logger), so make sure to remove them before bundling. You can also use this [babel plugin](https://babeljs.io/docs/plugins/transform-remove-console/) that removes all the `console.*` calls. You need to install it first with `npm i babel-plugin-transform-remove-console --save-dev`, and then edit the `.babelrc` file under your project directory like this:
-
 
 ```javascripton
 
@@ -51,7 +50,6 @@ When running a bundled app, these statements can cause a big bottleneck in the J
 }
 
 ```
-
 
 This will automatically remove all `console.*` calls in the release (production) versions of your project.
 
@@ -77,7 +75,7 @@ One case where I have used this is for animating in a modal (sliding down from t
 
 Caveats:
 
-* LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be interruptible, you will need to use `Animated`.
+- LayoutAnimation only works for fire-and-forget animations ("static" animations) -- if it must be interruptible, you will need to use `Animated`.
 
 ### Moving a view on the screen (scrolling, translating, rotating) drops UI thread FPS
 
@@ -93,19 +91,15 @@ On iOS, each time you adjust the width or height of an Image component it is re-
 
 Sometimes, if we do an action in the same frame that we are adjusting the opacity or highlight of a component that is responding to a touch, we won't see that effect until after the `onPress` function has returned. If `onPress` does a `setState` that results in a lot of work and a few frames dropped, this may occur. A solution to this is to wrap any action inside of your `onPress` handler in `requestAnimationFrame`:
 
-
 ```javascript
 
 handleOnPress() {
-  // Always use TimerMixin with requestAnimationFrame, setTimeout and
-  // setInterval
-  this.requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
     this.doExpensiveAction();
   });
 }
 
 ```
-
 
 ### Slow navigator transitions
 
@@ -139,19 +133,17 @@ The first step for debugging this jank is to answer the fundamental question of 
 
 First, connect a device that exhibits the stuttering you want to investigate to your computer via USB and get it to the point right before the navigation/animation you want to profile. Run `systrace` as follows:
 
-
 ```javascript
 
 $ <path_to_android_sdk>/platform-tools/systrace/systrace.py --time=10 -o trace.html sched gfx view -a <your_package_name>
 
 ```
 
-
 A quick breakdown of this command:
 
-* `time` is the length of time the trace will be collected in seconds
-* `sched`, `gfx`, and `view` are the android SDK tags (collections of markers) we care about: `sched` gives you information about what's running on each core of your phone, `gfx` gives you graphics info such as frame boundaries, and `view` gives you information about measure, layout, and draw passes
-* `-a <your_package_name>` enables app-specific markers, specifically the ones built into the React Native framework. `your_package_name` can be found in the `AndroidManifest.xml` of your app and looks like `com.example.app`
+- `time` is the length of time the trace will be collected in seconds
+- `sched`, `gfx`, and `view` are the android SDK tags (collections of markers) we care about: `sched` gives you information about what's running on each core of your phone, `gfx` gives you graphics info such as frame boundaries, and `view` gives you information about measure, layout, and draw passes
+- `-a <your_package_name>` enables app-specific markers, specifically the ones built into the React Native framework. `your_package_name` can be found in the `AndroidManifest.xml` of your app and looks like `com.example.app`
 
 Once the trace starts collecting, perform the animation or interaction you care about. At the end of the trace, systrace will give you a link to the trace which you can open in your browser.
 
@@ -169,9 +161,9 @@ If your trace .html file isn't opening correctly, check your browser console for
 
 Since `Object.observe` was deprecated in recent browsers, you may have to open the file from the Google Chrome Tracing tool. You can do so by:
 
-* Opening tab in chrome chrome://tracing
-* Selecting load
-* Selecting the html file generated from the previous command.
+- Opening tab in chrome chrome://tracing
+- Selecting load
+- Selecting the html file generated from the previous command.
 
 > **Enable VSync highlighting**
 >
@@ -187,19 +179,19 @@ Scroll until you see (part of) the name of your package. In this case, I was pro
 
 On the left side, you'll see a set of threads which correspond to the timeline rows on the right. There are a few threads we care about for our purposes: the UI thread (which has your package name or the name UI Thread), `mqt_js`, and `mqt_native_modules`. If you're running on Android 5+, we also care about the Render Thread.
 
-* **UI Thread.** This is where standard android measure/layout/draw happens. The thread name on the right will be your package name (in my case book.adsmanager) or UI Thread. The events that you see on this thread should look something like this and have to do with `Choreographer`, `traversals`, and `DispatchUI`:
+- **UI Thread.** This is where standard android measure/layout/draw happens. The thread name on the right will be your package name (in my case book.adsmanager) or UI Thread. The events that you see on this thread should look something like this and have to do with `Choreographer`, `traversals`, and `DispatchUI`:
 
   ![UI Thread Example](https://facebook.github.io/react-native/docs/assets/SystraceUIThreadExample.png)
 
-* **JS Thread.** This is where JavaScript is executed. The thread name will be either `mqt_js` or `<...>` depending on how cooperative the kernel on your device is being. To identify it if it doesn't have a name, look for things like `JSCall`, `Bridge.executeJSCall`, etc:
+- **JS Thread.** This is where JavaScript is executed. The thread name will be either `mqt_js` or `<...>` depending on how cooperative the kernel on your device is being. To identify it if it doesn't have a name, look for things like `JSCall`, `Bridge.executeJSCall`, etc:
 
   ![JS Thread Example](https://facebook.github.io/react-native/docs/assets/SystraceJSThreadExample.png)
 
-* **Native Modules Thread.** This is where native module calls (e.g. the `UIManager`) are executed. The thread name will be either `mqt_native_modules` or `<...>`. To identify it in the latter case, look for things like `NativeCall`, `callJavaModuleMethod`, and `onBatchComplete`:
+- **Native Modules Thread.** This is where native module calls (e.g. the `UIManager`) are executed. The thread name will be either `mqt_native_modules` or `<...>`. To identify it in the latter case, look for things like `NativeCall`, `callJavaModuleMethod`, and `onBatchComplete`:
 
   ![Native Modules Thread Example](https://facebook.github.io/react-native/docs/assets/SystraceNativeModulesThreadExample.png)
 
-* **Bonus: Render Thread.** If you're using Android L (5.0) and up, you will also have a render thread in your application. This thread generates the actual OpenGL commands used to draw your UI. The thread name will be either `RenderThread` or `<...>`. To identify it in the latter case, look for things like `DrawFrame` and `queueBuffer`:
+- **Bonus: Render Thread.** If you're using Android L (5.0) and up, you will also have a render thread in your application. This thread generates the actual OpenGL commands used to draw your UI. The thread name will be either `RenderThread` or `<...>`. To identify it in the latter case, look for things like `DrawFrame` and `queueBuffer`:
 
   ![Render Thread Example](https://facebook.github.io/react-native/docs/assets/SystraceRenderThreadExample.png)
 
@@ -250,8 +242,8 @@ Notice the long amount of time spent in `DrawFrame` that crosses frame boundarie
 
 To mitigate this, you should:
 
-* investigate using `renderToHardwareTextureAndroid` for complex, static content that is being animated/transformed (e.g. the `Navigator` slide/alpha animations)
-* make sure that you are **not** using `needsOffscreenAlphaCompositing`, which is disabled by default, as it greatly increases the per-frame load on the GPU in most cases.
+- investigate using `renderToHardwareTextureAndroid` for complex, static content that is being animated/transformed (e.g. the `Navigator` slide/alpha animations)
+- make sure that you are **not** using `needsOffscreenAlphaCompositing`, which is disabled by default, as it greatly increases the per-frame load on the GPU in most cases.
 
 If these don't help and you want to dig deeper into what the GPU is actually doing, you can check out [Tracer for OpenGL ES](http://developer.android.com/tools/help/gltracer.html).
 
@@ -279,9 +271,7 @@ Inline requires delay the requiring of a module or file until that file is actua
 
 #### VeryExpensive.js
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { Text } from 'react-native';
 // ... import some very expensive modules
@@ -295,15 +285,11 @@ export default class VeryExpensive extends Component {
     return <Text>Very Expensive Component</Text>;
   }
 }
-
 ```
-
 
 #### Optimized.js
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 
@@ -333,9 +319,7 @@ export default class Optimized extends Component {
     );
   }
 }
-
 ```
-
 
 Even without the RAM format, inline requires can lead to startup time improvements, because the code within VeryExpensive.js will only execute once it is required for the first time.
 
@@ -345,7 +329,6 @@ On iOS using the RAM format will create a single indexed file that react native 
 
 Enable the RAM format in Xcode by editing the build phase "Bundle React Native code and images". Before `../node_modules/react-native/scripts/react-native-xcode.sh` add `export BUNDLE_COMMAND="ram-bundle"`:
 
-
 ```javascript
 
 export BUNDLE_COMMAND="ram-bundle"
@@ -354,9 +337,7 @@ export NODE_BINARY=node
 
 ```
 
-
 On Android enable the RAM format by editing your `android/app/build.gradle` file. Before the line `apply from: "../../node_modules/react-native/react.gradle"` add or amend the `project.ext.react` block:
-
 
 ```javascript
 
@@ -366,9 +347,7 @@ project.ext.react = [
 
 ```
 
-
 Use the following lines on Android if you want to use a single indexed file:
-
 
 ```javascript
 
@@ -379,72 +358,15 @@ project.ext.react = [
 
 ```
 
-
 ### Configure Preloading and Inline Requires
 
 Now that we have a RAM bundle, there is overhead for calling `require`. `require` now needs to send a message over the bridge when it encounters a module it has not loaded yet. This will impact startup the most, because that is where the largest number of require calls are likely to take place while the app loads the initial module. Luckily we can configure a portion of the modules to be preloaded. In order to do this, you will need to implement some form of inline require.
-
-### Adding a packager config file
-
-Create a folder in your project called packager, and create a single file named config.js. Add the following:
-
-
-```javascript
-
-const config = {
-  transformer: {
-    getTransformOptions: () => {
-      return {
-        transform: { inlineRequires: true },
-      };
-    },
-  },
-};
-
-module.exports = config;
-
-```
-
-
-In Xcode, in the build phase, include `export BUNDLE_CONFIG="packager/config.js"`.
-
-
-```javascript
-
-export BUNDLE_COMMAND="ram-bundle"
-export BUNDLE_CONFIG="packager/config.js"
-export NODE_BINARY=node
-../node_modules/react-native/scripts/react-native-xcode.sh
-
-```
-
-
-Edit your android/app/build.gradle file to include `bundleConfig: "packager/config.js",`.
-
-
-```javascript
-
-project.ext.react = [
-  bundleCommand: "ram-bundle",
-  bundleConfig: "packager/config.js"
-]
-
-```
-
-
-Finally, you can update "start" under "scripts" on your package.json to use the config:
-
-`"start": "node node_modules/react-native/local-cli/cli.js start --config ../../../../packager/config.js",`
-
-Start your package server with `npm start`. Note that when the dev packager is automatically launched via xcode and `react-native run-android`, etc, it does not use `npm start`, so it won't use the config.
 
 ### Investigating the Loaded Modules
 
 In your root file (index.(ios|android).js) you can add the following after the initial imports:
 
-
 ```javascript
-
 const modules = require.getModules();
 const moduleIds = Object.keys(modules);
 const loadedModuleNames = moduleIds
@@ -455,48 +377,35 @@ const waitingModuleNames = moduleIds
   .map(moduleId => modules[moduleId].verboseName);
 
 // make sure that the modules you expect to be waiting are actually waiting
-console.log(
-  'loaded:',
-  loadedModuleNames.length,
-  'waiting:',
-  waitingModuleNames.length
-);
+console.log('loaded:', loadedModuleNames.length, 'waiting:', waitingModuleNames.length);
 
 // grab this text blob, and put it in a file named packager/modulePaths.js
 console.log(`module.exports = ${JSON.stringify(loadedModuleNames.sort())};`);
-
 ```
-
 
 When you run your app, you can look in the console and see how many modules have been loaded, and how many are waiting. You may want to read the moduleNames and see if there are any surprises. Note that inline requires are invoked the first time the imports are referenced. You may need to investigate and refactor to ensure only the modules you want are loaded on startup. Note that you can change the Systrace object on require to help debug problematic requires.
 
-
 ```javascript
-
-require.Systrace.beginEvent = (message) => {
-  if(message.includes(problematicModule)) {
+require.Systrace.beginEvent = message => {
+  if (message.includes(problematicModule)) {
     throw new Error();
   }
-}
-
+};
 ```
-
 
 Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named `packager/modulePaths.js`.
 
-### Updating the config.js
+### Updating the metro.config.js
 
-Returning to packager/config.js we should update it to use our newly generated modulePaths.js file.
-
+We now need to update `metro.config.js` in the root of the project to use our newly generated `modulePaths.js` file:
 
 ```javascript
-
-const modulePaths = require('./modulePaths');
+const modulePaths = require('./packager/modulePaths');
 const resolve = require('path').resolve;
 const fs = require('fs');
 
 // Update the following line if the root folder of your app is somewhere else.
-const ROOT_FOLDER = path.resolve(__dirname, '..');
+const ROOT_FOLDER = resolve(__dirname, '..');
 
 const config = {
   transformer: {
@@ -513,16 +422,14 @@ const config = {
       };
     },
   },
+  projectRoot: ROOT_FOLDER,
 };
 
 module.exports = config;
-
 ```
-
 
 The `preloadedModules` entry in the config indicates which modules should be marked as preloaded when building a RAM bundle. When the bundle is loaded, those modules are immediately loaded, before any requires have even executed. The blacklist entry indicates that those modules should not be required inline. Because they are preloaded, there is no performance benefit from using an inline require. In fact the javascript spends extra time resolving the inline require every time the imports are referenced.
 
 ### Test and Measure Improvements
 
 You should now be ready to build your app using the RAM format and inline requires. Make sure you measure the before and after startup times.
-

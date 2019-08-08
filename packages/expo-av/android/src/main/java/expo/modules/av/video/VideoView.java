@@ -11,10 +11,10 @@ import android.widget.FrameLayout;
 
 import com.yqritc.scalablevideoview.ScalableType;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.services.EventEmitter;
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
 import expo.modules.av.player.PlayerData;

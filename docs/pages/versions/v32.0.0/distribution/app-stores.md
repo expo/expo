@@ -4,7 +4,7 @@ title: Deploying to App Stores
 
 This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Building Standalone Apps](../building-standalone-apps/).
 
-Although you can share your published project through the Expo Client and on your [expo.io](https://expo.io) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
+Although you can share your published project through the Expo client and on your [expo.io](https://expo.io) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
 **Disclaimer:** Especially in the case of Apple, review guidelines and rules change all the time, and Apple's enforcement of various rules tends to be finicky and inconsistent. We can't guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. However, Expo apps are native apps and behave just like any other apps, so if you've created something awesome, you should have nothing to worry about!
 
@@ -31,7 +31,19 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 - Add a great [icon](../../guides/app-icons/). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
 - Customize your [primaryColor](../../workflow/configuration/#primarycolor).
 - Make sure your app has a valid iOS [Bundle Identifier](../../workflow/configuration/#bundleidentifier) and [Android Package](../../workflow/configuration/#package). Take care in choosing these, as you will not be able to change them later.
-- Use [versionCode](../../workflow/configuration/#versioncode) and [buildNumber](../../workflow/configuration/#buildnumber) to distinguish different binaries of your app.
+
+## Versioning your App
+
+You'll use the `app.json` file to specify the version of your app, but there are a few different fields each with specific functionality.
+
+- [`version`](../../workflow/configuration/#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
+- [`android.versionCode`](../../workflow/configuration/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
+- [`ios.buildNumber`](../../workflow/configuration/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
+
+To access these values at runtime, you can use the [Expo Constants API](../../sdk/constants/):
+
+- Use [`Constants.nativeAppVersion`](../../sdk/constants/#constantsnativeappversion) to access the `version` value listed above.
+- Use [`Constants.nativeBuildVersion`](../../sdk/constants/#constantsnativebuildversion) to access either `android.versionCode` or `ios.buildNumber` values (depending on the current platform)
 
 ## Privacy Policy
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 export default class NativeLinearGradient extends React.PureComponent {
     render() {
         return <BaseNativeLinearGradient {...this.props}/>;

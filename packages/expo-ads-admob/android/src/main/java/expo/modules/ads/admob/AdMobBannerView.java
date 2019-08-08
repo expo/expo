@@ -11,7 +11,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class AdMobBannerView extends FrameLayout {
   private String testDeviceID = null;

@@ -17,19 +17,22 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import expo.interfaces.taskManager.TaskConsumer;
-import expo.interfaces.taskManager.TaskManagerUtilsInterface;
-import expo.interfaces.taskManager.TaskConsumerInterface;
-import expo.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumer;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskInterface;
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
 
 public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
+  public static int VERSION = 1;
+
   private static final String TAG = "GeofencingTaskConsumer";
 
   private TaskInterface mTask;
@@ -105,22 +108,25 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
         data.putPersistableBundle("region", region);
 
         Context context = getContext().getApplicationContext();
-        getTaskManagerUtils().scheduleJob(context, mTask, data);
+        getTaskManagerUtils().scheduleJob(context, mTask, Collections.singletonList(data));
       }
     }
   }
 
   @Override
   public boolean didExecuteJob(JobService jobService, JobParameters params) {
-    PersistableBundle data = params.getExtras().getPersistableBundle("data");
-    Bundle bundle = new Bundle();
-    Bundle region = new Bundle();
+    List<PersistableBundle> data = getTaskManagerUtils().extractDataFromJobParams(params);
 
-    region.putAll(data.getPersistableBundle("region"));
-    bundle.putInt("eventType", data.getInt("eventType"));
-    bundle.putBundle("region", region);
+    for (PersistableBundle item : data) {
+      Bundle bundle = new Bundle();
+      Bundle region = new Bundle();
 
-    mTask.execute(bundle, null);
+      region.putAll(item.getPersistableBundle("region"));
+      bundle.putInt("eventType", item.getInt("eventType"));
+      bundle.putBundle("region", region);
+
+      mTask.execute(bundle, null);
+    }
     return true;
   }
 

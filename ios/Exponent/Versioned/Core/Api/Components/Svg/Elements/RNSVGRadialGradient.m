@@ -102,6 +102,7 @@
 
 - (void)parseReference
 {
+    self.dirty = false;
     NSArray<RNSVGLength *> *points = @[self.fx, self.fy, self.rx, self.ry, self.cx, self.cy];
     RNSVGPainter *painter = [[RNSVGPainter alloc] initWithPointsArray:points];
     [painter setUnits:self.gradientUnits];

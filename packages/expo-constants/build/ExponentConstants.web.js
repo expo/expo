@@ -1,6 +1,14 @@
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-const ExpoPackageJson = require('expo/package.json');
+import { CodedError } from '@unimodules/core';
+function getExpoPackage() {
+    try {
+        return require('expo/package.json');
+    }
+    catch (error) {
+        throw new CodedError('ERR_CONSTANTS', 'expoVersion & expoRuntimeVersion require the expo package to be installed.');
+    }
+}
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
@@ -44,18 +52,24 @@ export default {
         return false;
     },
     get expoVersion() {
-        return ExpoPackageJson.version;
+        return getExpoPackage().version;
     },
     get linkingUri() {
         // On native this is `exp://`
         return location.origin + location.pathname;
     },
     get expoRuntimeVersion() {
-        return ExpoPackageJson.version;
+        return getExpoPackage().version;
     },
     get deviceName() {
         const { browser, engine, os: OS } = parser.getResult();
         return browser.name || engine.name || OS.name || undefined;
+    },
+    get nativeAppVersion() {
+        return null;
+    },
+    get nativeBuildVersion() {
+        return null;
     },
     get systemFonts() {
         // TODO: Bacon: Maybe possible.
@@ -66,10 +80,11 @@ export default {
     },
     get deviceYearClass() {
         // TODO: Bacon: The android version isn't very accurate either, maybe we could try and guess this value.
-        console.log(`ExponentConstants.deviceYearClass: is unimplemented on web.`);
         return null;
     },
     get manifest() {
+        // This is defined by @expo/webpack-config. 
+        // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
     get experienceUrl() {

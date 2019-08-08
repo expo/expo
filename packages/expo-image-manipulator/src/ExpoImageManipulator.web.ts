@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-errors';
+import { CodedError } from '@unimodules/core';
 import {
   ImageResult,
   SaveOptions,
@@ -328,7 +328,7 @@ export default {
         }
         output = await manipulateWithActionAsync(uri || output!.uri, action, _options);
       }
-      return output;
+      return output!;
     }
   },
 };

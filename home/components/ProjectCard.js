@@ -13,17 +13,16 @@ import {
   View,
 } from 'react-native';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
-import FadeIn from '@expo/react-native-fade-in-image';
+import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
-import LikeButtonContainer from '../containers/LikeButtonContainer';
 import UrlUtils from '../utils/UrlUtils';
 
 @withNavigation
 export default class ProjectCard extends React.PureComponent {
   render() {
-    let { id, description, projectName, username, isLikedByMe, likeCount } = this.props;
+    let { id, description, projectName, username } = this.props;
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>
@@ -48,10 +47,6 @@ export default class ProjectCard extends React.PureComponent {
                     numberOfLines={1}>
                     {username}
                   </Text>
-                  <View style={styles.bullet} />
-                  <Text onPress={() => {}} style={styles.projectExtraInfoText}>
-                    {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-                  </Text>
                 </View>
               </View>
             </View>
@@ -60,13 +55,6 @@ export default class ProjectCard extends React.PureComponent {
             </View>
           </View>
         </TouchableNativeFeedbackSafe>
-
-        <LikeButtonContainer
-          style={{ position: 'absolute', top: 12, right: 12 }}
-          appId={id}
-          likeCount={likeCount}
-          liked={isLikedByMe}
-        />
       </View>
     );
   }
@@ -183,13 +171,6 @@ const styles = StyleSheet.create({
   projectExtraInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  bullet: {
-    width: 3.5,
-    height: 3.5,
-    borderRadius: 3.5 / 2,
-    backgroundColor: 'rgba(36, 44, 58, 0.2)',
-    marginHorizontal: 6,
   },
   projectExtraInfoText: {
     color: 'rgba(36, 44, 58, 0.4)',

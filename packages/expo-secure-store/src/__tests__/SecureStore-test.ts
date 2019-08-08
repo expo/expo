@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import * as SecureStore from '../SecureStore';
 
 import { mockPlatformIOS } from '../../test/mocking';

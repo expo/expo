@@ -16,17 +16,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.UIManager;
 
-public class MailComposerModule extends ExportedModule implements LifecycleEventListener, ModuleRegistryConsumer {
+public class MailComposerModule extends ExportedModule implements LifecycleEventListener {
   private boolean mComposerOpened = false;
   private ModuleRegistry mModuleRegistry;
   private Promise mPromise;
@@ -41,7 +40,7 @@ public class MailComposerModule extends ExportedModule implements LifecycleEvent
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }

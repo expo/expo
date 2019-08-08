@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 
 export default function withNativeAd() {
   throw new UnavailabilityError('expo-ads-facebook', 'withNativeAd');

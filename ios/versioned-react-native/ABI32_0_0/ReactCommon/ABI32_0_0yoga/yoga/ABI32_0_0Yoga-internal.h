@@ -25,7 +25,7 @@ WIN_EXPORT float ABI32_0_0YGRoundValueToPixelGrid(
 ABI32_0_0YG_EXTERN_C_END
 
 namespace facebook {
-namespace yoga {
+namespace ABI32_0_0yoga {
 
 inline bool isUndefined(float value) {
   // Value of a float in the case of it being not defined is 10.1E20. Earlier
@@ -39,7 +39,7 @@ inline bool isUndefined(float value) {
   return value >= 10E8 || value <= -10E8;
 }
 
-} // namespace yoga
+} // namespace ABI32_0_0yoga
 } // namespace facebook
 
 using namespace facebook;
@@ -83,20 +83,20 @@ struct ABI32_0_0YGCachedMeasurement {
     bool isEqual = widthMeasureMode == measurement.widthMeasureMode &&
         heightMeasureMode == measurement.heightMeasureMode;
 
-    if (!yoga::isUndefined(availableWidth) ||
-        !yoga::isUndefined(measurement.availableWidth)) {
+    if (!ABI32_0_0yoga::isUndefined(availableWidth) ||
+        !ABI32_0_0yoga::isUndefined(measurement.availableWidth)) {
       isEqual = isEqual && availableWidth == measurement.availableWidth;
     }
-    if (!yoga::isUndefined(availableHeight) ||
-        !yoga::isUndefined(measurement.availableHeight)) {
+    if (!ABI32_0_0yoga::isUndefined(availableHeight) ||
+        !ABI32_0_0yoga::isUndefined(measurement.availableHeight)) {
       isEqual = isEqual && availableHeight == measurement.availableHeight;
     }
-    if (!yoga::isUndefined(computedWidth) ||
-        !yoga::isUndefined(measurement.computedWidth)) {
+    if (!ABI32_0_0yoga::isUndefined(computedWidth) ||
+        !ABI32_0_0yoga::isUndefined(measurement.computedWidth)) {
       isEqual = isEqual && computedWidth == measurement.computedWidth;
     }
-    if (!yoga::isUndefined(computedHeight) ||
-        !yoga::isUndefined(measurement.computedHeight)) {
+    if (!ABI32_0_0yoga::isUndefined(computedHeight) ||
+        !ABI32_0_0yoga::isUndefined(measurement.computedHeight)) {
       isEqual = isEqual && computedHeight == measurement.computedHeight;
     }
 

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/Expo/Optional/ARKit/ABI30_0_0EXGLARSessionManager.h

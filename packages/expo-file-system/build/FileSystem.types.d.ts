@@ -76,6 +76,9 @@ export interface ExponentFileSystemModule {
     readonly downloadAsync?: PlatformMethod;
     readonly downloadResumableStartAsync?: PlatformMethod;
     readonly downloadResumablePauseAsync?: PlatformMethod;
+    readonly getContentUriAsync?: PlatformMethod;
+    readonly getFreeDiskStorageAsync?: PlatformMethod;
+    readonly getTotalDiskCapacityAsync?: PlatformMethod;
     startObserving?: () => void;
     stopObserving?: () => void;
     addListener: (eventName: string) => void;

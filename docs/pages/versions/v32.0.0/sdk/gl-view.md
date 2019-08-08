@@ -119,3 +119,5 @@ The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/do
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
 
+## Remote Debugging & GLView
+This API does not function as intended with remote debugging enabled. The React Native debugger runs Javascript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).

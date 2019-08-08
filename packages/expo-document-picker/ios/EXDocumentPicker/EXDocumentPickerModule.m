@@ -2,8 +2,8 @@
 
 
 #import <EXDocumentPicker/EXDocumentPickerModule.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -34,12 +34,12 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @interface EXDocumentPickerModule () <UIDocumentMenuDelegate, UIDocumentPickerDelegate>
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
 
-@property (nonatomic, strong) EXPromiseResolveBlock resolve;
-@property (nonatomic, strong) EXPromiseRejectBlock reject;
+@property (nonatomic, strong) UMPromiseResolveBlock resolve;
+@property (nonatomic, strong) UMPromiseRejectBlock reject;
 
 @property (nonatomic, assign) BOOL shouldCopyToCacheDirectory;
 
@@ -47,22 +47,22 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @implementation EXDocumentPickerModule
 
-EX_EXPORT_MODULE(ExpoDocumentPicker);
+UM_EXPORT_MODULE(ExpoDocumentPicker);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   
   if (_moduleRegistry != nil) {
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-    _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+    _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   }
 }
 
-EX_EXPORT_METHOD_AS(getDocumentAsync,
+UM_EXPORT_METHOD_AS(getDocumentAsync,
                     options:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (_resolve != nil) {
     return reject(@"E_DOCUMENT_PICKER", @"Different document picking in progress. Await other document picking first.", nil);

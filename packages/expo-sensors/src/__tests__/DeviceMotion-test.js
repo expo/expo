@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
 import { mockPlatformIOS } from '../../test/mocking';
 import DeviceMotion, { Gravity } from '../DeviceMotion';

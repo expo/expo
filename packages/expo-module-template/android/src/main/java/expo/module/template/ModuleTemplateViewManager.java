@@ -5,11 +5,10 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
 
-public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> implements ModuleRegistryConsumer {
+public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> {
   private static final String TAG = "ExpoModuleTemplateView";
 
   private ModuleRegistry mModuleRegistry;
@@ -35,7 +34,7 @@ public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> i
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

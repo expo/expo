@@ -77,12 +77,12 @@
     }
 }
 
-#pragma mark - NSCoding methods
+#pragma mark - NSSecureCoding methods
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
-        _bucket = [decoder decodeObjectForKey:@"bucket"];
-        _creditTransactionId = [decoder decodeObjectForKey:@"creditTransactionId"];
+        _bucket = [decoder decodeObjectOfClass:NSString.class forKey:@"bucket"];
+        _creditTransactionId = [decoder decodeObjectOfClass:NSString.class forKey:@"creditTransactionId"];
         _length = [decoder decodeIntegerForKey:@"length"];
         _order = [decoder decodeIntegerForKey:@"order"];
     }
@@ -95,6 +95,10 @@
     [coder encodeObject:self.creditTransactionId forKey:@"creditTransactionId"];
     [coder encodeInteger:self.length forKey:@"length"];
     [coder encodeInteger:self.order forKey:@"order"];
+}
+
++ (BOOL) supportsSecureCoding {
+    return YES;
 }
 
 @end

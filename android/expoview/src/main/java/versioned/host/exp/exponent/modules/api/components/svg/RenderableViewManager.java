@@ -13,10 +13,11 @@ import android.graphics.Matrix;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.MatrixMathHelper;
@@ -27,6 +28,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static com.facebook.react.uimanager.MatrixMathHelper.determinant;
@@ -72,7 +74,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
 
     class RenderableShadowNode extends LayoutShadowNode {
 
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "EmptyMethod"})
         @ReactPropGroup(
             names = {
                 ALIGN_SELF,
@@ -176,7 +178,6 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     private static void decomposeMatrix() {
-        Assertions.assertCondition(sTransformDecompositionArray.length == 16);
 
         // output values
         final double[] perspective = sMatrixDecompositionContext.perspective;
@@ -314,8 +315,12 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
             float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
 
             // The following converts the matrix's perspective to a camera distance
-            // such that the camera perspective looks the same on Android and iOS
-            float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+            // such that the camera perspective looks the same on Android and iOS.
+            // The native Android implementation removed the screen density from the
+            // calculation, so squaring and a normalization value of
+            // sqrt(5) produces an exact replica with iOS.
+            // For more information, see https://github.com/facebook/react-native/pull/18302
+            float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
             view.setCameraDistance(normalizedCameraDistance);
 
         }
@@ -344,6 +349,22 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         @ReactProp(name = "font")
         public void setFont(GroupView node, @Nullable ReadableMap font) {
             node.setFont(font);
+        }
+
+        @ReactProp(name = "fontSize")
+        public void setFontSize(GroupView node, Dynamic fontSize) {
+            JavaOnlyMap map = new JavaOnlyMap();
+            switch (fontSize.getType()) {
+                case Number:
+                    map.putDouble("fontSize", fontSize.asDouble());
+                    break;
+                case String:
+                    map.putString("fontSize", fontSize.asString());
+                    break;
+                default:
+                    return;
+            }
+            node.setFont(map);
         }
     }
 
@@ -644,6 +665,16 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
             node.setHref(href);
         }
 
+        @ReactProp(name = "x")
+        public void setX(UseView node, Dynamic x) {
+            node.setX(x);
+        }
+
+        @ReactProp(name = "y")
+        public void setY(UseView node, Dynamic y) {
+            node.setY(y);
+        }
+
         @ReactProp(name = "width")
         public void setWidth(UseView node, Dynamic width) {
             node.setWidth(width);
@@ -900,6 +931,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         mClassName = svgclass.toString();
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return mClassName;
@@ -921,7 +953,7 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     }
 
     @ReactProp(name = "opacity", defaultFloat = 1f)
-    public void setOpacity(VirtualView node, float opacity) {
+    public void setOpacity(@Nonnull VirtualView node, float opacity) {
         node.setOpacity(opacity);
     }
 
@@ -981,17 +1013,26 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         node.setStrokeLinejoin(strokeLinejoin);
     }
 
+    @ReactProp(name = "vectorEffect")
+    public void setVectorEffect(RenderableView node, int vectorEffect) {
+        node.setVectorEffect(vectorEffect);
+    }
+
     @ReactProp(name = "matrix")
     public void setMatrix(VirtualView node, Dynamic matrixArray) {
         node.setMatrix(matrixArray);
     }
 
     @ReactProp(name = "transform")
-    public void setTransform(VirtualView node, ReadableArray matrix) {
-        if (matrix == null) {
+    public void setTransform(VirtualView node, Dynamic matrix) {
+        if (matrix.getType() != ReadableType.Array) {
+            return;
+        }
+        ReadableArray ma = matrix.asArray();
+        if (ma == null) {
             resetTransformProperty(node);
         } else {
-            setTransformProperty(node, matrix);
+            setTransformProperty(node, ma);
         }
         Matrix m = node.getMatrix();
         node.mTransform = m;
@@ -1018,10 +1059,13 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
         if (view!= null) {
             view.invalidate();
         }
+        if (node instanceof TextView) {
+            ((TextView)node).getTextContainer().clearChildCache();
+        }
     }
 
     @Override
-    protected void addEventEmitters(ThemedReactContext reactContext, VirtualView view) {
+    protected void addEventEmitters(@Nonnull ThemedReactContext reactContext, @Nonnull VirtualView view) {
         super.addEventEmitters(reactContext, view);
         view.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
             @Override
@@ -1047,13 +1091,14 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
      * the parent class of the ViewManager may rely on callback being executed.
      */
     @Override
-    protected void onAfterUpdateTransaction(VirtualView node) {
+    protected void onAfterUpdateTransaction(@Nonnull VirtualView node) {
         super.onAfterUpdateTransaction(node);
         invalidateSvgView(node);
     }
 
+    @Nonnull
     @Override
-    protected VirtualView createViewInstance(ThemedReactContext reactContext) {
+    protected VirtualView createViewInstance(@Nonnull ThemedReactContext reactContext) {
         switch (svgClass) {
             case RNSVGGroup:
                 return new GroupView(reactContext);

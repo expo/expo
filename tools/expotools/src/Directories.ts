@@ -17,3 +17,15 @@ export function getExpotoolsDir(): string {
 export function getBinDir(): string {
   return path.join(getExpotoolsDir(), 'bin');
 }
+
+export function getPackagesDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'packages');
+}
+
+export function getIosDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'ios');
+}
+
+export function getAndroidDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'android');
+}

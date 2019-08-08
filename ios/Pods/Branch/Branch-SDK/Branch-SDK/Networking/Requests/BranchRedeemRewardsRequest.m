@@ -11,11 +11,9 @@
 #import "BranchConstants.h"
 
 @interface BranchRedeemRewardsRequest ()
-
 @property (assign, nonatomic) NSInteger amount;
 @property (strong, nonatomic) NSString *bucket;
 @property (copy) callbackWithStatus callback;
-
 @end
 
 @implementation BranchRedeemRewardsRequest
@@ -60,12 +58,12 @@
     }
 }
 
-#pragma mark - NSCoding methods
+#pragma mark - NSSecureCoding methods
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
         _amount = [decoder decodeIntegerForKey:@"amount"];
-        _bucket = [decoder decodeObjectForKey:@"bucket"];
+        _bucket = [decoder decodeObjectOfClass:NSString.class forKey:@"bucket"];
     }
     
     return self;
@@ -73,7 +71,6 @@
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     [super encodeWithCoder:coder];
-    
     [coder encodeInteger:self.amount forKey:@"amount"];
     [coder encodeObject:self.bucket forKey:@"bucket"];
 }

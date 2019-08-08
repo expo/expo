@@ -4,10 +4,10 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLErrorDomain.h>
 
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
-#import <EXTaskManagerInterface/EXTaskInterface.h>
+#import <UMTaskManagerInterface/UMTaskInterface.h>
 
 @interface EXGeofencingTaskConsumer ()
 
@@ -24,7 +24,7 @@
   [self reset];
 }
 
-# pragma mark - EXTaskConsumerInterface
+# pragma mark - UMTaskConsumerInterface
 
 - (NSString *)taskType
 {
@@ -37,7 +37,7 @@
   [self startMonitoringRegionsForTask:self->_task];
 }
 
-- (void)didRegisterTask:(id<EXTaskInterface>)task
+- (void)didRegisterTask:(id<UMTaskInterface>)task
 {
   [self startMonitoringRegionsForTask:task];
 }
@@ -52,15 +52,15 @@
 - (void)reset
 {
   [self stopMonitoringAllRegions];
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     self->_locationManager = nil;
     self->_task = nil;
   }];
 }
 
-- (void)startMonitoringRegionsForTask:(id<EXTaskInterface>)task
+- (void)startMonitoringRegionsForTask:(id<UMTaskInterface>)task
 {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = [CLLocationManager new];
     NSMutableDictionary *regionStates = [NSMutableDictionary new];
     NSDictionary *options = [task options];
@@ -95,7 +95,7 @@
 
 - (void)stopMonitoringAllRegions
 {
-  [EXUtilities performSynchronouslyOnMainThread:^{
+  [UMUtilities performSynchronouslyOnMainThread:^{
     for (CLRegion *region in self->_locationManager.monitoredRegions) {
       [self->_locationManager stopMonitoringForRegion:region];
     }

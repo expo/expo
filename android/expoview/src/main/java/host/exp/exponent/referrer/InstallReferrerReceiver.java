@@ -38,8 +38,13 @@ public class InstallReferrerReceiver extends CampaignTrackingReceiver {
       return;
     }
 
-    InstallListener listener = new InstallListener();
-    listener.onReceive(context, intent);
+    try {
+      Class.forName("io.branch.referral.InstallListener");
+      InstallListener listener = new InstallListener();
+      listener.onReceive(context, intent);
+    } catch (ClassNotFoundException e) {
+      // expected if Branch is not installed, fail silently
+    }
 
     NativeModuleDepsProvider.getInstance().inject(InstallReferrerReceiver.class, this);
 

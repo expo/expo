@@ -103,7 +103,8 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
                     scaleWidth, scaleHeight, outputFile, resultStreamFormat,
                     snapshotContentContainer, reactContext, activity, promise)
             );
-        } catch (final Throwable ignored) {
+        } catch (final Throwable ex) {
+            Log.e(RNVIEW_SHOT, "Failed to snapshot view tag " + tag, ex);
             promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag " + tag);
         }
     }

@@ -6,7 +6,7 @@ import java.util.List;
 
 import abi32_0_0.expo.core.ExportedModule;
 import abi32_0_0.expo.core.ViewManager;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.SingletonModule;
 
 public interface Package {
   List<InternalModule> createInternalModules(Context context);

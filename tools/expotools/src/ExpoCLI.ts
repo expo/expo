@@ -12,15 +12,14 @@ export async function runExpoCliAsync(
   args: string[] = [],
   options: Options = { useUnversioned: true }
 ): Promise<void> {
-  let rootDir = options.root || process.cwd();
-  let appJsonPath = path.resolve(rootDir, 'app.json');
+  let configArgs = options.root ? ['--config', path.resolve(options.root, 'app.json')] : [];
 
-  // // Don't handle SIGINT/SIGTERM in this process...defer to exp
+  // Don't handle SIGINT/SIGTERM in this process...defer to expo-cli
   process.on('SIGINT', () => {});
   process.on('SIGTERM', () => {});
 
-  await spawnAsync('expo', [command, ...args, '--config', appJsonPath], {
-    cwd: rootDir,
+  await spawnAsync('expo', [command, ...args, ...configArgs], {
+    cwd: options.root || process.cwd(),
     stdio: 'inherit',
     env: {
       ...process.env,

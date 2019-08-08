@@ -1,6 +1,6 @@
 # expo_flutter_adapter
 
-A Flutter adapter for Expo Universal Modules. It requires [`expo-core`](../expo-core) to be installed and linked.
+A Flutter adapter for Expo Universal Modules. It requires [`@unimodules/core`](../@unimodules/core) to be installed and linked.
 
 ## Getting Started
 

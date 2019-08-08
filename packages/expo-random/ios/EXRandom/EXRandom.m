@@ -4,12 +4,12 @@
 
 @implementation EXRandom
 
-EX_EXPORT_MODULE(ExpoRandom);
+UM_EXPORT_MODULE(ExpoRandom);
 
-EX_EXPORT_METHOD_AS(getRandomBase64StringAsync,
+UM_EXPORT_METHOD_AS(getRandomBase64StringAsync,
                     getRandomBase64StringAsync:(NSNumber *)count
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   NSUInteger _length = [count unsignedIntegerValue];
   NSMutableData *bytes = [NSMutableData dataWithLength:_length];

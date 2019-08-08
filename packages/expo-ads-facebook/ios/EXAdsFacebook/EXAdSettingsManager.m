@@ -1,13 +1,13 @@
 #import <EXAdsFacebook/EXAdSettingsManager.h>
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
-#import <EXCore/EXAppLifecycleService.h>
+#import <UMCore/UMAppLifecycleService.h>
 
 @interface EXAdSettingsManager ()
 
 @property (nonatomic) BOOL isChildDirected;
 @property (nonatomic, strong) NSString *mediationService;
 @property (nonatomic, strong) NSString *urlPrefix;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic) FBAdLogLevel logLevel;
 @property (nonatomic, strong) NSMutableArray<NSString*> *testDevices;
 
@@ -15,7 +15,7 @@
 
 @implementation EXAdSettingsManager
 
-EX_EXPORT_MODULE(CTKAdSettingsManager)
+UM_EXPORT_MODULE(CTKAdSettingsManager)
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -26,34 +26,34 @@ EX_EXPORT_MODULE(CTKAdSettingsManager)
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
 }
 
-EX_EXPORT_METHOD_AS(addTestDevice,
+UM_EXPORT_METHOD_AS(addTestDevice,
                     addTestDevice:(NSString *)deviceHash
-                    resolve:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
+                    resolve:(UMPromiseResolveBlock)resolver
+                    reject:(UMPromiseRejectBlock)rejecter)
 {
   [FBAdSettings addTestDevice:deviceHash];
   [_testDevices addObject:deviceHash];
   resolver(nil);
 }
 
-EX_EXPORT_METHOD_AS(clearTestDevices,
-                    clearTestDevicesWithResolver:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
+UM_EXPORT_METHOD_AS(clearTestDevices,
+                    clearTestDevicesWithResolver:(UMPromiseResolveBlock)resolver
+                    reject:(UMPromiseRejectBlock)rejecter)
 {
   [FBAdSettings clearTestDevices];
   [_testDevices removeAllObjects];
 }
 
-EX_EXPORT_METHOD_AS(setLogLevel,
+UM_EXPORT_METHOD_AS(setLogLevel,
                     setLogLevel:(NSString *)logLevelKey
-                    resolve:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
+                    resolve:(UMPromiseResolveBlock)resolver
+                    reject:(UMPromiseRejectBlock)rejecter)
 {
   FBAdLogLevel logLevel = [@{
                            @"none": @(FBAdLogLevelNone),
@@ -68,30 +68,30 @@ EX_EXPORT_METHOD_AS(setLogLevel,
   resolver(nil);
 }
 
-EX_EXPORT_METHOD_AS(setIsChildDirected,
+UM_EXPORT_METHOD_AS(setIsChildDirected,
                     setIsChildDirected:(BOOL)isDirected
-                    resolve:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
+                    resolve:(UMPromiseResolveBlock)resolver
+                    reject:(UMPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setIsChildDirected:isDirected];
   _isChildDirected = isDirected;
   resolver(nil);
 }
 
-EX_EXPORT_METHOD_AS(setMeditationService,
+UM_EXPORT_METHOD_AS(setMeditationService,
                     setMediationService:(NSString *)mediationService
-                    resolve:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
+                    resolve:(UMPromiseResolveBlock)resolver
+                    reject:(UMPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setMediationService:mediationService];
   _mediationService = mediationService;
   resolver(nil);
 }
 
-EX_EXPORT_METHOD_AS(setUrlPrefix,
+UM_EXPORT_METHOD_AS(setUrlPrefix,
                     setUrlPrefix:(NSString *)urlPrefix
-                    resolve:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
+                    resolve:(UMPromiseResolveBlock)resolver
+                    reject:(UMPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setUrlPrefix:urlPrefix];
   _urlPrefix = urlPrefix;

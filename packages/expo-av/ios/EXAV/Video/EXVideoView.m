@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <AVFoundation/AVFoundation.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 #import <EXAV/EXAV.h>
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAVPlayerData.h>
@@ -9,6 +9,7 @@
 
 static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const EXVideoSourceURIKeyPath = @"uri";
+static NSString *const EXVideoSourceHeadersKeyPath = @"headers";
 static NSString *const EXVideoBoundsKeyPath = @"videoBounds";
 static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenViewController";
 
@@ -24,16 +25,17 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 @property (nonatomic, assign) BOOL fullscreenPlayerIsDismissing;
 @property (nonatomic, weak) UIViewController *nativeFullscreenPlayerViewController;
 @property (nonatomic, strong) EXVideoPlayerViewController *fullscreenPlayerViewController;
-@property (nonatomic, strong) EXPromiseResolveBlock requestedFullscreenChangeResolver;
-@property (nonatomic, strong) EXPromiseRejectBlock requestedFullscreenChangeRejecter;
+@property (nonatomic, strong) UMPromiseResolveBlock requestedFullscreenChangeResolver;
+@property (nonatomic, strong) UMPromiseRejectBlock requestedFullscreenChangeRejecter;
 @property (nonatomic, assign) BOOL requestedFullscreenChange;
 
 @property (nonatomic, strong) UIViewController *presentingViewController;
 @property (nonatomic, assign) BOOL fullscreenPlayerPresented;
 
+@property (nonatomic, strong) NSDictionary *lastSetSource;
 @property (nonatomic, strong) NSMutableDictionary *statusToSet;
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
@@ -41,7 +43,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - EXVideoView interface methods
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   if ((self = [super init])) {
     _moduleRegistry = moduleRegistry;
@@ -87,8 +89,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - Player and source
 
-- (void)_tryUpdateDataStatus:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject
+- (void)_tryUpdateDataStatus:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject
 {
   if (_data) {
     if ([_statusToSet count] > 0) {
@@ -123,7 +125,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 {
   if (_requestedFullscreenChangeRejecter) {
     NSString *errorMessage = @"Player is being removed, cancelling fullscreen change request.";
-    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+    _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     _requestedFullscreenChangeResolver = nil;
     _requestedFullscreenChangeRejecter = nil;
     _requestedFullscreenChange = NO;
@@ -204,7 +206,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       }
     };
 
-    [EXUtilities performSynchronouslyOnMainThread:block];
+    [UMUtilities performSynchronouslyOnMainThread:block];
   }
 }
 
@@ -239,7 +241,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       }
     }
   } else if (object == _playerViewController && [keyPath isEqualToString:EXVideoBoundsKeyPath]) {
-    UIViewController *presentedViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
+    UIViewController *presentedViewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController];
     if (presentedViewController == nil) {
       return;
     }
@@ -282,8 +284,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setSource:(NSDictionary *)source
        withStatus:(NSDictionary *)initialStatus
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject
 {
   if (_data) {
     [_statusToSet addEntriesFromDictionary:[_data getStatus]];
@@ -334,7 +336,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
                              } else if (strongSelf) {
                                [strongSelf _removePlayer];
                                if (reject) {
-                                 reject(@"E_VIDEO_NOTCREATED", error, EXErrorWithMessage(error));
+                                 reject(@"E_VIDEO_NOTCREATED", error, UMErrorWithMessage(error));
                                }
                                [strongSelf _callErrorCallback:error];
                              }
@@ -352,8 +354,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)setStatus:(NSDictionary *)status
-         resolver:(EXPromiseResolveBlock)resolve
-         rejecter:(EXPromiseRejectBlock)reject
+         resolver:(UMPromiseResolveBlock)resolve
+         rejecter:(UMPromiseRejectBlock)reject
 {
   if (status != nil) {
     [_statusToSet addEntriesFromDictionary:status];
@@ -362,8 +364,8 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(EXPromiseResolveBlock)resolve
-                rejecter:(EXPromiseRejectBlock)reject
+                resolver:(UMPromiseResolveBlock)resolve
+                rejecter:(UMPromiseRejectBlock)reject
 {
   if (status != nil) {
     [_statusToSet addEntriesFromDictionary:status];
@@ -376,21 +378,21 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 }
 
 - (void)setFullscreen:(BOOL)value
-             resolver:(EXPromiseResolveBlock)resolve
-             rejecter:(EXPromiseRejectBlock)reject
+             resolver:(UMPromiseResolveBlock)resolve
+             rejecter:(UMPromiseRejectBlock)reject
 {
   if (!_data) {
     // Tried to set fullscreen for an unloaded component.
     if (reject) {
       NSString *errorMessage = @"Fullscreen encountered an error: video is not loaded.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     }
     return;
   } else if (!_playerHasLoaded) {
     // `setUri` has been called, but the video has not yet loaded.
     if (_requestedFullscreenChangeRejecter) {
       NSString *errorMessage = @"Received newer request, cancelling fullscreen mode change request.";
-      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+      _requestedFullscreenChangeRejecter(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     }
     
     _requestedFullscreenChange = value;
@@ -456,19 +458,19 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
     } else if (value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
       // Fullscreen player should be presented, is being presented, but hasn't been presented yet.
       NSString *errorMessage = @"Fullscreen player is already being presented. Await the first change request.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     } else if (!value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
       // Fullscreen player should be dismissing, is already dismissing, but hasn't dismissed yet.
       NSString *errorMessage = @"Fullscreen player is already being dismissed. Await the first change request.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     } else if (!value && !_fullscreenPlayerPresented && _fullscreenPlayerViewController && reject) {
       // Fullscreen player is being presented and we receive request to dismiss it.
       NSString *errorMessage = @"Fullscreen player is being presented. Await the `present` request and then dismiss the player.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     } else if (value && _fullscreenPlayerIsDismissing && _fullscreenPlayerViewController && reject) {
       // Fullscreen player is being dismissed and we receive request to present it.
       NSString *errorMessage = @"Fullscreen player is being dismissed. Await the `dismiss` request and then present the player again.";
-      reject(@"E_VIDEO_FULLSCREEN", errorMessage, EXErrorWithMessage(errorMessage));
+      reject(@"E_VIDEO_FULLSCREEN", errorMessage, UMErrorWithMessage(errorMessage));
     } else if (resolve) {
        // Fullscreen is already appropriately set.
       resolve([self getStatus]);
@@ -480,19 +482,23 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setSource:(NSDictionary *)source
 {
-  __weak EXVideoView *weakSelf = self;
-  dispatch_async(_exAV.methodQueue, ^{
-    __strong EXVideoView *strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
-    }
-  });
+  if (![source isEqualToDictionary:_lastSetSource]) {
+    __weak EXVideoView *weakSelf = self;
+    dispatch_async(_exAV.methodQueue, ^{
+      __strong EXVideoView *strongSelf = weakSelf;
+      if (strongSelf) {
+        [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
+        strongSelf.lastSetSource = source;
+      }
+    });
+  }
 }
 
 - (NSDictionary *)source
 {
   return @{
-           EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @""
+           EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @"",
+           EXVideoSourceHeadersKeyPath: _data.headers
            };
 }
 

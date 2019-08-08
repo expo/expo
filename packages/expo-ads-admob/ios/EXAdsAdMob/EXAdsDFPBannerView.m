@@ -1,9 +1,9 @@
-#import <EXCore/EXEventEmitterService.h>
+#import <UMCore/UMEventEmitterService.h>
 #import <EXAdsAdMob/EXAdsDFPBannerView.h>
 
 @implementation EXAdsDFPBannerView {
   DFPBannerView *_bannerView;
-  id<EXEventEmitterService> _eventEmitter;
+  id<UMEventEmitterService> _eventEmitter;
 }
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize {
@@ -55,13 +55,13 @@
   }
 }
 
-- (void)setOnSizeChange:(EXDirectEventBlock)block
+- (void)setOnSizeChange:(UMDirectEventBlock)block
 {
   _onSizeChange = block;
   [self loadBanner];
 }
 
-- (void)setOnDidFailToReceiveAdWithError:(EXDirectEventBlock)block
+- (void)setOnDidFailToReceiveAdWithError:(UMDirectEventBlock)block
 {
   _onDidFailToReceiveAdWithError = block;
   [self loadBanner];

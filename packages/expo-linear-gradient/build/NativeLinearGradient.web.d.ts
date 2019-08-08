@@ -18,9 +18,12 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
         height: undefined;
     };
     onLayout: (event: any) => void;
-    getAngle(): string;
-    getColors(): string;
-    getBackgroundImage(): string | null;
+    getControlPoints: () => [number, number][];
+    calculateGradientAngleFromControlPoints: () => number;
+    getWebGradientColorStyle: () => string;
+    convertJSColorToGradientSafeColor: (color: number, index: number) => string;
+    getGradientValues: () => string[];
+    getBackgroundImage: () => string;
     render(): JSX.Element;
 }
 export {};

@@ -7,20 +7,15 @@ Sometimes it's useful to know whether or not the device has a screen reader that
 
 Here's a small example illustrating how to use `AccessibilityInfo`:
 
-
 ```javascript
-
 class ScreenReaderStatusExample extends React.Component {
   state = {
     screenReaderEnabled: false,
   };
 
   componentDidMount() {
-    AccessibilityInfo.addEventListener(
-      'change',
-      this._handleScreenReaderToggled
-    );
-    AccessibilityInfo.fetch().done((isEnabled) => {
+    AccessibilityInfo.addEventListener('change', this._handleScreenReaderToggled);
+    AccessibilityInfo.fetch().done(isEnabled => {
       this.setState({
         screenReaderEnabled: isEnabled,
       });
@@ -28,13 +23,10 @@ class ScreenReaderStatusExample extends React.Component {
   }
 
   componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      'change',
-      this._handleScreenReaderToggled
-    );
+    AccessibilityInfo.removeEventListener('change', this._handleScreenReaderToggled);
   }
 
-  _handleScreenReaderToggled = (isEnabled) => {
+  _handleScreenReaderToggled = isEnabled => {
     this.setState({
       screenReaderEnabled: isEnabled,
     });
@@ -43,25 +35,20 @@ class ScreenReaderStatusExample extends React.Component {
   render() {
     return (
       <View>
-        <Text>
-          The screen reader is{' '}
-          {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
-        </Text>
+        <Text>The screen reader is {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.</Text>
       </View>
     );
   }
 }
-
 ```
-
 
 ### Methods
 
-* [`fetch`](../accessibilityinfo/#fetch)
-* [`addEventListener`](../accessibilityinfo/#addeventlistener)
-* [`setAccessibilityFocus`](../accessibilityinfo/#setaccessibilityfocus)
-* [`announceForAccessibility`](../accessibilityinfo/#announceforaccessibility)
-* [`removeEventListener`](../accessibilityinfo/#removeeventlistener)
+- [`fetch`](../accessibilityinfo/#fetch)
+- [`addEventListener`](../accessibilityinfo/#addeventlistener)
+- [`setAccessibilityFocus`](../accessibilityinfo/#setaccessibilityfocus)
+- [`announceForAccessibility`](../accessibilityinfo/#announceforaccessibility)
+- [`removeEventListener`](../accessibilityinfo/#removeeventlistener)
 
 ---
 
@@ -71,13 +58,11 @@ class ScreenReaderStatusExample extends React.Component {
 
 ### `fetch()`
 
-
 ```javascript
 
 static fetch()
 
 ```
-
 
 Query whether a screen reader is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a screen reader is enabled and `false` otherwise.
 
@@ -85,25 +70,22 @@ Query whether a screen reader is currently enabled. Returns a promise which reso
 
 ### `addEventListener()`
 
-
 ```javascript
 
 static addEventListener(eventName, handler)
 
 ```
 
-
 Add an event handler. Supported events:
 
-* `change`: Fires when the state of the screen reader changes. The argument to the event handler is a boolean. The boolean is `true` when a screen reader is enabled and `false` otherwise.
-* `announcementFinished`: iOS-only event. Fires when the screen reader has finished making an announcement. The argument to the event handler is a dictionary with these keys:
-  * `announcement`: The string announced by the screen reader.
-  * `success`: A boolean indicating whether the announcement was successfully made.
+- `change`: Fires when the state of the screen reader changes. The argument to the event handler is a boolean. The boolean is `true` when a screen reader is enabled and `false` otherwise.
+- `announcementFinished`: iOS-only event. Fires when the screen reader has finished making an announcement. The argument to the event handler is a dictionary with these keys:
+  - `announcement`: The string announced by the screen reader.
+  - `success`: A boolean indicating whether the announcement was successfully made.
 
 ---
 
 ### `setAccessibilityFocus()`
-
 
 ```javascript
 
@@ -111,13 +93,11 @@ static setAccessibilityFocus(reactTag)
 
 ```
 
-
 iOS-Only. Set accessibility focus to a react component.
 
 ---
 
 ### `announceForAccessibility()`
-
 
 ```javascript
 
@@ -125,13 +105,11 @@ static announceForAccessibility(announcement)
 
 ```
 
-
 iOS-Only. Post a string to be announced by the screen reader.
 
 ---
 
 ### `removeEventListener()`
-
 
 ```javascript
 
@@ -139,6 +117,4 @@ static removeEventListener(eventName, handler)
 
 ```
 
-
 Remove an event handler.
-

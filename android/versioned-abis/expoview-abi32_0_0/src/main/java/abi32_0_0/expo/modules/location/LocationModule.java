@@ -31,7 +31,7 @@ import abi32_0_0.expo.core.interfaces.ModuleRegistryConsumer;
 import abi32_0_0.expo.core.interfaces.services.EventEmitter;
 import abi32_0_0.expo.core.interfaces.services.UIManager;
 import abi32_0_0.expo.interfaces.permissions.Permissions;
-import expo.interfaces.taskManager.TaskManagerInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import abi32_0_0.expo.modules.location.taskConsumers.GeofencingTaskConsumer;
 import abi32_0_0.expo.modules.location.taskConsumers.LocationTaskConsumer;
 import abi32_0_0.expo.modules.location.utils.TimeoutObject;

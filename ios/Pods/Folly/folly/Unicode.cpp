@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 #include <folly/Unicode.h>
+#include <folly/Conv.h>
 
 namespace folly {
 
@@ -48,6 +49,106 @@ std::string codePointToUtf8(char32_t cp) {
   return result;
 }
 
+char32_t utf8ToCodePoint(
+    const unsigned char*& p,
+    const unsigned char* const e,
+    bool skipOnError) {
+  /* The following encodings are valid, except for the 5 and 6 byte
+   * combinations:
+   * 0xxxxxxx
+   * 110xxxxx 10xxxxxx
+   * 1110xxxx 10xxxxxx 10xxxxxx
+   * 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+   * 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+   * 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+   */
+
+  const auto skip = [&] {
+    ++p;
+    return U'\ufffd';
+  };
+
+  if (p >= e) {
+    if (skipOnError) {
+      return skip();
+    }
+    throw std::runtime_error("folly::utf8ToCodePoint empty/invalid string");
+  }
+
+  unsigned char fst = *p;
+  if (!(fst & 0x80)) {
+    // trivial case
+    return *p++;
+  }
+
+  static const uint32_t bitMask[] = {
+      (1 << 7) - 1,
+      (1 << 11) - 1,
+      (1 << 16) - 1,
+      (1 << 21) - 1,
+  };
+
+  // upper control bits are masked out later
+  uint32_t d = fst;
+
+  if ((fst & 0xC0) != 0xC0) {
+    if (skipOnError) {
+      return skip();
+    }
+    throw std::runtime_error(
+        to<std::string>("folly::utf8ToCodePoint i=0 d=", d));
+  }
+
+  fst <<= 1;
+
+  for (unsigned int i = 1; i != 4 && p + i < e; ++i) {
+    const unsigned char tmp = p[i];
+
+    if ((tmp & 0xC0) != 0x80) {
+      if (skipOnError) {
+        return skip();
+      }
+      throw std::runtime_error(to<std::string>(
+          "folly::utf8ToCodePoint i=", i, " tmp=", (uint32_t)tmp));
+    }
+
+    d = (d << 6) | (tmp & 0x3F);
+    fst <<= 1;
+
+    if (!(fst & 0x80)) {
+      d &= bitMask[i];
+
+      // overlong, could have been encoded with i bytes
+      if ((d & ~bitMask[i - 1]) == 0) {
+        if (skipOnError) {
+          return skip();
+        }
+        throw std::runtime_error(
+            to<std::string>("folly::utf8ToCodePoint i=", i, " d=", d));
+      }
+
+      // check for surrogates only needed for 3 bytes
+      if (i == 2) {
+        if ((d >= 0xD800 && d <= 0xDFFF) || d > 0x10FFFF) {
+          if (skipOnError) {
+            return skip();
+          }
+          throw std::runtime_error(
+              to<std::string>("folly::utf8ToCodePoint i=", i, " d=", d));
+        }
+      }
+
+      p += i + 1;
+      return d;
+    }
+  }
+
+  if (skipOnError) {
+    return skip();
+  }
+  throw std::runtime_error("folly::utf8ToCodePoint encoding length maxed out");
+}
+
 //////////////////////////////////////////////////////////////////////
 
-}
+} // namespace folly

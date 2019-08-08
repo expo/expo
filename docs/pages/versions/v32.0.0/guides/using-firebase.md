@@ -2,15 +2,25 @@
 title: Using Firebase
 ---
 
-Firebase Database is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
+[Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.  Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
+
+[Firebase Realtime Database](https://firebase.google.com/docs/database) is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
 
-See [firebase.google.com/docs/database](https://firebase.google.com/docs/database) for more general information and the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html)
+See the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html).
 
-> **Note:** This guide only covers Firebase Realtime Database, and not the other services under the larger Google Firebase umbrella. Firebase Cloud Storage is currently not supported, but we are [working on upstreaming a Blob implementation](https://github.com/facebook/react-native/issues/11103) to React Native that would make this possible. For more background on why other Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration)
+See also [the full list of available Expo Firebase packages](https://github.com/expo/expo/tree/master/packages) (scroll down to the packages prefixed with `expo-firebase-*`).
 
-## 1. Firebase SDK Setup
+> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), and will eventually cover all of the available Expo Firebase packages.  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
+
+##### Table of Contents
+- [Firebase SDK Setup](#firebase-sdk-setup)
+- [Storing Data and Receiving Updates](#storing-data-and-receiving-updates)
+- [User Authentication](#user-authentication)
+- [Using Expo with Firestore](#using-expo-with-firestore)
+
+## Firebase SDK Setup
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
@@ -51,7 +61,7 @@ Go into the Firebase console for Database, and under the Rules tab you should se
 
 > **Note** It is important to note that this is temporary for development, and these rules should be thoroughly assessed before releasing an application.
 
-## 2. Storing Data and Receiving Updates
+## Storing Data and Receiving Updates
 
 Storing data through Firebase can be pretty simple. Imagine we're creating a game where highscores are stored in Firebase for everyone to see. We could create a users bucket in our data that is referenced by each user. Setting their highscore would be straightforward.
 
@@ -74,7 +84,7 @@ setupHighscoreListener(userId) {
 }
 ```
 
-## 3. User Authentication
+## User Authentication
 
 This was all pretty simple and works fairly out of the box for what Firebase JavaScript SDK provides. There is one caveat however. We skipped the authentication rules for simplicity at the beginning. Firebase SDKs provide authentication methods for developers, so they don't have to reimplement common login systems such as Google or Facebook login.
 
@@ -153,7 +163,7 @@ The Facebook login method is similar to what you see in the Facebook login guide
 
 The `firebase.auth().onAuthStateChanged` event allows us to set a listener when the authentication state has changed, so in our case, when the Facebook credential is used to successfully sign in to Firebase, we are given a user object that can be used for authenticated data access.
 
-### Authenticated Data Updates
+### Authenticated Data Updates with Firebase Realtime Database
 
 Now that we have a user object for our authenticated user, we can adapt our previous `storeHighScore()` method to use the uid of the user object as our user reference. Since the `user.uid`'s are generated by Firebase automatically for authenticated users, this is a good way to reference our users bucket.
 
@@ -166,3 +176,30 @@ function storeHighScore(user, score) {
   }
 }
 ```
+
+## Using Expo with Firestore
+
+[Firestore](https://firebase.google.com/docs/firestore/) is the successor to Firebase Realtime Database.
+
+Here's one way to implement a data update using Firestore:
+
+```javascript
+import firebase from 'firebase'
+import '@firebase/firestore';
+
+const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
+
+firebase.initializeApp(firebaseConfig);
+
+const dbh = firebase.firestore();
+
+dbh.collection("characters").doc("mario").set({
+  employment: "plumber",
+  outfitColor: "red",
+  specialAttack: "fireball"
+})
+```
+
+This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+
+See also [the official package documentation](https://github.com/expo/expo/tree/master/packages/expo-firebase-firestore).

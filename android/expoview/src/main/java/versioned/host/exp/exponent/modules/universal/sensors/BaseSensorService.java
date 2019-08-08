@@ -4,7 +4,7 @@ import android.hardware.SensorEventListener2;
 
 import javax.inject.Inject;
 
-import expo.interfaces.sensors.SensorServiceSubscription;
+import org.unimodules.interfaces.sensors.SensorServiceSubscription;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;

@@ -31,19 +31,19 @@ class CircleView extends RenderableView {
 
     @ReactProp(name = "cx")
     public void setCx(Dynamic cx) {
-        mCx = getLengthFromDynamic(cx);
+        mCx = SVGLength.from(cx);
         invalidate();
     }
 
     @ReactProp(name = "cy")
     public void setCy(Dynamic cy) {
-        mCy = getLengthFromDynamic(cy);
+        mCy = SVGLength.from(cy);
         invalidate();
     }
 
     @ReactProp(name = "r")
     public void setR(Dynamic r) {
-        mR = getLengthFromDynamic(r);
+        mR = SVGLength.from(r);
         invalidate();
     }
 

@@ -14,24 +14,23 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.permissions.PermissionsListener;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import expo.core.ExportedModule;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.Promise;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.permissions.Permissions;
-import expo.interfaces.permissions.PermissionsListener;
-
-public class PermissionsModule extends ExportedModule implements ModuleRegistryConsumer, LifecycleEventListener {
+public class PermissionsModule extends ExportedModule implements LifecycleEventListener {
   private static final String EXPIRES_KEY = "expires";
   private static final String STATUS_KEY = "status";
   private static final String GRANTED_VALUE = "granted";
@@ -43,6 +42,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   private PermissionsRequester mPermissionsRequester;
   private Permissions mPermissions;
   private ActivityProvider mActivityProvider;
+  private Set<String> mPermissionsAskedFor = new HashSet<>();
 
   // state holders for asking for writing permissions
   private boolean mWritingPermissionBeingAsked = false; // change this directly before calling corresponding startActivity
@@ -55,7 +55,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mPermissionsRequester = new PermissionsRequester(moduleRegistry);
     mPermissions = moduleRegistry.getModule(Permissions.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
@@ -71,7 +71,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
   public void getAsync(final ArrayList<String> requestedPermissionsTypes, final Promise promise) {
     try {
       promise.resolve(getPermissions(requestedPermissionsTypes));
-    } catch (IllegalStateException e)  {
+    } catch (IllegalStateException e) {
       promise.reject(ERROR_TAG + "_UNKNOWN", e);
     }
   }
@@ -154,9 +154,11 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       mAskAsyncRequestedPermissionsTypes = requestedPermissionsTypes;
       mAskAsyncPermissionsTypesToBeAsked = permissionsTypesToBeAsked;
       askForWriteSettingsPermissionFirst();
+      mPermissionsAskedFor.add("systemBrightness");
       return;
     }
 
+    mPermissionsAskedFor.addAll(requestedPermissionsTypesSet);
     askForPermissions(requestedPermissionsTypes, permissionsTypesToBeAsked, promise);
   }
 
@@ -209,7 +211,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       case "reminders":
         Bundle response = new Bundle();
         response.putString(STATUS_KEY, GRANTED_VALUE);
-        response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);;
+        response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
         return response;
       default:
         throw new IllegalStateException(String.format("Unrecognized permission type: %s", permissionType));
@@ -234,8 +236,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
       } else if (isPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
         scope = "coarse";
-      } else {
+      } else if (mPermissionsAskedFor.contains("location")) {
         response.putString(STATUS_KEY, DENIED_VALUE);
+      } else {
+        response.putString(STATUS_KEY, UNDETERMINED_VALUE);
       }
     } catch (IllegalStateException e) {
       response.putString(STATUS_KEY, UNDETERMINED_VALUE);
@@ -255,10 +259,12 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     response.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-     if (Settings.System.canWrite(mActivityProvider.getCurrentActivity().getApplicationContext())) {
+      if (Settings.System.canWrite(mActivityProvider.getCurrentActivity().getApplicationContext())) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
-      } else {
+      } else if (mPermissionsAskedFor.contains("systemBrightness")) {
         response.putString(STATUS_KEY, DENIED_VALUE);
+      } else {
+        response.putString(STATUS_KEY, UNDETERMINED_VALUE);
       }
     } else {
       response.putString(STATUS_KEY, GRANTED_VALUE);
@@ -269,6 +275,7 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
 
   /**
    * Checks status for Android built-in permission
+   *
    * @param permission {@link Manifest.permission}
    */
   private Bundle getSimplePermission(String permission) {
@@ -277,8 +284,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     try {
       if (isPermissionGranted(permission)) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
-      } else {
+      } else if (mPermissionsAskedFor.contains(permission)) {
         response.putString(STATUS_KEY, DENIED_VALUE);
+      } else {
+        response.putString(STATUS_KEY, UNDETERMINED_VALUE);
       }
     } catch (IllegalStateException e) {
       response.putString(STATUS_KEY, UNDETERMINED_VALUE);
@@ -295,10 +304,12 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     try {
       if (arePermissionsGranted(new String[]{
           Manifest.permission.READ_EXTERNAL_STORAGE,
-          Manifest.permission.WRITE_EXTERNAL_STORAGE })) {
+          Manifest.permission.WRITE_EXTERNAL_STORAGE})) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
-      } else {
+      } else if (mPermissionsAskedFor.contains("cameraRoll")) {
         response.putString(STATUS_KEY, DENIED_VALUE);
+      } else {
+        response.putString(STATUS_KEY, UNDETERMINED_VALUE);
       }
     } catch (IllegalStateException e) {
       response.putString(STATUS_KEY, UNDETERMINED_VALUE);
@@ -314,8 +325,10 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
     try {
       if (arePermissionsGranted(new String[]{
           Manifest.permission.READ_CALENDAR,
-          Manifest.permission.WRITE_CALENDAR })) {
+          Manifest.permission.WRITE_CALENDAR})) {
         response.putString(STATUS_KEY, GRANTED_VALUE);
+      } else if (mPermissionsAskedFor.contains("calendar")) {
+        response.putString(STATUS_KEY, DENIED_VALUE);
       } else {
         response.putString(STATUS_KEY, DENIED_VALUE);
       }
@@ -383,11 +396,11 @@ public class PermissionsModule extends ExportedModule implements ModuleRegistryC
    * Asking for {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS} via separate activity
    * WARNING: has to be asked first among all permissions being asked in request
    * Scenario that forces this order:
-   *  1. user asks for "systemBrightness" (actual {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS}) and for some other permission (e.g. {@link android.Manifest.permission#CAMERA})
-   *  2. first goes ACTION_MANAGE_WRITE_SETTINGS that moves app into background and launches system-specific fullscreen activity
-   *  3. upon user action system resumes app and {@link this#onHostResume} is being called for the first time and logic for other permission is invoked
-   *  4. other permission invokes other system-specific activity that is visible as dialog what moves app again into background
-   *  5. upon user action app is restored and {@link this#onHostResume} is being called again, but no further action is invoked and promise is resolved
+   * 1. user asks for "systemBrightness" (actual {@link android.provider.Settings#ACTION_MANAGE_WRITE_SETTINGS}) and for some other permission (e.g. {@link android.Manifest.permission#CAMERA})
+   * 2. first goes ACTION_MANAGE_WRITE_SETTINGS that moves app into background and launches system-specific fullscreen activity
+   * 3. upon user action system resumes app and {@link this#onHostResume} is being called for the first time and logic for other permission is invoked
+   * 4. other permission invokes other system-specific activity that is visible as dialog what moves app again into background
+   * 5. upon user action app is restored and {@link this#onHostResume} is being called again, but no further action is invoked and promise is resolved
    */
   @TargetApi(Build.VERSION_CODES.M)
   private void askForWriteSettingsPermissionFirst() {

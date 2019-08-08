@@ -110,7 +110,6 @@ export default class ProjectList extends React.PureComponent {
           key={index.toString()}
           hideUsername
           iconUrl={app.iconUrl}
-          likeCount={app.likeCount}
           projectName={app.name}
           slug={app.packageName}
           projectUrl={app.fullName}
@@ -122,8 +121,6 @@ export default class ProjectList extends React.PureComponent {
         <ProjectCard
           key={index}
           style={styles.largeProjectCard}
-          isLikedByMe={app.isLikedByMe}
-          likeCount={app.likeCount}
           id={app.id}
           iconUrl={app.iconUrl}
           projectName={app.name}

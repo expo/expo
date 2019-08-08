@@ -14,14 +14,13 @@ import com.segment.analytics.android.integrations.firebase.FirebaseIntegration;
 import java.util.HashMap;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 
-public class SegmentModule extends ExportedModule implements ModuleRegistryConsumer {
+public class SegmentModule extends ExportedModule {
   private static final String NAME = "ExponentSegment";
   private static final String ENABLED_PREFERENCE_KEY = "enabled";
   private static final String TAG = SegmentModule.class.getSimpleName();
@@ -238,7 +237,7 @@ public class SegmentModule extends ExportedModule implements ModuleRegistryConsu
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mConstants = null;
     if (moduleRegistry != null) {
       mConstants = moduleRegistry.getModule(ConstantsInterface.class);

@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View } from 'react-native';
-declare type Props = {
-    tint: BlurTint;
-} & React.ComponentProps<typeof View>;
-declare type BlurTint = 'light' | 'dark' | 'default';
+import { BlurTint, Props } from './BlurView.types';
 export default class BlurView extends React.Component<Props> {
     static propTypes: {
+        tint: PropTypes.Validator<BlurTint>;
+        intensity: PropTypes.Validator<number>;
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
         onLayout?: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined> | undefined;
         pointerEvents?: PropTypes.Validator<"box-none" | "none" | "box-only" | "auto" | undefined> | undefined;
@@ -21,6 +19,13 @@ export default class BlurView extends React.Component<Props> {
         accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
         onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
+        isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
+        hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
+        tvParallaxProperties?: PropTypes.Validator<import("react-native").TVParallaxProperties | undefined> | undefined;
+        tvParallaxShiftDistanceX?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxShiftDistanceY?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxTiltAngle?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxMagnification?: PropTypes.Validator<number | undefined> | undefined;
         onStartShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onMoveShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
         onResponderEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
@@ -51,8 +56,10 @@ export default class BlurView extends React.Component<Props> {
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
-        tint: PropTypes.Requireable<string>;
+    };
+    static defaultProps: {
+        tint: BlurTint;
+        intensity: number;
     };
     render(): JSX.Element;
 }
-export {};

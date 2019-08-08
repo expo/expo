@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI26_0_0/Libraries/NativeAnimation/Nodes/ABI26_0_0RCTInterpolationAnimatedNode.h

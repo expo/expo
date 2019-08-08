@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { Project, ProjectUtils } from 'xdl';
+import { Project, ProjectUtils } from '@expo/xdl';
 import spawnAsync from '@expo/spawn-async';
 
 import { Directories, Fixtures } from '../expotools';

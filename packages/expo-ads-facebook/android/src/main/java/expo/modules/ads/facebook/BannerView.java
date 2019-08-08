@@ -11,10 +11,10 @@ import com.facebook.ads.AdListener;
 import com.facebook.ads.AdSize;
 import com.facebook.ads.AdView;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
 
 @SuppressLint("ViewConstructor")
 public class BannerView extends LinearLayout implements AdListener, LifecycleEventListener {

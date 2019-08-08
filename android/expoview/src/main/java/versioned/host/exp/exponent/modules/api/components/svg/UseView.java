@@ -11,6 +11,7 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 
@@ -23,6 +24,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 @SuppressLint("ViewConstructor")
 class UseView extends RenderableView {
     private String mHref;
+    private SVGLength mX;
+    private SVGLength mY;
     private SVGLength mW;
     private SVGLength mH;
 
@@ -36,15 +39,27 @@ class UseView extends RenderableView {
         invalidate();
     }
 
+    @ReactProp(name = "x")
+    public void setX(Dynamic x) {
+        mX = SVGLength.from(x);
+        invalidate();
+    }
+
+    @ReactProp(name = "y")
+    public void setY(Dynamic y) {
+        mY = SVGLength.from(y);
+        invalidate();
+    }
+
     @ReactProp(name = "width")
     public void setWidth(Dynamic width) {
-        mW = getLengthFromDynamic(width);
+        mW = SVGLength.from(width);
         invalidate();
     }
 
     @ReactProp(name = "height")
     public void setHeight(Dynamic height) {
-        mH = getLengthFromDynamic(height);
+        mH = SVGLength.from(height);
         invalidate();
     }
 
@@ -52,30 +67,33 @@ class UseView extends RenderableView {
     void draw(Canvas canvas, Paint paint, float opacity) {
         VirtualView template = getSvgView().getDefinedTemplate(mHref);
 
-        if (template != null) {
-            if (template instanceof RenderableView) {
-                ((RenderableView)template).mergeProperties(this);
-            }
-
-            int count = template.saveAndSetupCanvas(canvas);
-            clip(canvas, paint);
-
-            if (template instanceof SymbolView) {
-                SymbolView symbol = (SymbolView)template;
-                symbol.drawSymbol(canvas, paint, opacity, (float) relativeOnWidth(mW), (float) relativeOnHeight(mH));
-            } else {
-                template.draw(canvas, paint, opacity * mOpacity);
-            }
-
-            this.setClientRect(template.getClientRect());
-
-            template.restoreCanvas(canvas, count);
-            if (template instanceof RenderableView) {
-                ((RenderableView)template).resetProperties();
-            }
-        } else {
+        if (template == null) {
             FLog.w(ReactConstants.TAG, "`Use` element expected a pre-defined svg template as `href` prop, " +
-                "template named: " + mHref + " is not defined.");
+                    "template named: " + mHref + " is not defined.");
+            return;
+        }
+
+        template.clearCache();
+        canvas.translate((float) relativeOnWidth(mX), (float) relativeOnHeight(mY));
+        if (template instanceof RenderableView) {
+            ((RenderableView)template).mergeProperties(this);
+        }
+
+        int count = template.saveAndSetupCanvas(canvas);
+        clip(canvas, paint);
+
+        if (template instanceof SymbolView) {
+            SymbolView symbol = (SymbolView)template;
+            symbol.drawSymbol(canvas, paint, opacity, (float) relativeOnWidth(mW), (float) relativeOnHeight(mH));
+        } else {
+            template.draw(canvas, paint, opacity * mOpacity);
+        }
+
+        this.setClientRect(template.getClientRect());
+
+        template.restoreCanvas(canvas, count);
+        if (template instanceof RenderableView) {
+            ((RenderableView)template).resetProperties();
         }
     }
 
@@ -90,6 +108,12 @@ class UseView extends RenderableView {
         mInvTransform.mapPoints(dst);
 
         VirtualView template = getSvgView().getDefinedTemplate(mHref);
+        if (template == null) {
+            FLog.w(ReactConstants.TAG, "`Use` element expected a pre-defined svg template as `href` prop, " +
+                    "template named: " + mHref + " is not defined.");
+            return -1;
+        }
+
         int hitChild = template.hitTest(dst);
         if (hitChild != -1) {
             return (template.isResponsible() || hitChild != template.getId()) ? hitChild : getId();
@@ -100,7 +124,17 @@ class UseView extends RenderableView {
 
     @Override
     Path getPath(Canvas canvas, Paint paint) {
-        // todo:
-        return new Path();
+        VirtualView template = getSvgView().getDefinedTemplate(mHref);
+        if (template == null) {
+            FLog.w(ReactConstants.TAG, "`Use` element expected a pre-defined svg template as `href` prop, " +
+                    "template named: " + mHref + " is not defined.");
+            return null;
+        }
+        Path path = template.getPath(canvas, paint);
+        Path use = new Path();
+        Matrix m = new Matrix();
+        m.setTranslate((float) relativeOnWidth(mX), (float) relativeOnHeight(mY));
+        path.transform(m, use);
+        return use;
     }
 }

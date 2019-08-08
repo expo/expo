@@ -1,8 +1,11 @@
 #import <EXAdsFacebook/EXNativeMediaViewManager.h>
+#import <FBAudienceNetwork/FBMediaView.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXNativeMediaViewManager
 
-EX_EXPORT_MODULE(MediaViewManager)
+UM_EXPORT_MODULE(MediaViewManager)
 
 - (NSString *)viewName
 {
@@ -15,3 +18,5 @@ EX_EXPORT_MODULE(MediaViewManager)
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

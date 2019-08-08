@@ -62,12 +62,11 @@ class PropHelper {
      *
      * @param length     length string
      * @param relative   relative size for percentages
-     * @param offset     offset for all units
      * @param scale      scaling parameter
      * @param fontSize   current font size
      * @return value in the current user coordinate system
      */
-    static double fromRelative(String length, double relative, double offset, double scale, double fontSize) {
+    static double fromRelative(String length, double relative, double scale, double fontSize) {
         /*
             TODO list
 
@@ -94,9 +93,9 @@ class PropHelper {
         int stringLength = length.length();
         int percentIndex = stringLength - 1;
         if (stringLength == 0 || length.equals("normal")) {
-            return offset;
+            return 0d;
         } else if (length.codePointAt(percentIndex) == '%') {
-            return Double.valueOf(length.substring(0, percentIndex)) / 100 * relative + offset;
+            return Double.valueOf(length.substring(0, percentIndex)) / 100 * relative;
         } else {
             int twoLetterUnitIndex = stringLength - 2;
             if (twoLetterUnitIndex > 0) {
@@ -144,9 +143,9 @@ class PropHelper {
                         end = stringLength;
                 }
 
-                return Double.valueOf(length.substring(0, end)) * unit * scale + offset;
+                return Double.valueOf(length.substring(0, end)) * unit * scale;
             } else {
-                return Double.valueOf(length) * scale + offset;
+                return Double.valueOf(length) * scale;
             }
         }
     }
@@ -184,6 +183,9 @@ class PropHelper {
             https://drafts.csswg.org/css-fonts-3/#propdef-font-size
             https://drafts.csswg.org/css2/fonts.html#propdef-font-size
         */
+        if (length == null) {
+            return offset;
+        }
         SVGLengthUnitType unitType = length.unit;
         double value = length.value;
         double unit = 1;

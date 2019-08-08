@@ -5,19 +5,17 @@ package expo.modules.gl;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.View;
 
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.camera.ExpoCameraViewInterface;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.camera.CameraViewInterface;
 
-public class GLObjectManagerModule extends ExportedModule implements ModuleRegistryConsumer {
+public class GLObjectManagerModule extends ExportedModule {
   private SparseArray<GLObject> mGLObjects = new SparseArray<>();
   private SparseArray<GLContext> mGLContextMap = new SparseArray<>();
 
@@ -33,7 +31,7 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -74,9 +72,9 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
       return;
     }
 
-    uiManager.addUIBlock(cameraViewTag, new UIManager.UIBlock<ExpoCameraViewInterface>() {
+    uiManager.addUIBlock(cameraViewTag, new UIManager.UIBlock<CameraViewInterface>() {
       @Override
-      public void resolve(final ExpoCameraViewInterface cameraView) {
+      public void resolve(final CameraViewInterface cameraView) {
         final GLContext glContext = getContextWithId(exglCtxId);
 
         if (glContext == null) {
@@ -103,7 +101,7 @@ public class GLObjectManagerModule extends ExportedModule implements ModuleRegis
       public void reject(Throwable throwable) {
         promise.reject("E_GL_BAD_CAMERA_VIEW_TAG", "ExponentGLObjectManager.createCameraTextureAsync: Expected a CameraView", throwable);
       }
-    }, ExpoCameraViewInterface.class);
+    }, CameraViewInterface.class);
   }
 
   @ExpoMethod

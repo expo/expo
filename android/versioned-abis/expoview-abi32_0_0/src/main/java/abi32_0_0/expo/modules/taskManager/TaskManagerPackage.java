@@ -8,7 +8,7 @@ import java.util.List;
 import abi32_0_0.expo.core.ExportedModule;
 import abi32_0_0.expo.core.BasePackage;
 import abi32_0_0.expo.core.interfaces.InternalModule;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.SingletonModule;
 
 public class TaskManagerPackage extends BasePackage {
   @Override

@@ -27,7 +27,7 @@ const STYLES_INPUT = css`
     box-sizing: border-box;
     width: 380px;
     font-size: 14px;
-    padding: 2px 36px 0 32px;
+    padding: 2px 36px 0 8px;
     border-radius: 5px;
     height: 32px;
     outline: 0;
@@ -51,17 +51,6 @@ const STYLES_INPUT = css`
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
-  componentWillReceiveProps(nextProps) {
-    if (this.props.version && this.props.version !== nextProps.version) {
-      this.docsearch.algoliaOptions = {
-        ...this.docsearch.algoliaOptions,
-        facetFilters: [
-          `tags:${nextProps.version === 'latest' ? LATEST_VERSION : nextProps.version}`,
-        ],
-      };
-    }
-  }
-
   processUrl(url) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
@@ -77,7 +66,12 @@ class AlgoliaSearch extends React.Component {
       apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
       indexName: 'expo',
       inputSelector: '#algolia-search-box',
-      enhancedSearchInput: true,
+      enhancedSearchInput: false,
+      algoliaOptions: {
+        facetFilters: [
+          `version:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
+        ],
+      },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
         const url = suggestion.url;
@@ -125,7 +119,7 @@ class AlgoliaSearch extends React.Component {
         <input
           id="algolia-search-box"
           type="text"
-          placeholder="Search the docs"
+          placeholder={`Search ${Utilities.getUserFacingVersionString(this.props.version)} docs`}
           autoComplete="off"
           spellCheck="false"
           dir="auto"

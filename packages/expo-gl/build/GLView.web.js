@@ -2,7 +2,7 @@ import invariant from 'invariant';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { UnavailabilityError, CodedError } from 'expo-errors';
+import { UnavailabilityError, CodedError } from '@unimodules/core';
 function getImageForAsset(asset) {
     if (asset != null && typeof asset === 'object' && asset !== null && asset.downloadAsync) {
         const dataURI = asset.localUri || asset.uri || '';
@@ -36,8 +36,7 @@ function ensureContext(canvas, contextAttributes) {
     if (!canvas) {
         throw new CodedError('ERR_GL_INVALID', 'Attempting to use the GL context before it has been created.');
     }
-    const context = canvas.getContext('webgl2', contextAttributes) ||
-        canvas.getContext('webgl', contextAttributes) ||
+    const context = canvas.getContext('webgl', contextAttributes) ||
         canvas.getContext('webgl-experimental', contextAttributes) ||
         canvas.getContext('experimental-webgl', contextAttributes);
     invariant(context, 'Browser does not support WebGL');

@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from 'expo-core';
+import { SyntheticPlatformEmitter } from '@unimodules/core';
 
 import {
   OrientationInfo,
@@ -116,7 +116,9 @@ export default {
     const webOrientation =
       screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
     if (!webOrientation) {
-      throw new Error(`getOrientationAsync isn't supported in this browser.`);
+      return {
+        orientation: Orientation.UNKNOWN,
+      };
     }
     return {
       orientation: OrientationWebToAPI[webOrientation],

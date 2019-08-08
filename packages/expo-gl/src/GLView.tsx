@@ -1,12 +1,12 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-core';
+import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
 
 const packageJSON = require('../package.json');
 
 import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 
 declare let global: any;
 
@@ -56,13 +56,13 @@ export class GLView extends React.Component<GLViewProps> {
     return getGl(exglCtxId);
   }
 
-  static async destroyContextAsync(exgl?: WebGLRenderingContext | number): Promise<boolean> {
+  static async destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean> {
     const exglCtxId = getContextId(exgl);
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
 
   static async takeSnapshotAsync(
-    exgl?: WebGLRenderingContext | number,
+    exgl?: ExpoWebGLRenderingContext | number,
     options: SnapshotOptions = {}
   ): Promise<GLSnapshot> {
     const exglCtxId = getContextId(exgl);
@@ -561,7 +561,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
   return gl;
 };
 
-const getContextId = (exgl?: WebGLRenderingContext | number): number => {
+const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
   const exglCtxId = exgl && typeof exgl === 'object' ? exgl.__exglCtxId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {

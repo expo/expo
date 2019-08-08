@@ -11,13 +11,17 @@ project(':react-native-reanimated').projectDir = new File(rootProject.projectDir
 include ':react-native-screens'
 project(':react-native-screens').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-screens/android')
 
+include ':unimodules-core'
+project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../../../packages/@unimodules/core/android')
+
+include ':unimodules-react-native-adapter'
+project(':unimodules-react-native-adapter').projectDir = new File(rootProject.projectDir, '../../../packages/@unimodules/react-native-adapter/android')
+
 [
-        'expo-core',
-        'expo-react-native-adapter',
         // required by the adapter
-        'expo-font-interface',
-        'expo-image-loader-interface',
-        'expo-permissions-interface'
+        'unimodules-font-interface',
+        'unimodules-image-loader-interface',
+        'unimodules-permissions-interface'
 ].forEach({ name ->
     include ":$name"
     project(":$name").projectDir = new File(rootDir, "../../../packages/$name/android")

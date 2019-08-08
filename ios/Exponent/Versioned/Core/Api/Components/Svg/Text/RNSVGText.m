@@ -18,30 +18,22 @@
     RNSVGGlyphContext *_glyphContext;
     NSString *_alignmentBaseline;
     NSString *_baselineShift;
-    BOOL _merging;
+    CGFloat cachedAdvance;
 }
 
 - (void)invalidate
 {
-    if (_merging) {
+    if (self.dirty || self.merging) {
         return;
     }
     [super invalidate];
-    [self releaseCachedPath];
+    [self clearChildCache];
 }
 
-- (void)mergeProperties:(__kindof RNSVGRenderable *)target
+- (void)clearPath
 {
-    _merging = true;
-    [super mergeProperties:target];
-    _merging = false;
-}
-
-- (void)resetProperties
-{
-    _merging = true;
-    [super resetProperties];
-    _merging = false;
+    [super clearPath];
+    cachedAdvance = NAN;
 }
 
 - (void)setTextLength:(RNSVGLength *)textLength
@@ -130,14 +122,8 @@
     [self clip:context];
     CGContextSaveGState(context);
     [self setupGlyphContext:context];
-
-    CGPathRef path = [self getGroupPath:context];
     [self renderGroupTo:context rect:rect];
     CGContextRestoreGState(context);
-
-    CGPathRef transformedPath = CGPathCreateCopy(path);
-    [self setHitArea:transformedPath];
-    CGPathRelease(transformedPath);
 }
 
 - (void)setupGlyphContext:(CGContextRef)context
@@ -150,19 +136,25 @@
 
 - (CGPathRef)getGroupPath:(CGContextRef)context
 {
+    CGPathRef path = self.path;
+    if (path) {
+        return path;
+    }
     [self pushGlyphContext];
-    CGPathRef groupPath = [super getPath:context];
+    path = [super getPath:context];
     [self popGlyphContext];
-
-    return groupPath;
+    self.path = path;
+    return path;
 }
 
 - (CGPathRef)getPath:(CGContextRef)context
 {
+    CGPathRef path = self.path;
+    if (path) {
+        return path;
+    }
     [self setupGlyphContext:context];
-    CGPathRef groupPath = [self getGroupPath:context];
-
-    return (CGPathRef)CFAutorelease(CGPathCreateCopy(groupPath));
+    return [self getGroupPath:context];
 }
 
 - (void)renderGroupTo:(CGContextRef)context rect:(CGRect)rect
@@ -261,6 +253,41 @@
 - (CTFontRef)getFontFromContext
 {
     return [[self.textRoot getGlyphContext] getGlyphFont];
+}
+
+- (RNSVGText*)getTextAnchorRoot
+{
+    RNSVGGlyphContext* gc = [self.textRoot getGlyphContext];
+    NSArray* font = [gc getFontContext];
+    RNSVGText* node = self;
+    UIView* parent = [self superview];
+    for (NSInteger i = [font count] - 1; i >= 0; i--) {
+        RNSVGFontData* fontData = [font objectAtIndex:i];
+        if (![parent isKindOfClass:[RNSVGText class]] ||
+            fontData->textAnchor == RNSVGTextAnchorStart ||
+            node.positionX != nil) {
+            return node;
+        }
+        node = (RNSVGText*) parent;
+        parent = [node superview];
+    }
+    return node;
+}
+
+- (CGFloat)getSubtreeTextChunksTotalAdvance
+{
+    if (!isnan(cachedAdvance)) {
+        return cachedAdvance;
+    }
+    CGFloat advance = 0;
+    for (UIView *node in self.subviews) {
+        if ([node isKindOfClass:[RNSVGText class]]) {
+            RNSVGText *text = (RNSVGText*)node;
+            advance += [text getSubtreeTextChunksTotalAdvance];
+        }
+    }
+    cachedAdvance = advance;
+    return advance;
 }
 
 @end

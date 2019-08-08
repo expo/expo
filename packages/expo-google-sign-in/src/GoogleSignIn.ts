@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { UnavailabilityError } from 'expo-errors';
+import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 
 import ExpoGoogleSignIn from './ExpoGoogleSignIn';

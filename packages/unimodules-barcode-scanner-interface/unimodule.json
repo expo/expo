@@ -1,0 +1,4 @@
+{
+  "name": "unimodules-barcode-scanner-interface",
+  "platforms": ["ios", "android"]
+}

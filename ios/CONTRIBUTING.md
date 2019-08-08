@@ -35,7 +35,7 @@ The `EXShellManager` class keeps track of how the code is being run. Mostly it r
 We use CocoaPods to manage dependencies. Rather than committing `Podfile`, we use `template-files/ios/dependencies.json`. To add a dependency:
 
 - Add it to `dependencies.json`
-- Run `tools-public/generate-files-ios.sh`. This will write `Podfile` (for the Expo Client) and `ExpoKit.podspec` (for ExpoKit, which uses almost all of the same code as Expo Client, and therefore has the same dependencies).
+- Run `et ios-generate-dynamic-macros`. This will write `Podfile` (for the Expo Client) and `ExpoKit.podspec` (for ExpoKit, which uses almost all of the same code as Expo Client, and therefore has the same dependencies).
 
 ## Testing
 

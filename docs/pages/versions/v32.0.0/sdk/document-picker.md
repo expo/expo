@@ -39,7 +39,7 @@ Otherwise, returns `{ type: 'success', uri, name, size }` where `uri` is a URI t
 
 ## iOS configuration
 
-On iOS, for [standalone apps](../../distribution/building-standalone-apps/) and [ExpoKit](../../expokit/) projects, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../../workflow/configuration/#ios).
+On iOS, for [standalone apps](../../distribution/building-standalone-apps/) and [ExpoKit](../../expokit/overview/) projects, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../../workflow/configuration/#ios).
 
 ### iCloud Application Service
 

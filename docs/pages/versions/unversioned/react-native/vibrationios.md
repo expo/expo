@@ -13,7 +13,7 @@ Vibration patterns are currently unsupported.
 
 ### Methods
 
-* [`vibrate`](../vibrationios/#vibrate)
+- [`vibrate`](../vibrationios/#vibrate)
 
 ---
 
@@ -23,13 +23,10 @@ Vibration patterns are currently unsupported.
 
 ### `vibrate()`
 
-
 ```javascript
 
 static vibrate()
 
 ```
 
-
 @deprecated
-

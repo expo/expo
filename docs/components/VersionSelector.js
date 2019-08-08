@@ -2,6 +2,7 @@ import styled, { keyframes, css } from 'react-emotion';
 
 import * as React from 'react';
 import * as Constants from '~/common/constants';
+import * as Utilities from '~/common/utilities';
 import { VERSIONS, LATEST_VERSION } from '~/common/versions';
 
 import ChevronDownIcon from '~/components/icons/ChevronDown';
@@ -69,12 +70,13 @@ const orderVersions = versions => {
   });
 };
 
+
 export default class VersionSelector extends React.Component {
   render() {
     return (
       <div className={STYLES_SELECT} style={this.props.style}>
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          {this.props.version} <ChevronDownIcon style={{ marginLeft: 8 }} />
+          {Utilities.getUserFacingVersionString(this.props.version)} <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
         {// hidden links to help test-links spidering
         VERSIONS.map(v => (
@@ -89,7 +91,7 @@ export default class VersionSelector extends React.Component {
             .map(version => {
               return (
                 <option key={version} value={version}>
-                  {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : version}
+                  {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : Utilities.getUserFacingVersionString(version)}
                 </option>
               );
             })

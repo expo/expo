@@ -41,7 +41,11 @@ A short description of what your app is and why it is great.
 
 ### `"slug"`
 
-**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
+**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+
+### `"owner"`
+
+The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
@@ -54,7 +58,7 @@ Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the f
 
 ### `"version"`
 
-Your app version; use whatever versioning scheme that you like.
+Your app version. On iOS, this corresponds to `CFBundleShortVersionString`, and the required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
 
 > **ExpoKit**: To change your app version, edit the "Version" field in Xcode and the `versionName` string in `android/app/build.gradle`.
 
@@ -93,7 +97,7 @@ Adds a notification to your standalone app with refresh button and debug info.
 
 ### `"scheme"`
 
-**Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. String beginning with a letter followed by any combination of letters, digits, "+", "." or "-"
+**Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped. String beginning with a **lowercase** letter followed by any combination of **lowercase** letters, digits, "+", "." or "-"
 
 > **ExpoKit**: To change your app's scheme, replace all occurrences of the old scheme in `Info.plist`, `AndroidManifest.xml`, and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`.
 
@@ -216,6 +220,14 @@ Configuration for remote (push) notifications.
     "color": STRING,
 
     /*
+      Whether or not to display notifications when the app is in the foreground on iOS.
+      `_displayInForeground` option in the individual push notification message overrides this option.
+      Learn more: https://docs.expo.io/versions/latest/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Defaults to `false`.
+    */
+    "iosDisplayInForeground": BOOLEAN,
+
+    /*
       Show each push notification individually "default" or collapse into one "collapse".
       Valid values: "default", "collapse"
     */
@@ -280,7 +292,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+> **ExpoKit**: To change the value of `enabled`, edit the `areRemoteUpdatesEnabled` key in `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and the `ARE_REMOTE_UPDATES_ENABLED` variable in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
 
 ### `"ios"`
 
@@ -304,10 +316,11 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Must be a string
-      that matches Apple's format for CFBundleVersion.
-
+      Build number for your iOS standalone app. Corresponds to `CFBundleVersion` 
+      and must match Apple's specified format.
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
+      
+      Note- Application loader will pull the value for "Version Number" from `expo.version` and NOT from `expo.ios.buildNumber`
 
       ExpoKit: use Xcode to set this.
     */
@@ -337,6 +350,15 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "supportsTablet": BOOLEAN,
+
+    /*
+      If true, indicates that your standalone iOS app does not support Slide Over
+      and Split View on iPad.
+      Defaults to `true` currently, but will change to `false` in a future SDK version.
+
+      ExpoKit: use Xcode to set `UIRequiresFullScreen`.
+    */
+    "requireFullScreen": BOOLEAN,
 
     /*
       If true, indicates that your standalone iOS app does not support handsets.
@@ -672,8 +694,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       /*
         Determines how the "image" will be displayed in the splash loading screen.
-        Must be one of "cover" or "contain", defaults to "contain".
-        Valid values: "cover", "contain"
+        Must be one of "cover", "contain" or "native", defaults to "contain".
+        Valid values: "cover", "contain", "native"
       */
       "resizeMode": STRING,
 

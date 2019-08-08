@@ -21,10 +21,12 @@
         recognizer.direction = [RCTConvert NSInteger:prop];
     }
     
+#if !TARGET_OS_TV
     prop = config[@"numberOfPointers"];
     if (prop != nil) {
         recognizer.numberOfTouchesRequired = [RCTConvert NSInteger:prop];
     }
+#endif
 }
 
 @end

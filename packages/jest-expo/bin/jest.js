@@ -19,7 +19,8 @@ const jestPackageJson = require('jest/package.json');
 const jestPackagePath = path.resolve(require.resolve('jest/package.json'), '..');
 const jestProgramPath = path.resolve(jestPackagePath, jestPackageJson.bin.jest);
 const jestProgramArgs = process.argv.slice(2);
-const result = childProcess.spawnSync(jestProgramPath, jestProgramArgs, { stdio: 'inherit' });
+const jestWithArgs = [jestProgramPath].concat(jestProgramArgs);
+const result = childProcess.spawnSync('node', jestWithArgs, { stdio: 'inherit' });
 
 if (result.signal) {
   process.kill(process.pid, result.signal);

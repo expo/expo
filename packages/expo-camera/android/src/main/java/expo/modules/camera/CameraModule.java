@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Bundle;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
@@ -21,17 +20,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import expo.core.ExportedModule;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.Promise;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.imageloader.ImageLoader;
-import expo.interfaces.permissions.Permissions;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 
-public class CameraModule extends ExportedModule implements ModuleRegistryConsumer {
+public class CameraModule extends ExportedModule {
   private static final String TAG = "ExponentCameraModule";
   private static final String ERROR_TAG = "E_CAMERA";
   private ModuleRegistry mModuleRegistry;
@@ -66,7 +63,7 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

@@ -9,10 +9,10 @@ import android.view.WindowManager;
 
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 public class BarCodeScannerView extends ViewGroup {
   private final OrientationEventListener mOrientationListener;

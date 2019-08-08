@@ -1,5 +1,6 @@
 /* @flow */
 
+import Constants from 'expo-constants';
 import React from 'react';
 import {
   NativeModules,
@@ -11,13 +12,12 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
 
-import SessionActions from '../redux/SessionActions';
-import SettingsActions from '../redux/SettingsActions';
+import Analytics from '../api/Analytics';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import Analytics from '../api/Analytics';
+import SessionActions from '../redux/SessionActions';
+import SettingsActions from '../redux/SettingsActions';
 
 const forceTouchAvailable =
   (NativeModules.PlatformConstants && NativeModules.PlatformConstants.forceTouchAvailable) || false;

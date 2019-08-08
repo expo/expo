@@ -1,6 +1,6 @@
 # expo-face-detector
 
-Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
+Lets you use the power of MLKit (https://firebase.google.com/docs/ml-kit/detect-faces) framework to detect faces on images.
 
 # API documentation
 
@@ -11,7 +11,7 @@ Lets you use the power of Google Mobile Vision (https://developers.google.com/vi
 
 This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
 
-For bare React Native projects, you must ensure that you have [installed and configured the `@unimodules/core` package](https://github.com/unimodules/core) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -21,37 +21,12 @@ npm install expo-face-detector
 
 ### Configure for iOS
 
-Add the dependency to your `Podfile` and then run `pod install`.
-
-```ruby
-pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'
-```
+Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-1. Append the following lines to `android/settings.gradle`:
-
-```gradle
-include ':expo-face-detector'
-project(':expo-face-detector').projectDir = new File(rootProject.projectDir, '../node_modules/expo-face-detector/android')
-```
-
-2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-```gradle
-api project(':expo-face-detector')
-```
-
-3. In `MainApplication.java`, import the package and add it to the `ReactModuleRegistryProvider` list:
-```java
-import expo.modules.facedetector.FaceDetectorPackage;
-```
-```java
-private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(Arrays.<Package>asList(
-  // Your other packages will be here
-  new FaceDetectorPackage()
-), Arrays.<SingletonModule>asList());
-```
+No additional set up necessary.
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

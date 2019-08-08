@@ -15,6 +15,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,24 +35,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.permissions.Permissions;
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
-public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule, ModuleRegistryConsumer {
+public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
+  private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
+  private static final String AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND = "staysActiveInBackground";
 
   private static final String RECORDING_OPTIONS_KEY = "android";
   private static final String RECORDING_OPTION_EXTENSION_KEY = "extension";
@@ -53,7 +55,6 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
   private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
-  private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
 
   private boolean mShouldRouteThroughEarpiece = false;
 
@@ -75,6 +76,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private AudioInterruptionMode mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;
   private boolean mShouldDuckAudio = true;
   private boolean mIsDuckingAudio = false;
+  private boolean mStaysActiveInBackground = false;
 
   private int mSoundMapKeyCount = 0;
   // There will never be many PlayerData objects in the map, so HashMap is most efficient.
@@ -114,7 +116,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }
@@ -149,11 +151,13 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void onHostResume() {
     if (mAppIsPaused) {
       mAppIsPaused = false;
-      for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-        handler.onResume();
-      }
-      if (mShouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(true);
+      if (!mStaysActiveInBackground) {
+        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+          handler.onResume();
+        }
+        if (mShouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(true);
+        }
       }
     }
   }
@@ -162,13 +166,15 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void onHostPause() {
     if (!mAppIsPaused) {
       mAppIsPaused = true;
-      for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-        handler.onPause();
-      }
-      abandonAudioFocus();
+      if (!mStaysActiveInBackground) {
+        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+          handler.onPause();
+        }
+        abandonAudioFocus();
 
-      if (mShouldRouteThroughEarpiece) {
-        updatePlaySoundThroughEarpiece(false);
+        if (mShouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(false);
+        }
       }
     }
   }
@@ -240,7 +246,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       throw new AudioFocusNotAcquiredException("Expo Audio is disabled, so audio focus could not be acquired.");
     }
 
-    if (mAppIsPaused) {
+    if (mAppIsPaused && !mStaysActiveInBackground) {
       throw new AudioFocusNotAcquiredException("This experience is currently in the background, so audio focus could not be acquired.");
     }
 
@@ -322,6 +328,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       default:
         mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;
     }
+
+    mStaysActiveInBackground = map.getBoolean(AUDIO_MODE_STAYS_ACTIVE_IN_BACKGROUND);
   }
 
   // Unified playback API - Audio
@@ -491,7 +499,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return mModuleRegistry.getModule(Permissions.class).getPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    return mModuleRegistry.getModule(Permissions.class).getPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

@@ -1,6 +1,22 @@
 import { coalesceExpirations, coalesceStatuses } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
-import { PermissionResponse, PermissionType, PermissionMap } from './Permissions.types';
+import {
+  PermissionResponse,
+  PermissionType,
+  PermissionMap,
+  PermissionStatus,
+  PermissionExpiration,
+  PermissionInfo,
+} from './Permissions.types';
+
+export {
+  PermissionStatus,
+  PermissionResponse,
+  PermissionExpiration,
+  PermissionMap,
+  PermissionInfo,
+  PermissionType,
+};
 
 export const CAMERA = 'camera';
 export const CAMERA_ROLL = 'cameraRoll';

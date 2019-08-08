@@ -3,31 +3,36 @@
 #import <EXMailComposer/EXMailComposer.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
 @interface EXMailComposer ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
-@property (nonatomic, strong) EXPromiseResolveBlock resolve;
-@property (nonatomic, strong) EXPromiseRejectBlock reject;
+@property (nonatomic, strong) UMPromiseResolveBlock resolve;
+@property (nonatomic, strong) UMPromiseRejectBlock reject;
 
 @end
 
 @implementation EXMailComposer
 
-EX_EXPORT_MODULE(ExpoMailComposer);
+UM_EXPORT_MODULE(ExpoMailComposer);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-EX_EXPORT_METHOD_AS(composeAsync,
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
+UM_EXPORT_METHOD_AS(composeAsync,
                     composeAsync:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![MFMailComposeViewController canSendMail]) {
     reject(@"E_COMPOSE_UNAVAILABLE", @"Mail services are not available.", nil);
@@ -71,12 +76,12 @@ EX_EXPORT_METHOD_AS(composeAsync,
     for (NSString *uri in options[@"attachments"]) {
       NSURL *url = [NSURL URLWithString:uri];
       NSString *path = [url.path stringByStandardizingPath];
-      id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+      id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
       if (!fileSystem) {
         reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
         return;
       }
-      if (!([fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
+      if (!([fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
         reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
         return;
       }
@@ -103,11 +108,8 @@ EX_EXPORT_METHOD_AS(composeAsync,
 
   self.resolve = resolve;
   self.reject = reject;
-  __weak typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    id<EXUtilitiesInterface> utilities = [weakSelf.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
-    [utilities.currentViewController presentViewController:composeController animated:YES completion:nil];
-  });
+  id<UMUtilitiesInterface> utilities = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  [utilities.currentViewController presentViewController:composeController animated:YES completion:nil];
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller

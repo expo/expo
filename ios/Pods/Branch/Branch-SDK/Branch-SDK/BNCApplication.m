@@ -48,6 +48,14 @@ static NSString*const kBranchKeychainFirstInstalldKey = @"BranchKeychainFirstIns
     application->_firstInstallDate = [BNCApplication firstInstallDate];
     application->_currentInstallDate = [BNCApplication currentInstallDate];
 
+    NSString*group =  [BNCKeyChain securityAccessGroup];
+    if (group) {
+        NSRange range = [group rangeOfString:@"."];
+        if (range.location != NSNotFound) {
+            application->_teamID = [[group substringToIndex:range.location] copy];
+        }
+    }
+
     return application;
 }
 
@@ -93,7 +101,7 @@ static NSString*const kBranchKeychainFirstInstalldKey = @"BranchKeychainFirstIns
         forService:kBranchKeychainService
         key:kBranchKeychainFirstBuildKey
         cloudAccessGroup:nil];
-
+    if (error) BNCLogError(@"Keychain store: %@.", error);
     return firstBuildDate;
 }
 
@@ -128,7 +136,7 @@ static NSString*const kBranchKeychainFirstInstalldKey = @"BranchKeychainFirstIns
         forService:kBranchKeychainService
         key:kBranchKeychainFirstInstalldKey
         cloudAccessGroup:nil];
-
+    if (error) BNCLogError(@"Keychain store: %@.", error);
     return firstInstallDate;
 }
 
@@ -146,3 +154,16 @@ static NSString*const kBranchKeychainFirstInstalldKey = @"BranchKeychainFirstIns
 }
 
 @end
+
+@implementation BNCApplication (BNCTest)
+
+- (void) setAppOriginalInstallDate:(NSDate*)originalInstallDate
+        firstInstallDate:(NSDate*)firstInstallDate
+        lastUpdateDate:(NSDate*)lastUpdateDate {
+    self->_currentInstallDate = firstInstallDate;        // latest_install_time
+    self->_firstInstallDate = originalInstallDate;       // first_install_time
+    self->_currentBuildDate = lastUpdateDate;            // lastest_update_time
+}
+
+@end
+

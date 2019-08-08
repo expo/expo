@@ -1,13 +1,13 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <CoreLocation/CLLocationManagerDelegate.h>
-#import <EXTaskManagerInterface/EXTaskConsumerInterface.h>
+#import <UMTaskManagerInterface/UMTaskConsumerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXLocationTaskConsumer : NSObject <EXTaskConsumerInterface, CLLocationManagerDelegate>
+@interface EXLocationTaskConsumer : NSObject <UMTaskConsumerInterface, CLLocationManagerDelegate>
 
-@property (nonatomic, strong) id<EXTaskInterface> task;
+@property (nonatomic, strong) id<UMTaskInterface> task;
 
 @end
 

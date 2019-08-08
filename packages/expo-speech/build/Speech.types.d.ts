@@ -8,7 +8,7 @@ export declare type SpeechOptions = {
     onDone?: () => void | SpeechEventCallback;
     onError?: (error: Error) => void | SpeechEventCallback;
     volume?: number;
-    voiceIOS?: string;
+    voice?: string;
     _voiceIndex?: number;
     onBoundary?: SpeechEventCallback | null;
     onMark?: SpeechEventCallback | null;
@@ -24,4 +24,10 @@ export declare type Voice = {
     name: string;
     quality: VoiceQuality;
     language: string;
+};
+export declare type WebVoice = Voice & {
+    isDefault: boolean;
+    localService: boolean;
+    name: string;
+    voiceURI: string;
 };

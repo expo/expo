@@ -1,7 +1,7 @@
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
-#import <EXCore/EXAppLifecycleListener.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
+#import <UMCore/UMAppLifecycleListener.h>
 
-@interface EXAdSettingsManager : EXExportedModule <EXModuleRegistryConsumer, EXAppLifecycleListener>
+@interface EXAdSettingsManager : UMExportedModule <UMModuleRegistryConsumer, UMAppLifecycleListener>
 
 @end

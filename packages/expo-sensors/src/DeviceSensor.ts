@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, Platform } from 'expo-core';
+import { EventEmitter, Subscription, Platform } from '@unimodules/core';
 
 type Listener<E> = (event: E) => void;
 

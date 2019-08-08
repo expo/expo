@@ -8,13 +8,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.permissions.Permissions;
-import expo.interfaces.permissions.PermissionsListener;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.permissions.PermissionsListener;
 
-public class PermissionsService implements InternalModule, ModuleRegistryConsumer, Permissions {
+public class PermissionsService implements InternalModule, Permissions {
   protected Context mContext;
   private PermissionsRequester mPermissionsRequester;
 
@@ -28,7 +27,7 @@ public class PermissionsService implements InternalModule, ModuleRegistryConsume
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mPermissionsRequester = new PermissionsRequester(moduleRegistry);
   }
 

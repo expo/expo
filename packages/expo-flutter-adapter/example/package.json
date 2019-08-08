@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "expo-core": "file:../../expo-core",
+    "@unimodules/core": "file:../../@unimodules/core",
     "expo-permissions": "file:../../expo-permissions",
     "expo-permissions-interface": "file:../../expo-permissions-interface",
     "expo-sensors": "file:../../expo-sensors",

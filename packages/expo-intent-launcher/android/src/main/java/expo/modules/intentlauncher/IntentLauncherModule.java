@@ -8,20 +8,19 @@ import android.os.Bundle;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ActivityEventListener;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
-import expo.errors.CurrentActivityNotFoundException;
-import expo.errors.ModuleNotFoundException;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ActivityEventListener;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.core.errors.CurrentActivityNotFoundException;
+import org.unimodules.core.errors.ModuleNotFoundException;
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException;
 
-public class IntentLauncherModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class IntentLauncherModule extends ExportedModule implements ActivityEventListener {
   private static final int REQUEST_CODE = 12;
   private static final String ATTR_ACTION = "action";
   private static final String ATTR_TYPE = "type";
@@ -46,13 +45,13 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mUIManager = moduleRegistry.getModule(UIManager.class);
   }
 
   @ExpoMethod
-  public void startActivity(@NonNull String activityAction, @NonNull ReadableArguments params, final Promise promise) {
+  public void startActivity(String activityAction, @NonNull ReadableArguments params, final Promise promise) {
     if (mPendingPromise != null) {
       promise.reject(new ActivityAlreadyStartedException());
       return;
@@ -68,9 +67,9 @@ public class IntentLauncherModule extends ExportedModule implements ModuleRegist
       promise.reject(new ModuleNotFoundException("UIManager"));
       return;
     }
-
+    
     Intent intent = new Intent(activityAction);
-
+    
     if (params.containsKey(ATTR_CLASS_NAME)) {
       ComponentName cn = params.containsKey(ATTR_PACKAGE_NAME)
           ? new ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME))

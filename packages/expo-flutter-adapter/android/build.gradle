@@ -34,6 +34,6 @@ android {
 }
 
 dependencies {
-    provided rootProject.findProject(':expo-core')
+    provided rootProject.findProject(':unimodules-core')
     provided rootProject.findProject(':expo-permissions-interface')
 }

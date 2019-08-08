@@ -13,14 +13,16 @@
     "scheme": "ncl",
     "notification": {
       "icon": "./assets/icons/notificationIcon.png",
-      "color": "#000000"
+      "color": "#000000",
+      "iosDisplayInForeground": true
     },
     "splash": {
       "image": "./assets/icons/loadingIcon.png"
     },
     "packagerOpts": {
-      "config": "rn-cli.config.js"
+      "config": "metro.config.js"
     },
+    "platforms": ["android", "ios", "web"],
     "facebookScheme": "fb1201211719949057",
     "facebookAppId": "1201211719949057",
     "facebookDisplayName": "Expo APIs",
@@ -57,7 +59,6 @@
       }
     },
     "web": {
-      "favicon": "web/favicon.ico",
       "productionPath": "web-build"
     },
     "assetBundlePatterns": [

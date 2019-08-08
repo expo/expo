@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.interfaces.Package;
+import org.unimodules.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
@@ -14,9 +14,11 @@ import expo.modules.appauth.AppAuthPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.battery.BatteryPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
+import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.crypto.CryptoPackage;
@@ -38,6 +40,7 @@ import expo.modules.localization.LocalizationPackage;
 import expo.modules.location.LocationPackage;
 import expo.modules.mailcomposer.MailComposerPackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
+import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
@@ -48,7 +51,9 @@ import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
+import expo.modules.device.DevicePackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -57,6 +62,7 @@ public class ExperiencePackagePicker {
       new AdsFacebookPackage(),
       new AppAuthPackage(),
       new AmplitudePackage(),
+      new BatteryPackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
       new BrightnessPackage(),
@@ -65,6 +71,7 @@ public class ExperiencePackagePicker {
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),
+      new DevicePackage(),
       new DocumentPickerPackage(),
       new FacebookPackage(),
       new FaceDetectorPackage(),
@@ -83,6 +90,7 @@ public class ExperiencePackagePicker {
       new LocationPackage(),
       new MailComposerPackage(),
       new MediaLibraryPackage(),
+      new NetworkPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
       new RandomPackage(),
@@ -91,9 +99,11 @@ public class ExperiencePackagePicker {
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
+      new SharingPackage(),
       new SpeechPackage(),
       new StripePackage(),
       new TaskManagerPackage(),
+      new VideoThumbnailsPackage(),
       new WebBrowserPackage()
   );
 

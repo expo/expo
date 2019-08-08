@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI26_0_0/Libraries/CameraRoll/ABI26_0_0RCTImagePickerManager.h

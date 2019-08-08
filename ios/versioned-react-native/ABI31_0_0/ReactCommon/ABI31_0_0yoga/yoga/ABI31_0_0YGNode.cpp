@@ -427,7 +427,7 @@ bool ABI31_0_0YGNode::isNodeFlexible() {
 float ABI31_0_0YGNode::getLeadingBorder(const ABI31_0_0YGFlexDirection& axis) const {
   if (ABI31_0_0YGFlexDirectionIsRow(axis) &&
       style_.border[ABI31_0_0YGEdgeStart].unit != ABI31_0_0YGUnitUndefined &&
-      !yoga::isUndefined(style_.border[ABI31_0_0YGEdgeStart].value) &&
+      !ABI31_0_0yoga::isUndefined(style_.border[ABI31_0_0YGEdgeStart].value) &&
       style_.border[ABI31_0_0YGEdgeStart].value >= 0.0f) {
     return style_.border[ABI31_0_0YGEdgeStart].value;
   }
@@ -440,7 +440,7 @@ float ABI31_0_0YGNode::getLeadingBorder(const ABI31_0_0YGFlexDirection& axis) co
 float ABI31_0_0YGNode::getTrailingBorder(const ABI31_0_0YGFlexDirection& flexDirection) const {
   if (ABI31_0_0YGFlexDirectionIsRow(flexDirection) &&
       style_.border[ABI31_0_0YGEdgeEnd].unit != ABI31_0_0YGUnitUndefined &&
-      !yoga::isUndefined(style_.border[ABI31_0_0YGEdgeEnd].value) &&
+      !ABI31_0_0yoga::isUndefined(style_.border[ABI31_0_0YGEdgeEnd].value) &&
       style_.border[ABI31_0_0YGEdgeEnd].value >= 0.0f) {
     return style_.border[ABI31_0_0YGEdgeEnd].value;
   }

@@ -2,14 +2,13 @@ package expo.modules.av;
 
 import android.content.Context;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoMethod;
 
-public class AVModule extends ExportedModule implements ModuleRegistryConsumer {
+public class AVModule extends ExportedModule {
   private AVManagerInterface mAVManager;
 
   public AVModule(Context context) {
@@ -22,7 +21,7 @@ public class AVModule extends ExportedModule implements ModuleRegistryConsumer {
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mAVManager = moduleRegistry.getModule(AVManagerInterface.class);
   }
 

@@ -8,17 +8,17 @@
 
 @implementation EXHapticsModule
 
-EX_EXPORT_MODULE(ExpoHaptics);
+UM_EXPORT_MODULE(ExpoHaptics);
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-EX_EXPORT_METHOD_AS(notificationAsync,
+UM_EXPORT_METHOD_AS(notificationAsync,
                     notifyWithType:(NSString *)inputType
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSDictionary* types = @{
                           @"success": @(UINotificationFeedbackTypeSuccess),
@@ -38,10 +38,10 @@ EX_EXPORT_METHOD_AS(notificationAsync,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(impactAsync,
+UM_EXPORT_METHOD_AS(impactAsync,
                     impactWithStyle:(NSString *)inputStyle
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSDictionary* styles = @{
                            @"light": @(UIImpactFeedbackStyleLight),
@@ -61,9 +61,9 @@ EX_EXPORT_METHOD_AS(impactAsync,
   resolve(nil);
 }
 
-EX_EXPORT_METHOD_AS(selectionAsync,
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(selectionAsync,
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   UISelectionFeedbackGenerator *feedback = [UISelectionFeedbackGenerator new];
   [feedback prepare];

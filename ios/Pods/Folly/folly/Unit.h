@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,36 @@ namespace folly {
 /// possible to construct a value of this type, but it is always the same value
 /// every time, so it is uninteresting.
 struct Unit {
-  template <typename T>
-  using Lift = std::conditional<std::is_same<T, void>::value, Unit, T>;
-  template <typename T>
-  using Drop = std::conditional<std::is_same<T, Unit>::value, void, T>;
-
-  bool operator==(const Unit& /*other*/) const { return true; }
-  bool operator!=(const Unit& /*other*/) const { return false; }
+  constexpr bool operator==(const Unit& /*other*/) const {
+    return true;
+  }
+  constexpr bool operator!=(const Unit& /*other*/) const {
+    return false;
+  }
 };
 
-constexpr Unit unit {};
+constexpr Unit unit{};
 
-}
+template <typename T>
+struct lift_unit {
+  using type = T;
+};
+template <>
+struct lift_unit<void> {
+  using type = Unit;
+};
+template <typename T>
+using lift_unit_t = typename lift_unit<T>::type;
+
+template <typename T>
+struct drop_unit {
+  using type = T;
+};
+template <>
+struct drop_unit<Unit> {
+  using type = void;
+};
+template <typename T>
+using drop_unit_t = typename drop_unit<T>::type;
+
+} // namespace folly

@@ -5,18 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.util.Base64;
+import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.Promise;
@@ -29,13 +28,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -44,12 +42,21 @@ import java.util.zip.Deflater;
 
 import javax.annotation.Nullable;
 
+import static android.view.View.VISIBLE;
+
 /**
  * Snapshot utility class allow to screenshot a view.
  */
 public class ViewShot implements UIBlock {
     //region Constants
-    static final String ERROR_UNABLE_TO_SNAPSHOT = "E_UNABLE_TO_SNAPSHOT";
+    /**
+     * Tag fort Class logs.
+     */
+    private static final String TAG = ViewShot.class.getSimpleName();
+    /**
+     * Error code that we return to RN.
+     */
+    public static final String ERROR_UNABLE_TO_SNAPSHOT = "E_UNABLE_TO_SNAPSHOT";
     /**
      * pre-allocated output stream size for screenshot. In real life example it will eb around 7Mb.
      */
@@ -60,7 +67,6 @@ public class ViewShot implements UIBlock {
     private static final int ARGB_SIZE = 4;
 
     @SuppressWarnings("WeakerAccess")
-    @Retention(RetentionPolicy.SOURCE)
     @IntDef({Formats.JPEG, Formats.PNG, Formats.WEBP, Formats.RAW})
     public @interface Formats {
         int JPEG = 0; // Bitmap.CompressFormat.JPEG.ordinal();
@@ -78,7 +84,6 @@ public class ViewShot implements UIBlock {
     /**
      * Supported Output results.
      */
-    @Retention(RetentionPolicy.SOURCE)
     @StringDef({Results.BASE_64, Results.DATA_URI, Results.TEMP_FILE, Results.ZIP_BASE_64})
     public @interface Results {
         /**
@@ -167,6 +172,7 @@ public class ViewShot implements UIBlock {
         }
 
         if (view == null) {
+            Log.e(TAG, "No view found with reactTag: " + tag, new AssertionError());
             promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
             return;
         }
@@ -185,7 +191,8 @@ public class ViewShot implements UIBlock {
             } else if (Results.DATA_URI.equals(result)) {
                 saveToDataUriString(view);
             }
-        } catch (final Throwable ignored) {
+        } catch (final Throwable ex) {
+            Log.e(TAG, "Failed to capture view snapshot", ex);
             promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "Failed to capture view snapshot");
         }
     }
@@ -294,6 +301,8 @@ public class ViewShot implements UIBlock {
      */
     private Point captureView(@NonNull final View view, @NonNull final OutputStream os) throws IOException {
         try {
+            DebugViews.longDebug(TAG, DebugViews.logViewHierarchy(this.currentActivity));
+
             return captureViewImpl(view, os);
         } finally {
             os.close();
@@ -314,7 +323,7 @@ public class ViewShot implements UIBlock {
             throw new RuntimeException("Impossible to snapshot the view: view is invalid");
         }
 
-        //evaluate real height
+        // evaluate real height
         if (snapshotContentContainer) {
             h = 0;
             ScrollView scrollView = (ScrollView) view;
@@ -326,6 +335,14 @@ public class ViewShot implements UIBlock {
         final Point resolution = new Point(w, h);
         Bitmap bitmap = getBitmapForScreenshot(w, h);
 
+        final Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+
+        // Uncomment next line if you want to wait attached android studio debugger:
+        //   Debug.waitForDebugger();
+
         final Canvas c = new Canvas(bitmap);
         view.draw(c);
 
@@ -335,28 +352,24 @@ public class ViewShot implements UIBlock {
         for (final View child : childrenList) {
             // skip any child that we don't know how to process
             if (!(child instanceof TextureView)) continue;
+
             // skip all invisible to user child views
-            if (child.getVisibility() != View.VISIBLE) continue;
+            if (child.getVisibility() != VISIBLE) continue;
 
             final TextureView tvChild = (TextureView) child;
-            tvChild.setOpaque(false);
+            tvChild.setOpaque(false); // <-- switch off background fill
 
-            final Point offsets = getParentOffsets(view, child);
-            final int left = child.getLeft() + child.getPaddingLeft() + offsets.x;
-            final int top = child.getTop() + child.getPaddingTop() + offsets.y;
-            final int childWidth = child.getWidth();
-            final int childHeight = child.getHeight();
-            final Rect source = new Rect(0, 0, childWidth, childHeight);
-            final RectF destination = new RectF(left, top, left + childWidth, top + childHeight);
+            // NOTE (olku): get re-usable bitmap. TextureView should use bitmaps with matching size,
+            // otherwise content of the TextureView will be scaled to provided bitmap dimensions
+            final Bitmap childBitmapBuffer = tvChild.getBitmap(getExactBitmapForScreenshot(child.getWidth(), child.getHeight()));
 
-            // get re-usable bitmap
-            final Bitmap childBitmapBuffer = tvChild.getBitmap(getBitmapForScreenshot(child.getWidth(), child.getHeight()));
+            final int countCanvasSave = c.save();
+            applyTransformations(c, view, child);
 
-            c.save();
-            c.setMatrix(concatMatrix(view, child));
             // due to re-use of bitmaps for screenshot, we can get bitmap that is bigger in size than requested
-            c.drawBitmap(childBitmapBuffer, source, destination, null);
-            c.restore();
+            c.drawBitmap(childBitmapBuffer, 0, 0, paint);
+
+            c.restoreToCount(countCanvasSave);
             recycleBitmap(childBitmapBuffer);
         }
 
@@ -384,38 +397,43 @@ public class ViewShot implements UIBlock {
         return resolution; // return image width and height
     }
 
-    /** Concat all the transformation matrix's from child to parent. */
+    /**
+     * Concat all the transformation matrix's from parent to child.
+     */
     @NonNull
-    private Matrix concatMatrix(@NonNull final View view, @NonNull final View child){
+    @SuppressWarnings("UnusedReturnValue")
+    private Matrix applyTransformations(final Canvas c, @NonNull final View root, @NonNull final View child) {
         final Matrix transform = new Matrix();
+        final LinkedList<View> ms = new LinkedList<>();
 
+        // find all parents of the child view
         View iterator = child;
         do {
+            ms.add(iterator);
 
-            final Matrix m = iterator.getMatrix();
-            transform.preConcat(m);
+            iterator = (View) iterator.getParent();
+        } while (iterator != root);
 
-            iterator = (View)iterator.getParent();
-        } while( iterator != view );
+        // apply transformations from parent --> child order
+        Collections.reverse(ms);
 
-        return transform;
-    }
+        for (final View v : ms) {
+            c.save();
 
-    @NonNull
-    private Point getParentOffsets(@NonNull final View view, @NonNull final View child) {
-        int left = 0;
-        int top = 0;
+            // apply each view transformations, so each child will be affected by them
+            final float dx = v.getLeft() + ((v != child) ? v.getPaddingLeft() : 0) + v.getTranslationX();
+            final float dy = v.getTop() + ((v != child) ? v.getPaddingTop() : 0) + v.getTranslationY();
+            c.translate(dx, dy);
+            c.rotate(v.getRotation(), v.getPivotX(), v.getPivotY());
+            c.scale(v.getScaleX(), v.getScaleY());
 
-        View parentElem = (View) child.getParent();
-        while (parentElem != null) {
-            if (parentElem == view) break;
-
-            left += parentElem.getLeft();
-            top += parentElem.getTop();
-            parentElem = (View) parentElem.getParent();
+            // compute the matrix just for any future use
+            transform.postTranslate(dx, dy);
+            transform.postRotate(v.getRotation(), v.getPivotX(), v.getPivotY());
+            transform.postScale(v.getScaleX(), v.getScaleY());
         }
 
-        return new Point(left, top);
+        return transform;
     }
 
     @SuppressWarnings("unchecked")
@@ -454,13 +472,32 @@ public class ViewShot implements UIBlock {
     }
 
     /**
-     * Try to find a bitmap for screenshot in reusabel set and if not found create a new one.
+     * Try to find a bitmap for screenshot in reusable set and if not found create a new one.
      */
     @NonNull
     private static Bitmap getBitmapForScreenshot(final int width, final int height) {
         synchronized (guardBitmaps) {
             for (final Bitmap bmp : weakBitmaps) {
-                if (bmp.getWidth() * bmp.getHeight() <= width * height) {
+                if (bmp.getWidth() >= width && bmp.getHeight() >= height) {
+                    weakBitmaps.remove(bmp);
+                    bmp.eraseColor(Color.TRANSPARENT);
+                    return bmp;
+                }
+            }
+        }
+
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    }
+
+    /**
+     * Try to find a bitmap with exact width and height for screenshot in reusable set and if
+     * not found create a new one.
+     */
+    @NonNull
+    private static Bitmap getExactBitmapForScreenshot(final int width, final int height) {
+        synchronized (guardBitmaps) {
+            for (final Bitmap bmp : weakBitmaps) {
+                if (bmp.getWidth() == width && bmp.getHeight() == height) {
                     weakBitmaps.remove(bmp);
                     bmp.eraseColor(Color.TRANSPARENT);
                     return bmp;

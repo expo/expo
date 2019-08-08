@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { requireNativeViewManager } from 'expo-core';
+import { requireNativeViewManager } from '@unimodules/core';
 
 type Props = {
   colors: number[];

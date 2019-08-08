@@ -7,13 +7,12 @@ import com.yqritc.scalablevideoview.ScalableType;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.core.ViewManager;
-import expo.core.arguments.ReadableArguments;
-import expo.core.interfaces.ExpoProp;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ExpoProp;
 
-public class VideoViewManager extends ViewManager<VideoViewWrapper> implements ModuleRegistryConsumer {
+public class VideoViewManager extends ViewManager<VideoViewWrapper> {
   public static final String REACT_CLASS = "ExpoVideoView";
 
   private static final String PROP_STATUS = "status";
@@ -24,7 +23,7 @@ public class VideoViewManager extends ViewManager<VideoViewWrapper> implements M
   private ModuleRegistry mModuleRegistry;
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

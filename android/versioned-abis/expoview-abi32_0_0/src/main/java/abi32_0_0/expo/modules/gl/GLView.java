@@ -72,7 +72,7 @@ public class GLView extends TextureView implements TextureView.SurfaceTextureLis
 
   @Override
   synchronized public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
-    if (mOnSurfaceTextureCreatedWithZeroSize && width != 0 && height != 0) {
+    if (mOnSurfaceTextureCreatedWithZeroSize && (width != 0 || height != 0)) {
       initializeSurfaceInGLContext(surfaceTexture);
       mOnSurfaceTextureCreatedWithZeroSize = false;
     }

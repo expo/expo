@@ -1,5 +1,5 @@
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 import * as WebBrowser from '../WebBrowser';
 
 const fakeReturnValue = {
@@ -24,16 +24,15 @@ describeCrossPlatform('WebBrowser', () => {
   });
 
   it('openBrowserAsync returns correctly', async () => {
-    let openResult = await WebBrowser.openBrowserAsync('http://expo.io');
+    const pageUrl = 'http://expo.io';
+    const openResult = await WebBrowser.openBrowserAsync(pageUrl);
     expect(openResult).toEqual(fakeReturnValue);
-    expect(NativeModulesProxy.ExponentWebBrowser.openBrowserAsync).toHaveBeenCalledWith(
-      'http://expo.io'
-    );
+    expect(NativeModulesProxy.ExpoWebBrowser.openBrowserAsync).toHaveBeenCalledWith(pageUrl, {});
   });
 
   it('dismissBrowser returns nothing', () => {
-    let closeResult = WebBrowser.dismissBrowser();
+    const closeResult = WebBrowser.dismissBrowser();
     expect(closeResult).toBeUndefined();
-    expect(NativeModulesProxy.ExponentWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
+    expect(NativeModulesProxy.ExpoWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXGoogleSignIn/EXGoogleSignIn+Serialization.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 
 @implementation EXGoogleSignIn (Serialization)
 
@@ -10,15 +10,15 @@
   if (!input) return nil;
   
   return @{
-           @"scopes": EXNullIfNil([input scopes]),
-           @"language": EXNullIfNil([input language]),
-           @"openIdRealm": EXNullIfNil([input openIDRealm]),
-           @"accountName": EXNullIfNil([input loginHint]),
-           @"hostedDomain": EXNullIfNil([input hostedDomain]),
-           @"webClientId": EXNullIfNil([input serverClientID]),
-           @"shouldFetchBasicProfile": EXNullIfNil(@([input shouldFetchBasicProfile])),
-           @"currentUser": EXNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:input.currentUser]),
-           @"hasAuthInKeychain": EXNullIfNil(@([input hasAuthInKeychain]))
+           @"scopes": UMNullIfNil([input scopes]),
+           @"language": UMNullIfNil([input language]),
+           @"openIdRealm": UMNullIfNil([input openIDRealm]),
+           @"accountName": UMNullIfNil([input loginHint]),
+           @"hostedDomain": UMNullIfNil([input hostedDomain]),
+           @"webClientId": UMNullIfNil([input serverClientID]),
+           @"shouldFetchBasicProfile": UMNullIfNil(@([input shouldFetchBasicProfile])),
+           @"currentUser": UMNullIfNil([EXGoogleSignIn jsonFromGIDGoogleUser:input.currentUser]),
+           @"hasAuthInKeychain": UMNullIfNil(@([input hasAuthInKeychain]))
            };
 }
 
@@ -27,11 +27,11 @@
   if (!input) return nil;
   
   NSMutableDictionary *output = [[NSMutableDictionary alloc] initWithDictionary:@{
-                                                                                  @"uid": EXNullIfNil([input userID]),
-                                                                                  @"auth": EXNullIfNil([EXGoogleSignIn jsonFromGIDAuthentication:[input authentication]]),
-                                                                                  @"scopes": EXNullIfNil([input grantedScopes]),
-                                                                                  @"domain": EXNullIfNil([input hostedDomain]),
-                                                                                  @"serverAuthCode": EXNullIfNil([input serverAuthCode]),
+                                                                                  @"uid": UMNullIfNil([input userID]),
+                                                                                  @"auth": UMNullIfNil([EXGoogleSignIn jsonFromGIDAuthentication:[input authentication]]),
+                                                                                  @"scopes": UMNullIfNil([input grantedScopes]),
+                                                                                  @"domain": UMNullIfNil([input hostedDomain]),
+                                                                                  @"serverAuthCode": UMNullIfNil([input serverAuthCode]),
                                                                                   }];
   
   
@@ -53,12 +53,12 @@
 {
   if (!input) return nil;
   return @{
-           @"clientId": EXNullIfNil([input clientID]),
-           @"accessToken": EXNullIfNil([input accessToken]),
-           @"accessTokenExpirationDate": EXNullIfNil([EXGoogleSignIn jsonFromNSDate:[input accessTokenExpirationDate]]),
-           @"refreshToken": EXNullIfNil([input refreshToken]),
-           @"idToken": EXNullIfNil([input idToken]),
-           @"idTokenExpirationDate": EXNullIfNil([EXGoogleSignIn jsonFromNSDate:[input idTokenExpirationDate]])
+           @"clientId": UMNullIfNil([input clientID]),
+           @"accessToken": UMNullIfNil([input accessToken]),
+           @"accessTokenExpirationDate": UMNullIfNil([EXGoogleSignIn jsonFromNSDate:[input accessTokenExpirationDate]]),
+           @"refreshToken": UMNullIfNil([input refreshToken]),
+           @"idToken": UMNullIfNil([input idToken]),
+           @"idTokenExpirationDate": UMNullIfNil([EXGoogleSignIn jsonFromNSDate:[input idTokenExpirationDate]])
            };
 }
 
@@ -67,10 +67,10 @@
   if (!input) return nil;
   NSMutableDictionary *output =
   [NSMutableDictionary dictionaryWithDictionary:@{
-                                                  @"email": EXNullIfNil([input email]),
-                                                  @"displayName": EXNullIfNil([input name]),
-                                                  @"firstName": EXNullIfNil([input givenName]),
-                                                  @"lastName": EXNullIfNil([input familyName]),
+                                                  @"email": UMNullIfNil([input email]),
+                                                  @"displayName": UMNullIfNil([input name]),
+                                                  @"firstName": UMNullIfNil([input givenName]),
+                                                  @"lastName": UMNullIfNil([input familyName]),
                                                   }];
   if (input.hasImage) {
     NSURL *imageURL = [input imageURLWithDimension:128];

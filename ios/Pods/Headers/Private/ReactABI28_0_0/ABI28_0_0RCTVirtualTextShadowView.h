@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI28_0_0/Libraries/Text/VirtualText/ABI28_0_0RCTVirtualTextShadowView.h

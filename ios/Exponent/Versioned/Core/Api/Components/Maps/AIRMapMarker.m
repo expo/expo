@@ -205,13 +205,39 @@ NSInteger const AIR_CALLOUT_OPEN_ZINDEX_BASELINE = 999;
     
     if (marker.selected) {
         CGPoint touchPoint = [recognizer locationInView:marker.map.calloutView];
-        if ([marker.map.calloutView hitTest:touchPoint withEvent:nil]) {
+        CGRect bubbleFrame = [self.calloutView convertRect:marker.map.calloutView.bounds toView:marker.map];
+        CGPoint touchPointReal = [recognizer locationInView:self.calloutView];
+        
+        UIView *calloutView = [marker.map.calloutView hitTest:touchPoint withEvent:nil];
+        if (calloutView) {
+            // the callout (or its subview) got clicked, not the marker
+            UIWindow* win = [[[UIApplication sharedApplication] windows] firstObject];
+            AIRMapCalloutSubview* calloutSubview = nil;
+            UIView* tmp = calloutView;
+            while (tmp && tmp != win && tmp != self.calloutView && tmp != self.map) {
+                if ([tmp respondsToSelector:@selector(onPress)]) {
+                    calloutSubview = (AIRMapCalloutSubview*) tmp;
+                    break;
+                }
+                tmp = tmp.superview;
+            }
             
-            // the callout got clicked, not the marker
             id event = @{
-                         @"action": @"callout-press",
+                         @"action": calloutSubview ? @"callout-inside-press" : @"callout-press",
+                         @"id": marker.identifier ?: @"unknown",
+                         @"point": @{
+                                 @"x": @(touchPointReal.x),
+                                 @"y": @(touchPointReal.y),
+                                 },
+                         @"frame": @{
+                             @"x": @(bubbleFrame.origin.x),
+                             @"y": @(bubbleFrame.origin.y),
+                             @"width": @(bubbleFrame.size.width),
+                             @"height": @(bubbleFrame.size.height),
+                             }
                          };
             
+            if (calloutSubview) calloutSubview.onPress(event);
             if (marker.onCalloutPress) marker.onCalloutPress(event);
             if (marker.calloutView && marker.calloutView.onPress) marker.calloutView.onPress(event);
             if (marker.map.onCalloutPress) marker.map.onCalloutPress(event);

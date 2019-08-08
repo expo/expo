@@ -1,0 +1,4 @@
+{
+  "name": "expo-analytics-segment",
+  "platforms": ["ios", "android"]
+}

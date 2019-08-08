@@ -1,6 +1,6 @@
 {
   "name": "React",
-  "version": "0.57.1",
+  "version": "0.59.8",
   "summary": "A framework for building native apps using React",
   "description": "React Native apps are built using the React JS\nframework, and render directly to native UIKit\nelements using a fully asynchronous architecture.\nThere is no browser and no HTML. We have picked what\nwe think is the best set of features from these and\nother technologies to build what we hope to become\nthe best product development framework available,\nwith an emphasis on iteration speed, developer\ndelight, continuity of technology, and absolutely\nbeautiful and fast products with no compromises in\nquality or capability.",
   "homepage": "http://facebook.github.io/react-native/",
@@ -8,7 +8,7 @@
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.57.1"
+    "tag": "v0.59.8"
   },
   "default_subspecs": "Core",
   "requires_arc": true,
@@ -30,7 +30,7 @@
       "name": "Core",
       "dependencies": {
         "yoga": [
-          "0.57.1.React"
+          "0.59.8.React"
         ]
       },
       "source_files": "React/**/*.{c,h,m,mm,S,cpp}",
@@ -57,6 +57,7 @@
           "React/Views/RCTWebView*"
         ]
       },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
       "header_dir": "React",
       "frameworks": "JavaScriptCore",
       "libraries": "stdc++",
@@ -68,12 +69,15 @@
       "name": "CxxBridge",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "React/Core": [
 
         ],
         "React/cxxreact": [
+
+        ],
+        "React/jsiexecutor": [
 
         ]
       },
@@ -100,7 +104,7 @@
       "name": "RCTFabric",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ],
         "React/Core": [
 
@@ -128,27 +132,57 @@
       "source_files": "React/**/RCTTV*.{h,m}"
     },
     {
-      "name": "jschelpers",
+      "name": "jsinspector",
+      "source_files": "ReactCommon/jsinspector/*.{cpp,h}",
+      "private_header_files": "ReactCommon/jsinspector/*.h",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
+      }
+    },
+    {
+      "name": "jsiexecutor",
       "dependencies": {
-        "Folly": [
-          "2016.10.31.00"
+        "React/cxxreact": [
+
         ],
-        "React/PrivateDatabase": [
+        "React/jsi": [
+
+        ],
+        "Folly": [
+          "2018.10.22.00"
+        ],
+        "DoubleConversion": [
+
+        ],
+        "glog": [
 
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
-      "source_files": "ReactCommon/jschelpers/*.{cpp,h}",
-      "private_header_files": "ReactCommon/jschelpers/*.h",
+      "source_files": "ReactCommon/jsiexecutor/jsireact/*.{cpp,h}",
+      "private_header_files": "ReactCommon/jsiexecutor/jsireact/*.h",
+      "header_dir": "jsireact",
       "pod_target_xcconfig": {
-        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
-      },
-      "frameworks": "JavaScriptCore"
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\", \"$(PODS_TARGET_SRCROOT)/ReactCommon/jsiexecutor\""
+      }
     },
     {
-      "name": "jsinspector",
-      "source_files": "ReactCommon/jsinspector/*.{cpp,h}",
-      "private_header_files": "ReactCommon/jsinspector/*.h",
+      "name": "jsi",
+      "dependencies": {
+        "Folly": [
+          "2018.10.22.00"
+        ],
+        "DoubleConversion": [
+
+        ],
+        "glog": [
+
+        ]
+      },
+      "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+      "source_files": "ReactCommon/jsi/*.{cpp,h}",
+      "private_header_files": "ReactCommon/jsi/*.h",
+      "frameworks": "JavaScriptCore",
       "pod_target_xcconfig": {
         "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/ReactCommon\""
       }
@@ -164,9 +198,6 @@
     {
       "name": "cxxreact",
       "dependencies": {
-        "React/jschelpers": [
-
-        ],
         "React/jsinspector": [
 
         ],
@@ -174,7 +205,13 @@
           "1.63.0"
         ],
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
+        ],
+        "DoubleConversion": [
+
+        ],
+        "glog": [
+
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -192,7 +229,7 @@
           "name": "activityindicator",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -207,7 +244,7 @@
           "name": "attributedstring",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -222,7 +259,7 @@
           "name": "core",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -237,7 +274,7 @@
           "name": "debug",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -252,7 +289,7 @@
           "name": "graphics",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -267,7 +304,7 @@
           "name": "scrollview",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -282,7 +319,7 @@
           "name": "text",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -297,7 +334,7 @@
           "name": "textlayoutmanager",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -312,7 +349,7 @@
           "name": "uimanager",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ]
           },
           "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
@@ -327,7 +364,7 @@
           "name": "view",
           "dependencies": {
             "Folly": [
-              "2016.10.31.00"
+              "2018.10.22.00"
             ],
             "yoga": [
 
@@ -347,7 +384,7 @@
       "name": "RCTFabricSample",
       "dependencies": {
         "Folly": [
-          "2016.10.31.00"
+          "2018.10.22.00"
         ]
       },
       "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",

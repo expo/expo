@@ -4,7 +4,7 @@
 
 @implementation EXAdsAdMobBannerViewManager
 
-EX_EXPORT_MODULE(ExpoAdsAdMobBannerView);
+UM_EXPORT_MODULE(ExpoAdsAdMobBannerView);
 
 - (NSString *)viewName
 {
@@ -29,17 +29,17 @@ EX_EXPORT_MODULE(ExpoAdsAdMobBannerView);
   return [[EXAdsAdMobBannerView alloc] init];
 }
 
-EX_VIEW_PROPERTY(bannerSize, NSString *, EXAdsAdMobBannerView)
+UM_VIEW_PROPERTY(bannerSize, NSString *, EXAdsAdMobBannerView)
 {
   [view setBannerSize:value];
 }
 
-EX_VIEW_PROPERTY(adUnitID, NSString *, EXAdsAdMobBannerView)
+UM_VIEW_PROPERTY(adUnitID, NSString *, EXAdsAdMobBannerView)
 {
   [view setAdUnitID:value];
 }
 
-EX_VIEW_PROPERTY(testDeviceID, NSString *, EXAdsAdMobBannerView)
+UM_VIEW_PROPERTY(testDeviceID, NSString *, EXAdsAdMobBannerView)
 {
   [view setTestDeviceID:value];
 }

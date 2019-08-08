@@ -1,11 +1,18 @@
 self: super:
 
 {
-  xcpretty = assert !(builtins.hasAttr "xcpretty" super); super.bundlerApp {
-    pname = "xcpretty";
-    gemdir = ./xcpretty;
-    exes = [ "xcpretty" ];
-  };
+  fastlane =
+    assert (builtins.compareVersions "2.123.0" super.fastlane.version) == 1;
+    super.bundlerApp {
+      pname = "fastlane";
+      gemdir = ./fastlane;
+      exes = [ "fastlane" ];
+      buildInputs = [ super.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/fastlane \
+          --set FASTLANE_SKIP_UPDATE_CHECK 1
+      '';
+    };
 
   nodejs = super.nodejs-10_x;
 

@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from 'expo-core';
+import { NativeModulesProxy } from '@unimodules/core';
 
 export enum BrightnessMode {
   UNKNOWN = 0,

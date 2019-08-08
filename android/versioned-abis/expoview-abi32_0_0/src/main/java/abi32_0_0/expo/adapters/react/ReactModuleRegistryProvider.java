@@ -16,7 +16,7 @@ import abi32_0_0.expo.core.ModuleRegistryProvider;
 import abi32_0_0.expo.core.interfaces.InternalModule;
 import abi32_0_0.expo.core.ViewManager;
 import abi32_0_0.expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.SingletonModule;
 
 /**
  * Since React Native v0.55, {@link abi32_0_0.com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}

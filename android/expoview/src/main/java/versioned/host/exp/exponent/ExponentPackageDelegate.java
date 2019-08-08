@@ -2,8 +2,8 @@ package versioned.host.exp.exponent;
 
 import java.util.List;
 
-import expo.core.interfaces.Package;
-import expo.core.interfaces.SingletonModule;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
 public interface ExponentPackageDelegate {

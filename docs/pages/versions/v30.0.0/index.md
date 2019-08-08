@@ -2,7 +2,8 @@
 title: Getting to know Expo
 ---
 
-These are the docs for [Expo](http://expo.io). Expo is a set of tools, libraries and services which let you build native iOS and Android apps by writing JavaScript.
+Welcome to the documentation for [Expo](http://expo.io) -- a set of tools, libraries and services you can use to build native iOS and Android apps faster than ever before!
+
 
 ## Introduction
 
