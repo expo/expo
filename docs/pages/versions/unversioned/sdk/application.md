@@ -67,7 +67,7 @@ Note: In versions of the platform lower than Android 8.0 (API level 26), this va
 
 ### `Application.getIosIdForVendorAsync()`
 
-**iOS only.** Gets the iOS "identifier for vendor" [(IDFV)](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor) value, an alphanumeric string that uniquely identifies a device to the app’s vendor. This method may sometimes return `nil`, in which case wait and call the method again later. This might happen when the device has been restarted before the user has unlocked the device.
+**iOS only.** Gets the iOS "identifier for vendor" [(IDFV)](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor) value, a string ID that uniquely identifies a device to the app’s vendor. This method may sometimes return `nil`, in which case wait and call the method again later. This might happen when the device has been restarted before the user has unlocked the device.
 
 The OS will change the vendor identifier if all apps from the current app's vendor have been uninstalled.
 
