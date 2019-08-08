@@ -17,7 +17,7 @@ FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
 + (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
 
-- (void)askForGlobalPermissionWithRequesterClass:(Class)requesterClass
+- (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
                                     withResolver:(void (^)(NSDictionary *))resolver
                                     withRejecter:(UMPromiseRejectBlock)reject;
 

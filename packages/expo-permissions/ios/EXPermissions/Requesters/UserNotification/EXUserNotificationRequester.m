@@ -24,9 +24,8 @@
   if (self = [super init]){
     _notificationCenter = proxy;
     _methodQueue = queue;
-    return self;
   }
-  return nil;
+  return self;
 }
 
 - (NSDictionary *)getPermissions

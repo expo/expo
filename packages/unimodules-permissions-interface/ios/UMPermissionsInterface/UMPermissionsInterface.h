@@ -3,8 +3,6 @@
 #import <Foundation/Foundation.h>
 #import <UMCore/UMModuleRegistry.h>
 
-@protocol UMPermissionsInterface;
-
 typedef enum UMPermissionStatus {
   UMPermissionStatusDenied,
   UMPermissionStatusGranted,
@@ -32,13 +30,13 @@ typedef enum UMPermissionStatus {
               withResult:(void (^)(NSDictionary *))onResult
             withRejecter:(UMPromiseRejectBlock)reject;
 
-- (void)registerRequesters:(NSSet<id<UMPermissionsRequester>> *)newRequesters;
+- (void)registerRequesters:(NSArray<id<UMPermissionsRequester>> *)newRequesters;
 
-- (NSDictionary *)getPermissionWithRequesterClass:(Class)requesterClass;
+- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass;
 
-- (BOOL)hasGrantedPermissionWithRequesterClass:(Class)requesterClass;
+- (BOOL)hasGrantedPermissionUsingRequesterClass:(Class)requesterClass;
 
-- (void)askForPermissionWithRequesterClass:(Class)requesterClass
+- (void)askForPermissionUsingRequesterClass:(Class)requesterClass
               withResult:(void (^)(NSDictionary *))onResult
             withRejecter:(UMPromiseRejectBlock)reject;
 

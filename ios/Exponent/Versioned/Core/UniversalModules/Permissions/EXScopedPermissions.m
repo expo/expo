@@ -34,9 +34,9 @@
 
 # pragma mark - permission requsters / getters
 // overriding EXPermission to inject scoped permission logic
-- (NSDictionary *)getPermissionWithRequesterClass:(Class)requesterClass
+- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass
 {
-  NSDictionary *globalPermission = [super getPermissionWithRequesterClass:requesterClass];
+  NSDictionary *globalPermission = [super getPermissionUsingRequesterClass:requesterClass];
   return [self getScopedPermissionForType:[requesterClass permissionType] withGlobalPermission:globalPermission];
 }
 
@@ -60,11 +60,11 @@
   return [_permissionsService getPermission:permissionType forExperience:_experienceId] == UMPermissionStatusGranted;
 }
 
-- (void)askForPermissionWithRequesterClass:(Class)requesterClass
+- (void)askForPermissionUsingRequesterClass:(Class)requesterClass
                                 withResult:(void (^)(NSDictionary *))onResult
                               withRejecter:(UMPromiseRejectBlock)reject
 {
-  NSDictionary* globalPermissions = [super getPermissionWithRequesterClass:requesterClass];
+  NSDictionary* globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
   NSString* permissionType = [requesterClass permissionType];
   UM_WEAKIFY(self)
   if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
@@ -76,7 +76,7 @@
       onResult(permission);
     };
     
-    return [self askForGlobalPermissionWithRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
+    return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
   } else if (![self hasGrantedScopedPermission:permissionType]) {
     // second group
     // had to reinitilize UIAlertActions between alertShow invocations
@@ -102,7 +102,7 @@
     return [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
   }
   
-  onResult([self getPermissionWithRequesterClass:requesterClass]); // third group
+  onResult([self getPermissionUsingRequesterClass:requesterClass]); // third group
 }
 
 // overriding EXPermission to inject scoped permission logic
