@@ -35,7 +35,7 @@ public class EXBluetoothObject implements EXBluetoothObjectInterface, EXBluetoot
 
   @Override
   public String getID() {
-    // TODO: Assert override
+    // TODO(Bacon): Assert override
     return null;
   }
 

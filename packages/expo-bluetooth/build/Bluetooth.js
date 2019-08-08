@@ -30,7 +30,7 @@ export async function startScanningAsync(scanSettings = {}, callback) {
         }
     };
 }
-/** Dangerously rebuild the manager with the given options */
+// Dangerously rebuild the manager with the given options
 export async function initAsync(options) {
     invariantAvailability('initAsync');
     await _reset();
@@ -55,6 +55,7 @@ export async function observeCentralStateAsync(callback) {
 async function _createStableConnectionAsync(peripheralUUID, timeout, options = {}) {
     let timeoutTag;
     if (timeout) {
+        // @ts-ignore
         timeoutTag = setTimeout(() => {
             disconnectAsync(peripheralUUID);
             throw new BluetoothError({

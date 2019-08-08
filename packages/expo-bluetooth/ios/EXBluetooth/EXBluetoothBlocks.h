@@ -23,9 +23,9 @@ typedef void (^EXBluetoothPeripheralReadValueForDescriptors)(EXBluetoothPeripher
 typedef void (^EXBluetoothPeripheralWriteValueForDescriptors)(EXBluetoothPeripheral *peripheral, EXBluetoothDescriptor *descriptor, NSError *error);
 typedef void (^EXBluetoothPeripheralReadRSSI)(EXBluetoothPeripheral *peripheral, NSNumber *RSSI, NSError *error);
 
-// TODO: Bacon: Services
-// TODO: Bacon: Characteristics
-// TODO: Bacon: Descriptors
+// TODO(Bacon): Services
+// TODO(Bacon): Characteristics
+// TODO(Bacon): Descriptors
 
 #pragma mark - central
 

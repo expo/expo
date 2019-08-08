@@ -122,7 +122,7 @@
 - (void)stopScanWithCallback:(EXBluetoothCentralDidChangeScanning)onDidChangeScanning
 {
   if (_onDidChangeScanning) {
-    // TODO: Bacon: reject
+    // TODO(Bacon): reject
   }
   _onDidChangeScanning = onDidChangeScanning;
   _onDidDiscoverPeripheral = nil;
@@ -181,7 +181,7 @@ withDidDisconnectPeripheralCallback:(EXBluetoothCentralDidDisconnectPeripheral)o
 - (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary<NSString *,id> *)dict
 {
   /**
-   * TODO: Bacon: Add support for the following:
+   * TODO(Bacon): Add support for the following:
    * CBCentralManagerRestoredStatePeripheralsKey;
    * CBCentralManagerRestoredStateScanServicesKey;
    * CBCentralManagerRestoredStateScanOptionsKey;
@@ -259,7 +259,7 @@ withDidDisconnectPeripheralCallback:(EXBluetoothCentralDidDisconnectPeripheral)o
 
 # pragma - extra
 
-// TODO: Possibly extend CBCentralManager with these features.
+// TODO(Bacon): Possibly extend CBCentralManager with these features.
 - (void)disconnectPeripheral:(CBPeripheral *)peripheral
 {
   peripheral.delegate = nil;

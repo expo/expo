@@ -45,7 +45,7 @@ UM_EXPORT_MODULE(ExpoBluetooth);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  // TODO: Bacon: Maybe add restoration ID
+  // TODO(Bacon): Maybe add restoration ID
   _manager = [[EXBluetoothCentralManager alloc] initWithQueue:[self methodQueue] options:nil];
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
@@ -57,7 +57,7 @@ UM_EXPORT_MODULE(ExpoBluetooth);
   __weak EXBluetooth *weakSelf = self;
   [_manager setOnDidUpdateState:^(EXBluetoothCentralManager *centralManager) {
     if (weakSelf) {
-      // TODO: Bacon: dont use [weakSelf emitFullState];
+      // TODO(Bacon): dont use [weakSelf emitFullState];
       [weakSelf emitFullState];
       [weakSelf
        emit:EXBluetoothEvent_CENTRAL_STATE_CHANGED
@@ -151,7 +151,7 @@ UM_EXPORT_METHOD_AS(deallocateManagerAsync,
   if ([_manager guardEnabled:reject]) {
     return;
   }
-  //TODO: Bacon: Add
+  //TODO(Bacon): Add
   resolve(nil);
 }
 
@@ -167,7 +167,7 @@ UM_EXPORT_METHOD_AS(getPeripheralsAsync,
   [self emitFullState];
 }
 
-// TODO: Bacon: Use serviceUUIDStrings for Android parity
+// TODO(Bacon): Use serviceUUIDStrings for Android parity
 UM_EXPORT_METHOD_AS(getConnectedPeripheralsAsync,
                     getConnectedPeripheralsAsync:(NSArray<NSString *> *)serviceUUIDStrings
                     resolve:(UMPromiseResolveBlock)resolve
@@ -264,7 +264,7 @@ UM_EXPORT_METHOD_AS(startScanningAsync,
     return;
   }
   
-  // TODO: Bacon: Should we stop
+  // TODO(Bacon): Should we stop
   if ([_manager isScanning]) {
     reject(@"ERR_SCAN_REDUNDANT_INIT", @"Bluetooth is already scanning.", nil);
     return;
@@ -279,7 +279,7 @@ UM_EXPORT_METHOD_AS(startScanningAsync,
                                              BOOL isScanning) {
     resolve(@(isScanning));
     if (weakSelf) {
-      // TODO: Bacon: We emit on android when we start scanning. Figure out parity
+      // TODO(Bacon): We emit on android when we start scanning. Figure out parity
       [weakSelf emitFullState];
     }
   } withDidDiscoverPeripheralCallback:^(EXBluetoothCentralManager *centralManager,
@@ -347,7 +347,7 @@ UM_EXPORT_METHOD_AS(connectPeripheralAsync,
     
     NSDictionary *peripheralData = [peripheral getJSON];
     
-    // TODO: Bacon: Is this the best way to do this?
+    // TODO(Bacon): Is this the best way to do this?
     [self
      emit:EXBluetoothEvent_PERIPHERAL_DISCONNECTED
      data:@{
@@ -421,7 +421,7 @@ UM_EXPORT_METHOD_AS(readRSSIAsync,
   
   EXBluetoothCharacteristic *characteristic;
   if (options[@"characteristicProperties"]) {
-    // TODO: Bacon: CBCharacteristicPropertiesListJSONToNative
+    // TODO(Bacon): CBCharacteristicPropertiesListJSONToNative
     CBCharacteristicProperties characteristicProperties = [EXBluetooth CBCharacteristicPropertiesJSONToNative:options[@"characteristicProperties"]];
     characteristic = [service getCharacteristicOrReject:options[EXBluetoothCharacteristicUUID] characteristicProperties:characteristicProperties reject:reject];
   } else {
@@ -478,7 +478,7 @@ UM_EXPORT_METHOD_AS(writeDescriptorAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  // TODO: CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
+  // TODO(Bacon): CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
   EXBluetoothDescriptor *descriptor = [self getDescriptorFromOptionsOrReject:options reject:reject];
   if (descriptor == nil) {
     return;
@@ -511,7 +511,7 @@ UM_EXPORT_METHOD_AS(writeCharacteristicAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  // TODO: CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
+  // TODO(Bacon): CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
   if (characteristic == nil) {
     return;
@@ -570,7 +570,7 @@ UM_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  // TODO: CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
+  // TODO(Bacon): CBCharacteristicPropertyWrite CBCharacteristicPropertyWriteWithoutResponse
   EXBluetoothCharacteristic *characteristic = [self getCharacteristicFromOptionsOrReject:options reject:reject];
   if (characteristic == nil) {
     return;
@@ -603,7 +603,7 @@ UM_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
  [peripheral setNotifyValue:isEnabled forCharacteristic:characteristic];
  }
  break;
- // TODO: Bacon: Add these
+ // TODO(Bacon): Add these
  case CBCharacteristicPropertyBroadcast:
  case CBCharacteristicPropertyExtendedProperties:
  case CBCharacteristicPropertyNotifyEncryptionRequired:
@@ -612,7 +612,7 @@ UM_EXPORT_METHOD_AS(setNotifyCharacteristicAsync,
  */
 
 // Bacon: Predict the following, and throw an error without crashing the app.
-// TODO: Bacon: Can we try to auto-resolve this
+// TODO(Bacon): Can we try to auto-resolve this
 - (BOOL)guardCharacteristicConfiguration:(CBDescriptor *)descriptor reject:(UMPromiseRejectBlock)reject
 {
   if ([descriptor.UUID.UUIDString isEqualToString:CBUUIDClientCharacteristicConfigurationString]) {

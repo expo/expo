@@ -31,7 +31,7 @@ public class Service extends EXBluetoothChildObject {
     return service.getUuid();
   }
   
-  // TODO: Bacon: Test characteristicProperties query works / is standard
+  // TODO(Bacon): Test characteristicProperties query works / is standard
   public Characteristic getCharacteristic(UUID uuid, int characteristicProperties) {
     BluetoothGattService service = getService();
     if (service == null) {
@@ -47,9 +47,6 @@ public class Service extends EXBluetoothChildObject {
 
   public Characteristic getCharacteristic(UUID uuid) {
     return getCharacteristic(UUIDHelper.toString(uuid));
-//    BluetoothGattCharacteristic characteristic = getService().getCharacteristic(uuid);
-//    if (characteristic == null) return null;
-//    return new Characteristic(characteristic, this);
   }
 
   public List<Characteristic> getCharacteristics() {
@@ -108,10 +105,10 @@ public class Service extends EXBluetoothChildObject {
   }
 
 
-  // TODO: Bacon: Integrated
+  // TODO(Bacon): Integrated
   public Bundle discoverIncludedServices(ArrayList<UUID> includedServicesUUIDs, Promise promise) {
-    // TODO: Emit full state
-    // TODO: Bacon: How do we refresh these?
+    // TODO(Bacon): Emit full state
+    // TODO(Bacon): How do we refresh these?
     Bundle output = new Bundle();
     Bundle json = toJSON();
     output.putBundle(BluetoothConstants.JSON.SERVICE, json);
@@ -120,11 +117,8 @@ public class Service extends EXBluetoothChildObject {
   }
 
   public Bundle discoverCharacteristics(ArrayList<UUID> characteristicUUIDs, Promise promise) {
-    //TODO: Bacon: Are these gotten automatically?
     Bundle output = new Bundle();
     Bundle json = toJSON();
-//    Bundle peripheralData = getPeripheral().toJSON();
-//    output.putBundle(BluetoothConstants.JSON.PERIPHERAL, peripheralData);
     output.putBundle(BluetoothConstants.JSON.SERVICE, json);
     promise.resolve(json.get(BluetoothConstants.JSON.CHARACTERISTICS));
     return output;

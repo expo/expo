@@ -1,4 +1,4 @@
-// TODO: Bacon: Migrate react-bluetooth
+// TODO(Bacon): Migrate react-bluetooth
 export default {
     get name() {
         return 'ExpoBluetooth';

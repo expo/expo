@@ -35,12 +35,12 @@ public class Descriptor extends EXBluetoothChildObject {
     if (descriptor == null) {
       return output;
     }
-    // TODO: Bacon: Maybe add parsed value.
+    // TODO(Bacon): Maybe add parsed value.
     output.putString("type", "descriptor");
     output.putString(BluetoothConstants.JSON.CHARACTERISTIC_UUID, UUIDHelper.toString(descriptor.getCharacteristic().getUuid()));
     output.putString(BluetoothConstants.JSON.VALUE, Base64Helper.fromBase64(descriptor.getValue()));
     output.putStringArrayList(BluetoothConstants.JSON.PERMISSIONS, Serialize.DescriptorPermissions_NativeToJSON(descriptor.getPermissions()));
-    // TODO: Bacon: What do we do with the permissions?
+    // TODO(Bacon): What do we do with the permissions?
     return output;
   }
 

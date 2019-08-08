@@ -1,5 +1,10 @@
 import BluetoothPlatformError from '../errors/BluetoothPlatformError';
 import AndroidGATTError from '../errors/AndroidGATTError';
+/**
+ * Wrap the native method and transform the errors that are returned
+ *
+ * @param platformModule The BLE Native method
+ */
 export default function platformModuleWithCustomErrors(platformModule) {
     const platform = {};
     for (const property of Object.keys(platformModule)) {
@@ -26,6 +31,9 @@ function methodWithTransformedError(method, methodName) {
             return method(...props);
         }
         catch ({ message, code, ...props }) {
+            /**
+             * If an error is related to the device GATT then throw a `AndroidGATTError`
+             */
             if (code.indexOf('ERR_BLE_GATT:') > -1) {
                 const gattStatusCode = code.split(':')[1];
                 throw new AndroidGATTError({

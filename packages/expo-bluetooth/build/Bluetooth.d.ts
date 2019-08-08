@@ -8,7 +8,6 @@ import { AndroidGATTError } from './errors';
  * `serviceUUIDsToQuery` or `scanSettings`, the provided parameters will replace them.
  */
 export declare function startScanningAsync(scanSettings: ScanOptions | undefined, callback: (peripheral: Peripheral) => void): Promise<CancelScanningCallback>;
-/** Dangerously rebuild the manager with the given options */
 export declare function initAsync(options: CentralManagerOptions): Promise<void>;
 export declare function stopScanningAsync(): Promise<void>;
 export declare function observeUpdates(callback: (updates: any) => void): Subscription;

@@ -1,12 +1,12 @@
 // import { mockPlatformIOS, unmockAllProperties, mockPlatformAndroid } from 'jest-expo';
 
-// import {
-//   Characteristics,
-//   Descriptors,
-//   JSONToNative,
-//   nativeToJSON,
-//   Services,
-// } from 'expo-bluetooth-utils';
+// // import {
+// //   Characteristics,
+// //   Descriptors,
+// //   JSONToNative,
+// //   nativeToJSON,
+// //   Services,
+// // } from 'expo-bluetooth-utils';
 // import * as Bluetooth from '../Bluetooth';
 // import ExpoBluetooth from '../ExpoBluetooth';
 
@@ -40,24 +40,24 @@
 //   return dataSet[components[components.length - 1]];
 // }
 
-// function getStaticInfoFromGATT(gatt) {
-//   const dataSet = getStaticDataFromGATT(gatt);
-//   let parsedValue = null;
-//   if (dataSet) {
-//     // TODO: Bacon: Add format to each data set item. Since this isn't done lets try converting every value to UTF-8
+// // function getStaticInfoFromGATT(gatt) {
+// //   const dataSet = getStaticDataFromGATT(gatt);
+// //   let parsedValue = null;
+// //   if (dataSet) {
+// //     // TODO(Bacon): Add format to each data set item. Since this isn't done lets try converting every value to UTF-8
 
-//     if (gatt.value != null && dataSet.format === 'utf8') {
-//       parsedValue = nativeToJSON(gatt.value);
-//     }
+// //     if (gatt.value != null && dataSet.format === 'utf8') {
+// //       parsedValue = nativeToJSON(gatt.value);
+// //     }
 
-//     return {
-//       ...gatt,
-//       parsedValue,
-//       specForGATT: dataSet,
-//     };
-//   }
-//   return gatt;
-// }
+// //     return {
+// //       ...gatt,
+// //       parsedValue,
+// //       specForGATT: dataSet,
+// //     };
+// //   }
+// //   return gatt;
+// // }
 
 // afterEach(unmockAllProperties);
 
@@ -275,7 +275,7 @@
 // // });
 
 // describe('loadPeripheralAsync', async () => {
-//   // TODO: Bacon: Test shape
+//   // TODO(Bacon): Test shape
 //   it('loads', async () => {
 //     try {
 //       await Bluetooth.loadPeripheralAsync({

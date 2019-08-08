@@ -68,7 +68,7 @@ export var AndroidScanCallbackType;
      * Receive a callback when advertisements are no longer received from a device that has been
      * previously reported by a first match callback.
      */
-    AndroidScanCallbackType["matchLost"] = "MATCH_LOST";
+    AndroidScanCallbackType["matchLost"] = "matchLost";
 })(AndroidScanCallbackType || (AndroidScanCallbackType = {}));
 export var AndroidScanMode;
 (function (AndroidScanMode) {
@@ -83,7 +83,9 @@ export var AndroidMatchMode;
     AndroidMatchMode["Aggresive"] = "aggresive";
     AndroidMatchMode["Sticky"] = "sticky";
 })(AndroidMatchMode || (AndroidMatchMode = {}));
-/** Android O 26+ */
+/**
+ * **Android** _Oreo (26+)_
+ */
 export var AndroidPhyMode;
 (function (AndroidPhyMode) {
     AndroidPhyMode["LE1M"] = "LE1M";
@@ -91,7 +93,9 @@ export var AndroidPhyMode;
     AndroidPhyMode["Coded"] = "coded";
     AndroidPhyMode["AllSupported"] = "allSupported";
 })(AndroidPhyMode || (AndroidPhyMode = {}));
-/** Android M 23+ */
+/**
+ * **Android** _Marshmellow (23+)_
+ */
 export var AndroidNumberOfMatches;
 (function (AndroidNumberOfMatches) {
     AndroidNumberOfMatches["max"] = "max";
@@ -113,37 +117,65 @@ export var CharacteristicProperty;
      * Not allowed for local characteristics.
      */
     CharacteristicProperty["Broadcast"] = "broadcast";
-    /** Permits reads of the characteristic value. */
+    /**
+     * Permits reads of the characteristic value.
+     */
     CharacteristicProperty["Read"] = "read";
-    /** Permits writes of the characteristic value, without a response. */
+    /**
+     * Permits writes of the characteristic value, without a response.
+     */
     CharacteristicProperty["WriteWithoutResponse"] = "writeWithoutResponse";
-    /** Permits writes of the characteristic value. */
+    /**
+     * Permits writes of the characteristic value.
+     */
     CharacteristicProperty["Write"] = "write";
-    /** Permits notifications of the characteristic value, without a response. */
+    /**
+     * Permits notifications of the characteristic value, without a response.
+     */
     CharacteristicProperty["Notify"] = "notify";
-    /** Permits indications of the characteristic value. */
+    /**
+     * Permits indications of the characteristic value.
+     */
     CharacteristicProperty["Indicate"] = "indicate";
-    /** Permits signed writes of the characteristic value */
+    /**
+     * Permits signed writes of the characteristic value
+     */
     CharacteristicProperty["AuthenticateSignedWrites"] = "authenticateSignedWrites";
-    /* If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
+    /**
+     * If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
      * Not allowed for local characteristics.
      */
     CharacteristicProperty["ExtendedProperties"] = "extendedProperties";
-    /** If set, only trusted devices can enable notifications of the characteristic value. */
+    /**
+     * If set, only trusted devices can enable notifications of the characteristic value.
+     */
     CharacteristicProperty["NotifyEncryptionRequired"] = "notifyEncryptionRequired";
-    /** If set, only trusted devices can enable indications of the characteristic value. */
+    /**
+     * If set, only trusted devices can enable indications of the characteristic value.
+     */
     CharacteristicProperty["IndicateEncryptionRequired"] = "indicateEncryptionRequired";
 })(CharacteristicProperty || (CharacteristicProperty = {}));
-/** Read, write, and encryption permissions for an ATT attribute. Can be combined. */
+/**
+ * Read, write, and encryption permissions for an **ATT** attribute.
+ * This value can be combined.
+ */
 export var Permissions;
 (function (Permissions) {
-    /** Read-only. */
+    /**
+     * Read-only.
+     */
     Permissions["Readable"] = "Readable";
-    /** Write-only. */
+    /**
+     * Write-only.
+     */
     Permissions["Writeable"] = "Writeable";
-    /** Readable by trusted devices. */
+    /**
+     * Readable by trusted devices.
+     */
     Permissions["ReadEncryptionRequired"] = "ReadEncryptionRequired";
-    /** Writeable by trusted devices. */
+    /**
+     * Writeable by trusted devices.
+     */
     Permissions["WriteEncryptionRequired"] = "WriteEncryptionRequired";
 })(Permissions || (Permissions = {}));
 //# sourceMappingURL=Bluetooth.types.js.map

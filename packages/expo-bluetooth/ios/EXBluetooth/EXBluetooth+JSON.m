@@ -260,7 +260,7 @@
 + (nullable NSString *)CBUUID_NativeToJSON:(CBUUID *)input
 {
   if (!input) return nil;
-  // TODO: Bacon: Maybe we should return all of the data??
+  // TODO(Bacon): Maybe we should return all of the data??
   return [input UUIDString];
 }
 
@@ -361,7 +361,7 @@
            @"type": @"descriptor",
            };
 }
-// TODO: Bacon: Investigate CBCharacteristic for read/write, permissions
+// TODO(Bacon): Investigate CBCharacteristic for read/write, permissions
 + (nullable NSDictionary *)EXBluetoothCharacteristicNativeToJSON:(nullable EXBluetoothCharacteristic *)input
 {
   if (!input) return nil;
@@ -376,7 +376,7 @@
            @"serviceUUID": serviceUUIDString,
            @"peripheralUUID": peripheralUUIDString,
            @"properties": [EXBluetooth CBCharacteristicPropertiesNativeToJSON:input.properties],
-           @"value": UMNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]), //TODO: Bacon: Find out what this is. (NSData)
+           @"value": UMNullIfEmpty([EXBluetooth NSData_NativeToJSON:input.value]), //TODO(Bacon): Find out what this is. (NSData)
            @"descriptors": [EXBluetooth EXBluetoothDescriptorArrayNativeToJSON:input.descriptors],
            @"isNotifying": @(input.isNotifying),
            @"type": @"characteristic",
@@ -448,7 +448,7 @@
 API_AVAILABLE(ios(11.0)) {
   if (!input) return nil;
   
-  // TODO: Bacon: Input/Output streams
+  // TODO(Bacon): Input/Output streams
   return @{
            @"peer": [EXBluetooth CBPeer_NativeToJSON:input.peer],
            @"PSM": [NSNumber numberWithUnsignedInteger:input.PSM],

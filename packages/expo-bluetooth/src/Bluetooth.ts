@@ -75,8 +75,7 @@ export async function startScanningAsync(
   };
 }
 
-/** Dangerously rebuild the manager with the given options */
-
+// Dangerously rebuild the manager with the given options
 export async function initAsync(options: CentralManagerOptions): Promise<void> {
   invariantAvailability('initAsync');
   await _reset();
@@ -114,6 +113,7 @@ async function _createStableConnectionAsync(
   let timeoutTag: number | undefined;
 
   if (timeout) {
+    // @ts-ignore
     timeoutTag = setTimeout(() => {
       disconnectAsync(peripheralUUID);
 

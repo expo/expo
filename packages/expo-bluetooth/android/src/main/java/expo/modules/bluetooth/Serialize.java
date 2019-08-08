@@ -132,7 +132,7 @@ public class Serialize {
     return props;
   }
 
-  // TODO: Bacon: Add List
+  // TODO(Bacon): Add List
   public static int CharacteristicProperties_JSONToNative(String properties) {
     if (properties.equals("broadcast")) {
       return BluetoothGattCharacteristic.PROPERTY_BROADCAST;
@@ -176,7 +176,7 @@ public class Serialize {
       output.putStringArrayList("permissions", Serialize.DescriptorPermissions_NativeToJSON(input.getPermissions()));
     }
 
-    // TODO: Bacon: What do we do with the permissions?
+    // TODO(Bacon): What do we do with the permissions?
 
     return output;
   }

@@ -76,7 +76,7 @@ export enum AndroidScanCallbackType {
    * Receive a callback when advertisements are no longer received from a device that has been
    * previously reported by a first match callback.
    */
-  matchLost = 'MATCH_LOST',
+  matchLost = 'matchLost',
 }
 
 export enum AndroidScanMode {
@@ -92,7 +92,9 @@ export enum AndroidMatchMode {
   Sticky = 'sticky',
 }
 
-/** Android O 26+ */
+/** 
+ * **Android** _Oreo (26+)_ 
+ */
 export enum AndroidPhyMode {
   LE1M = 'LE1M',
   LE2M = 'LE2M',
@@ -100,7 +102,9 @@ export enum AndroidPhyMode {
   AllSupported = 'allSupported', // default
 }
 
-/** Android M 23+ */
+/** 
+ * **Android** _Marshmellow (23+)_ 
+ */
 export enum AndroidNumberOfMatches {
   max = 'max', // default
   one = 'one',
@@ -121,37 +125,65 @@ export enum CharacteristicProperty {
    * Not allowed for local characteristics.
    */
   Broadcast = 'broadcast',
-  /** Permits reads of the characteristic value. */
+  /** 
+   * Permits reads of the characteristic value. 
+   */
   Read = 'read',
-  /** Permits writes of the characteristic value, without a response. */
+  /** 
+   * Permits writes of the characteristic value, without a response. 
+   */
   WriteWithoutResponse = 'writeWithoutResponse',
-  /** Permits writes of the characteristic value. */
+  /** 
+   * Permits writes of the characteristic value. 
+   */
   Write = 'write',
-  /** Permits notifications of the characteristic value, without a response. */
+  /** 
+   * Permits notifications of the characteristic value, without a response. 
+   */
   Notify = 'notify',
-  /** Permits indications of the characteristic value. */
+  /** 
+   * Permits indications of the characteristic value. 
+   */
   Indicate = 'indicate',
-  /** Permits signed writes of the characteristic value */
+  /** 
+   * Permits signed writes of the characteristic value 
+   */
   AuthenticateSignedWrites = 'authenticateSignedWrites',
-  /* If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
+  /** 
+   * If set, additional characteristic properties are defined in the characteristic extended properties descriptor.
    * Not allowed for local characteristics.
    */
   ExtendedProperties = 'extendedProperties',
-  /** If set, only trusted devices can enable notifications of the characteristic value. */
+  /** 
+   * If set, only trusted devices can enable notifications of the characteristic value. 
+   */
   NotifyEncryptionRequired = 'notifyEncryptionRequired',
-  /** If set, only trusted devices can enable indications of the characteristic value. */
+  /** 
+   * If set, only trusted devices can enable indications of the characteristic value. 
+   */
   IndicateEncryptionRequired = 'indicateEncryptionRequired',
 }
 
-/** Read, write, and encryption permissions for an ATT attribute. Can be combined. */
+/** 
+ * Read, write, and encryption permissions for an **ATT** attribute. 
+ * This value can be combined. 
+ */
 export enum Permissions {
-  /** Read-only. */
+  /** 
+   * Read-only. 
+   */
   Readable = 'Readable',
-  /** Write-only. */
+  /** 
+   * Write-only. 
+   */
   Writeable = 'Writeable',
-  /** Readable by trusted devices. */
+  /** 
+   * Readable by trusted devices. 
+   */
   ReadEncryptionRequired = 'ReadEncryptionRequired',
-  /** Writeable by trusted devices. */
+  /** 
+   * Writeable by trusted devices. 
+   */
   WriteEncryptionRequired = 'WriteEncryptionRequired',
 }
 
@@ -160,7 +192,7 @@ export enum Permissions {
 export interface BluetoothElement {
   id: Identifier;
   uuid: UUID;
-  // TODO: Bacon: Maybe add a type like peripheral, service, characteristc, descriptor
+  // TODO(Bacon): Maybe add a type like peripheral, service, characteristc, descriptor
 }
 
 export interface Descriptor extends BluetoothElement {
@@ -190,7 +222,7 @@ export interface NativeError {
 export interface Characteristic extends BluetoothElement {
   serviceUUID: UUID;
   peripheralUUID: UUID;
-  properties: string[]; // TODO: Bacon: more specific
+  properties: string[]; // TODO(Bacon): more specific
   descriptors: Descriptor[];
   value: Base64 | null;
   isNotifying: boolean;
@@ -234,24 +266,12 @@ export interface Peripheral extends BluetoothElement {
   discoveryTimestamp?: number;
 }
 
-export type PeripheralFoundCallback = (peripheral: Peripheral) => void;
-
 export type StateUpdatedCallback = (state: CentralState) => void;
-
-export type ScanSettings = {
-  serviceUUIDsToQuery?: UUID[];
-  scanningOptions?: any; //TODO: Bacon: This is where the iOS multi-scan value would be defined.
-  callback?: PeripheralFoundCallback;
-};
 
 export interface Central {
   state: CentralState;
   isScanning: boolean;
 }
-
-export type UpdateDescriptorOptions = {
-  descriptorUUID?: UUID;
-};
 
 export type UpdateOptions = {
   peripheralUUID: UUID;
@@ -272,11 +292,11 @@ export type WriteCharacteristicOptions = UpdateCharacteristicOptions & {
 export type OperationHandler = any; // { callbacks: Array<Function | Prom> } | Prom;
 
 export type ScanOptions = {
-  serviceUUIDsToQuery?: UUID[];
 
+  serviceUUIDsToQuery?: UUID[];
   /**
    * Use this for continuously updating peripheral data like the RSSI.
-   *  
+   *  **iOS Only**
    * `CBCentralManagerScanOptionAllowDuplicatesKey`
    *
    * Indicating that the scan should run without duplicate filtering.
@@ -290,32 +310,44 @@ export type ScanOptions = {
    */
   iosAllowDuplicates?: boolean;
   /**
+   * **iOS Only**
    * `CBCentralManagerScanOptionSolicitedServiceUUIDsKey`
    * An array of UUIDs respresenting service UUIDs.
    * This causes the scan to also look for peripherals soliciting any of the services contained in the list.
    */
   iosSolicitedServiceUUIDs?: UUID[];
 
+  /**
+   * **Android Only**
+   * What kind of scan will invoke a callback
+   */
   androidCallbackType?: AndroidScanCallbackType;
-
+  /**
+   * **Android Only** 
+   * Sets the `ScanSettings.Builder.scanMode` property
+   */
   androidScanMode?: AndroidScanMode;
-  /** M (23+) */
+  /** 
+   * **Android Only** _Marshmallow (23+)_
+   */
   androidMatchMode?: AndroidMatchMode;
   /**
-   * M (23+)
+   * **Android Only** _Marshmallow (23+)_
    * Match as many advertisement per filter as hw could allow
    * dependes on current capability and availability of the resources in hw.
    */
   androidNumberOfMatches?: AndroidNumberOfMatches;
-  /** Oreo (26+) */
+  /** 
+   * **Android Only** _Oreo (26+)_
+   */
   androidOnlyConnectable?: boolean;
   /**
-   * Oreo (26+)
+   * **Android Only** _Oreo (26+)_
    * This value will only be used if `androidPhy` is undefined.
    */
   androidUseLegacy?: boolean;
   /**
-   * Oreo (26+)
+   * **Android Only** _Oreo (26+)_
    * When defined, `androidUseLegacy` is automatically set to `false`.
    */
   androidPhy?: AndroidPhyMode;
@@ -323,6 +355,7 @@ export type ScanOptions = {
 
 export type CentralManagerOptions = {
   /**
+   * **iOS Only**
    * `CBCentralManagerOptionShowPowerAlertKey`
    * If this is toggled on, and the Bluetooth manager is powered off, then the system will display a warning dialog to the user.
    */
@@ -342,19 +375,21 @@ export type CancelScanningCallback = () => void;
 
 export type PeripheralConnectionOption = {
   /**
-   * **Android**
+   * **Android Only**
    * Should be used for _reconnecting_ to devices that have already
    * been connected (then disconnected) **without** `shouldAutoConnect` enabled.
    */
   shouldAutoConnect?: boolean;
 
   /**
+   * **iOS Only**
    * `CBConnectPeripheralOptionNotifyOnConnectionKey`
    * A Boolean value that specifies whether the system should display an alert for a given peripheral if the app is suspended when a successful connection is made.
    * The value for this key is an NSNumber object. This key is useful for apps that have not specified the bluetooth-central background mode and cannot display their own alert. If more than one app has requested notification for a given peripheral, the one that was most recently in the foreground receives the alert. If the key is not specified, the default value is false.
    */
   shouldAlertConnection?: boolean;
   /**
+   * **iOS Only**
    * `CBConnectPeripheralOptionNotifyOnDisconnectionKey`
    * A Boolean value that specifies whether the system should display a disconnection alert for a given peripheral if the app is suspended at the time of the disconnection.
    * The value for this key is an NSNumber object. This key is useful for apps that have not specified the bluetooth-central background mode and cannot display their own alert. If more than one app has requested notification for a given peripheral, the one that was most recently in the foreground receives the alert. If the key is not specified, the default value is false.
@@ -362,6 +397,7 @@ export type PeripheralConnectionOption = {
   shouldAlertDisconnection?: boolean;
 
   /**
+   * **iOS Only**
    * `CBConnectPeripheralOptionNotifyOnNotificationKey`
    * A Boolean value that specifies whether the system should display an alert for all notifications received from a given peripheral if the app is suspended at the time.
    * The value for this key is an NSNumber object. This key is useful for apps that have not specified the bluetooth-central background mode and cannot display their own alert. If more than one app has requested notification for a given peripheral, the one that was most recently in the foreground receives the alert. If the key is not specified, the default value is false.
@@ -369,13 +405,22 @@ export type PeripheralConnectionOption = {
   shouldAlertNotification?: boolean;
 
   /**
+   * **iOS Only**
    * `CBConnectPeripheralOptionStartDelayKey`
-   *
+   * Indicates the number of seconds for the system to wait before starting a connection.
    */
   startDelay?: number;
 };
 
 export type ConnectionOptions = {
+  /**
+   * The duration in milliseconds to wait before automatically quiting the connection.
+   * If undefined then the client will rely on the native API to quit connecting.
+   */
   timeout?: number;
+  /**
+   * A callback that is invoked when the peripheral has disconnected. 
+   * This is useful for when a peripheral disconnects itself unexpectedly.
+   */
   onDisconnect?: (...args: any[]) => any;
 };

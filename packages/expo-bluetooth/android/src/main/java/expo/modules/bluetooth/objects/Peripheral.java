@@ -122,7 +122,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     if (mGatt != null) {
       output.putInt(BluetoothConstants.JSON.MTU, mMTU);
     } else {
-      output.putInt(BluetoothConstants.JSON.MTU, 576); // TODO: Bacon: annotate
+      output.putInt(BluetoothConstants.JSON.MTU, 576); // TODO(Bacon): annotate
     }
 
     return output;
@@ -156,7 +156,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
         if (mDidConnectStateChangePeripheralBlock.getEvent().equals(BluetoothConstants.EVENTS.PERIPHERAL_CONNECTED)) {
           BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
         } else {
-          // TODO: Bacon: Is this true?
+          // TODO(Bacon): Is this true?
           BluetoothError.reject(promise, "Cannot start connecting to device: " + getID() + " until disconnect operation has completed.");
         }
         return;
@@ -232,7 +232,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
         if (newState == BluetoothProfile.STATE_CONNECTED) {
           Log.d("BLE_TEST", "UNHANDLED: Did connect: " + getID() + ", connected: " + isConnected());
           //      getDevice().createBond();
-          // TODO: Bacon: Send Connection event
+          // TODO(Bacon): Send Connection event
 
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
           Log.d("BLE_TEST", "UNHANDLED: Did disconnect: " + getID() + ", connected: " + isConnected());
@@ -396,7 +396,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
         }
         mRSSIBlock = null;
       }
-      // TODO: Bacon: Send RSSI event here - not done on iOS either
+      // TODO(Bacon): Send RSSI event here - not done on iOS either
     }
 
     public void onMtuChanged(int mtu, int status) {
@@ -440,7 +440,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
       Log.d("BLE_TEST", "disconnect(): " + mGatt.getDevice().getAddress());
       try {
         mGatt.disconnect();
-        // TODO: Bacon: Will this not send any update to onConnectionStateChange
+        // TODO(Bacon): Will this not send any update to onConnectionStateChange
         if (!refreshGattCacheIgnoringErrors(mGatt)) {
           Log.d("BLE_TEST", "disconnect(): Failed to refresh cache: " + getID() + ", isConnected: " + isConnected());
         }
@@ -453,7 +453,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
 
     // It would seem that onConnectionStateChange(DISCONNECTED) is called when the device loses connection.
     // We will simulate the disconnect event from here.
-    // TODO: Bacon: Restructure to account for this extra logic.
+    // TODO(Bacon): Restructure to account for this extra logic.
     onConnectionStateChange(status, BluetoothProfile.STATE_DISCONNECTED);
   }
 
@@ -493,18 +493,18 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     }
   }
 
-  // TODO: Bacon: Is this overriding the StateChange method
+  // TODO(Bacon): Is this overriding the StateChange method
   public void disconnect(Promise promise) {
     // A task is currently running. Either connecting or disconnecting.
     if (mDidConnectStateChangePeripheralBlock != null) {
       // A disconnection is already running. Reject with concurrent error.
       if (mDidConnectStateChangePeripheralBlock.getEvent().equals(BluetoothConstants.EVENTS.PERIPHERAL_DISCONNECTED)) {
-        // TODO: Bacon: seems like this could be hard to work around given how long it takes a peripheral to disconnect.
+        // TODO(Bacon): seems like this could be hard to work around given how long it takes a peripheral to disconnect.
         BluetoothError.reject(promise, BluetoothError.CONCURRENT_TASK(getID()));
         return;
       } else {
         // A connection task is running. Reject the connection and proceed to cancel the connecting peripheral by closing it.
-        // TODO: Bacon: Cancel this instead of rejecting. Then proceed to disconnect.
+        // TODO(Bacon): Cancel this instead of rejecting. Then proceed to disconnect.
         if (shouldResolvePromiseWithStatusAndData(mDidConnectStateChangePeripheralBlock.getPromise(), BluetoothGatt.GATT_FAILURE)) {
           mDidConnectStateChangePeripheralBlock.getPromise().resolve(toJSON());
         }
@@ -521,7 +521,7 @@ public class Peripheral implements EXBluetoothObjectInterface, EXBluetoothParent
     disconnect();
   }
 
-  // TODO: Bacon: [iOS] Are solicitedServiceUUIDs overflowServiceUUIDs possible
+  // TODO(Bacon): [iOS] Are solicitedServiceUUIDs overflowServiceUUIDs possible
   public Bundle advertisementData() {
     if (advertisingData == null) {
       return null;

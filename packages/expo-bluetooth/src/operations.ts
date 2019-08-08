@@ -5,7 +5,7 @@ import {
   OperationType,
 } from './Bluetooth.types';
 import { DELIMINATOR } from './ExpoBluetooth';
-// TODO: this is a cycle
+// TODO(Bacon): this is a cycle
 import Operation from './Operation';
 
 let operations: { [operationId: string]: OperationHandler } = {};

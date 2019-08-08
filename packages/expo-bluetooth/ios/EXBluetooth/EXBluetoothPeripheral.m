@@ -204,7 +204,7 @@
     return;
   }
   
-  // TODO: Bacon: Somehow notify that we've invalidated services
+  // TODO(Bacon): Somehow notify that we've invalidated services
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(nullable NSError *)error

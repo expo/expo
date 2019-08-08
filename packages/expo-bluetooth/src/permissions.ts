@@ -2,7 +2,7 @@ import { Platform } from '@unimodules/core';
 import * as Permissions from 'expo-permissions';
 import { PermissionStatus } from 'expo-permissions/src/Permissions.types';
 
-// TODO: Bacon maybe move to `.android`
+// TODO(Bacon): maybe move to `.android`
 export async function requestPermissionAsync(): Promise<{ status: PermissionStatus }> {
   if (Platform.OS === 'android') {
     return await Permissions.askAsync(Permissions.LOCATION);

@@ -302,7 +302,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
             case BluetoothDevice.ERROR:
               BluetoothError.reject(createBond.promise, BluetoothError.BONDING_DENIED());
               createBond = null;
-              /// TODO: Bacon: Should we return?
+              /// TODO(Bacon): Should we return?
               break;
             default:
               break;
@@ -440,7 +440,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
     if (guardBluetoothAvailability(promise)) {
       return;
     }
-    // TODO: Bacon: Should we do nothing if shouldEnable === getBluetoothAdapter().isEnabled()
+    // TODO(Bacon): Should we do nothing if shouldEnable === getBluetoothAdapter().isEnabled()
 
     if (shouldEnable != getBluetoothAdapter().isEnabled()) {
       if (getCurrentActivity() == null) {
@@ -450,7 +450,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
         if (shouldEnable) {
           getCurrentActivity().startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), ENABLE_REQUEST);
         } else {
-          // TODO: Bacon: This may not be allowed
+          // TODO(Bacon): This may not be allowed
           getCurrentActivity().startActivityForResult(new Intent("android.bluetooth.adapter.action.REQUEST_DISABLE"), ENABLE_REQUEST);
         }
         return;
@@ -501,7 +501,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
       return;
     }
 
-    // TODO: Bacon: This is redundant but maybe more efficient.
+    // TODO(Bacon): This is redundant but maybe more efficient.
     if (isScanning()) {
       BluetoothError.reject(promise, BluetoothError.SCAN_REDUNDANT_INIT());
       return;
@@ -562,7 +562,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
           map.putBundle(BluetoothConstants.JSON.ERROR, error.toJSON());
         }
         map.putBundle(BluetoothConstants.JSON.CENTRAL, centralAsJSON());
-        emitState(); // TODO: Bacon
+        emitState(); // TODO(Bacon): 
         sendEvent(BluetoothConstants.EVENTS.CENTRAL_STATE_CHANGED, map);
       }
     }, adapter);
@@ -859,7 +859,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
     }
 
     String characteristicUUIDString = (String) options.get(BluetoothConstants.JSON.CHARACTERISTIC_UUID);
-    // TODO: Bacon: Restructure
+    // TODO(Bacon): Restructure
     Characteristic characteristic;
     if (options.containsKey(BluetoothConstants.JSON.CHARACTERISTIC_PROPERTIES)) {
       String characteristicPropertiesString = (String) options.get(BluetoothConstants.JSON.CHARACTERISTIC_PROPERTIES);
@@ -934,7 +934,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
       includedServicesUUIDs = Serialize.UUIDList_JSONToNative(includedServicesUUIDStrings);
     }
 
-    // TODO: Bacon: Add serviceUUIDs
+    // TODO(Bacon): Add serviceUUIDs
     Bundle output = service.discoverIncludedServices(includedServicesUUIDs, promise);
     BluetoothModule.sendEvent(BluetoothConstants.EVENTS.SERVICE_DISCOVERED_INCLUDED_SERVICES, output);
   }
@@ -1070,7 +1070,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
         emitState();
       } else {
         Peripheral peripheral = peripherals.get(address);
-        //TODO: Bacon: Sync new device data maybe
+        //TODO(Bacon): Sync new device data maybe
         peripheral.updateRSSI(RSSI);
         peripheral.updateData(scanRecord);
       }
@@ -1081,7 +1081,7 @@ public class BluetoothModule extends ExportedModule implements ActivityEventList
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     /*
-     * TODO: Bacon:
+     * TODO(Bacon):
      * In JS we need to observe Events.ENABLE_EVENT for { central, error } and callback with enabled event.
      */
     if (requestCode == ENABLE_REQUEST) {
