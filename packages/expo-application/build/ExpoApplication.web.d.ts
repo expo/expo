@@ -5,5 +5,6 @@ declare const _default: {
     readonly nativeApplicationVersion: null;
     readonly nativeBuildVersion: null;
     readonly androidId: null;
+    getInstallationTimeAsync(): Promise<null>;
 };
 export default _default;

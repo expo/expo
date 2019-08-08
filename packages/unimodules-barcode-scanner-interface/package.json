@@ -1,6 +1,6 @@
 {
   "name": "unimodules-barcode-scanner-interface",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "An interface for bar code scanners",
   "main": "index.js",
   "keywords": [
@@ -18,5 +18,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-barcode-scanner-interface",
-  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
 }

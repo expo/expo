@@ -9,13 +9,11 @@ ListView - A core component designed for efficient display of vertically scrolli
 
 Minimal example:
 
-
 ```javascript
-
 class MyComponent extends Component {
   constructor() {
     super();
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
     this.state = {
       dataSource: ds.cloneWithRows(['row 1', 'row 2']),
     };
@@ -23,53 +21,48 @@ class MyComponent extends Component {
 
   render() {
     return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={(rowData) => <Text>{rowData}</Text>}
-      />
+      <ListView dataSource={this.state.dataSource} renderRow={rowData => <Text>{rowData}</Text>} />
     );
   }
 }
-
 ```
-
 
 ListView also supports more advanced features, including sections with sticky section headers, header and footer support, callbacks on reaching the end of the available data (`onEndReached`) and on the set of rows that are visible in the device viewport change (`onChangeVisibleRows`), and several performance optimizations.
 
 There are a few performance operations designed to make ListView scroll smoothly while dynamically loading potentially very large (or conceptually infinite) data sets:
 
-* Only re-render changed rows - the rowHasChanged function provided to the data source tells the ListView if it needs to re-render a row because the source data has changed - see ListViewDataSource for more details.
+- Only re-render changed rows - the rowHasChanged function provided to the data source tells the ListView if it needs to re-render a row because the source data has changed - see ListViewDataSource for more details.
 
-* Rate-limited row rendering - By default, only one row is rendered per event-loop (customizable with the `pageSize` prop). This breaks up the work into smaller chunks to reduce the chance of dropping frames while rendering rows.
+- Rate-limited row rendering - By default, only one row is rendered per event-loop (customizable with the `pageSize` prop). This breaks up the work into smaller chunks to reduce the chance of dropping frames while rendering rows.
 
 ### Props
 
-* [ScrollView props...](../scrollview/#props)
+- [ScrollView props...](../scrollview/#props)
 
-- [`dataSource`](../listview/#datasource)
-- [`initialListSize`](../listview/#initiallistsize)
-- [`onEndReachedThreshold`](../listview/#onendreachedthreshold)
-- [`pageSize`](../listview/#pagesize)
-- [`renderRow`](../listview/#renderrow)
-- [`renderScrollComponent`](../listview/#renderscrollcomponent)
-- [`scrollRenderAheadDistance`](../listview/#scrollrenderaheaddistance)
-- [`stickyHeaderIndices`](../listview/#stickyheaderindices)
-- [`enableEmptySections`](../listview/#enableemptysections)
-- [`renderHeader`](../listview/#renderheader)
-- [`onEndReached`](../listview/#onendreached)
-- [`stickySectionHeadersEnabled`](../listview/#stickysectionheadersenabled)
-- [`renderSectionHeader`](../listview/#rendersectionheader)
-- [`renderSeparator`](../listview/#renderseparator)
-- [`onChangeVisibleRows`](../listview/#onchangevisiblerows)
-- [`removeClippedSubviews`](../listview/#removeclippedsubviews)
-- [`renderFooter`](../listview/#renderfooter)
+* [`dataSource`](../listview/#datasource)
+* [`initialListSize`](../listview/#initiallistsize)
+* [`onEndReachedThreshold`](../listview/#onendreachedthreshold)
+* [`pageSize`](../listview/#pagesize)
+* [`renderRow`](../listview/#renderrow)
+* [`renderScrollComponent`](../listview/#renderscrollcomponent)
+* [`scrollRenderAheadDistance`](../listview/#scrollrenderaheaddistance)
+* [`stickyHeaderIndices`](../listview/#stickyheaderindices)
+* [`enableEmptySections`](../listview/#enableemptysections)
+* [`renderHeader`](../listview/#renderheader)
+* [`onEndReached`](../listview/#onendreached)
+* [`stickySectionHeadersEnabled`](../listview/#stickysectionheadersenabled)
+* [`renderSectionHeader`](../listview/#rendersectionheader)
+* [`renderSeparator`](../listview/#renderseparator)
+* [`onChangeVisibleRows`](../listview/#onchangevisiblerows)
+* [`removeClippedSubviews`](../listview/#removeclippedsubviews)
+* [`renderFooter`](../listview/#renderfooter)
 
 ### Methods
 
-* [`getMetrics`](../listview/#getmetrics)
-* [`scrollTo`](../listview/#scrollto)
-* [`scrollToEnd`](../listview/#scrolltoend)
-* [`flashScrollIndicators`](../listview/#flashscrollindicators)
+- [`getMetrics`](../listview/#getmetrics)
+- [`scrollTo`](../listview/#scrollto)
+- [`scrollToEnd`](../listview/#scrolltoend)
+- [`flashScrollIndicators`](../listview/#flashscrollindicators)
 
 ---
 
@@ -259,13 +252,9 @@ The header and footer are always rendered (if these props are provided) on every
 
 ### `getMetrics()`
 
-
 ```javascript
-
 getMetrics();
-
 ```
-
 
 Exports some data, e.g. for perf investigations or analytics.
 
@@ -273,13 +262,11 @@ Exports some data, e.g. for perf investigations or analytics.
 
 ### `scrollTo()`
 
-
 ```javascript
 
 scrollTo(...args: Array)
 
 ```
-
 
 Scrolls to a given x, y offset, either immediately or with a smooth animation.
 
@@ -289,13 +276,9 @@ See `ScrollView#scrollTo`.
 
 ### `scrollToEnd()`
 
-
 ```javascript
-
 scrollToEnd(([options]: object));
-
 ```
-
 
 If this is a vertical ListView scrolls to the bottom. If this is a horizontal ListView scrolls to the right.
 
@@ -307,13 +290,8 @@ See `ScrollView#scrollToEnd`.
 
 ### `flashScrollIndicators()`
 
-
 ```javascript
-
 flashScrollIndicators();
-
 ```
 
-
 Displays the scroll indicators momentarily.
-

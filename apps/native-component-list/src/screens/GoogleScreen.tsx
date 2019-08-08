@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, View } from 'react-native';
-import { Google } from 'expo';
+import * as Google from 'expo-google-app-auth'
 
 import Button from '../components/Button';
 

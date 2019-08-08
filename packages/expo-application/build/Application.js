@@ -1,16 +1,18 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoApplication from './ExpoApplication';
-export const nativeApplicationVersion = ExpoApplication ? ExpoApplication.nativeApplicationVersion : null;
-export const nativeBuildVersion = ExpoApplication ? ExpoApplication.nativeBuildVersion : null;
-export const applicationName = ExpoApplication ? ExpoApplication.applicationName : null;
-export const bundleId = ExpoApplication ? ExpoApplication.bundleId : null;
-export let androidId;
-if (Platform.OS === 'ios' || Platform.OS === 'web') {
-    androidId = null;
-}
-else {
-    androidId = ExpoApplication ? ExpoApplication.androidId : null;
-}
+export const nativeApplicationVersion = ExpoApplication
+    ? ExpoApplication.nativeApplicationVersion || null
+    : null;
+export const nativeBuildVersion = ExpoApplication
+    ? ExpoApplication.nativeBuildVersion || null
+    : null;
+export const applicationName = ExpoApplication
+    ? ExpoApplication.applicationName || null
+    : null;
+export const applicationId = ExpoApplication
+    ? ExpoApplication.applicationId || null
+    : null;
+export const androidId = ExpoApplication ? ExpoApplication.androidId || null : null;
 export async function getInstallReferrerAsync() {
     if (!ExpoApplication.getInstallReferrerAsync) {
         throw new UnavailabilityError('expo-application', 'getInstallReferrerAsync');
@@ -23,12 +25,12 @@ export async function getIosIdForVendorAsync() {
     }
     return await ExpoApplication.getIosIdForVendorAsync();
 }
-export async function getFirstInstallTimeAsync() {
-    if (!ExpoApplication.getFirstInstallTimeAsync) {
-        throw new UnavailabilityError('expo-application', 'getFirstInstallTimeAsync');
+export async function getInstallationTimeAsync() {
+    if (!ExpoApplication.getInstallationTimeAsync) {
+        throw new UnavailabilityError('expo-application', 'getInstallationTimeAsync');
     }
-    let firstInstallTime = await ExpoApplication.getFirstInstallTimeAsync();
-    return new Date(firstInstallTime);
+    let installationTime = await ExpoApplication.getInstallationTimeAsync();
+    return new Date(installationTime);
 }
 export async function getLastUpdateTimeAsync() {
     if (!ExpoApplication.getLastUpdateTimeAsync) {

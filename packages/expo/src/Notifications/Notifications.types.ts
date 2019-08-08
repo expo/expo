@@ -13,6 +13,7 @@ export type LocalNotification = {
   categoryId?: string;
   ios?: {
     sound?: boolean;
+    _displayInForeground?: boolean;
   };
   android?: {
     channelId?: string;

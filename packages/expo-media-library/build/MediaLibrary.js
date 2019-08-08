@@ -3,6 +3,13 @@ import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
+export var PermissionStatus;
+(function (PermissionStatus) {
+    PermissionStatus["UNDETERMINED"] = "undetermined";
+    PermissionStatus["GRANTED"] = "granted";
+    PermissionStatus["DENIED"] = "denied";
+})(PermissionStatus || (PermissionStatus = {}));
+;
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;
@@ -46,9 +53,24 @@ function checkSortByKey(sortBy) {
         throw new Error(`Invalid sortBy key: ${sortBy}`);
     }
 }
+function dateToNumber(value) {
+    return value instanceof Date ? value.getTime() : value;
+}
 // export constants
 export const MediaType = MediaLibrary.MediaType;
 export const SortBy = MediaLibrary.SortBy;
+export async function requestPermissionsAsync() {
+    if (!MediaLibrary.requestPermissionsAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
+    }
+    return await MediaLibrary.requestPermissionsAsync();
+}
+export async function getPermissionsAsync() {
+    if (!MediaLibrary.getPermissionsAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
+    }
+    return await MediaLibrary.getPermissionsAsync();
+}
 export async function createAssetAsync(localUri) {
     if (!MediaLibrary.createAssetAsync) {
         throw new UnavailabilityError('MediaLibrary', 'createAssetAsync');
@@ -158,13 +180,15 @@ export async function getAssetsAsync(assetsOptions = {}) {
     if (!MediaLibrary.getAssetsAsync) {
         throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
     }
-    const { first, after, album, sortBy, mediaType } = assetsOptions;
+    const { first, after, album, sortBy, mediaType, createdAfter, createdBefore } = assetsOptions;
     const options = {
         first: first == null ? 20 : first,
         after: getId(after),
         album: getId(album),
         sortBy: arrayize(sortBy),
         mediaType: arrayize(mediaType || [MediaType.photo]),
+        createdAfter: dateToNumber(createdAfter),
+        createdBefore: dateToNumber(createdBefore),
     };
     if (first != null && typeof options.first !== 'number') {
         throw new Error('Option "first" must be a number!');

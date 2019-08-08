@@ -17,4 +17,7 @@ export default {
   get androidId(): null {
     return null;
   },
+  async getInstallationTimeAsync(): Promise<null> {
+    return null;
+  },
 };

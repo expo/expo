@@ -2,6 +2,7 @@ package expo.modules.medialibrary;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
@@ -129,14 +130,11 @@ final class MediaLibraryUtils {
     final int idIndex = cursor.getColumnIndex(Media._ID);
     final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
-    final int widthIndex = cursor.getColumnIndex(Media.WIDTH);
-    final int heightIndex = cursor.getColumnIndex(Media.HEIGHT);
     final int latitudeIndex = cursor.getColumnIndex(Media.LATITUDE);
     final int longitudeIndex = cursor.getColumnIndex(Media.LONGITUDE);
     final int creationDateIndex = cursor.getColumnIndex(Media.DATE_TAKEN);
     final int modificationDateIndex = cursor.getColumnIndex(Media.DATE_MODIFIED);
     final int durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
-    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
     final int localUriIndex = cursor.getColumnIndex(Media.DATA);
     final int albumIdIndex = cursor.getColumnIndex(Media.BUCKET_ID);
 
@@ -146,7 +144,7 @@ final class MediaLibraryUtils {
     for (int i = 0; i < limit && !cursor.isAfterLast(); i++) {
       String localUri = "file://" + cursor.getString(localUriIndex);
       int mediaType = cursor.getInt(mediaTypeIndex);
-      int[] size = maybeRotateAssetSize(cursor.getInt(widthIndex), cursor.getInt(heightIndex), cursor.getInt(orientationIndex));
+      int[] size = getSizeFromCursor(cursor, mediaType, localUriIndex);
 
       Bundle asset = new Bundle();
       asset.putString("id", cursor.getString(idIndex));
@@ -213,6 +211,27 @@ final class MediaLibraryUtils {
       throw new IllegalArgumentException(errorMessage);
     }
     return MEDIA_TYPES.get(mediaType);
+  }
+
+  static int[] getSizeFromCursor(Cursor cursor, int mediaType, int localUriIndex){
+    final int orientationIndex = cursor.getColumnIndex(Media.ORIENTATION);
+    final int widthIndex = cursor.getColumnIndex(Media.WIDTH);
+    final int heightIndex = cursor.getColumnIndex(Media.HEIGHT);
+
+    int[] size;
+    // If image doesn't have the required information, we can get them from Bitmap.Options
+    if ((cursor.getType(widthIndex) == Cursor.FIELD_TYPE_NULL ||
+        cursor.getType(heightIndex) == Cursor.FIELD_TYPE_NULL) &&
+        mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inJustDecodeBounds = true;
+
+      BitmapFactory.decodeFile(cursor.getString(localUriIndex), options);
+      size = maybeRotateAssetSize(options.outWidth, options.outHeight, cursor.getInt(orientationIndex));
+    } else {
+      size = maybeRotateAssetSize(cursor.getInt(widthIndex), cursor.getInt(heightIndex), cursor.getInt(orientationIndex));
+    }
+    return size;
   }
 
   static int[] maybeRotateAssetSize(int width, int height, int orientation) {

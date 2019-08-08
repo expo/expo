@@ -1,9 +1,9 @@
-export declare const nativeApplicationVersion: any;
-export declare const nativeBuildVersion: any;
-export declare const applicationName: any;
-export declare const bundleId: any;
-export declare let androidId: any;
+export declare const nativeApplicationVersion: string | null;
+export declare const nativeBuildVersion: string | null;
+export declare const applicationName: string | null;
+export declare const applicationId: string | null;
+export declare const androidId: string | null;
 export declare function getInstallReferrerAsync(): Promise<string>;
 export declare function getIosIdForVendorAsync(): Promise<string>;
-export declare function getFirstInstallTimeAsync(): Promise<Date>;
+export declare function getInstallationTimeAsync(): Promise<Date>;
 export declare function getLastUpdateTimeAsync(): Promise<Date>;

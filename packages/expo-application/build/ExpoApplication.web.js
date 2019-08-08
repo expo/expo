@@ -17,5 +17,8 @@ export default {
     get androidId() {
         return null;
     },
+    async getInstallationTimeAsync() {
+        return null;
+    },
 };
 //# sourceMappingURL=ExpoApplication.web.js.map
