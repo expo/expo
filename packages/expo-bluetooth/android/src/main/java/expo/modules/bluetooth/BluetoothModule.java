@@ -26,8 +26,6 @@ import org.json.JSONException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,7 +40,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
@@ -58,7 +55,7 @@ import static android.bluetooth.BluetoothDevice.DEVICE_TYPE_DUAL;
 import static android.bluetooth.BluetoothDevice.DEVICE_TYPE_LE;
 
 
-public class BluetoothModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class BluetoothModule extends ExportedModule implements ActivityEventListener {
 
   protected static final String TAG = "ExpoBluetooth";
 
@@ -148,7 +145,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     if (mReceiver != null) {
       getApplicationContext().unregisterReceiver(mReceiver);
       mReceiver = null;
@@ -340,7 +337,7 @@ public class BluetoothModule extends ExportedModule implements ModuleRegistryCon
     if (guardBluetoothAvailability(promise)) {
       return;
     }
-    setModuleRegistry(mModuleRegistry);
+    onCreate(mModuleRegistry);
     promise.resolve(null);
   }
 

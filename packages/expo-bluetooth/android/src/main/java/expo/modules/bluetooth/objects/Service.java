@@ -5,11 +5,12 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.os.Bundle;
 
+import org.unimodules.core.Promise;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.unimodules.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.helpers.UUIDHelper;
 

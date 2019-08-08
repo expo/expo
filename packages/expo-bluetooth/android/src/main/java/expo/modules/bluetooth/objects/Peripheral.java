@@ -3,7 +3,6 @@ package expo.modules.bluetooth.objects;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
@@ -16,18 +15,15 @@ import android.os.Looper;
 import android.os.ParcelUuid;
 import android.util.Base64;
 import android.util.Log;
-
-import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.unimodules.Promise;
+import org.unimodules.core.Promise;
+
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;

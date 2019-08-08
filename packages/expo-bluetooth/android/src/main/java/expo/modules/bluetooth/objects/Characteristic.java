@@ -5,9 +5,10 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.os.Bundle;
 
+import org.unimodules.core.Promise;
+
 import java.util.UUID;
 
-import org.unimodules.Promise;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothError;
 import expo.modules.bluetooth.BluetoothModule;

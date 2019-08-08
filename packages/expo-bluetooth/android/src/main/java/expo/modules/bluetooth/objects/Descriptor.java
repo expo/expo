@@ -3,9 +3,9 @@ package expo.modules.bluetooth.objects;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.Bundle;
 
-import java.util.UUID;
+import org.unimodules.core.Promise;
 
-import org.unimodules.Promise;
+import java.util.UUID;
 import expo.modules.bluetooth.BluetoothConstants;
 import expo.modules.bluetooth.BluetoothModule;
 import expo.modules.bluetooth.Serialize;

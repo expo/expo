@@ -1,6 +1,6 @@
 package expo.modules.bluetooth.objects;
 
-import org.unimodules.Promise;
+import org.unimodules.core.Promise;
 
 public class ConnectingPromise {
   private Promise mPromise;
