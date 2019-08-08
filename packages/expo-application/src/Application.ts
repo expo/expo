@@ -5,7 +5,7 @@ import ExpoApplication from './ExpoApplication';
 export const nativeApplicationVersion: string | null = ExpoApplication
   ? ExpoApplication.nativeApplicationVersion || null
   : null;
-export const nativeBuildVersion: string | number | null = ExpoApplication
+export const nativeBuildVersion: string | null = ExpoApplication
   ? ExpoApplication.nativeBuildVersion || null
   : null;
 export const applicationName: string | null = ExpoApplication

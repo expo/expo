@@ -1,5 +1,5 @@
 export declare const nativeApplicationVersion: string | null;
-export declare const nativeBuildVersion: string | number | null;
+export declare const nativeBuildVersion: string | null;
 export declare const applicationName: string | null;
 export declare const applicationId: string | null;
 export declare const androidId: string | null;
