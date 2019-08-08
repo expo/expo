@@ -53,6 +53,7 @@ export function getTestModules() {
     require('./tests/GLView'),
     require('./tests/Haptics'),
     require('./tests/Localization'),
+    require('./tests/Network'),
     require('./tests/Recording'),
     require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
