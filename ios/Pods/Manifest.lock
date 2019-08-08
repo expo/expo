@@ -782,6 +782,8 @@ PODS:
   - EXAppAuth (6.0.0):
     - AppAuth
     - UMCore
+  - EXApplication (0.0.1):
+    - UMCore
   - EXAppLoaderProvider (6.0.0)
   - EXAV (6.0.0):
     - UMCore
@@ -1547,6 +1549,7 @@ DEPENDENCIES:
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
+  - EXApplication (from `../packages/expo-application/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
@@ -2106,6 +2109,9 @@ EXTERNAL SOURCES:
   EXAppAuth:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-auth/ios"
+  EXApplication:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-application/ios"
   EXAppLoaderProvider:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-loader-provider/ios"
@@ -2505,6 +2511,7 @@ SPEC CHECKSUMS:
   EXAdsFacebook: e80bc258520c71bce17cb4c1f984391b4a8940b8
   EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
   EXAppAuth: a5e758845e701381b5a7bedafe29e83f9cd165eb
+  EXApplication: 79926cde236e05302805c31581000bcfa352049a
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
   EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
