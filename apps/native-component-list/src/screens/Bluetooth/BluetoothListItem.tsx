@@ -1,49 +1,50 @@
-import {Ionicons} from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import Colors from '../../constants/Colors';
 
 export default function BluetoothListItem(props: any) {
-  const { title, values, value, renderAction, onPress } = props
-  
-    const valuesToRender = values || [value];
-    const hasSubtitle = valuesToRender && valuesToRender.length && valuesToRender[0] !== undefined;
-    return (
-      <TouchableHighlight
-        disabled={!onPress}
-        underlayColor={Colors.listItemTouchableHighlight}
-        onPress={() => onPress(props)}>
-        <View style={styles.container}>
-          <View
-            style={{
-              maxWidth: '80%',
-            }}>
-            <Text
-              style={[
-                styles.title,
-                {
-                  marginBottom: hasSubtitle ? 4 : 0,
-                  fontSize: hasSubtitle ? 14 : 18,
-                },
-              ]}>
-              {title}
-            </Text>
-            {hasSubtitle &&
-              valuesToRender.map((value, index) => {
-                const text = typeof value === 'string' ? value : value.text;
+  const { title, values, value, renderAction, onPress } = props;
 
-                return (
+  const valuesToRender = values || [value];
+  const hasSubtitle = valuesToRender && valuesToRender.length && valuesToRender[0] !== undefined;
+  return (
+    <TouchableHighlight
+      disabled={!onPress}
+      underlayColor={Colors.listItemTouchableHighlight}
+      onPress={() => onPress(props)}>
+      <View style={styles.container}>
+        <View
+          style={{
+            maxWidth: '80%',
+          }}>
+          <Text
+            style={[
+              styles.title,
+              {
+                marginBottom: hasSubtitle ? 4 : 0,
+                fontSize: hasSubtitle ? 14 : 18,
+              },
+            ]}>
+            {title}
+          </Text>
+          {hasSubtitle &&
+            valuesToRender.map((value: any, index: number) => {
+              const text = typeof value === 'string' ? value : value.text;
+
+              return (
                 <Text key={`value-${index}-${text}`} style={[styles.link, value.style]}>
                   {text}
                 </Text>
-              )})}
-          </View>
-          {onPress && !renderAction && <ArrowIcon />}
-          {renderAction && renderAction()}
+              );
+            })}
         </View>
-      </TouchableHighlight>
-    );
+        {onPress && !renderAction && <ArrowIcon />}
+        {renderAction && renderAction()}
+      </View>
+    </TouchableHighlight>
+  );
 }
 
 const ArrowIcon = () => (
