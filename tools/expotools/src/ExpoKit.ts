@@ -59,6 +59,7 @@ export async function updateReactNativeUnimodulesAsync(
   versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting![
     'react-native-unimodules'
   ] = reactNativeUnimodulesVersion;
+
   await Versions.setVersionsAsync(versions);
 }
 

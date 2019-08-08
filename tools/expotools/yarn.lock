@@ -362,10 +362,10 @@
     mime "^2.4.0"
     tempy "^0.3.0"
 
-"@expo/xdl@^56.2.0":
-  version "56.2.0"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.2.0.tgz#9225cfe124649235e181afec621ced01b6299fc1"
-  integrity sha512-vmzj9ER+QvQ4PXcNvtH/jcRzjiIc9qT9qNHRTB0lfLdDIqY0Xup263QlQrnaOSXEnXE3DKtPR6gyVOOqRsFVdw==
+"@expo/xdl@~56.3.0-rc.1":
+  version "56.3.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.3.0-rc.1.tgz#b89db10ab4e5a31776c51b9319a76a122c1ca354"
+  integrity sha512-Vtlv1P1XlwwjRPO672Ny10J8d8RCnCgJtiYuTa/S4zDjBOwHC5vOIDrIWMzFEsfiQxstkoa301myAGV7Cw8umg==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.1.3"
@@ -8579,7 +8579,7 @@ tar@4.4.6:
     safe-buffer "^5.1.2"
     yallist "^3.0.2"
 
-tar@^4, tar@^4.4.8:
+tar@^4, tar@^4.4.10, tar@^4.4.8:
   version "4.4.10"
   resolved "https://registry.yarnpkg.com/tar/-/tar-4.4.10.tgz#946b2810b9a5e0b26140cf78bea6b0b0d689eba1"
   integrity sha512-g2SVs5QIxvo6OLp0GudTqEf05maawKUxXru104iaayWA09551tFCTI8f1Asb4lPfkBr91k07iL4c11XO3/b0tA==
