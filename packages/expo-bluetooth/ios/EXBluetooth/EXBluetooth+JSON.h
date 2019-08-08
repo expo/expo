@@ -8,14 +8,6 @@
 #import <EXBluetooth/EXBluetoothDescriptor.h>
 #import <EXBluetooth/EXBluetoothCentralManager.h>
 
-
-static id UMNullIfEmpty(nullable NSString *input) {
-  if (!input || [input isEqualToString:@""]) {
-    return NSNull.null;
-  }
-  return input;
-}
-
 @interface EXBluetooth (JSON)
 
 + (nullable NSDictionary *)peripheralConnectionOptionsJSONToNative:(nullable NSDictionary *)input;
