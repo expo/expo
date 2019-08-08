@@ -1,0 +1,4 @@
+{
+  "name": "expo-application",
+  "platforms": ["ios", "android","web"]
+}
