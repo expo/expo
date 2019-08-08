@@ -2,6 +2,7 @@ import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
 import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 import { CodedError } from '@unimodules/core';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
 function getExpoPackage() {
   try {
@@ -15,7 +16,7 @@ const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
 declare var __DEV__: boolean;
-declare var process: { env: any; browser: boolean };
+declare var process: { env: any };
 declare var navigator: Navigator;
 declare var location: Location;
 declare var localStorage: Storage;
@@ -47,7 +48,7 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: process.browser && UAParser(navigator.userAgent) };
+    return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
   },
   get isHeadless(): false {
     return false;
@@ -63,7 +64,7 @@ export default {
     return getExpoPackage().version;
   },
   get linkingUri(): string {
-    if (process.browser) {
+    if (canUseDOM) {
       // On native this is `exp://`
       return location.origin + location.pathname;
     } else {
@@ -101,10 +102,9 @@ export default {
     return process.env.APP_MANIFEST || {};
   },
   get experienceUrl(): string {
-    if (process.browser) {
+    if (canUseDOM) {
       return location.origin + location.pathname;
     } else {
-      console.log(process);
       return '';
     }
   },
@@ -112,7 +112,7 @@ export default {
     return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (process.browser) {
+    if (canUseDOM) {
       return navigator.userAgent;
     } else {
       return null;

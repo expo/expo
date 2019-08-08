@@ -1,6 +1,7 @@
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
 import { CodedError } from '@unimodules/core';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 function getExpoPackage() {
     try {
         return require('expo/package.json');
@@ -39,7 +40,7 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: process.browser && UAParser(navigator.userAgent) };
+        return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
     },
     get isHeadless() {
         return false;
@@ -55,7 +56,7 @@ export default {
         return getExpoPackage().version;
     },
     get linkingUri() {
-        if (process.browser) {
+        if (canUseDOM) {
             // On native this is `exp://`
             return location.origin + location.pathname;
         }
@@ -93,11 +94,10 @@ export default {
         return process.env.APP_MANIFEST || {};
     },
     get experienceUrl() {
-        if (process.browser) {
+        if (canUseDOM) {
             return location.origin + location.pathname;
         }
         else {
-            console.log(process);
             return '';
         }
     },
@@ -105,7 +105,7 @@ export default {
         return __DEV__;
     },
     async getWebViewUserAgentAsync() {
-        if (process.browser) {
+        if (canUseDOM) {
             return navigator.userAgent;
         }
         else {
