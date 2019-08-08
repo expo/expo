@@ -13,7 +13,6 @@
 #import "ExpoKit.h"
 #import "EXRootViewController.h"
 #import "EXConstants.h"
-#import <Firebase/Firebase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,10 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
   CrashlyticsKit.delegate = [ExpoKit sharedInstance]; // this must be set prior to init'ing fabric.
   [Fabric with:@[CrashlyticsKit]];
   [CrashlyticsKit setObjectValue:[EXBuildConstants sharedInstance].expoRuntimeVersion forKey:@"exp_client_version"];
-  // TODO: to be removed after sdk 35 release
-  if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"host.exp.Exponent"]) {
-    [FIRApp configure];
-  }
 
   if ([application applicationState] != UIApplicationStateBackground) {
     // App launched in foreground
