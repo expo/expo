@@ -11,8 +11,8 @@ UM_REGISTER_SINGLETON_MODULE(EXFaceDetectorAppDelegate)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
-  NSString* googleServicesPlist = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
-  if ([FIRApp defaultApp] == nil && [[NSFileManager defaultManager] fileExistsAtPath:googleServicesPlist]) {
+  NSString *googleServicesPlist = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+  if (![FIRApp defaultApp] && [[NSFileManager defaultManager] fileExistsAtPath:googleServicesPlist]) {
     [FIRApp configure];
   }
   return NO;
