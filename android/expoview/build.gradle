@@ -147,7 +147,7 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
       target       : 'react-native',
-      exclude      : ['expo-in-app-purchases', 'expo-updates']
+      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -160,7 +160,7 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
-      exclude      : ['expo-in-app-purchases', 'expo-updates']
+      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
   ])
 
   // Versioned react native
