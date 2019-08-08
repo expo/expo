@@ -13,32 +13,30 @@ module.exports = function(api, options = {}) {
 
   return {
     presets: [
-      isWeb && web.useNextBabel
-        ? 'next/babel'
-        : [
-            // We use `require` here instead of directly using the package name
-            // because we want to specifically use the `metro-react-native-babel-preset`
-            // installed in this folder's `node_modules` (`babel-preset-expo/node_modules/`).
-            // This way the preset will not change unintentionally.
-            // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-            require('metro-react-native-babel-preset'),
-            {
-              disableImportExportTransform: platformOptions.disableImportExportTransform,
-              lazyImportExportTransform:
-                lazyImportsOption === true
-                  ? importModuleSpecifier => {
-                      // Do not lazy-initialize packages that are local imports (similar to `lazy: true` behavior)
-                      // or are in the blacklist.
-                      return !(
-                        importModuleSpecifier.includes('./') ||
-                        lazyImportsBlacklist.has(importModuleSpecifier)
-                      );
-                    }
-                  : // Pass the option directly to `metro-react-native-babel-preset`
-                    // (which in turns pass it to `babel-plugin-transform-modules-commonjs`).
-                    lazyImportsOption,
-            },
-          ],
+      [
+        // We use `require` here instead of directly using the package name
+        // because we want to specifically use the `metro-react-native-babel-preset`
+        // installed in this folder's `node_modules` (`babel-preset-expo/node_modules/`).
+        // This way the preset will not change unintentionally.
+        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
+        require('metro-react-native-babel-preset'),
+        {
+          disableImportExportTransform: platformOptions.disableImportExportTransform,
+          lazyImportExportTransform:
+            lazyImportsOption === true
+              ? importModuleSpecifier => {
+                  // Do not lazy-initialize packages that are local imports (similar to `lazy: true` behavior)
+                  // or are in the blacklist.
+                  return !(
+                    importModuleSpecifier.includes('./') ||
+                    lazyImportsBlacklist.has(importModuleSpecifier)
+                  );
+                }
+              : // Pass the option directly to `metro-react-native-babel-preset`
+                // (which in turns pass it to `babel-plugin-transform-modules-commonjs`).
+                lazyImportsOption,
+        },
+      ],
     ],
     plugins: [
       [
@@ -50,7 +48,7 @@ module.exports = function(api, options = {}) {
         },
       ],
       ['@babel/plugin-proposal-decorators', { legacy: true }],
-      isWeb && ['babel-plugin-react-native-web', { commonjs: true }],
+      isWeb && ['babel-plugin-react-native-web'],
     ].filter(Boolean),
   };
 };
