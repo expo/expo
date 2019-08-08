@@ -3,11 +3,6 @@
 #import <EXApplication/EXApplication.h>
 #import <UIKit/UIKit.h>
 
-@interface EXApplication ()
-
-
-@end
-
 @implementation EXApplication
 
 UM_EXPORT_MODULE(ExpoApplication);
@@ -19,12 +14,7 @@ UM_EXPORT_MODULE(ExpoApplication);
 
 UM_EXPORT_METHOD_AS(getIosIdForVendorAsync, getIosIdForVendorAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  if(NSClassFromString(@"UIDevice") && [UIDevice instancesRespondToSelector:@selector(identifierForVendor)]) {
     resolve([[UIDevice currentDevice].identifierForVendor UUIDString]);
-  }
-  else{
-    resolve([NSNull null]);
-  }
 }
 
 UM_EXPORT_METHOD_AS(getInstallationTimeAsync, getInstallationTimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
@@ -34,11 +24,10 @@ UM_EXPORT_METHOD_AS(getInstallationTimeAsync, getInstallationTimeAsyncWithResolv
   NSDate *installDate = [[[NSFileManager defaultManager] attributesOfItemAtPath:urlToDocumentsFolder.path error:&error] objectForKey:NSFileCreationDate];
   if(error){
     reject(@"ERR_APPLICATION", @"Unable to get installation time of this application.", error);
-  }
-  else{
-    NSTimeInterval timeInMiliseconds = [installDate timeIntervalSince1970] * 1000;
-    NSNumber* timeInterval = @(timeInMiliseconds);
-    resolve(timeInterval);
+  } else{
+    NSTimeInterval timeInMilliseconds = [installDate timeIntervalSince1970] * 1000;
+    NSNumber *timeNumber = @(timeInMilliseconds);
+    resolve(timeNumber);
   }
 }
 
