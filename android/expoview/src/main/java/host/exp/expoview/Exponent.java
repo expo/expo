@@ -224,6 +224,7 @@ public class Exponent {
     void permissionsDenied();
   }
 
+  // TODO: Remove everything connect with permissions once SDK32 is phased out
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
   private PermissionsHelper mPermissionsHelper;
 
