@@ -275,6 +275,7 @@ To make it work in the background, it uses [TaskManager](../task-manager) Native
 
 - `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
 - Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
+- On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 
