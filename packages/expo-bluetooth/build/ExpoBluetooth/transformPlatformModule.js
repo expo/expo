@@ -20,21 +20,21 @@ export default function platformModuleWithCustomErrors(platformModule) {
 function methodWithTransformedError(method, methodName) {
     /** Stack trace without async layers */
     const stack = decodeURI(new Error().stack || '');
-    return async (...props) => {
+    return (...props) => {
         try {
             // console.log(`EXBLE: invoke: ${methodName}()`);
-            return await method(...props);
+            return method(...props);
         }
         catch ({ message, code, ...props }) {
             if (code.indexOf('ERR_BLE_GATT:') > -1) {
                 const gattStatusCode = code.split(':')[1];
-                return new AndroidGATTError({
+                throw new AndroidGATTError({
                     gattStatusCode: parseInt(gattStatusCode),
                     stack,
                     invokedMethod: methodName,
                 });
             }
-            return new BluetoothPlatformError({
+            throw new BluetoothPlatformError({
                 message,
                 code,
                 ...props,

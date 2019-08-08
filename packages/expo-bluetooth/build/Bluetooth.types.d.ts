@@ -232,6 +232,8 @@ export declare type OperationHandler = any;
 export declare type ScanOptions = {
     serviceUUIDsToQuery?: UUID[];
     /**
+     * Use this for continuously updating peripheral data like the RSSI.
+     *
      * `CBCentralManagerScanOptionAllowDuplicatesKey`
      *
      * Indicating that the scan should run without duplicate filtering.

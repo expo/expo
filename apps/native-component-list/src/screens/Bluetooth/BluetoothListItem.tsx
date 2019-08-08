@@ -30,11 +30,14 @@ export default function BluetoothListItem(props: any) {
               {title}
             </Text>
             {hasSubtitle &&
-              valuesToRender.map((value, index) => (
-                <Text key={`value-${index}-${value}`} style={styles.link}>
-                  {value}
+              valuesToRender.map((value, index) => {
+                const text = typeof value === 'string' ? value : value.text;
+
+                return (
+                <Text key={`value-${index}-${text}`} style={[styles.link, value.style]}>
+                  {text}
                 </Text>
-              ))}
+              )})}
           </View>
           {onPress && !renderAction && <ArrowIcon />}
           {renderAction && renderAction()}

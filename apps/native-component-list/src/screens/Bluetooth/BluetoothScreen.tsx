@@ -59,6 +59,7 @@ export default class BluetoothScreen extends React.Component<any, { isScanning: 
     this.setState({ isScanning: true }, async () => {
       const stopScanningAsync = await Bluetooth.startScanningAsync(
         {
+          
           androidOnlyConnectable: true,
         },
         /* This will query peripherals with a value found in the peripheral's `advertisementData.serviceUUIDs` */
@@ -67,7 +68,7 @@ export default class BluetoothScreen extends React.Component<any, { isScanning: 
           // console.log('Found: ', peripheral);
           if (peripheral.name) {
             const name = peripheral.name.toLowerCase();
-            const isBacon = name.indexOf('samsung') !== -1; // My phone's name
+            const isBacon = name.indexOf('baconbook') !== -1; // My phone's name
             if (isBacon) {
               this.setState({ isScanning: false });
 
@@ -78,9 +79,9 @@ export default class BluetoothScreen extends React.Component<any, { isScanning: 
               setTimeout(async () => {
                 const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
                 console.log('FINISHED!', loadedPeripheral);
-                // this.props.navigation.push('BluetoothPeripheralScreen', {
-                //   peripheral: loadedPeripheral,
-                // });
+                this.props.navigation.push('BluetoothPeripheralScreen', {
+                  peripheral: loadedPeripheral,
+                });
               }, 100);
             }
           }
@@ -129,7 +130,10 @@ export default class BluetoothScreen extends React.Component<any, { isScanning: 
               onValueChange={async value => {
                 // ExpoBluetooth.enableBluetoothAsync(true)
                 if (!this.stopScanningAsync && value) {
-                  this.stopScanningAsync = await Bluetooth.startScanningAsync({}, () => {});
+                  this.stopScanningAsync = await Bluetooth.startScanningAsync({
+                    iosAllowDuplicates: true,
+                    androidOnlyConnectable: true,
+                  }, () => {});
                 } else if (this.stopScanningAsync) {
                   console.log("stopScanningAsync:", this.stopScanningAsync)
                   await this.stopScanningAsync();
@@ -233,14 +237,22 @@ function Item({ peripheral, onPressInfo }: { peripheral: Bluetooth.Peripheral, o
     );
   };
   
+  console.log("peripheral", peripheral)
     return (
       <ItemContainer disabled={isConnecting} onPress={onPress}>
+        <View style={{flexDirection: 'column', flex: 1}}>
+        <View style={{flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',}}>
         <Text style={styles.itemText}>{peripheral.name}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {getSubtitle()}
           <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => onPressInfo(peripheral)}>
             <Ionicons name={'ios-information-circle-outline'} color="#197AFA" size={28} />
           </TouchableOpacity>
+        </View>
+        </View>
+        {peripheral.RSSI !== undefined && <Text style={[styles.itemText, {opacity: 0.8, fontSize: 12}]}>RSSI: {peripheral.RSSI}</Text>}
         </View>
       </ItemContainer>
     );

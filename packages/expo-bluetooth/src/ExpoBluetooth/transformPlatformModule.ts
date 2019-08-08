@@ -26,20 +26,20 @@ function methodWithTransformedError(
 ): (...props: any[]) => Promise<any> {
   /** Stack trace without async layers */
   const stack = decodeURI(new Error().stack || '');
-  return async (...props: any[]): Promise<any> => {
+  return (...props: any[]): Promise<any> => {
     try {
       // console.log(`EXBLE: invoke: ${methodName}()`);
-      return await method(...props);
+      return method(...props);
     } catch ({ message, code, ...props }) {
       if (code.indexOf('ERR_BLE_GATT:') > -1) {
         const gattStatusCode = code.split(':')[1];
-        return new AndroidGATTError({
+        throw new AndroidGATTError({
           gattStatusCode: parseInt(gattStatusCode),
           stack,
           invokedMethod: methodName,
         });
       }
-      return new BluetoothPlatformError({
+      throw new BluetoothPlatformError({
         message,
         code,
         ...props,
