@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.RemoteException;
 import android.provider.Settings;
 import android.util.Log;
@@ -63,7 +64,9 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
     try {
       PackageInfo pInfo = packageManager.getPackageInfo(packageName, 0);
       constants.put("nativeApplicationVersion", pInfo.versionName);
-      constants.put("nativeBuildVersion", pInfo.versionCode);
+
+      int versionCode = (int)getLongVersionCode(pInfo);
+      constants.put("nativeBuildVersion", Integer.toString(versionCode));
     } catch (PackageManager.NameNotFoundException e) {
       Log.e(TAG, "Exception: ", e);
     }
@@ -130,7 +133,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_CONNECTION", "Could not establish a connection to Google Play");
             break;
           default:
-            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error: response code " + responseCode);
+            promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code " + responseCode);
         }
 
         referrerClient.endConnection();
@@ -138,11 +141,16 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
 
       @Override
       public void onInstallReferrerServiceDisconnected() {
-        // Try to restart the connection on the next request to
-        // Google Play by calling the startConnection() method.
         promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.");
       }
     });
+  }
+
+  private static long getLongVersionCode(PackageInfo info) {
+    if (Build.VERSION.SDK_INT >= 28) {
+      return info.getLongVersionCode();
+    }
+    return info.versionCode;
   }
 }
 
