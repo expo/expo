@@ -4,19 +4,16 @@ import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import Colors from '../../constants/Colors';
 
-export default class BluetoothListItem extends React.PureComponent {
-  onPress = () => {
-    this.props.onPress && this.props.onPress(this.props);
-  };
-  render() {
-    const { title, values, value, renderAction, onPress } = this.props;
+export default function BluetoothListItem(props: any) {
+  const { title, values, value, renderAction, onPress } = props
+  
     const valuesToRender = values || [value];
     const hasSubtitle = valuesToRender && valuesToRender.length && valuesToRender[0] !== undefined;
     return (
       <TouchableHighlight
         disabled={!onPress}
         underlayColor={Colors.listItemTouchableHighlight}
-        onPress={this.onPress}>
+        onPress={() => onPress(props)}>
         <View style={styles.container}>
           <View
             style={{
@@ -44,7 +41,6 @@ export default class BluetoothListItem extends React.PureComponent {
         </View>
       </TouchableHighlight>
     );
-  }
 }
 
 const ArrowIcon = () => (

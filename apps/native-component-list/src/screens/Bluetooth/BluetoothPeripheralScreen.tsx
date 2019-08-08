@@ -20,6 +20,7 @@ import {
 import MonoText from '../../components/MonoText';
 import Colors from '../../constants/Colors';
 import BluetoothListItem from './BluetoothListItem';
+import { Subscription } from '@unimodules/core';
 
 const Characteristics = {};
 const Descriptors = {};
@@ -27,13 +28,13 @@ const JSONToNative = () => {};
 const nativeToJSON = () => {};
 const Services = {};
 
-export default class BluetoothPeripheralScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
+export default class BluetoothPeripheralScreen extends React.Component<any, { peripheral: Bluetooth.Peripheral | null, services: Bluetooth.Service[], sections: any[] }>  {
+  static navigationOptions = ({ navigation }: any) => ({
     title: navigation.getParam('peripheral').name,
   });
 
   state = {
-    peripheral: {},
+    peripheral: null,
     services: [],
     sections: [],
   };
@@ -54,13 +55,24 @@ export default class BluetoothPeripheralScreen extends React.Component {
     // this.setState({ services: servicesInfo });
   }
 
+  subscription: Subscription | null = null;
+
   componentWillUnmount() {
     if (this.subscription) this.subscription.remove();
   }
 
+  getPeripheral = (): Bluetooth.Peripheral => {
+    const { peripheral } = this.state;
+    if (peripheral == null) {
+      throw new Error('peripheral is not loaded');
+    }
+    // @ts-ignore
+    return peripheral;
+  }
+
   render() {
     //TODO: Bacon: disconnect button
-    const { state, name, uuid } = this.state.peripheral;
+    const { state, name, uuid, RSSI } = this.getPeripheral();
     const isConnected = state === 'connected';
 
     return (
@@ -71,7 +83,7 @@ export default class BluetoothPeripheralScreen extends React.Component {
         {isConnected && (
           <DataContainer>
             <RSSIButton
-              RSSI={this.state.peripheral.RSSI}
+              RSSI={RSSI}
               onPress={this.onPress}
               peripheralUUID={uuid}
             />
@@ -110,11 +122,11 @@ class ItemContainer extends React.Component {
   }
 }
 
-async function decodePeripheral(peripheral) {
+async function decodePeripheral(peripheral: Bluetooth.Peripheral) {
   const servicesInfo = await Promise.all(
-    peripheral.services.map(async service => {
+    peripheral.services.map(async (service: Bluetooth.Service) => {
       const characteristics = await Promise.all(
-        service.characteristics.map(async characteristic => {
+        service.characteristics.map(async (characteristic: Bluetooth.Characteristic) => {
           if (
             characteristic.properties &&
             characteristic.properties.length &&
@@ -233,42 +245,35 @@ class DisconnectPeripheralButton extends React.Component {
     );
   }
 }
-class RSSIButton extends React.Component {
-  state = {
-    isUpdating: false,
-  };
-
-  onPress = async () => {
-    if (this.state.isUpdating) {
-      return;
-    }
-    const { peripheralUUID } = this.props;
-    this.setState({ isUpdating: true });
-
-    try {
-      await Bluetooth.readRSSIAsync(peripheralUUID);
-    } catch (error) {
-      Alert.alert('RSSI Error!', error.message);
-    } finally {
-      this.setState({ isUpdating: false });
-    }
-  };
-
-  render() {
+function RSSIButton({ peripheralUUID, RSSI }: { peripheralUUID: string, RSSI: string }) {
+  const [isUpdating, setUpdate ] = React.useState(false);
+  
     return (
       <BluetoothListItem
-        disabled={this.state.isUpdating}
-        title={this.state.isUpdating ? 'Refreshing RSSI...' : 'Refresh RSSI'}
-        onPress={this.onPress}
+        disabled={isUpdating}
+        title={isUpdating ? 'Refreshing RSSI...' : 'Refresh RSSI'}
+        onPress={async () => {
+          if (isUpdating) {
+            return;
+          }
+          setUpdate(true);
+      
+          try {
+            await Bluetooth.readRSSIAsync(peripheralUUID);
+          } catch (error) {
+            Alert.alert('RSSI Error!', error.message);
+          } finally {
+            setUpdate(false);
+          }
+        }}
         renderAction={() => {
-          if (this.state.isUpdating) {
+          if (isUpdating) {
             return <ActivityIndicator />;
           }
-          return <Text>{this.props.RSSI}</Text>;
+          return <Text>{RSSI}</Text>;
         }}
       />
     );
-  }
 }
 
 class PeripheralView extends React.Component {
@@ -406,10 +411,10 @@ class CharacteristicsView extends React.Component {
         style={this.props.style}
         onPress={async () => {
           if (!isNotifying && properties.includes('notify')) {
-            await Bluetooth.shouldNotifyDescriptorAsync({
-              ...getGATTNumbersFromID(this.props.id),
-              shouldNotify: true,
-            });
+            // await Bluetooth.shouldNotifyDescriptorAsync({
+            //   ...getGATTNumbersFromID(this.props.id),
+            //   shouldNotify: true,
+            // });
           }
           if (canWrite) {
             await Bluetooth.writeCharacteristicAsync({

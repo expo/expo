@@ -16,8 +16,9 @@ import {
 } from 'react-native';
 
 import Colors from '../../constants/Colors';
+import { Subscription } from '@unimodules/core';
 
-export default class BluetoothScreen extends React.Component {
+export default class BluetoothScreen extends React.Component<any, { isScanning: boolean, peripherals: { [key: string]: Bluetooth.Peripheral }, centralState: Bluetooth.CentralState  }> {
   static navigationOptions = {
     title: 'Bluetooth',
   };
@@ -25,8 +26,11 @@ export default class BluetoothScreen extends React.Component {
   state = {
     peripherals: {},
     isScanning: false,
-    centralState: 'unknown',
+    centralState: Bluetooth.CentralState.Unknown,
   };
+
+  subscription: Subscription | null = null;
+  stateListener: Subscription | null = null;
 
   async componentDidMount() {
     await Bluetooth.requestPermissionAsync();
@@ -53,7 +57,7 @@ export default class BluetoothScreen extends React.Component {
     // const TileServiceUUID = 'FEED';
     // Load in one or more peripherals
     this.setState({ isScanning: true }, async () => {
-      this.stopScanningAsync = await Bluetooth.startScanningAsync(
+      const stopScanningAsync = await Bluetooth.startScanningAsync(
         {
           androidOnlyConnectable: true,
         },
@@ -61,15 +65,15 @@ export default class BluetoothScreen extends React.Component {
         // serviceUUIDsToQuery: [SnapChatSpectaclesServiceUUID, TileServiceUUID],
         async peripheral => {
           // console.log('Found: ', peripheral);
-          const hasName = peripheral.name && peripheral.name !== '';
-          if (hasName) {
-            // if (Object.values(this.state.peripherals).length > 2) {
-            // }
+          if (peripheral.name) {
             const name = peripheral.name.toLowerCase();
-            const isBacon = name.indexOf('samsung') !== -1; // My computer's name
+            const isBacon = name.indexOf('samsung') !== -1; // My phone's name
             if (isBacon) {
               this.setState({ isScanning: false });
-              await this.stopScanningAsync();
+
+              if (stopScanningAsync) {
+                await stopScanningAsync();
+              }
 
               setTimeout(async () => {
                 const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
@@ -94,17 +98,21 @@ export default class BluetoothScreen extends React.Component {
     LayoutAnimation.easeInEaseOut();
   }
 
-  onPressInfo = async peripheral => {
+  onPressInfo = async (peripheral: Bluetooth.Peripheral) => {
     this.props.navigation.push('BluetoothPeripheralScreen', { peripheral });
   };
 
-  stopScanningAsync;
-
+  stopScanningAsync: Bluetooth.CancelScanningCallback | null = null;
+  
   render() {
     const { centralState, peripherals, isScanning } = this.state;
-    const data = Object.values(peripherals)
-      .filter(({ name }) => name != null)
-      .sort((a, b) => a.discoveryTimestamp > b.discoveryTimestamp);
+    const allPeripherals: Bluetooth.Peripheral[] = Object.values(peripherals);
+    const data = allPeripherals.filter(({ name }) => name != null)
+      .sort(({ discoveryTimestamp = 0 }, { discoveryTimestamp: discoveryTimestampB = 0 }) => {
+        if (discoveryTimestamp > discoveryTimestampB) return 1;
+        if (discoveryTimestamp < discoveryTimestampB) return -1;
+        return 0;
+      });
 
     // console.log('ANNNND: ', { data });
     const canUseBluetooth = centralState === 'poweredOn';
@@ -120,9 +128,10 @@ export default class BluetoothScreen extends React.Component {
               value={isScanning}
               onValueChange={async value => {
                 // ExpoBluetooth.enableBluetoothAsync(true)
-                if (value && !this.stopScanningAsync) {
+                if (!this.stopScanningAsync && value) {
                   this.stopScanningAsync = await Bluetooth.startScanningAsync({}, () => {});
-                } else {
+                } else if (this.stopScanningAsync) {
+                  console.log("stopScanningAsync:", this.stopScanningAsync)
                   await this.stopScanningAsync();
                   this.stopScanningAsync = null;
                 }
@@ -147,12 +156,14 @@ export default class BluetoothScreen extends React.Component {
   }
 }
 
-class PeripheralsList extends React.Component {
-  renderItem = ({ item }) => <Item onPressInfo={this.props.onPressInfo} item={item} />;
+class PeripheralsList extends React.Component<{ onPressInfo: (peripheral: Bluetooth.Peripheral) => void, data: Bluetooth.Peripheral[] }> {
+  renderItem = ({ item }: { item: Bluetooth.Peripheral }) => {
+    return <Item onPressInfo={this.props.onPressInfo} peripheral={item} />
+  }
 
-  renderSectionHeader = ({ section: { title } }) => <Header title={title} />;
+  renderSectionHeader = ({ section: { title } }: { section: { title: string } }) => <Header title={title} />;
 
-  keyExtractor = (item = {}, index) => `key-${item.id || index}`;
+  keyExtractor = (item: Bluetooth.Peripheral, index: number) => `key-${item.id || index}`;
 
   render() {
     return (
@@ -164,7 +175,7 @@ class PeripheralsList extends React.Component {
             ]}
           />
         )}
-        data={this.props.data}
+        data={this.props.data.filter(Boolean)}
         style={styles.list}
         renderItem={this.renderItem}
         keyExtractor={this.keyExtractor}
@@ -173,16 +184,14 @@ class PeripheralsList extends React.Component {
   }
 }
 
-class Item extends React.Component {
-  state = {
-    isConnecting: false,
-  };
-  onPress = async () => {
-    const { item = {} } = this.props;
+function Item({ peripheral, onPressInfo }: { peripheral: Bluetooth.Peripheral, onPressInfo: (peripheral: Bluetooth.Peripheral) => void }) {
+  const [isConnecting, setConnecting ] = React.useState(false);
 
-    console.log('Attempt to connect to: ', item);
-    if (item.state === 'disconnected') {
-      this.setState({ isConnecting: true });
+  const onPress = async () => {
+
+    console.log('Attempt to connect to: ', peripheral);
+    if (peripheral.state === 'disconnected') {
+      setConnecting(true);
       try {
         // await Bluetooth.connectAsync(peripheralUUID, {
         //   // timeout: 5000,
@@ -193,58 +202,53 @@ class Item extends React.Component {
 
         // return;
 
-        const loadedPeripheral = await Bluetooth.loadPeripheralAsync(item);
+        const loadedPeripheral = await Bluetooth.loadPeripheralAsync(peripheral);
         console.log({ loadedPeripheral });
       } catch (error) {
         Alert.alert(
           'Connection Unsuccessful',
-          `Make sure "${item.name}" is turned on and in range.`
+          `Make sure "${peripheral.name}" is turned on and in range.`
         );
         console.log({ error });
         // console.error(error);
         // alert('Failed: ' + message);
       } finally {
-        this.setState({ isConnecting: false });
+        setConnecting(false);
       }
-    } else if (item.state === 'connected') {
-      await Bluetooth.disconnectAsync(item.id);
+    } else if (peripheral.state === 'connected') {
+      await Bluetooth.disconnectAsync(peripheral.id);
       // this.props.onPressInfo(this.props.item);
     } else {
-      alert('unknown state: ' + item.state);
+      alert('unknown state: ' + peripheral.state);
     }
   };
 
-  onPressInfo = () => {
-    this.props.onPressInfo(this.props.item);
-  };
-
-  getSubtitle = () => {
-    if (this.state.isConnecting) {
+  const getSubtitle = () => {
+    if (isConnecting) {
       return <ActivityIndicator animating />;
     }
+    
     return (
-      <Text style={[styles.itemText, { fontSize: 18, opacity: 0.6 }]}>{this.props.item.state}</Text>
+      <Text style={[styles.itemText, { fontSize: 18, opacity: 0.6 }]}>{peripheral.state}</Text>
     );
   };
-  render() {
-    const { item = {} } = this.props;
+  
     return (
-      <ItemContainer disabled={this.state.isConnecting} onPress={this.onPress}>
-        <Text style={styles.itemText}>{item.name}</Text>
+      <ItemContainer disabled={isConnecting} onPress={onPress}>
+        <Text style={styles.itemText}>{peripheral.name}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {this.getSubtitle()}
-          <TouchableOpacity style={{ marginLeft: 8 }} onPress={this.onPressInfo}>
+          {getSubtitle()}
+          <TouchableOpacity style={{ marginLeft: 8 }} onPress={() => onPressInfo(peripheral)}>
             <Ionicons name={'ios-information-circle-outline'} color="#197AFA" size={28} />
           </TouchableOpacity>
         </View>
       </ItemContainer>
     );
-  }
+  
 }
 
-class ScanningItem extends React.Component {
-  render() {
-    const { isDisabled } = this.props;
+function ScanningItem({ isDisabled, value, onValueChange }: { isDisabled: boolean, value: boolean, onValueChange: (value:boolean) => void }) {
+   
     const title = isDisabled ? 'Bluetooth Scanning is Disabled' : 'Bluetooth Scanning';
     return (
       <ItemContainer
@@ -253,15 +257,16 @@ class ScanningItem extends React.Component {
         <Text style={styles.itemText}>{title}</Text>
         <Switch
           disabled={isDisabled}
-          value={this.props.value}
-          onValueChange={this.props.onValueChange}
+          value={value}
+          onValueChange={onValueChange}
         />
       </ItemContainer>
     );
-  }
+  
 }
 
-const ItemContainer = ({ children, pointerEvents, containerStyle, style, ...props }) => (
+function ItemContainer({ children, pointerEvents, containerStyle, style, ...props }: any) { 
+  return (
   <TouchableHighlight
     {...props}
     underlayColor={Colors.listItemTouchableHighlight}
@@ -271,16 +276,16 @@ const ItemContainer = ({ children, pointerEvents, containerStyle, style, ...prop
     </View>
   </TouchableHighlight>
 );
+  }
 
-class Header extends React.Component {
-  render() {
-    const { title } = this.props;
+function Header({ title }: { title: string }) {
+  
     return (
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{title.toUpperCase()}</Text>
       </View>
     );
-  }
+  
 }
 
 // {peripheral.state === 'connected' && <TouchableOpacity onPress={() => {
