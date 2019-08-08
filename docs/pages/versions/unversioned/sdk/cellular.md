@@ -54,7 +54,7 @@ Cellular.allowsVoip; // true or false
 
 ### `Cellular.carrier`
 
-The name of the user’s home cellular service provider. If the device has dual sim card, only the current active sim card on the network will be returned. On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`. 
+The name of the user’s home cellular service provider. If the device has dual SIM cards, only the carrier for the currently active SIM card will be returned. On Android, this value is only available when the SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this returns `null`. 
 
 On iOS, if you configure a device for a carrier and then remove the SIM card, this property retains the name of the carrier. If you then install a new SIM card, its carrier name replaces the previous value of this property. The value for this property is `null` if the user never configured a carrier for the device.
 
