@@ -1,6 +1,19 @@
 package org.unimodules.interfaces.permissions;
 
+import android.os.Bundle;
+
 public interface Permissions {
+
+  Bundle getPermissionsBundle(String[] permissionTypes);
+
+  void askForPermissionsBundle(String[] permissionsTypes, PermissionsRequesterListenerBundle listener);
+
+  boolean hasPermissionsByTypes(String[] permissionsTypes);
+
+  interface PermissionsRequesterListenerBundle {
+    void onPermissionsResult(Bundle permissions);
+  }
+
   /**
    * @param permissions {String[]} of {@link android.Manifest.permission}
    * @return {int[]} of either {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the

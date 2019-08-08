@@ -9,7 +9,7 @@ import expo.modules.permissions.GRANTED_VALUE
 import expo.modules.permissions.PERMISSION_EXPIRES_NEVER
 import expo.modules.permissions.STATUS_KEY
 
-class NotificationRequester(private val context: Context) : PermissionRequester{
+class NotificationRequester(private val context: Context) : PermissionRequester {
   override fun getPermissionToAsk(): Array<String> = emptyArray()
 
   override fun getPermission(): Bundle {
