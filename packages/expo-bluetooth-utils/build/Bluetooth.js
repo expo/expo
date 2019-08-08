@@ -8,7 +8,7 @@ export { default as Services } from './Services';
  * 2. Convert the percent-encodings to raw bytes.
  * 3. Pass value to Base64.btoa (Binary to ASCII)
  */
-export function JSONToNative(str) {
+export function encodeBinaryString(str) {
     // first we use encodeURIComponent to get percent-encoded UTF-8,
     // then we convert the percent encodings into raw bytes which
     // can be fed into btoa.
@@ -21,7 +21,7 @@ export function JSONToNative(str) {
  * 2. Convert the raw bytes to percent-encodings.
  * 3. Decode the raw bytes
  */
-export function nativeToJSON(str) {
+export function decodeBinaryString(str) {
     const binary = Base64.atob(str);
     const modifiedBinaryString = binary
         .split('')

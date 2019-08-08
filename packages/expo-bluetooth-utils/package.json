@@ -1,7 +1,7 @@
 {
   "name": "expo-bluetooth-utils",
   "version": "1.0.0",
-  "description": "Expo Module Template standalone module",
+  "description": "Tools for working with expo-bluetooth",
   "main": "build/Bluetooth.js",
   "types": "build/Bluetooth.d.ts",
   "scripts": {
@@ -24,9 +24,5 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
-  },
-  "unimodulePeerDependencies": {
-    "expo-bluetooth": "~2.0.0",
-    "expo-core": "*"
   }
 }
