@@ -1,16 +1,21 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXAudioRecordingPermissionRequester.h>
+#import <EXPermissions/EXAudioRecordingRequester.h>
 #import <UMCore/UMDefines.h>
 
 #import <AVFoundation/AVFoundation.h>
 
-@implementation EXAudioRecordingPermissionRequester
+@implementation EXAudioRecordingRequester
 
-+ (NSDictionary *)permissions
++ (NSString *)permissionType
+{
+  return @"audioRecording";
+}
+
+- (NSDictionary *)getPermissions
 {
   AVAudioSessionRecordPermission systemStatus;
-  EXPermissionStatus status;
+  UMPermissionStatus status;
 
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!microphoneUsageDescription) {
@@ -21,19 +26,18 @@
   }
   switch (systemStatus) {
     case AVAudioSessionRecordPermissionGranted:
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       break;
     case AVAudioSessionRecordPermissionDenied:
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
       break;
     case AVAudioSessionRecordPermissionUndetermined:
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
       break;
   }
 
   return @{
-    @"status": [EXPermissions permissionStringForStatus:status],
-    @"expires": EXPermissionExpiresNever,
+    @"status": @(status)
   };
 }
 
@@ -42,10 +46,8 @@
   UM_WEAKIFY(self)
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     UM_STRONGIFY(self)
-    resolve([[self class] permissions]);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
+    resolve([self getPermissions]);
   }];
 }
+
 @end

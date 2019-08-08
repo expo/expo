@@ -26,21 +26,21 @@ export async function askAsync(...types) {
     return await _handlePermissionsRequestAsync(types, Permissions.askAsync);
 }
 async function _handleSinglePermissionRequestIOSAsync(type, handlePermission) {
-    return handlePermission(type);
+    return await handlePermission(type);
 }
 async function _handleMultiPermissionsRequestIOSAsync(types, handlePermission) {
     if (!types.length) {
         throw new Error('At least one permission type must be specified');
     }
-    return await Promise.all(types.map(async (type) => ({
-        [type]: await _handleSinglePermissionRequestIOSAsync(type, handlePermission),
-    })))
-        .then(permissions => permissions.reduce((permission, acc) => ({ ...acc, ...permission }), {}))
-        .then(permissions => ({
+    let permissions = {};
+    for (let type of types) {
+        permissions[type] = await _handleSinglePermissionRequestIOSAsync(type, handlePermission);
+    }
+    return {
         status: coalesceStatuses(permissions),
         expires: coalesceExpirations(permissions),
         permissions
-    }));
+    };
 }
 async function _handlePermissionsRequestAsync(types, handlePermissions) {
     if (!types.length) {

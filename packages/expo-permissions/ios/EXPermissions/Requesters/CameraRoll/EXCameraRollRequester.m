@@ -6,26 +6,30 @@
 
 @implementation EXCameraRollRequester
 
-+ (NSDictionary *)permissions
++ (NSString *)permissionType
 {
-  EXPermissionStatus status;
+  return @"cameraRoll";
+}
+
+- (NSDictionary *)getPermissions
+{
+  UMPermissionStatus status;
   PHAuthorizationStatus permissions = [PHPhotoLibrary authorizationStatus];
   switch (permissions) {
     case PHAuthorizationStatusAuthorized:
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
       break;
     case PHAuthorizationStatusNotDetermined:
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
       break;
   }
   return @{
-    @"status": [EXPermissions permissionStringForStatus:status],
-    @"granted": @(status == EXPermissionStatusGranted),
-    @"expires": EXPermissionExpiresNever,
+    @"status": @(status),
+    @"granted": @(status == UMPermissionStatusGranted)
   };
 }
 
@@ -34,10 +38,7 @@
   UM_WEAKIFY(self)
   [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
     UM_STRONGIFY(self)
-    resolve([[self class] permissions]);
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
-    }
+    resolve([self getPermissions]);
   }];
 }
 

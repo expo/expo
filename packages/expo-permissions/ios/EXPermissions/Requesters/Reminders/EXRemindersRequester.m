@@ -4,9 +4,14 @@
 
 @implementation EXRemindersRequester
 
-+ (NSDictionary *)permissions
++ (NSString *)permissionType
 {
-  EXPermissionStatus status;
+  return @"reminders";
+}
+
+- (NSDictionary *)getPermissions
+{
+  UMPermissionStatus status;
   EKAuthorizationStatus permissions;
   
   NSString *remindersUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSRemindersUsageDescription"];
@@ -18,20 +23,19 @@
   }
   switch (permissions) {
     case EKAuthorizationStatusAuthorized:
-      status = EXPermissionStatusGranted;
+      status = UMPermissionStatusGranted;
       break;
     case EKAuthorizationStatusRestricted:
     case EKAuthorizationStatusDenied:
-      status = EXPermissionStatusDenied;
+      status = UMPermissionStatusDenied;
       break;
     case EKAuthorizationStatusNotDetermined:
-      status = EXPermissionStatusUndetermined;
+      status = UMPermissionStatusUndetermined;
       break;
   }
   return @{
-           @"status": [EXPermissions permissionStringForStatus:status],
-           @"expires": EXPermissionExpiresNever,
-           };
+           @"status": @(status)
+          };
 }
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
@@ -44,11 +48,7 @@
     if (error && error.code != 100) {
       reject(@"E_REMINDERS_ERROR_UNKNOWN", error.localizedDescription, error);
     } else {
-      resolve([[self class] permissions]);
-    }
-    
-    if (self.delegate) {
-      [self.delegate permissionRequesterDidFinish:self];
+      resolve([self getPermissions]);
     }
   }];
 }

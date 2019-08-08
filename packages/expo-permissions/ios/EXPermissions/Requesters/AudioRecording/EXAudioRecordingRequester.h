@@ -2,6 +2,6 @@
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
-@interface EXLocationRequester : NSObject<UMPermissionsRequester>
+@interface EXAudioRecordingRequester : NSObject<UMPermissionsRequester>
 
 @end

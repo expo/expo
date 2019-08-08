@@ -33,23 +33,22 @@
 }
 
 # pragma mark - permission requsters / getters
+// overriding EXPermission to inject scoped permission logic
+- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass
+{
+  NSDictionary *globalPermission = [super getPermissionUsingRequesterClass:requesterClass];
+  return [self getScopedPermissionForType:[requesterClass permissionType] withGlobalPermission:globalPermission];
+}
 
 // overriding EXPermission to inject scoped permission logic
 - (NSDictionary *)getPermissionsForResource:(NSString *)permissionType
 {
   NSDictionary *globalPermission = [super getPermissionsForResource:permissionType];
-  if (!globalPermission) {
-    return nil;
-  }
-  
-  NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
-  
-  if ([self shouldVerifyScopedPermission:permissionType]
-      && [EXPermissions statusForPermissions:permission] == EXPermissionStatusGranted
-      && ![self hasGrantedScopedPermission:permissionType]) {
-    permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
-  }
-  return permission;
+  return [self getScopedPermissionForType:permissionType withGlobalPermission:globalPermission];
+}
+
+- (NSString *)getScopedPermissionStatus:(NSString *)permissionType {
+  return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_experienceId]];
 }
 
 - (BOOL)hasGrantedScopedPermission:(NSString *)permissionType
@@ -58,9 +57,55 @@
     return YES;
   }
   
-  return [_permissionsService getPermission:permissionType forExperience:_experienceId] == EXPermissionStatusGranted;
+  return [_permissionsService getPermission:permissionType forExperience:_experienceId] == UMPermissionStatusGranted;
 }
 
+- (void)askForPermissionUsingRequesterClass:(Class)requesterClass
+                                withResult:(void (^)(NSDictionary *))onResult
+                              withRejecter:(UMPromiseRejectBlock)reject
+{
+  NSDictionary* globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
+  NSString* permissionType = [requesterClass permissionType];
+  UM_WEAKIFY(self)
+  if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
+    // first group
+    // ask for permission. If granted then save it as scope permission
+    void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
+      UM_ENSURE_STRONGIFY(self)
+      [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+      onResult(permission);
+    };
+    
+    return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
+  } else if (![self hasGrantedScopedPermission:permissionType]) {
+    // second group
+    // had to reinitilize UIAlertActions between alertShow invocations
+    UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      UM_ENSURE_STRONGIFY(self);
+      NSMutableDictionary *permission = [globalPermissions mutableCopy];
+      // try to save scoped permissions - if fails than permission is denied
+      if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
+        permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
+        permission[@"granted"] = @(NO);
+      }
+      onResult(permission);
+    }];
+    
+    UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      UM_ENSURE_STRONGIFY(self);
+      NSMutableDictionary *permission = [globalPermissions mutableCopy];
+      permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
+      permission[@"granted"] = @(NO);
+      onResult([NSDictionary dictionaryWithDictionary:permission]);
+    }];
+    
+    return [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
+  }
+  
+  onResult([self getPermissionUsingRequesterClass:requesterClass]); // third group
+}
+
+// overriding EXPermission to inject scoped permission logic
 - (void)askForPermissionWithType:(NSString *)permissionType
                        withResults:(void (^)(NSDictionary *results))onResults
                       withRejecter:(UMPromiseRejectBlock)reject
@@ -76,9 +121,9 @@
 //
 //  We will query for second group manually, with our own dialogs.
 //  The result will be saved in EXPermissionsScopedModuleDelegate.
-
+  NSDictionary* globalPermissions = [super getPermissionsForResource:permissionType];
   UM_WEAKIFY(self)
-  if (![[super getPermissionsForResource:permissionType][@"status"] isEqualToString:@"granted"]) {
+  if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
     // first group
     // ask for permission. If granted then save it as scope permission
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
@@ -93,10 +138,10 @@
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       UM_ENSURE_STRONGIFY(self);
-      NSMutableDictionary *permission = [[super getPermissionsForResource:permissionType] mutableCopy];
+      NSMutableDictionary *permission = [globalPermissions mutableCopy];
       // try to save scoped permissions - if fails than permission is denied
       if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
-        permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+        permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
         permission[@"granted"] = @(NO);
       }
       onResults(permission);
@@ -104,9 +149,8 @@
     
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       UM_ENSURE_STRONGIFY(self);
-      // i dont know if i need to get global permission but for i will leave it here
-      NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
-      permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
+      NSMutableDictionary *permission = [globalPermissions mutableCopy];
+      permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
       permission[@"granted"] = @(NO);
       onResults([NSDictionary dictionaryWithDictionary:permission]);
     }];
@@ -118,6 +162,19 @@
 }
 
 # pragma mark - helpers
+- (NSDictionary *)getScopedPermissionForType:(NSString *)permissionType withGlobalPermission:(NSDictionary *)globalPermission
+{
+  if (!globalPermission) {
+    return nil;
+  }
+  NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
+  
+  if ([self shouldVerifyScopedPermission:permissionType]
+      && [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
+    permission[@"status"] = [self getScopedPermissionStatus:permissionType];
+  }
+  return permission;
+}
 
 - (void)showPermissionRequestAlert:(NSString *)permissionType
                    withAllowAction:(UIAlertAction *)allow
