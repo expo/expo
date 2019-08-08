@@ -1,5 +1,4 @@
-// @flow
-import Ionicons from '@expo/vector-icons/Ionicons';
+import {Ionicons} from '@expo/vector-icons';
 import * as Bluetooth from 'expo-bluetooth';
 import React from 'react';
 import {

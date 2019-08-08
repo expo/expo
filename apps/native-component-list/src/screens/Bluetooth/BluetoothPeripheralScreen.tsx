@@ -1,12 +1,11 @@
-// @flow
 import * as Bluetooth from 'expo-bluetooth';
-import {
-  Characteristics,
-  Descriptors,
-  JSONToNative,
-  nativeToJSON,
-  Services,
-} from 'expo-bluetooth-utils';
+// import {
+//   Characteristics,
+//   Descriptors,
+//   JSONToNative,
+//   nativeToJSON,
+//   Services,
+// } from 'expo-bluetooth-utils';
 import React from 'react';
 import {
   ScrollView,
@@ -21,6 +20,12 @@ import {
 import MonoText from '../../components/MonoText';
 import Colors from '../../constants/Colors';
 import BluetoothListItem from './BluetoothListItem';
+
+const Characteristics = {};
+const Descriptors = {};
+const JSONToNative = () => {};
+const nativeToJSON = () => {};
+const Services = {};
 
 export default class BluetoothPeripheralScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
