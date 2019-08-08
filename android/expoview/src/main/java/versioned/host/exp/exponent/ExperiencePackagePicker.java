@@ -11,14 +11,15 @@ import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.analytics.segment.SegmentPackage;
 import expo.modules.appauth.AppAuthPackage;
+import expo.modules.application.ApplicationPackage;
 import expo.modules.av.AVPackage;
 import expo.modules.backgroundfetch.BackgroundFetchPackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
 import expo.modules.battery.BatteryPackage;
-import expo.modules.bluetooth.BluetoothPackage;
 import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
+import expo.modules.cellular.CellularPackage;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -62,14 +63,15 @@ public class ExperiencePackagePicker {
       new AdMobPackage(),
       new AdsFacebookPackage(),
       new AppAuthPackage(),
+      new ApplicationPackage(),
       new AmplitudePackage(),
       new BatteryPackage(),
       new BackgroundFetchPackage(),
       new BarCodeScannerPackage(),
-      new BluetoothPackage(),
       new BrightnessPackage(),
       new CalendarPackage(),
       new CameraPackage(),
+      new CellularPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),
