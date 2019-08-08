@@ -1,4 +1,4 @@
 {
-  "name": "expo-battery",
+  "name": "expo-bluetooth",
   "platforms": ["ios", "android", "web"]
 }
