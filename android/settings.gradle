@@ -32,6 +32,7 @@ includeUnimodulesProjects(
         'expo-module-template',
 // FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `tools/gulp update-exponent-view`
 // section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
+        'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
