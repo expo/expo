@@ -70,7 +70,7 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
     }
     resolve(address);
   } else {
-    NSString *errorMessage = [NSString stringWithFormat:@"%@/%@/%@",  @"No network interfaces could be retrieved. getifaddrs() failed with error number: ", errno, strerror(errno)];
+    NSString *errorMessage = [NSString stringWithFormat:@"%@/%d/%s",  @"No network interfaces could be retrieved. getifaddrs() failed with error number: ", errno, strerror(errno)];
 
     reject(@"ERR_NETWORK_IP_ADDRESS", errorMessage, nil);
   }
