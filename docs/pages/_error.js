@@ -18,8 +18,6 @@ export default class Error extends React.Component {
   }
 
   render() {
-    let message = this._getMessage();
-
     return (
       <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <p style={{ textAlign: 'center' }}>
