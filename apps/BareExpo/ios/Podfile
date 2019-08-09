@@ -1,0 +1,62 @@
+platform :ios, '10.0'
+
+# [Custom] Add target the root modules in the workspace
+modules_path = '../../../node_modules'
+
+# [Custom] Use the workspace root
+require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
+
+# [Custom] Don't try to use the symlinked copy from the postinstall script
+# it won't work as expected.
+react_native_path = '../../../react-native-lab/react-native'
+
+target 'BareExpo' do
+  # [Custom] Add FBSDKCoreKit for Expo
+  pod 'FBSDKCoreKit', '~> 4.40'
+
+  # Pods for BareExpo
+  # [Custom] Use the symlinked react-native module
+  pod 'React', :path => react_native_path, :subspecs => [
+    'Core',
+    'CxxBridge',
+    'DevSupport',
+    'RCTActionSheet',
+    'RCTAnimation',
+    'RCTBlob',
+    'RCTGeolocation',
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTNetwork',
+    'RCTSettings',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket',
+  ]
+
+  # [Custom] Use the RN path to ensure this is being required correctly
+  pod 'yoga', :path => "#{react_native_path}/ReactCommon/yoga"
+  
+  pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
+  pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
+  # [Custom] RNGH and Reanimated are installed as node_modules in the root of the workspace
+  pod 'RNGestureHandler', :podspec => "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
+  pod 'RNReanimated', :podspec => "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
+
+  use_unimodules!({
+    # [Custom] Use the packages directory for unimodules
+    modules_paths: ['../../../packages'],
+    # [Custom] Prevent the bundling of template code and stripe
+    exclude: [
+      'expo-module-template',
+      'expo-payments-stripe',
+      # [Custom] To avoid dealing with this error: 
+      # 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
+      'expo-ads-admob',
+    ]
+  })
+
+  target 'BareExpoTests' do
+    inherit! :search_paths
+  end
+end
