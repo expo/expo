@@ -12,7 +12,7 @@ To install this API in a [managed](../../introduction/managed-vs-bare/#managed-w
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-<SnackEmbed snackId="@documentation/lottieexample" />
+<SnackEmbed snackId="@documentation/lottie-example" />
 
 ## Importing Lottie
 
