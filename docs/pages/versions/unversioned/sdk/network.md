@@ -45,7 +45,7 @@ A `Promise` that resolves to an object with the following fields:
 
 - **isConnected (_boolean_)** -- if there is an active network connection. Note that this does not mean that internet is reachable. This field is  `false` if the `type` is either `Network.NetworkStateType.NONE` or `Network.NetworkStateType.UNKNOWN`, `true` otherwise. 
 
-- **isInternetReachable (_boolean_)** -- if the internet is reachable with the currently active network connection. On Android, this depends on `NetInfo.isConnected()` (Api level < 29) or `ConnectivityManager.getActiveNetwork()` (Api level >= 29). On iOS, this value will always be the same as `isConnected`.
+- **isInternetReachable (_boolean_)** -- if the internet is reachable with the currently active network connection. On Android, this depends on `NetInfo.isConnected()` (API level < 29) or `ConnectivityManager.getActiveNetwork()` (API level >= 29).  On iOS, this value will always be the same as `isConnected`.
 
 **Examples**
 
