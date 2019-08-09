@@ -1,5 +1,7 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import ExpoNetwork from './ExpoNetwork';
+import { NetworkStateType } from './Network.types';
+export { NetworkStateType };
 export async function getNetworkStateAsync() {
     if (!ExpoNetwork.getNetworkStateAsync) {
         throw new UnavailabilityError('expo-network', 'getNetworkStateAsync');

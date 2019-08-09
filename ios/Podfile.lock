@@ -782,6 +782,8 @@ PODS:
   - EXAppAuth (6.0.0):
     - AppAuth
     - UMCore
+  - EXApplication (0.0.1):
+    - UMCore
   - EXAppLoaderProvider (6.0.0)
   - EXAV (6.0.0):
     - UMCore
@@ -812,6 +814,8 @@ PODS:
     - UMFileSystemInterface
     - UMImageLoaderInterface
     - UMPermissionsInterface
+  - EXCellular (0.0.1):
+    - UMCore
   - EXConstants (6.0.0):
     - UMConstantsInterface
     - UMCore
@@ -1545,6 +1549,7 @@ DEPENDENCIES:
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../packages/expo-app-auth/ios`)
+  - EXApplication (from `../packages/expo-application/ios`)
   - EXAppLoaderProvider (from `../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
@@ -1555,6 +1560,7 @@ DEPENDENCIES:
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
+  - EXCellular (from `../packages/expo-cellular/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXCrypto (from `../packages/expo-crypto/ios`)
@@ -2103,6 +2109,9 @@ EXTERNAL SOURCES:
   EXAppAuth:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-auth/ios"
+  EXApplication:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-application/ios"
   EXAppLoaderProvider:
     :path: !ruby/object:Pathname
     path: "../packages/expo-app-loader-provider/ios"
@@ -2133,6 +2142,9 @@ EXTERNAL SOURCES:
   EXCamera:
     :path: !ruby/object:Pathname
     path: "../packages/expo-camera/ios"
+  EXCellular:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-cellular/ios"
   EXConstants:
     :path: !ruby/object:Pathname
     path: "../packages/expo-constants/ios"
@@ -2499,6 +2511,7 @@ SPEC CHECKSUMS:
   EXAdsFacebook: e80bc258520c71bce17cb4c1f984391b4a8940b8
   EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
   EXAppAuth: a5e758845e701381b5a7bedafe29e83f9cd165eb
+  EXApplication: 79926cde236e05302805c31581000bcfa352049a
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
   EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
@@ -2509,6 +2522,7 @@ SPEC CHECKSUMS:
   EXBrightness: 5937628feed854e35525a50b105167b33c851f44
   EXCalendar: 910966393455a6d7d1ea246b01009124fecc7d60
   EXCamera: 54623e310d33bccbb8d8fbc84a0081523d0436be
+  EXCellular: 8de1b3ac151eb13d70c2869d31901bc8a6a38620
   EXConstants: 5d81e84ca71b9a552529889cc798b4a04e9e22b3
   EXContacts: fc25ebc07706984813a997400d88c00d2959401e
   EXCrypto: 0b51b301dc3748114a18752d2533e4167bad1730

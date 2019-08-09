@@ -1,4 +1,5 @@
 import { DeviceType } from './Device.types';
+export { DeviceType };
 export declare const isDevice: boolean;
 export declare const brand: string | null;
 export declare const manufacturer: string | null;

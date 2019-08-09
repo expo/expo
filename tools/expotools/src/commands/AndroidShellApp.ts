@@ -1,4 +1,5 @@
 import { AndroidShellApp } from '@expo/xdl';
+import * as Directories from '../Directories';
 
 type ActionOptions = {
   url: string;
@@ -21,7 +22,7 @@ async function action(options: ActionOptions) {
   AndroidShellApp.createAndroidShellAppAsync({
     buildMode: options.keystore ? 'release' : 'debug',
     buildType: 'apk',
-    workingDir: process.env.EXPO_ROOT_DIR,
+    workingDir: Directories.getExpoRepositoryRootDir(),
     ...options,
   });
 }
