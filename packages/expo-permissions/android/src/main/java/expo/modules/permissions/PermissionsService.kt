@@ -95,30 +95,27 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   }
 
   override fun getPermissionsBundle(permissionTypes: Array<out String>?): Bundle {
-    if (permissionTypes == null) {
-      return Bundle()
-    }
-
     return Bundle().apply {
-      for (permissionType in permissionTypes) {
-        putBundle(permissionType, getRequester(permissionType).getPermission())
+      permissionTypes?.forEach {
+        putBundle(it, getRequester(it).getPermission())
       }
     }
   }
 
   override fun hasPermissionsByTypes(permissionsTypes: Array<out String>?): Boolean {
     with(getPermissionsBundle(permissionsTypes)) {
-      for (elementBundleKey in keySet()) {
-        val elementBundle = getBundle(elementBundleKey) ?: Bundle()
-        if (elementBundle.getString(STATUS_KEY) != null &&
-            elementBundle.getString(STATUS_KEY) != GRANTED_VALUE) {
-          return false
+      keySet().forEach { key ->
+        getBundle(key)?.let {
+          if (it.getString(STATUS_KEY) == GRANTED_VALUE) {
+            return false
+          }
         }
       }
     }
     return true
   }
 
+  @Throws(NullPointerException::class)
   override fun askForPermissionsBundle(permissionsTypes: Array<out String>?, listener: Permissions.PermissionsRequesterListenerBundle?) {
     if (permissionsTypes == null || listener == null) {
       throw NullPointerException("permissionsTypes or listener can not be null")
@@ -126,10 +123,10 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
     val existingPermissions = getPermissionsBundle(permissionsTypes)
     val permissionsTypesSet = permissionsTypes.toHashSet()
-    for (elementBundleKey in existingPermissions.keySet()) {
-      with(existingPermissions.getBundle(elementBundleKey) ?: Bundle()) {
-        if (getString(STATUS_KEY) != null && getString(STATUS_KEY) == GRANTED_VALUE) {
-          permissionsTypesSet.remove(elementBundleKey)
+    existingPermissions.keySet().forEach { key ->
+      existingPermissions.getBundle(key)?.let {
+        if (it.getString(STATUS_KEY) == GRANTED_VALUE) {
+          permissionsTypesSet.remove(key)
         }
       }
     }
@@ -140,14 +137,15 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     }
 
     val permissionsToBeAsked = ArrayList<String>()
-    permissionsTypesSet.forEach { permissionsToBeAsked.addAll(getRequester(it).getPermissionToAsk()) }
-    if (permissionsTypesSet.contains("contacts") && isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
+    permissionsTypesSet.forEach { permissionsToBeAsked.addAll(getRequester(it).getAndroidPermissions()) }
+    // todo: remove after dividing CONTACTS permissions into read and write parts
+    if (permissionsTypesSet.contains(PermissionsTypes.CONTACTS.type) && isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
       // Ask for WRITE_CONTACTS permission only if the permission is present in AndroidManifest.
       permissionsToBeAsked.add(Manifest.permission.WRITE_CONTACTS)
     }
 
     // check whether to launch WritingSettingsActivity
-    if (permissionsTypesSet.contains("systemBrightness") &&
+    if (permissionsTypesSet.contains(PermissionsTypes.SYSTEM_BRIGHTNESS.type) &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (mAskAsyncListener != null) {
         throw IllegalStateException("Different asking for permissions in progress. Await the old request and then try again.")
@@ -169,18 +167,18 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   }
 
   override fun getPermission(permission: String): Int {
-    with(mActivityProvider.currentActivity) {
-      if (this != null && this is PermissionAwareActivity) {
-        return ContextCompat.checkSelfPermission(this, permission)
+    mActivityProvider.currentActivity?.let {
+      if (it is PermissionAwareActivity) {
+        return ContextCompat.checkSelfPermission(it, permission)
       }
     }
     return PackageManager.PERMISSION_DENIED
   }
 
   override fun askForPermissions(permissions: Array<String>, listener: Permissions.PermissionsRequestListener) {
-    with(mActivityProvider.currentActivity) {
-      if (this != null && this is PermissionAwareActivity) {
-        requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
+    mActivityProvider.currentActivity?.run {
+      if (this is PermissionAwareActivity) {
+        this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
           when (PERMISSIONS_REQUEST) {
             requestCode -> {
               listener.onPermissionsResult(grantResults)
@@ -204,16 +202,13 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
   override fun hasPermissions(permissions: Array<String>): Boolean = getPermissions(permissions).all { it == PackageManager.PERMISSION_GRANTED }
 
-
   /**
    * Checks whether given permission is present in AndroidManifest or not.
    */
   private fun isPermissionPresentInManifest(permission: String): Boolean {
     try {
-      with(context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)) {
-        if (requestedPermissions != null) {
-          return requestedPermissions.contains(permission)
-        }
+      context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
+        return requestedPermissions.contains(permission)
       }
       return false
     } catch (e: PackageManager.NameNotFoundException) {
@@ -233,9 +228,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
    * Throws IllegalStateException there's no Permissions module present.
    */
   fun arePermissionsGranted(permissions: Array<String>): Boolean {
-    with(getPermissions(permissions)) {
-      return count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
-    }
+    return getPermissions(permissions).count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
   }
 
   /**
@@ -251,7 +244,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   @TargetApi(Build.VERSION_CODES.M)
   private fun askForWriteSettingsPermissionFirst() {
     Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-      data = Uri.parse("package:" + context.packageName)
+      data = Uri.parse("package:${context.packageName}")
       addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }.let {
       mWritingPermissionBeingAsked = true

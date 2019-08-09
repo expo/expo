@@ -141,8 +141,8 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                withResult:(void (^)(NSDictionary *))onResult
-                              withRejecter:(UMPromiseRejectBlock)reject
+                                 withResult:(void (^)(NSDictionary *))onResult
+                               withRejecter:(UMPromiseRejectBlock)reject
 {
   NSMutableDictionary *permission = [[self getPermissionUsingRequesterClass:requesterClass] mutableCopy];
   

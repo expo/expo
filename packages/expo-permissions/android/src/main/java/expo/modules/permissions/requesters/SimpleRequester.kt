@@ -10,10 +10,10 @@ import expo.modules.permissions.UNDETERMINED_VALUE
 
 /**
  * Used for representing CAMERA, CONTACTS, AUDIO_RECORDING, SMS
- *
  */
-class SimpleRequester(private val permissionsService: PermissionsService, private val permission: String) : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> = arrayOf(permission)
+class SimpleRequester(private val permissionsService: PermissionsService,
+                      private val permission: String) : PermissionRequester {
+  override fun getAndroidPermissions(): Array<String> = arrayOf(permission)
 
   override fun getPermission(): Bundle {
     return Bundle().apply {

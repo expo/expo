@@ -12,7 +12,7 @@ import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 
 class LocationRequester(private val permissionsService: PermissionsService) : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> = arrayOf(
+  override fun getAndroidPermissions(): Array<String> = arrayOf(
       Manifest.permission.ACCESS_FINE_LOCATION,
       Manifest.permission.ACCESS_COARSE_LOCATION
   )

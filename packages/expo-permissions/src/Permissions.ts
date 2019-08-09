@@ -72,7 +72,6 @@ async function _handleMultiPermissionsRequestIOSAsync(
   };
 }
 
-
 async function _handlePermissionsRequestAsync(
   types: PermissionType[],
   handlePermissions: (types: PermissionType[]) => Promise<PermissionMap>

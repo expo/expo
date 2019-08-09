@@ -12,7 +12,7 @@ import expo.modules.permissions.STATUS_KEY
 import expo.modules.permissions.UNDETERMINED_VALUE
 
 class CalendarRequester(private val permissionsService: PermissionsService) : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> = arrayOf(
+  override fun getAndroidPermissions(): Array<String> = arrayOf(
       Manifest.permission.READ_CALENDAR,
       Manifest.permission.WRITE_CALENDAR
   )
@@ -20,7 +20,7 @@ class CalendarRequester(private val permissionsService: PermissionsService) : Pe
   override fun getPermission(): Bundle {
     return Bundle().apply {
       putString(STATUS_KEY, when {
-        permissionsService.arePermissionsGranted(getPermissionToAsk()) -> {
+        permissionsService.arePermissionsGranted(getAndroidPermissions()) -> {
           GRANTED_VALUE
         }
         permissionsService.didAsk(CALENDAR.type) -> {
