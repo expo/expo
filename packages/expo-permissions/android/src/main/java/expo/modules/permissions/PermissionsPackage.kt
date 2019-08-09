@@ -10,7 +10,6 @@ class PermissionsPackage : BasePackage() {
   override fun createInternalModules(context: Context): List<InternalModule>
     = listOf(PermissionsService(context))
 
-
   override fun createExportedModules(reactContext: Context): List<ExportedModule>
     = listOf(PermissionsModule(reactContext))
 }

@@ -15,7 +15,7 @@ import org.unimodules.core.interfaces.ActivityProvider
 
 class SystemBrightnessRequester(private val permissionsService: PermissionsService,
                                 private val activityProvider: ActivityProvider) : PermissionRequester {
-  override fun getPermissionToAsk(): Array<String> = emptyArray() // this permission is handled in different way
+  override fun getAndroidPermissions(): Array<String> = emptyArray() // this permission is handled in different way
 
   // checkSelfPermission does not return accurate status of WRITE_SETTINGS
   override fun getPermission(): Bundle {

@@ -9,7 +9,6 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.interfaces.permissions.Permissions
 
-
 class PermissionsModule(context: Context) : ExportedModule(context) {
   private lateinit var mPermissions: Permissions
 
