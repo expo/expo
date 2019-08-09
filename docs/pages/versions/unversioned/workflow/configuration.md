@@ -167,6 +167,33 @@ Configuration for android statusbar.
 }
 ```
 
+### `"androidNavigationBar"`
+
+Configuration for android bottom navigation bar.
+
+```javascript
+{
+  "androidNavigationBar": {
+     /*
+        Determines to show or hide bottom navigation bar.
+        "true" to show, "false" to hide.
+      */
+    "visible": BOOLEAN,
+    /*
+      Configure the navigation bar icons to have light or dark color.
+      Valid values: "light-content", "dark-content".
+    */
+    "barStyle": STRING,
+
+    /*
+      Configuration for android navigation bar.
+      6 character long hex color string, eg: "#000000"
+    */
+    "backgroundColor": STRING
+  }
+}
+```
+
 ### `"splash"`
 
 Configuration for loading and splash screen for standalone apps.
