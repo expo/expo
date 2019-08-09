@@ -11,7 +11,7 @@ export default class Error extends React.Component {
     let location;
 
     if (typeof window !== 'undefined') {
-      Sentry.captureException(new Error(`${window.location.href}`));
+      Sentry.captureMessage(`404: ${window.location.href}`);
     }
 
     // Maybe redirect!?
