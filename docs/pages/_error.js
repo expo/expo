@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Sentry from '@sentry/browser';
 
 export default class Error extends React.Component {
   static getInitialProps({ res, err }) {
@@ -10,11 +11,11 @@ export default class Error extends React.Component {
     let location;
 
     if (typeof window !== 'undefined') {
-      location = window.location.href;
+      Sentry.captureException(new Error(`${window.location.href}`));
     }
 
     // Maybe redirect!?
-    console.log(location);
+    console.log(window.location.pathname);
   }
 
   render() {
