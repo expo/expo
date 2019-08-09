@@ -1,3 +1,5 @@
+'use strict';
+
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
@@ -6,13 +8,7 @@ export async function test(t) {
   t.describe(`Device.getDeviceType()`, () => {
     t.it(`returns enum values`, async () => {
       let deviceType = await Device.getDeviceTypeAsync();
-      let include;
-      if (Object.values(Device.DeviceType).includes(deviceType)) {
-        include = true;
-      } else {
-        include = false;
-      }
-      t.expect(include).toBeTruthy();
+      t.expect(Object.values(Device.DeviceType).includes(deviceType)).toBeTruthy();
     });
   });
 
