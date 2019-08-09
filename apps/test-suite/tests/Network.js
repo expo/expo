@@ -5,111 +5,113 @@ export const name = 'Network';
 let Ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 let macAddressRegex = /^([0-9a-fA-F]{2}[:.-]){5}[0-9a-fA-F]{2}$/;
 
-// make ajax calls to check Internet connection
-let checkConnection = async () => {
-  let status = response => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
-    }
-  };
-
-  let json = response => {
-    return response.json();
-  };
-
-  let result = await fetch('https://api.ipify.org?format=json')
-    .then(status)
-    .then(json)
-    .then(data => {
-      //Request succeeded with JSON response
-      return true;
-    })
-    .catch(error => {
-      //Request failed
-      return false;
-    });
-  return result;
-};
 export async function test(t) {
   if (Platform.OS === 'android') {
     t.describe(`Network.isAirplaneModeEnabledAsync()`, async () => {
-      t.it(`returns a boolean and false when with Internet connection`, async () => {
+      t.it(`returns a boolean`, async () => {
         let isAirplaneModeOn = await Network.isAirplaneModeEnabledAsync();
         t.expect(isAirplaneModeOn).toBeDefined();
         t.expect(typeof isAirplaneModeOn).toBe('boolean');
-        if (!isAirplaneModeOn) {
-          let connection = await checkConnection();
-          t.expect(connection).toEqual(true);
+      });
+      t.it(`throws error Network.getIpAddressAsync() if Airplane mode is on`, async () => {
+        let isAirplaneModeOn = await Network.isAirplaneModeEnabledAsync();
+        if (isAirplaneModeOn) {
+          let ipAddress;
+          let error;
+          try {
+            ipAddress = await Network.getIpAddressAsync();
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
+          t.expect(typeof ipAddress).toEqual('undefined');
+        }
+      });
+      t.it(`throws error Network.getNetworkStateAsync() if Airplane mode is on`, async () => {
+        let isAirplaneModeOn = await Network.isAirplaneModeEnabledAsync();
+        if (isAirplaneModeOn) {
+          let networkState;
+          let error;
+          try {
+            networkState = await Network.getNetworkStateAsync();
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error).toBeDefined();
+          t.expect(typeof ipAddress).toEqual('undefined');
         }
       });
     });
   }
   t.describe(`Network.getIpAddressAsync()`, () => {
-    t.it(`throws error when device's offline`, async () => {
-      let IpAddress;
-      let error;
-      try {
-        IpAddress = await Network.getIpAddressAsync();
-      } catch (e) {
-        error = e;
-      }
-      if (navigator.onLine === false) {
-        t.expect(error).toBeDefined();
-        t.expect(typeof IpAddress).toEqual('undefined');
-      }
-    });
-    t.it(`gets IPV4 address when device's online`, async () => {
+    t.it(`gets valid IPV4 address when device's online`, async () => {
       let ipAddress;
       let error;
       try {
-        ipAddress = await Network.getipAddressAsync();
-        console.log(ipAddress);
+        ipAddress = await Network.getIpAddressAsync();
       } catch (e) {
         error = e;
       }
-      if (navigator.onLine === true) {
-        t.expect(typeof IpAddress).toEqual('string');
-        t.expect(typeof error).toEqual('undefined');
-        t.expect(Ipv4Regex.test(ipAddress)).toBeTruthy();
-      }
+      t.expect(typeof ipAddress).toEqual('string');
+      t.expect(typeof error).toEqual('undefined');
+      t.expect(Ipv4Regex.test(ipAddress)).toBeTruthy();
     });
   });
   t.describe(`Network.getMacAddressAsync()`, () => {
-    t.it(`returns valid mac address when pass in no network interface name`, async () => {
+    t.it(`returns valid Mac address when pass in no network interface name`, async () => {
       let macAddress;
       let error;
       try {
-        macAddress = await Network.getmacAddressAsync();
+        macAddress = await Network.getMacAddressAsync();
       } catch (e) {
         error = e;
       }
-      if (Platform.OS === 'android') {
-        let isAirplaneModeOn = Network.isAirplaneModeEnabledAsync();
-        if (!isAirplaneModeOn) {
-          t.expect(typeof error).toEqual('undefined');
-          t.expect(macAddress).toBeDefined();
-          t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
-        }
-      } else {
-        t.expect(typeof error).toEqual('undefined');
-        t.expect(macAddress).toBeDefined();
-        t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
-      }
+      t.expect(typeof error).toEqual('undefined');
+      t.expect(macAddress).toBeDefined();
+      t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
     });
     if (Platform.OS === 'android') {
       t.it(`throws error when pass in invalid network interface name`, async () => {
         let macAddress;
         let error;
         try {
-          macAddress = await Network.getmacAddressAsync('helloworld');
+          macAddress = await Network.getMacAddressAsync('helloworld');
         } catch (e) {
           error = e;
         }
         t.expect(error).toBeDefined();
         t.expect(typeof macAddress).toEqual('undefined');
       });
+      t.it(`returns valid Mac address when pass in null as network interface name`, async () => {
+        let macAddress;
+        let error;
+        try {
+          macAddress = await Network.getMacAddressAsync(null);
+        } catch (e) {
+          error = e;
+        }
+        t.expect(typeof error).toEqual('undefined');
+        t.expect(macAddress).toBeDefined();
+        t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
+      });
     }
+  });
+  t.describe(`Network.getNetworkStateAsync()`, () => {
+    t.it(`gets valid NetworkState types and valid NetworkStateType enums`, async () => {
+      function validateBoolean(result) {
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('boolean');
+      }
+      let error;
+      try {
+        const { type, isConnected, isInternetReachable } = await Network.getNetworkStateAsync();
+        validateBoolean(isConnected);
+        validateBoolean(isInternetReachable);
+        t.expect(Object.values(Network.NetworkStateType).includes(type)).toBeTruthy();
+        t.expect(typeof error).toEqual('undefined');
+      } catch (e) {
+        error = e;
+      }
+    });
   });
 }
