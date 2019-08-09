@@ -6,7 +6,7 @@ Removes unused platform and development code from Expo projects.
 
 ## `platform: string`
 
-The platform you want to compile to: `'ios', 'android', 'web'`.
+The platform for which you want to compile: `'ios'`, `'android'`, `'web'`.
 
 ## `mode: string`
 
