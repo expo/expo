@@ -1,0 +1,40 @@
+{
+  "name": "expo-store-review",
+  "version": "1.0.0",
+  "description": "ExpoStoreReview standalone module",
+  "main": "build/StoreReview.js",
+  "types": "build/StoreReview.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-store-review"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-store-review",
+  "peerDependencies": {
+    "@unimodules/core": "~1.0.0"
+  },
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  },
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+}
