@@ -7,12 +7,12 @@ modules_path = '../../../node_modules'
 require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
 
 # [Custom] Don't try to use the symlinked copy from the postinstall script
-# it won't work as expected.
+# it won't work as expected. (You may get `'React/RCTLog.h' file not found` when running building)
 react_native_path = '../../../react-native-lab/react-native'
 
 target 'BareExpo' do
-  # [Custom] Add FBSDKCoreKit for Expo
-  pod 'FBSDKCoreKit', '~> 4.40'
+  # [Custom] Add FBSDKCoreKit for Expo - only required for expo-facebook and expo-ads-facebook which we disabled in this project to speed up the pod install
+  # pod 'FBSDKCoreKit', '~> 4.40'
 
   # Pods for BareExpo
   # [Custom] Use the symlinked react-native module
@@ -50,6 +50,10 @@ target 'BareExpo' do
     exclude: [
       'expo-module-template',
       'expo-payments-stripe',
+
+      # [Custom] FBSDK adds a lot of time to the pod install 
+      'expo-facebook',
+      'expo-ads-facebook',
       # [Custom] To avoid dealing with this error: 
       # 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
       'expo-ads-admob',

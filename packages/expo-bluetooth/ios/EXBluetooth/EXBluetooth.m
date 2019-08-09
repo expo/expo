@@ -6,7 +6,6 @@
 @interface EXBluetooth()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, assign) BOOL isObserving;
 
 @end
@@ -33,7 +32,6 @@ UM_EXPORT_MODULE(ExpoBluetooth);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
 }
 
 - (NSDictionary *)constantsToExport

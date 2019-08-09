@@ -6,20 +6,11 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.1.0)
   - AppAuth/Core (1.1.0)
   - AppAuth/ExternalUserAgent (1.1.0)
-  - Bolts (1.9.0):
-    - Bolts/AppLinks (= 1.9.0)
-    - Bolts/Tasks (= 1.9.0)
-  - Bolts/AppLinks (1.9.0):
-    - Bolts/Tasks
-  - Bolts/Tasks (1.9.0)
   - boost-for-react-native (1.63.0)
   - Branch (0.27.1):
     - Branch/Core (= 0.27.1)
   - Branch/Core (0.27.1)
   - DoubleConversion (1.1.6)
-  - EXAdsFacebook (6.0.0):
-    - FBAudienceNetwork
-    - UMCore
   - EXAmplitude (6.0.0):
     - Amplitude-iOS
     - UMConstantsInterface
@@ -77,11 +68,6 @@ PODS:
   - EXDocumentPicker (6.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXFacebook (6.0.0):
-    - FBSDKCoreKit (~> 4.0)
-    - FBSDKLoginKit (~> 4.0)
-    - UMConstantsInterface
-    - UMCore
   - EXFaceDetector (6.0.0):
     - Firebase/Core
     - Firebase/MLVision
@@ -177,11 +163,6 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (6.0.0):
     - UMCore
-  - FBAudienceNetwork (5.3.2)
-  - FBSDKCoreKit (4.44.1):
-    - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.44.1):
-    - FBSDKCoreKit
   - Firebase/Core (6.6.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.1.0)
@@ -380,7 +361,6 @@ PODS:
 
 DEPENDENCIES:
   - DoubleConversion (from `../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EXAdsFacebook (from `../../../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../../../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../../../packages/expo-app-auth/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
@@ -401,7 +381,6 @@ DEPENDENCIES:
   - EXCrypto (from `../../../packages/expo-crypto/ios`)
   - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
-  - EXFacebook (from `../../../packages/expo-facebook/ios`)
   - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
@@ -434,7 +413,6 @@ DEPENDENCIES:
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
-  - FBSDKCoreKit (~> 4.40)
   - Folly (from `../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../../../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - React/Core (from `../../../react-native-lab/react-native`)
@@ -472,12 +450,8 @@ SPEC REPOS:
     - Amplitude-iOS
     - Analytics
     - AppAuth
-    - Bolts
     - boost-for-react-native
     - Branch
-    - FBAudienceNetwork
-    - FBSDKCoreKit
-    - FBSDKLoginKit
     - Firebase
     - FirebaseAnalytics
     - FirebaseCore
@@ -502,9 +476,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
-  EXAdsFacebook:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-ads-facebook/ios"
   EXAmplitude:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-analytics-amplitude/ios"
@@ -565,9 +536,6 @@ EXTERNAL SOURCES:
   EXDocumentPicker:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-document-picker/ios"
-  EXFacebook:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-facebook/ios"
   EXFaceDetector:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-face-detector/ios"
@@ -717,11 +685,9 @@ SPEC CHECKSUMS:
   Amplitude-iOS: ac1715ae68104b7a51723209ad574f60ab22ae5f
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   AppAuth: a08c77b389d259e1dd343010352dde2c0c5df689
-  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 1ace77c04b6e3efbf982bf4364f0662bfac156a0
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
-  EXAdsFacebook: e80bc258520c71bce17cb4c1f984391b4a8940b8
   EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
   EXAppAuth: a5e758845e701381b5a7bedafe29e83f9cd165eb
   EXApplication: 79926cde236e05302805c31581000bcfa352049a
@@ -742,7 +708,6 @@ SPEC CHECKSUMS:
   EXCrypto: 0b51b301dc3748114a18752d2533e4167bad1730
   EXDevice: d08fdca5e11432c4389f04a3ecec51d31f1c160d
   EXDocumentPicker: 043c0521b52ae061070fd84b405459e0b7cba940
-  EXFacebook: b71969e92a4d76632ee743d26e88c61b4d9a3e45
   EXFaceDetector: badb48d40de77184aabcc8bc9cbd9b2e6d5e14ee
   EXFileSystem: 091907902fcec9f9182b656fdead41a82f30986a
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
@@ -775,9 +740,6 @@ SPEC CHECKSUMS:
   EXUpdates: 2025a95a0dea48b5716de33af696b96d7471020f
   EXVideoThumbnails: 3c3b2231e6b6c19af2ac32c7b5f398b1a8948a5e
   EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
-  FBAudienceNetwork: f080b871e9b45f6ad67cf6c6e7d681dbe199fb47
-  FBSDKCoreKit: a823ae35bdb60ebb8d7a7e51abe7c5d87d2bfced
-  FBSDKLoginKit: 54ae59987f2a8703021557c90a9aebb9e5c2bef6
   Firebase: a2b5951f30ff38fd3b3bdae9c7d340f940fd3c51
   FirebaseAnalytics: 48414ae5cbf6976d8a2f7177e0466540e5ab33ce
   FirebaseCore: 8c9e08bce0c72a3affd83927d8184cf244918bc8
@@ -817,6 +779,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: 8664abd37a00715727e60df9ecd65e42ba47b548
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: d099912a4404e7261a3ccc3fe1f72eab7925175e
+PODFILE CHECKSUM: 7d33dcd155c5fc5515c7bf95d1cf353b772d01e2
 
 COCOAPODS: 1.7.3
