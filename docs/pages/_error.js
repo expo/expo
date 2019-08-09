@@ -6,13 +6,27 @@ export default class Error extends React.Component {
     return { statusCode };
   }
 
+  componentDidMount() {
+    let location;
+
+    if (typeof window !== 'undefined') {
+      location = window.location.href;
+    }
+
+    // Maybe redirect!?
+    console.log(location);
+  }
+
   render() {
+    let message = this._getMessage();
+
     return (
-      <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <p style={{ textAlign: 'center' }}>
-          {this.props.statusCode
-            ? `Uh oh, we received a ${this.props.statusCode} error. Maybe the URL doesn't exist anymore.`
-            : 'An unexpected error has occurred.'}
+          Uh oh, we couldn't find this page! Maybe it doesn't exist anymore! 😔
+        </p>
+        <p style={{textAlign: 'center'}}>
+          <a href="/">Go back to the Expo documentation</a>
         </p>
       </div>
     );
