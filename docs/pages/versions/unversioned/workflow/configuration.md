@@ -177,6 +177,7 @@ Configuration for android bottom navigation bar.
      /*
         Determines to show or hide bottom navigation bar.
         "true" to show, "false" to hide.
+        If set to false, status bar will also be hide. As it's a general rule to hide both status bar and navigation bar on Android developer official docs.
       */
     "visible": BOOLEAN,
     /*
