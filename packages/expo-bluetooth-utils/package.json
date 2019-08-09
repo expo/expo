@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
+  },
+  "dependencies": {
+    "js-base64": "^2.5.1"
   }
 }
