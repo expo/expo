@@ -165,7 +165,7 @@ export default function(api: any, options: Options) {
             additionalProperties.push(property);
           }
         });
-        // If we got exact mach, we can strip the rest
+        // If we got an exact match, we can strip the rest
         if (targetCase) {
           canStripPlatformSelect = true;
         }
