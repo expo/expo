@@ -44,10 +44,10 @@ export async function test({ describe, it, expect, jasmine }) {
     it('returns an enum value of Cellular.Cellular Generation', async () => {
       let hasError = false;
       let cellularGeneration;
+      const CellularGenerationEnumValues = [0, 1, 2, 3];
 
       try {
         cellularGeneration = await Cellular.getCellularGenerationAsync();
-
       } catch (e) {
         hasError = true;
         console.log(e);
@@ -55,8 +55,9 @@ export async function test({ describe, it, expect, jasmine }) {
 
       expect(hasError).toBe(false);
       expect(cellularGeneration).toEqual(jasmine.any(Number));
-      expect(cellularGeneration).toBeLessThanOrEqual(3);
-      expect(cellularGeneration).toBeGreaterThanOrEqual(0);
+      expect(CellularGenerationEnumValues.includes(cellularGeneration)).toBe(true);
     });
   });
+
+  // TODO: What about if airplane mode is on?
 }
