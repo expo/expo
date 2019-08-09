@@ -139,12 +139,32 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-reanimated')
-    implementation project(':react-native-gesture-handler')
+//    implementation project(':react-native-reanimated')
+//    implementation project(':react-native-gesture-handler')
+//    implementation project(":react-native-screens")
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    addUnimodulesDependencies()
+    addUnimodulesDependencies([
+      modulesPaths : [
+        '../../../../packages'
+      ],
+      configuration: 'api',
+      target       : 'react-native',
+      exclude      : [
+        // You can exclude unneeded modules here.
+        // By default we exclude FaceDetector
+        // and Stripe payments APIs.
+        'unimodules-face-detector-interface',
+        'expo-face-detector',
+        'expo-payments-stripe',
+        'expo-branch',
+        'expo-video-thumbnails',
+        'expo-camera',
+        // Adding a name here will also remove the package
+        // from auto-generated BasePackageList.java
+      ]
+  ])
 }
 
 // Run this once to be able to run the application with BUCK
