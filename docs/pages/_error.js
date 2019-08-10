@@ -33,6 +33,11 @@ export default class Error extends React.Component {
     if (isValidPath(pathname)) {
       let redirectPath = pathname;
 
+      // index.html is no longer a thing in our docs
+      if (pathIncludesIndexHtml(redirectPath)) {
+        redirectPath = redirectPath.replace('index.html', '');
+      }
+
       // Remove the .html extension if it is included in the path
       if (pathIncludesHtmlExtension(redirectPath)) {
         redirectPath = redirectPath.replace('.html', '');
@@ -167,6 +172,10 @@ function isVersionDocumented(path) {
 
 function pathIncludesHtmlExtension(path) {
   return !!path.match(/\.html$/);
+}
+
+function pathIncludesIndexHtml(path) {
+  return !!path.match(/index\.html$/);
 }
 
 const VERSION_PART_PATTERN = `(v\\d+\\.\\d+\.\\d+)|latest|unversioned`;
