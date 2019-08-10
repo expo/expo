@@ -1,6 +1,5 @@
 import './polyfillNextTick';
 import zipObject from 'lodash/zipObject';
-import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
 const { ExponentSQLite } = NativeModulesProxy;
@@ -28,7 +27,7 @@ class SQLiteDatabase {
     }
 }
 function _serializeQuery(query) {
-    return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
+    return [query.sql, query.args.map(_escapeBlob)];
 }
 function _deserializeResultSet(nativeResult) {
     let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;

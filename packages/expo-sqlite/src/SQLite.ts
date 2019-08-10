@@ -51,7 +51,7 @@ class SQLiteDatabase {
 }
 
 function _serializeQuery(query: Query): [string, unknown[]] {
-  return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
+  return [query.sql, query.args.map(_escapeBlob)];
 }
 
 function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
