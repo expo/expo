@@ -31,22 +31,24 @@ export default class Error extends React.Component {
     }
 
     if (isValidPath(pathname)) {
-      let redirectPath;
+      let redirectPath = pathname;
 
-      if (pathIncludesHtmlExtension(pathname)) {
-        redirectPath = pathname.replace('.html', '');
+      // Remove the .html extension if it is included in the path
+      if (pathIncludesHtmlExtension(redirectPath)) {
+        redirectPath = redirectPath.replace('.html', '');
       }
 
-      if (!isVersionDocumented(pathname)) {
-        redirectPath = replaceVersionWithLatest(pathname);
+      // Check if the version is documented, replace it with latest if not
+      if (!isVersionDocumented(redirectPath)) {
+        redirectPath = replaceVersionWithLatest(redirectPath);
       }
 
-      // Add that all important trailing slash
+      // Add a trailing slash if there is not one
       if (redirectPath[redirectPath.length - 1] !== '/') {
         redirectPath = `${redirectPath}/`;
       }
 
-      if (redirectPath) {
+      if (redirectPath !== pathname) {
         this.setState({ redirectPath });
         return;
       }
@@ -144,7 +146,6 @@ export default class Error extends React.Component {
       );
     } else {
       // Render nothing statically
-      return;
     }
   };
 }
