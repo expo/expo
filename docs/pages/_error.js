@@ -43,6 +43,11 @@ export default class Error extends React.Component {
         redirectPath = redirectPath.replace('.html', '');
       }
 
+      //
+      if (RENAMED_PAGES[redirectPath]) {
+        redirectPath = RENAMED_PAGES[redirectPath];
+      }
+
       // Check if the version is documented, replace it with latest if not
       if (!isVersionDocumented(redirectPath)) {
         redirectPath = replaceVersionWithLatest(redirectPath);
@@ -76,7 +81,7 @@ export default class Error extends React.Component {
       // cool emoji selection, they can just click through if they want speed
       setTimeout(() => {
         window.location = `${this.state.redirectPath}?redirected`;
-      }, 2500);
+      }, 2000);
     }
   }
 
@@ -190,3 +195,15 @@ function isValidPath(path) {
 function replaceVersionWithLatest(path) {
   return path.replace(new RegExp(VERSION_PART_PATTERN), 'latest');
 }
+
+// Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
+// for reasons I'm not totally clear on, those redirects do not work
+const RENAMED_PAGES = {
+  '/versions/latest/introduction/project-lifecycle/':
+    '/versions/latest/introduction/managed-vs-bare/',
+  '/versions/latest/guides/': '/versions/latest/workflow/exploring-managed-workflow/',
+  '/versions/latest/sdk/': '/versions/latest/sdk/overview/',
+  '/versions/latest/guides/building-standalone-apps/':
+    '/versions/latest/distribution/building-standalone-apps/',
+  '/versions/latest/guides/genymotion/': '/versions/latest/guides/android-studio-emulator/',
+};
