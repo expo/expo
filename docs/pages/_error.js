@@ -35,7 +35,9 @@ export default class Error extends React.Component {
 
       if (pathIncludesHtmlExtension(pathname)) {
         redirectPath = pathname.replace('.html', '');
-      } else if (!isVersionDocumented(pathname)) {
+      }
+
+      if (!isVersionDocumented(pathname)) {
         redirectPath = replaceVersionWithLatest(pathname);
       }
 
