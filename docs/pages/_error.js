@@ -43,7 +43,12 @@ export default class Error extends React.Component {
         redirectPath = redirectPath.replace('.html', '');
       }
 
-      //
+      // Add a trailing slash if there is not one
+      if (redirectPath[redirectPath.length - 1] !== '/') {
+        redirectPath = `${redirectPath}/`;
+      }
+
+      // A list of pages we know are renamed and can redirect
       if (RENAMED_PAGES[redirectPath]) {
         redirectPath = RENAMED_PAGES[redirectPath];
       }
@@ -51,11 +56,6 @@ export default class Error extends React.Component {
       // Check if the version is documented, replace it with latest if not
       if (!isVersionDocumented(redirectPath)) {
         redirectPath = replaceVersionWithLatest(redirectPath);
-      }
-
-      // Add a trailing slash if there is not one
-      if (redirectPath[redirectPath.length - 1] !== '/') {
-        redirectPath = `${redirectPath}/`;
       }
 
       if (redirectPath !== pathname) {
@@ -123,7 +123,7 @@ export default class Error extends React.Component {
             Hold tight, we are redirecting you to where we think this URL was intended to take you!
           </p>
           <p style={styles.link}>
-            <a href="/">Click here to possibly go there more quickly!</a>
+            <a href={this.state.redirectPath}>Click here to possibly go there more quickly!</a>
           </p>
         </>
       );
