@@ -43,6 +43,13 @@ export default class Error extends React.Component {
         redirectPath = redirectPath.replace('.html', '');
       }
 
+      // Unsure why this is happening, but sometimes URLs end up with /null in
+      // the last path part
+      // https://docs.expo.io/versions/latest/sdk/overview/null
+      if (endsInNull(redirectPath)) {
+        redirectPath = redirectPath.replace(/null$/, '');
+      }
+
       // Add a trailing slash if there is not one
       if (redirectPath[redirectPath.length - 1] !== '/') {
         redirectPath = `${redirectPath}/`;
@@ -194,6 +201,11 @@ function isValidPath(path) {
 // Replace an unsupported SDK version with latest
 function replaceVersionWithLatest(path) {
   return path.replace(new RegExp(VERSION_PART_PATTERN), 'latest');
+}
+
+// Not sure why this happens but sometimes the URL ends in /null
+function endsInNull(path) {
+  return !!path.match(/\/null$/);
 }
 
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
