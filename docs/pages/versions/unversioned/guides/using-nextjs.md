@@ -2,7 +2,7 @@
 title: Using Next.js with Expo for Web
 ---
 
-[Next.js](https://nextjs.org/) is a React framework that provides page-based simple client-side routing as well as server-side rendering.
+[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering.
 
 > Warning: Supports for Next.js is experimental.
 
@@ -22,6 +22,7 @@ title: Using Next.js with Expo for Web
       "use": "nextjs"
     }
   }
+}
 ```
 
 - Since Next.js use page-based routing, your homepage will be `pages/index.js`, which is different from Expo project's main file (which is by default `App.js`). To support both mobile and Next.js, you could set `App.js` to:
@@ -71,13 +72,19 @@ For [ZEIT Now](https://zeit.co/now) specifically, you could simply add `scripts.
 }
 ```
 
+You also export the website as static files by running the following commands. Learn more [here](https://nextjs.org/features/static-exporting).
+
+```bash
+expo build:web
+yarn next export
+```
+
 ## Limitations comparing to the default Expo for Web config
 
 - Unlike the default Expo for Web config, Workbox and PWA is not supported by default. Use Next.js plugins such as [next-offline](https://github.com/hanford/next-offline) instead. Learn more [here](https://nextjs.org/features/progressive-web-apps).
 - In the production mode (`--no-dev`), reload is not supported. You have to restart (i.e., run `expo start --no-dev --web` again) to rebuild the page.
 - You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
-- `next export` is not yet supported.
-- Only default page-based routing is currently supported.
+- Only the Next.js default page-based routing is supported.
 
 ## Learn more about Next.js
 
