@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import semver from 'semver';
-import { find } from 'find-in-files';
+import glob from 'glob-promise';
 
 import { getExpoRepositoryRootDir } from '../../Directories';
 
@@ -12,7 +12,8 @@ function getProjectPaths(abiName: string) {
   const androidPath = path.join(EXPO_DIR, 'android');
   const appPath = path.join(androidPath, 'app');
   const expoviewPath = path.join(androidPath, 'expoview');
-  const versionedExpoviewAbiPath = path.join(androidPath, 'versioned-abis', `expoview-${abiName}`);
+  const versionedAbisPath = path.join(androidPath, 'versioned-abis');
+  const versionedExpoviewAbiPath = path.join(versionedAbisPath, `expoview-${abiName}`);
   const expoviewBuildGradlePath = path.join(expoviewPath, 'build.gradle');
   const appManifestPath = path.join(appPath, 'src', 'main', 'AndroidManifest.xml');
   const templateManifestPath = path.join(EXPO_DIR, 'template-files', 'android', 'AndroidManifest.xml');
@@ -26,8 +27,6 @@ function getProjectPaths(abiName: string) {
 
   return {
     androidPath,
-    appPath,
-    expoviewPath,
     versionedExpoviewAbiPath,
     expoviewBuildGradlePath,
     appManifestPath,
@@ -118,38 +117,36 @@ async function removeTestSuiteTestsAsync(version: string, testsFilePath: string)
   );
 }
 
-async function findVersionReferencesInSourceFilesAsync(version: string, directories: string[]): Promise<boolean> {
-  const pattern = `(${version.replace(/\./g, '[._]')}|(SDK|ABI).?${semver.major(version)})`;
+async function findVersionReferencesInSourceFilesAsync(version: string, androidPath: string): Promise<boolean> {
+  const pattern = new RegExp(`(${version.replace(/\./g, '[._]')}|(SDK|ABI).?${semver.major(version)})`, 'ig');
   let matchesCount = 0;
 
-  for (const directory of directories) {
-    const results = await find({ term: pattern, flags: 'ig' }, directory, '\\.(java|kt|xml|gradle)$');
-    const keys = Object.keys(results);
-  
-    for (const key of keys) {
-      const result = results[key];
-      const fileContent = await fs.readFile(key, 'utf8');
-      const fileLines = fileContent.split(/\r\n?|\n/g);
+  const files = await glob('**/src/**/*.@(java|kt|xml|gradle)', { cwd: androidPath });
 
-      matchesCount += result.count;
-  
-      result.matches.forEach((match, index) => {
-        const line = result.line[index];
-        const lineNumberWithMatch = fileLines.indexOf(line);
-        const firstLineInContext = Math.max(0, lineNumberWithMatch - 2);
-        const lastLineInContext = Math.min(lineNumberWithMatch + 2, fileLines.length);
-  
+  for (const file of files) {
+    const filePath = path.join(androidPath, file);
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const fileLines = fileContent.split(/\r\n?|\n/g);
+    let match;
+
+    while ((match = pattern.exec(fileContent)) != null) {
+      const index = pattern.lastIndex - match[0].length;
+      const lineNumberWithMatch = fileContent.substring(0, index).split(/\r\n?|\n/g).length - 1;
+      const firstLineInContext = Math.max(0, lineNumberWithMatch - 2);
+      const lastLineInContext = Math.min(lineNumberWithMatch + 2, fileLines.length);
+
+      ++matchesCount;
+
+      console.log(
+        `Found ${chalk.bold.green(match[0])} in ${chalk.magenta(path.relative(EXPO_DIR, filePath))}:`,
+      );
+
+      for (let lineIndex = firstLineInContext; lineIndex <= lastLineInContext; lineIndex++) {
         console.log(
-          `Found ${chalk.bold.green(match)} in ${chalk.magenta(path.relative(EXPO_DIR, key))}:`,
+          `${chalk.gray(1 + lineIndex + ':')} ${fileLines[lineIndex].replace(match[0], chalk.bgMagenta(match[0]))}`,
         );
-  
-        for (let lineIndex = firstLineInContext; lineIndex <= lastLineInContext; lineIndex++) {
-          console.log(
-            `${chalk.gray(1 + lineIndex + ':')} ${fileLines[lineIndex].replace(match, chalk.bgMagenta(match))}`,
-          );
-        }
-        console.log();
-      });
+      }
+      console.log();
     }
   }
   return matchesCount > 0;
@@ -187,12 +184,7 @@ export async function removeVersionAsync(version: string) {
     `\nLooking for SDK references in source files...`
   );
 
-  const sourceFilesDirs = [
-    path.join(paths.appPath, 'src', 'main'),
-    path.join(paths.expoviewPath, 'src', 'main'),
-  ];
-
-  if (await findVersionReferencesInSourceFilesAsync(version, sourceFilesDirs)) {
+  if (await findVersionReferencesInSourceFilesAsync(version, paths.androidPath)) {
     console.log(
       chalk.yellow(`Please review all of these references and remove them manually if possible!\n`),
     );
