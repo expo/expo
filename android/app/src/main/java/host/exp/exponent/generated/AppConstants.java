@@ -5,6 +5,7 @@ import com.facebook.common.internal.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
 
+import expo.modules.ota.EmbeddedResponse;
 import host.exp.exponent.BuildConfig;
 import host.exp.exponent.Constants;
 
@@ -17,11 +18,11 @@ public class AppConstants {
   public static final String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
   public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
-  public static final List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
+  public static final List<EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean FCM_ENABLED = true;
 
   static {
-    List<Constants.EmbeddedResponse> embeddedResponses = new ArrayList<>();
+    List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
 
     // ADD EMBEDDED RESPONSES HERE
     // START EMBEDDED RESPONSES

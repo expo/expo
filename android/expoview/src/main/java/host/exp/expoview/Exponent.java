@@ -24,6 +24,7 @@ import com.raizlabs.android.dbflow.config.FlowManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.TeeOutputStream;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +56,8 @@ import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import expo.modules.ota.BundleDownloader;
+import expo.modules.ota.BundleLoader;
+import expo.modules.ota.EmbeddedResponse;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -344,12 +347,6 @@ public class Exponent {
       manifest = new JSONObject();
     }
 
-    boolean isDeveloping = manifest.has("developer");
-    if (isDeveloping) {
-      // This is important for running locally with no-dev
-      shouldForceNetwork = true;
-    }
-
     // The bundle is cached in two places:
     //   1. The OkHttp cache (which lives in internal storage)
     //   2. Written to our own file (in cache dir)
@@ -358,139 +355,32 @@ public class Exponent {
     // getCacheDir() doesn't work here! Some phones clean the file up in between when we check
     // file.exists() and when we feed it into React Native!
     // TODO: clean up files here!
-    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id + Integer.toString(urlString.hashCode()) + '-' + abiVersion;
+    final String fileName = KernelConstants.BUNDLE_FILE_PREFIX + id + urlString.hashCode() + '-' + abiVersion;
     final File directory = new File(mContext.getFilesDir(), abiVersion);
-    if (!directory.exists()) {
-      directory.mkdir();
-    }
 
-    try {
-      Request.Builder requestBuilder = KernelConstants.KERNEL_BUNDLE_ID.equals(id)
-          // TODO(eric): remove once home bundle is loaded normally
-          ? ExponentUrls.addExponentHeadersToUrl(urlString)
-          : new Request.Builder().url(urlString);
-      if (shouldForceNetwork) {
-        requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
-      }
-      Request request = requestBuilder.build();
-      // Use OkHttpClient with long read timeout for dev bundles
-      BundleDownloader.BundleDownloadCallback callback = new BundleDownloader.BundleDownloadCallback() {
+    BundleLoader bundleLoader = new BundleLoader(mContext, mExponentNetwork.longTimeoutClient());
+    BundleLoader.BundleLoadParams params =
+        new BundleLoader.BundleLoadParams(
+            urlString,
+            directory,
+            fileName,
+            Constants.EMBEDDED_RESPONSES,
+            manifest.has("developer")
+            );
 
-        @Override
-        public void onError(Exception error) {
-          bundleListener.onError(error);
-        }
-
-        @Override
-        public void onSuccess(Response response, BundleDownloader.ResponseSource source) {
-          switch (source) {
-            case CACHE:
-            case EMBEDDED:
-              EXL.d(TAG, "Using cached or embedded response.");
-              break;
-          }
-          if (!response.isSuccessful()) {
-            String body = "(could not render body)";
-            try {
-              body = response.body().string();
-            } catch (IOException e) {
-              EXL.e(TAG, e);
-            }
-            bundleListener.onError(new Exception("Bundle return code: " + response.code() +
-                ". With body: " + body));
-            return;
-          }
-
-          if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-            Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_BUNDLE);
-          }
-
-          try {
-            if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-              Analytics.markEvent(Analytics.TimedEvent.STARTED_WRITING_BUNDLE);
-            }
-            final File sourceFile = new File(directory, fileName);
-            boolean hasCachedSourceFile = false;
-
-            if (response.networkResponse() == null || response.networkResponse().code() == KernelConstants.HTTP_NOT_MODIFIED) {
-              // If we're getting a cached response don't rewrite the file to disk.
-              EXL.d(TAG, "Got cached OkHttp response for " + urlString);
-              if (sourceFile.exists()) {
-                hasCachedSourceFile = true;
-                EXL.d(TAG, "Have cached source file for " + urlString);
-              }
-            }
-
-            if (!hasCachedSourceFile) {
-              InputStream inputStream = null;
-              FileOutputStream fileOutputStream = null;
-              ByteArrayOutputStream byteArrayOutputStream = null;
-              TeeOutputStream teeOutputStream = null;
-
-              try {
-                EXL.d(TAG, "Do not have cached source file for " + urlString);
-                inputStream = response.body().byteStream();
-
-                fileOutputStream = new FileOutputStream(sourceFile);
-                byteArrayOutputStream = new ByteArrayOutputStream();
-
-                // Multiplex the stream. Write both to file and string.
-                teeOutputStream = new TeeOutputStream(fileOutputStream, byteArrayOutputStream);
-
-                ByteStreams.copy(inputStream, teeOutputStream);
-                teeOutputStream.flush();
-
-                mBundleStrings.put(sourceFile.getAbsolutePath(), byteArrayOutputStream.toString());
-
-                fileOutputStream.flush();
-                fileOutputStream.getFD().sync();
-              } finally {
-                IOUtils.closeQuietly(teeOutputStream);
-                IOUtils.closeQuietly(fileOutputStream);
-                IOUtils.closeQuietly(byteArrayOutputStream);
-                IOUtils.closeQuietly(inputStream);
-              }
-            }
-
-            if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
-              Analytics.markEvent(Analytics.TimedEvent.FINISHED_WRITING_BUNDLE);
-            }
-
-            if (Constants.WRITE_BUNDLE_TO_LOG) {
-              printSourceFile(sourceFile.getAbsolutePath());
-            }
-
-            mExpoHandler.post(new Runnable() {
-              @Override
-              public void run() {
-                bundleListener.onBundleLoaded(sourceFile.getAbsolutePath());
-              }
-            });
-          } catch (Exception e) {
-            bundleListener.onError(e);
-          }
-        }
-      };
-
-      LinkedList<BundleDownloader.FallbackResponse> fallbackResponses = new LinkedList<>();
-      for(Constants.EmbeddedResponse response: Constants.EMBEDDED_RESPONSES) {
-        fallbackResponses.addLast(new BundleDownloader.FallbackResponse(response.url, response.mediaType, response.responseFilePath));
+    bundleLoader.loadJsBundle(params, new BundleLoader.BundleLoadCallback() {
+      @Override
+      public void bundleLoaded(@NotNull String path) {
+        mExpoHandler.post(() -> {
+          bundleListener.onBundleLoaded(path);
+        });
       }
 
-      BundleDownloader bundleDownloader = new BundleDownloader(mContext, mExponentNetwork.longTimeoutClient(), fallbackResponses);
-      // TODO: Looks like there is at least one more case to be considered from below if :|
-      bundleDownloader.downloadBundle(request, shouldForceNetwork, null, callback);
-
-//      if (shouldForceCache) {
-//        mExponentNetwork.getLongTimeoutClient().tryForcedCachedResponse(request.url().toString(), request, callback, null, null);
-//      } else if (shouldForceNetwork) {
-//        mExponentNetwork.getLongTimeoutClient().callSafe(request, callback);
-//      } else {
-//        mExponentNetwork.getLongTimeoutClient().callDefaultCache(request, callback);
-//      }
-    } catch (Exception e) {
-      bundleListener.onError(e);
-    }
+      @Override
+      public void error(@NotNull Exception e) {
+        bundleListener.onError(e);
+      }
+    });
 
     // Guess whether we'll use the cache based on whether the source file is saved.
     final File sourceFile = new File(directory, fileName);
@@ -514,35 +404,6 @@ public class Exponent {
       return false;
     }
   }
-
-  private void printSourceFile(String path) {
-    EXL.d(KernelConstants.BUNDLE_TAG, "Printing bundle:");
-    InputStream inputStream = null;
-    try {
-      inputStream = new FileInputStream(path);
-
-      InputStreamReader inputReader = new InputStreamReader(inputStream);
-      BufferedReader bufferedReader = new BufferedReader(inputReader);
-
-      String line;
-      do {
-        line = bufferedReader.readLine();
-        EXL.d(KernelConstants.BUNDLE_TAG, line);
-      } while (line != null);
-    } catch (Exception e) {
-      EXL.e(KernelConstants.BUNDLE_TAG, e.toString());
-    } finally {
-      if (inputStream != null) {
-        try {
-          inputStream.close();
-        } catch (IOException e) {
-          EXL.e(KernelConstants.BUNDLE_TAG, e.toString());
-        }
-      }
-    }
-  }
-
-
 
   public static int getPort(String url) {
     if (!url.contains("://")) {
