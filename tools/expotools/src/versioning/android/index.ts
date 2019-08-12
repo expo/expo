@@ -112,7 +112,7 @@ async function removeTestSuiteTestsAsync(version: string, testsFilePath: string)
   );
   await transformFileAsync(
     testsFilePath,
-    new RegExp(`\\s*(@\\w+\\s+)*@ExpoSdkVersionTest("${version}")[^}]+}`),
+    new RegExp(`\\s*(@\\w+\\s+)*@ExpoSdkVersionTest\\("${version}"\\)[^}]+}`),
     '',
   );
 }
