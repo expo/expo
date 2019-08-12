@@ -121,7 +121,7 @@ async function findVersionReferencesInSourceFilesAsync(version: string, androidP
   const pattern = new RegExp(`(${version.replace(/\./g, '[._]')}|(SDK|ABI).?${semver.major(version)})`, 'ig');
   let matchesCount = 0;
 
-  const files = await glob('**/src/**/*.@(java|kt|xml|gradle)', { cwd: androidPath });
+  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', { cwd: androidPath });
 
   for (const file of files) {
     const filePath = path.join(androidPath, file);
