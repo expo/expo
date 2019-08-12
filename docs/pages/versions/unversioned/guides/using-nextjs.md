@@ -25,6 +25,8 @@ title: Using Next.js with Expo for Web
 }
 ```
 
+- Create a `_document.js` file in `pages/` to set proper layout. Use the file [here](https://github.com/zeit/next.js/blob/canary/examples/with-react-native-web/pages/_document.js).
+
 - Since Next.js use page-based routing, your homepage will be `pages/index.js`, which is different from Expo project's main file (which is by default `App.js`). To support both mobile and Next.js, you could set `App.js` to:
 
 ```javascript
