@@ -125,9 +125,10 @@ async function _stashFilesAsync(filenames: string[]): Promise<void> {
   }
 }
 
-async function _restoreFilesAsync(filenames: string[]): Promise<void> {
-  for (const filename of filenames) {
+async function _restoreFilesAsync(): Promise<void> {
+  for (const filename in savedFiles) {
     await fs.writeFile(filename, savedFiles[filename]);
+    delete savedFiles[filename];
   }
 }
 
@@ -184,14 +185,13 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     `host.exp.exponent:expoview:${sdkVersion}`
   );
 
-  const filesToStash = [
+  await _stashFilesAsync([
     appBuildGradle,
     expoViewBuildGradle,
     multipleVersionReactNativeActivity,
     constantsJava,
     settingsGradle,
-  ];
-  await _stashFilesAsync(filesToStash);
+  ]);
 
   // Modify temporarily
   await _regexFileAsync(
@@ -231,7 +231,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     process.stdout.write(` ✅  Finished building ${pkg.name}\n`);
   }
 
-  await _restoreFilesAsync(filesToStash);
+  await _restoreFilesAsync();
 
   console.log(' 🚚  Copying newly built packages...');
 
@@ -330,6 +330,17 @@ async function action(options: ActionOptions) {
 
   await _updateExpoViewAsync(packages.filter(pkg => packagesToBuild.includes(pkg.name)), options.sdkVersion);
 }
+
+async function _exitHandler(): Promise<void> {
+  if (Object.keys(savedFiles).length) {
+    console.log('Exited early, cleaning up...');
+    await _restoreFilesAsync();
+  }
+}
+
+process.on('beforeExit', _exitHandler);
+process.on('uncaughtException', _exitHandler);
+process.on('SIGINT', _exitHandler);
 
 export default (program: any) => {
   program
