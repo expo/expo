@@ -218,4 +218,6 @@ const RENAMED_PAGES = {
   '/versions/latest/guides/building-standalone-apps/':
     '/versions/latest/distribution/building-standalone-apps/',
   '/versions/latest/guides/genymotion/': '/versions/latest/guides/android-studio-emulator/',
+  '/versions/latest/workflow/upgrading-expo/':
+    '/versions/latest/workflow/upgrading-expo-sdk-walkthrough/',
 };
