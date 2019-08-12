@@ -18,7 +18,7 @@ const OrientationWebToAPI = {
     [WebOrientation.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
     [WebOrientation.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
-let { screen } = canUseViewport && window;
+const { screen } = canUseViewport && window;
 const orientation = canUseViewport && (screen.orientation || screen.msOrientation || null);
 async function emitOrientationEvent() {
     const [orientationLock, orientationInfo] = await Promise.all([

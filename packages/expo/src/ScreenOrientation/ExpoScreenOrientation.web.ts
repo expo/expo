@@ -35,7 +35,7 @@ const OrientationWebToAPI: {
 
 declare const window: Window;
 
-let { screen } = canUseViewport && window;
+const { screen } = canUseViewport && window;
 const orientation: ScreenOrientation | null =
   canUseViewport && (screen.orientation || (screen as any).msOrientation || null);
 
