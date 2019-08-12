@@ -1,0 +1,4 @@
+{
+  "name": "expo-bluetooth",
+  "platforms": ["ios", "android", "web"]
+}

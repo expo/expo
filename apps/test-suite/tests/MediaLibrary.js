@@ -211,6 +211,28 @@ export async function test(t) {
         assets.forEach(asset => t.expect(asset.mediaType).toBe(mediaType));
       });
 
+      t.it('check size - photo', async () => {
+        const mediaType = MediaLibrary.MediaType.photo;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        t.expect(assets.length).toBe(IMG_NUMBER);
+        assets.forEach(asset => {
+          t.expect(asset.width).not.toEqual(0);
+          t.expect(asset.height).not.toEqual(0);
+        });      
+      });
+
+      t.it('check size - video', async () => {
+        const mediaType = MediaLibrary.MediaType.video;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        t.expect(assets.length).toBe(VIDEO_NUMBER);
+        assets.forEach(asset => {
+          t.expect(asset.width).not.toEqual(0);
+          t.expect(asset.height).not.toEqual(0);
+        });      
+      });
+
       t.it('supports getting assets from specified time range', async () => {
         const assetsToCheck = 7;
 

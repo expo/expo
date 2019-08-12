@@ -194,7 +194,7 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
   
   if ([uri.scheme isEqualToString:@"file"]) {
     [EXFileSystemLocalFileHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
-  } else if ([uri.scheme isEqualToString:@"assets-library"]) {
+  } else if ([uri.scheme isEqualToString:@"assets-library"] || [uri.scheme isEqualToString:@"ph"]) {
     [EXFileSystemAssetLibraryHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -453,7 +453,7 @@ UM_EXPORT_METHOD_AS(copyAsync,
   
   if ([from.scheme isEqualToString:@"file"]) {
     [EXFileSystemLocalFileHandler copyFrom:from to:to resolver:resolve rejecter:reject];
-  } else if ([from.scheme isEqualToString:@"assets-library"]) {
+  } else if ([from.scheme isEqualToString:@"assets-library"] || [from.scheme isEqualToString:@"ph"]) {
     [EXFileSystemAssetLibraryHandler copyFrom:from to:to resolver:resolve rejecter:reject];
   } else {
     reject(@"E_FILESYSTEM_INVALID_URI",
@@ -787,6 +787,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                             @"assets-library",
                             @"http",
                             @"https",
+                            @"ph",
                             ];
   if ([validSchemas containsObject:uri.scheme]) {
     return UMFileSystemPermissionRead;
