@@ -18,8 +18,6 @@ title: Using Next.js with Expo for Web
 ```json
 {
   "expo": {
-    // ... your existing configuration
-
     "web": {
       "use": "nextjs"
     }
