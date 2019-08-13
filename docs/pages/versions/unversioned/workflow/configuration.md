@@ -175,9 +175,9 @@ Configuration for the bottom navigation bar on Android.
 {
   "androidNavigationBar": {
      /*
-        Determines whether to show or hide the bottom navigation bar.
-        Specify `true` to show and `false` to hide. The Android design guidelines recommend hiding the status bar when the navigation bar is hidden.
-      */
+       Determines whether to show or hide the bottom navigation bar.
+       Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+    */
     "visible": BOOLEAN,
     /*
       Configure the navigation-bar icons to have a light or dark color.
