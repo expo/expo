@@ -108,15 +108,13 @@ public class ExperienceActivityUtils {
 
   public static void setNavigationBar(final JSONObject manifest, final Activity activity) {
     JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
-
-    String navBarColor;
-    if (navBarOptions != null) {
-      navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
-    } else {
+    if (navBarOptions == null) {
       return;
     }
+    
+    String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
 
-    //set background color of navigation bar
+    // Set background color of navigation bar
     if (navBarColor != null && ColorParser.isValid(navBarColor)) {
       try {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -126,7 +124,7 @@ public class ExperienceActivityUtils {
       }
     }
 
-    //set icon color of navigation bar
+    // Set icon color of navigation bar
     String navBarAppearance = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE);
     if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       try {
@@ -144,14 +142,12 @@ public class ExperienceActivityUtils {
       }
     }
 
-    //set visibility of navigation bar
+    // Set visibility of navigation bar
     if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)) {
       Boolean visible = navBarOptions.optBoolean(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
       if (!visible) {
-        // Hide both the navigation bar and the status bar.
-        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
-        // a general rule, you should design your app to hide the status bar whenever you
-        // hide the navigation bar.
+        // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
+        // design your app to hide the status bar whenever you hide the navigation bar."
         View decorView = activity.getWindow().getDecorView();
         int flags = decorView.getSystemUiVisibility();
         flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
