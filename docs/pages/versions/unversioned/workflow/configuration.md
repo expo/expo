@@ -174,9 +174,9 @@ Configuration for the bottom navigation bar on Android.
 ```javascript
 {
   "androidNavigationBar": {
-     /*
-       Determines whether to show or hide the bottom navigation bar.
-       Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+    /*
+      Determines whether to show or hide the bottom navigation bar.
+      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
     */
     "visible": BOOLEAN,
     /*
