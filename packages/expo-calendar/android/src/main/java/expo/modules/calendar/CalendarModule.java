@@ -867,7 +867,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
       Object relativeOffset = reminder.get("relativeOffset");
 
       if (relativeOffset instanceof Number) {
-        int minutes = -(int) relativeOffset;
+        int minutes = - ((Number) relativeOffset).intValue();
         int method = CalendarContract.Reminders.METHOD_DEFAULT;
         ContentValues reminderValues = new ContentValues();
 

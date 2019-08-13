@@ -38,7 +38,7 @@ Lastly, you will also see a QR code in terminal and Dev Tools. One fast way to o
 
 ## Making your first change
 
-Open up `screens/HomeScreen.js` in your new project and change any of the text in the `render()` function. You should see your app reload with your changes.
+Open up `screens/HomeScreen.js` in your new project and change any of the text in the `HomeScreen()` component. You should see your app reload with your changes after saving.
 
 ### Can't see your changes?
 
@@ -56,7 +56,7 @@ Live reload is enabled by default, but let's just make sure we go over the steps
 
 #### Manually reloading the app
 
-- If you've followed the above steps and live reload **still** doesn't work, [post to Expo Forums](https://forums.expo.io/c/help) to send us a support request. Until we resolve the issue for you, you can either shake the device and press `Reload`, or use one of the following tools which work both with an without development mode.
+- If you've followed the above steps and live reload **still** doesn't work, [post to Expo Forums](https://forums.expo.io/c/help) to send us a support request. Until we resolve the issue for you, you can either shake the device and press `Reload`, or use one of the following tools which work both with and without development mode.
 
   ![Refresh using Expo buttons](/static/images/expo-refresh.png)
 

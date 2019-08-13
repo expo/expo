@@ -6,8 +6,29 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+### 🛠 Breaking changes
+- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
+
+### 🎉 New features
+
+- added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
+- added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
+- added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages by [@hesyifei](https://github.com/hesyifei) ([#4685](https://github.com/expo/expo/pull/4685))
+- added the possibility to get MediaLibrary assets from specific time range. ([#5166](https://github.com/expo/expo/pull/5166) by [@tsapeta](https://github.com/tsapeta))
+- added supports for push notification in Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#4963](https://github.com/expo/expo/pull/4963))
+
+### 🐛 Bug fixes
+
+- fixed MediaLibrary assets' width and height were sometimes equal to 0. ([#4935](https://github.com/expo/expo/pull/4935) by [@lukmccall](https://github.com/lukmccall))
+- fixed location background mode was required to use geofencing. ([#5198](https://github.com/expo/expo/pull/5198) by [@tsapeta](https://github.com/tsapeta))
+- fixed `Calendar.createEventAsync` crashing with relativeOffSet due to invalid type conversion from double to integer by [@vivianzzhu91](https://github.com/vivianzzhu91) ([#5134](https://github.com/expo/expo/pull/5134))
+
+## 34.0.0
+
+### 📚 3rd party library updates
+
 - `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
-- `react-native-branch` updated from `2.2.5` to `3.0.1`
+- `react-native-branch` updated from `2.2.5` to `3.1.1`
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`
 - `react-native-svg` updated from `9.4.0` to `9.5.1`
 - `react-native-webview` updated from `5.8.0` to `5.12.0`
@@ -17,16 +38,13 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - Removed `promptMessageIOS` string argument from `LocalAuthentication.authenticateAsync` in favor of options object. ([#4631](https://github.com/expo/expo/pull/4631) by [@tsapeta](https://github.com/tsapeta))
 - Removed `Calendar.DEFAULT` and replaced it with `null`. ([#4836](https://github.com/expo/expo/pull/4836) by [@lukmccall](https://github.com/lukmccall))
-- `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
 - Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
 - added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
 - added support for video recording in `ImagePicker.launchCameraAsync`. ([#4903](https://github.com/expo/expo/pull/4903) by [@lukmccall](https://github.com/lukmccall))
-- added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
-- added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
-- added supports for push notification in Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#4963](https://github.com/expo/expo/pull/4963))
+- added support for `ph://` URLs to `expo-file-system` ([#5195](https://github.com/expo/expo/pull/5195) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🐛 Bug fixes
 
@@ -34,6 +52,10 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed picking images over 2000px on Android by [@bbarthec](https://github.com/bbarthec) ([#4731](https://github.com/expo/expo/pull/4731))
 - fixed `Calendar.getEventsAsync` crashing if `calendarId` is SQL keyword by [@lukmccall](https://github.com/lukmccall) ([#4836](https://github.com/expo/expo/pull/4836))
 - fixed `BOOL` interpretation on 32-bit iOS devices by [@lukmccall](https://github.com/lukmccall) ([#4862](https://github.com/expo/expo/pull/4862))
+- fixed AV rejecting to further load an asset once any loading error occured ([#5105](https://github.com/expo/expo/pull/5105)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed AV resetting player whenever props changed ([#5106](https://github.com/expo/expo/pull/5106)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed bar code scanning crash if the result couldn't be converted to string ([#5183](https://github.com/expo/expo/pull/5183)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed camera crash in standalone apps ([#5194](https://github.com/expo/expo/pull/5194)) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 33.0.0
 

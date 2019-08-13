@@ -60,7 +60,7 @@ Example:
 ```js
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Constants } from 'expo';
+import Constants from 'expo-constants';
 
 const styles = StyleSheet.create({
   statusBar: {
