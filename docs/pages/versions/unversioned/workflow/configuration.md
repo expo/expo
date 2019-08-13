@@ -180,7 +180,7 @@ Configuration for the bottom navigation bar on Android.
     */
     "visible": BOOLEAN,
     /*
-      Configure the navigation-bar icons to have a light or dark color.
+      Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
       Valid values: "light-content", "dark-content".
     */
     "barStyle": STRING,
