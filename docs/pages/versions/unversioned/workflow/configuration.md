@@ -147,20 +147,47 @@ An array of file glob strings which point to assets that will be bundled within 
 
 ### `"androidStatusBar"`
 
-Configuration for android statusbar.
+Configuration for the status bar on Android.
 
 ```javascript
 {
   "androidStatusBar": {
     /*
-      Configure the statusbar icons to have light or dark color.
+      Configures the status-bar icons to have a light or dark color.
       Valid values: "light-content", "dark-content".
     */
     "barStyle": STRING,
 
     /*
-      Configuration for android statusbar.
-      6 character long hex color string, eg: "#000000"
+      Specifies the background color of the status bar.
+      Six-character hex color string, e.g., "#000000"
+    */
+    "backgroundColor": STRING
+  }
+}
+```
+
+### `"androidNavigationBar"`
+
+Configuration for the bottom navigation bar on Android.
+
+```javascript
+{
+  "androidNavigationBar": {
+    /*
+      Determines whether to show or hide the bottom navigation bar.
+      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+    */
+    "visible": BOOLEAN,
+    /*
+      Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
+      Valid values: "light-content", "dark-content".
+    */
+    "barStyle": STRING,
+
+    /*
+      Specifies the background color of the navigation bar.
+      Six-character hex color string, e.g., "#000000"
     */
     "backgroundColor": STRING
   }
