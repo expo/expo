@@ -104,7 +104,10 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [appAuthRedirectScheme: 'com.bareexpo']
+        manifestPlaceholders = [
+                // [Custom]: Required for expo-app-auth
+                appAuthRedirectScheme: 'com.bareexpo'
+        ]
     }
     splits {
         abi {
