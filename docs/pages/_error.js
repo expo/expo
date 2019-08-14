@@ -26,6 +26,7 @@ export default class Error extends React.Component {
     let { pathname, search } = window.location;
 
     if (window.location.search === REDIRECT_SUFFIX) {
+      Sentry.captureMessage(`Redirect failed`);
       this.setState({ redirectFailed: true });
       return;
     }
@@ -222,4 +223,6 @@ const RENAMED_PAGES = {
     '/versions/latest/workflow/upgrading-expo-sdk-walkthrough/',
   '/versions/latest/workflow/create-react-native-app/':
     'versions/latest/workflow/glossary-of-terms/#create-react-native-app',
+  '/versions/latest/guides/configuration/': 'versions/latest/workflow/configuration/',
+  '/versions/latest/guides/expokit/': '/versions/latest/expokit/overview/',
 };
