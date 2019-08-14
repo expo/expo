@@ -4,42 +4,25 @@ import chalk from 'chalk';
 import semver from 'semver';
 import glob from 'glob-promise';
 
-import { getExpoRepositoryRootDir } from '../../Directories';
+import { getExpoRepositoryRootDir, getAndroidDir } from '../../Directories';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
+const ANDROID_DIR = getAndroidDir();
 
-function getProjectPaths(abiName: string) {
-  const androidPath = path.join(EXPO_DIR, 'android');
-  const appPath = path.join(androidPath, 'app');
-  const expoviewPath = path.join(androidPath, 'expoview');
-  const versionedAbisPath = path.join(androidPath, 'versioned-abis');
-  const versionedExpoviewAbiPath = path.join(versionedAbisPath, `expoview-${abiName}`);
-  const expoviewBuildGradlePath = path.join(expoviewPath, 'build.gradle');
-  const appManifestPath = path.join(appPath, 'src', 'main', 'AndroidManifest.xml');
-  const templateManifestPath = path.join(EXPO_DIR, 'template-files', 'android', 'AndroidManifest.xml');
-  const settingsGradlePath = path.join(androidPath, 'settings.gradle');
-  const appBuildGradlePath = path.join(appPath, 'build.gradle');
-  const buildGradlePath = path.join(androidPath, 'build.gradle');
-  const sdkVersionsPath = path.join(androidPath, 'sdkVersions.json');
-  const rnActivityPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
-  const expoviewConstantsPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/Constants.java');
-  const testSuiteTestsPath = path.join(appPath, 'src/androidTest/java/host/exp/exponent/TestSuiteTests.java');
-
-  return {
-    androidPath,
-    versionedExpoviewAbiPath,
-    expoviewBuildGradlePath,
-    appManifestPath,
-    templateManifestPath,
-    settingsGradlePath,
-    appBuildGradlePath,
-    buildGradlePath,
-    sdkVersionsPath,
-    rnActivityPath,
-    expoviewConstantsPath,
-    testSuiteTestsPath,
-  };
-}
+const appPath = path.join(ANDROID_DIR, 'app');
+const expoviewPath = path.join(ANDROID_DIR, 'expoview');
+const versionedAbisPath = path.join(ANDROID_DIR, 'versioned-abis');
+const versionedExpoviewAbiPath = abiName => path.join(versionedAbisPath, `expoview-${abiName}`);
+const expoviewBuildGradlePath = path.join(expoviewPath, 'build.gradle');
+const appManifestPath = path.join(appPath, 'src', 'main', 'AndroidManifest.xml');
+const templateManifestPath = path.join(EXPO_DIR, 'template-files', 'android', 'AndroidManifest.xml');
+const settingsGradlePath = path.join(ANDROID_DIR, 'settings.gradle');
+const appBuildGradlePath = path.join(appPath, 'build.gradle');
+const buildGradlePath = path.join(ANDROID_DIR, 'build.gradle');
+const sdkVersionsPath = path.join(ANDROID_DIR, 'sdkVersions.json');
+const rnActivityPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
+const expoviewConstantsPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/Constants.java');
+const testSuiteTestsPath = path.join(appPath, 'src/androidTest/java/host/exp/exponent/TestSuiteTests.java');
 
 async function transformFileAsync(filePath: string, regexp: RegExp, replacement: string = '') {
   const fileContent = await fs.readFile(filePath, 'utf8');
@@ -117,14 +100,14 @@ async function removeTestSuiteTestsAsync(version: string, testsFilePath: string)
   );
 }
 
-async function findVersionReferencesInSourceFilesAsync(version: string, androidPath: string): Promise<boolean> {
+async function findAndPrintVersionReferencesInSourceFilesAsync(version: string): Promise<boolean> {
   const pattern = new RegExp(`(${version.replace(/\./g, '[._]')}|(SDK|ABI).?${semver.major(version)})`, 'ig');
   let matchesCount = 0;
 
-  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', { cwd: androidPath });
+  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', { cwd: ANDROID_DIR });
 
   for (const file of files) {
-    const filePath = path.join(androidPath, file);
+    const filePath = path.join(ANDROID_DIR, file);
     const fileContent = await fs.readFile(filePath, 'utf8');
     const fileLines = fileContent.split(/\r\n?|\n/g);
     let match;
@@ -154,37 +137,36 @@ async function findVersionReferencesInSourceFilesAsync(version: string, androidP
 
 export async function removeVersionAsync(version: string) {
   const abiName = `abi${version.replace(/\./g, '_')}`;
-  const paths = getProjectPaths(abiName);
   const sdkMajorVersion = semver.major(version);
 
   console.log(`Removing SDK version ${chalk.cyan(version)} for ${chalk.blue('Android')}...`);
 
   // Remove expoview-abi*_0_0 library
-  await removeVersionedExpoviewAsync(paths.versionedExpoviewAbiPath);
-  await removeFromSettingsGradleAsync(abiName, paths.settingsGradlePath);
-  await removeFromBuildGradleAsync(abiName, paths.buildGradlePath);
+  await removeVersionedExpoviewAsync(versionedExpoviewAbiPath(abiName));
+  await removeFromSettingsGradleAsync(abiName, settingsGradlePath);
+  await removeFromBuildGradleAsync(abiName, buildGradlePath);
   
   // Remove code surrounded by BEGIN_SDK_* and END_SDK_*
-  await removeVersionReferencesFromFileAsync(sdkMajorVersion, paths.expoviewBuildGradlePath);
-  await removeVersionReferencesFromFileAsync(sdkMajorVersion, paths.appBuildGradlePath);
-  await removeVersionReferencesFromFileAsync(sdkMajorVersion, paths.rnActivityPath);
-  await removeVersionReferencesFromFileAsync(sdkMajorVersion, paths.expoviewConstantsPath);
+  await removeVersionReferencesFromFileAsync(sdkMajorVersion, expoviewBuildGradlePath);
+  await removeVersionReferencesFromFileAsync(sdkMajorVersion, appBuildGradlePath);
+  await removeVersionReferencesFromFileAsync(sdkMajorVersion, rnActivityPath);
+  await removeVersionReferencesFromFileAsync(sdkMajorVersion, expoviewConstantsPath);
 
   // Remove test-suite tests from the app.
-  await removeTestSuiteTestsAsync(version, paths.testSuiteTestsPath);
+  await removeTestSuiteTestsAsync(version, testSuiteTestsPath);
 
   // Update AndroidManifests
-  await removeFromManifestAsync(sdkMajorVersion, paths.appManifestPath);
-  await removeFromManifestAsync(sdkMajorVersion, paths.templateManifestPath);
+  await removeFromManifestAsync(sdkMajorVersion, appManifestPath);
+  await removeFromManifestAsync(sdkMajorVersion, templateManifestPath);
 
   // Remove SDK version from the list of supported SDKs
-  await removeFromSdkVersionsAsync(version, paths.sdkVersionsPath);
+  await removeFromSdkVersionsAsync(version, sdkVersionsPath);
 
   console.log(
     `\nLooking for SDK references in source files...`
   );
 
-  if (await findVersionReferencesInSourceFilesAsync(version, paths.androidPath)) {
+  if (await findAndPrintVersionReferencesInSourceFilesAsync(version)) {
     console.log(
       chalk.yellow(`Please review all of these references and remove them manually if possible!\n`),
     );
