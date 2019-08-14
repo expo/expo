@@ -73,7 +73,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js"
+    entryFile: "index.js",
 ]
 
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
@@ -104,6 +104,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [appAuthRedirectScheme: 'com.bareexpo']
     }
     splits {
         abi {
@@ -139,9 +140,9 @@ android {
 }
 
 dependencies {
-//    implementation project(':react-native-reanimated')
-//    implementation project(':react-native-gesture-handler')
-//    implementation project(":react-native-screens")
+    implementation project(':react-native-reanimated')
+    implementation project(':react-native-gesture-handler')
+    implementation project(":react-native-screens")
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
@@ -152,15 +153,21 @@ dependencies {
       configuration: 'api',
       target       : 'react-native',
       exclude      : [
+        // [Custom] FBSDK adds a lot of time to the pod install
+        'expo-facebook',
+        'expo-ads-facebook',
+        // [Custom] To avoid dealing with this error:
+        // 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
+        'expo-ads-admob',
         // You can exclude unneeded modules here.
         // By default we exclude FaceDetector
         // and Stripe payments APIs.
         'unimodules-face-detector-interface',
         'expo-face-detector',
+        'expo-camera',
         'expo-payments-stripe',
         'expo-branch',
         'expo-video-thumbnails',
-        'expo-camera',
         // Adding a name here will also remove the package
         // from auto-generated BasePackageList.java
       ]

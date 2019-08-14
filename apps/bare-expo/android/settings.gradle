@@ -1,8 +1,10 @@
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-//include ':react-native-reanimated'
-//project(':react-native-reanimated').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-reanimated/android')
-//include ':react-native-screens'
-//project(':react-native-screens').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-screens/android')
+
+include ':react-native-reanimated'
+project(':react-native-reanimated').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-reanimated/android')
+include ':react-native-screens'
+project(':react-native-screens').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-screens/android')
+
 // Include unimodules.
 includeUnimodulesProjects(
         modulesPaths : [
@@ -11,18 +13,21 @@ includeUnimodulesProjects(
         configuration: 'api',
         target       : 'react-native',
         exclude      : [
-                'unimodules-face-detector-interface',
-                'expo-face-detector',
+                'expo-facebook',
+                'expo-ads-facebook',
+                'expo-ads-admob',
                 'expo-payments-stripe',
                 'expo-branch',
                 'expo-video-thumbnails',
+                'unimodules-face-detector-interface',
+                'expo-face-detector',
                 'expo-camera',
         ]
 )
 
 
-//include ':react-native-gesture-handler'
-//project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-gesture-handler/android')
+include ':react-native-gesture-handler'
+project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-gesture-handler/android')
 
 rootProject.name = 'BareExpo'
 
