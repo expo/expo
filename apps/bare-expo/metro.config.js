@@ -8,6 +8,8 @@ module.exports = {
   resolver: {
     ...(config.resolver || {}),
     blacklistRE: blacklist([
+      // [Custom] Prevent the haste collision in `ios/` versioned code.
+      // Otherwise you will get an error from Metro bundler.
       /.*\/ios\/.*/,
       /.*\/android\/ReactAndroid\/.*/,
       /.*\/versioned-react-native\/.*/,

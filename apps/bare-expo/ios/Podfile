@@ -1,4 +1,8 @@
+require 'json'
+
 platform :ios, '10.0'
+
+package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 # [Custom] Add target the root modules in the workspace
 modules_path = '../../../node_modules'
@@ -47,17 +51,7 @@ target 'BareExpo' do
     # [Custom] Use the packages directory for unimodules
     modules_paths: ['../../../packages'],
     # [Custom] Prevent the bundling of template code and stripe
-    exclude: [
-      'expo-module-template',
-      'expo-payments-stripe',
-
-      # [Custom] FBSDK adds a lot of time to the pod install 
-      'expo-facebook',
-      'expo-ads-facebook',
-      # [Custom] To avoid dealing with this error: 
-      # 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
-      'expo-ads-admob',
-    ]
+    exclude: package['excludedUnimodules']
   })
 
   target 'BareExpoTests' do

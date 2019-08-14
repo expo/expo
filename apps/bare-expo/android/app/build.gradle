@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-
+import groovy.json.JsonSlurper
 import com.android.build.OutputFile
 
 /**
@@ -149,35 +149,18 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
+
+    def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+    def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+    def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
+
     addUnimodulesDependencies([
       modulesPaths : [
         '../../../../packages'
       ],
       configuration: 'api',
       target       : 'react-native',
-      exclude      : [
-        'expo-task-manager',
-        'unimodules-task-manager-interface',
-        'expo-background-fetch',
-        'expo-location',
-        // [Custom] FBSDK adds a lot of time to the pod install
-        'expo-facebook',
-        'expo-ads-facebook',
-        // [Custom] To avoid dealing with this error:
-        // 'GADInvalidInitializationException', reason: 'The Google Mobile Ads SDK was initialized without an application ID. Google AdMob publishers, follow instructions here: https://googlemobileadssdk.page.link/admob-ios-update-plist to set GADApplicationIdentifier with a valid App ID. Google Ad Manager publishers, follow instructions here: https://googlemobileadssdk.page.link/ad-manager-ios-update-plist'
-        'expo-ads-admob',
-        // You can exclude unneeded modules here.
-        // By default we exclude FaceDetector
-        // and Stripe payments APIs.
-        'unimodules-face-detector-interface',
-        'expo-face-detector',
-        'expo-camera',
-        'expo-payments-stripe',
-        'expo-branch',
-        'expo-video-thumbnails',
-        // Adding a name here will also remove the package
-        // from auto-generated BasePackageList.java
-      ]
+      exclude      : excludedUnimodules
   ])
 }
 

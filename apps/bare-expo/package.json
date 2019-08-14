@@ -26,6 +26,22 @@
     "react-native-unimodules": "~0.5.2",
     "react-native-web": "^0.11.4"
   },
+  "excludedUnimodules": [
+    "expo-task-manager",
+    "unimodules-task-manager-interface",
+    "expo-background-fetch",
+    "expo-location",
+    "expo-branch",
+    "expo-camera",
+    "expo-face-detector",
+    "unimodules-face-detector-interface",
+    "expo-payments-stripe",
+    "expo-facebook",
+    "expo-ads-facebook",
+    "expo-ads-admob",
+    "expo-video-thumbnails",
+    "expo-module-template"
+  ],
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@types/react": "^16.8.23",
