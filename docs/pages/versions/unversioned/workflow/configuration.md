@@ -463,6 +463,14 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     "splash": {
       /*
+        Local path to a .xib interface builder document which will be used as the
+        loading screen of the standalone iOS app.
+        Note that this will only be used in the standalone app (i.e., after you
+        build the app). It will not be used in the Expo client.
+      */
+      "xib": STRING,
+
+      /*
         Color to fill the loading screen background 6 character long hex color string, eg: "#000000"
       */
       "backgroundColor": STRING,
