@@ -39,6 +39,18 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
   return @[kEXPurchasesUpdatedEventName];
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+           @"canRequestStoreReview": [SKStoreReviewController class] ? @YES : @NO
+           };
+}
+
 - (void)startObserving {}
 - (void)stopObserving {}
 
@@ -134,6 +146,28 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 {
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
   resolve(nil);
+}
+
+/*
+ From Apple: https://developer.apple.com/ios/human-interface-guidelines/system-capabilities/ratings-and-reviews/
+ 
+ Ask for a rating only after the user has demonstrated engagement with your app. For example, prompt the user upon the completion of a game level or productivity task. Never ask for a rating on first launch or during onboarding. Allow ample time to form an opinion.
+ 
+ Don’t interrupt the user, especially when they’re performing a time-sensitive or stressful task. Look for logical pauses or stopping points, where a rating request makes the most sense.
+ 
+ Don’t be a pest. Repeated rating prompts can be irritating, and may even negatively influence the user’s opinion of your app. Allow at least a week or two between rating requests and only prompt again after the user has demonstrated additional engagement with your app.
+ */
+
+UM_EXPORT_METHOD_AS(requestStoreReviewAsync,
+                    requestStoreReviewAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if (@available(iOS 10.3, *)) {
+    [SKStoreReviewController requestReview];
+    resolve(@YES);
+    return;
+  }
+  resolve(@NO);
 }
 
 # pragma mark - Helper Methods

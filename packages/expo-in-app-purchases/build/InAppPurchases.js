@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { CodedError, EventEmitter } from '@unimodules/core';
+import { CodedError, EventEmitter, UnavailabilityError } from '@unimodules/core';
 import { InAppPurchaseState, IAPItemType, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 const errors = {
@@ -70,6 +70,19 @@ export async function disconnectAsync() {
     }
     await ExpoInAppPurchases.disconnectAsync();
     connected = false;
+}
+export async function requestStoreReviewAsync() {
+    if (!ExpoInAppPurchases.requestStoreReviewAsync)
+        throw new UnavailabilityError('expo-in-app-purchases', 'requestStoreReviewAsync');
+    return await ExpoInAppPurchases.requestStoreReviewAsync();
+}
+/*
+ * Platform must be iOS
+ * iOS 10.3 or greater
+ * `SKStoreReviewController` class is available
+ */
+export function canRequestStoreReview() {
+    return ExpoInAppPurchases && ExpoInAppPurchases.canRequestStoreReview;
 }
 class ConnectionError extends CodedError {
     constructor(message) {

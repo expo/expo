@@ -8,3 +8,5 @@ export declare function setPurchaseListener(callback: (result: any) => void): Pr
 export declare function finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean): Promise<void>;
 export declare function getBillingResponseCodeAsync(): Promise<number>;
 export declare function disconnectAsync(): Promise<void>;
+export declare function requestStoreReviewAsync(): Promise<boolean>;
+export declare function canRequestStoreReview(): boolean;
