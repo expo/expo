@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXCachedResource.h"
+#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXKernelUtil.h"
 #import "EXUtil.h"
@@ -275,8 +276,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)_defaultCachePath
 {
-  NSString *cachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-  NSString *sourceDirectory = [cachesDirectory stringByAppendingPathComponent:@"EXCachedResource"];
+  return [[self class] cachePathWithName:@"EXCachedResource"];
+}
+
++ (NSString *)cachePathWithName:(NSString *)cacheName
+{
+  NSString *cachesDirectory = [EXEnvironment sharedEnvironment].isDetached
+    ? NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
+    : NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *sourceDirectory = [cachesDirectory stringByAppendingPathComponent:cacheName];
   
   BOOL cacheDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:sourceDirectory isDirectory:nil];
   if (!cacheDirectoryExists) {
@@ -289,6 +297,14 @@ NS_ASSUME_NONNULL_BEGIN
       cacheDirectoryExists = YES;
     } else {
       DDLogError(@"Could not create source cache directory: %@", error.localizedDescription);
+    }
+  }
+
+  if (cacheDirectoryExists && [EXEnvironment sharedEnvironment].isDetached) {
+    NSURL *cacheDirectoryUrl = [NSURL fileURLWithPath:sourceDirectory];
+    NSError *error;
+    if (![cacheDirectoryUrl setResourceValue:@(YES) forKey:NSURLIsExcludedFromBackupKey error:&error]) {
+      DDLogError(@"Could not exclude source cache directory from backup: %@", error.localizedDescription);
     }
   }
   
