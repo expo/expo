@@ -27,6 +27,7 @@
     "expo-av": "~6.0.0",
     "expo-background-fetch": "~6.0.0",
     "expo-barcode-scanner": "~6.0.0",
+    "expo-battery": "~0.0.1",
     "expo-blur": "~6.0.0",
     "expo-brightness": "~6.0.0",
     "expo-calendar": "~6.0.0",

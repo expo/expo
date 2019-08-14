@@ -8,7 +8,7 @@ title: Testing with Jest
 
 The first thing we'll want to do is install jest-expo, it's a Jest preset that mocks out the native side of the Expo SDK and handles some configuration for you.
 
-To install jest-expo as a development dependency run: `yarn add jest-expo --dev` **or** `npm install jest-expo --save-dev`.
+To install jest-expo as a development dependency run: `yarn add jest-expo --dev` **or** `npm i jest-expo --save-dev`.
 
 Then we need to add/update `package.json` to include:
 

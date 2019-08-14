@@ -4,6 +4,8 @@ import { DeviceType } from './Device.types';
 import ExpoDevice from './ExpoDevice';
 import { getIosModelName } from './ModelNames';
 
+export { DeviceType };
+
 export const isDevice: boolean = ExpoDevice ? ExpoDevice.isDevice : true;
 export const brand: string | null = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer: string | null = ExpoDevice ? ExpoDevice.manufacturer : null;

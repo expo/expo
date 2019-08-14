@@ -89,13 +89,19 @@ class AlgoliaSearch extends React.Component {
           Router.push(route);
         }
 
-        document.getElementById('docsearch').blur();
+        let docSearchEl = document.getElementById('docsearch');
+        if (docSearchEl) {
+          docSearchEl.blur();
+        }
+
         const searchbox = document.querySelector('input#docsearch');
         const reset = document.querySelector('.searchbox [type="reset"]');
-        reset.className = 'searchbox__reset';
 
-        if (searchbox.value.length === 0) {
-          reset.className += ' hide';
+        if (reset) {
+          reset.className = 'searchbox__reset';
+          if (searchbox && searchbox.value.length === 0) {
+            reset.className += ' hide';
+          }
         }
 
         this.props.closeSidebar && this.props.closeSidebar();
