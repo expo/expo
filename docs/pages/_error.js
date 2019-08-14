@@ -223,6 +223,6 @@ const RENAMED_PAGES = {
     '/versions/latest/workflow/upgrading-expo-sdk-walkthrough/',
   '/versions/latest/workflow/create-react-native-app/':
     'versions/latest/workflow/glossary-of-terms/#create-react-native-app',
-  '/versions/latest/guides/configuration/': 'versions/latest/workflow/configuration/',
+  '/versions/latest/guides/configuration/': '/versions/latest/workflow/configuration/',
   '/versions/latest/guides/expokit/': '/versions/latest/expokit/overview/',
 };
