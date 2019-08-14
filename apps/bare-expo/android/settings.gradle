@@ -13,6 +13,11 @@ includeUnimodulesProjects(
         configuration: 'api',
         target       : 'react-native',
         exclude      : [
+                'expo-task-manager',
+                'unimodules-task-manager-interface',
+                'expo-background-fetch',
+                'expo-location',
+                'expo-facebook',
                 'expo-facebook',
                 'expo-ads-facebook',
                 'expo-ads-admob',
