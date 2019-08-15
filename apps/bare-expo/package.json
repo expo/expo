@@ -53,8 +53,5 @@
   },
   "jest": {
     "preset": "react-native"
-  },
-  "powertools": {
-    "group": "client"
   }
 }
