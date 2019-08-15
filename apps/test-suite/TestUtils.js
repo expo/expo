@@ -70,8 +70,11 @@ export function getTestModules() {
   if (ExponentTest && !ExponentTest.isInCI) {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
-    // Requires interaction (sign in popup)
-    modules.push(require('./tests/GoogleSignIn'));
+
+    if (Constants.isDevice && Platform.OS !== 'android') {
+      // Requires interaction (sign in popup)
+      modules.push(require('./tests/GoogleSignIn'));
+    }
     // Popup to request device's location which uses Google's location service
     modules.push(require('./tests/Location'));
     // Fails to redirect because of malformed URL in published version with release channel parameter
