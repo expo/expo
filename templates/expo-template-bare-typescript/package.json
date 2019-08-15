@@ -1,7 +1,7 @@
 {
   "name": "expo-template-bare-typescript",
   "description": "This bare project template includes TypeScript",
-  "version": "34.0.4",
+  "version": "34.0.5",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
