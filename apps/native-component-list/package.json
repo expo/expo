@@ -11,9 +11,6 @@
     "web:serve": "serve ./web-build",
     "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
   },
-  "powertools": {
-    "group": "client"
-  },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
     "@react-native-community/netinfo": "~3.2.1",

@@ -13,9 +13,6 @@
   "jest": {
     "preset": "jest-expo"
   },
-  "powertools": {
-    "group": "client"
-  },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/react-native-touchable-native-feedback-safe": "^1.1.2",
