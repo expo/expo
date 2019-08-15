@@ -1,0 +1,58 @@
+{
+  "name": "bare-expo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall",
+    "android": "react-native run-android",
+    "android-clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
+    "setup-android": "cd ../../react-native-lab/react-native && ./gradlew :ReactAndroid:installArchives && cd ../../apps/bare-expo && npm run android-clean",
+    "ios": "react-native run-ios",
+    "setup-ios": "cd ios; pod install",
+    "web": "expo start --web",
+    "start": "react-native start",
+    "start-clean": "react-native start --reset-cache",
+    "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "expo": "^34.0.1",
+    "expo-yarn-workspaces": "^1.2.0",
+    "react": "16.8.3",
+    "react-dom": "^16.8.6",
+    "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0",
+    "react-native-reanimated": "~1.1.0",
+    "react-native-unimodules": "~0.5.2",
+    "react-native-web": "^0.11.4"
+  },
+  "excludedUnimodules": [
+    "expo-task-manager",
+    "unimodules-task-manager-interface",
+    "expo-background-fetch",
+    "expo-location",
+    "expo-branch",
+    "expo-camera",
+    "expo-face-detector",
+    "unimodules-face-detector-interface",
+    "expo-payments-stripe",
+    "expo-facebook",
+    "expo-ads-facebook",
+    "expo-ads-admob",
+    "expo-video-thumbnails",
+    "expo-module-template"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@types/react": "^16.8.23",
+    "@types/react-native": "^0.57.65",
+    "babel-preset-expo": "^6.0.0",
+    "expo-yarn-workspaces": "^1.2.0",
+    "jest-expo": "^34.0.0",
+    "typescript": "^3.4.5"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
