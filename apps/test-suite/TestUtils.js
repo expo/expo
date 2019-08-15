@@ -17,10 +17,6 @@ function browserSupportsWebGL() {
   }
 }
 
-const isInDeviceFarm = () => {
-  return Constants.isDevice && !!process.env.DEVICEFARM_PROJECT_NAME;
-}
-
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
@@ -75,7 +71,7 @@ export function getTestModules() {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
 
-    if (!isInDeviceFarm()) {
+    if (Constants.isDevice && Platform.OS !== 'android') {
       // Requires interaction (sign in popup)
       modules.push(require('./tests/GoogleSignIn'));
     }
