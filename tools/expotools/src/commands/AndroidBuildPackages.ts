@@ -305,7 +305,7 @@ async function action(options: ActionOptions) {
     console.log(' 🕵️   It appears that the following packages need to be rebuilt:');
     console.log(packagesToBuild);
 
-    const { option } = await inquirer.prompt([{
+    const { option } = await inquirer.prompt<{ option: string }>([{
       type: 'list',
       name: 'option',
       message: 'What would you like to do?',
@@ -319,7 +319,7 @@ async function action(options: ActionOptions) {
     if (option === 'all') {
       packagesToBuild = packages.map(pkg => pkg.name);
     } else if (option === 'choose') {
-      const result: any = await inquirer.prompt([{
+      const result = await inquirer.prompt<{ packagesToBuild: string[] }>([{
         type: 'checkbox',
         name: 'packagesToBuild',
         message: 'Choose which packages to build',
