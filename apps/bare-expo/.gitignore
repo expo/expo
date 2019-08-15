@@ -58,3 +58,5 @@ buck-out/
 
 ios/Pods
 ios/build
+
+/android/app/build

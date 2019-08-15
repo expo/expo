@@ -99,14 +99,14 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.bareexpo"
+        applicationId "dev.expo.payments"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [
                 // [Custom]: Required for expo-app-auth
-                appAuthRedirectScheme: 'com.bareexpo'
+                appAuthRedirectScheme: 'dev.expo.payments'
         ]
     }
     splits {

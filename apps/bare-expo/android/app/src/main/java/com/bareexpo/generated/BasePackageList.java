@@ -1,4 +1,4 @@
-package com.bareexpo.generated;
+package dev.expo.payments.generated;
 
 import java.util.Arrays;
 import java.util.List;

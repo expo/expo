@@ -1,4 +1,4 @@
-package com.bareexpo;
+package dev.expo.payments;
 
 import android.app.Application;
 
@@ -8,7 +8,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.bareexpo.generated.BasePackageList;
+import dev.expo.payments.generated.BasePackageList;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 
 import org.unimodules.adapters.react.ReactAdapterPackage;

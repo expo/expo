@@ -1,4 +1,4 @@
-package com.bareexpo;
+package dev.expo.payments;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
