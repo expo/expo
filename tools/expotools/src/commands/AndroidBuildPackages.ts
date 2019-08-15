@@ -215,12 +215,11 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   // Clear maven local so that we don't end up with multiple versions
   console.log(' ❌  Clearing old package versions...')
 
-  await spawnAsync('rm', [
-    '-rf',
-    ...packages.map(pkg => path.join(process.env.HOME!, '.m2', 'repository', pkg.buildDirRelative)),
-    ...packages.map(pkg => path.join(ANDROID_DIR, 'maven', pkg.buildDirRelative)),
-    ...packages.map(pkg => path.join(pkg.sourceDir, 'build'))
-  ]);
+  for (const pkg of packages) {
+    await fs.remove(path.join(process.env.HOME!, '.m2', 'repository', pkg.buildDirRelative));
+    await fs.remove(path.join(ANDROID_DIR, 'maven', pkg.buildDirRelative));
+    await fs.remove(path.join(pkg.sourceDir, 'build'));
+  }
 
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
@@ -236,25 +235,23 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 
   console.log(' 🚚  Copying newly built packages...');
 
-  await spawnAsync('mkdir', ['-p', path.join(ANDROID_DIR, 'maven/com/facebook')])
-  await spawnAsync('mkdir', ['-p', path.join(ANDROID_DIR, 'maven/host/exp/exponent')]);
-  await spawnAsync('mkdir', ['-p', path.join(ANDROID_DIR, 'maven/org/unimodules')]);
+  await fs.mkdir(path.join(ANDROID_DIR, 'maven/com/facebook'), { recursive: true });
+  await fs.mkdir(path.join(ANDROID_DIR, 'maven/host/exp/exponent'), { recursive: true });
+  await fs.mkdir(path.join(ANDROID_DIR, 'maven/org/unimodules'), { recursive: true });
 
   for (const pkg of packages) {
-    await spawnAsync('cp', [
-      '-r',
+    await fs.copy(
       path.join(process.env.HOME!, '.m2', 'repository', pkg.buildDirRelative),
-      path.join(ANDROID_DIR, 'maven', pkg.buildDirRelative),
-    ]);
+      path.join(ANDROID_DIR, 'maven', pkg.buildDirRelative)
+    );
   }
 
   // Copy JSC
-  await spawnAsync('rm', ['-rf', path.join(ANDROID_DIR, 'maven/org/webkit/')]);
-  await spawnAsync('cp', [
-    '-r',
+  await fs.remove(path.join(ANDROID_DIR, 'maven/org/webkit/'));
+  await fs.copy(
     path.join(ANDROID_DIR, '../node_modules/jsc-android/dist/org/webkit'),
-    path.join(ANDROID_DIR, 'maven/org/webkit/'),
-  ]);
+    path.join(ANDROID_DIR, 'maven/org/webkit/')
+  );
 }
 
 async function action(options: ActionOptions) {
