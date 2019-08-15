@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
@@ -221,14 +222,23 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     await fs.remove(path.join(pkg.sourceDir, 'build'));
   }
 
+  let failedPackages: string[] = [];
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
-    await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`], {
-      cwd: ANDROID_DIR,
-    });
-    readline.clearLine(process.stdout, 0);
-    readline.cursorTo(process.stdout, 0);
-    process.stdout.write(` ✅  Finished building ${pkg.name}\n`);
+    try {
+      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`], {
+        cwd: ANDROID_DIR,
+      });
+      readline.clearLine(process.stdout, 0);
+      readline.cursorTo(process.stdout, 0);
+      process.stdout.write(` ✅  Finished building ${pkg.name}\n`);
+    } catch (e) {
+      failedPackages.push(pkg.name);
+      readline.clearLine(process.stdout, 0);
+      readline.cursorTo(process.stdout, 0);
+      process.stdout.write(` ❌  Failed to build ${pkg.name}:\n`);
+      console.error(chalk.red(e.message));
+    }
   }
 
   await _restoreFilesAsync();
@@ -240,6 +250,9 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   await fs.mkdir(path.join(ANDROID_DIR, 'maven/org/unimodules'), { recursive: true });
 
   for (const pkg of packages) {
+    if (failedPackages.includes(pkg.name)) {
+      continue;
+    }
     await fs.copy(
       path.join(process.env.HOME!, '.m2', 'repository', pkg.buildDirRelative),
       path.join(ANDROID_DIR, 'maven', pkg.buildDirRelative)
@@ -252,6 +265,14 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     path.join(ANDROID_DIR, '../node_modules/jsc-android/dist/org/webkit'),
     path.join(ANDROID_DIR, 'maven/org/webkit/')
   );
+
+  if (failedPackages.length) {
+    console.log(' ❌  The following packages failed to build:');
+    console.log(failedPackages);
+    console.log(
+      `You will need to fix the compilation errors show in the logs above and then run \`et abp -s ${sdkVersion} -p ${failedPackages.join(',')}\``
+    );
+  }
 }
 
 async function action(options: ActionOptions) {
@@ -328,7 +349,12 @@ async function action(options: ActionOptions) {
     }
   }
 
-  await _updateExpoViewAsync(packages.filter(pkg => packagesToBuild.includes(pkg.name)), options.sdkVersion);
+  try {
+    await _updateExpoViewAsync(packages.filter(pkg => packagesToBuild.includes(pkg.name)), options.sdkVersion);
+  } catch (e) {
+    await _exitHandler();
+    throw e;
+  }
 }
 
 async function _exitHandler(): Promise<void> {
@@ -338,8 +364,6 @@ async function _exitHandler(): Promise<void> {
   }
 }
 
-process.on('beforeExit', _exitHandler);
-process.on('uncaughtException', _exitHandler);
 process.on('SIGINT', _exitHandler);
 
 export default (program: any) => {
