@@ -14,9 +14,6 @@
   },
   "author": "",
   "license": "MIT",
-  "powertools": {
-    "group": "client"
-  },
   "dependencies": {
     "async-retry": "^1.1.4",
     "expo": "~34.0.3",
