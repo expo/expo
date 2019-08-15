@@ -11,6 +11,7 @@
     "setup-ios": "cd ios; pod install",
     "web": "expo start --web",
     "start": "react-native start",
+    "start-clean": "react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "test": "jest"
   },
