@@ -30,8 +30,4 @@ target 'HelloWorld' do
   pod 'RNReanimated', :podspec => '../node_modules/react-native-reanimated/RNReanimated.podspec'
 
   use_unimodules!
-
-  target 'HelloWorldTests' do
-    inherit! :search_paths
-  end
 end
