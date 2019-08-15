@@ -1,0 +1,4 @@
+{
+  "name": "expo-wallet",
+  "platforms": ["ios", "android", "web"]
+}
