@@ -1,4 +1,4 @@
-import { Platform } from '../index';
+import { Platform } from 'react-native';
 import { CodedError } from './CodedError';
 /**
  * A class for errors to be thrown when a property is accessed which is
