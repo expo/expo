@@ -17,6 +17,10 @@ function browserSupportsWebGL() {
   }
 }
 
+const isInDeviceFarm = () => {
+  return Constants.isDevice && !!process.env.DEVICEFARM_PROJECT_NAME;
+}
+
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
@@ -70,8 +74,11 @@ export function getTestModules() {
   if (ExponentTest && !ExponentTest.isInCI) {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
-    // Requires interaction (sign in popup)
-    modules.push(require('./tests/GoogleSignIn'));
+
+    if (!isInDeviceFarm()) {
+      // Requires interaction (sign in popup)
+      modules.push(require('./tests/GoogleSignIn'));
+    }
     // Popup to request device's location which uses Google's location service
     modules.push(require('./tests/Location'));
     // Fails to redirect because of malformed URL in published version with release channel parameter
