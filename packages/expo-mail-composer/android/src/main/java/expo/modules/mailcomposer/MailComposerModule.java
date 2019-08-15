@@ -145,7 +145,7 @@ public class MailComposerModule extends ExportedModule implements LifecycleEvent
   private Uri contentUriFromFile(File file) {
     try {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
-      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+      return FileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
     } catch (Exception e) {
       return Uri.fromFile(file);
     }
