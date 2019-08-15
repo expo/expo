@@ -284,7 +284,7 @@ static dispatch_queue_t _reapingQueue;
 + (NSString *)cachePathWithName:(NSString *)cacheName
 {
   NSString *cachesDirectory = [EXEnvironment sharedEnvironment].isDetached
-    ? NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject
+    ? NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES).firstObject
     : NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
 
   NSString *sourceDirectory = [cachesDirectory stringByAppendingPathComponent:cacheName];
