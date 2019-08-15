@@ -108,7 +108,6 @@
 				7EF74F8A2123893DE8D71406 /* Pods-BareExpoTests.debug.xcconfig */,
 				E4628F702B77F544CEDC686D /* Pods-BareExpoTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -218,6 +217,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -455,7 +455,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.payments;
 				PRODUCT_NAME = BareExpo;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -474,7 +474,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.payments;
 				PRODUCT_NAME = BareExpo;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
