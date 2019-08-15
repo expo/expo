@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Creates cache directory with the given name and returns path.
  *  In the Expo Client this uses NSCachesDirectory, whereas in
- *  shell apps it uses NSDocumentDirectory.
+ *  shell apps it uses NSApplicationSupportDirectory.
  */
 + (NSString *)cachePathWithName:(NSString *)cacheName;
 
