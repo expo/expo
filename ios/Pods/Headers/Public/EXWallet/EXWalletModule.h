@@ -1,0 +1,1 @@
+../../../../../packages/expo-wallet/ios/EXWallet/EXWalletModule.h

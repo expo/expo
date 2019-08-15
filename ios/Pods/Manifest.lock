@@ -924,6 +924,8 @@ PODS:
   - EXVideoThumbnails (2.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXWallet (1.0.0):
+    - UMCore
   - EXWebBrowser (6.0.0):
     - UMCore
   - Fabric (1.10.1)
@@ -1596,6 +1598,7 @@ DEPENDENCIES:
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
+  - EXWallet (from `../packages/expo-wallet/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.6)
   - FBAudienceNetwork (= 5.1.1)
@@ -2250,6 +2253,9 @@ EXTERNAL SOURCES:
   EXVideoThumbnails:
     :path: !ruby/object:Pathname
     path: "../packages/expo-video-thumbnails/ios"
+  EXWallet:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-wallet/ios"
   EXWebBrowser:
     :path: !ruby/object:Pathname
     path: "../packages/expo-web-browser/ios"
@@ -2558,6 +2564,7 @@ SPEC CHECKSUMS:
   EXSQLite: 8dab6a5ab1b78be7925073d6071eb22095d4dda6
   EXTaskManager: 2cff8c104c212fa67cab08a10946ba268a4cf5e5
   EXVideoThumbnails: 3c3b2231e6b6c19af2ac32c7b5f398b1a8948a5e
+  EXWallet: 1a1f7cb94948bc4d9e125497e799ab324d4e13f4
   EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
   Fabric: f6f21452846788bb44595d73e9909d79d328e617
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
@@ -2609,6 +2616,6 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
 
-PODFILE CHECKSUM: 9a5974b3440a63c3a02566809aeeb4b9c4c439cf
+PODFILE CHECKSUM: 8ed622845e211eaa58c567d513f602dd6ff9a28c
 
 COCOAPODS: 1.7.3
