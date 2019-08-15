@@ -25,8 +25,6 @@ title: Using Next.js with Expo for Web
 }
 ```
 
-- Create a `_document.js` file in `pages/` to set proper layout. Use the file [here](https://github.com/zeit/next.js/blob/canary/examples/with-react-native-web/pages/_document.js).
-
 - Since Next.js use page-based routing, your homepage will be `pages/index.js`, which is different from Expo project's main file (which is by default `App.js`). To support both mobile and Next.js, you could set `App.js` to:
 
 ```javascript
@@ -80,6 +78,12 @@ You also export the website as static files by running the following commands. L
 expo build:web
 yarn next export
 ```
+
+## Customizing `pages/_document.js`
+
+Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
+
+By default, Expo creates a `pages/_document.js` file for you (which `import` the `.expo/next_document.js` file controlled by Expo) that contains proper layout for your app (and possibility more features such as web push notifications in the future). If you choose to customize the `_document.js` file, we encourage you to copy `.expo/next_document.js` as a starter and check if `.expo/next_document.js` has any update periodically. (You could also try to `export default class MyDocument extends ExpoDocument`, but we do not promise that this will work as intended.)
 
 ## Limitations comparing to the default Expo for Web config
 
