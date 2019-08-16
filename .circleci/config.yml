@@ -145,13 +145,16 @@ executors:
 workflows:
   docs:
     jobs:
-      - docs:
-          # with tag
+      - hold:
+          type: approval
           filters:
             tags:
               only: /docs/
             branches:
               ignore: /.*/
+      - docs:
+          requires:
+            - hold
       - docs_approve_deploy:
           type: approval
           requires:
