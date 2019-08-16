@@ -146,7 +146,6 @@ workflows:
   docs:
     jobs:
       - docs:
-          # with tag
           filters:
             tags:
               only: /^project:\sdocs$/
