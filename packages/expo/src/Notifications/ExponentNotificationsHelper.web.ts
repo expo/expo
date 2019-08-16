@@ -37,8 +37,7 @@ export async function getExponentPushTokenAsync(): Promise<string> {
     type: 'web',
   };
 
-  // TODO: Use production URL
-  const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
+  const response = await fetch('https://exp.host/--/api/v2/push/getExpoPushToken', {
     method: 'POST',
     body: JSON.stringify(tokenArguments),
   })
