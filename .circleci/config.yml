@@ -143,97 +143,100 @@ executors:
       CI: 1
 
 workflows:
-  docs:
-    jobs:
-      - docs
-      - docs_approve_deploy:
-          type: approval
-          requires:
-            - docs
-          filters:
-            branches:
-              only:
-                - master
-                - /.*all-ci.*/
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
-
-  # JavaScript packages that make up the SDK
-  sdk:
-    jobs:
-      - expo_sdk
-      - web_test_suite
-      - babel_preset
-
   # E2E SDK testing
   native-sdk:
     jobs:
-      - bare_workflow
-
-  # Android and iOS clients
-  client:
-    jobs:
-      - home
-      - expotools
-      - client_android
-      - client_ios
-      - test_suite_publish
-      - android_test_suite:
+      - iOS-Detox-setup
+      - iOS-Detox-build:
           requires:
-            - test_suite_publish
-      - client_android_approve_google_play:
+            - iOS-Detox-setup
+      - iOS-Detox-run:
           type: approval
           requires:
-            - client_android
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - client_android_release_google_play:
-          requires:
-            - client_android_approve_google_play
-  #     - shell_app_ios_tests:
+            - iOS-Detox-build
+  # docs:
+  #   jobs:
+  #     - docs
+  #     - docs_approve_deploy:
+  #         type: approval
   #         requires:
-  #           - shell_app_sim_base_ios
+  #           - docs
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #               - /.*all-ci.*/
+  #     - docs_deploy:
+  #         requires:
+  #           - docs_approve_deploy
+  # JavaScript packages that make up the SDK
+  # sdk:
+  #   jobs:
+  #     - expo_sdk
+  #     - web_test_suite
+  #     - babel_preset
+  #
+  # Android and iOS clients
+  # client:
+  #   jobs:
+  #     - home
+  #     - expotools
+  #     - client_android
+  #     - client_ios
+  #     - test_suite_publish
+  #     - android_test_suite:
+  #         requires:
   #           - test_suite_publish
-
-  shell_app:
-    jobs:
-      - shell_app_ios_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_ios_build:
-          requires:
-            - shell_app_ios_approve_build
-      - shell_app_android_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_android_build:
-          requires:
-            - shell_app_android_approve_build
-
-  client_shell_app:
-    jobs:
-      - expo_client_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - expo_client_build:
-          requires:
-            - expo_client_approve_build
+  #     - client_android_approve_google_play:
+  #         type: approval
+  #         requires:
+  #           - client_android
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - client_android_release_google_play:
+  #         requires:
+  #           - client_android_approve_google_play
+  # #     - shell_app_ios_tests:
+  # #         requires:
+  # #           - shell_app_sim_base_ios
+  # #           - test_suite_publish
+  # shell_app:
+  #   jobs:
+  #     - shell_app_ios_approve_build:
+  #         type: approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - shell_app_ios_build:
+  #         requires:
+  #           - shell_app_ios_approve_build
+  #     - shell_app_android_approve_build:
+  #         type: approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - shell_app_android_build:
+  #         requires:
+  #           - shell_app_android_approve_build
+  # client_shell_app:
+  #   jobs:
+  #     - expo_client_approve_build:
+  #         type: approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - expo_client_build:
+  #         requires:
+  #           - expo_client_approve_build
 
 jobs:
   expo_sdk:
@@ -305,31 +308,132 @@ jobs:
           command: tsc
           working_directory: ~/expo/tools/expotools
 
-  bare_workflow:
+  iOS-Detox-setup:
     executor: mac
+    working_directory: ~/expo/apps/bare-expo
     steps:
       - install_nix
       - setup
       - update_submodules
       - run: git lfs pull
+
+      - attach_workspace:
+          at: ~/expo/apps/bare-expo
+      # Rehydrate
+      - restore_cache:
+          key: gems-v3-ios-{{ arch }}
       - run:
-          name: Install Detox simulators
-          command: brew tap wix/brew && brew install applesimutils
-      - run:
-          name: Install node
-          command: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+          name: Install Gems
+          command: cd ios && bundle install
+      - save_cache:
+          key: gems-v3-ios-{{ arch }}
+          paths:
+            - ios/gems
+      - restore_cache:
+          key: pods-v5-{{ checksum "ios/Podfile.lock" }}-{{ arch }}
       - run:
           name: Install CocoaPods
-          working_directory: ~/expo/apps/bare-expo/ios
-          command: pod install
+          command: yarn ios:setup
+      - save_cache:
+          key: pods-v5-{{ checksum "ios/Podfile.lock" }}-{{ arch }}
+          paths:
+            - ios/Pods
+      - persist_to_workspace:
+          root: ~/expo/apps/bare-expo
+          paths:
+            - ios/gems
+            - ios/Pods
+
+  iOS-Detox-build:
+    executor: mac
+    working_directory: ~/expo/apps/bare-expo
+    steps:
+      - setup
+      - update_submodules
+      - attach_workspace:
+          at: ~/expo/apps/bare-expo
+      - restore_cache:
+          key: detox-v12-{{ arch }}
+      - run:
+          name: Clean Detox
+          command: |
+            yarn global add detox-cli
+            detox clean-framework-cache && detox build-framework-cache
+      - save_cache:
+          key: detox-v12-{{ arch }}
+          paths:
+            - ~/Library/Detox/ios
+            - ~/.config/yarn/global
+      - restore_cache:
+          key: brew-watchman-v6-ios-{{ arch }}
+      - run:
+          name: Brew install
+          command: |
+            if brew ls --versions watchman > /dev/null; then
+              echo "Watchman already installed."
+              brew link watchman pcre
+            else
+              echo "Watchman not installed."
+              brew install watchman
+            fi
+      - save_cache:
+          key: brew-watchman-v6-ios-{{ arch }}
+          paths:
+            - ~/Library/Caches/Homebrew
+            - /usr/local/Cellar
+            - /usr/local/var/run/watchman
+
       - run:
           name: Build iOS project for Detox
-          working_directory: ~/expo/apps/bare-expo
           command: npm run ci:detox-build-release
+
+      - persist_to_workspace:
+          root: ~/expo/apps/bare-expo
+          paths:
+            - ios/build/Build/Products/Release-iphonesimulator/BareExpo.app
+
+  iOS-Detox-run:
+    executor: mac
+    working_directory: ~/expo/apps/bare-expo
+    parallelism: 8
+    steps:
+      - setup
+      - update_submodules
+
+      - attach_workspace:
+          at: ~/expo/apps/bare-expo
+      - restore_cache:
+          key: detox-v12-{{ arch }}
+      - restore_cache:
+          key: brew-e2e-v5-ios-{{ arch }}
+
       - run:
-          name: Run iOS Detox tests
-          working_directory: ~/expo/apps/bare-expo
-          command: npm run ci:detox-test-release
+          name: Brew dependencies
+          command: |
+            if brew ls --versions applesimutils > /dev/null; then
+              echo "Applesimutils already installed."
+              brew link applesimutils
+            else
+              echo "Applesimutils not installed."
+              brew untap wix/brew && brew tap wix/brew
+              brew install applesimutils
+            fi
+
+      - save_cache:
+          key: brew-e2e-v5-ios-{{ arch }}
+          paths:
+            - ~/Library/Caches/Homebrew
+            - /usr/local/Cellar
+      - run:
+          name: Tests
+          command: |
+            yarn global add detox-cli
+            detox clean-framework-cache && detox build-framework-cache
+            circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
+          environment:
+            JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
+      - store_test_results:
+          path: ./__e2e__/results
 
   client_ios:
     executor: mac

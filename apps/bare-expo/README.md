@@ -4,10 +4,10 @@
 
 ```sh
 # Installs cocoapods
-yarn setup-ios
+yarn ios:setup
 
 # Compiles react-native-lab/react-native and syncs
-yarn setup-android
+yarn android:setup
 ```
 
 ## Detox

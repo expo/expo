@@ -6,19 +6,19 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "android": "react-native run-android",
     "android-clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
-    "setup-android": "cd ../../react-native-lab/react-native && ./gradlew :ReactAndroid:installArchives && cd ../../apps/bare-expo && npm run android-clean",
+    "android:setup": "cd ../../react-native-lab/react-native && ./gradlew :ReactAndroid:installArchives && cd ../../apps/bare-expo && npm run android-clean",
     "ios": "react-native run-ios",
-    "setup-ios": "cd ios; pod install",
     "web": "expo start --web",
     "start": "react-native start",
     "start-clean": "npm run clear-metro && react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
+    "ios:setup": "cd ios/ && (bundle check || bundle install) && bundle exec pod install",
     "test": "jest",
     "e2e:ios:setup": "detox build --configuration ios.sim.debug",
     "e2e:ios": "detox test --configuration ios.sim.debug",
     "ci:detox-build-release": "detox build --configuration ios.sim.release",
-    "ci:detox-test-release": "detox test --configuration ios.sim.release --cleanup"
+    "ci:detox-test-release": "detox test --configuration ios.sim.release"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
