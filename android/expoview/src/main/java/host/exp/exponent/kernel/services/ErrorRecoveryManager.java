@@ -14,6 +14,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
+// todo: Remove this once SDK34 is phased out
 public class ErrorRecoveryManager {
 
   private static final long FIVE_MINUTES_MS = 5 * 60 * 1000;

@@ -274,6 +274,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  ErrorRecovery: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { ErrorRecovery } from 'expo' -> import * as ErrorRecovery from 'expo-error-recovery'`,
+        'ErrorRecovery',
+        'expo-error-recovery'
+      );
+    },
+  },
+
   FaceDetector: {
     enumerable: true,
     get() {
