@@ -2,7 +2,7 @@
 title: Wallet
 ---
 
-Provides interactions for applications to add passes and cards to Apple Wallet.
+Provides interactions for applications to add passes to Apple Wallet.
 
 ## Installation
 
@@ -80,21 +80,6 @@ A `Promise` that resolves to a `boolean` value of whether the pass is sccessfull
 
 ```js
 await Wallet.addPassFromUrlAsync('filePath');
-// true or false
-```
-
-### `Wallet.canAddPaymentPassAsync()`
-
-**iOS only.** Tells whether current device supports adding credit/debit cards to apple wallet.
-
-#### Returns
-
-A `Promise` that resolves to a `boolean` value of whether the device supports adding cards to apple wallet.
-
-**Examples**
-
-```js
-await Wallet.canAddPaymentPassAsync();
 // true or false
 ```
 
