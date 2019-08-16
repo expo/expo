@@ -68,17 +68,18 @@ export function getTestModules() {
     require('./tests/FBBannerAd'),
   ];
   if (ExponentTest && !ExponentTest.isInCI) {
+    const possiblyRunningInDeviceFarm = Constants.isDevice && Platform.OS === 'android';
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
 
-    if (Constants.isDevice && Platform.OS !== 'android') {
+    if (!possiblyRunningInDeviceFarm) {
       // Requires interaction (sign in popup)
       modules.push(require('./tests/GoogleSignIn'));
+      // Fails to redirect because of malformed URL in published version with release channel parameter
+      modules.push(require('./tests/Linking'));
     }
     // Popup to request device's location which uses Google's location service
     modules.push(require('./tests/Location'));
-    // Fails to redirect because of malformed URL in published version with release channel parameter
-    modules.push(require('./tests/Linking'));
     // Requires permission
     modules.push(require('./tests/Calendar'));
     modules.push(require('./tests/Contacts'));
