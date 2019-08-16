@@ -36,17 +36,23 @@ commands:
       - checkout
   decrypt_secrets_if_possible:
     steps:
-      - run: |
-          if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
-            echo 'git-crypt key not present in environment' && exit 0
-          fi
-          git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
+      - run:
+          name: Decrypt secrets
+          command: |
+            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+              echo 'git-crypt key not present in environment' && exit 0
+            fi
+            git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
   update_submodules:
     steps:
-      - run: git submodule update --init
+      - run:
+          name: Update submodules
+          command: git submodule update --init
   fetch_cocoapods_specs:
     steps:
-      - run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+      - run:
+          name: Fetch CocoaPods
+          command: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
   restore_yarn_cache:
     parameters:
       working_directory:
@@ -241,7 +247,9 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       # Add back linting once we get ESLint or TSLint set up
-      - run: expotools check-packages
+      - run:
+          name: Check packages
+          command: expotools check-packages
 
   web_test_suite:
     executor: web
@@ -308,8 +316,12 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - run: expotools ios-generate-dynamic-macros
-      - run: nix run expo.procps --command fastlane ios create_simulator_build
+      - run:
+          name: Generate dynamic macros
+          command: expotools ios-generate-dynamic-macros
+      - run:
+          name: Build
+          command: nix run expo.procps --command fastlane ios create_simulator_build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
@@ -321,7 +333,9 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
-      - run: expotools ios-generate-dynamic-macros
+      - run:
+          name: Generate dynamic macros
+          command: expotools ios-generate-dynamic-macros
       - run:
           name: Build Expo Client and upload tarball
           command: |
@@ -347,7 +361,9 @@ jobs:
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
-      - run: expotools ios-generate-dynamic-macros
+      - run:
+          name: Generate dynamic macros
+          command: expotools ios-generate-dynamic-macros
       - run: echo "--run.cwd project/tools-public" >> ~/.yarnrc
       - run:
           name: Build iOS shell app for real devices
@@ -364,17 +380,17 @@ jobs:
           working_directory: ~/project
           no_output_timeout: 40m
           command: |
-              export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-              tar \
-                -zcf "/tmp/$TARBALL" \
-                package.json \
-                exponent-view-template \
-                shellAppBase-builds \
-                shellAppWorkspaces \
-                ios
-              ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-              echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-              echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
+            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+            tar \
+              -zcf "/tmp/$TARBALL" \
+              package.json \
+              exponent-view-template \
+              shellAppBase-builds \
+              shellAppWorkspaces \
+              ios
+            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+            echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
 
   shell_app_android_build:
     executor: android
@@ -402,15 +418,17 @@ jobs:
       - yarn_install:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
-      - run: |
-          nix-shell android/shell.nix --pure \
-            --keep AWS_ACCESS_KEY_ID \
-            --keep AWS_SECRET_ACCESS_KEY \
-            --keep SSL_CERT_FILE \
-            --keep FASTLANE_SKIP_UPDATE_CHECK \
-            --keep FASTLANE_DISABLE_COLORS \
-            --keep CI \
-            --run "fastlane android devicefarm"
+      - run:
+          name: Build APK, upload to Device Farm, follow device logs
+          command: |
+            nix-shell android/shell.nix --pure \
+              --keep AWS_ACCESS_KEY_ID \
+              --keep AWS_SECRET_ACCESS_KEY \
+              --keep SSL_CERT_FILE \
+              --keep FASTLANE_SKIP_UPDATE_CHECK \
+              --keep FASTLANE_DISABLE_COLORS \
+              --keep CI \
+              --run "fastlane android devicefarm"
       - save_gradle_cache
 
   client_android:
@@ -424,16 +442,20 @@ jobs:
           working_directory: ~/expo/tools-public
       - restore_gradle_cache
       - decrypt_secrets_if_possible
-      - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-      - run: |
-          nix-shell android/shell.nix --pure \
-            --keep ANDROID_KEYSTORE_PASSWORD \
-            --keep ANDROID_KEY_ALIAS \
-            --keep ANDROID_KEY_PASSWORD \
-            --keep FASTLANE_SKIP_UPDATE_CHECK \
-            --keep FASTLANE_DISABLE_COLORS \
-            --keep CI \
-            --run "fastlane android build build_type:Release"
+      - run:
+          name: Decoding keystore
+          command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+      - run:
+          name: Build APK
+          command: |
+            nix-shell android/shell.nix --pure \
+              --keep ANDROID_KEYSTORE_PASSWORD \
+              --keep ANDROID_KEY_ALIAS \
+              --keep ANDROID_KEY_PASSWORD \
+              --keep FASTLANE_SKIP_UPDATE_CHECK \
+              --keep FASTLANE_DISABLE_COLORS \
+              --keep CI \
+              --run "fastlane android build build_type:Release"
       - save_gradle_cache
       - save_cache:
           key: client-android-apk-{{ .Revision }}
@@ -450,7 +472,9 @@ jobs:
       - setup
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
-      - run: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
+      - run:
+          name: Decoding keystore
+          command: echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
       - run:
           name: Upload APK to Google Play and release to production
           working_directory: ~/expo
@@ -468,10 +492,12 @@ jobs:
           command: export
           working_directory: docs
       - run:
+          name: Export server
           working_directory: docs
           command: yarn run export-server
           background: true
       - run:
+          name: Test links
           working_directory: docs
           command: nix run expo.curl --command yarn run test-links http://localhost:8000
       - save_cache:
@@ -497,5 +523,6 @@ jobs:
       - update_submodules
       - decrypt_secrets_if_possible
       - run:
+          name: Publish
           working_directory: ~/expo/apps/test-suite
           command: ./publish.sh
