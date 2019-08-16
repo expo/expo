@@ -13,29 +13,48 @@ jasmine.getEnv().addReporter(adapter);
 // This is strictly optional.
 jasmine.getEnv().addReporter(specReporter);
 
+const permissions = {
+  // location: 'always', // inuse, never, unset
+  // calendar: true,
+  // camera: true,
+  // contacts: true,
+  // faceid: true,
+  // homekit: true,
+  // medialibrary: true,
+  // microphone: true,
+  // motion: true,
+  // notifications: true,
+  // photos: true,
+  // reminders: true,
+  // siri: true,
+  // speech: true,
+  // // (iOS 12.0 and above)
+  // health: true,
+};
+
 beforeAll(async () => {
-  await detox.init(config, { launchApp: false });
-  await device.launchApp({
-    permissions: {
-      calendar: 'YES',
-      camera: 'YES',
-      contacts: 'YES',
-      faceid: 'YES',
-      // (iOS 12.0 and above)
-      health: 'YES',
-      homekit: 'YES',
-      location: 'always', // inuse, never, unset
-      medialibrary: 'YES',
-      microphone: 'YES',
-      motion: 'YES',
-      notifications: 'YES',
-      photos: 'YES',
-      reminders: 'YES',
-      siri: 'YES',
-      speech: 'YES',
-    },
-    newInstance: true,
-  });
+  if (Object.keys(permissions).length) {
+    await detox.init(config, { launchApp: false });
+    await device.launchApp({
+      permissions: Object.keys(permissions).reduce((prev, curr) => {
+        const value = permissions[curr];
+        if (typeof value === 'string') {
+          return {
+            ...prev,
+            [curr]: value,
+          };
+        } else {
+          return {
+            ...prev,
+            [curr]: value ? 'YES' : 'NO',
+          };
+        }
+      }, {}),
+      newInstance: true,
+    });
+  } else {
+    await detox.init(config);
+  }
 });
 
 beforeEach(async () => {
