@@ -300,6 +300,25 @@ jobs:
           command: tsc
           working_directory: ~/expo/tools/expotools
 
+  bare_workflow:
+    executor: mac
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - run: git lfs pull
+      - run: brew tap wix/brew
+      - run: brew install applesimutils
+      - run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+      - run:
+          name: Setup the iOS project
+          working_directory: ~/apps/bare-expo
+          command: npm run setup-ios
+      - run:
+          name: Run iOS Detox tests
+          working_directory: ~/apps/bare-expo
+          command: npm run e2e:ios:ci
+
   client_ios:
     executor: mac
     steps:
@@ -364,17 +383,17 @@ jobs:
           working_directory: ~/project
           no_output_timeout: 40m
           command: |
-              export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-              tar \
-                -zcf "/tmp/$TARBALL" \
-                package.json \
-                exponent-view-template \
-                shellAppBase-builds \
-                shellAppWorkspaces \
-                ios
-              ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-              echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-              echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
+            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+            tar \
+              -zcf "/tmp/$TARBALL" \
+              package.json \
+              exponent-view-template \
+              shellAppBase-builds \
+              shellAppWorkspaces \
+              ios
+            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+            echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
 
   shell_app_android_build:
     executor: android
