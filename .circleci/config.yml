@@ -166,6 +166,12 @@ workflows:
       - web_test_suite
       - babel_preset
 
+  # E2E SDK testing
+  native_sdk:
+    name: Native SDK
+    jobs:
+      - bare_workflow
+
   # Android and iOS clients
   client:
     jobs:
