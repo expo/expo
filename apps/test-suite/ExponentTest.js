@@ -1,2 +1,2 @@
 import { NativeModules } from 'react-native';
-export default NativeModules;
+export default NativeModules.ExponentTest;
