@@ -238,6 +238,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       readline.cursorTo(process.stdout, 0);
       process.stdout.write(` ❌  Failed to build ${pkg.name}:\n`);
       console.error(chalk.red(e.message));
+      console.error(chalk.red(e.stderr));
     }
   }
 
