@@ -149,7 +149,7 @@ workflows:
           # with tag
           filters:
             tags:
-              only: /^project:\sdocs$/
+              only: /*.docs$/
             branches:
               ignore: /.*/
       - docs_approve_deploy:
