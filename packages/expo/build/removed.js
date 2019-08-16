@@ -362,6 +362,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { SQLite } from 'expo' -> import { SQLite } from 'expo-sqlite'`, 'SQLite', 'expo-sqlite');
         },
     },
+    StoreReview: {
+        enumerable: true,
+        get() {
+            removedModule(`import { StoreReview } from 'expo' -> import { StoreReview } from 'expo-store-review'`, 'StoreReview', 'expo-store-review');
+        },
+    },
     TaskManager: {
         enumerable: true,
         get() {

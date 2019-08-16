@@ -25,8 +25,8 @@ UM_EXPORT_METHOD_AS(requestReview,
   if (@available(iOS 10.3, *)) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [SKStoreReviewController requestReview];
+      resolve(nil);
     });
-    resolve(nil);
   } else {
     reject(@"E_STORE_REVIEW_UNSUPPORTED", @"Store review is not supported.", nil);
   }

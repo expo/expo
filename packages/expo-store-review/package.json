@@ -26,10 +26,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-store-review",
-  "peerDependencies": {
-    "@unimodules/core": "~1.0.0"
-  },
+  "homepage": "https://docs.expo.io/versions/latest/sdk/store-review/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
