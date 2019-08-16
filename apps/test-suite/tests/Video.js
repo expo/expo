@@ -5,6 +5,7 @@ import { forEach } from 'lodash';
 import { Video } from 'expo-av';
 import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
@@ -326,30 +327,32 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.describe('Video fullscreen player', () => {
-      t.it('presents the player and calls callback func', async () => {
-        const onFullscreenUpdate = t.jasmine.createSpy('onFullscreenUpdate');
-        await mountAndWaitFor(
-          <Video
-            style={style}
-            source={source}
-            ref={refSetter}
-            onFullscreenUpdate={onFullscreenUpdate}
-          />,
-          'onReadyForDisplay'
-        );
-        const expectUpdate = fullscreenUpdate =>
-          t.expect(onFullscreenUpdate).toHaveBeenCalledWith(
-            t.jasmine.objectContaining({
-              fullscreenUpdate,
-            })
+      if (!(Platform.OS === 'android' && Constants.isDevice)) {
+        t.it('presents the player and calls callback func', async () => {
+          const onFullscreenUpdate = t.jasmine.createSpy('onFullscreenUpdate');
+          await mountAndWaitFor(
+            <Video
+              style={style}
+              source={source}
+              ref={refSetter}
+              onFullscreenUpdate={onFullscreenUpdate}
+            />,
+            'onReadyForDisplay'
           );
-        await instance.presentFullscreenPlayer();
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT);
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT);
-        await instance.dismissFullscreenPlayer();
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS);
-        expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS);
-      });
+          const expectUpdate = fullscreenUpdate =>
+            t.expect(onFullscreenUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({
+                fullscreenUpdate,
+              })
+            );
+          await instance.presentFullscreenPlayer();
+          expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT);
+          expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT);
+          await instance.dismissFullscreenPlayer();
+          expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS);
+          expectUpdate(Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS);
+        });
+      }
 
       if (Platform.OS === 'android') {
         t.it("raises an error if the code didn't wait for completion", async () => {
