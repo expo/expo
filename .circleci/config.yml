@@ -149,6 +149,8 @@ workflows:
           filters:
             tags:
               only: /^project:\sdocs$/
+            branches:
+              ignore: /.*/
       - docs_approve_deploy:
           type: approval
           requires:
