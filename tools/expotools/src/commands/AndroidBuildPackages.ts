@@ -233,7 +233,11 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       readline.cursorTo(process.stdout, 0);
       process.stdout.write(` ✅  Finished building ${pkg.name}\n`);
     } catch (e) {
-      if (e.status === 130 || e.signal === 'SIGINT') {
+      if (
+        e.status === 130 || e.signal === 'SIGINT' ||
+        e.status === 137 || e.signal === 'SIGKILL' ||
+        e.status === 143 || e.signal === 'SIGTERM'
+      ) {
         throw e;
       } else {
         failedPackages.push(pkg.name);
@@ -370,6 +374,8 @@ async function _exitHandler(): Promise<void> {
 }
 
 process.on('SIGINT', _exitHandler);
+process.on('SIGKILL', _exitHandler);
+process.on('SIGTERM', _exitHandler);
 
 export default (program: any) => {
   program
