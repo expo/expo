@@ -71,21 +71,21 @@ export function getTestModules() {
     const possiblyRunningInDeviceFarm = Constants.isDevice && Platform.OS === 'android';
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
+    // Fails to redirect because of malformed URL in published version with release channel parameter
+    modules.push(require('./tests/Linking'));
+    // Popup to request device's location which uses Google's location service
+    modules.push(require('./tests/Location'));
 
     if (!possiblyRunningInDeviceFarm) {
       // Requires interaction (sign in popup)
       modules.push(require('./tests/GoogleSignIn'));
-      // Fails to redirect because of malformed URL in published version with release channel parameter
-      modules.push(require('./tests/Linking'));
+      // Requires permission
+      modules.push(require('./tests/Calendar'));
+      modules.push(require('./tests/Contacts'));
+      modules.push(require('./tests/Permissions'));
+      modules.push(require('./tests/MediaLibrary'));
+      modules.push(require('./tests/Notifications'));
     }
-    // Popup to request device's location which uses Google's location service
-    modules.push(require('./tests/Location'));
-    // Requires permission
-    modules.push(require('./tests/Calendar'));
-    modules.push(require('./tests/Contacts'));
-    modules.push(require('./tests/Permissions'));
-    modules.push(require('./tests/MediaLibrary'));
-    modules.push(require('./tests/Notifications'));
     if (Constants.isDevice) modules.push(require('./tests/Brightness'));
     // Crashes app when mounting component
     modules.push(require('./tests/Video'));
