@@ -285,6 +285,10 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 }
 
 async function action(options: ActionOptions) {
+  process.on('SIGINT', _exitHandler);
+  process.on('SIGTERM', _exitHandler);
+
+
   if (!options.sdkVersion) {
     throw new Error('Must run with `--sdkVersion SDK_VERSION`');
   }
@@ -372,10 +376,6 @@ async function _exitHandler(): Promise<void> {
     await _restoreFilesAsync();
   }
 }
-
-process.on('SIGINT', _exitHandler);
-process.on('SIGKILL', _exitHandler);
-process.on('SIGTERM', _exitHandler);
 
 export default (program: any) => {
   program
