@@ -459,24 +459,25 @@ jobs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
-      - setup
-      - update_submodules
-      - yarn_install:
-          working_directory: docs
-      - yarn:
-          command: export
-          working_directory: docs
-      - run:
-          working_directory: docs
-          command: yarn run export-server
-          background: true
-      - run:
-          working_directory: docs
-          command: nix run expo.curl --command yarn run test-links http://localhost:8000
-      - save_cache:
-          key: docs-site-{{ .Revision }}
-          paths:
-            - docs/out
+      - run: exit 0
+      # - setup
+      # - update_submodules
+      # - yarn_install:
+      #     working_directory: docs
+      # - yarn:
+      #     command: export
+      #     working_directory: docs
+      # - run:
+      #     working_directory: docs
+      #     command: yarn run export-server
+      #     background: true
+      # - run:
+      #     working_directory: docs
+      #     command: nix run expo.curl --command yarn run test-links http://localhost:8000
+      # - save_cache:
+      #     key: docs-site-{{ .Revision }}
+      #     paths:
+      #       - docs/out
 
   docs_deploy:
     executor: nix
