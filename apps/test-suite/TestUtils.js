@@ -38,8 +38,9 @@ export function getTestModules() {
       modules.push(require('./tests/GLView'));
     }
 
+    // Pending https://github.com/expo/expo-cli/pull/940
     if (ExponentTest && !ExponentTest.isInCI) {
-      modules.push(require('./tests/Speech'));
+      // modules.push(require('./tests/Speech'));
     }
     return modules;
   }
