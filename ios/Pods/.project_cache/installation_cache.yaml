@@ -6747,6 +6747,18 @@ CACHE_KEYS:
     PROJECT_NAME: EXRandom
     SPECS:
       - EXRandom (8.0.0)
+  EXScreenOrientation:
+    BUILD_SETTINGS_CHECKSUM:
+      EXScreenOrientation: 53674c669dc5fa28f35b7ca144922ce1
+    CHECKSUM: 64d2a99623fc4bfa6cb3163eb63a2d2d75ee98ab
+    FILES:
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationModule.m"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.h"
+      - "../../packages/expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationRegistry.m"
+    PROJECT_NAME: EXScreenOrientation
+    SPECS:
+      - EXScreenOrientation (1.0.0)
   EXSecureStore:
     BUILD_SETTINGS_CHECKSUM:
       EXSecureStore: 50e8e13014befd337f5b36b246cde917

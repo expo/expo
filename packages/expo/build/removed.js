@@ -303,6 +303,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { Random } from 'expo' -> import * as Random from 'expo-random'`, 'Random', 'expo-random');
         },
     },
+    ScreenOrientation: {
+        enumerable: true,
+        get() {
+            removedModule(`import { ScreenOrientation } from 'expo' -> import * as ScreenOrientation from 'expo-screen-orientation'`, 'ScreenOrientation', 'expo-screen-orientation');
+        },
+    },
     SecureStore: {
         enumerable: true,
         get() {

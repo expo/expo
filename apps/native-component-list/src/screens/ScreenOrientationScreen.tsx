@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
-import { ScreenOrientation } from 'expo';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { Platform, Subscription } from '@unimodules/core';
 import ListButton from '../components/ListButton';
 
@@ -23,18 +23,16 @@ export default class ScreenOrientationScreen extends React.Component<
 
   async componentDidMount() {
     this.listener = ScreenOrientation.addOrientationChangeListener(
-      ({ orientationInfo, orientationLock }) => {
+      ({ orientation, orientationLock }) => {
         this.setState({
-          orientation: orientationInfo.orientation,
+          orientation,
           orientationLock,
         });
       }
     );
 
     const [orientation, orientationLock] = await Promise.all([
-      ScreenOrientation.getOrientationAsync().then(
-        ({ orientation }) => orientation
-      ),
+      ScreenOrientation.getOrientationAsync(),
       ScreenOrientation.getOrientationLockAsync(),
     ]);
     // update state
@@ -46,7 +44,7 @@ export default class ScreenOrientationScreen extends React.Component<
 
   updateOrientationAsync = async () => {
     this.setState({
-      orientation: (await ScreenOrientation.getOrientationAsync()).orientation,
+      orientation: await ScreenOrientation.getOrientationAsync(),
     });
   }
 

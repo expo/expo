@@ -1302,6 +1302,10 @@ EXRandom:
   LABEL: EXRandom
   PROJECT_PATH: EXRandom.xcodeproj
   UUID: 00EB4A6BB9778AFFF7F587D732973596
+EXScreenOrientation:
+  LABEL: EXScreenOrientation
+  PROJECT_PATH: EXScreenOrientation.xcodeproj
+  UUID: AA651E1AC215FDCE87E218058A342349
 EXSecureStore:
   LABEL: EXSecureStore
   PROJECT_PATH: EXSecureStore.xcodeproj
