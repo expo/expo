@@ -39,7 +39,7 @@ export function getTestModules() {
     }
 
     if (ExponentTest && !ExponentTest.isInCI) {
-      // modules.push(require('./tests/Speech'));
+      modules.push(require('./tests/Speech'));
     }
     return modules;
   }
@@ -54,7 +54,6 @@ export function getTestModules() {
     require('./tests/Haptics'),
     require('./tests/Localization'),
     require('./tests/Recording'),
-    require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
     require('./tests/Segment'),
     require('./tests/Speech'),
@@ -100,6 +99,9 @@ export function getTestModules() {
   if (Constants.isDevice) {
     modules.push(require('./tests/BarCodeScanner'));
   }
+
+  // Add screen orientation last as it disrupts the Device Farm video
+  modules.push(require('./tests/ScreenOrientation'));
   return modules;
 }
 
