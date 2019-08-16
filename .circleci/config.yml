@@ -145,7 +145,7 @@ executors:
 workflows:
   docs:
     jobs:
-      - should-test-babel-preset-expo:
+      - docs:
           filters:
             tags:
               only: /^project:\sdocs$/
@@ -153,9 +153,6 @@ workflows:
               only:
                 - master
                 - /.*all-ci.*/
-      - docs:
-          requires:
-            - should-test-babel-preset-expo
       - docs_approve_deploy:
           type: approval
           requires:
