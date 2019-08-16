@@ -65,18 +65,6 @@ UM_EXPORT_METHOD_AS(addPassFromUrlAsync, addPassFromUrlAsync:(NSString *)passFro
     [self addPasses:data resolver:resolve rejecter:reject];
 }
 
-UM_EXPORT_METHOD_AS(addPassFromFilePathAsync, addPassFromFilePathAsync:(NSString *)passFromFilePath addPassFromFilePathAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  NSData* data =[[NSData alloc]init];
-  data = [NSData dataWithContentsOfFile:passFromFilePath];
-  if (!data) {
-    reject(@"ERR_WALLET_INVALID_PASS", @"The fila path does not have valid passes", nil);
-    return;
-  }
-  
-  [self addPasses:data resolver:resolve rejecter:reject];
-}
-
 - (void) addPasses:(NSData *)passData resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject{
   NSError *parsePassErr;
   self.pass = [[PKPass alloc] initWithData:passData error:&parsePassErr];
