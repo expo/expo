@@ -233,12 +233,16 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       readline.cursorTo(process.stdout, 0);
       process.stdout.write(` ✅  Finished building ${pkg.name}\n`);
     } catch (e) {
-      failedPackages.push(pkg.name);
-      readline.clearLine(process.stdout, 0);
-      readline.cursorTo(process.stdout, 0);
-      process.stdout.write(` ❌  Failed to build ${pkg.name}:\n`);
-      console.error(chalk.red(e.message));
-      console.error(chalk.red(e.stderr));
+      if (e.status === 130 || e.signal === 'SIGINT') {
+        throw e;
+      } else {
+        failedPackages.push(pkg.name);
+        readline.clearLine(process.stdout, 0);
+        readline.cursorTo(process.stdout, 0);
+        process.stdout.write(` ❌  Failed to build ${pkg.name}:\n`);
+        console.error(chalk.red(e.message));
+        console.error(chalk.red(e.stderr));
+      }
     }
   }
 
