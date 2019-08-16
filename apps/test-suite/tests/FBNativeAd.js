@@ -2,7 +2,8 @@
 
 import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Platform, Text } from 'react-native';
+import Constants from 'expo-constants';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
@@ -81,12 +82,14 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(typeof nativeAd).toEqual('object');
       });
 
-      variables.forEach(variable => {
-        t.it(`checking if variable ${variable} is not null`, () => {
-          let value = nativeAd[variable];
-          t.expect(value).not.toBeNull();
+      if (!(Platform.OS === 'android' && Constants.isDevice)) {
+        variables.forEach(variable => {
+          t.it(`checking if variable ${variable} is not null`, () => {
+            let value = nativeAd[variable];
+            t.expect(value).not.toBeNull();
+          });
         });
-      });
+      }
     });
   });
 }
