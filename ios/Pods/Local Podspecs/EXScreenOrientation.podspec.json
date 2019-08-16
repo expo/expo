@@ -1,0 +1,23 @@
+{
+  "name": "EXScreenOrientation",
+  "version": "1.0.0",
+  "summary": "Expo universal module for managing device's screen orientation",
+  "description": "Expo universal module for managing device's screen orientation",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-screen-orientation",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXScreenOrientation/**/*.{h,m}",
+  "preserve_paths": "EXScreenOrientation/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  }
+}

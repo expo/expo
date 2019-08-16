@@ -13,9 +13,12 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
+#import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #import "EXScreenOrientationManager.h"
+#import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
+#import <UMCore/UMModuleRegistryProvider.h>
 
 #import <React/RCTUtils.h>
 
@@ -319,6 +322,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  NSString *validatedVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:_appRecord.appLoader.manifest];
+  NSString *majorSDKVersion = [validatedVersion componentsSeparatedByString:@"."][0];
+  if ([validatedVersion length] != 0 && [majorSDKVersion integerValue] <= 35) {
+    return [self legacySupportedInterfaceOrientations];
+  }
+  
+  if (_appRecord.experienceId == nil) {
+    return UIInterfaceOrientationMaskAllButUpsideDown;
+  }
+  EXScreenOrientationRegistry *registry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  if ([registry doesKeyExistForAppId:_appRecord.experienceId]) {
+    return [registry orientationMaskForAppId:_appRecord.experienceId];
+  } else if (_appRecord.appLoader.manifest) {
+    NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
+    UIInterfaceOrientationMask mask = UIInterfaceOrientationMaskAllButUpsideDown;
+    if ([orientationConfig isEqualToString:@"portrait"]) {
+      mask = UIInterfaceOrientationMaskPortrait;
+    } else if ([orientationConfig isEqualToString:@"landscape"]) {
+      mask = UIInterfaceOrientationMaskLandscape;
+    }
+    [registry setOrientationMask:mask forAppId:_appRecord.experienceId];
+    return mask;
+  }
+  // no config or default value: allow autorotation
+  return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+- (UIInterfaceOrientationMask)legacySupportedInterfaceOrientations {
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
