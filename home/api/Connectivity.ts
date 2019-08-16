@@ -1,4 +1,4 @@
-import NetInfo from '@react-native-community/netinfo';
+import { NetInfo } from 'react-native';
 
 type ConnectivityListener = (available: boolean) => void;
 
