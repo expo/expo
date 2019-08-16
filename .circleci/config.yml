@@ -168,7 +168,6 @@ workflows:
 
   # E2E SDK testing
   native_sdk:
-    name: Native SDK
     jobs:
       - bare_workflow
 
