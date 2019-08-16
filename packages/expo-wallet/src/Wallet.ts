@@ -19,13 +19,6 @@ export async function addPassFromUrlAsync(url): Promise<boolean> {
   return await ExpoWallet.addPassFromUrlAsync(url);
 }
 
-export async function addPassFromFilePathAsync(filePath): Promise<boolean> {
-  if (!ExpoWallet.addPassFromFilePathAsync) {
-    throw new UnavailabilityError('expo-wallet', 'addPassFromFilePathAsync');
-  }
-  return await ExpoWallet.addPassFromFilePathAsync(filePath);
-}
-
 export function addPassViewDidFinishListener(listener: PassViewFinishListener): Subscription {
   if(Platform.OS === 'ios'){
     return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
