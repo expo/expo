@@ -54,7 +54,6 @@ export function getTestModules() {
     require('./tests/Haptics'),
     require('./tests/Localization'),
     require('./tests/Recording'),
-    require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
     require('./tests/Segment'),
     require('./tests/Speech'),
@@ -101,6 +100,9 @@ export function getTestModules() {
   if (Constants.isDevice) {
     modules.push(require('./tests/BarCodeScanner'));
   }
+
+  // Add ScreenOrientation last as it messes with the device farm video
+  modules.push(require('./tests/ScreenOrientation'));
   return modules;
 }
 
