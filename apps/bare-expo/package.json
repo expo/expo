@@ -17,7 +17,8 @@
     "test": "jest",
     "e2e:ios:setup": "detox build --configuration ios.sim.debug",
     "e2e:ios": "detox test --configuration ios.sim.debug",
-    "e2e:ios:ci": "detox build --configuration ios.sim.release && detox test --configuration ios.sim.release --cleanup"
+    "ci:detox-build-release": "detox build --configuration ios.sim.release",
+    "ci:detox-test-release": "detox test --configuration ios.sim.release --cleanup"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",

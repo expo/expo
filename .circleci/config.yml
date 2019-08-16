@@ -167,7 +167,7 @@ workflows:
       - babel_preset
 
   # E2E SDK testing
-  native_sdk:
+  native-sdk:
     jobs:
       - bare_workflow
 
@@ -312,17 +312,24 @@ jobs:
       - setup
       - update_submodules
       - run: git lfs pull
-      - run: brew tap wix/brew
-      - run: brew install applesimutils
-      - run: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
       - run:
-          name: Setup the iOS project
-          working_directory: ~/apps/bare-expo
-          command: npm run setup-ios
+          name: Install Detox simulators
+          command: brew tap wix/brew && brew install applesimutils
+      - run:
+          name: Install node
+          command: curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+      - run:
+          name: Install CocoaPods
+          working_directory: ~/expo/apps/bare-expo/ios
+          command: pod install
+      - run:
+          name: Build iOS project for Detox
+          working_directory: ~/expo/apps/bare-expo
+          command: npm run ci:detox-build-release
       - run:
           name: Run iOS Detox tests
-          working_directory: ~/apps/bare-expo
-          command: npm run e2e:ios:ci
+          working_directory: ~/expo/apps/bare-expo
+          command: npm run ci:detox-test-release
 
   client_ios:
     executor: mac
