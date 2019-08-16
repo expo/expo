@@ -233,12 +233,7 @@ platform :android do
     )
     result_info = upload_result.match(/View the INSTRUMENTATION run.*\/projects\/(?<project_id>.*)\/runs\/(?<run_id>.*)$/)
     UI.shell_error!("Apks not uploaded!") unless result_info
-
-    ENV["EXPO_AWS_DEVICEFARM_FOLLOW_URL"] = "arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}"
-  end
-
-  lane :devicefarm_logs do
-    devicefarm_follow_run(ENV["EXPO_AWS_DEVICEFARM_FOLLOW_URL"])
+    devicefarm_follow_run("arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}")
   end
 
   lane :build do |build_type: "Debug"|
