@@ -1,0 +1,1 @@
+{"version":3,"file":"Wallet.types.js","sourceRoot":"","sources":["../src/Wallet.types.ts"],"names":[],"mappings":"","sourcesContent":["export type PassViewFinishListener = (event: void) => void;"]}

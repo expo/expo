@@ -1,6 +1,9 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError, EventEmitter, Subscription, Platform } from '@unimodules/core';
 
+import { PassViewFinishListener } from './Wallet.types';
 import ExpoWallet from './ExpoWallet';
+
+const WalletEventEmitter = new EventEmitter(ExpoWallet);
 
 export async function canAddPassesAsync(): Promise<boolean> {
   if (!ExpoWallet.canAddPassesAsync) {
@@ -21,4 +24,15 @@ export async function addPassFromFilePathAsync(filePath): Promise<boolean> {
     throw new UnavailabilityError('expo-wallet', 'addPassFromFilePathAsync');
   }
   return await ExpoWallet.addPassFromFilePathAsync(filePath);
+}
+
+export function addPassViewDidFinishListener(listener: PassViewFinishListener): Subscription {
+  if(Platform.OS === 'ios'){
+    return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
+  }
+  throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
+}
+
+export {
+  PassViewFinishListener
 }
