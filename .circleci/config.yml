@@ -320,10 +320,10 @@ jobs:
       # Rehydrate
       - restore_cache:
           key: gems-v3-ios-{{ arch }}
-      - run:
-          name: Install Gems
-          working_directory: ~/project/apps/bare-expo/ios
-          command: bundle install
+      # - run:
+      #     name: Install Gems
+      #     working_directory: ~/project/apps/bare-expo/ios
+      #     command: bundle install
       - save_cache:
           key: gems-v3-ios-{{ arch }}
           paths:
