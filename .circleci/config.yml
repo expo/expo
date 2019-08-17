@@ -366,9 +366,7 @@ jobs:
       - run:
           name: Clean Detox
           working_directory: ~/project/apps/bare-expo
-          command: |
-            yarn global add detox-cli
-            detox clean-framework-cache && detox build-framework-cache
+          command: yarn ci:detox-clean
       - save_cache:
           key: detox-v12-{{ arch }}
           paths:
