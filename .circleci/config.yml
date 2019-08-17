@@ -311,7 +311,7 @@ jobs:
   iOS-Detox-setup:
     executor: mac
     steps:
-      # - install_nix
+      - install_nix
       - setup
       - update_submodules
       - run: git lfs pull
