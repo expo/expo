@@ -322,16 +322,16 @@ jobs:
       - attach_workspace:
           at: ~/project/apps/bare-expo
       # Rehydrate
-      - restore_cache:
-          key: gems-v3-ios-{{ arch }}
+      # - restore_cache:
+      #     key: gems-v3-ios-{{ arch }}
       # - run:
       #     name: Install Gems
       #     working_directory: ~/project/apps/bare-expo/ios
       #     command: bundle install
-      - save_cache:
-          key: gems-v3-ios-{{ arch }}
-          paths:
-            - ~/project/apps/bare-expo/ios/gems
+      # - save_cache:
+      #     key: gems-v3-ios-{{ arch }}
+      #     paths:
+      #       - ~/project/apps/bare-expo/ios/gems
       - restore_cache:
           key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
       - run:
@@ -351,8 +351,14 @@ jobs:
   iOS-Detox-build:
     executor: mac
     steps:
+      - install_nix
       - setup
       - update_submodules
+      - run: git lfs pull
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - save_yarn_cache
       - attach_workspace:
           at: ~/project/apps/bare-expo
       - restore_cache:
@@ -402,9 +408,14 @@ jobs:
     executor: mac
     parallelism: 8
     steps:
+      - install_nix
       - setup
       - update_submodules
-
+      - run: git lfs pull
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - save_yarn_cache
       - attach_workspace:
           at: ~/project/apps/bare-expo
       - restore_cache:
