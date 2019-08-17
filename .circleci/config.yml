@@ -151,7 +151,6 @@ workflows:
           requires:
             - iOS-Detox-setup
       - iOS-Detox-run:
-          type: approval
           requires:
             - iOS-Detox-build
   # docs:
