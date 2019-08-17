@@ -1,11 +1,10 @@
 'use strict';
 
 import React from 'react';
-import { NativeModules, StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
+import { StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
-
-const { ExponentTest } = NativeModules;
+import ExponentTest from '../ExponentTest';
 
 export default class TestScreen extends React.Component {
   constructor(props, context) {
