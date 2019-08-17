@@ -315,6 +315,10 @@ jobs:
       - setup
       - update_submodules
       - run: git lfs pull
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - save_yarn_cache
       - attach_workspace:
           at: ~/project/apps/bare-expo
       # Rehydrate
