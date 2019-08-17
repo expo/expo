@@ -313,7 +313,6 @@ jobs:
       - install_nix
       - setup
       - update_submodules
-      - run: git lfs pull
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/project
@@ -353,7 +352,6 @@ jobs:
       - install_nix
       - setup
       - update_submodules
-      - run: git lfs pull
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/project
@@ -411,7 +409,6 @@ jobs:
       - install_nix
       - setup
       - update_submodules
-      - run: git lfs pull
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/project
