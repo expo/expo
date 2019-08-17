@@ -374,6 +374,10 @@ jobs:
       - restore_cache:
           key: brew-watchman-v6-ios-{{ arch }}
       - run:
+          name: Xcode-10.1 Command Line Tools
+          working_directory: ~/project/apps/bare-expo
+          command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
+      - run:
           name: Brew install
           working_directory: ~/project/apps/bare-expo
           command: |
@@ -390,7 +394,6 @@ jobs:
             - ~/Library/Caches/Homebrew
             - /usr/local/Cellar
             - /usr/local/var/run/watchman
-
       - run:
           name: Build iOS project for Detox
           working_directory: ~/project/apps/bare-expo
@@ -419,7 +422,10 @@ jobs:
           key: detox-v12-{{ arch }}
       - restore_cache:
           key: brew-e2e-v5-ios-{{ arch }}
-
+      - run:
+          name: Xcode-10.1 Command Line Tools
+          working_directory: ~/project/apps/bare-expo
+          command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
       - run:
           name: Brew dependencies
           working_directory: ~/project/apps/bare-expo
