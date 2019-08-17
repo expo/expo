@@ -146,13 +146,14 @@ workflows:
   # E2E SDK testing
   native-sdk:
     jobs:
-      - iOS-Detox-setup
-      - iOS-Detox-build:
-          requires:
-            - iOS-Detox-setup
-      - iOS-Detox-run:
-          requires:
-            - iOS-Detox-build
+      - iOS-Detox
+      # - iOS-Detox-build:
+      #     requires:
+      #       - iOS-Detox-setup
+      # - iOS-Detox-run:
+      #     requires:
+      #       - iOS-Detox-build
+
   # docs:
   #   jobs:
   #     - docs
@@ -346,8 +347,9 @@ jobs:
             - ios/gems
             - ios/Pods
 
-  iOS-Detox-build:
+  iOS-Detox:
     executor: mac
+    parallelism: 8
     steps:
       - install_nix
       - setup
@@ -356,8 +358,33 @@ jobs:
       - yarn_install:
           working_directory: ~/project
       - save_yarn_cache
-      - attach_workspace:
-          at: ~/project/apps/bare-expo
+      # - attach_workspace:
+      #     at: ~/project/apps/bare-expo
+      ### Setup
+      # Rehydrate
+      # - restore_cache:
+      #     key: gems-v3-ios-{{ arch }}
+      # - run:
+      #     name: Install Gems
+      #     working_directory: ~/project/apps/bare-expo/ios
+      #     command: bundle install
+      # - save_cache:
+      #     key: gems-v3-ios-{{ arch }}
+      #     paths:
+      #       - ~/project/apps/bare-expo/ios/gems
+      - restore_cache:
+          key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
+      - run:
+          name: Install CocoaPods
+          working_directory: ~/project/apps/bare-expo
+          command: yarn ios:setup
+      - save_cache:
+          key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
+          paths:
+            - ~/project/apps/bare-expo/ios/Pods
+
+      ### Build
+
       - restore_cache:
           key: detox-v12-{{ arch }}
       - run:
@@ -369,38 +396,92 @@ jobs:
           paths:
             - ~/Library/Detox/ios
             - ~/.config/yarn/global
-      - restore_cache:
-          key: brew-watchman-v6-ios-{{ arch }}
       - run:
           name: Xcode-10.1 Command Line Tools
           working_directory: ~/project/apps/bare-expo
           command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
       - run:
-          name: Brew install
+          name: Install Watchman
           working_directory: ~/project/apps/bare-expo
-          command: |
-            if brew ls --versions watchman > /dev/null; then
-              echo "Watchman already installed."
-              brew link watchman pcre
-            else
-              echo "Watchman not installed."
-              brew install watchman
-            fi
-      - save_cache:
-          key: brew-watchman-v6-ios-{{ arch }}
-          paths:
-            - ~/Library/Caches/Homebrew
-            - /usr/local/Cellar
-            - /usr/local/var/run/watchman
+          command: brew install watchman
+
+      ### TODO(Bacon): Use cached watchmen
+
+      # - restore_cache:
+      #     key: brew-watchman-v6-ios-{{ arch }}
+      # - run:
+      #     name: Install Watchman
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: |
+      #       if brew ls --versions watchman > /dev/null; then
+      #         echo "Watchman already installed."
+      #         brew link watchman pcre
+      #       else
+      #         echo "Watchman not installed."
+      #         brew install watchman
+      #       fi
+      # - save_cache:
+      #     key: brew-watchman-v6-ios-{{ arch }}
+      #     paths:
+      #       - ~/Library/Caches/Homebrew
+      #       - /usr/local/Cellar
+      #       - /usr/local/var/run/watchman
+
       - run:
           name: Build iOS project for Detox
           working_directory: ~/project/apps/bare-expo
           command: npm run ci:detox-build-release
+      - run:
+          name: Install iOS simulators
+          working_directory: ~/project/apps/bare-expo
+          command: brew tap wix/brew && brew install applesimutils
+      - run:
+          name: Tests
+          working_directory: ~/project/apps/bare-expo
+          command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
+          environment:
+            JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
+      - store_test_results:
+          path: ~/project/apps/bare-expo/__e2e__/results
 
-      - persist_to_workspace:
-          root: ~/project/apps/bare-expo
-          paths:
-            - ios/build/Build/Products/Release-iphonesimulator/BareExpo.app
+      ### Run
+      # - restore_cache:
+      #     key: brew-e2e-v5-ios-{{ arch }}
+      # - run:
+      #     name: Xcode-10.1 Command Line Tools
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
+      # - run:
+      #     name: Install iOS simulators
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: |
+      #       if brew ls --versions applesimutils > /dev/null; then
+      #         echo "Applesimutils already installed."
+      #         brew link applesimutils
+      #       else
+      #         echo "Applesimutils not installed."
+      #         brew untap wix/brew && brew tap wix/brew
+      #         brew install applesimutils
+      #       fi
+      # - save_cache:
+      #     key: brew-e2e-v5-ios-{{ arch }}
+      #     paths:
+      #       - ~/Library/Caches/Homebrew
+      #       - /usr/local/Cellar
+      # - run:
+      #     name: Tests
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
+      #     environment:
+      #       JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
+      # - store_test_results:
+      #     path: ~/project/apps/bare-expo/__e2e__/results
+      # - persist_to_workspace:
+      #     root: ~/project/apps/bare-expo
+      #     paths:
+      #       - ios/build/Build/Products/Release-iphonesimulator/BareExpo.app
+      #       - ios/gems
+      #       - ios/Pods
 
   iOS-Detox-run:
     executor: mac
