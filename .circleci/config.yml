@@ -347,7 +347,7 @@ jobs:
             - ios/gems
             - ios/Pods
 
-  iOS-Detox:
+  test-iOS-Detox:
     executor: mac
     parallelism: 8
     steps:
@@ -372,30 +372,30 @@ jobs:
       #     key: gems-v3-ios-{{ arch }}
       #     paths:
       #       - ~/project/apps/bare-expo/ios/gems
-      - restore_cache:
-          key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
+      # - restore_cache:
+      #     key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
       - run:
           name: Install CocoaPods
           working_directory: ~/project/apps/bare-expo
           command: yarn ios:setup
-      - save_cache:
-          key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
-          paths:
-            - ~/project/apps/bare-expo/ios/Pods
+      # - save_cache:
+      #     key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
+      #     paths:
+      #       - ~/project/apps/bare-expo/ios/Pods
 
       ### Build
 
-      - restore_cache:
-          key: detox-v12-{{ arch }}
+      # - restore_cache:
+      #     key: detox-v12-{{ arch }}
       - run:
           name: Clean Detox
           working_directory: ~/project/apps/bare-expo
           command: yarn ci:detox-clean
-      - save_cache:
-          key: detox-v12-{{ arch }}
-          paths:
-            - ~/Library/Detox/ios
-            - ~/.config/yarn/global
+      # - save_cache:
+      #     key: detox-v12-{{ arch }}
+      #     paths:
+      #       - ~/Library/Detox/ios
+      #       - ~/.config/yarn/global
       - run:
           name: Xcode-10.1 Command Line Tools
           working_directory: ~/project/apps/bare-expo
@@ -482,6 +482,33 @@ jobs:
       #       - ios/build/Build/Products/Release-iphonesimulator/BareExpo.app
       #       - ios/gems
       #       - ios/Pods
+  iOS-Detox:
+    executor: mac
+    parallelism: 8
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - save_yarn_cache
+      - run:
+          name: Xcode-10.1 Command Line Tools
+          working_directory: ~/project/apps/bare-expo
+          command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
+      - run:
+          name: Install iOS simulators
+          working_directory: ~/project/apps/bare-expo
+          command: brew tap wix/brew && brew install applesimutils
+      - run:
+          name: Tests
+          working_directory: ~/project/apps/bare-expo
+          command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
+          environment:
+            JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
+      - store_test_results:
+          path: ~/project/apps/bare-expo/__e2e__/results
 
   iOS-Detox-run:
     executor: mac
