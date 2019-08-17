@@ -145,16 +145,7 @@ executors:
 workflows:
   docs:
     jobs:
-      - hold:
-          type: approval
-          filters:
-            tags:
-              only: /docs/
-            branches:
-              ignore: /.*/
-      - docs:
-          requires:
-            - hold
+      - docs
       - docs_approve_deploy:
           type: approval
           requires:
@@ -465,7 +456,11 @@ jobs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
-      - run: exit 0
+      - run:
+          name: Check if docs have been modified
+          working_directory: ~/expo
+          command: expotools was-modified -d docs && circleci-agent step halt
+      - run: echo "run docs tests"
       # - setup
       # - update_submodules
       # - yarn_install:
