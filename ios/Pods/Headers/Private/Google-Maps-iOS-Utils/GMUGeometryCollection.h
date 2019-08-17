@@ -1,1 +1,0 @@
-../../../Google-Maps-iOS-Utils/src/Geometry/Model/GMUGeometryCollection.h

@@ -1,6 +1,0 @@
-framework module Fabric {
-    umbrella header "Fabric.h"
-
-    export *
-    module * { export * }
-}

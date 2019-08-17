@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/EXVideoThumbnails/ABI34_0_0EXVideoThumbnails/ABI34_0_0EXVideoThumbnailsModule.h

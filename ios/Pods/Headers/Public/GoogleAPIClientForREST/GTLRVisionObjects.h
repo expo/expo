@@ -1,1 +1,0 @@
-../../../GoogleAPIClientForREST/Source/GeneratedServices/Vision/GTLRVisionObjects.h

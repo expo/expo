@@ -1,6 +1,0 @@
-.next
-node_modules
-out/
-
-# copied in next.config.js
-pages/versions/latest/
