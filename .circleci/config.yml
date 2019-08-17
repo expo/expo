@@ -347,17 +347,29 @@ jobs:
             - ios/gems
             - ios/Pods
 
-  test-iOS-Detox:
+  iOS-Detox:
     executor: mac
     parallelism: 8
     steps:
       - install_nix
       - setup
       - update_submodules
+
+      # Simulators are more likely to fail. Try them first
+      - run:
+          name: Install iOS simulators
+          working_directory: ~/project/apps/bare-expo
+          command: brew tap wix/brew && brew install applesimutils
+      - run:
+          name: Install Watchman
+          working_directory: ~/project/apps/bare-expo
+          command: brew install watchman
+
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/project
       - save_yarn_cache
+
       # - attach_workspace:
       #     at: ~/project/apps/bare-expo
       ### Setup
@@ -396,14 +408,10 @@ jobs:
       #     paths:
       #       - ~/Library/Detox/ios
       #       - ~/.config/yarn/global
-      - run:
-          name: Xcode-10.1 Command Line Tools
-          working_directory: ~/project/apps/bare-expo
-          command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
-      - run:
-          name: Install Watchman
-          working_directory: ~/project/apps/bare-expo
-          command: brew install watchman
+      # - run:
+      #     name: Xcode-10.1 Command Line Tools
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
 
       ### TODO(Bacon): Use cached watchmen
 
@@ -432,18 +440,15 @@ jobs:
           working_directory: ~/project/apps/bare-expo
           command: npm run ci:detox-build-release
       - run:
-          name: Install iOS simulators
+          name: Run tests
           working_directory: ~/project/apps/bare-expo
-          command: brew tap wix/brew && brew install applesimutils
-      - run:
-          name: Tests
-          working_directory: ~/project/apps/bare-expo
-          command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
-          environment:
-            JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
-      - store_test_results:
-          path: ~/project/apps/bare-expo/__e2e__/results
+          command: npm run ci:detox-test-release
 
+          # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
+          # environment:
+          #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
+      # - store_test_results:
+      # path: ~/project/apps/bare-expo/__e2e__/results
       ### Run
       # - restore_cache:
       #     key: brew-e2e-v5-ios-{{ arch }}
@@ -482,7 +487,7 @@ jobs:
       #       - ios/build/Build/Products/Release-iphonesimulator/BareExpo.app
       #       - ios/gems
       #       - ios/Pods
-  iOS-Detox:
+  test-iOS-Detox:
     executor: mac
     parallelism: 8
     steps:
@@ -493,13 +498,6 @@ jobs:
       - yarn_install:
           working_directory: ~/project
       - save_yarn_cache
-      - run:
-          name: Xcode-10.1 Command Line Tools
-          working_directory: ~/project/apps/bare-expo
-          command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
-      - run:
-          name: Change Permissions
-          command: sudo chown -R $(whoami) /Users/distiller/.config/
       - run:
           name: Install iOS simulators
           working_directory: ~/project/apps/bare-expo
