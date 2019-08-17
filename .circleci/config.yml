@@ -498,6 +498,9 @@ jobs:
           working_directory: ~/project/apps/bare-expo
           command: softwareupdate --list && softwareupdate --install "Command Line Tools (macOS High Sierra version 10.13) for Xcode-10.1"
       - run:
+          name: Change Permissions
+          command: sudo chown -R $(whoami) /Users/distiller/.config/
+      - run:
           name: Install iOS simulators
           working_directory: ~/project/apps/bare-expo
           command: brew tap wix/brew && brew install applesimutils
