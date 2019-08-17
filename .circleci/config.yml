@@ -316,30 +316,30 @@ jobs:
       - update_submodules
       - run: git lfs pull
       - attach_workspace:
-          at: ~/expo/apps/bare-expo
+          at: ~/project/apps/bare-expo
       # Rehydrate
       - restore_cache:
           key: gems-v3-ios-{{ arch }}
       - run:
           name: Install Gems
-          working_directory: ~/expo/apps/bare-expo/ios
+          working_directory: ~/project/apps/bare-expo/ios
           command: bundle install
       - save_cache:
           key: gems-v3-ios-{{ arch }}
           paths:
-            - ~/expo/apps/bare-expo/ios/gems
+            - ~/project/apps/bare-expo/ios/gems
       - restore_cache:
-          key: pods-v5-{{ checksum "~/expo/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
+          key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
       - run:
           name: Install CocoaPods
-          working_directory: ~/expo/apps/bare-expo
+          working_directory: ~/project/apps/bare-expo
           command: yarn ios:setup
       - save_cache:
-          key: pods-v5-{{ checksum "~/expo/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
+          key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
           paths:
-            - ~/expo/apps/bare-expo/ios/Pods
+            - ~/project/apps/bare-expo/ios/Pods
       - persist_to_workspace:
-          root: ~/expo/apps/bare-expo
+          root: ~/project/apps/bare-expo
           paths:
             - ios/gems
             - ios/Pods
@@ -350,12 +350,12 @@ jobs:
       - setup
       - update_submodules
       - attach_workspace:
-          at: ~/expo/apps/bare-expo
+          at: ~/project/apps/bare-expo
       - restore_cache:
           key: detox-v12-{{ arch }}
       - run:
           name: Clean Detox
-          working_directory: ~/expo/apps/bare-expo
+          working_directory: ~/project/apps/bare-expo
           command: |
             yarn global add detox-cli
             detox clean-framework-cache && detox build-framework-cache
@@ -368,7 +368,7 @@ jobs:
           key: brew-watchman-v6-ios-{{ arch }}
       - run:
           name: Brew install
-          working_directory: ~/expo/apps/bare-expo
+          working_directory: ~/project/apps/bare-expo
           command: |
             if brew ls --versions watchman > /dev/null; then
               echo "Watchman already installed."
@@ -386,11 +386,11 @@ jobs:
 
       - run:
           name: Build iOS project for Detox
-          working_directory: ~/expo/apps/bare-expo
+          working_directory: ~/project/apps/bare-expo
           command: npm run ci:detox-build-release
 
       - persist_to_workspace:
-          root: ~/expo/apps/bare-expo
+          root: ~/project/apps/bare-expo
           paths:
             - ios/build/Build/Products/Release-iphonesimulator/BareExpo.app
 
@@ -402,7 +402,7 @@ jobs:
       - update_submodules
 
       - attach_workspace:
-          at: ~/expo/apps/bare-expo
+          at: ~/project/apps/bare-expo
       - restore_cache:
           key: detox-v12-{{ arch }}
       - restore_cache:
@@ -410,7 +410,7 @@ jobs:
 
       - run:
           name: Brew dependencies
-          working_directory: ~/expo/apps/bare-expo
+          working_directory: ~/project/apps/bare-expo
           command: |
             if brew ls --versions applesimutils > /dev/null; then
               echo "Applesimutils already installed."
@@ -428,7 +428,7 @@ jobs:
             - /usr/local/Cellar
       - run:
           name: Tests
-          working_directory: ~/expo/apps/bare-expo
+          working_directory: ~/project/apps/bare-expo
           command: |
             yarn global add detox-cli
             detox clean-framework-cache && detox build-framework-cache
@@ -436,7 +436,7 @@ jobs:
           environment:
             JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
       - store_test_results:
-          path: ~/expo/apps/bare-expo/__e2e__/results
+          path: ~/project/apps/bare-expo/__e2e__/results
 
   client_ios:
     executor: mac
