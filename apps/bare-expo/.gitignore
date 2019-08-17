@@ -58,5 +58,6 @@ buck-out/
 
 ios/Pods
 ios/build
+ios/gems
 
 /android/app/build
