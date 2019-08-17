@@ -1,9 +1,10 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 export default {
     get name() {
         return 'ExpoAppAuth';
     },
     get OAuthRedirect() {
-        return window.location.href;
+        return canUseDOM ? window.location.href : '';
     },
 };
 //# sourceMappingURL=ExpoAppAuth.web.js.map
