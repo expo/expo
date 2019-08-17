@@ -145,7 +145,10 @@ executors:
 workflows:
   docs:
     jobs:
-      - docs
+      - expotools
+      - docs:
+          requires:
+            - expotools
       - docs_approve_deploy:
           type: approval
           requires:
