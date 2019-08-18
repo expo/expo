@@ -20,7 +20,7 @@
     "e2e:ios": "detox test --configuration ios.sim.debug",
     "ci:detox-clean": "detox clean-framework-cache && detox build-framework-cache",
     "ci:detox-build-release": "detox build --configuration ios.sim.release",
-    "ci:detox-test-release": "detox test --configuration ios.sim.release"
+    "ci:detox-test-release": "detox test --configuration ios.sim.release -l verbose --cleanup"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
@@ -60,7 +60,7 @@
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/BareExpo.app",
-        "build": "xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -quiet | xcpretty -k",
+        "build": "xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet | xcpretty -k",
         "type": "ios.simulator",
         "name": "iPhone X"
       }
