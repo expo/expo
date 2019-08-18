@@ -169,13 +169,13 @@ workflows:
       - docs_deploy:
           requires:
             - docs_approve_deploy
-  JavaScript packages that make up the SDK
+  # JavaScript packages that make up the SDK
   sdk:
     jobs:
       - expo_sdk
       - web_test_suite
       - babel_preset
-  
+
   Android and iOS clients
   client:
     jobs:
@@ -199,6 +199,7 @@ workflows:
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
+
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
