@@ -21,7 +21,7 @@
     "ci:detox": "yarn ci:detox-build-release && yarn ci:detox-test-release",
     "ci:detox-clean": "detox clean-framework-cache && detox build-framework-cache",
     "ci:detox-build-release": "detox build --configuration ios.sim.release",
-    "ci:detox-test-release": "detox test --configuration ios.sim.release -l verbose --cleanup"
+    "ci:detox-test-release": "watchman watch-del-all; detox test --configuration ios.sim.release -l verbose --cleanup"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
