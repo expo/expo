@@ -4,9 +4,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 export default function App() {
   return (
-    <View style={styles.container} testID="App-gradient">
+    <LinearGradient style={styles.container} colors={['red', 'blue']} testID="App-gradient">
       <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
+    </LinearGradient>
   );
 }
 

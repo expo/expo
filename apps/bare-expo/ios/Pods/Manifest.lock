@@ -12,6 +12,8 @@ PODS:
     - UMFontInterface
   - EXKeepAwake (6.0.0):
     - UMCore
+  - EXLinearGradient (6.0.0):
+    - UMCore
   - EXPermissions (6.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -75,6 +77,10 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - RNGestureHandler (1.3.0):
+    - React
+  - RNReanimated (1.1.0):
+    - React
   - UMBarCodeScannerInterface (3.0.0)
   - UMCameraInterface (3.0.0)
   - UMConstantsInterface (3.0.0)
@@ -96,6 +102,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
+  - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - Folly (from `../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../../../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
@@ -113,6 +120,8 @@ DEPENDENCIES:
   - React/RCTText (from `../../../react-native-lab/react-native`)
   - React/RCTVibration (from `../../../react-native-lab/react-native`)
   - React/RCTWebSocket (from `../../../react-native-lab/react-native`)
+  - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
+  - RNReanimated (from `../../../node_modules/react-native-reanimated/RNReanimated.podspec`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../../../packages/unimodules-camera-interface/ios`)
   - UMConstantsInterface (from `../../../packages/unimodules-constants-interface/ios`)
@@ -144,6 +153,9 @@ EXTERNAL SOURCES:
   EXKeepAwake:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-keep-awake/ios"
+  EXLinearGradient:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-linear-gradient/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-permissions/ios"
@@ -153,6 +165,10 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../../../react-native-lab/react-native"
+  RNGestureHandler:
+    :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
+  RNReanimated:
+    :podspec: "../../../node_modules/react-native-reanimated/RNReanimated.podspec"
   UMBarCodeScannerInterface:
     :path: !ruby/object:Pathname
     path: "../../../packages/unimodules-barcode-scanner-interface/ios"
@@ -193,10 +209,13 @@ SPEC CHECKSUMS:
   EXFileSystem: 091907902fcec9f9182b656fdead41a82f30986a
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXKeepAwake: e7cb6516675052b12a7d23291e33078b4239653a
+  EXLinearGradient: 40781b77e58f844c8dc4ad310dc9755b4d3792a7
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
+  RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
+  RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   UMBarCodeScannerInterface: 84ea2d6b58ff0dc27ef9b68bab71286be18ee020
   UMCameraInterface: 26b26005d1756a0d5f4f04f1e168e39ea9154535
   UMConstantsInterface: 038bacb19de12b6fd328c589122c8dc977cccf61
@@ -209,6 +228,6 @@ SPEC CHECKSUMS:
   UMSensorsInterface: 0ed023ce9b96f2ca6fada7bda05b7760da60b293
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 31b9754dacafca9d77f8ef3f1739c7ec5b0c1845
+PODFILE CHECKSUM: 89d36f5a85f14250f85476dcc6c968499f450490
 
 COCOAPODS: 1.7.3
