@@ -349,7 +349,7 @@ jobs:
 
   iOS-Detox:
     executor: mac
-    parallelism: 8
+    #parallelism: 8
     steps:
       - install_nix
       - setup
@@ -357,14 +357,19 @@ jobs:
 
       # Simulators are more likely to fail. Try them first
       - run:
+          name: Get Detox simulators
+          working_directory: ~/project/apps/bare-expo
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew
+      - run:
           name: Install iOS simulators
           working_directory: ~/project/apps/bare-expo
-          command: brew tap wix/brew && brew install applesimutils
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils
       - run:
           name: Install Watchman
           working_directory: ~/project/apps/bare-expo
-          command: brew install watchman
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman
 
+      ## Yarn takes a while to run
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/project
@@ -386,10 +391,10 @@ jobs:
       #       - ~/project/apps/bare-expo/ios/gems
       # - restore_cache:
       #     key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
-      - run:
-          name: Install CocoaPods
-          working_directory: ~/project/apps/bare-expo
-          command: yarn ios:setup
+      # - run:
+      #     name: Install CocoaPods
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: yarn ios:setup
       # - save_cache:
       #     key: pods-v5-{{ checksum "~/project/apps/bare-expo/ios/Podfile.lock" }}-{{ arch }}
       #     paths:
@@ -399,10 +404,10 @@ jobs:
 
       # - restore_cache:
       #     key: detox-v12-{{ arch }}
-      - run:
-          name: Clean Detox
-          working_directory: ~/project/apps/bare-expo
-          command: yarn ci:detox-clean
+      # - run:
+      #     name: Clean Detox
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: yarn ci:detox-clean
       # - save_cache:
       #     key: detox-v12-{{ arch }}
       #     paths:
@@ -435,10 +440,10 @@ jobs:
       #       - /usr/local/Cellar
       #       - /usr/local/var/run/watchman
 
-      - run:
-          name: Build iOS project for Detox
-          working_directory: ~/project/apps/bare-expo
-          command: npm run ci:detox-build-release
+      # - run:
+      #     name: Build iOS project for Detox
+      #     working_directory: ~/project/apps/bare-expo
+      #     command: npm run ci:detox-build-release
       - run:
           name: Run tests
           working_directory: ~/project/apps/bare-expo
