@@ -24,10 +24,11 @@
     "react-native-unimodules": "~0.5.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-eslint": "^9.0.0",
     "eslint": "~6.1.0",
-    "eslint-config-universe": "^2.0.0-alpha.0",
+    "eslint-config-universe": "^2.0.0-beta.0",
     "expo-cli": "^3.0.4",
     "expo-yarn-workspaces": "^1.2.0",
     "prettier": "^1.18.2"
