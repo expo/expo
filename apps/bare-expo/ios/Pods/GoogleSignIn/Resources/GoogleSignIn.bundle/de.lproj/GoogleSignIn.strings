@@ -1,0 +1,44 @@
+/* Sign-in button text */
+"Sign in" = "Anmelden";
+
+/* Long form sign-in button text */
+"Sign in with Google" = "Über Google anmelden";
+
+/* The title of the promotional prompt to install the Google app. */
+"PromoTitle" = "Über Google anmelden";
+
+/* The body message of the promotional prompt to install the Google app. */
+"PromoMessage" = "Installieren Sie die kostenlose Google App und melden Sie sich mit Ihrem Google-Konto in Apps an. So müssen Sie sich keine Passwörter mehr merken.";
+
+/* The cancel button on the promotional prompt to install the Google app. */
+"PromoActionCancel" = "Abbrechen";
+
+/* The install button on the promotional prompt to install the Google app. */
+"PromoActionInstall" = "Installieren";
+
+/* The text for the button for user to acknowledge and dismiss a dialog. */
+"OK" = "OK";
+
+/* The text for the button for user to dismiss a dialog without taking any action. */
+"Cancel" = "Abbrechen";
+
+/* The name of the iOS native "Settings" app. */
+"SettingsAppName" = "Einstellungen";
+
+/* The title for the error dialog for unable to sign in because of EMM policy. */
+"EmmErrorTitle" = "Anmelden im Konto nicht möglich";
+
+/* The text in the error dialog asking user to set up a passcode for the device due to EMM policy. */
+"EmmPasscodeRequired" = "Ihr Administrator hat festgelegt, dass auf diesem Gerät ein Sicherheitscode eingerichtet werden muss, um auf dieses Konto zuzugreifen. Bitte legen Sie einen Sicherheitscode fest und versuchen Sie es noch einmal.";
+
+/* The text in the error dialog informing user that EMM policy prevented sign-in on the device. */
+"EmmGeneralError" = "Das Gerät ist nicht mit den von Ihrem Administrator festgelegten Sicherheitsrichtlinien konform.";
+
+/* The title in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectTitle" = "Mit der Device Policy App verknüpfen?";
+
+/* The text in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectText" = "Zum Schutz der Daten Ihrer Organisation müssen Sie Ihr Gerät zuerst mit der Device Policy App verknüpfen, bevor Sie sich anmelden.";
+
+/* The action button label in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectLabel" = "Verknüpfen";

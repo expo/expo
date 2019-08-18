@@ -62,7 +62,6 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  console.log(` 💙 Tests Complete 💙 `);
   await adapter.afterAll();
   await detox.cleanup();
 });
