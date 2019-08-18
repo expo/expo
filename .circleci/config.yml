@@ -176,7 +176,7 @@ workflows:
       - web_test_suite
       - babel_preset
 
-  Android and iOS clients
+  # Android and iOS clients
   client:
     jobs:
       - home
