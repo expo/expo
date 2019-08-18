@@ -1,0 +1,44 @@
+/* Sign-in button text */
+"Sign in" = "Logga in";
+
+/* Long form sign-in button text */
+"Sign in with Google" = "Logga in med Google";
+
+/* The title of the promotional prompt to install the Google app. */
+"PromoTitle" = "Logga in med Google";
+
+/* The body message of the promotional prompt to install the Google app. */
+"PromoMessage" = "Hämta Google-appen utan kostnad och logga in i appar med ditt Google-konto. Du behöver inte komma ihåg en massa lösenord.";
+
+/* The cancel button on the promotional prompt to install the Google app. */
+"PromoActionCancel" = "Avbryt";
+
+/* The install button on the promotional prompt to install the Google app. */
+"PromoActionInstall" = "Hämta";
+
+/* The text for the button for user to acknowledge and dismiss a dialog. */
+"OK" = "Ok";
+
+/* The text for the button for user to dismiss a dialog without taking any action. */
+"Cancel" = "Avbryt";
+
+/* The name of the iOS native "Settings" app. */
+"SettingsAppName" = "Inställningar";
+
+/* The title for the error dialog for unable to sign in because of EMM policy. */
+"EmmErrorTitle" = "Det gick inte att logga in på kontot";
+
+/* The text in the error dialog asking user to set up a passcode for the device due to EMM policy. */
+"EmmPasscodeRequired" = "Administratören kräver att du anger ett lösenord på den här enheten för att få åtkomst till kontot. Ange ett lösenord och försök igen.";
+
+/* The text in the error dialog informing user that EMM policy prevented sign-in on the device. */
+"EmmGeneralError" = "Säkerhetspolicyn som administratören har angett efterlevs inte på enheten.";
+
+/* The title in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectTitle" = "Vill du ansluta med appen Device Policy?";
+
+/* The text in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectText" = "Du måste ansluta med appen Device Policy innan du loggar in för att skydda organisationens data.";
+
+/* The action button label in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectLabel" = "Anslut";

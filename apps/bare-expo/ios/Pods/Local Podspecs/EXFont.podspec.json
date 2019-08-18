@@ -1,0 +1,26 @@
+{
+  "name": "EXFont",
+  "version": "6.0.1",
+  "summary": "Load fonts at runtime and use them in React Native components.",
+  "description": "Load fonts at runtime and use them in React Native components.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/font/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXFont/**/*.{h,m}",
+  "preserve_paths": "EXFont/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ],
+    "UMFontInterface": [
+
+    ]
+  }
+}
