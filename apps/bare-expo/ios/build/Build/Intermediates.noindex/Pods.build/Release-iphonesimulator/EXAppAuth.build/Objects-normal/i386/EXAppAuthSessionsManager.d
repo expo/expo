@@ -1,0 +1,37 @@
+dependencies: \
+  /Users/evanbacon/Documents/GitHub/expo/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthSessionsManager.m \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Target\ Support\ Files/EXAppAuth/EXAppAuth-prefix.pch \
+  /Users/evanbacon/Documents/GitHub/expo/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthSessionsManager.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/UMCore/UMSingletonModule.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/AppAuth.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthState.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthStateChangeDelegate.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthStateErrorDelegate.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthorizationRequest.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDExternalUserAgentRequest.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDResponseTypes.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDScopes.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthorizationResponse.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthorizationService.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDError.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDErrorUtilities.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDExternalUserAgent.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDExternalUserAgentSession.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDGrantTypes.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDIDToken.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDRegistrationRequest.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDRegistrationResponse.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDScopeUtilities.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDServiceConfiguration.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDServiceDiscovery.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDTokenRequest.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDTokenResponse.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDTokenUtilities.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDURLSessionProvider.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDEndSessionRequest.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDEndSessionResponse.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthState+IOS.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDAuthorizationService+IOS.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDExternalUserAgentIOS.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/AppAuth/OIDExternalUserAgentIOSCustomBrowser.h \
+  /Users/evanbacon/Documents/GitHub/expo/apps/bare-expo/ios/Pods/Headers/Private/UMCore/UMDefines.h

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>10</integer>
+	<key>logs</key>
+	<dict>
+		<key>ACD86F80-F313-44DC-8C9D-50ECD1A7377A</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>ACD86F80-F313-44DC-8C9D-50ECD1A7377A.xcactivitylog</string>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>BareExpo project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>BareExpo</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building workspace BareExpo with scheme BareExpo and configuration Debug</string>
+			<key>timeStartedRecording</key>
+			<real>587594455.70480299</real>
+			<key>timeStoppedRecording</key>
+			<real>587594457.70867705</real>
+			<key>title</key>
+			<string>Building workspace BareExpo with scheme BareExpo and configuration Debug</string>
+			<key>uniqueIdentifier</key>
+			<string>ACD86F80-F313-44DC-8C9D-50ECD1A7377A</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

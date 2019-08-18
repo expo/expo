@@ -57,10 +57,7 @@ buck-out/
 
 
 ios/Pods
-/ios/build/BareExpo
-/ios/build/index
-/ios/build/Build
-!/ios/build/Build/Products
+
 ios/gems
 
 /android/app/build
