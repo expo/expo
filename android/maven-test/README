@@ -1,0 +1,3 @@
+The com.android.support.test:runner:1.0.1 library has a bug where the test runner can't be extended. See: https://groups.google.com/forum/#!topic/android-testing-support-library/VtAgPnvopQk
+This is a modified version of the library where the `&& annotation.value().equals(AndroidJUnit4.class)` statement in AndroidAnnotatedBuilder is removed. Jesse used this library: https://sourceforge.net/projects/rejava/files/
+to modify the test runner jar file.

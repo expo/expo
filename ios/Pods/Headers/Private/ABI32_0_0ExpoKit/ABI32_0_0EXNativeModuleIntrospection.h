@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI32_0_0/Expo/Core/Internal/ABI32_0_0EXNativeModuleIntrospection.h

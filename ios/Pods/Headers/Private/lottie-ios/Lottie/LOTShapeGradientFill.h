@@ -1,0 +1,1 @@
+../../../../lottie-ios/lottie-ios/Classes/Models/LOTShapeGradientFill.h

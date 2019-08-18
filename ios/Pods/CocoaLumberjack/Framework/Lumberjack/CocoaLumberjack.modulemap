@@ -1,0 +1,36 @@
+framework module CocoaLumberjack {
+	umbrella header "CocoaLumberjack.h"
+	
+	export *
+	module * { export * }
+	
+	textual header "DDLogMacros.h"
+	
+	exclude header "DDLog+LOGV.h"
+	exclude header "DDLegacyMacros.h"
+	
+	explicit module DDContextFilterLogFormatter {
+		header "DDContextFilterLogFormatter.h"
+		export *
+	}
+	
+	explicit module DDDispatchQueueLogFormatter {
+		header "DDDispatchQueueLogFormatter.h"
+		export *
+	}
+	
+	explicit module DDMultiFormatter {
+		header "DDMultiFormatter.h"
+		export *
+	}
+	
+	explicit module DDASLLogCapture {
+		header "DDASLLogCapture.h"
+		export *
+	}
+	
+	explicit module DDAbstractDatabaseLogger {
+		header "DDAbstractDatabaseLogger.h"
+		export *
+	}
+}

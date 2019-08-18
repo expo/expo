@@ -1,0 +1,82 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+  ext {
+    minSdkVersion = 21
+    targetSdkVersion = 28
+    compileSdkVersion = 28
+
+    buildToolsVersion = '28.0.0'
+    supportLibVersion = '28.0.0'
+    kotlinVersion = '1.3.21'
+    repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
+  }
+  repositories {
+    google()
+    jcenter()
+    maven { url 'https://dl.bintray.com/android/android-tools/' }
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.google.gms:google-services:3.2.1'
+    classpath 'de.undercouch:gradle-download-task:2.0.0'
+
+    // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
+    classpath 'com.amazonaws:aws-devicefarm-gradle-plugin:1.3'
+
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+  }
+}
+
+allprojects {
+  repositories {
+    // For non-detach
+    maven {
+      url "$rootDir/maven"
+    }
+    // For old expoviews to work
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi31_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi32_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi33_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi34_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/maven"
+    }
+    // For detach
+    maven {
+      url "$rootDir/../node_modules/expokit/maven"
+    }
+    maven {
+      // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
+      url "$rootDir/maven-test"
+    }
+    google()
+    jcenter()
+    maven {
+      // Local Maven repo containing AARs with JSC built for Android
+      url "$rootDir/../node_modules/jsc-android/dist"
+    }
+    flatDir {
+      dirs 'libs'
+      // dirs project(':expoview').file('libs')
+    }
+    // https://github.com/google/ExoPlayer/issues/5225#issuecomment-445739013
+    maven { url 'https://google.bintray.com/exoplayer' }
+    maven { url "https://jitpack.io" }
+
+    // Want this last so that we never end up with a stale cache
+    mavenLocal()
+  }
+}
+
+task clean(type: Delete) {
+  delete rootProject.buildDir
+}

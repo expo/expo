@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Oct 26 23:43:53 CEST 2018
+infer-annotation-0.11.2.jar>=
+infer-annotation-0.11.2.pom>=

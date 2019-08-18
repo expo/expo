@@ -1,0 +1,92 @@
+/* Prompts a person to go to the URL listed to enter the confirmation code that is presented to them above the given string. */
+"DeviceLogin.LogInPrompt" = "Truy cập %@ và nhập mã hiển thị ở trên.";
+
+/* Prompts a person that the next thing they need to do to finish connecting their Smart TV and Facebook application is to navigate to their Facebook application on their mobile device and look through their notifications for a message about the connection being formed */
+"DeviceLogin.SmartLogInPrompt" = "Để kết nối tài khoản của bạn, hãy mở ứng dụng Facebook trên thiết bị di động và kiểm tra thông báo.";
+
+/* Displayed as a separator between two options. First option is on a line above this, and second option is below */
+"DeviceLogin.SmartLogInOrLabel" = "- HOẶC -";
+
+/* The title of the label to dismiss the alert when presenting user facing error messages */
+"ErrorRecovery.Alert.OK" = "OK";
+
+/* The title of the label to decline attempting error recovery */
+"ErrorRecovery.Cancel" = "Hủy";
+
+/* The fallback message to display to recover invalidated tokens */
+"ErrorRecovery.Login.Suggestion" = "Vui lòng đăng nhập lại vào ứng dụng này để kết nối lại tài khoản Facebook của bạn.";
+
+/* The title of the label to start attempting error recovery */
+"ErrorRecovery.OK" = "OK";
+
+/* The fallback message to display to retry transient errors */
+"ErrorRecovery.Transient.Suggestion" = "Máy chủ hiện đang bận, vui lòng thử lại sau.";
+
+/* The label for the FBSDKLikeButton when the object is not currently liked. */
+"LikeButton.Like" = "Thích";
+
+/* The label for the FBSDKLikeButton when the object is currently liked. */
+"LikeButton.Liked" = "Đã thích";
+
+/* The label for the FBSDKLoginButton action sheet to cancel logging out */
+"LoginButton.CancelLogout" = "Hủy";
+
+/* The label for the FBSDKLoginButton action sheet to confirm logging out */
+"LoginButton.ConfirmLogOut" = "Đăng xuất";
+
+/* The fallback string for the FBSDKLoginButton label when the user name is not available yet */
+"LoginButton.LoggedIn" = "Đã đăng nhập bằng Facebook";
+
+/* The format string for the FBSDKLoginButton label when the user is logged in */
+"LoginButton.LoggedInAs" = "Đã đăng nhập với tư cách là";
+
+/* The short label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogIn" = "Đăng nhập";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInContinue" = "Tiếp tục với Facebook";
+
+/* The long label for the FBSDKLoginButton when the user is currently logged out */
+"LoginButton.LogInLong" = "Đăng nhập bằng Facebook";
+
+/* The label for the FBSDKLoginButton when the user is currently logged in */
+"LoginButton.LogOut" = "Đăng xuất";
+
+/* The user facing error message when the app slider has been disabled and login fails. */
+"LoginError.SystemAccount.Disabled" = "Quyền truy cập chưa được cấp cho tài khoản Facebook. Xác minh thiết lập của thiết bị.";
+
+/* The user facing error message when the Accounts framework encounters a network error. */
+"LoginError.SystemAccount.Network" = "Không thể kết nối với Facebook. Vui lòng kiểm tra kết nối mạng của bạn và thử lại.";
+
+/* The user facing error message when the device Facebook account password is incorrect and login fails. */
+"LoginError.SystemAccount.PasswordChange" = "Mật khẩu Facebook của bạn đã thay đổi. Để xác nhận mật khẩu của bạn, hãy mở Thiết lập &gt; Facebook và nhấn vào tên bạn.";
+
+/* The user facing error message when the device Facebook account is unavailable and login fails. */
+"LoginError.SystemAccount.Unavailable" = "Tài khoản Facebook chưa được định cấu hình trên thiết bị.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework becomes unconfirmed. */
+"LoginError.SystemAccount.UnconfirmedUser" = "Tài khoản của bạn không được xác nhận. Vui lòng đăng nhập vào www.facebook.com và làm theo hướng dẫn được cung cấp.";
+
+/* The user facing error message when the Facebook account signed in to the Accounts framework has been checkpointed. */
+"LoginError.SystemAccount.UserCheckpointed" = "Bạn không thể đăng nhập vào các ứng dụng lúc này. Vui lòng đăng nhập vào www.facebook.com và làm theo hướng dẫn được cung cấp.";
+
+/* The message of the FBSDKLoginTooltipView */
+"LoginTooltip.Message" = "Bạn đang có quyền kiểm soát - hãy chọn thông tin bạn muốn chia sẻ với ứng dụng.";
+
+/* Title of the web dialog that prompts the user to log in to Facebook. */
+"LoginWeb.LogInTitle" = "Đăng nhập";
+
+/* The label for FBSDKSendButton */
+"SendButton.Send" = "Gửi";
+
+/* The label for FBSDKShareButton */
+"ShareButton.Share" = "Chia sẻ";
+
+/* Prompts a person if this is their current account */
+"SmartLogin.NotYou" = "Không phải bạn?";
+
+/* Text on a button that a person presses to confirm that they are finished with the login experience */
+"SmartLogin.ConfirmationTitle" = "Xác nhận đăng nhập";
+
+/* Text on a button that lets a person continue with their name linked to a Facebook account (Name = %@) */
+"SmartLogin.Continue" = "Tiếp tục với tư cách %@";
