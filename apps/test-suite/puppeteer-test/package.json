@@ -1,0 +1,19 @@
+{
+  "name": "puppeteer-test",
+  "version": "2.0.0",
+  "description": "Test Expo APIs in web with puppeteer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "650 Industries, Inc.",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@expo/xdl": "^56.0.0",
+    "puppeteer": "^1.11.0"
+  }
+}

@@ -12,6 +12,7 @@
     "start": "react-native start",
     "start-clean": "npm run clear-metro && react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
+    "clear-watchment": "watchman watch-del-all",
     "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
     "ios:setup": "cd ios/ && pod install",
     "_ios:setup": "cd ios/ && (bundle check || bundle install) && bundle exec pod install",

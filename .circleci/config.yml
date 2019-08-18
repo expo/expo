@@ -346,11 +346,11 @@ jobs:
       - run:
           name: Build iOS project for Detox
           working_directory: ~/project/apps/bare-expo
-          command: yarn clear-metro && yarn ci:detox-build-release
+          command: yarn clear-watchment && yarn ci:detox-build-release
       - run:
           name: Run tests
           working_directory: ~/project/apps/bare-expo
-          command: yarn clear-metro && yarn ci:detox-test-release
+          command: yarn clear-watchment && yarn ci:detox-test-release
           # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
           # environment:
           #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
