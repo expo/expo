@@ -1,1 +1,0 @@
-../../../RNGestureHandler/ios/Handlers/RNRotationHandler.h

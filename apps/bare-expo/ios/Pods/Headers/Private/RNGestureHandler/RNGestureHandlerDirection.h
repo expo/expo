@@ -1,1 +1,0 @@
-../../../RNGestureHandler/ios/RNGestureHandlerDirection.h

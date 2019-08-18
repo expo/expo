@@ -1,5 +1,9 @@
 # Bare Workflow
 
+## Edits
+
+- [iOS] Needed to do this to get Release builds working https://github.com/facebook/react-native/issues/4210#issuecomment-171944483
+
 ## Setup
 
 ```sh
