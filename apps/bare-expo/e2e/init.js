@@ -61,25 +61,6 @@ beforeEach(async () => {
   await adapter.beforeEach();
 });
 
-beforeEach(async function beforeEach() {
-  const retry = this.currentTest.currentRetry();
-
-  if (retry > 0) {
-    if (retry === 1) {
-      console.log();
-      console.warn(`💔 failed:`);
-      console.warn(`️  👉  ${this.currentTest.title}`);
-    }
-
-    if (retry > 1) {
-      console.warn(`   ✌️ Retry #${retry - 1} failed...`);
-    }
-
-    console.warn(`️   👉 Retrying in ${1 * retry} seconds ... (${retry})`);
-    await Utils.sleep(2000 * retry);
-  }
-});
-
 afterAll(async () => {
   console.log(` 💙 Tests Complete 💙 `);
   await adapter.afterAll();
