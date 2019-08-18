@@ -20,7 +20,7 @@
     "e2e:ios": "detox test --configuration ios.sim.debug",
     "ci:detox-clean": "detox clean-framework-cache && detox build-framework-cache",
     "ci:detox-build-release": "detox build --configuration ios.sim.release",
-    "ci:detox-test-release": "detox test --configuration ios.sim.release -l verbose --cleanup"
+    "ci:detox-test-release": "npm run ci:detox-clean && detox test --configuration ios.sim.release -l verbose --cleanup"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
