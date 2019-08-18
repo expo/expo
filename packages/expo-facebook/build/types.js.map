@@ -1,0 +1,1 @@
+{"version":3,"file":"types.js","sourceRoot":"","sources":["../src/types.ts"],"names":[],"mappings":"","sourcesContent":["export type FacebookLoginResult = {\r\n  type: string;\r\n  token?: string;\r\n  expires?: number;\r\n};\r\n\r\nexport type FacebookOptions = {\r\n  permissions?: string[];\r\n  behavior?: 'web' | 'native' | 'browser' | 'system';\r\n};\r\n"]}
