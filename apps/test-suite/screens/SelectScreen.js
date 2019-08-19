@@ -11,6 +11,7 @@ import {
   Alert,
   Button,
   PixelRatio,
+  AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -51,15 +52,81 @@ export default class SelectScreen extends React.PureComponent {
   constructor(props) {
     super(props);
 
+    if (global.ErrorUtils) {
+      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
+
+      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
+        // Prevent optionalRequire from failing
+        if (
+          isFatal &&
+          (error.message.includes('Native module cannot be null') ||
+            error.message.includes(
+              `from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: `
+            ))
+        ) {
+          console.log('Caught require error');
+        } else {
+          global.expoErrorDelegate.throw(error, isFatal);
+          originalErrorHandler(error, isFatal);
+        }
+      });
+    }
     this.modules = getTestModules();
+    if (process.env.DETOX) {
+      global.expoRunner.addTests(getTestModules().map(({ name }) => name));
+    }
     this.state = {
       selected: new Set(),
+      appState: AppState.currentState,
     };
+
+    setTimeout(() => {
+      this.checkLinking('SMS');
+    }, 100);
   }
 
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this._handleOpenURL);
+  }
+
+  _handleAppStateChange = nextAppState => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('App has come to the foreground!');
+      this.checkLinking();
+    }
+    this.setState({ appState: nextAppState });
+  };
+
+  checkLinking = incomingTests => {
+    // const incomingTests = this.props.navigation.getParam('tests');
+    console.log('[TEST_SUITE]:', 'incoming', incomingTests);
+    if (incomingTests) {
+      const testNames = incomingTests.split(',').map(v => v.trim());
+      const selected = this.modules.filter(m => testNames.includes(m.name));
+      if (!selected.length) {
+        console.log('[TEST_SUITE]', 'No selected modules', testNames);
+      }
+      this.props.navigation.navigate('RunTests', {
+        selected: this.modules.filter(m => testNames.includes(m.name)),
+      });
+    }
+  };
+
+  _handleOpenURL = ({ url }) => {
+    setTimeout(() => {
+      console.log('[TEST_SUITE]:', '_handleOpenURL', url);
+      if (url && url.includes('select/')) {
+        this.checkLinking(url.split('/').pop());
+      }
+    }, 100);
+  };
+
   componentDidMount() {
+    Linking.addEventListener('url', this._handleOpenURL);
+
     Linking.getInitialURL()
       .then(url => {
+        this._handleOpenURL({ url });
         // TODO: Use Expo Linking library once parseURL is implemented for web
         if (url && url.indexOf('/all') > -1) {
           // Test all available modules

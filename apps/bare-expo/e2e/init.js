@@ -1,6 +1,8 @@
-/* global device jasmine */
+/* global jasmine */
 
-const detox = require('detox');
+import { launchWithPermissionsAsync } from './Utils';
+
+const { cleanup } = require('detox');
 const adapter = require('detox/runners/jest/adapter');
 const specReporter = require('detox/runners/jest/specReporter');
 const config = require('../package.json').detox;
@@ -14,47 +16,26 @@ jasmine.getEnv().addReporter(adapter);
 jasmine.getEnv().addReporter(specReporter);
 
 const permissions = {
+  calendar: true,
+  contacts: true,
+  medialibrary: true,
+  microphone: true,
+  motion: true,
+  notifications: true,
+  photos: true,
+  reminders: true,
+  speech: true,
   // location: 'always', // inuse, never, unset
-  // calendar: true,
   // camera: true,
-  // contacts: true,
   // faceid: true,
   // homekit: true,
-  // medialibrary: true,
-  // microphone: true,
-  // motion: true,
-  // notifications: true,
-  // photos: true,
-  // reminders: true,
   // siri: true,
-  // speech: true,
   // // (iOS 12.0 and above)
   // health: true,
 };
 
 beforeAll(async () => {
-  if (Object.keys(permissions).length) {
-    await detox.init(config, { launchApp: false });
-    await device.launchApp({
-      permissions: Object.keys(permissions).reduce((prev, curr) => {
-        const value = permissions[curr];
-        if (typeof value === 'string') {
-          return {
-            ...prev,
-            [curr]: value,
-          };
-        } else {
-          return {
-            ...prev,
-            [curr]: value ? 'YES' : 'NO',
-          };
-        }
-      }, {}),
-      newInstance: true,
-    });
-  } else {
-    await detox.init(config);
-  }
+  await launchWithPermissionsAsync(config, permissions, { initGlobals: false, reuse: false });
 });
 
 beforeEach(async () => {
@@ -63,5 +44,9 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await adapter.afterAll();
-  await detox.cleanup();
+  await cleanup();
+});
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
