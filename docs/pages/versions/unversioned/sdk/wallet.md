@@ -31,7 +31,7 @@ import * as Wallet from 'expo-wallet';
 
 ### `Wallet.canAddPassesAsync()`
 
-**iOS only.** Tells whether current device supports adding passes to Apple Wallet.
+Tells whether the current device supports adding passes to Apple Wallet.
 
 #### Returns
 
@@ -41,12 +41,12 @@ A `Promise` that resolves to a `boolean` value of whether the device supports ad
 
 ```js
 await Wallet.canAddPassesAsync();
-// true or false
+// `true` or `false`
 ```
 
 ### `Wallet.addPassFromUrlAsync(url)`
 
-**iOS only.** Presents the [Passes View Controller](https://developer.apple.com/documentation/passkit/pkaddpassesviewcontroller) modally with animation to prompt the user to add the pass given by `url` to Apple Wallet. If the pass was already added to Apple Wallet, this method returns `true` and does not open preview of the pass.
+**iOS and web only.** Presents the [Passes View Controller](https://developer.apple.com/documentation/passkit/pkaddpassesviewcontroller) modally with animation to prompt the user to add the pass given by `url` to Apple Wallet. If the pass was already added to Apple Wallet, this method returns `true` and does not open preview of the pass.
 
 Note that if you want to use a `.pkpass` file from a local file path in your application, you can use `Asset` from [`expo-asset`](../../sdk/asset/) to get the remote URI. See examples at the bottom. Also, remember to add `"pkpass"` into your `assetExts` in `metro.config.js` in root directory so that Metro can resolve the file.
 

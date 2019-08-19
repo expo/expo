@@ -7,7 +7,7 @@ const WalletEventEmitter = new EventEmitter(ExpoWallet);
 
 export async function canAddPassesAsync(): Promise<boolean> {
   if (!ExpoWallet.canAddPassesAsync) {
-    throw new UnavailabilityError('expo-wallet', 'canAddPassesAsync');
+    return false;
   }
   return await ExpoWallet.canAddPassesAsync();
 }
@@ -20,12 +20,10 @@ export async function addPassFromUrlAsync(url): Promise<boolean> {
 }
 
 export function addPassViewDidFinishListener(listener: PassViewFinishListener): Subscription {
-  if(Platform.OS === 'ios'){
-    return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
+  if (Platform.OS !== 'ios') {
+    throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
   }
-  throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
+  return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
 }
 
-export {
-  PassViewFinishListener
-}
+export { PassViewFinishListener };
