@@ -16,7 +16,7 @@ import * as Wallet from 'expo-wallet';
 
 ### Components
 
-- [`<Wallet.AddPassButton />`](#walletaddPassbutton)
+- [`<Wallet.AddPassButton />`](#walletaddpassbutton)
 
 ### Methods
 
@@ -33,14 +33,14 @@ import * as Wallet from 'expo-wallet';
 
 ## Components
 
-### `<Wallet.AddPassButton />`
+### `Wallet.AddPassButton`
 
 **iOS only.** An Apple-provided responsive button ([`PKAddPassButton`](https://developer.apple.com/documentation/passkit/pkaddpassbutton)) that displays "Add to Apple Wallet".
 
 #### Properties
 
-- **type (_string_)** -- The button’s style, which could either be [`'black'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblack) or [`'blackOutline'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblackoutline).
-- You could also use any other properties of a [`TouchableHighlight`](https://facebook.github.io/react-native/docs/touchablehighlight).
+- **type (_string_)** -- The button’s style, which could either be [`'black'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblack) (default) or [`'blackOutline'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblackoutline).
+- You could also use any other properties of a [`TouchableHighlight`](https://facebook.github.io/react-native/docs/touchablehighlight#props).
 
 ## Methods
 
