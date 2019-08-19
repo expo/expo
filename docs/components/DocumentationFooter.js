@@ -33,10 +33,11 @@ function githubUrl(path) {
     }
   }
 
-  let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
+  let pathAsMarkdown = path.replace(/\/$|\/#__next$/, '') + '.md';
   if (pathAsMarkdown.startsWith('/versions/latest')) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
   }
+
   return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
 }
 
