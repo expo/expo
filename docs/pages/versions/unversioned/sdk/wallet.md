@@ -14,6 +14,10 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as Wallet from 'expo-wallet';
 ```
 
+### Components
+
+- [`<Wallet.AddPassButton />`](#walletaddPassbutton)
+
 ### Methods
 
 - [`Wallet.canAddPassesAsync()`](#walletcanaddpassesasync)
@@ -26,6 +30,17 @@ import * as Wallet from 'expo-wallet';
 ### Errors
 
 - [Error Codes](#error-codes)
+
+## Components
+
+### `<Wallet.AddPassButton />`
+
+**iOS only.** An Apple-provided responsive button ([`PKAddPassButton`](https://developer.apple.com/documentation/passkit/pkaddpassbutton)) that displays "Add to Apple Wallet".
+
+#### Properties
+
+- **type (_string_)** -- The button’s style, which could either be [`'black'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblack) or [`'blackOutline'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblackoutline).
+- You could also use any other properties of a [`TouchableHighlight`](https://facebook.github.io/react-native/docs/touchablehighlight).
 
 ## Methods
 
@@ -92,7 +107,7 @@ On web, the event never fires.
 
 ```js
 import React from 'react';
-import { StyleSheet, Button, View } from 'react-native';
+import { StyleSheet, View, Button } from 'react-native';
 import * as Wallet from 'expo-wallet';
 import { Asset } from 'expo-asset';
 
@@ -129,7 +144,11 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button onPress={this._onPressWallet} title="Press me to add the pkpass" />
+        <Wallet.AddPassButton
+          type={'black'}
+          style={{ height: 60, width: 200 }}
+          onPress={() => _onPressWallet()}
+        />
       </View>
     );
   }
