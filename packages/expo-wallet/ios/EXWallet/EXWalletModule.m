@@ -50,19 +50,19 @@ UM_EXPORT_METHOD_AS(canAddPassesAsync, canAddPassesAsyncWithResolver:(UMPromiseR
 
 UM_EXPORT_METHOD_AS(addPassFromUrlAsync, addPassFromUrlAsync:(NSString *)passFromUrl addPassFromUrlAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-    NSURL *passUrl = [[NSURL alloc] initWithString:passFromUrl];
-    if (!passUrl) {
-      reject(@"ERR_WALLET_INVALID_PASS", @"The Url does not have valid passes", nil);
-      return;
-    }
-    
-    NSData *data = [[NSData alloc] initWithContentsOfURL:passUrl];
-    if (!data) {
-      reject(@"ERR_WALLET_INVALID_PASS", @"The Url does not have valid passes", nil);
-      return;
-    }
+  NSURL *passUrl = [[NSURL alloc] initWithString:passFromUrl];
+  if (!passUrl) {
+    reject(@"ERR_WALLET_INVALID_PASS", @"The Url does not have valid passes", nil);
+    return;
+  }
 
-    [self addPasses:data resolver:resolve rejecter:reject];
+  NSData *data = [[NSData alloc] initWithContentsOfURL:passUrl];
+  if (!data) {
+    reject(@"ERR_WALLET_INVALID_PASS", @"The Url does not have valid passes", nil);
+    return;
+  }
+
+  [self addPasses:data resolver:resolve rejecter:reject];
 }
 
 - (void) addPasses:(NSData *)passData resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject{
@@ -73,7 +73,7 @@ UM_EXPORT_METHOD_AS(addPassFromUrlAsync, addPassFromUrlAsync:(NSString *)passFro
     return;
   }
   self.passLibrary = [[PKPassLibrary alloc] init];
-  //if pass already in library
+  // If pass already in library
   if([self.passLibrary containsPass:(self.pass)]){
     resolve(@(YES));
     return;
@@ -97,9 +97,9 @@ UM_EXPORT_METHOD_AS(addPassFromUrlAsync, addPassFromUrlAsync:(NSString *)passFro
 
 - (void)addPassesViewControllerDidFinish:(PKAddPassesViewController *)controller {
   [controller dismissViewControllerAnimated:YES completion:^{
-		if (self->_hasListeners) {
-			[self->_eventEmitter sendEventWithName:@"Expo.addPassesViewControllerDidFinish" body:nil];
-		}
+    if (self->_hasListeners) {
+      [self->_eventEmitter sendEventWithName:@"Expo.addPassesViewControllerDidFinish" body:nil];
+    }
     // Clean up
     controller.delegate = nil;
     self.passLibrary = nil;
