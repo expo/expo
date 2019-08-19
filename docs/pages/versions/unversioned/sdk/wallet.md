@@ -37,6 +37,8 @@ import * as Wallet from 'expo-wallet';
 
 **iOS only.** An Apple-provided responsive button ([`PKAddPassButton`](https://developer.apple.com/documentation/passkit/pkaddpassbutton)) that displays "Add to Apple Wallet".
 
+For web, you could download the [Add to Apple Wallet badge](https://developer.apple.com/wallet/#related-content) from Apple Developer website.
+
 #### Properties
 
 - **type (_string_)** -- The button’s style, which could either be [`'black'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblack) (default) or [`'blackOutline'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblackoutline).
@@ -86,7 +88,7 @@ await Wallet.addPassFromUrlAsync('https://example.com/your-pass.pkpass');
 
 **iOS only.** Subscribes to the event after the Passes View Controller is dismissed.
 
-On web, the event never fires.
+For web, the event never fires.
 
 #### Arguments
 
