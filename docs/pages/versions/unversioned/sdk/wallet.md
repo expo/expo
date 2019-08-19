@@ -63,9 +63,9 @@ await Wallet.canAddPassesAsync();
 
 ### `Wallet.addPassFromUrlAsync(url)`
 
-**iOS and web only.** Presents the [Passes View Controller](https://developer.apple.com/documentation/passkit/pkaddpassesviewcontroller) modally with animation to prompt the user to add the pass given by `url` to Apple Wallet. If the pass was already added to Apple Wallet, this method returns `true` and does not open preview of the pass.
+**iOS and web only.** Presents the [Passes View Controller](https://developer.apple.com/documentation/passkit/pkaddpassesviewcontroller) modally with animation to prompt the user to add the pass given by `url` to Apple Wallet. If the pass was already added to Apple Wallet, this method returns `true` and does not present the preview of the pass.
 
-Note that if you want to use a `.pkpass` file from a local file path in your application, you can use `Asset` from [`expo-asset`](../../sdk/asset/) to get the remote URI. See examples at the bottom. Also, remember to add `"pkpass"` into your `assetExts` in `metro.config.js` in root directory so that Metro can resolve the file.
+Note that if you want to use a `.pkpass` file from a local file path in your application, you can use `Asset` from [`expo-asset`](../../sdk/asset/) to get the remote URI. See examples at the bottom. Also, remember to add `"pkpass"` into your `assetExts` in `metro.config.js` in the root directory of your app so that Metro can resolve the file.
 
 For web, it prompts the user to save the pass (in Safari) or downloads the pass (in any other browser) and always returns `true`.
 
@@ -75,7 +75,7 @@ For web, it prompts the user to save the pass (in Safari) or downloads the pass 
 
 #### Returns
 
-A `Promise` that resolves to a `boolean` value of whether the pass is successfully added to Apple Wallet.
+A `Promise` that resolves to a `boolean` value of whether the Passes View Controller is successfully presented to the user. Note that a `true` does **not** guarantee that the user has accepted to add the pass to their Apple Wallet.
 
 **Examples**
 
@@ -89,6 +89,8 @@ await Wallet.addPassFromUrlAsync('https://example.com/your-pass.pkpass');
 ### `Wallet.addPassViewDidFinishListener(callback)`
 
 **iOS only.** Subscribes to the event after the Passes View Controller is dismissed.
+
+Note that there is no easy way to know if the user has clicked "Cancel" or "Add". Learn more in [this question](https://stackoverflow.com/q/14068596/2603230).
 
 For web, the function returns `null`, and the event never fires.
 
