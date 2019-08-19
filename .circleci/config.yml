@@ -149,6 +149,11 @@ executors:
       CI: 1
 
 workflows:
+  # E2E SDK testing
+  native-sdk:
+    jobs:
+      - iOS-Detox
+
   docs:
     jobs:
       - docs
@@ -164,7 +169,6 @@ workflows:
       - docs_deploy:
           requires:
             - docs_approve_deploy
-
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
@@ -195,11 +199,11 @@ workflows:
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
+
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-
   shell_app:
     jobs:
       - shell_app_ios_approve_build:
@@ -222,7 +226,6 @@ workflows:
       - shell_app_android_build:
           requires:
             - shell_app_android_approve_build
-
   client_shell_app:
     jobs:
       - expo_client_approve_build:
@@ -307,6 +310,55 @@ jobs:
       - yarn:
           command: tsc
           working_directory: ~/expo/tools/expotools
+
+  iOS-Detox:
+    executor: mac
+    macos: # Detox simulators require 10.1.0
+      xcode: '10.1.0'
+    #parallelism: 8
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+
+      # Simulators are more likely to fail. Try them first
+      - run:
+          name: Pull Detox
+          working_directory: ~/project/apps/bare-expo
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew
+      - run:
+          name: Install iOS simulators
+          working_directory: ~/project/apps/bare-expo
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils
+      - run:
+          name: Install Watchman
+          working_directory: ~/project/apps/bare-expo
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman
+
+      ## Yarn takes a while to run
+      - restore_yarn_cache
+      - yarn_install:
+          working_directory: ~/project
+      - save_yarn_cache
+
+      ## Detox
+      - run:
+          name: Clean Detox
+          working_directory: ~/project/apps/bare-expo
+          command: yarn ci:detox-clean
+      - run:
+          name: Build iOS project for Detox
+          working_directory: ~/project/apps/bare-expo
+          command: yarn ci:detox-build-release
+      - run:
+          name: Run tests
+          working_directory: ~/project/apps/bare-expo
+          command: yarn ci:detox-test-release
+          # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
+          # environment:
+          #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
+      # - store_test_results:
+      # path: ~/project/apps/bare-expo/__e2e__/results
 
   client_ios:
     executor: mac
