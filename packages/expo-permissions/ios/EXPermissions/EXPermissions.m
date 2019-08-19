@@ -77,7 +77,7 @@ UM_EXPORT_METHOD_AS(getAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:[self getPermissionsForResource:permissionType]];
+  NSDictionary *permission = [self getPermissionsForResource:permissionType];
   // permission type not found - reject immediately
   if (permission == nil) {
     return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
@@ -141,7 +141,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                 withResult:(void (^)(NSDictionary *))onResult
+                                 withResult:(UMPromiseResolveBlock)onResult
                                withRejecter:(UMPromiseRejectBlock)reject
 {
   NSMutableDictionary *permission = [[self getPermissionUsingRequesterClass:requesterClass] mutableCopy];
@@ -163,8 +163,8 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForPermissionWithType:(NSString *)permissionType
-                       withResults:(void (^)(NSDictionary *results))onResults
-                      withRejecter:(UMPromiseRejectBlock)reject
+                     withResults:(UMPromiseResolveBlock)onResults
+                    withRejecter:(UMPromiseRejectBlock)reject
 {
   NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
     
@@ -187,7 +187,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 
 // From UMPermissionsInterface
 - (void)askForPermission:(NSString *)permissionType
-              withResult:(void (^)(NSDictionary *))onResult
+              withResult:(UMPromiseResolveBlock)onResult
             withRejecter:(UMPromiseRejectBlock)reject
 {
   void (^customResolver)(NSDictionary *) = ^(NSDictionary *permission) {
@@ -203,7 +203,7 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForGlobalPermission:(NSString *)permissionType
-                  withResolver:(void (^)(NSDictionary *))resolver
+                  withResolver:(UMPromiseResolveBlock)resolver
                   withRejecter:(UMPromiseRejectBlock)reject
 {
   id<UMPermissionsRequester> requester = [self getPermissionRequesterForType:permissionType];
@@ -211,16 +211,16 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
-                  withResolver:(void (^)(NSDictionary *))resolver
-                  withRejecter:(UMPromiseRejectBlock)reject
+                                     withResolver:(UMPromiseResolveBlock)resolver
+                                     withRejecter:(UMPromiseRejectBlock)reject
 {
   id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
   [self askForGlobalPermissionUsingRequester:requester withResolver:resolver withRejecter:reject];
 }
 
 - (void)askForGlobalPermissionUsingRequester:(id<UMPermissionsRequester>)requester
-                  withResolver:(void (^)(NSDictionary *))resolver
-                  withRejecter:(UMPromiseRejectBlock)reject
+                                withResolver:(UMPromiseResolveBlock)resolver
+                                withRejecter:(UMPromiseRejectBlock)reject
 {
   if (requester == nil) {
     return reject(@"E_PERMISSIONS_UNSUPPORTED", @"Cannot find requester", nil);

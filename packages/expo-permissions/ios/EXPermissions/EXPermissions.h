@@ -10,7 +10,7 @@ FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
 // TODO: Remove once SDK34 is phased out
 - (void)askForGlobalPermission:(NSString *)permissionType
-                  withResolver:(void (^)(NSDictionary *))resolver
+                  withResolver:(UMPromiseResolveBlock)resolver
                   withRejecter:(UMPromiseRejectBlock)reject;
 
 + (UMPermissionStatus)statusForPermission:(NSDictionary *)permissions;
@@ -18,7 +18,7 @@ FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 + (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
 
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
-                                    withResolver:(void (^)(NSDictionary *))resolver
+                                    withResolver:(UMPromiseResolveBlock)resolver
                                     withRejecter:(UMPromiseRejectBlock)reject;
 
 @end
