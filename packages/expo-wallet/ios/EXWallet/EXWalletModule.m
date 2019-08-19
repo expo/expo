@@ -96,12 +96,11 @@ UM_EXPORT_METHOD_AS(addPassFromUrlAsync, addPassFromUrlAsync:(NSString *)passFro
 #pragma mark - PKAddPassesViewControllerDelegate
 
 - (void)addPassesViewControllerDidFinish:(PKAddPassesViewController *)controller {
-  if (!_hasListeners) {
-    return;
-  }
   [controller dismissViewControllerAnimated:YES completion:^{
-    [_eventEmitter sendEventWithName:@"Expo.addPassesViewControllerDidFinish" body:nil];
-    //clean up
+		if (self->_hasListeners) {
+			[self->_eventEmitter sendEventWithName:@"Expo.addPassesViewControllerDidFinish" body:nil];
+		}
+    // Clean up
     controller.delegate = nil;
     self.passLibrary = nil;
     self.pass = nil;
