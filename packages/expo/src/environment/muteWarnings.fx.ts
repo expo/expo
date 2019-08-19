@@ -14,7 +14,8 @@ console.warn = function warn(...args) {
     args.length > 0 &&
     typeof args[0] === 'string' &&
     (/^Require cycle: .*node_modules/.test(args[0]) ||
-      /Use UIManager\.getViewManagerConfig\('LottieAnimationView'\) instead\./.test(args[0]))
+      /Use UIManager\.getViewManagerConfig\('LottieAnimationView'\) instead\./.test(args[0]) ||
+      /ReactNative\.NativeModules.\LottieAnimationView\.getConstants/.test(args[0]))
   ) {
     return;
   }

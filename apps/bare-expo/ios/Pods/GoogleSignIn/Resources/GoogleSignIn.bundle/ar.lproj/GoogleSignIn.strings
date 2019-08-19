@@ -1,0 +1,44 @@
+/* Sign-in button text */
+"Sign in" = "تسجيل الدخول";
+
+/* Long form sign-in button text */
+"Sign in with Google" = "تسجيل الدخول باستخدام Google";
+
+/* The title of the promotional prompt to install the Google app. */
+"PromoTitle" = "تسجيل الدخول باستخدام Google";
+
+/* The body message of the promotional prompt to install the Google app. */
+"PromoMessage" = "احصل على تطبيق Google المجاني وسجل الدخول إلى التطبيقات من خلال حساب Google. لا توجد حاجة لتذكر كلمات المرور.";
+
+/* The cancel button on the promotional prompt to install the Google app. */
+"PromoActionCancel" = "إلغاء";
+
+/* The install button on the promotional prompt to install the Google app. */
+"PromoActionInstall" = "جلب";
+
+/* The text for the button for user to acknowledge and dismiss a dialog. */
+"OK" = "موافق";
+
+/* The text for the button for user to dismiss a dialog without taking any action. */
+"Cancel" = "إلغاء";
+
+/* The name of the iOS native "Settings" app. */
+"SettingsAppName" = "إعدادات";
+
+/* The title for the error dialog for unable to sign in because of EMM policy. */
+"EmmErrorTitle" = "يتعذَّر تسجيل الدخول إلى الحساب";
+
+/* The text in the error dialog asking user to set up a passcode for the device due to EMM policy. */
+"EmmPasscodeRequired" = "يطلب منك المشرف تعيين رمز مرور على هذا الجهاز للدخول إلى هذا الحساب. يُرجى تعيين رمز المرور وإعادة المحاولة.";
+
+/* The text in the error dialog informing user that EMM policy prevented sign-in on the device. */
+"EmmGeneralError" = "لا يتوافق هذا الجهاز مع سياسة الأمان التي أعدها مشرفك";
+
+/* The title in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectTitle" = "هل تريد الربط بتطبيق Device Policy؟";
+
+/* The text in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectText" = "يجب الربط مع تطبيق Device Policy قبل تسجيل الدخول لحماية بيانات مؤسستك.";
+
+/* The action button label in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectLabel" = "ربط";

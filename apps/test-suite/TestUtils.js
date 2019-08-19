@@ -38,6 +38,7 @@ export function getTestModules() {
       modules.push(require('./tests/GLView'));
     }
 
+    // Pending https://github.com/expo/expo-cli/pull/940
     if (ExponentTest && !ExponentTest.isInCI) {
       // modules.push(require('./tests/Speech'));
     }
@@ -54,7 +55,6 @@ export function getTestModules() {
     require('./tests/Haptics'),
     require('./tests/Localization'),
     require('./tests/Recording'),
-    require('./tests/ScreenOrientation'),
     require('./tests/SecureStore'),
     require('./tests/Segment'),
     require('./tests/Speech'),
@@ -70,8 +70,11 @@ export function getTestModules() {
   if (ExponentTest && !ExponentTest.isInCI) {
     // Invalid placementId in CI (all tests fail)
     modules.push(require('./tests/FBNativeAd'));
-    // Requires interaction (sign in popup)
-    modules.push(require('./tests/GoogleSignIn'));
+
+    if (Constants.isDevice && Platform.OS !== 'android') {
+      // Requires interaction (sign in popup)
+      modules.push(require('./tests/GoogleSignIn'));
+    }
     // Popup to request device's location which uses Google's location service
     modules.push(require('./tests/Location'));
     // Fails to redirect because of malformed URL in published version with release channel parameter
@@ -97,6 +100,9 @@ export function getTestModules() {
   if (Constants.isDevice) {
     modules.push(require('./tests/BarCodeScanner'));
   }
+
+  // Add screen orientation last as it disrupts the Device Farm video
+  modules.push(require('./tests/ScreenOrientation'));
   return modules;
 }
 
