@@ -1,5 +1,5 @@
 import { NativeModulesProxy } from '@unimodules/core';
-import * as Facebook from '../Facebook';
+import * as Facebook from '../';
 
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
 
