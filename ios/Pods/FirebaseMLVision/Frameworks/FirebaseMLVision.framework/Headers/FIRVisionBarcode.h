@@ -10,57 +10,31 @@ NS_ASSUME_NONNULL_BEGIN
  * Barcode's value format. For example, TEXT, PRODUCT, URL, etc.
  */
 typedef NS_ENUM(NSInteger, FIRVisionBarcodeValueType) {
-  /**
-   * Unknown Barcode value types.
-   */
+  /** Unknown Barcode value types.  */
   FIRVisionBarcodeValueTypeUnknown,
-  /**
-   * Barcode value type for contact info.
-   */
+  /** Barcode value type for contact info. */
   FIRVisionBarcodeValueTypeContactInfo,
-  /**
-   * Barcode value type for email addresses.
-   */
+  /** Barcode value type for email addresses. */
   FIRVisionBarcodeValueTypeEmail,
-  /**
-   * Barcode value type for ISBNs.
-   */
+  /** Barcode value type for ISBNs. */
   FIRVisionBarcodeValueTypeISBN,
-  /**
-   * Barcode value type for phone numbers.
-   */
+  /** Barcode value type for phone numbers. */
   FIRVisionBarcodeValueTypePhone,
-  /**
-   * Barcode value type for product codes.
-   */
+  /** Barcode value type for product codes. */
   FIRVisionBarcodeValueTypeProduct,
-  /**
-   * Barcode value type for SMS details.
-   */
+  /** Barcode value type for SMS details. */
   FIRVisionBarcodeValueTypeSMS,
-  /**
-   * Barcode value type for plain text.
-   */
+  /** Barcode value type for plain text. */
   FIRVisionBarcodeValueTypeText,
-  /**
-   * Barcode value type for URLs/bookmarks.
-   */
+  /** Barcode value type for URLs/bookmarks. */
   FIRVisionBarcodeValueTypeURL,
-  /**
-   * Barcode value type for Wi-Fi access point details.
-   */
+  /** Barcode value type for Wi-Fi access point details. */
   FIRVisionBarcodeValueTypeWiFi,
-  /**
-   * Barcode value type for geographic coordinates.
-   */
+  /** Barcode value type for geographic coordinates. */
   FIRVisionBarcodeValueTypeGeographicCoordinates,
-  /**
-   * Barcode value type for calendar events.
-   */
+  /** Barcode value type for calendar events. */
   FIRVisionBarcodeValueTypeCalendarEvent,
-  /**
-   * Barcode value type for driver's license data.
-   */
+  /** Barcode value type for driver's license data. */
   FIRVisionBarcodeValueTypeDriversLicense,
 } NS_SWIFT_NAME(VisionBarcodeValueType);
 
@@ -69,17 +43,11 @@ typedef NS_ENUM(NSInteger, FIRVisionBarcodeValueType) {
  * Address type.
  */
 typedef NS_ENUM(NSInteger, FIRVisionBarcodeAddressType) {
-  /**
-   * Barcode unknown address type.
-   */
+  /** Barcode unknown address type. */
   FIRVisionBarcodeAddressTypeUnknown,
-  /**
-   * Barcode work address type.
-   */
+  /** Barcode work address type. */
   FIRVisionBarcodeAddressTypeWork,
-  /**
-   * Barcode home address type.
-   */
+  /** Barcode home address type. */
   FIRVisionBarcodeAddressTypeHome,
 } NS_SWIFT_NAME(VisionBarcodeAddressType);
 
@@ -88,17 +56,11 @@ typedef NS_ENUM(NSInteger, FIRVisionBarcodeAddressType) {
  * Email type for VisionBarcodeEmail.
  */
 typedef NS_ENUM(NSInteger, FIRVisionBarcodeEmailType) {
-  /**
-   * Unknown email type.
-   */
+  /** Unknown email type. */
   FIRVisionBarcodeEmailTypeUnknown,
-  /**
-   * Barcode work email type.
-   */
+  /** Barcode work email type. */
   FIRVisionBarcodeEmailTypeWork,
-  /**
-   * Barcode home email type.
-   */
+  /** Barcode home email type. */
   FIRVisionBarcodeEmailTypeHome,
 } NS_SWIFT_NAME(VisionBarcodeEmailType);
 
@@ -107,25 +69,15 @@ typedef NS_ENUM(NSInteger, FIRVisionBarcodeEmailType) {
  * Phone type for VisionBarcodePhone.
  */
 typedef NS_ENUM(NSInteger, FIRVisionBarcodePhoneType) {
-  /**
-   * Unknown phone type.
-   */
+  /** Unknown phone type. */
   FIRVisionBarcodePhoneTypeUnknown,
-  /**
-   * Barcode work phone type.
-   */
+  /** Barcode work phone type. */
   FIRVisionBarcodePhoneTypeWork,
-  /**
-   * Barcode home phone type.
-   */
+  /** Barcode home phone type. */
   FIRVisionBarcodePhoneTypeHome,
-  /**
-   * Barcode fax phone type.
-   */
+  /** Barcode fax phone type. */
   FIRVisionBarcodePhoneTypeFax,
-  /**
-   * Barcode mobile phone type.
-   */
+  /** Barcode mobile phone type. */
   FIRVisionBarcodePhoneTypeMobile,
 } NS_SWIFT_NAME(VisionBarcodePhoneType);
 
@@ -134,27 +86,17 @@ typedef NS_ENUM(NSInteger, FIRVisionBarcodePhoneType) {
  * Wi-Fi encryption type for VisionBarcodeWiFi.
  */
 typedef NS_ENUM(NSInteger, FIRVisionBarcodeWiFiEncryptionType) {
-  /**
-   * Barcode unknown Wi-Fi encryption type.
-   */
+  /** Barcode unknown Wi-Fi encryption type. */
   FIRVisionBarcodeWiFiEncryptionTypeUnknown,
-  /**
-   * Barcode open Wi-Fi encryption type.
-   */
+  /** Barcode open Wi-Fi encryption type. */
   FIRVisionBarcodeWiFiEncryptionTypeOpen,
-  /**
-   * Barcode WPA Wi-Fi encryption type.
-   */
+  /** Barcode WPA Wi-Fi encryption type. */
   FIRVisionBarcodeWiFiEncryptionTypeWPA,
-  /**
-   * Barcode WEP Wi-Fi encryption type.
-   */
+  /** Barcode WEP Wi-Fi encryption type. */
   FIRVisionBarcodeWiFiEncryptionTypeWEP,
 } NS_SWIFT_NAME(VisionBarcodeWiFiEncryptionType);
 
-/**
- * An address.
- */
+/** An address. */
 NS_SWIFT_NAME(VisionBarcodeAddress)
 @interface FIRVisionBarcodeAddress : NSObject
 
@@ -167,62 +109,40 @@ NS_SWIFT_NAME(VisionBarcodeAddress)
  */
 @property(nonatomic, readonly, nullable) NSArray<NSString *> *addressLines;
 
-/**
- * Address type.
- */
+/** Address type. */
 @property(nonatomic, readonly) FIRVisionBarcodeAddressType type;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * A calendar event extracted from a QR code.
- */
+/** A calendar event extracted from a QR code. */
 NS_SWIFT_NAME(VisionBarcodeCalendarEvent)
 @interface FIRVisionBarcodeCalendarEvent : NSObject
 
-/**
- * Calendar event description.
- */
+/** Calendar event description. */
 @property(nonatomic, readonly, nullable) NSString *eventDescription;
 
-/**
- * Calendar event location.
- */
+/** Calendar event location. */
 @property(nonatomic, readonly, nullable) NSString *location;
 
-/**
- * Clendar event organizer.
- */
+/** Clendar event organizer. */
 @property(nonatomic, readonly, nullable) NSString *organizer;
 
-/**
- * Calendar event status.
- */
+/** Calendar event status. */
 @property(nonatomic, readonly, nullable) NSString *status;
 
-/**
- * Calendar event summary.
- */
+/** Calendar event summary. */
 @property(nonatomic, readonly, nullable) NSString *summary;
 
-/**
- * Calendar event start date.
- */
+/** Calendar event start date. */
 @property(nonatomic, readonly, nullable) NSDate *start;
 
-/**
- * Calendar event end date.
- */
+/** Calendar event end date. */
 @property(nonatomic, readonly, nullable) NSDate *end;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -236,167 +156,105 @@ NS_SWIFT_NAME(VisionBarcodeCalendarEvent)
 NS_SWIFT_NAME(VisionBarcodeDriverLicense)
 @interface FIRVisionBarcodeDriverLicense : NSObject
 
-/**
- * Holder's first name.
- */
+/** Holder's first name. */
 @property(nonatomic, readonly, nullable) NSString *firstName;
 
-/**
- * Holder's middle name.
- */
+/** Holder's middle name. */
 @property(nonatomic, readonly, nullable) NSString *middleName;
 
-/**
- * Holder's last name.
- */
+/** Holder's last name. */
 @property(nonatomic, readonly, nullable) NSString *lastName;
 
-/**
- * Holder's gender. 1 is male and 2 is female.
- */
+/** Holder's gender. 1 is male and 2 is female. */
 @property(nonatomic, readonly, nullable) NSString *gender;
 
-/**
- * Holder's city address.
- */
+/** Holder's city address. */
 @property(nonatomic, readonly, nullable) NSString *addressCity;
 
-/**
- * Holder's state address.
- */
+/** Holder's state address. */
 @property(nonatomic, readonly, nullable) NSString *addressState;
 
-/**
- * Holder's street address.
- */
+/** Holder's street address. */
 @property(nonatomic, readonly, nullable) NSString *addressStreet;
 
-/**
- * Holder's address' zipcode.
- */
+/** Holder's address' zipcode. */
 @property(nonatomic, readonly, nullable) NSString *addressZip;
 
-/**
- * Holder's birthday. The date format depends on the issuing country.
- */
+/** Holder's birthday. The date format depends on the issuing country. */
 @property(nonatomic, readonly, nullable) NSString *birthDate;
 
-/**
- * "DL" for driver licenses, "ID" for ID cards.
- */
+/** "DL" for driver licenses, "ID" for ID cards. */
 @property(nonatomic, readonly, nullable) NSString *documentType;
 
-/**
- * Driver license ID number.
- */
+/** Driver license ID number. */
 @property(nonatomic, readonly, nullable) NSString *licenseNumber;
 
-/**
- * Driver license expiration date. The date format depends on the issuing country.
- */
+/** Driver license expiration date. The date format depends on the issuing country. */
 @property(nonatomic, readonly, nullable) NSString *expiryDate;
 
-/**
- * The date format depends on the issuing country.
- */
+/** The date format depends on the issuing country. */
 @property(nonatomic, readonly, nullable) NSString *issuingDate;
 
-/**
- * A country in which DL/ID was issued.
- */
+/** A country in which DL/ID was issued. */
 @property(nonatomic, readonly, nullable) NSString *issuingCountry;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * An email message from a 'MAILTO:' or similar QR Code type.
- */
+/** An email message from a 'MAILTO:' or similar QR Code type. */
 NS_SWIFT_NAME(VisionBarcodeEmail)
 @interface FIRVisionBarcodeEmail : NSObject
 
-/**
- * Email message address.
- */
+/** Email message address. */
 @property(nonatomic, readonly, nullable) NSString *address;
 
-/**
- * Email message body.
- */
+/** Email message body. */
 @property(nonatomic, readonly, nullable) NSString *body;
 
-/**
- * Email message subject.
- */
+/** Email message subject. */
 @property(nonatomic, readonly, nullable) NSString *subject;
 
-/**
- * Email message type.
- */
+/** Email message type. */
 @property(nonatomic, readonly) FIRVisionBarcodeEmailType type;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * GPS coordinates from a 'GEO:' or similar QR Code type data.
- */
+/** GPS coordinates from a 'GEO:' or similar QR Code type data. */
 NS_SWIFT_NAME(VisionBarcodeGeoPoint)
 @interface FIRVisionBarcodeGeoPoint : NSObject
-/**
- * A location latitude.
- */
+/** A location latitude. */
 @property(nonatomic, readonly) double latitude;
 
-/**
- * A location longitude.
- */
+/** A location longitude. */
 @property(nonatomic, readonly) double longitude;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * A person's name, both formatted and as individual name components.
- */
+/** A person's name, both formatted and as individual name components. */
 NS_SWIFT_NAME(VisionBarcodePersonName)
 @interface FIRVisionBarcodePersonName : NSObject
 
-/**
- * Properly formatted name.
- */
+/** Properly formatted name. */
 @property(nonatomic, readonly, nullable) NSString *formattedName;
 
-/**
- * First name.
- */
+/** First name. */
 @property(nonatomic, readonly, nullable) NSString *first;
 
-/**
- * Last name.
- */
+/** Last name. */
 @property(nonatomic, readonly, nullable) NSString *last;
 
-/**
- * Middle name.
- */
+/** Middle name. */
 @property(nonatomic, readonly, nullable) NSString *middle;
 
-/**
- * Name prefix.
- */
+/** Name prefix. */
 @property(nonatomic, readonly, nullable) NSString *prefix;
 
 /**
@@ -405,111 +263,73 @@ NS_SWIFT_NAME(VisionBarcodePersonName)
  */
 @property(nonatomic, readonly, nullable) NSString *pronounciation;
 
-/**
- * Name suffix.
- */
+/** Name suffix. */
 @property(nonatomic, readonly, nullable) NSString *suffix;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * A phone number from a 'TEL:' or similar QR Code type.
- */
+/** A phone number from a 'TEL:' or similar QR Code type. */
 NS_SWIFT_NAME(VisionBarcodePhone)
 @interface FIRVisionBarcodePhone : NSObject
 
-/**
- * Phone number.
- */
+/** Phone number. */
 @property(nonatomic, readonly, nullable) NSString *number;
 
-/**
- * Phone number type.
- */
+/** Phone number type. */
 @property(nonatomic, readonly) FIRVisionBarcodePhoneType type;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * An SMS message from an 'SMS:' or similar QR Code type.
- */
+/** An SMS message from an 'SMS:' or similar QR Code type. */
 NS_SWIFT_NAME(VisionBarcodeSMS)
 @interface FIRVisionBarcodeSMS : NSObject
 
-/**
- * An SMS message body.
- */
+/** An SMS message body. */
 @property(nonatomic, readonly, nullable) NSString *message;
 
-/**
- * An SMS message phone number.
- */
+/** An SMS message phone number. */
 @property(nonatomic, readonly, nullable) NSString *phoneNumber;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * A URL and title from a 'MEBKM:' or similar QR Code type.
- */
+/** A URL and title from a 'MEBKM:' or similar QR Code type. */
 NS_SWIFT_NAME(VisionBarcodeURLBookmark)
 @interface FIRVisionBarcodeURLBookmark : NSObject
 
-/**
- * A URL bookmark title.
- */
+/** A URL bookmark title. */
 @property(nonatomic, readonly, nullable) NSString *title;
 
-/**
- * A URL bookmark url.
- */
+/** A URL bookmark url. */
 @property(nonatomic, readonly, nullable) NSString *url;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * Wi-Fi network parameters from a 'WIFI:' or similar QR Code type.
- */
+/** Wi-Fi network parameters from a 'WIFI:' or similar QR Code type. */
 NS_SWIFT_NAME(VisionBarcodeWifi)
 @interface FIRVisionBarcodeWiFi : NSObject
 
-/**
- * A Wi-Fi access point SSID.
- */
+/** A Wi-Fi access point SSID. */
 @property(nonatomic, readonly, nullable) NSString *ssid;
 
-/**
- * A Wi-Fi access point password.
- */
+/** A Wi-Fi access point password. */
 @property(nonatomic, readonly, nullable) NSString *password;
 
-/**
- * A Wi-Fi access point encryption type.
- */
+/** A Wi-Fi access point encryption type. */
 @property(nonatomic, readonly) FIRVisionBarcodeWiFiEncryptionType type;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -525,51 +345,33 @@ NS_SWIFT_NAME(VisionBarcodeWifi)
 NS_SWIFT_NAME(VisionBarcodeContactInfo)
 @interface FIRVisionBarcodeContactInfo : NSObject
 
-/**
- * Person's or organization's addresses.
- */
+/** Person's or organization's addresses. */
 @property(nonatomic, readonly, nullable) NSArray<FIRVisionBarcodeAddress *> *addresses;
 
-/**
- * Contact emails.
- */
+/** Contact emails. */
 @property(nonatomic, readonly, nullable) NSArray<FIRVisionBarcodeEmail *> *emails;
 
-/**
- * A person's name.
- */
+/** A person's name. */
 @property(nonatomic, readonly, nullable) FIRVisionBarcodePersonName *name;
 
-/**
- * Contact phone numbers.
- */
+/** Contact phone numbers. */
 @property(nonatomic, readonly, nullable) NSArray<FIRVisionBarcodePhone *> *phones;
 
-/**
- * Contact URLs.
- */
+/** Contact URLs. */
 @property(nonatomic, readonly, nullable) NSArray<NSString *> *urls;
 
-/**
- * A job title.
- */
+/** A job title. */
 @property(nonatomic, readonly, nullable) NSString *jobTitle;
 
-/**
- * A business organization.
- */
+/** A business organization. */
 @property(nonatomic, readonly, nullable) NSString *organization;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
 
-/**
- * A barcode in an image.
- */
+/** A barcode in an image. */
 NS_SWIFT_NAME(VisionBarcode)
 @interface FIRVisionBarcode : NSObject
 
@@ -661,14 +463,10 @@ NS_SWIFT_NAME(VisionBarcode)
  */
 @property(nonatomic, readonly, nullable) FIRVisionBarcodeCalendarEvent *calendarEvent;
 
-/**
- * A driver license or ID card. This property is only set if valueType is .driverLicense.
- */
+/** A driver license or ID card. This property is only set if valueType is .driverLicense. */
 @property(nonatomic, readonly, nullable) FIRVisionBarcodeDriverLicense *driverLicense;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

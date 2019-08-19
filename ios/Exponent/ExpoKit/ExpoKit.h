@@ -52,11 +52,6 @@ FOUNDATION_EXPORT NSString * const EXAppDidRegisterUserNotificationSettingsNotif
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions;
 
 #pragma mark - APNS hooks
-// TODO: Remove once SDK31 is phased out
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings;
-#pragma clang diagnostic pop
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)err;
