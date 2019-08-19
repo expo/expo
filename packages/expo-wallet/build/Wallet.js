@@ -1,6 +1,6 @@
 import { UnavailabilityError, EventEmitter, Platform } from '@unimodules/core';
 import ExpoWallet from './ExpoWallet';
-import ExpoWalletAddPassButton from './ExpoWalletAddPassButton';
+import AddPassButton from './AddPassButton';
 const WalletEventEmitter = new EventEmitter(ExpoWallet);
 export async function canAddPassesAsync() {
     if (!ExpoWallet.canAddPassesAsync) {
@@ -20,5 +20,5 @@ export function addPassViewDidFinishListener(listener) {
     }
     return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
 }
-export { ExpoWalletAddPassButton as AddPassButton };
+export { AddPassButton };
 //# sourceMappingURL=Wallet.js.map

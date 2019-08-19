@@ -2,7 +2,7 @@ import { UnavailabilityError, EventEmitter, Subscription, Platform } from '@unim
 
 import { PassViewFinishListener } from './Wallet.types';
 import ExpoWallet from './ExpoWallet';
-import ExpoWalletAddPassButton from './ExpoWalletAddPassButton';
+import AddPassButton from './AddPassButton';
 
 const WalletEventEmitter = new EventEmitter(ExpoWallet);
 
@@ -27,4 +27,4 @@ export function addPassViewDidFinishListener(listener: PassViewFinishListener): 
   return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
 }
 
-export { PassViewFinishListener, ExpoWalletAddPassButton as AddPassButton };
+export { PassViewFinishListener, AddPassButton };

@@ -30,8 +30,12 @@ UM_REGISTER_MODULE();
 
 - (UIView *)view
 {
-	// TODO: CUSTOM STYLE
   return [[PKAddPassButton alloc] initWithAddPassButtonStyle:PKAddPassButtonStyleBlack];
+}
+
+UM_VIEW_PROPERTY(type, NSNumber *, PKAddPassButton)
+{
+	[view setAddPassButtonStyle:[value integerValue]];
 }
 
 @end
