@@ -151,12 +151,6 @@
     <!-- BEGIN_SDK_33 -->
     <activity android:name="abi33_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_33 -->
-    <!-- BEGIN_SDK_32 -->
-    <activity android:name="abi32_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_32 -->
-    <!-- BEGIN_SDK_31 -->
-    <activity android:name="abi31_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_31 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
@@ -187,10 +181,6 @@
 
     <activity
       android:name=".oauth.OAuthResultActivity">
-    </activity>
-
-    <activity
-      android:name="abi32_0_0.expo.modules.appauth.AppAuthBrowserActivity">
     </activity>
 
     <!-- START OF STRIPE SCHEMES -->
@@ -235,34 +225,6 @@
       </intent-filter>
     </activity>
     <!-- END_SDK_33 -->
-    <!-- BEGIN_SDK_32 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi32_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="abi32_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_32 -->
-    <!-- BEGIN_SDK_31 -->
-    <activity
-        android:exported="true"
-        android:launchMode="singleTask"
-        android:name="abi31_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="abi31_0_0.expo.modules.payments.stripe" />
-        </intent-filter>
-    </activity>
-    <!-- END_SDK_31 -->
     <!-- END OF STRIPE SCHEMES -->
 
     <activity
