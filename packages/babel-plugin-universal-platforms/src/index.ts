@@ -56,7 +56,7 @@ export default function(api: any, options: Options) {
       }
     },
     /**
-     * Transforms member expressions for Terser to shake
+     * Transforms member expressions for Terser to analyze
      * `process.env.NODE_ENV => <true | false>`
      * `Platform.OS => <"ios" | "android" | "web" | string>`
      */
