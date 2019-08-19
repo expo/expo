@@ -31,11 +31,11 @@ import * as Wallet from 'expo-wallet';
 
 ### `Wallet.canAddPassesAsync()`
 
-**iOS only.** Tells whether current device supports adding passes to apple wallet
+**iOS only.** Tells whether current device supports adding passes to Apple Wallet.
 
 #### Returns
 
-A `Promise` that resolves to a `boolean` value of whether the device supports adding passes to apple wallet.
+A `Promise` that resolves to a `boolean` value of whether the device supports adding passes to Apple Wallet.
 
 **Examples**
 
@@ -46,36 +46,36 @@ await Wallet.canAddPassesAsync();
 
 ### `Wallet.addPassFromUrlAsync(url)`
 
-**iOS only.** Adds passes to Apple wallet from given url and present the add passes view controller modally with animation to prompt the user to add it to Apple Wallet. If the pass is already added to Apple Wallet, this method returns `true` and does not open preview of the pass.
+**iOS only.** Presents the [Passes View Controller](https://developer.apple.com/documentation/passkit/pkaddpassesviewcontroller) modally with animation to prompt the user to add the pass given by `url` to Apple Wallet. If the pass was already added to Apple Wallet, this method returns `true` and does not open preview of the pass.
 
-Note that if you want to use `.pkpass` file from local file path in your application, you can use `Asset` from `expo-asset` to get the remote URI. See examples in the bottom. Also, remember to add `"pkpass"` into your `assetExts` in `metro.config.js` in root directory.
+Note that if you want to use a `.pkpass` file from a local file path in your application, you can use `Asset` from [`expo-asset`](../../sdk/asset/) to get the remote URI. See examples at the bottom. Also, remember to add `"pkpass"` into your `assetExts` in `metro.config.js` in root directory so that Metro can resolve the file.
 
 #### Arguments
 
-- **url (_string_)** -- valid url where it directs to a [`PKPass`](https://developer.apple.com/documentation/passkit/pkpass?language=objc) file.
+- **url (_string_)** -- valid URL where it directs to a [`PKPass`](https://developer.apple.com/documentation/passkit/pkpass) file.
 
 #### Returns
 
-A `Promise` that resolves to a `boolean` value of whether the pass is sccessfully added to Apple Wallet.
+A `Promise` that resolves to a `boolean` value of whether the pass is successfully added to Apple Wallet.
 
 **Examples**
 
 ```js
-await Wallet.addPassFromUrlAsync('passUrl');
-// true or false
+await Wallet.addPassFromUrlAsync('https://example.com/your-pass.pkpass');
+// `true` or `false`
 ```
 
 ## Event Subscriptions
 
 ### `Wallet.addPassViewDidFinishListener(callback)`
 
-**iOS only.** Subscribe to the event after the add-passes view controller has finished.
+**iOS only.** Subscribes to the event after the Passes View Controller is dismissed.
 
 On web, the event never fires.
 
 #### Arguments
 
-- **callback (_function_)** A callback that is invoked after the add-passes view controller has finished.
+- **callback (_function_)** A callback that is invoked after the Passes View Controller is dismissed.
 
 #### Returns
 
@@ -83,16 +83,16 @@ On web, the event never fires.
 
 ## Error Codes
 
-| Code                        | Description                                              |
-| --------------------------- | -------------------------------------------------------- |
-| ERR_WALLET_INVALID_PASS     | Given file path or url does not contain valid pass data. |
-| ERR_WALLET_VIEW_PASS_FAILED | Failed to present PKAddPassesViewController.             |
+| Code                        | Description                                 |
+| --------------------------- | ------------------------------------------- |
+| ERR_WALLET_INVALID_PASS     | Given URL does not contain valid pass data. |
+| ERR_WALLET_VIEW_PASS_FAILED | Failed to present Passes View Controller.   |
 
-**Examples (use Asset to add pkpass in local file path)**
+**Examples (use `Asset` to add a local `.pkpass` file)**
 
 ```js
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Button, View } from 'react-native';
 import * as Wallet from 'expo-wallet';
 import { Asset } from 'expo-asset';
 
@@ -106,9 +106,9 @@ export default class App extends React.Component {
   }
 
   _subscribe = () => {
-    this._subscription = Wallet.addPassViewDidFinishListener(()=>{
-      console.log("View pass controller dismissed");
-    })
+    this._subscription = Wallet.addPassViewDidFinishListener(() => {
+      console.log('Passes View Controller dismissed');
+    });
   };
 
   _unsubscribe = () => {
@@ -118,17 +118,18 @@ export default class App extends React.Component {
 
   _onPressWallet = () => {
     Wallet.canAddPassesAsync().then(canAdd => {
-      console.log('can add pass', canAdd);
-      let filePath = Asset.fromModule(require('you local file path to pkpass')).uri;
-      Wallet.addPassFromUrlAsync(filePath).then(open=>{
-        console.log('pass added', open);
+      console.log('Can add pass', canAdd);
+      let filePath = Asset.fromModule(require('./your/local/file/path/to/pkpass')).uri;
+      Wallet.addPassFromUrlAsync(filePath).then(open => {
+        console.log('Pass added', open);
       });
     });
+  };
 
   render() {
     return (
       <View style={styles.container}>
-        <Button onPress={this._onPressWallet} title="Press me to add pass" />
+        <Button onPress={this._onPressWallet} title="Press me to add the pkpass" />
       </View>
     );
   }
