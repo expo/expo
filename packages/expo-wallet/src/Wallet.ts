@@ -8,12 +8,14 @@ const WalletEventEmitter = new EventEmitter(ExpoWallet);
 
 export async function canAddPassesAsync(): Promise<boolean> {
   if (!ExpoWallet.canAddPassesAsync) {
-    return false;
+    return new Promise(resolve => {
+      resolve(false);
+    });
   }
   return await ExpoWallet.canAddPassesAsync();
 }
 
-export async function addPassFromUrlAsync(url): Promise<boolean> {
+export async function addPassFromUrlAsync(url: string): Promise<boolean> {
   if (!ExpoWallet.addPassFromUrlAsync) {
     throw new UnavailabilityError('expo-wallet', 'addPassFromUrlAsync');
   }

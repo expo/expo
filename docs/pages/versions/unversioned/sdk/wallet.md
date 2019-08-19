@@ -67,6 +67,8 @@ await Wallet.canAddPassesAsync();
 
 Note that if you want to use a `.pkpass` file from a local file path in your application, you can use `Asset` from [`expo-asset`](../../sdk/asset/) to get the remote URI. See examples at the bottom. Also, remember to add `"pkpass"` into your `assetExts` in `metro.config.js` in root directory so that Metro can resolve the file.
 
+For web, it prompts the user to save the pass (in Safari) or downloads the pass (in any other browser) and always returns `true`.
+
 #### Arguments
 
 - **url (_string_)** -- valid URL where it directs to a [`PKPass`](https://developer.apple.com/documentation/passkit/pkpass) file.
