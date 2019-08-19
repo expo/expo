@@ -135,14 +135,16 @@ export default class App extends React.Component {
     this._subscription = null;
   };
 
-  _onPressWallet = () => {
-    Wallet.canAddPassesAsync().then(canAdd => {
-      console.log('Can add pass', canAdd);
-      let filePath = Asset.fromModule(require('./your/local/file/path/to/pkpass')).uri;
-      Wallet.addPassFromUrlAsync(filePath).then(open => {
-        console.log('Pass added', open);
-      });
-    });
+  _onPressWallet = async () => {
+    const canAddPasses = await Wallet.canAddPassesAsync();
+    console.log(`canAddPassesAsync returns: ${canAddPasses}`);
+    if (!canAddPasses) {
+      return;
+    }
+
+    let filePath = Asset.fromModule(require('./your/local/file/path/to/pkpass')).uri;
+    const result = await Wallet.addPassFromUrlAsync(filePath);
+    console.log(`addPassFromUrlAsync returns: ${result}`);
   };
 
   render() {
