@@ -111,7 +111,7 @@ For web, the function returns `null`, and the event never fires.
 
 ```js
 import React from 'react';
-import { StyleSheet, View, Button } from 'react-native';
+import { View, Button, Platform } from 'react-native';
 import * as Wallet from 'expo-wallet';
 import { Asset } from 'expo-asset';
 
@@ -147,23 +147,18 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Wallet.AddPassButton
-          type={'black'}
-          style={{ height: 60, width: 200 }}
-          onPress={() => _onPressWallet()}
-        />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        {Platform.OS === 'ios' ? (
+          <Wallet.AddPassButton
+            type="black"
+            style={{ height: 60, width: 200 }}
+            onPress={() => this._onPressWallet()}
+          />
+        ) : (
+          <Button title="Add to Apple Wallet" onPress={() => this._onPressWallet()} />
+        )}
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 ```
