@@ -4,6 +4,5 @@ export interface AddPassButtonProps extends TouchableHighlightProps {
     type?: 'black' | 'blackOutline';
 }
 export default class AddPassButton extends React.Component<AddPassButtonProps> {
-    componentDidMount(): void;
     render(): JSX.Element;
 }

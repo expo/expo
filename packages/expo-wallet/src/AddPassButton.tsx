@@ -8,13 +8,11 @@ export interface AddPassButtonProps extends TouchableHighlightProps {
 }
 
 export default class AddPassButton extends React.Component<AddPassButtonProps> {
-  componentDidMount() {
+  render() {
     if (!ExpoWalletAddPassButton) {
       throw new UnavailabilityError('expo-wallet', 'AddPassButton');
     }
-  }
 
-  render() {
     const { type, ...touchableHighlightProps } = this.props;
     let typeInt = 0;
     switch (type) {
