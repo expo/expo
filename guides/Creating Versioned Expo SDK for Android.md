@@ -14,7 +14,6 @@ This document will guide you through the process of creating a versioned snapsho
 
     **How:** Any directory pointers from now on will assume current working directory is `android`.
       - Run `et remove-sdk-version -p android` and choose the SDK to remove from the list. This script removes versioned code for given SDK version and removes almost all references to this version in source files. Any references that the script couldn't remove automatically will be shown at the end of the script - iterate through them and decide what to do with each one, most of them can be just removed if the code is no longer used.
-      - If deprecated SDKs depended on any `expolib_vX` libraries on which no other SDK now depends, remove those dependencies from `versioned-abis/maven/` (`expolib_vX` libraries are created by us with [JarJar](https://github.com/shevek/jarjar) so we can have multiple versions of dependencies in one application).
       - Search in Java and Kotlin files for `/SDK(?!_INT)/`. Look through every entry and see if you can drop any no longer used code path.
       - (If dropping some Android version support) Look for `SDK_INT` in the codebase and see if you can simplify the logic.
 
