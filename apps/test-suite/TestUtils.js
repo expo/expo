@@ -1,6 +1,6 @@
 'use strict';
 
-import { Platform } from 'react-native';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 
 import ExponentTest from './ExponentTest';
@@ -79,6 +79,8 @@ export function getTestModules() {
     modules.push(require('./tests/Location'));
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(require('./tests/Linking'));
+    // Has uncontrolled view controllers
+    modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(require('./tests/Calendar'));
     modules.push(require('./tests/Contacts'));
@@ -130,4 +132,17 @@ export async function shouldSkipTestsRequiringPermissionsAsync() {
     return false;
   }
   return ExponentTest.shouldSkipTestsRequiringPermissionsAsync();
+}
+
+export async function expectMethodToBeUnavailableAsync(expect, method) {
+  const error = await expectMethodToThrowAsync(method);
+  expect(error instanceof UnavailabilityError).toBeTruthy();
+}
+
+export async function expectMethodToThrowAsync(method) {
+  try {
+    await method();
+  } catch (error) {
+    return error;
+  }
 }
