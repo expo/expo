@@ -1,9 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
 import React from 'react';
-import { TouchableHighlight, TouchableHighlightProps } from 'react-native';
+import { TouchableWithoutFeedback, TouchableWithoutFeedbackProps } from 'react-native';
 import ExpoWalletAddPassButton from './ExpoWalletAddPassButton';
 
-export interface AddPassButtonProps extends TouchableHighlightProps {
+export interface AddPassButtonProps extends TouchableWithoutFeedbackProps {
   type?: 'black' | 'blackOutline';
 }
 
@@ -13,7 +13,7 @@ export default class AddPassButton extends React.Component<AddPassButtonProps> {
       throw new UnavailabilityError('expo-wallet', 'AddPassButton');
     }
 
-    const { type, ...touchableHighlightProps } = this.props;
+    const { type, style, ...touchableWithoutFeedbackProps } = this.props;
     let typeInt = 0;
     switch (type) {
       case 'black':
@@ -23,10 +23,14 @@ export default class AddPassButton extends React.Component<AddPassButtonProps> {
         typeInt = 1;
         break;
     }
+    // We use `TouchableWithoutFeedback` here because `ExpoWalletAddPassButton`
+    // (i.e., `PKAddPassButton`) already has its own touch effect.
+    // Also note that `TouchableWithoutFeedback` does not have a `style` property,
+    // so we apply `style` to `ExpoWalletAddPassButton` directly.
     return (
-      <TouchableHighlight {...touchableHighlightProps}>
-        <ExpoWalletAddPassButton type={typeInt} style={{ flex: 1 }} />
-      </TouchableHighlight>
+      <TouchableWithoutFeedback {...touchableWithoutFeedbackProps}>
+        <ExpoWalletAddPassButton type={typeInt} style={style} />
+      </TouchableWithoutFeedback>
     );
   }
 }

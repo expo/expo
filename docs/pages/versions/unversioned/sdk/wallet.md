@@ -42,7 +42,7 @@ For web, you could download the [Add to Apple Wallet badge](https://developer.ap
 #### Properties
 
 - **type (_string_)** -- The button’s style, which could either be [`'black'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblack) (default) or [`'blackOutline'`](https://developer.apple.com/documentation/passkit/pkaddpassbuttonstyle/pkaddpassbuttonstyleblackoutline).
-- You could also use any other properties of a [`TouchableHighlight`](https://facebook.github.io/react-native/docs/touchablehighlight#props).
+- You could also use `style` as well as any other properties of a [`TouchableWithoutFeedback`](https://facebook.github.io/react-native/docs/touchablewithoutfeedback.html#props).
 
 ## Methods
 
