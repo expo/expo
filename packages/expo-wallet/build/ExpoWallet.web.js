@@ -1,14 +1,10 @@
 export default {
     async canAddPassesAsync() {
-        return new Promise(resolve => {
-            resolve(true);
-        });
+        return true;
     },
     async addPassFromUrlAsync(url) {
         window.open(url);
-        return new Promise(resolve => {
-            resolve(true);
-        });
+        return true;
     },
 };
 //# sourceMappingURL=ExpoWallet.web.js.map

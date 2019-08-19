@@ -1,13 +1,9 @@
 export default {
   async canAddPassesAsync(): Promise<boolean> {
-    return new Promise(resolve => {
-      resolve(true);
-    });
+    return true;
   },
   async addPassFromUrlAsync(url: string): Promise<boolean> {
     window.open(url);
-    return new Promise(resolve => {
-      resolve(true);
-    });
+    return true;
   },
 };

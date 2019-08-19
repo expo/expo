@@ -4,9 +4,7 @@ import AddPassButton from './AddPassButton';
 const WalletEventEmitter = new EventEmitter(ExpoWallet);
 export async function canAddPassesAsync() {
     if (!ExpoWallet.canAddPassesAsync) {
-        return new Promise(resolve => {
-            resolve(false);
-        });
+        return false;
     }
     return await ExpoWallet.canAddPassesAsync();
 }
