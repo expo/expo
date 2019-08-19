@@ -1,7 +1,13 @@
+import { UnavailabilityError } from '@unimodules/core';
 import React from 'react';
 import { TouchableHighlight } from 'react-native';
 import ExpoWalletAddPassButton from './ExpoWalletAddPassButton';
 export default class AddPassButton extends React.Component {
+    componentDidMount() {
+        if (!ExpoWalletAddPassButton) {
+            throw new UnavailabilityError('expo-wallet', 'AddPassButton');
+        }
+    }
     render() {
         const { type, ...touchableHighlightProps } = this.props;
         let typeInt = 0;
