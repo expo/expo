@@ -20,11 +20,17 @@ export async function addPassFromUrlAsync(url): Promise<boolean> {
   return await ExpoWallet.addPassFromUrlAsync(url);
 }
 
-export function addPassViewDidFinishListener(listener: PassViewFinishListener): Subscription {
-  if (Platform.OS !== 'ios') {
-    throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
+export function addPassViewDidFinishListener(
+  listener: PassViewFinishListener
+): Subscription | null {
+  switch (Platform.OS) {
+    case 'ios':
+      return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
+    case 'web':
+      return null;
+    default:
+      throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
   }
-  return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
 }
 
 export { PassViewFinishListener, AddPassButton };

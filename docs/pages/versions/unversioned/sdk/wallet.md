@@ -88,7 +88,7 @@ await Wallet.addPassFromUrlAsync('https://example.com/your-pass.pkpass');
 
 **iOS only.** Subscribes to the event after the Passes View Controller is dismissed.
 
-For web, the event never fires.
+For web, the function returns `null`, and the event never fires.
 
 #### Arguments
 
@@ -96,7 +96,7 @@ For web, the event never fires.
 
 #### Returns
 
-- An `EventSubscription` object on which you can call `remove()` to unsubscribe from the listener.
+- An `EventSubscription` object on which you can call `remove()` to unsubscribe from the listener, or `null` for web (see above).
 
 ## Error Codes
 

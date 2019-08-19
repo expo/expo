@@ -15,10 +15,14 @@ export async function addPassFromUrlAsync(url) {
     return await ExpoWallet.addPassFromUrlAsync(url);
 }
 export function addPassViewDidFinishListener(listener) {
-    if (Platform.OS !== 'ios') {
-        throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
+    switch (Platform.OS) {
+        case 'ios':
+            return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
+        case 'web':
+            return null;
+        default:
+            throw new UnavailabilityError('expo-wallet', 'addPassViewDidFinishListener');
     }
-    return WalletEventEmitter.addListener('Expo.addPassesViewControllerDidFinish', listener);
 }
 export { AddPassButton };
 //# sourceMappingURL=Wallet.js.map
