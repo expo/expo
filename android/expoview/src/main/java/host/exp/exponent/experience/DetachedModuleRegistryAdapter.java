@@ -42,7 +42,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     }
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
-    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext)); // todo: I think I can delete this line but I'm not sure :\
+    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext));
 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));

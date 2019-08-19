@@ -33,6 +33,7 @@
 }
 
 # pragma mark - permission requsters / getters
+
 // overriding EXPermission to inject scoped permission logic
 - (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass
 {
@@ -61,8 +62,8 @@
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                withResult:(void (^)(NSDictionary *))onResult
-                              withRejecter:(UMPromiseRejectBlock)reject
+                                 withResult:(UMPromiseResolveBlock)onResult
+                               withRejecter:(UMPromiseRejectBlock)reject
 {
   NSDictionary* globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
   NSString* permissionType = [requesterClass permissionType];
@@ -77,7 +78,8 @@
     };
     
     return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
-  } else if (![self hasGrantedScopedPermission:permissionType]) {
+  } else if ([_constantsBinding.appOwnership isEqualToString:@"expo"] &&
+             ![self hasGrantedScopedPermission:permissionType]) {
     // second group
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -107,8 +109,8 @@
 
 // overriding EXPermission to inject scoped permission logic
 - (void)askForPermissionWithType:(NSString *)permissionType
-                       withResults:(void (^)(NSDictionary *results))onResults
-                      withRejecter:(UMPromiseRejectBlock)reject
+                     withResults:(UMPromiseResolveBlock)onResults
+                    withRejecter:(UMPromiseRejectBlock)reject
 {
 //   Divide permissions into three groups:
 //   1. that for which global status is undetermined
@@ -133,7 +135,8 @@
     };
     
     return [super askForGlobalPermission:permissionType withResolver:customOnResults withRejecter:reject];
-  } else if (![self hasGrantedScopedPermission:permissionType]) {
+  } else if ([_constantsBinding.appOwnership isEqualToString:@"expo"] &&
+             ![self hasGrantedScopedPermission:permissionType]) {
     // second group
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -162,6 +165,7 @@
 }
 
 # pragma mark - helpers
+
 - (NSDictionary *)getScopedPermissionForType:(NSString *)permissionType withGlobalPermission:(NSDictionary *)globalPermission
 {
   if (!globalPermission) {
