@@ -99,7 +99,7 @@ Add the following to your `package.json`:
 {
     "homepage": "http://evanbacon.github.io/expo-gh-pages",
     "scripts": {
-        "deploy": "gh-pages -d build",
+        "deploy": "gh-pages -d web-build",
         "predeploy": "expo build:web"
     }
 }
