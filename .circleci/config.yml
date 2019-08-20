@@ -37,9 +37,8 @@ commands:
     steps:
       - run:
           name: Detect file changes
-          working_directory: ~/expo
           command: |
-            if [ ! "$(sh branch-has-changes.sh << parameters.exlcuding >>)" ]; then
+            if [ "$(sh ~/expo/branch-has-changes.sh << parameters.exlcuding >>)" = 0 ]; then
               echo "No relevant file changes in the current branch. Stopping job."
               circleci-agent step halt
             fi
