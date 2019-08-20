@@ -1,35 +1,35 @@
+import WebSocket from 'ws';
+
+import RelapseError from './RelapseError';
+
 const defaultOptions = {
   port: 8085,
 };
 
-// all state is contained in this variable
 let state;
 
-const WebSocket = require('ws');
-
-export function startAsync(startOptions = {}) {
+export async function startAsync(startOptions = {}) {
   if (state) {
-    throw new Error('Server is already started');
+    throw new RelapseError(`server`, 'Server is already started');
   }
-  const options = Object.assign({}, defaultOptions, startOptions);
+  const options = { ...defaultOptions, ...startOptions };
 
-  const wss = new WebSocket.Server({ port: defaultOptions.port });
-  wss.on('connection', ws => {
-    ws.on('message', message => {
-      const body = JSON.parse(message);
-      options.onEvent && options.onEvent(body.call, body.arguments || []);
-
-      // console.log(`Received message => ${message}`);
-    });
-    state.ws = ws;
-  });
+  const wss = new WebSocket.Server({ port: options.port });
 
   state = {
     ws: null,
     server: wss,
   };
 
-  console.log('Starting server', options);
+  wss.on('connection', ws => {
+    ws.on('message', message => {
+      const body = JSON.parse(message);
+      options.onEvent && options.onEvent(body.call, body.arguments || []);
+    });
+    state.ws = ws;
+    startOptions.onConnect && startOptions.onConnect(ws);
+  });
+
   return async () => {
     if (state.ws) state.ws.close();
     return new Promise((resolve, reject) =>
@@ -41,17 +41,9 @@ export function startAsync(startOptions = {}) {
   };
 }
 
-// export function stop() {
-//   if (!state) {
-//     throw new Error('Server is already stopped');
-//   }
-//   state.ws.close();
-//   state = undefined;
-// }
-
 export function send(message) {
-  if (!state) {
-    throw new Error('Server is already stopped');
+  if (!state || !state.ws) {
+    throw new RelapseError(`server`, 'Server cannot send data');
   }
   state.ws.send(JSON.stringify(message));
 }

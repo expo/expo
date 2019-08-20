@@ -1,11 +1,10 @@
 /* global jasmine */
 
-import { launchWithPermissionsAsync } from './Utils';
-
 const { cleanup } = require('detox');
 const adapter = require('detox/runners/jest/adapter');
 const specReporter = require('detox/runners/jest/specReporter');
-const config = require('../package.json').detox;
+const { launchWithPermissionsAsync } = require('../Utils');
+const config = require('../../package.json').detox;
 
 // Set the default timeout
 jest.setTimeout(120000);

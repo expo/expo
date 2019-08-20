@@ -1,20 +1,26 @@
 import * as detox from 'detox';
-import { startAsync } from '../relapse/server';
-
-const { device } = detox;
+import { startAsync, send } from '../../relapse/server';
 
 let stopAsync;
 beforeAll(async () => {
+  const customConsole = { ...console };
+  // We only want warnings and errors from the client to show up in the jest logs
+  customConsole.log = () => {};
+
+  // The testing modules we want to share with the client
   const API = {
-    device,
+    device: detox.device,
     detox,
-    console,
+    console: customConsole,
   };
 
   stopAsync = await startAsync({
+    onConnect: () => {
+      send({ globals: Object.keys(API) });
+    },
     onEvent: (invocation, props) => {
-      const [clss, method] = invocation.split('.');
-      API[clss][method](...props);
+      const [module, method] = invocation.split('.');
+      API[module][method](...props);
       // eval(`${fcName}(${props[0]})`);
     },
   });
