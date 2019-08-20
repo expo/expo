@@ -22,7 +22,11 @@ export async function test(
 
   beforeAll(async () => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 3;
+    if (DETOX) {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 6;
+    } else {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 3;
+    }
   });
 
   afterAll(() => {

@@ -5,15 +5,15 @@ import { getTextAsync, sleepAsync } from './Utils';
 
 let TESTS = [
   'Basic',
-  'Asset',
+  // 'Asset',
   'Constants',
   'Crypto',
   'GLView',
   'Haptics',
   'Localization',
   'SecureStore',
-  'Segment',
-  'SQLite',
+  // 'Segment',
+  // 'SQLite',
   'Random',
   'Permissions',
   // 'Audio',
