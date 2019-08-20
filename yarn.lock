@@ -890,10 +890,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@expo/browser-polyfill@^0.0.1-alpha.3":
-  version "0.0.1-alpha.6"
-  resolved "https://registry.yarnpkg.com/@expo/browser-polyfill/-/browser-polyfill-0.0.1-alpha.6.tgz#9e550a6e240836d0ead1b7982613525c238dbc88"
-  integrity sha512-gB/tmuc80Dgtmmm4bOJoKD/Y1IdJJE4GmbtONp/irVumYMW6UTGfX2Qny+Fi4Su1NRYuF3/452KnkTftVR3rzQ==
+"@expo/browser-polyfill@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/browser-polyfill/-/browser-polyfill-0.1.0.tgz#225dc667b22f8b247fa11aa961537f3a43c4fe48"
+  integrity sha512-L1Bc7R8F/Q+aiuA2z3s7QKqu5rxxY0ZlDVmB3pxAbB7CqTW3WX5e1e1Qg0Pxm1ZCjNhqgBQhTz9I0Tfaqc4d2g==
   dependencies:
     expo-2d-context "^0.0.2"
     fbemitter "^2.1.1"
@@ -5980,13 +5980,14 @@ expo-permissions@~5.0.0:
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-5.0.1.tgz#cc6af49a37ea3ab73e780a8a19f22b7662379941"
   integrity sha512-cOg9f9TaV8grORTwLSuoPfviDGcJSALjaALvxdmQD5ujPW6lxO6Ofd/s4/dV4L3lJww4HXiurjPJnT5yo+3ydw==
 
-expo-three@3.0.2-alpha.1:
-  version "3.0.2-alpha.1"
-  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-3.0.2-alpha.1.tgz#6b1d185822aa8ce84cdc253ea8c163894703a69c"
-  integrity sha512-uisd3H0npk2D3qif1DpqULWMAz+M9i0o5FvZExyzO4/p4Whvz6yLmLfMnvyfXD3lDFWfVhhhhyzQffrtHZJ9IA==
+expo-three@4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-4.0.6.tgz#1a23012a2147d1a69c3539e79d9062004230ed0c"
+  integrity sha512-WGITe8N3ixx4LB6OxD8pqGogf4jthVPClBhT5YRrqXdQ7tp1OGzqHDVjU7iPC82EQoVGcMtOt9d6/1DVSb70QA==
   dependencies:
-    "@expo/browser-polyfill" "^0.0.1-alpha.3"
+    "@expo/browser-polyfill" "^0.1.0"
     color-temperature "0.2.7"
+    expo-asset "^6.0.0"
     expo-asset-utils "^1.0.0"
     three "^0.102.1"
 
@@ -14199,11 +14200,6 @@ three@^0.102.1:
   version "0.102.1"
   resolved "https://registry.yarnpkg.com/three/-/three-0.102.1.tgz#fc08b6b11860cf59e8cd45b7e90e34d1d1a8cbd6"
   integrity sha512-btHBdww/Es4vdBkB2GjTE9mpj0vy8tgtxkX7ne7uxySXV8zoGxWJv1N88BydxnCqvAfmD4ZUTqPeESO7oDgeOQ==
-
-three@^0.88.0:
-  version "0.88.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.88.0.tgz#4256c2fc38e4fb23a0d23eba2b6cce4df8e466d5"
-  integrity sha1-QlbC/Djk+yOg0j66K2zOTfjkZtU=
 
 throat@^4.0.0, throat@^4.1.0:
   version "4.1.0"
