@@ -15,7 +15,8 @@ do
             CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
             if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
                 # circleci-agent step halt
-                echo $FILE_NAME
+                exit 1
+                # echo $FILE_NAME
             fi
         fi
     fi
