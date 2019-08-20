@@ -8,7 +8,7 @@ let TESTS = [
   // 'Asset',
   'Constants',
   'Crypto',
-  'GLView',
+  // 'GLView',
   'Haptics',
   'Localization',
   'SecureStore',

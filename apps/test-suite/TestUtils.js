@@ -1,4 +1,3 @@
-/* global DETOX */
 'use strict';
 
 import { Platform, UnavailabilityError } from '@unimodules/core';
@@ -75,8 +74,8 @@ export function getTestModules() {
   if (global.DETOX) {
     modules.push(
       modules.push(optionalRequire(() => require('./tests/Permissions'))),
-      // modules.push(optionalRequire(() => require('./tests/Calendar'))),
-      // modules.push(optionalRequire(() => require('./tests/Video'))),
+      modules.push(optionalRequire(() => require('./tests/Calendar'))),
+      modules.push(optionalRequire(() => require('./tests/Video'))),
       modules.push(optionalRequire(() => require('./tests/Audio')))
     );
   } else {
@@ -94,7 +93,7 @@ export function getTestModules() {
     );
   }
 
-  if (!DETOX && !isInDeviceFarm()) {
+  if (!global.DETOX && !isInDeviceFarm()) {
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)
