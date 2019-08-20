@@ -17,7 +17,9 @@ NS_SWIFT_NAME(LocalModel)
  *
  * @param name The name of the local model. Within the same Firebase app, all local models should
  *     have distinct names.
- * @param path An absolute path to the model file stored locally on the device.
+ * @param path An absolute path to the model file stored locally on the device. For a custom model,
+ *     this should be the path to the TensorFlow Lite model. For an AutoML Vision Edge model, this
+ *     should be the path to the model manifest file.
  * @return A new `LocalModel` instance.
  */
 - (instancetype)initWithName:(NSString *)name

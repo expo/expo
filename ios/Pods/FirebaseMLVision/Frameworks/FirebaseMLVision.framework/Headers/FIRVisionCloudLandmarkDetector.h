@@ -15,15 +15,11 @@ typedef void (^FIRVisionCloudLandmarkDetectionCompletion)(
     NSArray<FIRVisionCloudLandmark *> *_Nullable landmarks, NSError *_Nullable error)
     NS_SWIFT_NAME(VisionCloudLandmarkDetectionCompletion);
 
-/**
- * A landmark detector that detects landmark in an image.
- */
+/** A landmark detector that detects landmark in an image. */
 NS_SWIFT_NAME(VisionCloudLandmarkDetector)
 @interface FIRVisionCloudLandmarkDetector : NSObject
 
-/**
- * Unavailable.  Use `Vision` factory methods.
- */
+/** Unavailable. Use `Vision` factory methods. */
 - (instancetype)init NS_UNAVAILABLE;
 
 /**

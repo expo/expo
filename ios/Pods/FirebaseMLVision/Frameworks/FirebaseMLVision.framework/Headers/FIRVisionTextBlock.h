@@ -6,20 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * A text block recognized in an image that consists of an array of text lines.
- */
+/** A text block recognized in an image that consists of an array of text lines. */
 NS_SWIFT_NAME(VisionTextBlock)
 @interface FIRVisionTextBlock : NSObject
 
-/**
- * String representation of the text block that was recognized.
- */
+/** String representation of the text block that was recognized. */
 @property(nonatomic, readonly) NSString *text;
 
-/**
- * An array of text lines that make up the block.
- */
+/** An array of text lines that make up the block. */
 @property(nonatomic, readonly) NSArray<FIRVisionTextLine *> *lines;
 
 /**
@@ -47,9 +41,7 @@ NS_SWIFT_NAME(VisionTextBlock)
  */
 @property(nonatomic, readonly, nullable) NSNumber *confidence;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
