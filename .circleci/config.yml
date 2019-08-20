@@ -191,7 +191,7 @@ executors:
 workflows:
   native:
     jobs:
-      - do-expensive
+      - web_test_suite
   # docs:
   #   jobs:
   # - docs
@@ -310,6 +310,8 @@ jobs:
     steps:
       - install_nix
       - setup
+      - guard-directories:
+          exlcuding: 'docs'
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
