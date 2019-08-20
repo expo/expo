@@ -1,11 +1,5 @@
-import connect from 'connect';
-import http from 'http';
-import bodyParser from 'body-parser';
-
-export const jestExpect = require('expect');
-
 const defaultOptions = {
-  port: 62556,
+  port: 8085,
 };
 
 // all state is contained in this variable
@@ -31,19 +25,29 @@ export function startAsync(startOptions = {}) {
   });
 
   state = {
+    ws: null,
     server: wss,
   };
 
   console.log('Starting server', options);
+  return async () => {
+    if (state.ws) state.ws.close();
+    return new Promise((resolve, reject) =>
+      wss.close(error => {
+        if (error) reject(error);
+        else resolve();
+      })
+    );
+  };
 }
 
-export function stop() {
-  if (!state) {
-    throw new Error('Server is already stopped');
-  }
-  state.server.close();
-  state = undefined;
-}
+// export function stop() {
+//   if (!state) {
+//     throw new Error('Server is already stopped');
+//   }
+//   state.ws.close();
+//   state = undefined;
+// }
 
 export function send(message) {
   if (!state) {

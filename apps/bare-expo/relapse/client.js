@@ -4,7 +4,7 @@ let socket;
 
 class RelapseError extends Error {
   constructor(message) {
-    super(`[expo-relapse]: ${message}`);
+    super(`[expo-relapse][client]: ${message}`);
   }
 }
 
@@ -14,10 +14,12 @@ export async function addListener(listener) {
 }
 
 export async function startAsync() {
-  if (!socket) {
-    throw new RelapseError('Socket is already running');
+  if (socket) {
+    console.warn('Socket is already running');
+    return () => socket.close();
+    // throw new RelapseError('Socket is already running');
   }
-  return new Promise(resolve => {
+  await new Promise(resolve => {
     socket = new WebSocket('ws://127.0.0.1:8085');
     socket.onopen = () => resolve();
   });
@@ -34,12 +36,12 @@ export function send(message) {
   socket.send(JSON.stringify(message));
 }
 
-export function stop() {
-  if (!socket) {
-    throw new RelapseError(`Socket isn't running`);
-  }
-  socket.close();
-}
+// export function stop() {
+//   if (!socket) {
+//     throw new RelapseError(`Socket isn't running`);
+//   }
+//   socket.close();
+// }
 
 export function createProxy(name) {
   return new Proxy(

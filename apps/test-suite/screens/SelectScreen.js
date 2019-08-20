@@ -72,17 +72,10 @@ export default class SelectScreen extends React.PureComponent {
       });
     }
     this.modules = getTestModules();
-    if (process.env.DETOX) {
-      global.expoRunner.addTests(getTestModules().map(({ name }) => name));
-    }
     this.state = {
       selected: new Set(),
       appState: AppState.currentState,
     };
-
-    setTimeout(() => {
-      this.checkLinking('SMS');
-    }, 100);
   }
 
   componentWillUnmount() {
@@ -98,8 +91,6 @@ export default class SelectScreen extends React.PureComponent {
   };
 
   checkLinking = incomingTests => {
-    // const incomingTests = this.props.navigation.getParam('tests');
-    console.log('[TEST_SUITE]:', 'incoming', incomingTests);
     if (incomingTests) {
       const testNames = incomingTests.split(',').map(v => v.trim());
       const selected = this.modules.filter(m => testNames.includes(m.name));
@@ -114,7 +105,6 @@ export default class SelectScreen extends React.PureComponent {
 
   _handleOpenURL = ({ url }) => {
     setTimeout(() => {
-      console.log('[TEST_SUITE]:', '_handleOpenURL', url);
       if (url && url.includes('select/')) {
         this.checkLinking(url.split('/').pop());
       }
@@ -142,7 +132,9 @@ export default class SelectScreen extends React.PureComponent {
     title: 'Test Suite',
   };
 
-  _keyExtractor = item => item.name;
+  _keyExtractor = (item, index) => {
+    return `${index}-${item.name}`;
+  };
 
   _onPressItem = id => {
     this.setState(state => {

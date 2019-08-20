@@ -1,3 +1,4 @@
+/* global DETOX */
 'use strict';
 
 import { Platform, UnavailabilityError } from '@unimodules/core';
@@ -59,30 +60,41 @@ export function getTestModules() {
 
   const modules = [
     require('./tests/Basic'),
-    optionalRequire(() => require('./tests/AppAuth')),
     optionalRequire(() => require('./tests/Asset')),
     optionalRequire(() => require('./tests/Constants')),
     optionalRequire(() => require('./tests/Crypto')),
-    optionalRequire(() => require('./tests/FileSystem')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
     optionalRequire(() => require('./tests/Localization')),
-    optionalRequire(() => require('./tests/Recording')),
-    optionalRequire(() => require('./tests/ScreenOrientation')),
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
-    optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/SQLite')),
     optionalRequire(() => require('./tests/Random')),
-    optionalRequire(() => require('./tests/Payments')),
-    optionalRequire(() => require('./tests/AdMobInterstitial')),
-    optionalRequire(() => require('./tests/AdMobBanner')),
-    optionalRequire(() => require('./tests/AdMobPublisherBanner')),
-    optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd')),
   ];
 
-  if (!isInDeviceFarm()) {
+  if (global.DETOX) {
+    modules.push(
+      modules.push(optionalRequire(() => require('./tests/Permissions'))),
+      // modules.push(optionalRequire(() => require('./tests/Calendar'))),
+      // modules.push(optionalRequire(() => require('./tests/Video'))),
+      modules.push(optionalRequire(() => require('./tests/Audio')))
+    );
+  } else {
+    modules.push(
+      optionalRequire(() => require('./tests/Speech')),
+      optionalRequire(() => require('./tests/Recording')),
+      optionalRequire(() => require('./tests/FileSystem')),
+      optionalRequire(() => require('./tests/ScreenOrientation')),
+      optionalRequire(() => require('./tests/Payments')),
+      optionalRequire(() => require('./tests/AdMobInterstitial')),
+      optionalRequire(() => require('./tests/AdMobBanner')),
+      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
+      optionalRequire(() => require('./tests/AdMobRewarded')),
+      optionalRequire(() => require('./tests/FBBannerAd'))
+    );
+  }
+
+  if (!DETOX && !isInDeviceFarm()) {
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)

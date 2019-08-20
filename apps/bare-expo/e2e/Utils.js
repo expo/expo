@@ -1,6 +1,6 @@
 import * as detox from 'detox';
 
-const { device, init, expect: detoxExpect, element, by } = detox;
+const { device, init, expect, element, by } = detox;
 
 export const sleepAsync = t => new Promise(res => setTimeout(res, t));
 
@@ -31,7 +31,7 @@ export async function launchWithPermissionsAsync(config, permissions, options) {
 
 export const getTextAsync = async testID => {
   try {
-    await detoxExpect(element(by.id(testID))).toHaveText('_unfoundable_text');
+    await expect(element(by.id(testID))).toHaveText('_unfoundable_text');
     throw new Error('We never should get here unless target element has unfoundable text');
   } catch (error) {
     if (device.getPlatform() === 'ios') {
