@@ -1,3 +1,16 @@
+docker-images-matrix:
+  executor: &images-executor-defaults
+    machine: true
+    working_directory: ~/docker
+  attach_step: &images-attach-workspace
+    attach_workspace:
+      at: ~/
+  persist_step: &images-persist-workspace
+    persist_to_workspace:
+      root: ~/
+      paths:
+        - docker
+
 version: 2.1
 
 commands:
@@ -141,26 +154,31 @@ executors:
       FASTLANE_SKIP_UPDATE_CHECK: 1
       FASTLANE_DISABLE_COLORS: 1
       CI: 1
+  project-docs:
+    <<: *images-executor-defaults
+    environment:
+      PROJECT_PATH: docs
 
 workflows:
   docs:
     jobs:
-      - expotools
-      - docs:
-          requires:
-            - expotools
-      - docs_approve_deploy:
-          type: approval
-          requires:
-            - docs
-          filters:
-            branches:
-              only:
-                - master
-                - /.*all-ci.*/
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
+      - guard-checkout:
+          runner: project-docs
+      # - docs:
+      #     requires:
+      #       - expotools
+      # - docs_approve_deploy:
+      #     type: approval
+      #     requires:
+      #       - docs
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #           - /.*all-ci.*/
+      # - docs_deploy:
+      #     requires:
+      #       - docs_approve_deploy
   # JavaScript packages that make up the SDK
   # sdk:
   #   jobs:
@@ -230,6 +248,21 @@ workflows:
   #           - expo_client_approve_build
 
 jobs:
+  guard-checkout:
+    parameters:
+      runner:
+        type: executor
+    executor: << parameters.runner >>
+    steps:
+      - *images-attach-workspace
+      - checkout
+      - run: |
+          if [ "$(git --no-pager log -1 --format=format:%H --full-diff "${PROJECT_PATH}")" != "${CIRCLE_SHA1}"  ]; then
+            echo "No changes in ${PROJECT_PATH} repository, skipping step..."
+            circleci-agent step halt
+          fi
+      - run: echo "Found Changes in docs/"
+      - *images-persist-workspace
   expo_sdk:
     executor: js
     steps:
@@ -482,6 +515,11 @@ jobs:
       #     key: docs-site-{{ .Revision }}
       #     paths:
       #       - docs/out
+
+  do-expensive:
+    executor: nix
+    steps:
+      - run: echo "Do Expensive Thing"
 
   docs_deploy:
     executor: nix
