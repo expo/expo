@@ -3,6 +3,8 @@ import { UnavailabilityError } from '@unimodules/core';
 import ExponentFacebook from './ExponentFacebook';
 import { FacebookOptions, FacebookLoginResult } from './types';
 
+export { FacebookOptions, FacebookLoginResult };
+
 export async function logInWithReadPermissionsAsync(
   appId: string,
   options?: FacebookOptions
