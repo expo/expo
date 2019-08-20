@@ -14,6 +14,35 @@ docker-images-matrix:
 version: 2.1
 
 commands:
+  # directory-has-changes:
+  #   description: 'Only continue if the provided directory has changes'
+  #   parameters:
+  #     directory:
+  #       description: 'If this directory does not have changes then the step will be halted'
+  #       type: string
+  #   steps:
+  #     - run:
+  #         working_directory: ~/expo
+  #         command: |
+  #         if [ $(git log -1 "$(git merge-base remotes/origin/"$(git rev-parse --abbrev-ref HEAD)" "master")" --format=format:%H --full-diff << parameters.directory >>) != $(git log -1 --format=format:%H --full-diff << parameters.directory >>) ]; then
+  #           echo "No changes in << parameters.directory >>, skipping step..."
+  #           circleci-agent step halt
+  #         fi
+  guard-directories:
+    description: 'Stop the job when the files in directory have not been changed. However, the master branch not affected.'
+    parameters:
+      exlcuding:
+        description: 'If any of these directories are included then the step will be halted'
+        type: string
+    steps:
+      - run:
+          name: Detect file changes
+          working_directory: ~/expo
+          command: |
+            if [ ! "$(sh branch-has-changes.sh << parameters.exlcuding >>)" ]; then
+              echo "No relevant file changes in the current branch. Stopping job."
+              circleci-agent step halt
+            fi
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -160,25 +189,26 @@ executors:
       PROJECT_PATH: docs
 
 workflows:
-  docs:
+  native:
     jobs:
-      - guard-checkout:
-          runner: project-docs
-      # - docs:
-      #     requires:
-      #       - expotools
-      # - docs_approve_deploy:
-      #     type: approval
-      #     requires:
-      #       - docs
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #           - /.*all-ci.*/
-      # - docs_deploy:
-      #     requires:
-      #       - docs_approve_deploy
+      - do-expensive
+  # docs:
+  #   jobs:
+  # - docs
+  #     requires:
+  #       - expotools
+  # - docs_approve_deploy:
+  #     type: approval
+  #     requires:
+  #       - docs
+  #     filters:
+  #       branches:
+  #         only:
+  #           - master
+  #           - /.*all-ci.*/
+  # - docs_deploy:
+  #     requires:
+  #       - docs_approve_deploy
   # JavaScript packages that make up the SDK
   # sdk:
   #   jobs:
@@ -492,10 +522,9 @@ jobs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
-      - run:
-          name: Check if docs have been modified
-          working_directory: ~/expo
-          command: expotools was-modified -d docs && circleci-agent step halt
+      - checkout
+      # - directory-has-changes:
+      #     directory: docs
       - run: echo "run docs tests"
       # - setup
       # - update_submodules
@@ -519,6 +548,9 @@ jobs:
   do-expensive:
     executor: nix
     steps:
+      - checkout
+      - guard-directories:
+          exlcuding: 'docs'
       - run: echo "Do Expensive Thing"
 
   docs_deploy:
