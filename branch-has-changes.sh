@@ -8,7 +8,7 @@ ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
 for file in $CIRCLE_WORKING_DIRECTORY/*/
 do
     FILE_NAME=$(basename $file)
-    if [[ ! " ${@} " =~ " ${FILE_NAME} " ]]; then
+    if [ ! " ${@} " =~ " ${FILE_NAME} " ]; then
         if [ ! $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
             # MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
             ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
