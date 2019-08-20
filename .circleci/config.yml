@@ -116,7 +116,6 @@ executors:
     working_directory: ~/expo
     environment:
       # fastlane complains if these are not set
-      LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
       FASTLANE_SKIP_UPDATE_CHECK: 1
       FASTLANE_DISABLE_COLORS: 1
