@@ -41,7 +41,7 @@ commands:
 
             echo "!! No relevant file changes in the current branch; stopping tests. !!"
             # No changes. Halting step
-            circleci-agent step halt
+            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
   conditionally_require_changes:
     parameters:
       require:
@@ -80,8 +80,7 @@ commands:
 
             echo "!! No relevant file changes in the current branch; stopping tests. !!"
             # No changes. Halting step
-            # TODO(Bacon): circleci-agent is not available in nix
-            # circleci-agent step halt
+            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
