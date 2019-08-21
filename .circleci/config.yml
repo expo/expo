@@ -9,7 +9,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Require any directory except << parameters.exclude >> to have changes
+          name: Stop the job if only << parameters.exclude >> was changed
           command: |
             ROOT_BRANCH="master"
 
