@@ -13,7 +13,8 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+            if [ $CIRCLE_BRANCH = $CIRCLE_BRANCH ]; then
+              echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
               exit 0
             fi
 
@@ -52,6 +53,7 @@ commands:
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
               exit 0
             fi
 
@@ -221,6 +223,7 @@ executors:
     resource_class: small
     environment:
       USER: circleci
+      CI: 1
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: '11.0.0'
@@ -236,94 +239,93 @@ executors:
 
 workflows:
   # E2E SDK testing
-  native-sdk:
-    jobs:
-      - iOS-Detox
+  # native-sdk:
+  #   jobs:
+  #     - iOS-Detox
 
-  docs:
-    jobs:
-      - docs
-      - docs_approve_deploy:
-          type: approval
-          requires:
-            - docs
-          filters:
-            branches:
-              only:
-                - master
-                - /.*all-ci.*/
-      - docs_deploy:
-          requires:
-            - docs_approve_deploy
+  # docs:
+  #   jobs:
+  #     - docs
+  #     - docs_approve_deploy:
+  #         type: approval
+  #         requires:
+  #           - docs
+  #         filters:
+  #           branches:
+  #             only:
+  #               - master
+  #               - /.*all-ci.*/
+  #     - docs_deploy:
+  #         requires:
+  #           - docs_approve_deploy
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
-      - expo_sdk
+      # - expo_sdk
       - web_test_suite
-      - babel_preset
+      # - babel_preset
 
   # Android and iOS clients
-  client:
-    jobs:
-      - home
-      - expotools
-      - client_android
-      - client_ios
-      - test_suite_publish
-      - android_test_suite:
-          requires:
-            - test_suite_publish
-      - client_android_approve_google_play:
-          type: approval
-          requires:
-            - client_android
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - client_android_release_google_play:
-          requires:
-            - client_android_approve_google_play
-
+  # client:
+  #   jobs:
+  #     - home
+  #     - expotools
+  #     - client_android
+  #     - client_ios
+  #     - test_suite_publish
+  #     - android_test_suite:
+  #         requires:
+  #           - test_suite_publish
+  #     - client_android_approve_google_play:
+  #         type: approval
+  #         requires:
+  #           - client_android
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - client_android_release_google_play:
+  #         requires:
+  #           - client_android_approve_google_play
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  shell_app:
-    jobs:
-      - shell_app_ios_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_ios_build:
-          requires:
-            - shell_app_ios_approve_build
-      - shell_app_android_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - shell_app_android_build:
-          requires:
-            - shell_app_android_approve_build
-  client_shell_app:
-    jobs:
-      - expo_client_approve_build:
-          type: approval
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - expo_client_build:
-          requires:
-            - expo_client_approve_build
+  # shell_app:
+  #   jobs:
+  #     - shell_app_ios_approve_build:
+  #         type: approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - shell_app_ios_build:
+  #         requires:
+  #           - shell_app_ios_approve_build
+  #     - shell_app_android_approve_build:
+  #         type: approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - shell_app_android_build:
+  #         requires:
+  #           - shell_app_android_approve_build
+  # client_shell_app:
+  #   jobs:
+  #     - expo_client_approve_build:
+  #         type: approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - expo_client_build:
+  #         requires:
+  #           - expo_client_approve_build
 
 jobs:
   expo_sdk:
