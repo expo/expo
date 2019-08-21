@@ -102,6 +102,10 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <receiver android:name="host.exp.exponent.notifications.MyBroadcastReceiver" android:exported="true" />
+        <service android:name="host.exp.exponent.notifications.MyTaskService" />
+
     </application>
 
 </manifest>

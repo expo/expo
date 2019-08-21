@@ -233,14 +233,27 @@ public class PushNotificationHelper {
               NotificationActionCenter.setCategory(categoryId, notificationBuilder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
-                  Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+                  Intent intent = new Intent(context, MyBroadcastReceiver.class);
+                  intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
+                  intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
+                  return intent;
+
+                  /*Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
                   intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
-                  return intent;
+                  return intent;*/
                 }
-              });
+              }, true);
             }
+
+            Intent snoozeIntent = new Intent(context, MyBroadcastReceiver.class);
+            PendingIntent snoozePendingIntent =
+                PendingIntent.getBroadcast(context, 0, snoozeIntent, 0);
+
+            notificationBuilder.addAction(R.drawable.notification_icon, "hahaha",
+                    snoozePendingIntent);
+
 
             // Add icon
             if (!manifestUrl.equals(Constants.INITIAL_URL)) {

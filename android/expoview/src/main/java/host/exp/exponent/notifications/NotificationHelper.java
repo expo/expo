@@ -499,6 +499,7 @@ public class NotificationHelper {
               PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
               builder.setContentIntent(contentIntent);
 
+              // TODO: IS THIS LOCAL NOTIFICATION?
               if (data.containsKey("categoryId")) {
                 final String manifestUrl = experience.manifestUrl;
                 NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
@@ -512,7 +513,7 @@ public class NotificationHelper {
                     intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
                     return intent;
                   }
-                });
+                }, false);
               }
 
               int color = NotificationHelper.getColor(

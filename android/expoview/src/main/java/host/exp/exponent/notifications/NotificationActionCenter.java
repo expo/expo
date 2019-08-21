@@ -39,7 +39,7 @@ public class NotificationActionCenter {
     }
   }
 
-  public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
+  public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider, Boolean isBroadcast) {
     throwExceptionIfOnMainThread();
 
     // Expo Client has a permanent notification, so we have to set max priority in order to show up buttons
@@ -51,17 +51,22 @@ public class NotificationActionCenter {
         .queryList();
 
     for (ActionObject actionObject : actions) {
-      addAction(builder, actionObject, intentProvider, context);
+      addAction(builder, actionObject, intentProvider, isBroadcast, context);
     }
   }
 
-  private static void addAction(NotificationCompat.Builder builder, ActionObject actionObject, IntentProvider intentProvider, Context context) {
+  private static void addAction(NotificationCompat.Builder builder, ActionObject actionObject, IntentProvider intentProvider, Boolean isBroadcast, Context context) {
     Intent intent = intentProvider.provide();
 
     String actionId = actionObject.getActionId();
 
     intent.putExtra(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY, actionId);
-    PendingIntent pendingIntent = PendingIntent.getActivity(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    PendingIntent pendingIntent;
+    if (isBroadcast) {
+      pendingIntent = PendingIntent.getBroadcast(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    } else {
+      pendingIntent = PendingIntent.getActivity(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     NotificationCompat.Action.Builder actionBuilder = new NotificationCompat.Action.Builder(0,
         actionObject.getButtonTitle(),
