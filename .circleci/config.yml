@@ -1,6 +1,88 @@
 version: 2.1
 
 commands:
+  halt_if_unchanged_except:
+    description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
+    parameters:
+      exclude:
+        description: 'Prevent the job from stopping if changes are found in this directory'
+        type: string
+    steps:
+      - run:
+          name: Stop the job if only << parameters.exclude >> was changed
+          command: |
+            ROOT_BRANCH="master"
+
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              exit 0
+            fi
+
+            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
+            echo " - Excluding << parameters.exclude >>"
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
+            for file in $PWD/*/
+            do
+              FILE_NAME=$(basename $file)
+              if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
+                echo " -- Checking ${FILE_NAME}"
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  exit 0
+                fi
+              fi
+            done
+
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
+            # No changes. Halting step
+            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+  halt_if_unchanged:
+    parameters:
+      require:
+        description: 'The job will stop if there are no changes in this directory'
+        type: string
+    steps:
+      - run:
+          name: Require the << parameters.require >> directory to have changes
+          command: |
+            ROOT_BRANCH="master"
+
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              exit 0
+            fi
+
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
+            echo " - Required << parameters.require >>"
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
+            for file in $PWD/*/
+            do
+              FILE_NAME=$(basename $file)
+              if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
+                echo " -- Checking ${FILE_NAME}"
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  exit 0
+                fi
+              fi
+            done
+
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -10,7 +92,7 @@ commands:
       - run:
           name: Install common packages
           # direnv: configures environment with .envrc files
-          # findutils (where, find, etc): expo-module test
+          # findutils: where, find, etc. for expo-module test
           # git: circleci checkout steps
           # gnugrep: used in .envrc
           # gnutar: used by nix commands which download channels
@@ -43,6 +125,11 @@ commands:
               echo 'git-crypt key not present in environment' && exit 0
             fi
             git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
+  # Prevent native tests from running when docs is the only directory that was edited
+  guard_sdk_tests:
+    steps:
+      - halt_if_unchanged_except:
+          exclude: 'docs'
   update_submodules:
     steps:
       - run:
@@ -244,6 +331,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -259,6 +347,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -272,6 +361,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -288,6 +378,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -300,6 +391,7 @@ jobs:
     executor: js
     steps:
       - setup
+      - guard_sdk_tests
       - restore_yarn_cache:
           working_directory: ~/expo/tools/expotools
       - yarn_install:
@@ -319,6 +411,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
+      - guard_sdk_tests
 
       # Simulators are more likely to fail. Try them first
       - run:
@@ -365,6 +458,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
+      - guard_sdk_tests
       - run: git lfs pull
       - fetch_cocoapods_specs
       - run:
@@ -382,6 +476,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
+      - guard_sdk_tests
       - run: git lfs pull
       - fetch_cocoapods_specs
       - run:
@@ -408,6 +503,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
+      - guard_sdk_tests
       - run: git lfs pull
       - fetch_cocoapods_specs
       - yarn_install:
@@ -464,6 +560,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -487,6 +584,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -537,6 +635,8 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - halt_if_unchanged:
+          require: 'docs'
       - yarn_install:
           working_directory: docs
       - yarn:
@@ -572,6 +672,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - decrypt_secrets_if_possible
       - run:
           name: Publish
