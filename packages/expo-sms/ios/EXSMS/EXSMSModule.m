@@ -68,11 +68,11 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
         case MessageComposeResultCancelled:
             resolveData = @{@"result": @"cancelled"};
             break;
-        case MessageComposeResultFailed:
-            rejectMessage = @"User's attempt to save or send an SMS was unsuccessful.";
-            break;
         case MessageComposeResultSent:
             resolveData = @{@"result": @"sent"};
+            break;
+        case MessageComposeResultFailed:
+            rejectMessage = @"User's attempt to save or send an SMS was unsuccessful. This can occur when the device loses connection to Wifi or Cellular.";
             break;
         default:
             rejectMessage = @"SMS message sending failed with unknown error";
