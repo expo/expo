@@ -13,8 +13,8 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            if [ "$CIRCLE_BRANCH" = "$CIRCLE_BRANCH" ]; then
-              echo " ▶️  Running on ${ROOT_BRANCH}. Continuing the job..."
+            if [ "${CIRCLE_BRANCH}" = "${CIRCLE_BRANCH}" ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               exit 0;
             fi
 
@@ -44,7 +44,7 @@ commands:
             if command -v circleci-agent >/dev/null; then
               circleci-agent task halt
             else
-             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
   halt_if_unchanged:
     parameters:
@@ -57,8 +57,8 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            if [ "$CIRCLE_BRANCH" = "$ROOT_BRANCH" ]; then
-              echo " ▶️  Running on ${ROOT_BRANCH}. Continuing the job..."
+            if [ "${CIRCLE_BRANCH}" = "${ROOT_BRANCH}" ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               exit 0;
             fi
 
@@ -88,7 +88,7 @@ commands:
             if command -v circleci-agent >/dev/null; then
               circleci-agent task halt
             else
-             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
   install_nix:
     steps:
