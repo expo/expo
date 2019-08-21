@@ -13,9 +13,9 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
-              echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
-              exit 0
+            if [ "$CIRCLE_BRANCH" = "$CIRCLE_BRANCH" ]; then
+              echo " ▶️  Running on ${ROOT_BRANCH}. Continuing the job..."
+              exit 0;
             fi
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
@@ -57,9 +57,9 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
-              echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
-              exit 0
+            if [ "$CIRCLE_BRANCH" = "$ROOT_BRANCH" ]; then
+              echo " ▶️  Running on ${ROOT_BRANCH}. Continuing the job..."
+              exit 0;
             fi
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
@@ -223,8 +223,7 @@ executors:
   web:
     docker:
       - image: circleci/node:latest-browsers
-    # shell: /bin/bash -leo pipefail
-    shell: /run/current-system/sw/bin/bash -leo pipefail
+    shell: /bin/bash -leo pipefail
     working_directory: ~/expo
     resource_class: small
     environment:
