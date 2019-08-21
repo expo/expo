@@ -13,7 +13,7 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            if [ $CIRCLE_BRANCH = $CIRCLE_BRANCH ]; then
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
               echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
               exit 0
             fi
@@ -224,8 +224,9 @@ executors:
     docker:
       - image: circleci/node:latest-browsers
     # shell: /bin/bash -leo pipefail
-    # resource_class: small
+    shell: /run/current-system/sw/bin/bash -leo pipefail
     working_directory: ~/expo
+    resource_class: small
     environment:
       USER: circleci
       CI: 1
@@ -351,7 +352,7 @@ jobs:
   web_test_suite:
     executor: web
     steps:
-      # - install_nix
+      - install_nix
       - setup
       - update_submodules
       - guard_sdk_tests
