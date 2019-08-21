@@ -16,35 +16,35 @@ commands:
             if [ "${CIRCLE_BRANCH}" = "${ROOT_BRANCH}" ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               exit
-            fi
-
-            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
-            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Excluding << parameters.exclude >>"
-            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
-            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-            # Test all top-level directories
-            for file in $PWD/*/
-            do
-              FILE_NAME=$(basename $file)
-              if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
-                echo " -- Checking ${FILE_NAME}"
-                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ "${BASE_FILE_HASH}" = "${CURRENT_FILE_HASH}" ]; then
-                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  exit
-                fi
-              fi
-            done
-
-            echo "⏹ No relevant file changes in the current branch; stopping tests."
-
-            # circleci-agent is not available with nix executors
-            if command -v circleci-agent >/dev/null; then
-              circleci-agent task halt
             else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+              echo "Checking for changes in branch ${CIRCLE_BRANCH}"
+              echo " - Excluding << parameters.exclude >>"
+              echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+              echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+              # Test all top-level directories
+              for file in $PWD/*/
+              do
+                FILE_NAME=$(basename $file)
+                if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
+                  echo " -- Checking ${FILE_NAME}"
+                  BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                  CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+                  if [ ! "${BASE_FILE_HASH}" = "${CURRENT_FILE_HASH}" ]; then
+                    echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                    exit
+                  fi
+                fi
+              done
+
+              echo "⏹ No relevant file changes in the current branch; stopping tests."
+
+              # circleci-agent is not available with nix executors
+              if command -v circleci-agent >/dev/null; then
+                circleci-agent task halt
+              else
+                echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              fi
             fi
   halt_if_unchanged:
     parameters:
@@ -125,6 +125,7 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
+      - run: echo 'Bye' && exit 0 && echo 'should not print'
       - checkout
   decrypt_secrets_if_possible:
     steps:
@@ -224,10 +225,11 @@ executors:
     <<: *nix
     resource_class: small
   web:
+    <<: *nix
     docker:
       - image: circleci/node:latest-browsers
-    shell: /bin/bash -leo pipefail
-    working_directory: ~/expo
+    # shell: /bin/bash -leo pipefail
+    # working_directory: ~/expo
     resource_class: small
     environment:
       USER: circleci
@@ -354,8 +356,9 @@ jobs:
   web_test_suite:
     executor: web
     steps:
+      - setup
       # - install_nix
-      - just-quit
+      # - just-quit
       # - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       # - checkout
       # - update_submodules
