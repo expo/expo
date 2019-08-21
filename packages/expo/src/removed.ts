@@ -643,6 +643,17 @@ Object.defineProperties(module.exports, {
     },
   },
 
+  StoreReview: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { StoreReview } from 'expo' -> import { StoreReview } from 'expo-store-review'`,
+        'StoreReview',
+        'expo-store-review'
+      );
+    },
+  },
+
   TaskManager: {
     enumerable: true,
     get() {
