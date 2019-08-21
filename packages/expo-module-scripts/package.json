@@ -6,6 +6,9 @@
   "bin": {
     "expo-module": "bin/expo-module.js"
   },
+  "scripts": {
+    "lint": "expo-module lint ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo.git"
