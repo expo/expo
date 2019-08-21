@@ -15,7 +15,7 @@ commands:
 
             if [ "${CIRCLE_BRANCH}" = "${CIRCLE_BRANCH}" ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              exit 0;
+              exit 3;
             fi
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
