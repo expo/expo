@@ -13,6 +13,8 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
+            set -e
+
             if [ $CIRCLE_BRANCH = $CIRCLE_BRANCH ]; then
               echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
               exit 0
