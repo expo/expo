@@ -17,7 +17,7 @@ commands:
               exit 0
             fi
 
-            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
+            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Git root ${CIRCLE_WORKING_DIRECTORY}/*"
@@ -29,10 +29,10 @@ commands:
               FILE_NAME=$(basename $file)
               if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
-                MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
-                # ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
+                # MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
+                ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $MASTER_LAST_COMMIT = $CURRENT_FILE_HASH ]; then
+                if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ${FILE_NAME}/ has changes. Proceeding to the tests..."
                   exit 0
                 fi
@@ -57,7 +57,7 @@ commands:
               exit 0
             fi
 
-            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
+            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Required << parameters.require >>"
             echo " - Git root ${CIRCLE_WORKING_DIRECTORY}/*"
@@ -68,10 +68,10 @@ commands:
               FILE_NAME=$(basename $file)
               if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
-                MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
-                # ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
+                # MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
+                ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $MASTER_LAST_COMMIT = $CURRENT_FILE_HASH ]; then
+                if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ${FILE_NAME}/ has changes. Proceeding to the tests..."
                   exit 0
                 fi
@@ -254,11 +254,11 @@ workflows:
           requires:
             - docs_approve_deploy
   # JavaScript packages that make up the SDK
-  sdk:
-    jobs:
-      - expo_sdk
-      - web_test_suite
-      # - babel_preset
+  # sdk:
+  #   jobs:
+  #     - expo_sdk
+  #     - web_test_suite
+  #     - babel_preset
 
   # Android and iOS clients
   # client:
