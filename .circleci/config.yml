@@ -330,7 +330,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -346,7 +346,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -360,7 +360,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -377,7 +377,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -390,7 +390,7 @@ jobs:
     executor: js
     steps:
       - setup
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - restore_yarn_cache:
           working_directory: ~/expo/tools/expotools
       - yarn_install:
@@ -558,7 +558,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -582,7 +582,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      # - guard_sdk_tests
+      - guard_sdk_tests
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
