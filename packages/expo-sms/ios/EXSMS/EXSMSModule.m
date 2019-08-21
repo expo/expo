@@ -25,8 +25,7 @@ UM_EXPORT_METHOD_AS(isAvailableAsync,
                     isAvailable:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-    BOOL canCompose = ![MFMessageComposeViewController canSendText];
-    resolve(@(canCompose));
+    resolve(@([MFMessageComposeViewController canSendText]));
 }
 
 UM_EXPORT_METHOD_AS(sendSMSAsync,
