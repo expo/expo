@@ -1,6 +1,6 @@
 export default {
   get name(): string {
-    return 'ExponentStoreReview';
+    return 'ExpoStoreReview';
   },
   get isSupported(): boolean {
     return false;

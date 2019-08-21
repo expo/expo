@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { Linking, Platform } from 'react-native';
 
-import ExponentStoreReview from './ExponentStoreReview';
+import StoreReview from './ExpoStoreReview';
 
 /*
  * Platform must be iOS
@@ -9,15 +9,15 @@ import ExponentStoreReview from './ExponentStoreReview';
  * `SKStoreReviewController` class is available
  */
 export function isSupported(): boolean {
-  return ExponentStoreReview && ExponentStoreReview.isSupported;
+  return StoreReview && StoreReview.isSupported;
 }
 
 /*
  * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app.
  */
 export async function requestReview(): Promise<void> {
-  if (ExponentStoreReview && ExponentStoreReview.requestReview) {
-    await ExponentStoreReview.requestReview();
+  if (StoreReview && StoreReview.requestReview) {
+    await StoreReview.requestReview();
   } else {
     /*
      * If StoreReview is unavailable then get the store URL from the `app.json` and open to the store.
@@ -26,14 +26,14 @@ export async function requestReview(): Promise<void> {
     if (url) {
       const supported = await Linking.canOpenURL(url);
       if (!supported) {
-        console.log("Expo.StoreReview.requestReview(): Can't open store url: ", url);
+        console.warn("Expo.StoreReview.requestReview(): Can't open store url: ", url);
       } else {
         await Linking.openURL(url);
         return; 
       }
     } else {
       // If the store URL is missing, let the dev know.
-      console.log(
+      console.warn(
         "Expo.StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`"
       );
     }
