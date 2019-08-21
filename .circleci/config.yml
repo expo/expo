@@ -33,7 +33,7 @@ commands:
                 ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
-                  echo " --- ${FILE_NAME}/ has changes. Proceeding to the tests..."
+                  echo " --- ${FILE_NAME}/ has been modified on this branch. Proceeding to the tests..."
                   exit 0
                 fi
               fi
@@ -72,7 +72,7 @@ commands:
                 ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
-                  echo " --- ${FILE_NAME}/ has changes. Proceeding to the tests..."
+                  echo " --- ${FILE_NAME}/ has been modified on this branch. Proceeding to the tests..."
                   exit 0
                 fi
               fi
@@ -347,7 +347,7 @@ jobs:
       - install_nix
       - setup
       - update_submodules
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
