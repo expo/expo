@@ -234,9 +234,9 @@ executors:
 
 workflows:
   # E2E SDK testing
-  native-sdk:
-    jobs:
-      - iOS-Detox
+  # native-sdk:
+  #   jobs:
+  #     - iOS-Detox
 
   docs:
     jobs:
@@ -631,7 +631,6 @@ jobs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
-      - install_nix
       - setup
       - update_submodules
       - conditionally_require_changes:
