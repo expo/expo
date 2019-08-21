@@ -80,7 +80,8 @@ commands:
 
             echo "!! No relevant file changes in the current branch; stopping tests. !!"
             # No changes. Halting step
-            circleci-agent step halt
+            # TODO(Bacon): circleci-agent is not available in nix
+            # circleci-agent step halt
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -90,7 +91,7 @@ commands:
       - run:
           name: Install common packages
           # direnv: configures environment with .envrc files
-          # findutils (where, find, etc): expo-module test
+          # findutils: (where, find, etc): expo-module test
           # git: circleci checkout steps
           # gnugrep: used in .envrc
           # gnutar: used by nix commands which download channels
@@ -234,9 +235,9 @@ executors:
 
 workflows:
   # E2E SDK testing
-  # native-sdk:
-  #   jobs:
-  #     - iOS-Detox
+  native-sdk:
+    jobs:
+      - iOS-Detox
 
   docs:
     jobs:
@@ -254,40 +255,41 @@ workflows:
           requires:
             - docs_approve_deploy
   # JavaScript packages that make up the SDK
-  # sdk:
-  #   jobs:
-  #     - expo_sdk
-  #     - web_test_suite
-  #     - babel_preset
+  sdk:
+    jobs:
+      - expo_sdk
+      - web_test_suite
+      - babel_preset
 
   # Android and iOS clients
-  # client:
-  #   jobs:
-  #     - home
-  #     - expotools
-  #     - client_android
-  #     - client_ios
-  #     - test_suite_publish
-  #     - android_test_suite:
-  #         requires:
-  #           - test_suite_publish
-  #     - client_android_approve_google_play:
-  #         type: approval
-  #         requires:
-  #           - client_android
-  #         filters:
-  #           branches:
-  #             only:
-  #               - /sdk-\d+/
-  #               - /.*all-ci.*/
-  #     - client_android_release_google_play:
-  #         requires:
-  #           - client_android_approve_google_play
+  client:
+    jobs:
+      - home
+      - expotools
+      - client_android
+      - client_ios
+      - test_suite_publish
+      - android_test_suite:
+          requires:
+            - test_suite_publish
+      - client_android_approve_google_play:
+          type: approval
+          requires:
+            - client_android
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - client_android_release_google_play:
+          requires:
+            - client_android_approve_google_play
 
-  #     - shell_app_ios_tests:
-  #         requires:
-  #           - shell_app_sim_base_ios
-  #           - test_suite_publish
+      # - shell_app_ios_tests:
+      #     requires:
+      #       - shell_app_sim_base_ios
+      #       - test_suite_publish
+
   shell_app:
     jobs:
       - shell_app_ios_approve_build:
@@ -329,7 +331,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -359,7 +361,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -376,7 +378,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -389,7 +391,7 @@ jobs:
     executor: js
     steps:
       - setup
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - restore_yarn_cache:
           working_directory: ~/expo/tools/expotools
       - yarn_install:
@@ -557,7 +559,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -581,7 +583,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      - guard_sdk_tests
+      # - guard_sdk_tests
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
