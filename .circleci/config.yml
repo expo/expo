@@ -9,6 +9,7 @@ commands:
         type: string
     steps:
       - run:
+          name: Require any directory except << parameters.exclude >> to have changes
           command: |
             ROOT_BRANCH="master"
 
@@ -48,6 +49,7 @@ commands:
         type: string
     steps:
       - run:
+          name: Require the << parameters.require >> directory to have changes
           command: |
             ROOT_BRANCH="master"
 
