@@ -1,11 +1,11 @@
 version: 2.1
 
 commands:
-  conditionally_exclude_changes:
+  halt_if_unchanged_except:
     description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
     parameters:
       exclude:
-        description: 'Prevent the test from stopping if changes are found in this directory'
+        description: 'Prevent the job from stopping if changes are found in this directory'
         type: string
     steps:
       - run:
@@ -17,35 +17,33 @@ commands:
               exit 0
             fi
 
-            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
-            echo " - Git root ${CIRCLE_WORKING_DIRECTORY}/*"
-            echo " - Initial commit ${ROOT_COMMIT}"
-            # ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
-            # Tests all root directories
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
             for file in $PWD/*/
             do
               FILE_NAME=$(basename $file)
               if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
-                # MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
-                ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
-                  echo " --- ${FILE_NAME}/ has been modified on this branch. Proceeding to the tests..."
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
                   exit 0
                 fi
               fi
             done
 
-            echo "!! No relevant file changes in the current branch; stopping tests. !!"
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
             # No changes. Halting step
             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
-  conditionally_require_changes:
+  halt_if_unchanged:
     parameters:
       require:
-        description: 'The test will stop if there are no changes in this directory'
+        description: 'The job will stop if there are no changes in this directory'
         type: string
     steps:
       - run:
@@ -57,28 +55,27 @@ commands:
               exit 0
             fi
 
-            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Required << parameters.require >>"
-            echo " - Git root ${CIRCLE_WORKING_DIRECTORY}/*"
-            echo " - Initial commit ${ROOT_COMMIT}"
-            # Tests all root directories
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
             for file in $PWD/*/
             do
               FILE_NAME=$(basename $file)
               if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
-                # MASTER_LAST_COMMIT=$(git log -1 origin/"${ROOT_BRANCH}" --format=format:%H --full-diff "${file}")
-                ROOT_FILE_HASH=$(git log -1 "${ROOT_COMMIT}" --format=format:%H --full-diff "${file}")
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $ROOT_FILE_HASH = $CURRENT_FILE_HASH ]; then
-                  echo " --- ${FILE_NAME}/ has been modified on this branch. Proceeding to the tests..."
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
                   exit 0
                 fi
               fi
             done
 
-            echo "!! No relevant file changes in the current branch; stopping tests. !!"
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
             # No changes. Halting step
             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
   install_nix:
@@ -90,7 +87,7 @@ commands:
       - run:
           name: Install common packages
           # direnv: configures environment with .envrc files
-          # findutils: (where, find, etc): expo-module test
+          # findutils: where, find, etc. for expo-module test
           # git: circleci checkout steps
           # gnugrep: used in .envrc
           # gnutar: used by nix commands which download channels
@@ -126,7 +123,7 @@ commands:
   # Prevent native tests from running when docs is the only directory that was edited
   guard_sdk_tests:
     steps:
-      - conditionally_exclude_changes:
+      - halt_if_unchanged_except:
           exclude: 'docs'
   update_submodules:
     steps:
@@ -633,7 +630,7 @@ jobs:
     steps:
       - setup
       - update_submodules
-      - conditionally_require_changes:
+      - halt_if_unchanged:
           require: 'docs'
       - yarn_install:
           working_directory: docs
