@@ -13,14 +13,12 @@ commands:
           command: |
             ROOT_BRANCH="master"
 
-            set -e
-
             if [ $CIRCLE_BRANCH = $CIRCLE_BRANCH ]; then
               echo " ▶️ Running on ${ROOT_BRANCH}. Continuing the job..."
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
@@ -41,8 +39,13 @@ commands:
             done
 
             echo "⏹ No relevant file changes in the current branch; stopping tests."
-            # No changes. Halting step
-            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
   halt_if_unchanged:
     parameters:
       require:
@@ -220,9 +223,9 @@ executors:
   web:
     docker:
       - image: circleci/node:latest-browsers
-    shell: /bin/bash -leo pipefail
+    # shell: /bin/bash -leo pipefail
+    # resource_class: small
     working_directory: ~/expo
-    resource_class: small
     environment:
       USER: circleci
       CI: 1
