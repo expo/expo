@@ -5,7 +5,6 @@
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
-#import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"
@@ -147,24 +146,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
   completionHandler(UIBackgroundFetchResultNoData);
 }
 
-// TODO: Remove once SDK31 is phased out
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
-}
-#pragma clang diagnostic pop
-
 #pragma mark - deep linking hooks
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if ([[EXKernel sharedInstance].serviceRegistry.googleAuthManager
-       application:application openURL:url sourceApplication:sourceApplication annotation:annotation]) {
-    return YES;
-  }
-
   return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 

@@ -21,8 +21,6 @@ NSString * const EXShellManifestResourceName = @"shell-app-manifest";
   NSString *experienceCachesDirectory = [[exponentCachesDirectory stringByAppendingPathComponent:escapedExperienceId] stringByStandardizingPath];
 
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
-    [self ensureOldFilesAreMigratedFrom:experienceDocumentDirectory to:mainDocumentDirectory];
-
     return [super init];
   }
 
@@ -64,24 +62,6 @@ NSString * const EXShellManifestResourceName = @"shell-app-manifest";
     bundledAssets = manifest[@"bundledAssets"];
   });
   return bundledAssets;
-}
-
-// This method ensures that data are migrated from the old scoped path to the new, unscoped one.
-// It needs to be called in case somebody wants to update their standalone app.
-// This method can be removed when SDK32 is phased out.
-- (void)ensureOldFilesAreMigratedFrom:(NSString *)fromDirectory to:(NSString *)toDirectory
-{
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:fromDirectory]) {
-    NSArray<NSString *> *files = [fileManager contentsOfDirectoryAtPath:fromDirectory error:nil];
-
-    for (NSString *file in files) {
-      [fileManager moveItemAtPath:[fromDirectory stringByAppendingPathComponent:file]
-                           toPath:[toDirectory stringByAppendingPathComponent:file]
-                            error:nil];
-    }
-    [fileManager removeItemAtPath:fromDirectory error:nil];
-  }
 }
 
 @end

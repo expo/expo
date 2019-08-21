@@ -3,8 +3,6 @@
 #import "EXKernelServiceRegistry.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXFileSystemManager.h"
-#import "EXGoogleAuthManager.h"
 #import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -21,8 +19,6 @@
 @interface EXKernelServiceRegistry ()
 
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
-@property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
-@property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
@@ -48,9 +44,7 @@
     [self linkingManager];
     [self homeModuleManager];
     [self screenOrientationManager];
-    [self googleAuthManager];
     [self sensorManager];
-    [self fileSystemManager];
     [self updatesManager];
     [self notificationsManager];
     [self notificationCenter];
@@ -80,22 +74,6 @@
     _errorRecoveryManager = [[EXErrorRecoveryManager alloc] init];
   }
   return _errorRecoveryManager;
-}
-
-- (EXFileSystemManager *)fileSystemManager
-{
-  if (!_fileSystemManager) {
-    _fileSystemManager = [[EXFileSystemManager alloc] init];
-  }
-  return _fileSystemManager;
-}
-
-- (EXGoogleAuthManager *)googleAuthManager
-{
-  if (!_googleAuthManager) {
-    _googleAuthManager = [[EXGoogleAuthManager alloc] init];
-  }
-  return _googleAuthManager;
 }
 
 - (EXKernelLinkingManager *)linkingManager
@@ -167,8 +145,6 @@
     NSArray *registryServices = @[
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
-                                  self.fileSystemManager,
-                                  self.googleAuthManager,
                                   self.homeModuleManager,
                                   self.linkingManager,
                                   self.remoteNotificationManager,

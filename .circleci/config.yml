@@ -284,11 +284,10 @@ workflows:
           requires:
             - client_android_approve_google_play
 
-      # - shell_app_ios_tests:
-      #     requires:
-      #       - shell_app_sim_base_ios
-      #       - test_suite_publish
-
+  #     - shell_app_ios_tests:
+  #         requires:
+  #           - shell_app_sim_base_ios
+  #           - test_suite_publish
   shell_app:
     jobs:
       - shell_app_ios_approve_build:
@@ -411,6 +410,7 @@ jobs:
       - setup
       - update_submodules
       - guard_sdk_tests
+
       # Simulators are more likely to fail. Try them first
       - run:
           name: Pull Detox

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI31_0_0/Expo/Core/Api/Standalone/Branch/ABI31_0_0RNBranchConfig.h
