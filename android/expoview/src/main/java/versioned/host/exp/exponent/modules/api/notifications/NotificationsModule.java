@@ -17,9 +17,12 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import expo.modules.backgroundfetch.BackgroundFetchTaskConsumer;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -34,6 +38,8 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
+import host.exp.exponent.notifications.NotificationBackgroundModule;
+import host.exp.exponent.notifications.NotificationBackgroundTaskConsumer;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
 import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
@@ -84,6 +90,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
         newActions.add(action);
       }
     }
+
+    NotificationBackgroundModule myModule = new NotificationBackgroundModule(getReactApplicationContext());
+    myModule.registerTaskAsync("hahayep", Collections.emptyMap(), promise);
 
     NotificationActionCenter.putCategory(categoryId, newActions);
     promise.resolve(null);

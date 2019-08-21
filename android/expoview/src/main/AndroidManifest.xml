@@ -104,7 +104,6 @@
         </provider>
 
         <receiver android:name="host.exp.exponent.notifications.MyBroadcastReceiver" android:exported="true" />
-        <service android:name="host.exp.exponent.notifications.MyTaskService" />
 
     </application>
 

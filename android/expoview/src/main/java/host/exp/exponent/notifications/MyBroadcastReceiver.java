@@ -1,9 +1,11 @@
 package host.exp.exponent.notifications;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -16,6 +18,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import javax.annotation.Nonnull;
 
+import expo.modules.taskManager.TaskBroadcastReceiver;
 import host.exp.exponent.kernel.ExperienceId;
 import versioned.host.exp.exponent.modules.ExpoBaseModule;
 
@@ -31,21 +34,43 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     Log.i(TAG, log);
     //Toast.makeText(context, log, Toast.LENGTH_LONG).show();
 
+    createTaskIntent(context, "@hesyifei/push-notification-test", "", 0);
+
     /*Intent serviceIntent = new Intent(context, MyTaskService.class);
     serviceIntent.putExtra("hasInternet", "hello world");
     context.startService(serviceIntent);
     HeadlessJsTaskService.acquireWakeLockNow(context);*/
 
-    Intent service = new Intent(context.getApplicationContext(), MyTaskService.class);
+    /*Intent service = new Intent(context.getApplicationContext(), MyTaskService.class);
     Bundle bundle = new Bundle();
 
     bundle.putString("foo", "bar");
     service.putExtras(bundle);
 
     context.getApplicationContext().startService(service);
-    HeadlessJsTaskService.acquireWakeLockNow(context.getApplicationContext());
+    HeadlessJsTaskService.acquireWakeLockNow(context.getApplicationContext());*/
   }
+
+  private PendingIntent createTaskIntent(Context context, String appId, String taskName, int flags) {
+    if (context == null) {
+      return null;
+    }
+
+    Intent intent = new Intent(TaskBroadcastReceiver.INTENT_ACTION, null, context, TaskBroadcastReceiver.class);
+
+    Uri dataUri = new Uri.Builder()
+        .appendQueryParameter("appId", appId)
+        .appendQueryParameter("taskName", "hahayep")
+        .build();
+
+    intent.setData(dataUri);
+
+    return PendingIntent.getBroadcast(context, 6666, intent, flags);
+  }
+
 }
+
+
 
 
 /*
