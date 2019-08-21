@@ -90,6 +90,9 @@ commands:
             else
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
+  just-quit:
+    steps:
+      - run: echo 'Bye' && exit 0
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -351,6 +354,7 @@ jobs:
   web_test_suite:
     executor: web
     steps:
+      - just-quit
       - install_nix
       - setup
       - update_submodules
