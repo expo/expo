@@ -9,7 +9,7 @@ export async function sendSMSAsync(
 ): Promise<SMSResponse> {
   const finalAddresses = Array.isArray(addresses) ? addresses : [addresses];
   if (!ExpoSMS.sendSMSAsync) {
-    throw new UnavailabilityError(`expo-sms`, `sendSMSAsync`);
+    throw new UnavailabilityError('expo-sms', 'sendSMSAsync');
   }
   return ExpoSMS.sendSMSAsync(finalAddresses, message);
 }
