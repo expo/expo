@@ -15,7 +15,7 @@ commands:
 
             if [ "${CIRCLE_BRANCH}" = "${ROOT_BRANCH}" ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              exit 0;
+              exit
             fi
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
@@ -33,7 +33,7 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ "${BASE_FILE_HASH}" = "${CURRENT_FILE_HASH}" ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  exit 0
+                  exit
                 fi
               fi
             done
@@ -59,7 +59,7 @@ commands:
 
             if [ "${CIRCLE_BRANCH}" = "${ROOT_BRANCH}" ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              exit 0;
+              exit
             fi
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
@@ -77,7 +77,7 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  exit 0
+                  exit
                 fi
               fi
             done
