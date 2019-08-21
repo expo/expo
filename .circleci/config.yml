@@ -55,7 +55,7 @@ commands:
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Required << parameters.require >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
@@ -76,8 +76,13 @@ commands:
             done
 
             echo "⏹ No relevant file changes in the current branch; stopping tests."
-            # No changes. Halting step
-            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
