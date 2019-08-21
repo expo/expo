@@ -670,6 +670,7 @@ jobs:
     steps:
       - setup
       - update_submodules
+      - guard_sdk_tests
       - decrypt_secrets_if_possible
       - run:
           name: Publish
