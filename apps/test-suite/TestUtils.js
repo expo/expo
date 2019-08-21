@@ -134,11 +134,6 @@ export async function shouldSkipTestsRequiringPermissionsAsync() {
   return ExponentTest.shouldSkipTestsRequiringPermissionsAsync();
 }
 
-export async function expectMethodToBeUnavailableAsync(expect, method) {
-  const error = await expectMethodToThrowAsync(method);
-  expect(error instanceof UnavailabilityError).toBe(true);
-}
-
 export async function expectMethodToThrowAsync(method) {
   try {
     await method();
