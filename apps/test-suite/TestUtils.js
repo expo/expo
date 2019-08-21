@@ -136,7 +136,7 @@ export async function shouldSkipTestsRequiringPermissionsAsync() {
 
 export async function expectMethodToBeUnavailableAsync(expect, method) {
   const error = await expectMethodToThrowAsync(method);
-  expect(error instanceof UnavailabilityError).toBeTruthy();
+  expect(error instanceof UnavailabilityError).toBe(true);
 }
 
 export async function expectMethodToThrowAsync(method) {
