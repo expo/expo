@@ -74,6 +74,9 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
         case MessageComposeResultSent:
             resolveData = @{@"result": @"sent"};
             break;
+        default:
+            rejectMessage = @"SMS message sending failed with unknown error";
+            break;
     }
     UM_WEAKIFY(self);
     [controller dismissViewControllerAnimated:YES completion:^{
