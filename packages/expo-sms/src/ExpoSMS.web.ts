@@ -10,6 +10,6 @@ export default {
     return false;
   },
   async sendSMSAsync(addresses: string[], message: string): Promise<SMSResponse> {
-    throw new CodedError('E_SMS_UNAVAILABLE', 'SMS service not available');
+    throw new CodedError('E_SMS_UNAVAILABLE', 'SMS not available');
   },
 };
