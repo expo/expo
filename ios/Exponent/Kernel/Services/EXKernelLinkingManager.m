@@ -72,7 +72,9 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
 - (void)linkingModule:(__unused id)linkingModule didOpenUrl:(NSString *)url
 {
-  [self openUrl:url isUniversalLink:NO];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self openUrl:url isUniversalLink:NO];
+  });
 }
 
 - (BOOL)linkingModule:(__unused id)linkingModule shouldOpenExpoUrl:(NSURL *)url
