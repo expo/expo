@@ -16,11 +16,11 @@ commands:
               exit 0
             fi
 
-            ROOT_COMMIT=$(git merge-base "${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
+            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Git root ${CIRCLE_WORKING_DIRECTORY}/*"
-            echo " - Initial commit ${ROOT_COMMIT}/*"
+            echo " - Initial commit ${ROOT_COMMIT}"
             # ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
             # Tests all root directories
             for file in $PWD/*/
@@ -55,11 +55,11 @@ commands:
               exit 0
             fi
 
-            ROOT_COMMIT=$(git merge-base "${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
+            ROOT_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" "${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Required << parameters.require >>"
             echo " - Git root ${CIRCLE_WORKING_DIRECTORY}/*"
-            echo " - Initial commit ${ROOT_COMMIT}/*"
+            echo " - Initial commit ${ROOT_COMMIT}"
             # Tests all root directories
             for file in $PWD/*/
             do
@@ -256,31 +256,31 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
-      - babel_preset
+      # - babel_preset
 
   # Android and iOS clients
-  client:
-    jobs:
-      - home
-      - expotools
-      - client_android
-      - client_ios
-      - test_suite_publish
-      - android_test_suite:
-          requires:
-            - test_suite_publish
-      - client_android_approve_google_play:
-          type: approval
-          requires:
-            - client_android
-          filters:
-            branches:
-              only:
-                - /sdk-\d+/
-                - /.*all-ci.*/
-      - client_android_release_google_play:
-          requires:
-            - client_android_approve_google_play
+  # client:
+  #   jobs:
+  #     - home
+  #     - expotools
+  #     - client_android
+  #     - client_ios
+  #     - test_suite_publish
+  #     - android_test_suite:
+  #         requires:
+  #           - test_suite_publish
+  #     - client_android_approve_google_play:
+  #         type: approval
+  #         requires:
+  #           - client_android
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /sdk-\d+/
+  #               - /.*all-ci.*/
+  #     - client_android_release_google_play:
+  #         requires:
+  #           - client_android_approve_google_play
 
   #     - shell_app_ios_tests:
   #         requires:
@@ -325,6 +325,7 @@ jobs:
   expo_sdk:
     executor: js
     steps:
+      - install_nix
       - setup
       - update_submodules
       - guard_sdk_tests
@@ -628,6 +629,7 @@ jobs:
     executor: nix
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
+      - install_nix
       - setup
       - update_submodules
       - conditionally_require_changes:
