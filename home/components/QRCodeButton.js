@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { Keyboard, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';

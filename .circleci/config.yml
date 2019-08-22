@@ -380,6 +380,9 @@ jobs:
       - yarn:
           command: jest --maxWorkers 1
           working_directory: ~/expo/home
+      - yarn:
+          command: lint
+          working_directory: ~/expo/home
 
   expotools:
     executor: js
