@@ -18,7 +18,6 @@ import expo.modules.taskManager.TaskManagerUtils;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.NotificationConstants;
-import versioned.host.exp.exponent.modules.api.notifications.NotificationBackgroundTaskConsumer;
 
 public class NotificationActionReceiver extends BroadcastReceiver {
   private static final String TAG = "NotificationActionReceiver";

@@ -1,20 +1,15 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package host.exp.exponent.notifications.backgroundActions;
 
 import android.content.Context;
 import android.util.Log;
 
-import org.unimodules.core.BasePackage;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-
-import expo.modules.location.LocationModule;
 
 public class NotificationBackgroundModule extends ExportedModule {
   private TaskManagerInterface mTaskManager;

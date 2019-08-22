@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package host.exp.exponent.notifications.backgroundActions;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;

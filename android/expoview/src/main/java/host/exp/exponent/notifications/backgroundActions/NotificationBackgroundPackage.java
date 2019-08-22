@@ -1,14 +1,12 @@
-package versioned.host.exp.exponent.modules.api.notifications;
+package host.exp.exponent.notifications.backgroundActions;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.unimodules.core.BasePackage;
 import org.unimodules.core.ExportedModule;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class NotificationBackgroundPackage extends BasePackage {
   @Override
