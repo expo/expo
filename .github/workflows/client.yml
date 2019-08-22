@@ -9,7 +9,7 @@ jobs:
     
     steps:
     - name: Set up BASH_ENV
-      run: touch "$BASH_ENV"
+      run: mkdir -p $(dirname "$BASH_ENV") && touch "$BASH_ENV"
     - name: Install Nix
       run: |
         echo >> ~/.bash_profile
