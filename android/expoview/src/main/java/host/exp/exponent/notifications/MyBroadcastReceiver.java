@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,11 +17,16 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import org.unimodules.interfaces.taskManager.TaskInterface;
+
+import java.util.Collections;
+
 import javax.annotation.Nonnull;
 
 import expo.modules.taskManager.TaskBroadcastReceiver;
 import expo.modules.taskManager.TaskManagerUtils;
 import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.KernelConstants;
 import versioned.host.exp.exponent.modules.ExpoBaseModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationBackgroundTaskConsumer;
 
@@ -36,14 +42,30 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     Log.i(TAG, log);
     //Toast.makeText(context, log, Toast.LENGTH_LONG).show();
 
+    Bundle bundle = intent.getExtras();
+    String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
+    String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
+    //if (notificationManifestUrl != null) {
+    ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
+    //exponentNotification.body;
+
     //createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
 
+    TaskInterface myTask = NotificationBackgroundTaskConsumer.mTasks.get("hahayep");
+
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
-    try {
+    PersistableBundle data = new PersistableBundle();
+
+    data.putString("THIS IS HARD:::::", "CODED!!!!!");
+    data.putInt("itis", 123);
+
+    mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));
+
+    /*try {
       mTaskManagerUtils.createTaskIntent(context, NotificationBackgroundTaskConsumer.mTasks.get("hahayep")).send();
     } catch (Exception e) {
 
-    }
+    }*/
 
 
     /*Intent serviceIntent = new Intent(context, MyTaskService.class);
