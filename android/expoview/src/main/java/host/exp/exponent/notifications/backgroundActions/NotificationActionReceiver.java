@@ -1,4 +1,4 @@
-package host.exp.exponent.notifications;
+package host.exp.exponent.notifications.backgroundActions;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,10 +16,12 @@ import java.util.Collections;
 
 import expo.modules.taskManager.TaskManagerUtils;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.notifications.ExponentNotification;
+import host.exp.exponent.notifications.NotificationConstants;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationBackgroundTaskConsumer;
 
-public class MyBroadcastReceiver extends BroadcastReceiver {
-  private static final String TAG = "MyBroadcastReceiver";
+public class NotificationActionReceiver extends BroadcastReceiver {
+  private static final String TAG = "NotificationActionReceiver";
 
   @Override
   public void onReceive(Context context, Intent intent) {

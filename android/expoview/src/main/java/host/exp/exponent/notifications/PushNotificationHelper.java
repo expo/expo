@@ -30,6 +30,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.notifications.backgroundActions.NotificationActionReceiver;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -233,7 +234,7 @@ public class PushNotificationHelper {
               NotificationActionCenter.setCategory(categoryId, notificationBuilder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
-                  Intent intent = new Intent(context, MyBroadcastReceiver.class);
+                  Intent intent = new Intent(context, NotificationActionReceiver.class);
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
                   intent.putExtra(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);

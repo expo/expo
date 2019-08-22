@@ -103,7 +103,7 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <receiver android:name="host.exp.exponent.notifications.MyBroadcastReceiver" android:exported="true" />
+        <receiver android:name="host.exp.exponent.notifications.backgroundActions.NotificationActionReceiver" android:exported="true" />
 
     </application>
 
