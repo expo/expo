@@ -6,7 +6,7 @@ import { CodedError, RCTDeviceEventEmitter, UnavailabilityError, NativeModulesPr
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
-const { ExpoNotificationBackground } = NativeModulesProxy;
+const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
 function _maybeInitEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
@@ -116,10 +116,10 @@ export default {
     // User passes set of actions titles.
     createCategoryAsync(categoryId, actions) {
         if (Platform.OS === 'android') {
-            if (!ExpoNotificationBackground) {
+            if (!ExpoNotificationBackgroundAction) {
                 throw new Error('nooo');
             }
-            ExpoNotificationBackground.registerTaskAsync('hahayep', {});
+            ExpoNotificationBackgroundAction.registerTaskAsync('hahayep', {});
         }
         return ExponentNotifications.createCategoryAsync(categoryId, actions);
     },

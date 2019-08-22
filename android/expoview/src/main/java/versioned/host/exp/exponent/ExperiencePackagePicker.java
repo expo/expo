@@ -1,11 +1,11 @@
 package versioned.host.exp.exponent;
 
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.Package;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.interfaces.Package;
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
@@ -20,10 +20,10 @@ import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
-import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.crypto.CryptoPackage;
+import expo.modules.device.DevicePackage;
 import expo.modules.documentpicker.DocumentPickerPackage;
 import expo.modules.facebook.FacebookPackage;
 import expo.modules.facedetector.FaceDetectorPackage;
@@ -49,18 +49,17 @@ import expo.modules.print.PrintPackage;
 import expo.modules.random.RandomPackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
+import expo.modules.sharing.SharingPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
 import expo.modules.sqlite.SQLitePackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
-import expo.modules.device.DevicePackage;
-import host.exp.exponent.notifications.backgroundActions.NotificationBackgroundPackage;
+import host.exp.exponent.notifications.backgroundActions.NotificationBackgroundActionPackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
-      new NotificationBackgroundPackage(),
       new AVPackage(),
       new AdMobPackage(),
       new AdsFacebookPackage(),
@@ -97,6 +96,7 @@ public class ExperiencePackagePicker {
       new MailComposerPackage(),
       new MediaLibraryPackage(),
       new NetworkPackage(),
+      new NotificationBackgroundActionPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
       new RandomPackage(),

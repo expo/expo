@@ -19,7 +19,7 @@ import {
 let _emitter;
 let _initialNotification;
 
-const { ExpoNotificationBackground } = NativeModulesProxy;
+const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
 
 function _maybeInitEmitter() {
   if (!_emitter) {
@@ -149,10 +149,10 @@ export default {
   // User passes set of actions titles.
   createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
     if (Platform.OS === 'android') {
-      if (!ExpoNotificationBackground) {
+      if (!ExpoNotificationBackgroundAction) {
         throw new Error('nooo');
       }
-      ExpoNotificationBackground.registerTaskAsync('hahayep', {});
+      ExpoNotificationBackgroundAction.registerTaskAsync('hahayep', {});
     }
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
   },

@@ -8,9 +8,9 @@ import org.unimodules.core.ExportedModule;
 import java.util.Collections;
 import java.util.List;
 
-public class NotificationBackgroundPackage extends BasePackage {
+public class NotificationBackgroundActionPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.singletonList((ExportedModule) new NotificationBackgroundModule(context));
+    return Collections.singletonList((ExportedModule) new NotificationBackgroundActionModule(context));
   }
 }

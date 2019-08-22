@@ -33,7 +33,7 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     PersistableBundle data = exponentNotification.toPersistableBundle("selected");
     data.putString(NotificationConstants.NOTIFICATION_ACTION_TYPE, actionId);
 
-    TaskInterface myTask = NotificationBackgroundTaskConsumer.mTasks.get("hahayep");
+    TaskInterface myTask = NotificationBackgroundActionTaskConsumer.mTasks.get("hahayep");
 
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
     mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));

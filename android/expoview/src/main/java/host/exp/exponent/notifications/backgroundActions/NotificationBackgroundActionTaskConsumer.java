@@ -17,13 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NotificationBackgroundTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
-  private static final String TAG = "NotifinBGTaskConsumer";
-
+public class NotificationBackgroundActionTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private TaskInterface mTask;
   static public HashMap<String, TaskInterface> mTasks = new HashMap<>();
 
-  public NotificationBackgroundTaskConsumer(Context context, TaskManagerUtilsInterface taskManagerUtils) {
+  public NotificationBackgroundActionTaskConsumer(Context context, TaskManagerUtilsInterface taskManagerUtils) {
     super(context, taskManagerUtils);
   }
 

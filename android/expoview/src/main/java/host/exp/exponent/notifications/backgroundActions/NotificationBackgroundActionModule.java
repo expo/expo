@@ -11,16 +11,16 @@ import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import java.util.Map;
 
-public class NotificationBackgroundModule extends ExportedModule {
+public class NotificationBackgroundActionModule extends ExportedModule {
   private TaskManagerInterface mTaskManager;
 
-  public NotificationBackgroundModule(Context context) {
+  public NotificationBackgroundActionModule(Context context) {
     super(context);
   }
 
   @Override
   public String getName() {
-    return "ExpoNotificationBackground";
+    return "ExpoNotificationBackgroundAction";
   }
 
   @Override
@@ -35,7 +35,7 @@ public class NotificationBackgroundModule extends ExportedModule {
     Log.i("hawef", "PLEEEEEEEEEESE");
     Log.i("hawef", mTaskManager.toString());
     try {
-      mTaskManager.registerTask(taskName, NotificationBackgroundTaskConsumer.class, options);
+      mTaskManager.registerTask(taskName, NotificationBackgroundActionTaskConsumer.class, options);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -45,7 +45,7 @@ public class NotificationBackgroundModule extends ExportedModule {
   @ExpoMethod
   public void unregisterTaskAsync(String taskName, final Promise promise) {
     try {
-      mTaskManager.unregisterTask(taskName, NotificationBackgroundTaskConsumer.class);
+      mTaskManager.unregisterTask(taskName, NotificationBackgroundActionTaskConsumer.class);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
