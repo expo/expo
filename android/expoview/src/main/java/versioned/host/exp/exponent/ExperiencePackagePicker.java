@@ -56,9 +56,11 @@ import expo.modules.taskManager.TaskManagerPackage;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
 import expo.modules.device.DevicePackage;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationBackgroundPackage;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
+      new NotificationBackgroundPackage(),
       new AVPackage(),
       new AdMobPackage(),
       new AdsFacebookPackage(),

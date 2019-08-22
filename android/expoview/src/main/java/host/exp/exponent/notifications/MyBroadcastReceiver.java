@@ -35,7 +35,6 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     //Toast.makeText(context, log, Toast.LENGTH_LONG).show();
 
     createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
-
     /*Intent serviceIntent = new Intent(context, MyTaskService.class);
     serviceIntent.putExtra("hasInternet", "hello world");
     context.startService(serviceIntent);
@@ -64,6 +63,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         .build();
 
     intent.setData(dataUri);
+
+    Log.i("HAHA", "PLLLLLLLLLLLZ THIS BE CALLED!!!!");
+
+    context.sendBroadcast(intent);
 
     return PendingIntent.getBroadcast(context, 6666, intent, flags);
   }
