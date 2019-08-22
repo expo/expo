@@ -24,6 +24,7 @@ declare const _default: {
     cancelScheduledNotificationAsync(notificationId: import("react").ReactText): Promise<void>;
     cancelAllScheduledNotificationsAsync(): Promise<void>;
     addListener(listener: (notification: Notification) => unknown): EventSubscription;
+    addActionBackgroundListener(categoryId: string, listener: (notification: Notification) => unknown): void;
     getBadgeNumberAsync(): Promise<number>;
     setBadgeNumberAsync(number: number): Promise<void>;
     scheduleNotificationWithCalendarAsync(notification: LocalNotification, options?: {

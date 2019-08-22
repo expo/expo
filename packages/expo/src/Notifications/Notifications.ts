@@ -148,10 +148,12 @@ export default {
 
   // User passes set of actions titles.
   createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
-    if (!ExpoNotificationBackground) {
-      throw new Error('nooo');
+    if (Platform.OS === 'android') {
+      if (!ExpoNotificationBackground) {
+        throw new Error('nooo');
+      }
+      ExpoNotificationBackground.registerTaskAsync('hahayep', {});
     }
-    ExpoNotificationBackground.registerTaskAsync('hahayep', {});
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
 
@@ -397,6 +399,32 @@ export default {
     }
 
     return _emitter.addListener('notification', listener);
+  },
+
+  addActionBackgroundListener(
+    categoryId: string,
+    listener: (notification: Notification) => unknown
+  ) {
+    let TaskManager: any;
+    try {
+      TaskManager = require('expo-task-manager');
+    } catch {
+      throw new Error(
+        'expo-task-manager is not installed. You have to install expo-task-manager for `addActionBackgroundListener`.'
+      );
+    }
+    TaskManager.defineTask(categoryId, ({ data }) => {
+      console.warn(`defineTask's data is ${JSON.stringify(data)}`);
+      if (data) {
+        // We want to try to parse the `data` field because Java send it as a string.
+        try {
+          data.data = JSON.parse(data.data);
+        } catch {
+          // Do nothing
+        }
+        listener(data);
+      }
+    });
   },
 
   async getBadgeNumberAsync(): Promise<number> {
