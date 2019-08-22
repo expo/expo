@@ -1,16 +1,18 @@
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraUtils.h>
+#import <EXCamera/EXCameraRequester.h>
 
 #import <UMCore/UMUIManager.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 @interface EXCameraManager ()
 
 @property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<UMUIManager> uiManager;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @end
 
 @implementation EXCameraManager
@@ -27,6 +29,8 @@ UM_EXPORT_MODULE(ExponentCameraManager);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsManager registerRequesters:@[[EXCameraRequester new]]];
 }
 
 - (UIView *)view
@@ -323,6 +327,31 @@ UM_EXPORT_METHOD_AS(getAvailablePictureSizes,
                                               rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve([[[self class] pictureSizes] allKeys]);
+}
+
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager getPermissionUsingRequesterClass:[EXCameraRequester class]
+                                             withResult:resolve
+                                           withRejecter:reject];
+}
+
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager askForPermissionUsingRequesterClass:[EXCameraRequester class]
+                                                withResult:resolve
+                                              withRejecter:reject];
 }
 
 @end

@@ -57,4 +57,10 @@ export async function setSystemBrightnessModeAsync(brightnessMode) {
     }
     return await NativeModulesProxy.ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
 }
+export async function getPermissionsAsync() {
+    return NativeModulesProxy.ExpoBrightness.getPermissionsAsync();
+}
+export async function requestPermissionsAsync() {
+    return NativeModulesProxy.ExpoBrightness.requestPermissionsAsync();
+}
 //# sourceMappingURL=Brightness.js.map

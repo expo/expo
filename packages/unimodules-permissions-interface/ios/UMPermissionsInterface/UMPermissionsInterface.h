@@ -22,22 +22,16 @@ typedef enum UMPermissionStatus {
 
 @protocol UMPermissionsInterface
 
-- (NSDictionary *)getPermissionsForResource:(NSString *)resource;
-
-- (BOOL)hasGrantedPermission:(NSString *)permissionType;
-
-- (void)askForPermission:(NSString *)permissionType
-              withResult:(UMPromiseResolveBlock)onResult
-            withRejecter:(UMPromiseRejectBlock)reject;
-
 - (void)registerRequesters:(NSArray<id<UMPermissionsRequester>> *)newRequesters;
 
-- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass;
+- (void)getPermissionUsingRequesterClass:(Class)requesterClass
+                              withResult:(UMPromiseResolveBlock)onResult
+                            withRejecter:(UMPromiseRejectBlock)reject;
 
 - (BOOL)hasGrantedPermissionUsingRequesterClass:(Class)requesterClass;
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-              withResult:(UMPromiseResolveBlock)onResult
-            withRejecter:(UMPromiseRejectBlock)reject;
+                                 withResult:(UMPromiseResolveBlock)onResult
+                               withRejecter:(UMPromiseRejectBlock)reject;
 
 @end

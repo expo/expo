@@ -2,12 +2,15 @@
 
 #import <EXBarCodeScanner/EXBarCodeScannerModule.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
+#import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
 #import <UMImageLoaderInterface/UMImageLoaderInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 @interface EXBarCodeScannerModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMImageLoaderInterface> imageLoader;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
 
 @end
 
@@ -19,6 +22,8 @@ UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
 {
   _moduleRegistry = moduleRegistry;
   _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(UMImageLoaderInterface)];
+  _permissionsModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsModule registerRequesters:@[[EXBareCodeCameraRequester new]]];
 }
 
 - (NSDictionary *)constantsToExport
@@ -30,6 +35,30 @@ UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
                },
            @"BarCodeType": [EXBarCodeScannerUtils validBarCodeTypes],
            };
+}
+
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsModule) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsModule getPermissionUsingRequesterClass:[EXBareCodeCameraRequester class]
+                                            withResult:resolve
+                                          withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsModule) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsModule askForPermissionUsingRequesterClass:[EXBareCodeCameraRequester class]
+                                               withResult:resolve
+                                             withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(scanFromURLAsync,

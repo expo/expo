@@ -104,6 +104,7 @@ export enum PermissionStatus {
 export type PermissionInfo = {
   status: 'granted' | 'denied' | 'undetermined';
   granted: boolean;
+  expires: "never" | number;
 };
 
 export type AssetRef = Asset | string;

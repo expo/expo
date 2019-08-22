@@ -303,8 +303,11 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
         error(e);
     }
 }
+export async function getPermissionsAsync() {
+    return await ExpoLocation.getPermissionsAsync();
+}
 export async function requestPermissionsAsync() {
-    await ExpoLocation.requestPermissionsAsync();
+    return await ExpoLocation.requestPermissionsAsync();
 }
 // --- Location service
 export async function hasServicesEnabledAsync() {

@@ -154,8 +154,22 @@ export type RecordingStatus = {
   durationMillis: number;
 };
 
+export type PermissionsRespone = {
+  status: "undetermined" | "granted" | "denied";
+  expires: "never" | number;
+  granted: boolean;
+};
+
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+
+export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+  return ExponentAV.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
+  return ExponentAV.requestPermissionsAsync();
+}
 
 export class Recording {
   _subscription: Subscription | null = null;

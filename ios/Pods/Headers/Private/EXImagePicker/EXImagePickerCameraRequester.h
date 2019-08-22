@@ -1,0 +1,1 @@
+../../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRequester.h

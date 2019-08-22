@@ -4,6 +4,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <EXMediaLibrary/EXMediaLibrary.h>
+#import <EXMediaLibrary/EXMediaLibraryCameraRollRequester.h>
 
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
@@ -37,6 +38,7 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsManager registerRequesters:@[[EXMediaLibraryCameraRollRequester new]]];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -84,7 +86,9 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
   if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS_MODULE", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  [_permissionsManager askForPermission:@"cameraRoll" withResult:resolve withRejecter:reject];
+  [_permissionsManager askForPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]
+                                                withResult:resolve
+                                              withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(getPermissionsAsync,
@@ -94,7 +98,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
   if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS_MODULE", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  resolve([_permissionsManager getPermissionsForResource:@"cameraRoll"]);
+  [_permissionsManager getPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]
+                                             withResult:resolve
+                                           withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(createAssetAsync,
@@ -900,8 +906,7 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 
 - (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject
 {
-  NSDictionary *cameraRollPermissions = [_permissionsManager getPermissionsForResource:@"cameraRoll"];
-  if (![cameraRollPermissions[@"status"] isEqualToString:@"granted"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]]) {
     reject(@"E_NO_PERMISSIONS", @"CAMERA_ROLL permission is required to do this operation.", nil);
     return NO;
   }

@@ -3,6 +3,7 @@
 #import <EXContacts/EXContacts.h>
 #import <EXContacts/EXContactsViewController.h>
 #import <EXContacts/EXContacts+Serialization.h>
+#import <EXContacts/EXContactsRequester.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
@@ -86,6 +87,7 @@ UM_EXPORT_MODULE(ExpoContacts);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsManager registerRequesters:@[[EXContactsRequester new]]];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
@@ -502,6 +504,31 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
      ];
 }
 
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager getPermissionUsingRequesterClass:[EXContactsRequester class]
+                                             withResult:resolve
+                                           withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager askForPermissionUsingRequesterClass:[EXContactsRequester class]
+                                                withResult:resolve
+                                              withRejecter:reject];
+}
+
+
 - (void)_serializeContactPayload:(NSDictionary *)payload
                      keysToFetch:(NSArray<NSString *> *)keysToFetch
                          options:(NSDictionary *)options
@@ -811,9 +838,8 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         
         if(!store.defaultContainerIdentifier) {
             //APPL says: If the caller lacks Contacts authorization or an error occurs, nil is returned.
-            
-            NSDictionary *cameraPermissions = [_permissionsManager getPermissionsForResource:@"contacts"];
-            if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
+          
+            if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXContactsRequester class]]) {
                 reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
                 return nil;
             } else {

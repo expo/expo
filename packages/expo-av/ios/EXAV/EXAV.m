@@ -11,6 +11,7 @@
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
+#import <EXAV/EXAudioRecordingRequester.h>
 
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
@@ -54,6 +55,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
 
 @end
 
@@ -113,7 +115,8 @@ UM_EXPORT_MODULE(ExponentAV);
   _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
 //  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
-
+  _permissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsModule registerRequesters:@[[EXAudioRecordingRequester new]]];
 }
 
 - (void)onAppForegrounded
@@ -746,12 +749,36 @@ UM_EXPORT_METHOD_AS(getStatusForVideo,
 
 #pragma mark - Audio API: Recording
 
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsModule) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsModule getPermissionUsingRequesterClass:[EXAudioRecordingRequester class]
+                                            withResult:resolve
+                                          withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsModule) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsModule askForPermissionUsingRequesterClass:[EXAudioRecordingRequester class]
+                                               withResult:resolve
+                                             withRejecter:reject];
+}
+
 UM_EXPORT_METHOD_AS(prepareAudioRecorder,
                     prepareAudioRecorder:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![[_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)] hasGrantedPermission:@"audioRecording"]) {
+  if (![_permissionsModule hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
   }
@@ -781,7 +808,7 @@ UM_EXPORT_METHOD_AS(startAudioRecording,
                     startAudioRecording:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![[_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)] hasGrantedPermission:@"audioRecording"]) {
+  if (![_permissionsModule hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
   }

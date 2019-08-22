@@ -92,6 +92,13 @@ export declare type RecordingStatus = {
     isDoneRecording: boolean;
     durationMillis: number;
 };
+export declare type PermissionsRespone = {
+    status: "undetermined" | "granted" | "denied";
+    expires: "never" | number;
+    granted: boolean;
+};
+export declare function getPermissionsAsync(): Promise<PermissionsRespone>;
+export declare function requestPermissionsAsync(): Promise<PermissionsRespone>;
 export declare class Recording {
     _subscription: Subscription | null;
     _canRecord: boolean;

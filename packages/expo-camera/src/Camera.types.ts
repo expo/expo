@@ -74,3 +74,9 @@ export type NativeProps = {
   ratio?: string;
   useCamera2Api?: boolean;
 };
+
+export type PermissionsRespone = {
+  status: "undetermined" | "granted" | "denied";
+  expires: "never" | number;
+  granted: boolean;
+};

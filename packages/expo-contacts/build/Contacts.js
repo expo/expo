@@ -157,6 +157,18 @@ export async function getContainersAsync(containerQuery) {
     }
     return await ExpoContacts.getContainersAsync(containerQuery);
 }
+export async function getPermissionsAsync() {
+    if (!ExpoContacts.getPermissionsAsync) {
+        throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
+    }
+    return ExpoContacts.getPermissionsAsync();
+}
+export async function requestPermissionsAsync() {
+    if (!ExpoContacts.requestPermissionsAsync) {
+        throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
+    }
+    return await ExpoContacts.requestPermissionsAsync();
+}
 // Legacy
 export const PHONE_NUMBERS = 'phoneNumbers';
 export const EMAILS = 'emails';

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+import { CapturedPicture, PictureOptions, Props, RecordingOptions, PermissionsRespone } from './Camera.types';
 export default class Camera extends React.Component<Props> {
     static Constants: {
         Type: any;
@@ -28,14 +28,14 @@ export default class Camera extends React.Component<Props> {
         barCodeScannerSettings: PropTypes.Requireable<object>;
         onFacesDetected: PropTypes.Requireable<(...args: any[]) => any>;
         faceDetectorSettings: PropTypes.Requireable<object>;
-        type: PropTypes.Requireable<string | number>;
-        flashMode: PropTypes.Requireable<string | number>;
+        type: PropTypes.Requireable<React.ReactText>;
+        flashMode: PropTypes.Requireable<React.ReactText>;
         videoStabilizationMode: PropTypes.Requireable<number>;
-        whiteBalance: PropTypes.Requireable<string | number>;
+        whiteBalance: PropTypes.Requireable<React.ReactText>;
         autoFocus: PropTypes.Requireable<string | number | boolean>;
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
         onLayout?: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined> | undefined;
-        pointerEvents?: PropTypes.Validator<"box-none" | "none" | "box-only" | "auto" | undefined> | undefined;
+        pointerEvents?: PropTypes.Validator<"none" | "auto" | "box-none" | "box-only" | undefined> | undefined;
         removeClippedSubviews?: PropTypes.Validator<boolean | undefined> | undefined;
         style?: PropTypes.Validator<import("react-native").StyleProp<import("react-native").ViewStyle>> | undefined;
         testID?: PropTypes.Validator<string | undefined> | undefined;
@@ -73,19 +73,21 @@ export default class Camera extends React.Component<Props> {
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityRole?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined> | undefined;
+        accessibilityRole?: PropTypes.Validator<"none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined> | undefined;
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
+        accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"none" | "button" | "header" | "link" | "summary" | "image" | "text" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
     static defaultProps: Props;
+    static getPermissionsAsync(): Promise<PermissionsRespone>;
+    static requestPermissionsAsync(): Promise<PermissionsRespone>;
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
@@ -123,3 +125,5 @@ export declare const Constants: {
     VideoQuality: any;
     VideoStabilization: any;
 };
+export declare const getPermissionsAsync: typeof Camera.getPermissionsAsync;
+export declare const requestPermissionsAsync: typeof Camera.requestPermissionsAsync;

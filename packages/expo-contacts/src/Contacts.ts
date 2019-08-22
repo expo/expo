@@ -232,6 +232,12 @@ export type Container = {
   type: ContainerType;
 };
 
+export type PermissionsRespone = {
+  status: "undetermined" | "granted" | "denied";
+  expires: "never" | number;
+  granted: boolean;
+};
+
 export async function shareContactAsync(
   contactId: string,
   message: string,
@@ -447,6 +453,22 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
   }
 
   return await ExpoContacts.getContainersAsync(containerQuery);
+}
+
+export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+  if (!ExpoContacts.getPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
+  }
+
+  return ExpoContacts.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
+  if (!ExpoContacts.requestPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
+  }
+
+  return await ExpoContacts.requestPermissionsAsync();
 }
 
 // Legacy

@@ -274,6 +274,18 @@ export function openEventInCalendar(id) {
     }
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
+export async function getPermissionsAsync() {
+    if (!ExpoCalendar.getCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getPermissionsAsync');
+    }
+    return ExpoCalendar.getCalendarPermissionsAsync();
+}
+export async function getRemindersPermissionsAync() {
+    if (!ExpoCalendar.getRemindersPermissionsAync) {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAync');
+    }
+    return ExpoCalendar.getRemindersPermissionsAync();
+}
 export async function requestPermissionsAsync() {
     if (!ExpoCalendar.requestPermissionsAsync) {
         throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');

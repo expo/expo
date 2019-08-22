@@ -7,6 +7,8 @@
 
 #import <EXCalendar/EXCalendar.h>
 #import <EXCalendar/EXCalendarConverter.h>
+#import <EXCalendar/EXCalendarRequester.h>
+#import <EXCalendar/EXRemindersRequester.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
@@ -25,6 +27,11 @@ UM_EXPORT_MODULE(ExpoCalendar);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsManager registerRequesters:@[
+                                            [EXCalendarRequester new],
+                                            [EXRemindersRequester new]
+                                            ]
+   ];
 }
 
 #pragma mark -
@@ -727,7 +734,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
   if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  [_permissionsManager askForPermission:@"calendar" withResult:resolve withRejecter:reject];
+  [_permissionsManager askForPermissionUsingRequesterClass:[EXCalendarRequester class] withResult:resolve withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
@@ -737,7 +744,31 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  [_permissionsManager askForPermission:@"reminders" withResult:resolve withRejecter:reject];
+  [_permissionsManager askForPermissionUsingRequesterClass:[EXRemindersRequester class] withResult:resolve withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
+                    getCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager getPermissionUsingRequesterClass:[EXCalendarRequester class]
+                                             withResult:resolve
+                                           withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
+                    getRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager getPermissionUsingRequesterClass:[EXRemindersRequester class]
+                                             withResult:resolve
+                                           withRejecter:reject];
 }
 
 #pragma mark - helpers
@@ -880,10 +911,10 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return EKEventAvailabilityNotSupported;
 }
 
-- (BOOL)_checkPermissions:(NSString *)permissionType reject:(UMPromiseRejectBlock)reject
+- (BOOL)_checkPermissions:(Class)permissionsRequester reject:(UMPromiseRejectBlock)reject
 {
-  if (![_permissionsManager hasGrantedPermission:permissionType]) {
-    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [permissionType uppercaseString]];
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCalendarRequester class]]) {
+    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [[permissionsRequester permissionType] uppercaseString]];
     reject(@"E_MISSING_PERMISSION", errorMessage, nil);
     return NO;
   }
@@ -892,12 +923,12 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
 
 - (BOOL)_checkCalendarPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:@"calendar" reject:reject];
+  return [self _checkPermissions:[EXCalendarRequester class] reject:reject];
 }
 
 - (BOOL)_checkRemindersPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:@"reminders" reject:reject];
+  return [self _checkPermissions:[EXRemindersRequester class] reject:reject];
 }
 
 @end

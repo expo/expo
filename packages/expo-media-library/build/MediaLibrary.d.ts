@@ -76,6 +76,7 @@ export declare enum PermissionStatus {
 export declare type PermissionInfo = {
     status: 'granted' | 'denied' | 'undetermined';
     granted: boolean;
+    expires: "never" | number;
 };
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;

@@ -118,6 +118,12 @@ export type RecurrenceRule = {
   occurrence?: number;
 };
 
+export type PermissionsRespone = {
+  status: "undetermined" | "granted" | "denied";
+  expires: "never" | number;
+  granted: boolean;
+};
+
 type OptionalKeys<T> = {
   [P in keyof T]?: T[P];
 };
@@ -493,14 +499,28 @@ export function openEventInCalendar(id: string): void {
   return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
 
-export async function requestPermissionsAsync(): Promise<void> {
+export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+  if (!ExpoCalendar.getCalendarPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'getPermissionsAsync');
+  }
+  return ExpoCalendar.getCalendarPermissionsAsync();
+}
+
+export async function getRemindersPermissionsAync(): Promise<PermissionsRespone> {
+  if (!ExpoCalendar.getRemindersPermissionsAync) {
+    throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAync');
+  }
+  return ExpoCalendar.getRemindersPermissionsAync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
   if (!ExpoCalendar.requestPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
   }
   return await ExpoCalendar.requestPermissionsAsync();
 }
 
-export async function requestRemindersPermissionsAsync(): Promise<void> {
+export async function requestRemindersPermissionsAsync(): Promise<PermissionsRespone> {
   if (!ExpoCalendar.requestRemindersPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'requestRemindersPermissionsAsync');
   }

@@ -1,13 +1,44 @@
 #import <EXBrightness/EXBrightness.h>
+#import <EXBrightness/EXSystemBrightnessRequester.h>
 #import <UMCore/UMUtilities.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 #import <UIKit/UIKit.h>
+
+@interface EXBrightness ()
+
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
+
+@end
 
 @implementation EXBrightness
 
 UM_EXPORT_MODULE(ExpoBrightness);
 
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+{
+  _permissionsModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [_permissionsModule registerRequesters:@[[EXSystemBrightnessRequester new]]];
+}
 
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [_permissionsModule getPermissionUsingRequesterClass:[EXSystemBrightnessRequester class]
+                                            withResult:resolve
+                                          withRejecter:reject];
+}
+
+ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                     rejecter:(UMPromiseRejectBlock)reject)
+ {
+  [_permissionsModule askForPermissionUsingRequesterClass:[EXSystemBrightnessRequester class]
+                                               withResult:resolve
+                                             withRejecter:reject];
+ }
+   
 UM_EXPORT_METHOD_AS(setBrightnessAsync,
                     setBrightnessAsync:(NSNumber *)brightnessValue
                     resolver:(UMPromiseResolveBlock)resolve

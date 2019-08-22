@@ -148,6 +148,11 @@ export declare type Container = {
     id: string;
     type: ContainerType;
 };
+export declare type PermissionsRespone = {
+    status: "undetermined" | "granted" | "denied";
+    expires: "never" | number;
+    granted: boolean;
+};
 export declare function shareContactAsync(contactId: string, message: string, shareOptions?: Object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
@@ -166,6 +171,8 @@ export declare function removeContactFromGroupAsync(contactId: string, groupId: 
 export declare function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]>;
 export declare function getDefaultContainerIdAsync(): Promise<string>;
 export declare function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>;
+export declare function getPermissionsAsync(): Promise<PermissionsRespone>;
+export declare function requestPermissionsAsync(): Promise<PermissionsRespone>;
 export declare const PHONE_NUMBERS = "phoneNumbers";
 export declare const EMAILS = "emails";
 export declare const ADDRESSES = "addresses";
