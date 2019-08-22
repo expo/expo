@@ -6,18 +6,14 @@ jobs:
   build-ios-client:
     name: Build iOS Expo Client
     runs-on: macOS-10.14
+    shell: zsh {0}
     
     steps:
-    - name: Set up BASH_ENV
-      run: |
-        env
-        echo "$BASH_ENV"
-        mkdir -p $(dirname "$BASH_ENV") && touch "$BASH_ENV"
     - name: Install Nix
       run: |
         echo >> ~/.bash_profile
         curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
-        echo '. ~/.nix-profile/etc/profile.d/nix.sh' >> "$BASH_ENV"
+        echo '. ~/.nix-profile/etc/profile.d/nix.sh' >> ~/.ci-bashrc
     - name: Install common packages
       # direnv: configures environment with .envrc files                                        
       # findutils: where, find, etc. for expo-module test                                       
