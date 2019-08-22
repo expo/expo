@@ -1,5 +1,6 @@
 package expo.modules.barcodescanner;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import org.unimodules.interfaces.imageloader.ImageLoader;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;
@@ -87,6 +89,26 @@ public class BarCodeScannerModule extends ExportedModule {
         });
       }
     });
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
   }
 
   @ExpoMethod

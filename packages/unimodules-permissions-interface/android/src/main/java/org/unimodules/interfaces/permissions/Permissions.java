@@ -1,64 +1,21 @@
 package org.unimodules.interfaces.permissions;
 
-import android.os.Bundle;
+import org.unimodules.core.Promise;
 
 public interface Permissions {
 
-  Bundle getPermissionsBundle(String[] permissionTypes);
+  void getPermissionsWithPromise(final Promise promise, String... permissions);
 
-  void askForPermissionsBundle(String[] permissionsTypes, PermissionsRequesterListenerBundle listener);
+  void getPermissions(final PermissionsResponse response, String... permissions);
 
-  boolean hasPermissionsByTypes(String[] permissionsTypes);
+  void askForPermissionsWithPromise(final Promise promise, String... permissions);
 
-  interface PermissionsRequesterListenerBundle {
-    void onPermissionsResult(Bundle permissions);
-  }
+  void askForPermissions(final PermissionsResponse response, String... permissions);
 
-  /**
-   * @param permissions {String[]} of {@link android.Manifest.permission}
-   * @return {int[]} of either {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-   * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-   */
-  int[] getPermissions(String[] permissions);
+  boolean hasGrantedPermissions(String... permissions);
 
   /**
-   * @param permission {@link android.Manifest.permission}
-   * @return {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-   * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
+   * Checks whether given permission is present in AndroidManifest or not.
    */
-  int getPermission(String permission);
-
-  /**
-   * @param permissions {String[]} of {@link android.Manifest.permission}
-   * @param listener {@link PermissionsRequestListener} that would be called when permissions action ends
-   */
-  void askForPermissions(String[] permissions, PermissionsRequestListener listener);
-
-  /**
-   * @param permission {String[]} of {@link android.Manifest.permission}
-   * @param listener {@link PermissionRequestListener}
-   */
-  void askForPermission(String permission, PermissionRequestListener listener);
-
-  /**
-   * @param permissions {String[]} of {@link android.Manifest.permission}
-   * @return {boolean} whether all given permissions are granted.
-   */
-  boolean hasPermissions(String[] permissions);
-
-  interface PermissionRequestListener {
-    /**
-     * @param result {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-     * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-     */
-    void onPermissionResult(int result);
-  }
-
-  interface PermissionsRequestListener {
-    /**
-     * @param results {int[]} of either {@link android.content.pm.PackageManager#PERMISSION_GRANTED} if you have the
-     * permission, or {@link android.content.pm.PackageManager#PERMISSION_DENIED} if not.
-     */
-    void onPermissionsResult(int[] results);
-  }
+  boolean isPermissionPresentInManifest(String permission);
 }

@@ -1,17 +1,17 @@
 package expo.modules.permissions.requesters
 
 import android.os.Bundle
-import expo.modules.permissions.EXPIRES_KEY
-import expo.modules.permissions.GRANTED_VALUE
-import expo.modules.permissions.PERMISSION_EXPIRES_NEVER
-import expo.modules.permissions.STATUS_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse.EXPIRES_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse.PERMISSION_EXPIRES_NEVER
+import org.unimodules.interfaces.permissions.PermissionsResponse.STATUS_KEY
+import org.unimodules.interfaces.permissions.PermissionsStatus
 
 class RemindersRequester : PermissionRequester {
-  override fun getAndroidPermissions(): Array<String> = emptyArray()
+  override fun getAndroidPermissions(): List<String> = listOf()
 
-  override fun getPermission(): Bundle {
+  override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsStatus>): Bundle {
     return Bundle().apply {
-      putString(STATUS_KEY, GRANTED_VALUE)
+      putString(STATUS_KEY, PermissionsStatus.GRANTED.jsString)
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
     }
   }

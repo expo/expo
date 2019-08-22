@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -499,7 +498,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   // Recording API
 
   private boolean isMissingAudioRecordingPermissions() {
-    return mModuleRegistry.getModule(Permissions.class).getPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED;
+    return !mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

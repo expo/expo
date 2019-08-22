@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -252,24 +251,21 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
+  public void getPermissionsAsync(final Promise promise) {
     if (mPermissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    String[] permissions = new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+    mPermissionsModule.getPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+  }
 
-    mPermissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
-      @Override
-      public void onPermissionsResult(int[] results) {
-        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
-        Bundle response = new Bundle();
-
-        response.putString("status", isGranted ? "granted" : "denied");
-        response.putBoolean("granted", isGranted);
-        promise.resolve(response);
-      }
-    });
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    if (mPermissionsModule == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsModule.askForPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
   }
 
   //endregion
@@ -1396,7 +1392,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
       promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
       return false;
     }
-    if (!mPermissionsModule.hasPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR})) {
+    if (!mPermissionsModule.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
       promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.");
       return false;
     }

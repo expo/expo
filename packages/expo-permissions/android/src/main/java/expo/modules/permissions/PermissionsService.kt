@@ -14,43 +14,31 @@ import android.support.v4.content.ContextCompat
 
 import com.facebook.react.modules.core.PermissionAwareActivity
 
-import expo.modules.permissions.requesters.CalendarRequester
-import expo.modules.permissions.requesters.CameraRollRequester
-import expo.modules.permissions.requesters.LocationRequester
-import expo.modules.permissions.requesters.NotificationRequester
-import expo.modules.permissions.requesters.PermissionRequester
-import expo.modules.permissions.requesters.RemindersRequester
-import expo.modules.permissions.requesters.SimpleRequester
-import expo.modules.permissions.requesters.SystemBrightnessRequester
-
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityProvider
 import org.unimodules.core.interfaces.InternalModule
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
+import org.unimodules.interfaces.permissions.PermissionsResponse
+import org.unimodules.interfaces.permissions.PermissionsStatus
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
 
-internal const val EXPIRES_KEY = "expires"
-internal const val STATUS_KEY = "status"
-internal const val GRANTED_VALUE = "granted"
-internal const val DENIED_VALUE = "denied"
-internal const val UNDETERMINED_VALUE = "undetermined"
 internal const val ERROR_TAG = "E_PERMISSIONS"
 
-internal const val PERMISSION_EXPIRES_NEVER = "never"
+typealias PermissionsListener = (result: IntArray) -> Unit
 
 class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private lateinit var mActivityProvider: ActivityProvider
-  private lateinit var mRequesters: Map<String, PermissionRequester>
+
 
   // state holders for asking for writing permissions
   private var mWritingPermissionBeingAsked = false // change this directly before calling corresponding startActivity
-  private var mAskAsyncListener: Permissions.PermissionsRequesterListenerBundle? = null
-  private var mAskAsyncRequestedPermissionsTypes: Array<out String>? = null
-  private var mAskAsyncPermissionsTypesToBeAsked: ArrayList<String>? = null
+  private var mAskAsyncListener: PermissionsListener? = null
+  private var mAskAsyncRequestedPermissions: Array<String>? = null
 
   private lateinit var mPermissionsAskedStorage: SharedPreferences
 
@@ -71,141 +59,58 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
         ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     mPermissionsAskedStorage = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
-
-    val notificationRequester = NotificationRequester(context)
-    mRequesters = mapOf(
-        PermissionsTypes.LOCATION.type to LocationRequester(this),
-        PermissionsTypes.CAMERA.type to SimpleRequester(this, Manifest.permission.CAMERA),
-        PermissionsTypes.CONTACTS.type to SimpleRequester(this, Manifest.permission.READ_CONTACTS),
-        PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(this, Manifest.permission.RECORD_AUDIO),
-        PermissionsTypes.CAMERA_ROLL.type to CameraRollRequester(this),
-        PermissionsTypes.CALENDAR.type to CalendarRequester(this),
-        PermissionsTypes.SMS.type to SimpleRequester(this, Manifest.permission.READ_SMS),
-        PermissionsTypes.REMINDERS.type to RemindersRequester(),
-        PermissionsTypes.NOTIFICATIONS.type to notificationRequester,
-        PermissionsTypes.USER_FACING_NOTIFICATIONS.type to notificationRequester,
-        PermissionsTypes.SYSTEM_BRIGHTNESS.type to SystemBrightnessRequester(this, mActivityProvider)
-    )
   }
 
-  @Throws(IllegalStateException::class)
-  private fun getRequester(permissionType: String): PermissionRequester {
-    return mRequesters[permissionType]
-        ?: throw IllegalStateException("Unrecognized permission type: $permissionType")
+  override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+    getPermissions(PermissionsResponse { permissionsMap: Map<String, PermissionsStatus> ->
+      val allGranted = permissionsMap.all { (_, status) -> status == PermissionsStatus.GRANTED }
+      val allDenied = permissionsMap.all { (_, status) -> status == PermissionsStatus.DENIED }
+      promise.resolve(Bundle().apply {
+        putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
+        putString(PermissionsResponse.STATUS_KEY, when {
+          allGranted -> PermissionsStatus.GRANTED.jsString
+          allDenied -> PermissionsStatus.DENIED.jsString
+          else -> PermissionsStatus.UNDETERMINED.jsString
+        })
+        putBoolean(PermissionsResponse.GRANTED_KEY, allGranted)
+      })
+    }, *permissions)
   }
 
-  override fun getPermissionsBundle(permissionTypes: Array<out String>?): Bundle {
-    return Bundle().apply {
-      permissionTypes?.forEach {
-        putBundle(it, getRequester(it).getPermission())
+  override fun askForPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+    askForPermissions(PermissionsResponse {
+      getPermissionsWithPromise(promise, *permissions)
+    }, *permissions)
+  }
+
+
+  override fun getPermissions(response: PermissionsResponse, vararg permissions: String) {
+    val permissionsMap = HashMap<String, PermissionsStatus>()
+    permissions.forEach {
+      permissionsMap[it] = when {
+        isPermissionGranted(it) -> PermissionsStatus.GRANTED
+        didAsk(it) -> PermissionsStatus.DENIED
+        else -> PermissionsStatus.UNDETERMINED
       }
     }
+    response.onResult(permissionsMap)
   }
 
-  override fun hasPermissionsByTypes(permissionsTypes: Array<out String>?): Boolean {
-    with(getPermissionsBundle(permissionsTypes)) {
-      keySet().forEach { key ->
-        getBundle(key)?.let {
-          if (it.getString(STATUS_KEY) == GRANTED_VALUE) {
-            return false
-          }
-        }
-      }
-    }
-    return true
-  }
-
-  @Throws(NullPointerException::class)
-  override fun askForPermissionsBundle(permissionsTypes: Array<out String>?, listener: Permissions.PermissionsRequesterListenerBundle?) {
-    if (permissionsTypes == null || listener == null) {
-      throw NullPointerException("permissionsTypes or listener can not be null")
-    }
-
-    val existingPermissions = getPermissionsBundle(permissionsTypes)
-    val permissionsTypesSet = permissionsTypes.toHashSet()
-    existingPermissions.keySet().forEach { key ->
-      existingPermissions.getBundle(key)?.let {
-        if (it.getString(STATUS_KEY) == GRANTED_VALUE) {
-          permissionsTypesSet.remove(key)
-        }
-      }
-    }
-
-    // all permissions are granted - resolve with them
-    if (permissionsTypesSet.isEmpty()) {
-      return listener.onPermissionsResult(existingPermissions)
-    }
-
-    val permissionsToBeAsked = ArrayList<String>()
-    permissionsTypesSet.forEach { permissionsToBeAsked.addAll(getRequester(it).getAndroidPermissions()) }
-    // todo: remove after dividing CONTACTS permissions into read and write parts
-    if (permissionsTypesSet.contains(PermissionsTypes.CONTACTS.type) && isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
-      // Ask for WRITE_CONTACTS permission only if the permission is present in AndroidManifest.
-      permissionsToBeAsked.add(Manifest.permission.WRITE_CONTACTS)
-    }
-
-    // check whether to launch WritingSettingsActivity
-    if (permissionsTypesSet.contains(PermissionsTypes.SYSTEM_BRIGHTNESS.type) &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (mAskAsyncListener != null) {
-        throw IllegalStateException("Different asking for permissions in progress. Await the old request and then try again.")
-      }
-      mAskAsyncListener = listener
-      mAskAsyncRequestedPermissionsTypes = permissionsTypes
-      mAskAsyncPermissionsTypesToBeAsked = permissionsToBeAsked
-      addToAskedPreferences(listOf(PermissionsTypes.SYSTEM_BRIGHTNESS.type))
-      askForWriteSettingsPermissionFirst()
-      return
-    }
-
-    addToAskedPreferences(permissionsToBeAsked)
-    askForPermissions(permissionsToBeAsked.toTypedArray()) { listener.onPermissionsResult(getPermissionsBundle(permissionsTypes)) }
-  }
-
-  override fun getPermissions(permissions: Array<String>): IntArray {
-    return IntArray(permissions.size) { getPermission(permissions[it]) }
-  }
-
-  override fun getPermission(permission: String): Int {
-    mActivityProvider.currentActivity?.let {
-      if (it is PermissionAwareActivity) {
-        return ContextCompat.checkSelfPermission(it, permission)
-      }
-    }
-    return PackageManager.PERMISSION_DENIED
-  }
-
-  override fun askForPermissions(permissions: Array<String>, listener: Permissions.PermissionsRequestListener) {
-    mActivityProvider.currentActivity?.run {
-      if (this is PermissionAwareActivity) {
-        this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
-          when (PERMISSIONS_REQUEST) {
-            requestCode -> {
-              listener.onPermissionsResult(grantResults)
-              true
-            }
-            else -> {
-              listener.onPermissionsResult(IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED })
-              false
-            }
-          }
-        }
-      } else {
-        listener.onPermissionsResult(IntArray(permissions.size) { PackageManager.PERMISSION_DENIED })
-      }
+  override fun askForPermissions(response: PermissionsResponse, vararg permissions: String) {
+    val permissionsToAsk = permissions.filter { !isPermissionGranted(it) }
+    askForManifestPermissions(permissionsToAsk.toTypedArray()) {
+      getPermissions(response, *permissions)
     }
   }
 
-  override fun askForPermission(permission: String, listener: Permissions.PermissionRequestListener) {
-    askForPermissions(arrayOf(permission)) { listener.onPermissionResult(it[0]) }
+  override fun hasGrantedPermissions(vararg permissions: String): Boolean {
+    return permissions.all { isPermissionGranted(it) }
   }
-
-  override fun hasPermissions(permissions: Array<String>): Boolean = getPermissions(permissions).all { it == PackageManager.PERMISSION_GRANTED }
 
   /**
    * Checks whether given permission is present in AndroidManifest or not.
    */
-  private fun isPermissionPresentInManifest(permission: String): Boolean {
+  override fun isPermissionPresentInManifest(permission: String): Boolean {
     try {
       context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
         return requestedPermissions.contains(permission)
@@ -221,14 +126,66 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
    *
    * @param permission [android.Manifest.permission]
    */
-  fun isPermissionGranted(permission: String): Boolean = getPermission(permission) == PackageManager.PERMISSION_GRANTED
+  private fun isPermissionGranted(permission: String): Boolean {
+    return when (permission) {
+      // we need to handle this permission in different way
+      Manifest.permission.WRITE_SETTINGS -> hasWritePermission()
+      else -> getManifestPermission(permission) == PackageManager.PERMISSION_GRANTED
+    }
+  }
 
   /**
-   * Checks whether all given permissions are granted or not.
-   * Throws IllegalStateException there's no Permissions module present.
+   * Gets status for Android built-in permission
+   *
+   * @param permission [android.Manifest.permission]
    */
-  fun arePermissionsGranted(permissions: Array<String>): Boolean {
-    return getPermissions(permissions).count { it == PackageManager.PERMISSION_GRANTED } == permissions.size
+  private fun getManifestPermission(permission: String): Int {
+    mActivityProvider.currentActivity?.let {
+      if (it is PermissionAwareActivity) {
+        return ContextCompat.checkSelfPermission(it, permission)
+      }
+    }
+    return PackageManager.PERMISSION_DENIED
+  }
+
+  /**
+   * Asks for Android built-in permission
+   * According to Android documentation [android.Manifest.permission.WRITE_SETTINGS] need to be handled in different way
+   *
+   * @param permission [android.Manifest.permission]
+   */
+  private fun askForManifestPermissions(permissions: Array<String>, listener: PermissionsListener) {
+    addToAskedPreferences(permissions.toList())
+
+    if (permissions.contains(Manifest.permission.WRITE_SETTINGS) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (mAskAsyncListener != null) {
+        throw IllegalStateException("Different asking for permissions in progress. Await the old request and then try again.")
+      }
+
+      mAskAsyncListener = listener
+      mAskAsyncRequestedPermissions = permissions
+      askForWriteSettingsPermissionFirst()
+      return
+    }
+
+    mActivityProvider.currentActivity?.run {
+      if (this is PermissionAwareActivity) {
+        this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
+          when (PERMISSIONS_REQUEST) {
+            requestCode -> {
+              listener(grantResults)
+              true
+            }
+            else -> {
+              listener(IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED })
+              false
+            }
+          }
+        }
+      } else {
+        listener(IntArray(permissions.size) { PackageManager.PERMISSION_DENIED })
+      }
+    }
   }
 
   /**
@@ -252,6 +209,14 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     }
   }
 
+  private fun hasWritePermission(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      Settings.System.canWrite(mActivityProvider.currentActivity.applicationContext)
+    } else {
+      true
+    }
+  }
+
   override fun onHostResume() {
     if (!mWritingPermissionBeingAsked) {
       return
@@ -259,17 +224,20 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     mWritingPermissionBeingAsked = false
 
     // cleanup
-    val askAsyncListener = mAskAsyncListener
-    val askAsyncRequestedPermissionsTypes = mAskAsyncRequestedPermissionsTypes
-    val askAsyncPermissionsTypesToBeAsked = mAskAsyncPermissionsTypesToBeAsked
+    val askAsyncListener = mAskAsyncListener!!
+    val askAsyncRequestedPermissions = mAskAsyncRequestedPermissions!!
 
     mAskAsyncListener = null
-    mAskAsyncRequestedPermissionsTypes = null
-    mAskAsyncPermissionsTypesToBeAsked = null
+    mAskAsyncRequestedPermissions = null
+
+    val permissionsToAsk = askAsyncRequestedPermissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
+
 
     // invoke actual asking for permissions
-    addToAskedPreferences(askAsyncPermissionsTypesToBeAsked!!)
-    askForPermissions(askAsyncPermissionsTypesToBeAsked.toTypedArray()) { askAsyncListener!!.onPermissionsResult(getPermissionsBundle(askAsyncRequestedPermissionsTypes)) }
+    askForManifestPermissions(permissionsToAsk) {
+      // add to result WRITE_SETTINGS result
+      askAsyncListener(it + getManifestPermission(Manifest.permission.WRITE_SETTINGS))
+    }
   }
 
   override fun onHostPause() = Unit

@@ -14,12 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.content.pm.PackageManager;
 
 import org.unimodules.core.*;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.permissions.Permissions;
+
 import expo.modules.contacts.models.DateModel;
 import expo.modules.contacts.models.EmailModel;
 import expo.modules.contacts.models.ExtraNameModel;
@@ -76,10 +76,38 @@ public class ContactsModule extends ExportedModule {
     }
   };
 
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CALENDAR)) {
+      permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS);
+    } else {
+      permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS);
+    }
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CALENDAR)) {
+      permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS);
+    } else {
+      permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS);
+    }
+  }
+
   // TODO: Evan: Test
   @ExpoMethod
   public void getContactsAsync(final Map<String, Object> options, final Promise promise) {
-    if (isMissingPermissions(promise)) return;
+    if (isMissingReadPermission(promise)) return;
 
     new Thread(new Runnable() {
       @Override
@@ -87,7 +115,7 @@ public class ContactsModule extends ExportedModule {
 
         String sortOrder = null;
         if (options.containsKey("sort") && options.get("sort") instanceof String) {
-          sortOrder = (String)options.get("sort");
+          sortOrder = (String) options.get("sort");
         }
 
         ArrayList fields = null;
@@ -110,7 +138,7 @@ public class ContactsModule extends ExportedModule {
           output.putParcelableArrayList("data", data);
           promise.resolve(output);
         } else if (options.containsKey("name") && options.get("name") instanceof String) {
-          String predicateMatchingName = (String)options.get("name");
+          String predicateMatchingName = (String) options.get("name");
           HashMap<String, Object> contactData = getContactByName(predicateMatchingName, keysToFetch, sortOrder,
               promise);
           Collection<Contact> contacts = (Collection<Contact>) contactData.get("data");
@@ -133,7 +161,7 @@ public class ContactsModule extends ExportedModule {
 
   @ExpoMethod
   public void addContactAsync(Map<String, Object> data, String containerId, Promise promise) {
-    if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
+    if (isMissingReadPermission(promise) || isMissingWritePermission(promise)) return;
     Contact contact = mutateContact(null, data);
 
     ArrayList<ContentProviderOperation> ops = contact.toOperationList();
@@ -155,9 +183,9 @@ public class ContactsModule extends ExportedModule {
   // TODO: Evan: Test
   @ExpoMethod
   public void updateContactAsync(Map<String, Object> contact, final Promise promise) {
-    if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
+    if (isMissingReadPermission(promise) || isMissingWritePermission(promise)) return;
 
-    String id = contact.containsKey("id") ? (String)contact.get("id") : null;
+    String id = contact.containsKey("id") ? (String) contact.get("id") : null;
     Set<String> keysToFetch = getFieldsSet(null);
     Contact targetContact = getContactById(id, keysToFetch, promise);
     if (targetContact != null) {
@@ -181,7 +209,7 @@ public class ContactsModule extends ExportedModule {
 
   @ExpoMethod
   public void removeContactAsync(String contactId, final Promise promise) {
-    if (isMissingPermissions(promise) || isMissingWritePermissions(promise)) return;
+    if (isMissingReadPermission(promise) || isMissingWritePermission(promise)) return;
 
     Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
 
@@ -211,9 +239,9 @@ public class ContactsModule extends ExportedModule {
 
   @ExpoMethod
   public void writeContactToFileAsync(Map<String, Object> contact, final Promise promise) {
-    if (isMissingPermissions(promise)) return;
+    if (isMissingReadPermission(promise)) return;
 
-    String id = contact.containsKey("id") ? (String)contact.get("id") : null;
+    String id = contact.containsKey("id") ? (String) contact.get("id") : null;
     String lookupKey = getLookupKeyForContactId(id);
     if (lookupKey == null) {
       promise.reject("E_CONTACTS", "Couldn't find lookup key for contact.");
@@ -224,7 +252,7 @@ public class ContactsModule extends ExportedModule {
 
   @ExpoMethod
   public void presentFormAsync(String contactId, Map<String, Object> contactData, Map<String, Object> options, Promise promise) {
-    if (isMissingPermissions(promise)) return;
+    if (isMissingReadPermission(promise)) return;
 
     if (contactId != null) {
       Set<String> keysToFetch = getFieldsSet(null);
@@ -266,7 +294,7 @@ public class ContactsModule extends ExportedModule {
   // TODO: Evan: WIP - Not for SDK 29
   @ExpoMethod
   public void getContactByPhoneNumber(final String phoneNumber, final Promise promise) {
-    if (isMissingPermissions(promise)) return;
+    if (isMissingReadPermission(promise)) return;
 
     // TODO: Replace this with new format
     AsyncTask.execute(new Runnable() {
@@ -439,7 +467,7 @@ public class ContactsModule extends ExportedModule {
   }
 
   private HashMap<String, Object> getContactByName(final String query, final Set<String> keysToFetch, String sortOrder,
-                                                  final Promise promise) {
+                                                   final Promise promise) {
     return fetchContacts(0, 9999, (new String[]{query}), ContactsContract.Data.DISPLAY_NAME_PRIMARY, keysToFetch, sortOrder, promise);
   }
 
@@ -458,7 +486,7 @@ public class ContactsModule extends ExportedModule {
 
     for (Object key : fields) {
       if (key instanceof String) {
-        String field = (String)key;
+        String field = (String) key;
         fieldStrings.add(field);
       }
     }
@@ -475,15 +503,15 @@ public class ContactsModule extends ExportedModule {
   }
 
   private void getAllContactsAsync(final Map<String, Object> options, final Set<String> keysToFetch, String sortOrder,
-                                  final Promise promise) {
+                                   final Promise promise) {
     int pageOffset = 0;
     if (options.containsKey("pageOffset") && options.get("pageOffset") instanceof Number) {
-      pageOffset = ((Number)options.get("pageOffset")).intValue();
+      pageOffset = ((Number) options.get("pageOffset")).intValue();
     }
 
     int pageSize = 0;
     if (options.containsKey("pageSize") && options.get("pageSize") instanceof Number) {
-      pageSize = ((Number)options.get("pageSize")).intValue();
+      pageSize = ((Number) options.get("pageSize")).intValue();
     }
 
     HashMap<String, Object> contactsData = fetchContacts(pageOffset, pageSize, null, null, keysToFetch, sortOrder,
@@ -748,15 +776,14 @@ public class ContactsModule extends ExportedModule {
     return map;
   }
 
-  private boolean isMissingPermissions(Promise promise) {
+  private boolean isMissingReadPermission(Promise promise) {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return false;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.READ_CONTACTS });
 
-    Boolean hasPermission = (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+    boolean hasPermission = permissionsManager.hasGrantedPermissions(Manifest.permission.READ_CONTACTS);
 
     if (!hasPermission) {
       promise.reject("E_MISSING_PERMISSION", "Missing read contacts permission.");
@@ -764,15 +791,14 @@ public class ContactsModule extends ExportedModule {
     return !hasPermission;
   }
 
-  private boolean isMissingWritePermissions(Promise promise) {
+  private boolean isMissingWritePermission(Promise promise) {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return false;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.WRITE_CONTACTS });
 
-    Boolean hasPermission = (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+    boolean hasPermission = permissionsManager.hasGrantedPermissions(Manifest.permission.WRITE_CONTACTS);
 
     if (!hasPermission) {
       promise.reject("E_MISSING_PERMISSION", "Missing write contacts permission.");
