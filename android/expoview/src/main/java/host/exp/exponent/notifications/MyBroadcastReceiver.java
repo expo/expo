@@ -4,8 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.support.v4.app.NotificationManagerCompat;
+import android.widget.Toast;
 
 import org.unimodules.interfaces.taskManager.TaskInterface;
 
@@ -34,8 +37,19 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
     mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));
 
+    showToast(context, "Loading...");
+
     // Remove the notification.
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
     notificationManager.cancel(experienceId, data.getInt(NotificationConstants.NOTIFICATION_ID_KEY));
+  }
+
+  private void showToast(final Context context, final String text) {
+    Handler handler = new Handler(Looper.getMainLooper());
+    handler.post(new Runnable() {
+      public void run() {
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+      }
+    });
   }
 }
