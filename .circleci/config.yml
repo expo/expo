@@ -1,12 +1,18 @@
 version: 2.1
 
 commands:
-  halt_if_unchanged_except:
+  conditionally_halt:
     description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
     parameters:
       exclude:
         description: 'Prevent the job from stopping if changes are found in this directory'
         type: string
+      require:
+        description: 'The job will halt if the matched files have not been modified'
+        type: string
+      search_depth:
+        description: 'The maximum directory depth to search'
+        type: integer
     steps:
       - run:
           name: Stop the job if only << parameters.exclude >> was changed
@@ -24,21 +30,33 @@ commands:
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
+            echo " - Requiring << parameters.require >>"
+            echo " - Depth << parameters.search_depth >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+
+            checkModified () {
+              file=$1
+
+              BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+              CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+              if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
+                set +e
+                # exit 0
+              fi
+            }
+
             # Test all top-level directories
-            for file in $PWD/*/
-            do
-              FILE_NAME=$(basename $file)
-              if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
-                echo " -- Checking ${FILE_NAME}"
-                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
-                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  set +e
-                  exit 0
-                fi
+            for file in $(find $PWD/* -maxdepth << parameters.search_depth >> -not -path '*/\.*'); do
+              if ! [[ $file =~ << parameters.exclude >> ]]; then
+                echo " -- [included] Checking ${file}"
+                checkModified $file
+              elif [[ $file =~ << parameters.require >> ]]; then
+                echo " -- [required] Checking ${file}"
+                checkModified $file
+              else
+                echo " -- [skip] ${file}"
               fi
             done
 
@@ -143,8 +161,9 @@ commands:
   # Prevent native tests from running when docs is the only directory that was edited
   guard_sdk_tests:
     steps:
-      - halt_if_unchanged_except:
-          exclude: 'docs'
+      - conditionally_halt:
+          exclude: '/(docs|guides|*.md)/'
+          search_depth: 1
   update_submodules:
     steps:
       - run:
@@ -341,7 +360,9 @@ jobs:
     executor: js
     steps:
       - setup
-      - guard_sdk_tests
+      - conditionally_halt:
+          exclude: '/(docs|apps)/'
+          search_depth: 1
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -665,7 +686,9 @@ jobs:
     executor: nix
     steps:
       - setup
-      - guard_sdk_tests
+      - conditionally_halt:
+          exclude: '/(docs|*/native-component-list|*/bare-expo|*/)/'
+          search_depth: 2
       - update_submodules
       - decrypt_secrets_if_possible
       - run:
