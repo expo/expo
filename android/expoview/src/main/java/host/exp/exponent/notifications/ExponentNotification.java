@@ -2,6 +2,9 @@
 
 package host.exp.exponent.notifications;
 
+import android.os.Build;
+import android.os.PersistableBundle;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -77,6 +80,25 @@ public class ExponentNotification {
     args.call("putString", NotificationConstants.NOTIFICATION_ACTION_TYPE, actionType);
     args.call("putString", NotificationConstants.NOTIFICATION_INPUT_TEXT, inputText);
     return args.get();
+  }
+
+  public PersistableBundle toPersistableBundle(String origin) {
+    PersistableBundle data = new PersistableBundle();
+    if (origin != null) {
+      data.putString(NotificationConstants.NOTIFICATION_ORIGIN_KEY, origin);
+    }
+    data.putString(NotificationConstants.NOTIFICATION_DATA_KEY, body);
+    data.putInt(NotificationConstants.NOTIFICATION_ID_KEY, notificationId);
+    if (Build.VERSION.SDK_INT < 22) {
+      data.putInt(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY, isMultiple ? 1 : 0);
+      data.putInt(NotificationConstants.NOTIFICATION_REMOTE_KEY, isRemote ? 1 : 0);
+    } else {
+      data.putBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY, isMultiple);
+      data.putBoolean(NotificationConstants.NOTIFICATION_REMOTE_KEY, isRemote);
+    }
+    data.putString(NotificationConstants.NOTIFICATION_ACTION_TYPE, actionType);
+    data.putString(NotificationConstants.NOTIFICATION_INPUT_TEXT, inputText);
+    return data;
   }
 
   public void setInputText(String inputText) {

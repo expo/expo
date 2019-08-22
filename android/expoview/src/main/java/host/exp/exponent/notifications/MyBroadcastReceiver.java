@@ -47,18 +47,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
     //if (notificationManifestUrl != null) {
     ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
-    //exponentNotification.body;
+    PersistableBundle data = exponentNotification.toPersistableBundle("selected");
 
     //createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
 
     TaskInterface myTask = NotificationBackgroundTaskConsumer.mTasks.get("hahayep");
 
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
-    PersistableBundle data = new PersistableBundle();
-
-    data.putString("THIS IS HARD:::::", "CODED!!!!!");
-    data.putInt("itis", 123);
-
     mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));
 
     /*try {
