@@ -14,32 +14,24 @@ class ExpoOTA(private val context: Context, private val config: ExpoOTAConfig, p
 
     private val bundleDir = "bundle-${config.id}"
     private val persistence = ExpoOTAPersistence(context, config.id)
-    private val downloader = ManifestDownloader(config.manifestConfig.url, config.manifestConfig.headers, config.manifestHttpClient)
 
     var bundlePath = persistence.bundlePath
 
     fun init() {
         if (!loadFromBundler) {
-            downloadManifest(this::handleDownloadedManifest) { Log.e("WHOOPS", "Error while loading manifest", it) }
+            downloadUpdateIfAvailable({ _, path -> Log.i("ExpoOTA", "Bundle downloaded and saved at: $path") }) { Log.e("ExpoOTA", "Error while updating: ", it) }
         }
     }
 
-    private fun downloadManifest(success: (JSONObject) -> Unit, errorHandler: (java.lang.Exception) -> Unit) {
-        downloader.downloadManifest(object : ManifestDownloader.ManifestDownloadCallback {
-            override fun onSuccess(manifest: JSONObject) {
-                success(manifest)
+    fun downloadUpdateIfAvailable(success: (manifest: JSONObject, bundlePath: String) -> Unit, error: (java.lang.Exception) -> Unit) {
+        downloadManifest(config.manifestConfig ,{ manifest ->
+            if (config.manifestComparator.shouldDownloadBundle(persistence.manifest, manifest)) {
+                downloadBundle(manifest, {
+                    saveManifestAndBundle(manifest, it)
+                    success(manifest, it)
+                }) { error(it) }
             }
-
-            override fun onError(error: Exception) {
-                errorHandler(error)
-            }
-        })
-    }
-
-    private fun handleDownloadedManifest(manifest: JSONObject) {
-        if (config.manifestComparator.shouldDownloadBundle(persistence.manifest, manifest)) {
-            downloadBundle(manifest)
-        }
+        }) { error(it) }
     }
 
 
@@ -48,20 +40,19 @@ class ExpoOTA(private val context: Context, private val config: ExpoOTAConfig, p
         persistence.bundlePath = path
     }
 
-    private fun downloadBundle(manifest: JSONObject) {
+    private fun downloadBundle(manifest: JSONObject, success: (String) -> Unit, error: (java.lang.Exception) -> Unit) {
         val bundleUrl = manifest.optString(KEY_MANIFEST_BUNDLE_URL)
         val bundleLoader = BundleLoader(context, bundleClient())
         val bundleDir = File(context.filesDir, bundleDir)
         bundleLoader.loadJsBundle(BundleLoader.BundleLoadParams(bundleUrl, bundleDir, bundleFilename(), Collections.emptyList()), object : BundleLoader.BundleLoadCallback {
             override fun bundleLoaded(path: String) {
-                saveManifestAndBundle(manifest, path)
+                success(path)
             }
 
             override fun error(e: Exception) {
-                Log.e("WHOOPS", "Error while loading bundle")
+                error(e)
             }
         })
-
     }
 
     private fun bundleFilename(): String {
@@ -69,7 +60,7 @@ class ExpoOTA(private val context: Context, private val config: ExpoOTAConfig, p
     }
 
     private fun bundleClient(): OkHttpClient {
-        return config.bundleHttpClient?:longTimeoutHttpClient()
+        return config.bundleHttpClient ?: longTimeoutHttpClient()
     }
 
     private fun longTimeoutHttpClient(): OkHttpClient {

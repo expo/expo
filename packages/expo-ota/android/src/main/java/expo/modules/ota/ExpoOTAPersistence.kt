@@ -16,17 +16,37 @@ class ExpoOTAPersistence(val context: Context, val identifier: String) {
     private val sharedPreferences: SharedPreferences
         get() = context.getSharedPreferences(EXPO_OTA_PREFERENCES, Context.MODE_PRIVATE)
 
-    var bundlePath: String? = sharedPreferences.getString(bundlePathKey, null)
-        set(value) {
+    var bundlePath: String?
+        @Synchronized get() {
+            return sharedPreferences.getString(bundlePathKey, null)
+        }
+        @Synchronized set(value) {
             sharedPreferences.edit().putString(bundlePathKey, value).apply()
-            field = value
         }
 
-    var manifest: JSONObject = JSONObject(sharedPreferences.getString(manifestKey, "{}"))
-        set(value) {
+    var manifest: JSONObject
+        @Synchronized get() {
+            return JSONObject(sharedPreferences.getString(manifestKey, "{}"))
+        }
+        @Synchronized set(value) {
             sharedPreferences.edit().putString(manifestKey, value.toString()).apply()
-            field = value
         }
 
+}
+
+enum class ExpoOTAPersistenceFactory {
+    INSTANCE;
+
+    private val persistencesMap = HashMap<String, ExpoOTAPersistence>()
+
+    @Synchronized fun persistence(context: Context, id: String): ExpoOTAPersistence {
+        return if(persistencesMap.containsKey(id)) {
+            persistencesMap[id]!!
+        } else {
+            val persistence = ExpoOTAPersistence(context.applicationContext, id)
+            persistencesMap[id] = persistence
+            persistence
+        }
+    }
 
 }

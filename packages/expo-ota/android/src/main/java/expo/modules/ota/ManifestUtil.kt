@@ -9,10 +9,12 @@ interface ManifestComparator {
     fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean
 }
 
+const val MANIFEST_VERSION_KEY = "version"
+
 class VersionNumberManifestCompoarator: ManifestComparator {
     override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
-        val newVersion = newManifest.optString("version", "")
-        val lastVersion = lastManifest.optString("version", "")
+        val newVersion = newManifest.optString(MANIFEST_VERSION_KEY, "")
+        val lastVersion = lastManifest.optString(MANIFEST_VERSION_KEY, "")
         return when {
             TextUtils.isEmpty(newVersion) -> throw IllegalArgumentException("Manifest must provide version parameter!")
             TextUtils.isEmpty(lastVersion) -> true
@@ -35,6 +37,21 @@ class VersionNumberManifestCompoarator: ManifestComparator {
             if (result != 0) return result
         }
         return versions1.size.compareTo(versions2.size)
+    }
+
+}
+
+const val MANIFEST_REVISION_KEY = "revisionId"
+
+class RevisionIdManifestCompoarator: ManifestComparator {
+    override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
+        val newVersion = newManifest.optString(MANIFEST_REVISION_KEY, "")
+        val lastVersion = lastManifest.optString(MANIFEST_REVISION_KEY, "")
+        return when {
+            TextUtils.isEmpty(newVersion) -> throw IllegalArgumentException("Manifest must provide version parameter!")
+            TextUtils.isEmpty(lastVersion) -> true
+            else -> newVersion != lastVersion
+        }
     }
 
 }

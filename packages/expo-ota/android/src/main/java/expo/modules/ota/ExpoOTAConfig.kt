@@ -2,9 +2,10 @@ package expo.modules.ota
 
 import okhttp3.OkHttpClient
 
-interface ManifestRequestConfig {
+interface ManifestDownloadParams {
     val headers: Map<String, String>
     val url: String
+    val okHttpClient: OkHttpClient?
 }
 
 data class ExpoManifestConfig @JvmOverloads constructor(
@@ -12,23 +13,28 @@ data class ExpoManifestConfig @JvmOverloads constructor(
         val projectName: String,
         val releaseChannel: String = "default",
         val expoSdkVersion: String = "34.0.0",
-        val apiVersion: Number = 1) : ManifestRequestConfig {
+        val apiVersion: Number = 1,
+        override val okHttpClient: OkHttpClient?) :
+        ManifestDownloadParams {
 
-    override val headers: Map<String, String> = mapOf("Accept" to "application/expo+json,application/json",
+    override val url = "https://exp.host/@$username/$projectName"
+    override val headers = mapOf(
+            "Accept" to "application/expo+json,application/json",
             "Exponent-SDK-Version" to expoSdkVersion,
             "Expo-Api-Version" to apiVersion.toString(),
             "Expo-Release-Channel" to releaseChannel,
             "Exponent-Platform" to "android")
-
-    override val url: String = "https://exp.host/@$username/$projectName"
 }
 
-data class CustomManifestConfig(override val url: String, override val headers: Map<String, String>) : ManifestRequestConfig
+data class CustomManifestConfig(
+        override val url: String,
+        override val headers: Map<String, String>,
+        override val okHttpClient: OkHttpClient?
+) : ManifestDownloadParams
 
 data class ExpoOTAConfig @JvmOverloads constructor(
-        val manifestConfig: ManifestRequestConfig,
+        val manifestConfig: ManifestDownloadParams,
         val id: String = "default",
         val manifestComparator: ManifestComparator = VersionNumberManifestCompoarator(),
-        val manifestHttpClient: OkHttpClient? = null,
         val bundleHttpClient: OkHttpClient? = null
 )
