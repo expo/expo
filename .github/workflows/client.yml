@@ -1,13 +1,13 @@
 name: Expo Client
 
-on: [push]
+ on: [push]
 
-jobs:
+ jobs:
   build-ios-client:
     name: Build iOS Expo Client
     runs-on: macOS-10.14
-    
-    steps:
+
+     steps:
     - name: Install Nix
       run: |
         echo "\n" >> ~/.bash_profile
