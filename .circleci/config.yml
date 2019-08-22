@@ -11,13 +11,17 @@ commands:
       - run:
           name: Stop the job if only << parameters.exclude >> was changed
           command: |
+
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
+              # Required for circleci/node:latest-browsers
+              set +e
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
@@ -32,14 +36,20 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  set +e
                   exit 0
                 fi
               fi
             done
 
             echo "⏹ No relevant file changes in the current branch; stopping tests."
-            # No changes. Halting step
-            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
   halt_if_unchanged:
     parameters:
       require:
@@ -49,9 +59,13 @@ commands:
       - run:
           name: Require the << parameters.require >> directory to have changes
           command: |
+
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
+              # Required for circleci/node:latest-browsers
+              set +e
               exit 0
             fi
 
@@ -70,6 +84,7 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  set +e
                   exit 0
                 fi
               fi
@@ -81,7 +96,7 @@ commands:
             if command -v circleci-agent >/dev/null; then
               circleci-agent task halt
             else
-             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
   install_nix:
     steps:
