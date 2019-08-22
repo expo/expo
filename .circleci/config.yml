@@ -1,6 +1,103 @@
 version: 2.1
 
 commands:
+  halt_if_unchanged_except:
+    description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
+    parameters:
+      exclude:
+        description: 'Prevent the job from stopping if changes are found in this directory'
+        type: string
+    steps:
+      - run:
+          name: Stop the job if only << parameters.exclude >> was changed
+          command: |
+
+            ROOT_BRANCH="master"
+
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
+              # Required for circleci/node:latest-browsers
+              set +e
+              exit 0
+            fi
+
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
+            echo " - Excluding << parameters.exclude >>"
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
+            for file in $PWD/*/
+            do
+              FILE_NAME=$(basename $file)
+              if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
+                echo " -- Checking ${FILE_NAME}"
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  set +e
+                  exit 0
+                fi
+              fi
+            done
+
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
+  halt_if_unchanged:
+    parameters:
+      require:
+        description: 'The job will stop if there are no changes in this directory'
+        type: string
+    steps:
+      - run:
+          name: Require the << parameters.require >> directory to have changes
+          command: |
+
+            ROOT_BRANCH="master"
+
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
+              # Required for circleci/node:latest-browsers
+              set +e
+              exit 0
+            fi
+
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
+            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
+            echo " - Required << parameters.require >>"
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
+            for file in $PWD/*/
+            do
+              FILE_NAME=$(basename $file)
+              if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
+                echo " -- Checking ${FILE_NAME}"
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  set +e
+                  exit 0
+                fi
+              fi
+            done
+
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -10,7 +107,7 @@ commands:
       - run:
           name: Install common packages
           # direnv: configures environment with .envrc files
-          # findutils (where, find, etc): expo-module test
+          # findutils: where, find, etc. for expo-module test
           # git: circleci checkout steps
           # gnugrep: used in .envrc
           # gnutar: used by nix commands which download channels
@@ -43,6 +140,11 @@ commands:
               echo 'git-crypt key not present in environment' && exit 0
             fi
             git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
+  # Prevent native tests from running when docs is the only directory that was edited
+  guard_sdk_tests:
+    steps:
+      - halt_if_unchanged_except:
+          exclude: 'docs'
   update_submodules:
     steps:
       - run:
@@ -116,7 +218,6 @@ executors:
     working_directory: ~/expo
     environment:
       # fastlane complains if these are not set
-      LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
       FASTLANE_SKIP_UPDATE_CHECK: 1
       FASTLANE_DISABLE_COLORS: 1
@@ -149,11 +250,6 @@ executors:
       CI: 1
 
 workflows:
-  # E2E SDK testing
-  native-sdk:
-    jobs:
-      - iOS-Detox
-
   docs:
     jobs:
       - docs
@@ -174,7 +270,8 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
-      - babel_preset
+      # E2E SDK testing
+      - iOS-Detox
 
   # Android and iOS clients
   client:
@@ -244,6 +341,7 @@ jobs:
     executor: js
     steps:
       - setup
+      - guard_sdk_tests
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -259,6 +357,7 @@ jobs:
     steps:
       - install_nix
       - setup
+      - guard_sdk_tests
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -268,26 +367,11 @@ jobs:
           command: test:web:ci
           working_directory: ~/expo/apps/test-suite
 
-  babel_preset:
-    executor: js
-    steps:
-      - setup
-      - update_submodules
-      - restore_yarn_cache
-      - yarn_install:
-          working_directory: ~/expo
-      - save_yarn_cache
-      - yarn:
-          command: lint --max-warnings 0
-          working_directory: ~/expo/packages/babel-preset-expo
-      - yarn:
-          command: jest --maxWorkers 1
-          working_directory: ~/expo/packages/babel-preset-expo
-
   home:
     executor: js
     steps:
       - setup
+      - guard_sdk_tests
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -301,6 +385,7 @@ jobs:
     executor: js
     steps:
       - setup
+      - guard_sdk_tests
       - restore_yarn_cache:
           working_directory: ~/expo/tools/expotools
       - yarn_install:
@@ -319,6 +404,7 @@ jobs:
     steps:
       - install_nix
       - setup
+      - guard_sdk_tests
       - update_submodules
 
       # Simulators are more likely to fail. Try them first
@@ -365,6 +451,7 @@ jobs:
     steps:
       - install_nix
       - setup
+      - guard_sdk_tests
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
@@ -382,6 +469,7 @@ jobs:
     steps:
       - install_nix
       - setup
+      - guard_sdk_tests
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
@@ -408,6 +496,7 @@ jobs:
     steps:
       - install_nix
       - setup
+      - guard_sdk_tests
       - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
@@ -464,6 +553,7 @@ jobs:
     executor: android
     steps:
       - setup
+      - guard_sdk_tests
       - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
@@ -487,6 +577,7 @@ jobs:
     executor: android
     steps:
       - setup
+      - guard_sdk_tests
       - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
@@ -537,6 +628,8 @@ jobs:
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
       - setup
+      - halt_if_unchanged:
+          require: 'docs'
       - update_submodules
       - yarn_install:
           working_directory: docs
@@ -572,6 +665,7 @@ jobs:
     executor: nix
     steps:
       - setup
+      - guard_sdk_tests
       - update_submodules
       - decrypt_secrets_if_possible
       - run:

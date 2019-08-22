@@ -11,13 +11,13 @@ import * as Directories from '../Directories';
 type ActionOptions = {
   sdkVersion: string;
   packages?: string;
-}
+};
 
 type Package = {
   name: string;
   sourceDir: string;
   buildDirRelative: string;
-}
+};
 
 const EXPO_ROOT_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
@@ -68,14 +68,13 @@ async function _isPackageUpToDate(sourceDir: string, buildDir: string): Promise<
     const latestBuildCommitSha = buildCommits.lines[0].split(' ')[0];
 
     // throws if source commit is not an ancestor of build commit
-    await spawnAsync('git', [
-      'merge-base',
-      '--is-ancestor',
-      latestSourceCommitSha,
-      latestBuildCommitSha,
-    ], {
-      cwd: EXPO_ROOT_DIR,
-    })
+    await spawnAsync(
+      'git',
+      ['merge-base', '--is-ancestor', latestSourceCommitSha, latestBuildCommitSha],
+      {
+        cwd: EXPO_ROOT_DIR,
+      }
+    );
     return true;
   } catch (e) {
     return false;
@@ -83,18 +82,16 @@ async function _isPackageUpToDate(sourceDir: string, buildDir: string): Promise<
 }
 
 async function _gitLogAsync(path: string): Promise<{ lines: string[] }> {
-  const child = await spawnAsync('git', [
-    'log',
-    `--pretty=oneline`,
-    '--',
-    path,
-  ], {
+  const child = await spawnAsync('git', ['log', `--pretty=oneline`, '--', path], {
     stdio: 'pipe',
     cwd: EXPO_ROOT_DIR,
   });
 
   return {
-    lines: child.stdout.trim().split(/\r?\n/g).filter(a => a),
+    lines: child.stdout
+      .trim()
+      .split(/\r?\n/g)
+      .filter(a => a),
   };
 }
 
@@ -112,7 +109,11 @@ async function _getSuggestedPackagesToBuild(packages: Package[]): Promise<string
   return packagesToBuild;
 }
 
-async function _regexFileAsync(filename: string, regex: RegExp | string, replace: string): Promise<void> {
+async function _regexFileAsync(
+  filename: string,
+  regex: RegExp | string,
+  replace: string
+): Promise<void> {
   let file = await fs.readFile(filename);
   let fileString = file.toString();
   await fs.writeFile(filename, fileString.replace(regex, replace));
@@ -200,21 +201,17 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     /TEMPORARY_ABI_VERSION\s*=\s*null/,
     `TEMPORARY_ABI_VERSION = "${sdkVersion}"`
   );
-  await _regexFileAsync(
-    settingsGradle,
-    `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`,
-    `/*`
-  );
-  await _regexFileAsync(
-    settingsGradle,
-    `// FLAG_END_REMOVE__UPDATE_EXPOKIT`,
-    `*/ //`
-  );
+  await _regexFileAsync(settingsGradle, `// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT`, `/*`);
+  await _regexFileAsync(settingsGradle, `// FLAG_END_REMOVE__UPDATE_EXPOKIT`, `*/ //`);
   await _uncommentWhenDistributing([appBuildGradle, expoViewBuildGradle]);
-  await _commentWhenDistributing([constantsJava, expoViewBuildGradle, multipleVersionReactNativeActivity]);
+  await _commentWhenDistributing([
+    constantsJava,
+    expoViewBuildGradle,
+    multipleVersionReactNativeActivity,
+  ]);
 
   // Clear maven local so that we don't end up with multiple versions
-  console.log(' ❌  Clearing old package versions...')
+  console.log(' ❌  Clearing old package versions...');
 
   for (const pkg of packages) {
     await fs.remove(path.join(process.env.HOME!, '.m2', 'repository', pkg.buildDirRelative));
@@ -234,9 +231,12 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
       process.stdout.write(` ✅  Finished building ${pkg.name}\n`);
     } catch (e) {
       if (
-        e.status === 130 || e.signal === 'SIGINT' ||
-        e.status === 137 || e.signal === 'SIGKILL' ||
-        e.status === 143 || e.signal === 'SIGTERM'
+        e.status === 130 ||
+        e.signal === 'SIGINT' ||
+        e.status === 137 ||
+        e.signal === 'SIGKILL' ||
+        e.status === 143 ||
+        e.signal === 'SIGTERM'
       ) {
         throw e;
       } else {
@@ -279,7 +279,9 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     console.log(' ❌  The following packages failed to build:');
     console.log(failedPackages);
     console.log(
-      `You will need to fix the compilation errors show in the logs above and then run \`et abp -s ${sdkVersion} -p ${failedPackages.join(',')}\``
+      `You will need to fix the compilation errors show in the logs above and then run \`et abp -s ${sdkVersion} -p ${failedPackages.join(
+        ','
+      )}\``
     );
   }
 }
@@ -287,7 +289,6 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 async function action(options: ActionOptions) {
   process.on('SIGINT', _exitHandler);
   process.on('SIGTERM', _exitHandler);
-
 
   if (!options.sdkVersion) {
     throw new Error('Must run with `--sdkVersion SDK_VERSION`');
@@ -297,23 +298,23 @@ async function action(options: ActionOptions) {
 
   // packages must stay in this order --
   // expoview MUST be last
-  const packages: Package[] = [
-    REACT_ANDROID_PKG,
-    ...detachableUniversalModules,
-    EXPOVIEW_PKG,
-  ];
+  const packages: Package[] = [REACT_ANDROID_PKG, ...detachableUniversalModules, EXPOVIEW_PKG];
   let packagesToBuild: string[] = [];
 
-  const expoviewBuildGradle = await fs.readFile(
-    path.join(ANDROID_DIR, 'expoview', 'build.gradle'),
-  );
-  const match = expoviewBuildGradle.toString().match(/api 'com.facebook.react:react-native:([\d.]+)'/);
+  const expoviewBuildGradle = await fs.readFile(path.join(ANDROID_DIR, 'expoview', 'build.gradle'));
+  const match = expoviewBuildGradle
+    .toString()
+    .match(/api 'com.facebook.react:react-native:([\d.]+)'/);
   if (!match[1]) {
-    throw new Error('Could not find SDK version in android/expoview/build.gradle: unexpected format');
+    throw new Error(
+      'Could not find SDK version in android/expoview/build.gradle: unexpected format'
+    );
   }
 
   if (match[1] !== options.sdkVersion) {
-    console.log(" 🔍  It looks like you're adding a new SDK version. Ignoring the `--packages` option and rebuilding all packages...");
+    console.log(
+      " 🔍  It looks like you're adding a new SDK version. Ignoring the `--packages` option and rebuilding all packages..."
+    );
     packagesToBuild = packages.map(pkg => pkg.name);
   } else if (options.packages) {
     if (options.packages === 'all') {
@@ -323,7 +324,9 @@ async function action(options: ActionOptions) {
       packagesToBuild = await _getSuggestedPackagesToBuild(packages);
     } else {
       const packageNames = options.packages.split(',');
-      packagesToBuild = packages.map(pkg => pkg.name).filter(pkgName => packageNames.includes(pkgName));
+      packagesToBuild = packages
+        .map(pkg => pkg.name)
+        .filter(pkgName => packageNames.includes(pkgName));
     }
     console.log(' 🛠   Rebuilding the following packages:');
     console.log(packagesToBuild);
@@ -336,34 +339,41 @@ async function action(options: ActionOptions) {
     console.log(' 🕵️   It appears that the following packages need to be rebuilt:');
     console.log(packagesToBuild);
 
-    const { option } = await inquirer.prompt<{ option: string }>([{
-      type: 'list',
-      name: 'option',
-      message: 'What would you like to do?',
-      choices: [
-        { value: 'suggested', name: 'Build the suggested packages only' },
-        { value: 'all', name: 'Build all packages' },
-        { value: 'choose', name: 'Choose packages manually' },
-      ],
-    }]);
+    const { option } = await inquirer.prompt<{ option: string }>([
+      {
+        type: 'list',
+        name: 'option',
+        message: 'What would you like to do?',
+        choices: [
+          { value: 'suggested', name: 'Build the suggested packages only' },
+          { value: 'all', name: 'Build all packages' },
+          { value: 'choose', name: 'Choose packages manually' },
+        ],
+      },
+    ]);
 
     if (option === 'all') {
       packagesToBuild = packages.map(pkg => pkg.name);
     } else if (option === 'choose') {
-      const result = await inquirer.prompt<{ packagesToBuild: string[] }>([{
-        type: 'checkbox',
-        name: 'packagesToBuild',
-        message: 'Choose which packages to build',
-        choices: packages.map(pkg => pkg.name),
-        default: packagesToBuild,
-        pageSize: Math.min(packages.length, (process.stdout.rows || 100) - 2),
-      }]);
+      const result = await inquirer.prompt<{ packagesToBuild: string[] }>([
+        {
+          type: 'checkbox',
+          name: 'packagesToBuild',
+          message: 'Choose which packages to build',
+          choices: packages.map(pkg => pkg.name),
+          default: packagesToBuild,
+          pageSize: Math.min(packages.length, (process.stdout.rows || 100) - 2),
+        },
+      ]);
       packagesToBuild = result.packagesToBuild;
     }
   }
 
   try {
-    await _updateExpoViewAsync(packages.filter(pkg => packagesToBuild.includes(pkg.name)), options.sdkVersion);
+    await _updateExpoViewAsync(
+      packages.filter(pkg => packagesToBuild.includes(pkg.name)),
+      options.sdkVersion
+    );
   } catch (e) {
     await _exitHandler();
     throw e;
@@ -383,6 +393,9 @@ export default (program: any) => {
     .alias('abp', 'update-exponent-view')
     .description('Builds all Android AAR packages for ExpoKit')
     .option('-s, --sdkVersion [string]', 'SDK version')
-    .option('-p, --packages [string]', '[optional] packages to build. May be `all`, `suggested`, or a comma-separate list of package names.')
+    .option(
+      '-p, --packages [string]',
+      '[optional] packages to build. May be `all`, `suggested`, or a comma-separate list of package names.'
+    )
     .asyncAction(action);
 };

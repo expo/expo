@@ -28,18 +28,14 @@ typedef NS_ENUM(NSUInteger, FIRVisionImageLabelerType) {
   FIRVisionImageLabelerTypeOnDeviceAutoML,
 } NS_SWIFT_NAME(VisionImageLabelerType);
 
-/**
- * An on-device or cloud image labeler for labeling images.
- */
+/** An on-device or cloud image labeler for labeling images. */
 NS_SWIFT_NAME(VisionImageLabeler)
 @interface FIRVisionImageLabeler : NSObject
 
 /** The image labeler type. */
 @property(nonatomic, readonly) FIRVisionImageLabelerType type;
 
-/**
- * Unavailable. Use `Vision` factory methods.
- */
+/** Unavailable. Use `Vision` factory methods. */
 - (instancetype)init NS_UNAVAILABLE;
 
 /**
