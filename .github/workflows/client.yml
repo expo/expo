@@ -1,18 +1,22 @@
-name: Expo client
+name: Expo Client
 
 on: [push]
 
 jobs:
-  build:
-
+  build-ios-client:
+    name: Build iOS Expo Client
     runs-on: macOS-10.14
     
     steps:
+      run:
+        shell: bash -leo pipefail {0}
+      
     - name: Install Nix
-      run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
-    - name: Source Nix from Bash
-      run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
+      run: |
+        curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
+        echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
     - name: Install common packages
+      shell: bash -leo pipefail {0}
       # direnv: configures environment with .envrc files                                        
       # findutils: where, find, etc. for expo-module test                                       
       # git: circleci checkout steps                                                            
