@@ -18,10 +18,11 @@ commands:
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               exit 0
             fi
 
-            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
@@ -42,8 +43,13 @@ commands:
             done
 
             echo "⏹ No relevant file changes in the current branch; stopping tests."
-            # No changes. Halting step
-            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
   halt_if_unchanged:
     parameters:
       require:
@@ -60,6 +66,7 @@ commands:
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               exit 0
             fi
 
@@ -89,7 +96,7 @@ commands:
             if command -v circleci-agent >/dev/null; then
               circleci-agent task halt
             else
-             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
   install_nix:
     steps:
