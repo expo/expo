@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
+import android.util.Log;
+
 import com.cronutils.model.Cron;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -18,6 +20,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.ModuleRegistryProvider;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import java.security.InvalidParameterException;
@@ -31,6 +35,7 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import expo.modules.backgroundfetch.BackgroundFetchTaskConsumer;
+import expo.modules.taskManager.TaskService;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -38,7 +43,6 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
-import host.exp.exponent.notifications.NotificationBackgroundModule;
 import host.exp.exponent.notifications.NotificationBackgroundTaskConsumer;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
@@ -91,8 +95,19 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
       }
     }
 
-    NotificationBackgroundModule myModule = new NotificationBackgroundModule(getReactApplicationContext());
-    myModule.registerTaskAsync("hahayep", Collections.emptyMap(), promise);
+    /*NotificationBackgroundModule myModule = new NotificationBackgroundModule(this.getReactApplicationContext());
+    Log.i(TAG, "WHYYYYYYY");
+    Log.i(TAG, myModule.toString());
+    myModule.registerTaskAsync("hahayep", Collections.emptyMap(), promise);*/
+
+    /*TaskService haha = new TaskService(getReactApplicationContext());
+    Log.i(TAG, "PLEEEEEEEEEESE");
+    Log.i(TAG, haha.toString());
+    try {
+      haha.registerTask("hahayep", "@hesyifei/push-notification-test", "exp://57-8vt.hesyifei.push-notification-test.exp.direct:80", NotificationBackgroundTaskConsumer.class, Collections.emptyMap());
+    } catch (Exception e) {
+      promise.reject(e);
+    }*/
 
     NotificationActionCenter.putCategory(categoryId, newActions);
     promise.resolve(null);

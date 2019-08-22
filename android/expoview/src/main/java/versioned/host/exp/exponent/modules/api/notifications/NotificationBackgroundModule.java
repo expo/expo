@@ -1,6 +1,7 @@
-package host.exp.exponent.notifications;
+package versioned.host.exp.exponent.modules.api.notifications;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -24,11 +25,15 @@ public class NotificationBackgroundModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
+    Log.i("hawef", "NOOOOOOOOOO");
+    Log.i("hawef", moduleRegistry.toString());
     mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
   }
 
   @ExpoMethod
   public void registerTaskAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    Log.i("hawef", "PLEEEEEEEEEESE");
+    Log.i("hawef", mTaskManager.toString());
     try {
       mTaskManager.registerTask(taskName, NotificationBackgroundTaskConsumer.class, options);
       promise.resolve(null);

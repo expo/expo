@@ -2,10 +2,11 @@ import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError, NativeModulesProxy, } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
+const { ExpoNotificationBackground } = NativeModulesProxy;
 function _maybeInitEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
@@ -114,6 +115,10 @@ export default {
     },
     // User passes set of actions titles.
     createCategoryAsync(categoryId, actions) {
+        if (!ExpoNotificationBackground) {
+            throw new Error('nooo');
+        }
+        ExpoNotificationBackground.registerTaskAsync('hahayep', {});
         return ExponentNotifications.createCategoryAsync(categoryId, actions);
     },
     deleteCategoryAsync(categoryId) {
@@ -339,6 +344,6 @@ export default {
     },
 };
 function isInRangeInclusive(variable, min, max) {
-    return (variable >= min && variable <= max);
+    return variable >= min && variable <= max;
 }
 //# sourceMappingURL=Notifications.js.map

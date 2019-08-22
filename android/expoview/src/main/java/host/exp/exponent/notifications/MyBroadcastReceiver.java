@@ -34,7 +34,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     Log.i(TAG, log);
     //Toast.makeText(context, log, Toast.LENGTH_LONG).show();
 
-    createTaskIntent(context, "@hesyifei/push-notification-test", "", 0);
+    createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
 
     /*Intent serviceIntent = new Intent(context, MyTaskService.class);
     serviceIntent.putExtra("hasInternet", "hello world");
