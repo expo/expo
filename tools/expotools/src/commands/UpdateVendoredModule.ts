@@ -151,6 +151,17 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'apple-authentication': {
+    repoUrl: 'https://github.com/react-native-community/apple-authentication.git',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: '../../../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication',
+        updatePbxproj: false,
+      }
+    ],
+  },
   'lottie-react-native': {
     repoUrl: 'https://github.com/react-native-community/lottie-react-native.git',
     installableInManagedApps: true,

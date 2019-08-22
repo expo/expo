@@ -1,0 +1,9 @@
+import { requireNativeViewManager } from '@unimodules/core';
+const ExpoSignInWithAppleButtonSignInWhite = requireNativeViewManager('ExpoSignInWithAppleButtonSignInWhite');
+const ExpoSignInWithAppleButtonSignInWhiteOutline = requireNativeViewManager('ExpoSignInWithAppleButtonSignInWhiteOutline');
+const ExpoSignInWithAppleButtonSignInBlack = requireNativeViewManager('ExpoSignInWithAppleButtonSignInBlack');
+const ExpoSignInWithAppleButtonContinueWhite = requireNativeViewManager('ExpoSignInWithAppleButtonContinueWhite');
+const ExpoSignInWithAppleButtonContinueWhiteOutline = requireNativeViewManager('ExpoSignInWithAppleButtonContinueWhiteOutline');
+const ExpoSignInWithAppleButtonContinueBlack = requireNativeViewManager('ExpoSignInWithAppleButtonContinueBlack');
+export { ExpoSignInWithAppleButtonSignInWhite, ExpoSignInWithAppleButtonSignInWhiteOutline, ExpoSignInWithAppleButtonSignInBlack, ExpoSignInWithAppleButtonContinueWhite, ExpoSignInWithAppleButtonContinueWhiteOutline, ExpoSignInWithAppleButtonContinueBlack, };
+//# sourceMappingURL=ExpoSignInWithAppleButtonNativeViews.js.map

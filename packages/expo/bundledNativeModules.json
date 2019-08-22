@@ -1,6 +1,7 @@
 {
   "@expo/vector-icons": "^10.0.0",
   "@react-native-community/netinfo": "~3.2.1",
+  "@react-native-community/apple-authentication": "https://github.com/react-native-community/apple-authentication",
   "@unimodules/core": "~3.0.2",
   "@unimodules/react-native-adapter": "~3.0.0",
   "expo-ads-admob": "~6.0.0",
