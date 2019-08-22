@@ -45,11 +45,12 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     Bundle bundle = intent.getExtras();
     String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
     String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
+    String actionId = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY);
+
     //if (notificationManifestUrl != null) {
     ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
     PersistableBundle data = exponentNotification.toPersistableBundle("selected");
-
-    //createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
+    data.putString(NotificationConstants.NOTIFICATION_ACTION_TYPE, actionId);
 
     TaskInterface myTask = NotificationBackgroundTaskConsumer.mTasks.get("hahayep");
 
