@@ -39,6 +39,7 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
     mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));
 
+    // TODO: make this customizable from the JS's `createCategoryAsync` function
     showToast(context, "Loading...");
 
     // Remove the notification.
