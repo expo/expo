@@ -1,25 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Image,
-  Keyboard,
-  Linking,
-  Platform,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Linking, Platform, Share, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
-import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from 'react-native-fade-in-image';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 function isDescriptionEmpty(description) {
   if (!description || description === 'No description') {
@@ -32,7 +19,7 @@ function isDescriptionEmpty(description) {
 @withNavigation
 export default class SnackCard extends React.PureComponent {
   render() {
-    let { description, projectName, projectUrl, username, slug } = this.props;
+    let { description, projectName } = this.props;
 
     return (
       <TouchableNativeFeedbackSafe
@@ -76,12 +63,6 @@ export default class SnackCard extends React.PureComponent {
     this.props.navigation.navigate('Profile', { username: this.props.username });
   };
 }
-
-// note(brentvatne): we need to know this value so we can set the width of extra info container so
-// it properly sizes the url, otherwise it just overflows. I think this is a yoga bug
-const IconPaddingLeft = 15;
-const IconPaddingRight = 10;
-const IconWidth = 40;
 
 const styles = StyleSheet.create({
   bottomBorder: {

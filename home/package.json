@@ -6,9 +6,10 @@
   "description": "The Expo client app",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint --ext .js,.ts,.tsx,.d.ts ."
   },
-  "author": "650 Industries",
+  "author": "Expo",
   "license": "MIT",
   "jest": {
     "preset": "jest-expo"
