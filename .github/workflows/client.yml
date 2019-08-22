@@ -10,10 +10,9 @@ jobs:
     steps:
     - name: Install Nix
       run: |
+        echo "\n" >> ~/.bash_profile
         curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
-        echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
     - name: Install common packages
-      shell: bash -leo pipefail {0}
       # direnv: configures environment with .envrc files                                        
       # findutils: where, find, etc. for expo-module test                                       
       # git: circleci checkout steps                                                            
@@ -24,6 +23,7 @@ jobs:
       # rsync: expo-module-scripts uses to copy template files                                  
       # xz: circleci checkout steps                                                             
       run: |
+        . ~/.nix-profile/etc/profile.d/nix.sh
         nix-env -iA \
           nixpkgs.direnv \
           nixpkgs.findutils \
@@ -46,5 +46,6 @@ jobs:
     - name: Generate dynamic macros
       run: expotools ios-generate-dynamic-macros
     - name: Build iOS app for simulator
-      shell: bash -leo pipefail {0}
-      run: nix run expo.procps --command fastlane ios create_simulator_build
+      run: |
+        . ~/.nix-profile/etc/profile.d/nix.sh
+        nix run expo.procps --command fastlane ios create_simulator_build
