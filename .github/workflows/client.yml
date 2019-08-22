@@ -13,3 +13,11 @@ jobs:
     - name: Source Nix from Bash
       run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
     - uses: actions/checkout@v1
+    - name: Pull LFS files
+      run: git lfs pull
+    - name: Fetch CocoaPods specs
+      run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+    - name: Generate dynamic macros
+      run: expotools ios-generate-dynamic-macros
+    - name: Build iOS app for simulator
+      run: nix run expo.procps --command fastlane ios create_simulator_build
