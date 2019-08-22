@@ -1,5 +1,4 @@
-import { Platform } from 'react-native';
-
+import Platform from '../Platform';
 import { CodedError } from './CodedError';
 
 /**
