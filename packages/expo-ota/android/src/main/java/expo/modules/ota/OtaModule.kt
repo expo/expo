@@ -26,21 +26,21 @@ class OtaModule(context: Context) : ExportedModule(context) {
 
     @ExpoMethod
     fun checkForUpdateAsync(username: String, slug: String, releaseChannel: String, sdkVersion: String, promise: Promise) {
-        val manifestConfig = ExpoManifestConfig(username, slug, releaseChannel, sdkVersion)
-        val manifestDownloader = ManifestDownloader(manifestConfig.url, manifestConfig.headers, null)
-        val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, slug)
-        manifestDownloader.downloadManifest(object: ManifestDownloader.ManifestDownloadCallback {
-            override fun onSuccess(manifest: JSONObject) {
-                val bundle = Bundle()
-                bundle.putBoolean("isAvailable", manifestComparator.shouldDownloadBundle(persistence.manifest, manifest))
-                bundle.putString("manifest", manifest.toString())
-                promise.resolve(bundle)
-            }
-
-            override fun onError(error: Exception) {
-                promise.reject(error)
-            }
-        })
+//        val manifestConfig = ExpoManifestConfig(username, slug, releaseChannel, sdkVersion)
+//        val manifestDownloader = ManifestDownloader(manifestConfig.url, manifestConfig.headers, null)
+//        val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, slug)
+//        manifestDownloader.downloadManifest(object: ManifestDownloader.ManifestDownloadCallback {
+//            override fun onSuccess(manifest: JSONObject) {
+//                val bundle = Bundle()
+//                bundle.putBoolean("isAvailable", manifestComparator.shouldDownloadBundle(persistence.manifest, manifest))
+//                bundle.putString("manifest", manifest.toString())
+//                promise.resolve(bundle)
+//            }
+//
+//            override fun onError(error: Exception) {
+//                promise.reject(error)
+//            }
+//        })
     }
 
     @ExpoMethod
@@ -55,17 +55,17 @@ class OtaModule(context: Context) : ExportedModule(context) {
 
     @ExpoMethod
     fun fetchUpdatesAsync(username: String, slug: String, releaseChannel: String, sdkVersion: String, promise: Promise) {
-        val manifestConfig = ExpoManifestConfig(username, slug, releaseChannel, sdkVersion)
-        val manifestDownloader = ManifestDownloader(manifestConfig.url, manifestConfig.headers, null)
-        manifestDownloader.downloadManifest(object: ManifestDownloader.ManifestDownloadCallback {
-            override fun onSuccess(manifest: JSONObject) {
-
-            }
-
-            override fun onError(error: Exception) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
+//        val manifestConfig = ExpoManifestConfig(username, slug, releaseChannel, sdkVersion)
+//        val manifestDownloader = ManifestDownloader(manifestConfig.url, manifestConfig.headers, null)
+//        manifestDownloader.downloadManifest(object: ManifestDownloader.ManifestDownloadCallback {
+//            override fun onSuccess(manifest: JSONObject) {
+//
+//            }
+//
+//            override fun onError(error: Exception) {
+//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//            }
+//        })
     }
 
     companion object {

@@ -14,7 +14,7 @@ data class ExpoManifestConfig @JvmOverloads constructor(
         val releaseChannel: String = "default",
         val expoSdkVersion: String = "34.0.0",
         val apiVersion: Number = 1,
-        override val okHttpClient: OkHttpClient?) :
+        override val okHttpClient: OkHttpClient? = null) :
         ManifestDownloadParams {
 
     override val url = "https://exp.host/@$username/$projectName"
