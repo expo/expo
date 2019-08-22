@@ -7,12 +7,17 @@ commands:
       exclude:
         description: 'Prevent the job from stopping if changes are found in this directory'
         type: string
+        # Exclude nothing
+        default: '$^'
       require:
         description: 'The job will halt if the matched files have not been modified'
         type: string
+        # Require nothing
+        default: '$^'
       search_depth:
         description: 'The maximum directory depth to search'
         type: integer
+        default: 1
     steps:
       - run:
           name: Stop the job if only << parameters.exclude >> was changed
