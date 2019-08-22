@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.unimodules.core.interfaces.LifecycleEventListener;
@@ -16,10 +17,10 @@ import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class NotificationBackgroundTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
-  private static final String TAG = "NotificationBackgroundTaskConsumer";
+  private static final String TAG = "NotifinBGTaskConsumer";
 
-  // TODO: static here will not always work. E.g. what if there are two `createCategoryAsync`. The latter `mTask` override the prior one.
-  static public TaskInterface mTask;
+  private TaskInterface mTask;
+  static public HashMap<String, TaskInterface> mTasks = new HashMap<>();
 
   public NotificationBackgroundTaskConsumer(Context context, TaskManagerUtilsInterface taskManagerUtils) {
     super(context, taskManagerUtils);
@@ -42,6 +43,10 @@ public class NotificationBackgroundTaskConsumer extends TaskConsumer implements 
   @Override
   public void didRegister(TaskInterface task) {
     mTask = task;
+    mTasks.put(task.getName(), task);
+    Log.i(TAG, "HEEEEEELLLLLO WORLD");
+    Log.i(TAG, task.getName());
+    Log.i(TAG, mTasks.toString());
   }
 
   @Override
@@ -49,6 +54,7 @@ public class NotificationBackgroundTaskConsumer extends TaskConsumer implements 
     // Cancel pending intent.
     getTaskManagerUtils().cancelTaskIntent(getContext(), mTask.getAppId(), mTask.getName());
 
+    mTasks.remove(mTask.getName());
     mTask = null;
   }
 

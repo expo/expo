@@ -40,7 +40,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
     try {
-      mTaskManagerUtils.createTaskIntent(context, NotificationBackgroundTaskConsumer.mTask).send();
+      mTaskManagerUtils.createTaskIntent(context, NotificationBackgroundTaskConsumer.mTasks.get("hahayep")).send();
     } catch (Exception e) {
 
     }
