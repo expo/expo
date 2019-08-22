@@ -405,6 +405,11 @@ export default {
     categoryId: string,
     listener: (notification: Notification) => unknown
   ) {
+    if (Platform.OS !== 'android') {
+      // Only Android needs this.
+      return;
+    }
+
     let TaskManager: any;
     try {
       TaskManager = require('expo-task-manager');
@@ -413,6 +418,7 @@ export default {
         'expo-task-manager is not installed. You have to install expo-task-manager for `addActionBackgroundListener`.'
       );
     }
+    // TODO: prefix this define task
     TaskManager.defineTask(categoryId, ({ data }) => {
       console.warn(`defineTask's data is ${JSON.stringify(data)}`);
       if (data) {
