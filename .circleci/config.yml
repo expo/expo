@@ -11,41 +11,39 @@ commands:
       - run:
           name: Stop the job if only << parameters.exclude >> was changed
           command: |
+
+            # Required for circleci/node:latest-browsers
+            set +e
+
             ROOT_BRANCH="master"
 
-            if [ "${CIRCLE_BRANCH}" = "${ROOT_BRANCH}" ]; then
-              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              exit
-            else
-              BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
-              echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-              echo " - Excluding << parameters.exclude >>"
-              echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
-              echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
-              # Test all top-level directories
-              for file in $PWD/*/
-              do
-                FILE_NAME=$(basename $file)
-                if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
-                  echo " -- Checking ${FILE_NAME}"
-                  BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                  CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                  if [ ! "${BASE_FILE_HASH}" = "${CURRENT_FILE_HASH}" ]; then
-                    echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                    exit
-                  fi
-                fi
-              done
-
-              echo "⏹ No relevant file changes in the current branch; stopping tests."
-
-              # circleci-agent is not available with nix executors
-              if command -v circleci-agent >/dev/null; then
-                circleci-agent task halt
-              else
-                echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
-              fi
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              exit 0
             fi
+
+            BASE_COMMIT=$(git merge-base remotes/origin/"${CIRCLE_BRANCH}" remotes/origin/"${ROOT_BRANCH}")
+            echo "Checking for changes in branch ${CIRCLE_BRANCH}"
+            echo " - Excluding << parameters.exclude >>"
+            echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
+            echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
+            # Test all top-level directories
+            for file in $PWD/*/
+            do
+              FILE_NAME=$(basename $file)
+              if [[ ! " << parameters.exclude >> " =~ " ${FILE_NAME} " ]]; then
+                echo " -- Checking ${FILE_NAME}"
+                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                  echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  exit 0
+                fi
+              fi
+            done
+
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
+            # No changes. Halting step
+            echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
   halt_if_unchanged:
     parameters:
       require:
@@ -55,11 +53,14 @@ commands:
       - run:
           name: Require the << parameters.require >> directory to have changes
           command: |
+
+            # Required for circleci/node:latest-browsers
+            set +e
+
             ROOT_BRANCH="master"
 
-            if [ "${CIRCLE_BRANCH}" = "${ROOT_BRANCH}" ]; then
-              echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
-              exit
+            if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
+              exit 0
             fi
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
@@ -77,7 +78,7 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
-                  exit
+                  exit 0
                 fi
               fi
             done
@@ -88,11 +89,8 @@ commands:
             if command -v circleci-agent >/dev/null; then
               circleci-agent task halt
             else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+             echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
-  just-quit:
-    steps:
-      - run: echo 'Bye' && kill
   install_nix:
     steps:
       - run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -125,7 +123,6 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - run: echo 'Bye' && exit 0 && echo 'should not print'
       - checkout
   decrypt_secrets_if_possible:
     steps:
@@ -225,15 +222,13 @@ executors:
     <<: *nix
     resource_class: small
   web:
-    <<: *nix
     docker:
       - image: circleci/node:latest-browsers
-    # shell: /bin/bash -leo pipefail
-    # working_directory: ~/expo
+    shell: /bin/bash -leo pipefail
+    working_directory: ~/expo
     resource_class: small
     environment:
       USER: circleci
-      CI: 1
   mac:
     macos: # https://circleci.com/docs/2.0/testing-ios/#supported-xcode-versions
       xcode: '11.0.0'
@@ -249,93 +244,93 @@ executors:
 
 workflows:
   # E2E SDK testing
-  # native-sdk:
-  #   jobs:
-  #     - iOS-Detox
+  native-sdk:
+    jobs:
+      - iOS-Detox
 
-  # docs:
-  #   jobs:
-  #     - docs
-  #     - docs_approve_deploy:
-  #         type: approval
-  #         requires:
-  #           - docs
-  #         filters:
-  #           branches:
-  #             only:
-  #               - master
-  #               - /.*all-ci.*/
-  #     - docs_deploy:
-  #         requires:
-  #           - docs_approve_deploy
+  docs:
+    jobs:
+      - docs
+      - docs_approve_deploy:
+          type: approval
+          requires:
+            - docs
+          filters:
+            branches:
+              only:
+                - master
+                - /.*all-ci.*/
+      - docs_deploy:
+          requires:
+            - docs_approve_deploy
   # JavaScript packages that make up the SDK
   sdk:
     jobs:
-      # - expo_sdk
+      - expo_sdk
       - web_test_suite
-      # - babel_preset
 
   # Android and iOS clients
-  # client:
-  #   jobs:
-  #     - home
-  #     - expotools
-  #     - client_android
-  #     - client_ios
-  #     - test_suite_publish
-  #     - android_test_suite:
-  #         requires:
-  #           - test_suite_publish
-  #     - client_android_approve_google_play:
-  #         type: approval
-  #         requires:
-  #           - client_android
-  #         filters:
-  #           branches:
-  #             only:
-  #               - /sdk-\d+/
-  #               - /.*all-ci.*/
-  #     - client_android_release_google_play:
-  #         requires:
-  #           - client_android_approve_google_play
+  client:
+    jobs:
+      - home
+      - expotools
+      - client_android
+      - client_ios
+      - test_suite_publish
+      - android_test_suite:
+          requires:
+            - test_suite_publish
+      - client_android_approve_google_play:
+          type: approval
+          requires:
+            - client_android
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - client_android_release_google_play:
+          requires:
+            - client_android_approve_google_play
+
   #     - shell_app_ios_tests:
   #         requires:
   #           - shell_app_sim_base_ios
   #           - test_suite_publish
-  # shell_app:
-  #   jobs:
-  #     - shell_app_ios_approve_build:
-  #         type: approval
-  #         filters:
-  #           branches:
-  #             only:
-  #               - /sdk-\d+/
-  #               - /.*all-ci.*/
-  #     - shell_app_ios_build:
-  #         requires:
-  #           - shell_app_ios_approve_build
-  #     - shell_app_android_approve_build:
-  #         type: approval
-  #         filters:
-  #           branches:
-  #             only:
-  #               - /sdk-\d+/
-  #               - /.*all-ci.*/
-  #     - shell_app_android_build:
-  #         requires:
-  #           - shell_app_android_approve_build
-  # client_shell_app:
-  #   jobs:
-  #     - expo_client_approve_build:
-  #         type: approval
-  #         filters:
-  #           branches:
-  #             only:
-  #               - /sdk-\d+/
-  #               - /.*all-ci.*/
-  #     - expo_client_build:
-  #         requires:
-  #           - expo_client_approve_build
+  shell_app:
+    jobs:
+      - shell_app_ios_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - shell_app_ios_build:
+          requires:
+            - shell_app_ios_approve_build
+      - shell_app_android_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - shell_app_android_build:
+          requires:
+            - shell_app_android_approve_build
+  client_shell_app:
+    jobs:
+      - expo_client_approve_build:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /sdk-\d+/
+                - /.*all-ci.*/
+      - expo_client_build:
+          requires:
+            - expo_client_approve_build
 
 jobs:
   expo_sdk:
@@ -356,24 +351,7 @@ jobs:
   web_test_suite:
     executor: web
     steps:
-      - setup
-      # - install_nix
-      # - just-quit
-      # - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      # - checkout
-      # - update_submodules
-      # - guard_sdk_tests
-      # - restore_yarn_cache
-      # - yarn_install:
-      #     working_directory: ~/expo
-      # - save_yarn_cache
-      # - yarn:
-      #     command: test:web:ci
-      #     working_directory: ~/expo/apps/test-suite
-
-  babel_preset:
-    executor: js
-    steps:
+      - install_nix
       - setup
       - update_submodules
       - guard_sdk_tests
@@ -382,11 +360,8 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
-          command: lint --max-warnings 0
-          working_directory: ~/expo/packages/babel-preset-expo
-      - yarn:
-          command: jest --maxWorkers 1
-          working_directory: ~/expo/packages/babel-preset-expo
+          command: test:web:ci
+          working_directory: ~/expo/apps/test-suite
 
   home:
     executor: js
