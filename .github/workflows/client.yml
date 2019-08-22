@@ -8,9 +8,6 @@ jobs:
     runs-on: macOS-10.14
     
     steps:
-      run:
-        shell: bash -leo pipefail {0}
-      
     - name: Install Nix
       run: |
         curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
@@ -49,4 +46,5 @@ jobs:
     - name: Generate dynamic macros
       run: expotools ios-generate-dynamic-macros
     - name: Build iOS app for simulator
+      shell: bash -leo pipefail {0}
       run: nix run expo.procps --command fastlane ios create_simulator_build
