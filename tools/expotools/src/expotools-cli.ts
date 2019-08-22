@@ -31,15 +31,18 @@ async function runAsync() {
     program.parse(process.argv);
 
     const subCommandName = process.argv[2];
-    const subCommand = subCommandName && program.commands.find(({ _name, _aliases }) => {
-      return _name === subCommandName || _aliases && _aliases.includes(subCommandName);
-    });
+    const subCommand =
+      subCommandName &&
+      program.commands.find(({ _name, _aliases }) => {
+        return _name === subCommandName || (_aliases && _aliases.includes(subCommandName));
+      });
 
     if (!subCommand) {
-      subCommandName && console.log(
-        chalk.bold.green(subCommandName),
-        chalk.red('is not an expotools command. See below for the full list of commands.\n'),
-      );
+      subCommandName &&
+        console.log(
+          chalk.bold.green(subCommandName),
+          chalk.red('is not an expotools command. See below for the full list of commands.\n')
+        );
       program.help();
     }
   } catch (e) {
@@ -52,7 +55,7 @@ export function run() {
   runAsync().catch(e => {
     console.error(
       chalk.red('Uncaught error:'),
-      chalk.red(process.env.EXPO_ET_VERBOSE ? e.stack : e.message),
+      chalk.red(process.env.EXPO_ET_VERBOSE ? e.stack : e.message)
     );
     process.exit(1);
   });

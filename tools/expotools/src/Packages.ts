@@ -31,7 +31,7 @@ class Package {
   }
 
   get packageSlug(): string {
-    return this.unimoduleJson && this.unimoduleJson.name || this.packageName;
+    return (this.unimoduleJson && this.unimoduleJson.name) || this.packageName;
   }
 
   get scripts(): { [key: string]: string } {
@@ -43,7 +43,10 @@ class Package {
       return null;
     }
 
-    const iosConfig = { subdirectory: 'ios', ...('ios' in this.unimoduleJson ? this.unimoduleJson.ios : {}) };
+    const iosConfig = {
+      subdirectory: 'ios',
+      ...('ios' in this.unimoduleJson ? this.unimoduleJson.ios : {}),
+    };
 
     // 'ios.podName' is actually not used anywhere in our unimodules, but let's have the same logic as react-native-unimodules script.
     if ('podName' in iosConfig) {
@@ -69,9 +72,14 @@ class Package {
     if (platform === 'ios') {
       // On iOS we can easily check whether the package is included in Expo client by checking if it is installed by Cocoapods.
       const { podspecName } = this;
-      return podspecName != null && fs.existsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName));
+      return (
+        podspecName != null &&
+        fs.existsSync(path.join(IOS_DIR, 'Pods', 'Headers', 'Public', podspecName))
+      );
     }
-    throw new Error(`'isIncludedInExpoClientOnPlatform' is not supported on '${platform}' platform yet.`);
+    throw new Error(
+      `'isIncludedInExpoClientOnPlatform' is not supported on '${platform}' platform yet.`
+    );
   }
 
   isVersionableOnPlatform(platform: 'ios'): boolean {
@@ -88,7 +96,10 @@ class Package {
  * @param dir Directory at which the function will look for packages. Defaults to `packages`.
  * @param packages Array of already found packages (used when traversing the directory recursively).
  */
-async function getListOfPackagesAsync(dir: string = PACKAGES_DIR, packages: Package[] = []): Promise<Package[]> {
+async function getListOfPackagesAsync(
+  dir: string = PACKAGES_DIR,
+  packages: Package[] = []
+): Promise<Package[]> {
   const dirs = await fs.readdir(dir);
 
   for (const dirName of dirs) {
