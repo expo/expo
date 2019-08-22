@@ -344,8 +344,8 @@ jobs:
     executor: js
     steps:
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -360,8 +360,8 @@ jobs:
     steps:
       - install_nix
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -374,8 +374,8 @@ jobs:
     executor: js
     steps:
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - restore_yarn_cache
       - yarn_install:
           working_directory: ~/expo
@@ -407,8 +407,8 @@ jobs:
     steps:
       - install_nix
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
 
       # Simulators are more likely to fail. Try them first
       - run:
@@ -454,8 +454,8 @@ jobs:
     steps:
       - install_nix
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
       - run:
@@ -472,8 +472,8 @@ jobs:
     steps:
       - install_nix
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
       - run:
@@ -499,8 +499,8 @@ jobs:
     steps:
       - install_nix
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - run: git lfs pull
       - fetch_cocoapods_specs
       - yarn_install:
@@ -556,8 +556,8 @@ jobs:
     executor: android
     steps:
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -580,8 +580,8 @@ jobs:
     executor: android
     steps:
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - yarn_install:
           working_directory: ~/expo # need jsc-android dependency in expokit-npm-package
       - yarn_install:
@@ -631,9 +631,9 @@ jobs:
     resource_class: xlarge # TODO: Use less than 8Gib of ram to build a static site
     steps:
       - setup
-      - update_submodules
       - halt_if_unchanged:
           require: 'docs'
+      - update_submodules
       - yarn_install:
           working_directory: docs
       - yarn:
@@ -668,8 +668,8 @@ jobs:
     executor: nix
     steps:
       - setup
-      - update_submodules
       - guard_sdk_tests
+      - update_submodules
       - decrypt_secrets_if_possible
       - run:
           name: Publish
