@@ -248,14 +248,6 @@ public class PushNotificationHelper {
               }, true);
             }
 
-            /*Intent snoozeIntent = new Intent(context, MyBroadcastReceiver.class);
-            PendingIntent snoozePendingIntent =
-                PendingIntent.getBroadcast(context, 0, snoozeIntent, 0);
-
-            notificationBuilder.addAction(R.drawable.notification_icon, "hahaha",
-                    snoozePendingIntent);*/
-
-
             // Add icon
             if (!manifestUrl.equals(Constants.INITIAL_URL)) {
               notificationBuilder.setLargeIcon(bitmap);

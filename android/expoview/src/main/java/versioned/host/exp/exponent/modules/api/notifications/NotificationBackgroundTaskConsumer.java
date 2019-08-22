@@ -3,14 +3,8 @@ package versioned.host.exp.exponent.modules.api.notifications;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.util.Log;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
@@ -18,6 +12,10 @@ import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class NotificationBackgroundTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = "NotifinBGTaskConsumer";
@@ -37,19 +35,9 @@ public class NotificationBackgroundTaskConsumer extends TaskConsumer implements 
   }
 
   @Override
-  public boolean canReceiveCustomBroadcast(String action) {
-    // Let the TaskService know that we want to receive custom broadcasts
-    // having "android.intent.action.BOOT_COMPLETED" action.
-    return Intent.ACTION_BOOT_COMPLETED.equals(action);
-  }
-
-  @Override
   public void didRegister(TaskInterface task) {
     mTask = task;
     mTasks.put(task.getName(), task);
-    Log.i(TAG, "HEEEEEELLLLLO WORLD");
-    Log.i(TAG, task.getName());
-    Log.i(TAG, mTasks.toString());
   }
 
   @Override
@@ -59,18 +47,6 @@ public class NotificationBackgroundTaskConsumer extends TaskConsumer implements 
 
     mTasks.remove(mTask.getName());
     mTask = null;
-  }
-
-  @Override
-  public void didReceiveBroadcast(Intent intent) {
-    String action = intent.getAction();
-
-    Context context = getContext();
-    TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
-
-    if (context != null) {
-      taskManagerUtils.scheduleJob(context, mTask, null);
-    }
   }
 
   @Override
