@@ -8,6 +8,8 @@ jobs:
     runs-on: macOS-10.14
     
     steps:
+    - name: Set up BASH_ENV
+      run: touch "$BASH_ENV"
     - name: Install Nix
       run: |
         echo >> ~/.bash_profile
@@ -24,7 +26,6 @@ jobs:
       # rsync: expo-module-scripts uses to copy template files                                  
       # xz: circleci checkout steps                                                             
       run: |
-        . ~/.nix-profile/etc/profile.d/nix.sh
         nix-env -iA \
           nixpkgs.direnv \
           nixpkgs.findutils \
@@ -45,12 +46,6 @@ jobs:
     - name: Fetch CocoaPods specs
       run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
     - name: Generate dynamic macros
-      run: |
-        . ~/.nix-profile/etc/profile.d/nix.sh
-        eval "$(direnv hook bash)"
-        expotools ios-generate-dynamic-macros
+      run: expotools ios-generate-dynamic-macros
     - name: Build iOS app for simulator
-      run: |
-        . ~/.nix-profile/etc/profile.d/nix.sh
-        eval "$(direnv hook bash)"
-        nix run expo.procps --command fastlane ios create_simulator_build
+      run: nix run expo.procps --command fastlane ios create_simulator_build
