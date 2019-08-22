@@ -12,13 +12,12 @@ commands:
           name: Stop the job if only << parameters.exclude >> was changed
           command: |
 
-            # Required for circleci/node:latest-browsers
-            set +e
-
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
+              # Required for circleci/node:latest-browsers
+              set +e
               exit 0
             fi
 
@@ -37,6 +36,7 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  set +e
                   exit 0
                 fi
               fi
@@ -60,13 +60,12 @@ commands:
           name: Require the << parameters.require >> directory to have changes
           command: |
 
-            # Required for circleci/node:latest-browsers
-            set +e
-
             ROOT_BRANCH="master"
 
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
+              # Required for circleci/node:latest-browsers
+              set +e
               exit 0
             fi
 
@@ -85,6 +84,7 @@ commands:
                 CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
                 if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
+                  set +e
                   exit 0
                 fi
               fi
