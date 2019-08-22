@@ -8,10 +8,8 @@ jobs:
     runs-on: macOS-10.14
     
     steps:
+    - name: Install Nix
+      run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
+    - name: Source Nix from Bash
+      run: echo ". ~/.nix-profile/etc/profile.d/nix.sh" >> ~/.bash_profile
     - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
