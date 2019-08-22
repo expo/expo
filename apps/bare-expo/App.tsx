@@ -1,20 +1,29 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
-export default function App() {
-  return (
-    <LinearGradient style={styles.container} colors={['red', 'blue']} testID="App-gradient">
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </LinearGradient>
-  );
+import MainNavigator from './MainNavigator';
+import { createProxy, startAsync, addListener } from './relapse/client';
+
+// import NativeComponentList from '../native-component-list/App';
+
+export default function Main() {
+  // @ts-ignore
+  if (DETOX) {
+    React.useEffect(() => {
+      addListener(data => {
+        if (data.globals) {
+          for (const moduleName of data.globals) {
+            // @ts-ignore
+            global[moduleName] = createProxy(moduleName);
+          }
+        }
+      });
+
+      let stop;
+      startAsync().then(_stop => (stop = _stop));
+
+      return () => stop && stop();
+    }, []);
+  }
+
+  return <MainNavigator uriPrefix="bareexpo://" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

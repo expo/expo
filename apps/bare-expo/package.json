@@ -17,11 +17,13 @@
     "_ios:setup": "cd ios/ && (bundle check || bundle install) && bundle exec pod install",
     "test": "jest",
     "e2e:ios:setup": "detox build --configuration ios.sim.debug",
-    "e2e:ios": "detox test --configuration ios.sim.debug",
+    "e2e:ios": "detox test --configuration ios.sim.debug --loglevel warn",
     "ci:detox": "yarn ci:detox-build-release && yarn ci:detox-test-release",
     "ci:detox-clean": "detox clean-framework-cache && detox build-framework-cache",
     "ci:detox-build-release": "detox build --configuration ios.sim.release",
-    "ci:detox-test-release": "watchman watch-del-all; detox test --configuration ios.sim.release -l verbose --cleanup"
+    "ci:detox-test-release": "watchman watch-del-all; detox test --configuration ios.sim.release -l verbose --cleanup",
+    "open:ts": "xcrun simctl openurl booted bareexpo://test-suite",
+    "open:ncl": "xcrun simctl openurl booted bareexpo://native-component-list"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
