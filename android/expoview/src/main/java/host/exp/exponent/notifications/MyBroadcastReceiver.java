@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
     String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
     String actionId = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY);
+    String experienceId = bundle.getString(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY);
 
     //if (notificationManifestUrl != null) {
     ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
@@ -56,6 +58,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
     mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));
+
+
+    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+    notificationManager.cancel(experienceId, data.getInt(NotificationConstants.NOTIFICATION_ID_KEY));
 
     /*try {
       mTaskManagerUtils.createTaskIntent(context, NotificationBackgroundTaskConsumer.mTasks.get("hahayep")).send();
