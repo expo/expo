@@ -19,8 +19,10 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import javax.annotation.Nonnull;
 
 import expo.modules.taskManager.TaskBroadcastReceiver;
+import expo.modules.taskManager.TaskManagerUtils;
 import host.exp.exponent.kernel.ExperienceId;
 import versioned.host.exp.exponent.modules.ExpoBaseModule;
+import versioned.host.exp.exponent.modules.api.notifications.NotificationBackgroundTaskConsumer;
 
 public class MyBroadcastReceiver extends BroadcastReceiver {
   private static final String TAG = "MyBroadcastReceiver";
@@ -34,7 +36,16 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     Log.i(TAG, log);
     //Toast.makeText(context, log, Toast.LENGTH_LONG).show();
 
-    createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
+    //createTaskIntent(context, "@hesyifei/push-notification-test", "hahayep", 0);
+
+    TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
+    try {
+      mTaskManagerUtils.createTaskIntent(context, NotificationBackgroundTaskConsumer.mTask).send();
+    } catch (Exception e) {
+
+    }
+
+
     /*Intent serviceIntent = new Intent(context, MyTaskService.class);
     serviceIntent.putExtra("hasInternet", "hello world");
     context.startService(serviceIntent);

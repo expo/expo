@@ -18,7 +18,8 @@ import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 public class NotificationBackgroundTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
   private static final String TAG = "NotificationBackgroundTaskConsumer";
 
-  private TaskInterface mTask;
+  // TODO: static here will not always work. E.g. what if there are two `createCategoryAsync`. The latter `mTask` override the prior one.
+  static public TaskInterface mTask;
 
   public NotificationBackgroundTaskConsumer(Context context, TaskManagerUtilsInterface taskManagerUtils) {
     super(context, taskManagerUtils);
