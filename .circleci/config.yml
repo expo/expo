@@ -250,11 +250,6 @@ executors:
       CI: 1
 
 workflows:
-  # E2E SDK testing
-  native-sdk:
-    jobs:
-      - iOS-Detox
-
   docs:
     jobs:
       - docs
@@ -275,6 +270,8 @@ workflows:
     jobs:
       - expo_sdk
       - web_test_suite
+      # E2E SDK testing
+      - iOS-Detox
 
   # Android and iOS clients
   client:
