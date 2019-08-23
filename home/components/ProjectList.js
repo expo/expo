@@ -71,7 +71,7 @@ export default class ProjectList extends React.PureComponent {
           if (props.renderLoadingIndicator) {
             return <ScrollView {...props} />;
           } else {
-            return <InfiniteScrollView {...props} />
+            return <InfiniteScrollView {...props} />;
           }
         }}
         canLoadMore={this._canLoadMore()}

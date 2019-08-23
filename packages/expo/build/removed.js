@@ -1,6 +1,7 @@
 // Importing these modules from the 'expo' package was deprecated in SDK 33.
 // Please import them from the each individual unimodule package instead.
 import removedModule from './removedModule';
+/* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
     AdMobBanner: {
         enumerable: true,

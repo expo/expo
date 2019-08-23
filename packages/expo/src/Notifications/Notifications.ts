@@ -122,7 +122,6 @@ if (Platform.OS === 'android') {
   AsyncStorage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
     try {
       let keys = await AsyncStorage.getAllKeys();
-      let result = null;
       if (keys && keys.length) {
         let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
         await AsyncStorage.multiRemove(filteredKeys);

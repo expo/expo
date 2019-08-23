@@ -30,7 +30,7 @@ async function loadNewImageAsync(element) {
     return new Promise((resolve, reject) => {
         element.onload = () => resolve();
         element.onerror = () => {
-            reject(`Image could not be loaded ${element.src}`);
+            reject(new Error(`Image could not be loaded: ${element.src}`));
         };
         element.src = dataUrl;
     });

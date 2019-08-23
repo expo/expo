@@ -2,7 +2,7 @@
 // methods that we need to set up before we override them
 import { AppRegistry } from 'react-native';
 
-const _unusedAppRegistry = AppRegistry;
+AppRegistry; // eslint-disable-line no-unused-expressions
 
 // NOTE(2018-10-29): temporarily filter out cyclic dependency warnings here since they are noisy and
 // each warning symbolicates a stack trace, which is slow when there are many warnings
@@ -15,7 +15,7 @@ console.warn = function warn(...args) {
     typeof args[0] === 'string' &&
     (/^Require cycle: .*node_modules/.test(args[0]) ||
       /Use UIManager\.getViewManagerConfig\('LottieAnimationView'\) instead\./.test(args[0]) ||
-      /ReactNative\.NativeModules.\LottieAnimationView\.getConstants/.test(args[0]))
+      /ReactNative\.NativeModules\.LottieAnimationView\.getConstants/.test(args[0]))
   ) {
     return;
   }

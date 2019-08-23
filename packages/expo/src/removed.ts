@@ -5,6 +5,7 @@ import removedModule from './removedModule';
 
 declare var module: any;
 
+/* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
   AdMobBanner: {
     enumerable: true,
@@ -617,7 +618,11 @@ Object.defineProperties(module.exports, {
   SMS: {
     enumerable: true,
     get() {
-      removedModule(`import { SMS } from 'expo' -> import * as SMS from 'expo-sms'`, 'SMS', 'expo-sms');
+      removedModule(
+        `import { SMS } from 'expo' -> import * as SMS from 'expo-sms'`,
+        'SMS',
+        'expo-sms'
+      );
     },
   },
 

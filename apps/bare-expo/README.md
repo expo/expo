@@ -35,4 +35,10 @@ Start the Metro bundler with `yarn start` then run Detox with `yarn test:e2e:ios
 
 ### Testing locally
 
-- `yarn ci:detox` should very closely emulate what happens when you run in CI. Use this to ensure native code is linking, pods are installed, and your tests are passing.
+- `yarn e2e:ios:setup` Build the detox project (required when native code changes)
+- `yarn start-clean` Start Metro without caches
+- `yarn e2e:ios` Run the project on the iOS Detox simulator (optionally you can pass the `--watch` flag)
+
+**Testing CI**
+
+- `yarn ci:detox` This should very closely emulate what happens when you run in CI. Use this to ensure native code is linking, pods are installed, and your tests are passing.
