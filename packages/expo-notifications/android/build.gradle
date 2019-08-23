@@ -1,17 +1,21 @@
 buildscript {
   repositories {
+    maven { url "https://www.jitpack.io" }
     google()
     jcenter()
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.3.2'
   //  classpath 'com.google.gms:google-services:4.3.0'
   }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "kotlin-kapt"
 
 group = 'host.exp.exponent'
 version = '1.0.0'
@@ -75,11 +79,18 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 def dbflow_version = "4.2.4"
 
+kapt {
+  generateStubs = true
+  arguments {
+    arg("targetModuleName", "ExpoNotifications")
+  }
+}
+
 dependencies {
   unimodule 'unimodules-core'
 
   //DBFlow
-  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+  kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
   implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
   implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 

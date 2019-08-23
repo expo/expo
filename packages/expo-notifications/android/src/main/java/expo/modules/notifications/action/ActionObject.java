@@ -7,15 +7,6 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.Map;
 
-import static expo.modules.notifications.NotificationConstants.ACTION_BUTTON_TITLE;
-import static expo.modules.notifications.NotificationConstants.ACTION_ID;
-import static expo.modules.notifications.NotificationConstants.ACTION_IS_AUTHENTICATION_REQUIRED;
-import static expo.modules.notifications.NotificationConstants.ACTION_IS_DESTRUCTIVE;
-import static expo.modules.notifications.NotificationConstants.ACTION_PLACEHOLDER;
-import static expo.modules.notifications.NotificationConstants.ACTION_SUBMIT_BUTTON_TITLE;
-import static expo.modules.notifications.NotificationConstants.ACTION_TEXT_INPUT;
-import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CATEGORY;
-
 @Table(database = ActionDatabase.class)
 public class ActionObject extends BaseModel {
   @Column
