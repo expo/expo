@@ -132,11 +132,11 @@ public class ActionObject extends BaseModel {
     this.placeholder = placeholder;
   }
 
-  public Boolean getIsBackgroundAction() {
+  public Boolean isBackgroundAction() {
     return isBackgroundAction;
   }
 
-  public void setIsBackgroundAction(Boolean isBackgroundAction) {
-    this.isBackgroundAction = isBackgroundAction;
+  public void setBackgroundAction(Boolean backgroundAction) {
+    isBackgroundAction = backgroundAction;
   }
 }

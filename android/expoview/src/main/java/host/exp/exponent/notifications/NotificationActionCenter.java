@@ -64,8 +64,8 @@ public class NotificationActionCenter {
                                 IntentProvider foregroundIntentProvider,
                                 IntentProvider backgroundIntentProvider,
                                 Context context) {
-    Boolean isBackgroundAction = (actionObject.getIsBackgroundAction() != null) &&
-        actionObject.getIsBackgroundAction();
+    Boolean isBackgroundAction = (actionObject.isBackgroundAction() != null) &&
+        actionObject.isBackgroundAction();
 
     Intent intent;
     if (isBackgroundAction) {
