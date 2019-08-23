@@ -3,6 +3,7 @@ export type Notification = {
   data: any;
   remote: boolean;
   isMultiple: boolean;
+  actionId?: string;
 };
 
 export type LocalNotification = {
@@ -49,3 +50,5 @@ export type ActionType = {
 // Android assigns unique number to each notification natively.
 // Since that's not supported on iOS, we generate an unique string.
 export type LocalNotificationId = string | number;
+
+export type NotificationListener = (notification: Notification) => unknown;

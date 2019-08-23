@@ -6,6 +6,7 @@ import { CodedError, RCTDeviceEventEmitter, UnavailabilityError, NativeModulesPr
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
+let _actionListeners;
 function _maybeInitEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
@@ -321,12 +322,20 @@ export default {
                 _emitNotification(initialNotification);
             }, 0);
         }
-        // MAKE LISTENERA FUNCTION HERE SUCH THAT WE CAN CHECK IF ACTIONID
-        return _emitter.addListener('notification', listener);
+        return _emitter.addListener('notification', (notification) => {
+            // TODO: WE NEED TO GET `categoryId` here
+            if (notification.actionId && _actionListeners) {
+                _actionListeners['TODO'](notification);
+                return;
+            }
+            listener(notification);
+        });
     },
-    addActionBackgroundListener(categoryId, listener) {
+    addActionListener(categoryId, listener) {
         if (Platform.OS !== 'android') {
-            // Only Android needs this.
+            // If we are not on Android, the normal `addListener` can be used even in background.
+            // So we will just set this listener and call that in `addListener`.
+            _actionListeners[this.getScopedIdIfNotDetached(categoryId)] = listener;
             return;
         }
         let TaskManager;
@@ -390,7 +399,7 @@ export default {
     getScopedIdIfNotDetached(categoryId) {
         if (Platform.OS === 'web') {
             // There's no scoped ID for web.
-            return "";
+            return '';
         }
         if (!ExponentNotifications.scopedIdPrefix) {
             throw new UnavailabilityError('Expo.Notifications', 'getScopedIdIfNotDetached');

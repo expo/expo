@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { Notification, LocalNotification, Channel, ActionType } from './Notifications.types';
+import { Notification, LocalNotification, Channel, ActionType, NotificationListener } from './Notifications.types';
 declare const _default: {
     _setInitialNotification(notification: Notification): void;
     createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void>;
@@ -23,8 +23,8 @@ declare const _default: {
     dismissAllNotificationsAsync(): Promise<void>;
     cancelScheduledNotificationAsync(notificationId: import("react").ReactText): Promise<void>;
     cancelAllScheduledNotificationsAsync(): Promise<void>;
-    addListener(listener: (notification: Notification) => unknown): EventSubscription;
-    addActionBackgroundListener(categoryId: string, listener: (notification: Notification) => unknown): void;
+    addListener(listener: NotificationListener): EventSubscription;
+    addActionListener(categoryId: string, listener: NotificationListener): void;
     getBadgeNumberAsync(): Promise<number>;
     setBadgeNumberAsync(number: number): Promise<void>;
     scheduleNotificationWithCalendarAsync(notification: LocalNotification, options?: {

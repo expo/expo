@@ -3,6 +3,7 @@ export declare type Notification = {
     data: any;
     remote: boolean;
     isMultiple: boolean;
+    actionId?: string;
 };
 export declare type LocalNotification = {
     title: string;
@@ -42,3 +43,4 @@ export declare type ActionType = {
     };
 };
 export declare type LocalNotificationId = string | number;
+export declare type NotificationListener = (notification: Notification) => unknown;
