@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class NotificationBackgroundActionModule extends ExportedModule {
   private TaskManagerInterface mTaskManager;
-  private static final String TASK_PREFIX = "_expoNotificationBackgroundAction:";
+  public static final String TASK_NAME = "_expoNotificationBackgroundAction";
 
   public NotificationBackgroundActionModule(Context context) {
     super(context);
@@ -28,23 +28,19 @@ public class NotificationBackgroundActionModule extends ExportedModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    constants.put("TASK_PREFIX", TASK_PREFIX);
+    constants.put("TASK_NAME", TASK_NAME);
     return constants;
   }
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    Log.i("hawef", "NOOOOOOOOOO");
-    Log.i("hawef", moduleRegistry.toString());
     mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
   }
 
   @ExpoMethod
-  public void registerTaskAsync(String categoryId, Map<String, Object> options, final Promise promise) {
-    Log.i("hawef", "PLEEEEEEEEEESE");
-    Log.i("hawef", mTaskManager.toString());
+  public void registerTaskAsync(Map<String, Object> options, final Promise promise) {
     try {
-      mTaskManager.registerTask(getTaskName(categoryId), NotificationBackgroundActionTaskConsumer.class, options);
+      mTaskManager.registerTask(TASK_NAME, NotificationBackgroundActionTaskConsumer.class, options);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -52,17 +48,12 @@ public class NotificationBackgroundActionModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void unregisterTaskAsync(String categoryId, final Promise promise) {
+  public void unregisterTaskAsync(final Promise promise) {
     try {
-      mTaskManager.unregisterTask(getTaskName(categoryId), NotificationBackgroundActionTaskConsumer.class);
+      mTaskManager.unregisterTask(TASK_NAME, NotificationBackgroundActionTaskConsumer.class);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
-  }
-
-  public static String getTaskName(String categoryId) {
-    // If this is changed, also remember to change `addActionBackgroundListener` function in `expo` package.
-    return TASK_PREFIX + categoryId;
   }
 }

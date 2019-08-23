@@ -20,7 +20,7 @@ import {
 let _emitter;
 let _initialNotification;
 
-let _actionListeners: { [scopedCategoryId: string]: NotificationListener };
+let _actionListener: NotificationListener;
 
 function _maybeInitEmitter() {
   if (!_emitter) {
@@ -150,13 +150,13 @@ export default {
   // User passes set of actions titles.
   createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
     if (Platform.OS === 'android') {
+      // TODO: only do this when `doesNotOpenInForeground` is `true`
       const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
       if (!ExpoNotificationBackgroundAction) {
         throw new Error('nooo');
       }
-      const scopedCategoryId = this.getScopedIdIfNotDetached(categoryId);
-      console.warn(scopedCategoryId);
-      ExpoNotificationBackgroundAction.registerTaskAsync(scopedCategoryId, {});
+      // TODO: ADD LIST TO STORE REGISTERED TASK AND TO REMOVE & unregister THEM WHEN NON-EMPTY->EMPTY
+      ExpoNotificationBackgroundAction.registerTaskAsync({});
     }
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
@@ -167,8 +167,7 @@ export default {
       if (!ExpoNotificationBackgroundAction) {
         throw new Error('nooo');
       }
-      const scopedCategoryId = this.getScopedIdIfNotDetached(categoryId);
-      ExpoNotificationBackgroundAction.unregisterTaskAsync(scopedCategoryId);
+      ExpoNotificationBackgroundAction.unregisterTaskAsync();
     }
     return ExponentNotifications.deleteCategoryAsync(categoryId);
   },
@@ -412,19 +411,19 @@ export default {
 
     return _emitter.addListener('notification', (notification: Notification) => {
       // TODO: WE NEED TO GET `categoryId` here
-      if (notification.actionId && _actionListeners) {
-        _actionListeners['TODO'](notification);
+      if (notification.actionId && _actionListener) {
+        _actionListener(notification);
         return;
       }
       listener(notification);
     });
   },
 
-  addActionListener(categoryId: string, listener: NotificationListener) {
+  addActionListener(listener: NotificationListener) {
     if (Platform.OS !== 'android') {
       // If we are not on Android, the normal `addListener` can be used even in background.
       // So we will just set this listener and call that in `addListener`.
-      _actionListeners[this.getScopedIdIfNotDetached(categoryId)] = listener;
+      _actionListener = listener;
       return;
     }
 
@@ -442,8 +441,7 @@ export default {
       throw new Error('nooo');
     }
 
-    const taskName =
-      ExpoNotificationBackgroundAction.TASK_PREFIX + this.getScopedIdIfNotDetached(categoryId);
+    const taskName = ExpoNotificationBackgroundAction.TASK_NAME;
     console.warn(taskName);
     TaskManager.defineTask(taskName, ({ data }) => {
       console.warn(`defineTask's data is ${JSON.stringify(data)}`);

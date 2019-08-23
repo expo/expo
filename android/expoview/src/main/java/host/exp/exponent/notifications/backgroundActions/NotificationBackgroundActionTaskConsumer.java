@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class NotificationBackgroundActionTaskConsumer extends TaskConsumer implements TaskConsumerInterface, LifecycleEventListener {
-  private TaskInterface mTask;
-  static public HashMap<String, TaskInterface> mTasks = new HashMap<>();
+  public static TaskInterface mTask = null;
 
   public NotificationBackgroundActionTaskConsumer(Context context, TaskManagerUtilsInterface taskManagerUtils) {
     super(context, taskManagerUtils);
@@ -35,7 +34,6 @@ public class NotificationBackgroundActionTaskConsumer extends TaskConsumer imple
   @Override
   public void didRegister(TaskInterface task) {
     mTask = task;
-    mTasks.put(task.getName(), task);
   }
 
   @Override
@@ -43,7 +41,6 @@ public class NotificationBackgroundActionTaskConsumer extends TaskConsumer imple
     // Cancel pending intent.
     getTaskManagerUtils().cancelTaskIntent(getContext(), mTask.getAppId(), mTask.getName());
 
-    mTasks.remove(mTask.getName());
     mTask = null;
   }
 
