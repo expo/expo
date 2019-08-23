@@ -1,10 +1,11 @@
 'use strict';
 
 import React from 'react';
-import { StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
+import { StyleSheet, Linking, Platform, ScrollView, Text, View } from 'react-native';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
 import ExponentTest from '../ExponentTest';
+import { getTestModules } from '../TestUtils';
 
 export default class TestScreen extends React.Component {
   state = TestScreen.initialState;
@@ -12,14 +13,59 @@ export default class TestScreen extends React.Component {
   _failures = '';
   _scrollViewRef = null;
 
-  componentDidMount() {
+  _handleOpenURL = ({ url }) => {
+    if (!url) return;
+
+    // setTimeout(() => {
+    if (url.includes('select/')) {
+      this.checkLinking(url.split('/').pop());
+    } else if (url.includes('/all')) {
+      // TODO: Use Expo Linking library once parseURL is implemented for web
+      // Test all available modules
+      this._runTests(getTestModules());
+    }
+    // }, 300);
+  };
+
+  checkLinking = incomingTests => {
+    if (!incomingTests) return;
+
+    const testNames = incomingTests.split(',').map(v => v.trim());
+
+    const selected = getTestModules().filter(m => testNames.includes(m.name));
+
+    if (!selected.length) {
+      console.log('[TEST_SUITE]', 'No selected modules', testNames);
+    }
+
+    this._runTests(selected);
+  };
+
+  async componentDidMount() {
     const { navigation } = this.props;
+    Linking.addEventListener('url', this._handleOpenURL);
+
+    if (navigation.getParam('tests')) {
+      this.checkLinking(navigation.getParam('tests'));
+    } else {
+      try {
+        const url = await Linking.getInitialURL();
+
+        this._handleOpenURL({ url });
+      } catch ({ message }) {
+        console.log('Failed to load initial URL: ' + message);
+      }
+    }
+
     const selectedModules = navigation.getParam('selected');
-    this._runTests(selectedModules);
+    if (selectedModules) {
+      this._runTests(selectedModules);
+    }
     this._isMounted = true;
   }
 
   componentWillUnmount() {
+    Linking.removeEventListener('url', this._handleOpenURL);
     this._isMounted = false;
   }
 

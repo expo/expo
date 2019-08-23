@@ -13,7 +13,7 @@ if [ "${STATUS}" = "packager-status:running" ]; then
     echo " ✅ Verified Metro Bundler is running."
 else
     echo " ⚠️  Starting Metro Bundler..."
-    yarn run clear-metro
+    # yarn run clear-metro
     # yarn start
 
   commandFile=$(dirname "$0")/start.command

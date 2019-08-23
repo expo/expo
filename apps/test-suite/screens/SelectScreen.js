@@ -104,11 +104,9 @@ export default class SelectScreen extends React.PureComponent {
   };
 
   _handleOpenURL = ({ url }) => {
-    setTimeout(() => {
-      if (url && url.includes('select/')) {
-        this.checkLinking(url.split('/').pop());
-      }
-    }, 100);
+    if (url && url.includes('select/')) {
+      this.checkLinking(url.split('/').pop());
+    }
   };
 
   componentDidMount() {
