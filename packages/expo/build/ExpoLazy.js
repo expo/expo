@@ -459,7 +459,7 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.StoreReview = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
+exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
 
 require("./Expo.fx");
 
