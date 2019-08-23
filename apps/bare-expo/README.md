@@ -1,5 +1,25 @@
 # Bare Workflow
 
+## Usage
+
+### Setup
+
+### Run
+
+### `deep-link`
+
+To run a Test Suite test use the `deep-link` script to deep link into the app.
+
+`yarn deep-link <platform> <module>`
+
+Open the Haptics Test Suite tests on iOS:
+
+`yarn deep-link ios Haptics`
+
+Open the Constants and Crypto tests on Android:
+
+`yarn deep-link android Constants Crypto`
+
 ## Edits
 
 - [iOS] Needed to do this to get Release builds working
