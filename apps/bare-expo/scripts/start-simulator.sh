@@ -33,10 +33,10 @@ if [ "${CURRENT_ENV}" = "test" ]; then
     fi
 
     if [ -d "ios/build/Build/Products/Debug-iphonesimulator/BareExpo.app" ]; then
-        echo " ✅ Debug Detox project is built"
+        echo " ✅ Debug Detox project is built for iOS"
     else
         echo " ⚠️  Building the debug Detox project..."
-        yarn run e2e:ios:setup
+        yarn run ios:detox:build:debug
     fi
 
     echo " ☛  Opening the iOS simulator app"
@@ -45,7 +45,7 @@ if [ "${CURRENT_ENV}" = "test" ]; then
 
     echo " ☛  Starting Detox in watch mode"
     # Run our default E2E tests
-    yarn run e2e:ios --watch
+    yarn run ios:detox:test:debug --watch
 else 
     echo " ☛  Running the iOS project..."
     # Build and run the iOS project using `react-native run-ios`

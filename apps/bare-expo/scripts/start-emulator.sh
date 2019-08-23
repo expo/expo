@@ -1,6 +1,18 @@
 #!/bin/bash
 
+port=$2
+if [ -z "${port}" ]; then
+  port=8081
+fi
+
+CURRENT_ENV=$NODE_ENV
+if [ -z "${CURRENT_ENV}" ]; then
+  CURRENT_ENV="development"
+fi
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 
 $DIR/setup-project.sh
 
@@ -28,9 +40,22 @@ else
     echo " ✅ Emulator is running"
 fi
 
-
 $DIR/start-metro.sh $port
 
-echo " ☛  Running the Android project..."
-# Build and run the Android project using `react-native run-android`
-node "node_modules/react-native/cli.js" run-android --no-packager --port ${port}
+if [ "${CURRENT_ENV}" = "test" ]; then
+
+    if [ -f "android/app/build/outputs/apk/debug/app-debug-androidTest.apk" ]; then
+        echo " ✅ Debug Detox project is built for Android"
+    else
+        echo " ⚠️  Building the debug Detox project..."
+        yarn run android:detox:build:debug
+    fi
+
+    echo " ☛  Starting Detox in watch mode"
+    # Run our default E2E tests
+    yarn run android:detox:test:debug --watch
+else 
+    echo " ☛  Running the Android project..."
+    # Build and run the Android project using `react-native run-android`
+    node "node_modules/react-native/cli.js" run-android --no-packager --port ${port}
+fi
