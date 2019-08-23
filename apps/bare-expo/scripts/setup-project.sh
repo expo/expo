@@ -34,15 +34,15 @@ else
     # Build the AARs (~5-10 minutes)
     ./gradlew :ReactAndroid:installArchives 
     # Come back to the project
-    cd ../../apps/bare-expo/android
+    cd ../../apps/bare-expo
     
-    echo " ⚠️  Syncing React Android..."
+    # echo " ⚠️  Syncing React Android..."
     # Delete the Android caches
-    rm -rf ./.gradle 
+    # rm -rf ./.gradle 
     # Sync gradle
-    gradle --recompile-scripts
+    # gradle --recompile-scripts
     
-    cd ..
+    # cd ..
 
     echo " ✅ React Android is now installed!"
 fi

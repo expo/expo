@@ -6,7 +6,7 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "android": "./scripts/start-emulator.sh",
     "android-clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
-    "android:setup": "cd ../../react-native-lab/react-native && ./gradlew :ReactAndroid:installArchives && cd ../../apps/bare-expo && npm run android-clean",
+    "android:setup": "cd ../../react-native-lab/react-native && ./gradlew :ReactAndroid:installArchives && cd ../../apps/bare-expo",
     "ios": "./scripts/start-simulator.sh",
     "web": "expo start --web",
     "start": "react-native start --reset-cache",
