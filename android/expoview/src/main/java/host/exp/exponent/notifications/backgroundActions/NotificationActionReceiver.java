@@ -20,20 +20,20 @@ import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.NotificationConstants;
 
 public class NotificationActionReceiver extends BroadcastReceiver {
-  private static final String TAG = "NotificationActionReceiver";
-
   @Override
   public void onReceive(Context context, Intent intent) {
     Bundle bundle = intent.getExtras();
     String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
     String actionId = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY);
     String experienceId = bundle.getString(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY);
+    String categoryId = bundle.getString(KernelConstants.NOTIFICATION_CATEGORY_ID_KEY);
 
     ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
     PersistableBundle data = exponentNotification.toPersistableBundle("selected");
     data.putString(NotificationConstants.NOTIFICATION_ACTION_TYPE, actionId);
 
-    TaskInterface myTask = NotificationBackgroundActionTaskConsumer.mTasks.get("hahayep");
+    TaskInterface myTask = NotificationBackgroundActionTaskConsumer.mTasks.get(
+        NotificationBackgroundActionModule.getTaskName(categoryId));
 
     TaskManagerUtils mTaskManagerUtils = new TaskManagerUtils();
     mTaskManagerUtils.scheduleJob(context, myTask, Collections.singletonList(data));

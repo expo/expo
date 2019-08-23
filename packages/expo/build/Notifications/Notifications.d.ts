@@ -41,5 +41,6 @@ declare const _default: {
         interval: number;
         repeat?: boolean | undefined;
     }): Promise<string>;
+    getScopedIdIfNotDetached(categoryId: string): string;
 };
 export default _default;

@@ -72,6 +72,13 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     return "ExponentNotifications";
   }
 
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("SCOPED_ID_PREFIX", getScopedIdIfNotDetached(""));
+    return constants;
+  }
+
   @ReactMethod
   public void createCategoryAsync(final String categoryIdParam, final ReadableArray actions, final Promise promise) {
     String categoryId = getScopedIdIfNotDetached(categoryIdParam);

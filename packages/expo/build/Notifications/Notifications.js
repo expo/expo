@@ -119,11 +119,21 @@ export default {
             if (!ExpoNotificationBackgroundAction) {
                 throw new Error('nooo');
             }
-            ExpoNotificationBackgroundAction.registerTaskAsync('hahayep', {});
+            const scopedCategoryId = this.getScopedIdIfNotDetached(categoryId);
+            console.warn(scopedCategoryId);
+            ExpoNotificationBackgroundAction.registerTaskAsync(scopedCategoryId, {});
         }
         return ExponentNotifications.createCategoryAsync(categoryId, actions);
     },
     deleteCategoryAsync(categoryId) {
+        if (Platform.OS === 'android') {
+            const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
+            if (!ExpoNotificationBackgroundAction) {
+                throw new Error('nooo');
+            }
+            const scopedCategoryId = this.getScopedIdIfNotDetached(categoryId);
+            ExpoNotificationBackgroundAction.unregisterTaskAsync(scopedCategoryId);
+        }
         return ExponentNotifications.deleteCategoryAsync(categoryId);
     },
     /* Re-export */
@@ -325,8 +335,13 @@ export default {
         catch {
             throw new Error('expo-task-manager is not installed. You have to install expo-task-manager for `addActionBackgroundListener`.');
         }
-        // TODO: prefix this define task
-        TaskManager.defineTask(categoryId, ({ data }) => {
+        const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
+        if (!ExpoNotificationBackgroundAction) {
+            throw new Error('nooo');
+        }
+        const taskName = ExpoNotificationBackgroundAction.TASK_PREFIX + this.getScopedIdIfNotDetached(categoryId);
+        console.warn(taskName);
+        TaskManager.defineTask(taskName, ({ data }) => {
             console.warn(`defineTask's data is ${JSON.stringify(data)}`);
             if (data) {
                 // We want to try to parse the `data` field because Java send it as a string.
@@ -370,6 +385,12 @@ export default {
             throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
         }
         return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
+    },
+    getScopedIdIfNotDetached(categoryId) {
+        if (!ExponentNotifications.SCOPED_ID_PREFIX) {
+            throw new UnavailabilityError('Expo.Notifications', 'getScopedIdIfNotDetached');
+        }
+        return ExponentNotifications.SCOPED_ID_PREFIX + categoryId;
     },
 };
 function isInRangeInclusive(variable, min, max) {
