@@ -116,7 +116,7 @@ export default {
     // User passes set of actions titles.
     createCategoryAsync(categoryId, actions) {
         if (Platform.OS === 'android') {
-            // TODO: only do this when `doesNotOpenInForeground` is `true`
+            // TODO: only do this when at least a single `doesNotOpenInForeground` is `true`
             const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
             if (!ExpoNotificationBackgroundAction) {
                 throw new Error('nooo');
@@ -322,7 +322,6 @@ export default {
             }, 0);
         }
         return _emitter.addListener('notification', (notification) => {
-            // TODO: WE NEED TO GET `categoryId` here
             if (notification.actionId && _actionListener) {
                 _actionListener(notification);
                 return;
@@ -331,10 +330,9 @@ export default {
         });
     },
     addActionListener(listener) {
+        // This is used by systems other than Android as well as Android foreground action.
+        _actionListener = listener;
         if (Platform.OS !== 'android') {
-            // If we are not on Android, the normal `addListener` can be used even in background.
-            // So we will just set this listener and call that in `addListener`.
-            _actionListener = listener;
             return;
         }
         let TaskManager;
