@@ -9,6 +9,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🛠 Breaking changes
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 
+- Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 - added an option which allows displaying notifications in foreground on iOS by [@hesyifei](https://github.com/hesyifei) ([#4802](https://github.com/expo/expo/pull/4802))
