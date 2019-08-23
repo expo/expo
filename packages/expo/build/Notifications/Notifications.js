@@ -321,6 +321,7 @@ export default {
                 _emitNotification(initialNotification);
             }, 0);
         }
+        // MAKE LISTENERA FUNCTION HERE SUCH THAT WE CAN CHECK IF ACTIONID
         return _emitter.addListener('notification', listener);
     },
     addActionBackgroundListener(categoryId, listener) {
@@ -387,10 +388,14 @@ export default {
         return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
     },
     getScopedIdIfNotDetached(categoryId) {
-        if (!ExponentNotifications.SCOPED_ID_PREFIX) {
+        if (Platform.OS === 'web') {
+            // There's no scoped ID for web.
+            return "";
+        }
+        if (!ExponentNotifications.scopedIdPrefix) {
             throw new UnavailabilityError('Expo.Notifications', 'getScopedIdIfNotDetached');
         }
-        return ExponentNotifications.SCOPED_ID_PREFIX + categoryId;
+        return ExponentNotifications.scopedIdPrefix + categoryId;
     },
 };
 function isInRangeInclusive(variable, min, max) {

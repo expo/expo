@@ -57,6 +57,16 @@ EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNotification
   return self;
 }
 
+- (NSDictionary *)constantsToExport
+{
+	return @{ @"scopedIdPrefix": [self internalIdForIdentifier:@""] };
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+	return NO;
+}
+
 RCT_REMAP_METHOD(getDevicePushTokenAsync,
                  getDevicePushTokenWithConfig: (__unused NSDictionary *)config
                  resolver:(RCTPromiseResolveBlock)resolve

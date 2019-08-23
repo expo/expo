@@ -75,7 +75,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
-    constants.put("SCOPED_ID_PREFIX", getScopedIdIfNotDetached(""));
+    constants.put("scopedIdPrefix", getScopedIdIfNotDetached(""));
     return constants;
   }
 
