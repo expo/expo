@@ -42,6 +42,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Pull submodules and LFS files
       run: |
+        git submodule init
         git submodule update
         git lfs pull
     - name: Fetch CocoaPods specs
