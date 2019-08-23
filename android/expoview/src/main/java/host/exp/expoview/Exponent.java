@@ -20,6 +20,8 @@ import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
 import com.raizlabs.android.dbflow.config.DatabaseConfig;
+import com.raizlabs.android.dbflow.config.ExpoNotificationsGeneratedDatabaseHolder;
+import com.raizlabs.android.dbflow.config.ExpoviewGeneratedDatabaseHolder;
 import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
@@ -47,7 +49,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -55,19 +56,18 @@ import javax.inject.Inject;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
-import expo.modules.notifications.channels.ChannelProperties;
+import expo.modules.notifications.action.ActionDatabase;
 import expo.modules.notifications.channels.ChannelPropertiesDatabase;
 import expo.modules.notifications.postoffice.pendingdeliveries.PendingDeliveriesDatabase;
 import expo.modules.notifications.scheduling.insecurescheduler.repository.ScheduledNotificationDatabase;
-import host.exp.exponent.notifications.ActionDatabase;
-import host.exp.exponent.notifications.managers.SchedulersDatabase;
+import host.exp.exponent.notifications.ActionDatabaseExpoview;
+import host.exp.exponent.notifications.managers.SchedulersDatabaseExpoview;
 import host.exp.exponent.storage.ExponentDB;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
 import okhttp3.Response;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
@@ -203,30 +203,8 @@ public class Exponent {
   private void initDBFlow(Context context) {
     // We need to add here versioned expo-notification databases
     FlowManager.init(FlowConfig.builder(context)
-        .addDatabaseConfig(DatabaseConfig.builder(SchedulersDatabase.class)
-            .databaseName(SchedulersDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(ActionDatabase.class)
-            .databaseName(ActionDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(ExponentDB.class)
-            .databaseName(ExponentDB.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(expo.modules.notifications.action.ActionDatabase.class)
-            .databaseName(expo.modules.notifications.action.ActionDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(expo.modules.notifications.scheduling.managers.SchedulersDatabase.class)
-            .databaseName(expo.modules.notifications.scheduling.managers.SchedulersDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(ChannelPropertiesDatabase.class)
-            .databaseName(ChannelPropertiesDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(PendingDeliveriesDatabase.class)
-            .databaseName(PendingDeliveriesDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(ScheduledNotificationDatabase.class)
-            .databaseName(ScheduledNotificationDatabase.NAME)
-            .build())
+        .addDatabaseHolder(ExpoviewGeneratedDatabaseHolder.class)
+        .addDatabaseHolder(ExpoNotificationsGeneratedDatabaseHolder.class)
         .build()
     );
   }
@@ -246,8 +224,6 @@ public class Exponent {
       action.run();
     }
   }
-
-
 
   private String mGCMSenderId;
   public void setGCMSenderId(final String senderId) {

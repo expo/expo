@@ -16,10 +16,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import host.exp.exponent.notifications.managers.SchedulersDatabaseExpoview;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
-import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
-@Table(database = SchedulersDatabase.class)
+@Table(database = SchedulersDatabaseExpoview.class)
 public class IntervalSchedulerModel extends BaseModel implements SchedulerModel {
 
   private static List<String> triggeringActions = Arrays.asList(null,

@@ -7,7 +7,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import java.util.Map;
 
-@Table(database = ActionDatabase.class)
+@Table(database = ActionDatabaseExpoview.class)
 public class ActionObject extends BaseModel {
   @Column
   private String categoryId;
