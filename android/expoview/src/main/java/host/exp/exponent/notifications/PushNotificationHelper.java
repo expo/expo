@@ -234,20 +234,23 @@ public class PushNotificationHelper {
               NotificationActionCenter.setCategory(categoryId, notificationBuilder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
-                  Intent intent = new Intent(context, NotificationActionReceiver.class);
-                  intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
-                  intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
-                  intent.putExtra(KernelConstants.NOTIFICATION_CATEGORY_ID_KEY, categoryId);
-                  intent.putExtra(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
-                  return intent;
-
-                  /*Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+                  Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
                   intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
-                  return intent;*/
+                  return intent;
                 }
-              }, true);
+              }, new IntentProvider() {
+                @Override
+                public Intent provide() {
+                  Intent intent = new Intent(context, NotificationActionReceiver.class);
+                  intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
+                  intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+                  intent.putExtra(KernelConstants.NOTIFICATION_CATEGORY_ID_KEY, categoryId);  // TODO: UNUSED
+                  intent.putExtra(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
+                  return intent;
+                }
+              });
             }
 
             // Add icon

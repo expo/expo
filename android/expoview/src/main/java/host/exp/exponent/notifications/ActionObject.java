@@ -37,6 +37,9 @@ public class ActionObject extends BaseModel {
   @Column
   private int position;
 
+  @Column
+  private Boolean isBackgroundAction;
+
   public ActionObject() {
     this.position = 0;
   }
@@ -54,6 +57,7 @@ public class ActionObject extends BaseModel {
       this.submitButtonTitle = (String) subMap.get("submitButtonTitle");
     }
     this.position = position;
+    this.isBackgroundAction = (Boolean) map.get("doNotOpenInForeground");
   }
 
   public String getActionId() {
@@ -126,5 +130,13 @@ public class ActionObject extends BaseModel {
 
   public void setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
+  }
+
+  public Boolean getIsBackgroundAction() {
+    return isBackgroundAction;
+  }
+
+  public void setIsBackgroundAction(Boolean isBackgroundAction) {
+    this.isBackgroundAction = isBackgroundAction;
   }
 }

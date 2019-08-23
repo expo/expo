@@ -39,7 +39,11 @@ public class NotificationActionCenter {
     }
   }
 
-  public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider, Boolean isBroadcast) {
+  public synchronized static void setCategory(String categoryId,
+                                              NotificationCompat.Builder builder,
+                                              Context context,
+                                              IntentProvider foregroundIntentProvider,
+                                              IntentProvider backgroundIntentProvider) {
     throwExceptionIfOnMainThread();
 
     // Expo Client has a permanent notification, so we have to set max priority in order to show up buttons
@@ -51,18 +55,30 @@ public class NotificationActionCenter {
         .queryList();
 
     for (ActionObject actionObject : actions) {
-      addAction(builder, actionObject, intentProvider, isBroadcast, context);
+      addAction(builder, actionObject, foregroundIntentProvider, backgroundIntentProvider, context);
     }
   }
 
-  private static void addAction(NotificationCompat.Builder builder, ActionObject actionObject, IntentProvider intentProvider, Boolean isBroadcast, Context context) {
-    Intent intent = intentProvider.provide();
+  private static void addAction(NotificationCompat.Builder builder,
+                                ActionObject actionObject,
+                                IntentProvider foregroundIntentProvider,
+                                IntentProvider backgroundIntentProvider,
+                                Context context) {
+    Boolean isBackgroundAction = (actionObject.getIsBackgroundAction() != null) &&
+        actionObject.getIsBackgroundAction();
+
+    Intent intent;
+    if (isBackgroundAction) {
+      intent = backgroundIntentProvider.provide();
+    } else {
+      intent = foregroundIntentProvider.provide();
+    }
 
     String actionId = actionObject.getActionId();
 
     intent.putExtra(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY, actionId);
     PendingIntent pendingIntent;
-    if (isBroadcast) {
+    if (isBackgroundAction) {
       pendingIntent = PendingIntent.getBroadcast(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
     } else {
       pendingIntent = PendingIntent.getActivity(context, UUID.randomUUID().hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);

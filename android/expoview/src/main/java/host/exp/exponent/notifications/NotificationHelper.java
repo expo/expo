@@ -36,6 +36,7 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
+import host.exp.exponent.notifications.backgroundActions.NotificationActionReceiver;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -499,7 +500,7 @@ public class NotificationHelper {
               PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
               builder.setContentIntent(contentIntent);
 
-              // TODO: IS THIS LOCAL NOTIFICATION?
+              // TODO: TEST THIS
               if (data.containsKey("categoryId")) {
                 final String manifestUrl = experience.manifestUrl;
                 NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
@@ -513,7 +514,17 @@ public class NotificationHelper {
                     intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
                     return intent;
                   }
-                }, false);
+                }, new IntentProvider() {
+                  @Override
+                  public Intent provide() {
+                    Class receiverClass = NotificationActionReceiver.class;
+                    Intent intent = new Intent(context, receiverClass);
+                    intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
+                    final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
+                    intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+                    return intent;
+                  }
+                });
               }
 
               int color = NotificationHelper.getColor(
