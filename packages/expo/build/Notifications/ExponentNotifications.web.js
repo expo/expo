@@ -40,6 +40,7 @@ async function getNotificationsAsync(tag) {
     return notifications;
 }
 export default {
+    scopedIdPrefix: '',
     async presentLocalNotification(notification) {
         const registration = await getRegistrationAsync();
         const tag = generateID();

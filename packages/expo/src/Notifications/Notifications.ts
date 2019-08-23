@@ -515,10 +515,6 @@ export default {
   },
 
   getScopedIdIfNotDetached(categoryId: string) {
-    if (Platform.OS === 'web') {
-      // There's no scoped ID for web.
-      return '';
-    }
     if (!ExponentNotifications.scopedIdPrefix) {
       throw new UnavailabilityError('Expo.Notifications', 'getScopedIdIfNotDetached');
     }

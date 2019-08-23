@@ -57,6 +57,8 @@ async function getNotificationsAsync(tag?: string): Promise<Notification[]> {
 }
 
 export default {
+  scopedIdPrefix: '', // There's no scoped ID for web.
+
   async presentLocalNotification(notification: LocalNotification): Promise<LocalNotificationId> {
     const registration = await getRegistrationAsync();
     const tag = generateID();

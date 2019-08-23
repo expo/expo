@@ -1,5 +1,6 @@
 import { LocalNotification } from './Notifications.types';
 declare const _default: {
+    scopedIdPrefix: string;
     presentLocalNotification(notification: LocalNotification): Promise<import("react").ReactText>;
     scheduleLocalNotification(notification: any, options?: {
         time?: number | Date | undefined;
