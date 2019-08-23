@@ -8,6 +8,7 @@ apply plugin: 'com.jakewharton.butterknife'
 group = 'host.exp.exponent'
 version = '34.0.0'
 
+
 //Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
@@ -36,6 +37,8 @@ uploadArchives {
   }
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
+
+def dbflow_version = "4.2.4"
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -211,9 +214,6 @@ dependencies {
   api 'com.google.android.gms:play-services-location:16.0.0'
   api 'com.google.android.gms:play-services-fitness:16.0.1'
   api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  api "com.raizlabs.android:DBFlow-Core:2.2.1"
-  api "com.raizlabs.android:DBFlow:2.2.1"
   api "com.madgag.spongycastle:core:1.53.0.0"
   api "com.madgag.spongycastle:prov:1.53.0.0"
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -244,6 +244,11 @@ dependencies {
   // expo-av
   // See explanation in expo-av/build.gradle
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
+
+  //dbflow
+  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+  compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+  compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 }
