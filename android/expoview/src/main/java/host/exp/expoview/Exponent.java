@@ -55,6 +55,10 @@ import javax.inject.Inject;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
+import expo.modules.notifications.channels.ChannelProperties;
+import expo.modules.notifications.channels.ChannelPropertiesDatabase;
+import expo.modules.notifications.postoffice.pendingdeliveries.PendingDeliveriesDatabase;
+import expo.modules.notifications.scheduling.insecurescheduler.repository.ScheduledNotificationDatabase;
 import host.exp.exponent.notifications.ActionDatabase;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
 import host.exp.exponent.storage.ExponentDB;
@@ -181,18 +185,7 @@ public class Exponent {
     Analytics.initializeAmplitude(context, application);
 
     // TODO: profile this
-    FlowManager.init(FlowConfig.builder(context)
-        .addDatabaseConfig(DatabaseConfig.builder(SchedulersDatabase.class)
-            .databaseName(SchedulersDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(ActionDatabase.class)
-            .databaseName(ActionDatabase.NAME)
-            .build())
-        .addDatabaseConfig(DatabaseConfig.builder(ExponentDB.class)
-            .databaseName(ExponentDB.NAME)
-            .build())
-        .build()
-    );
+    initDBFlow(context);
 
     if (ExpoViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);
@@ -205,6 +198,37 @@ public class Exponent {
       StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
       StrictMode.setThreadPolicy(policy);
     }
+  }
+
+  private void initDBFlow(Context context) {
+    // We need to add here versioned expo-notification databases
+    FlowManager.init(FlowConfig.builder(context)
+        .addDatabaseConfig(DatabaseConfig.builder(SchedulersDatabase.class)
+            .databaseName(SchedulersDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ActionDatabase.class)
+            .databaseName(ActionDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ExponentDB.class)
+            .databaseName(ExponentDB.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(expo.modules.notifications.action.ActionDatabase.class)
+            .databaseName(expo.modules.notifications.action.ActionDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(expo.modules.notifications.scheduling.managers.SchedulersDatabase.class)
+            .databaseName(expo.modules.notifications.scheduling.managers.SchedulersDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ChannelPropertiesDatabase.class)
+            .databaseName(ChannelPropertiesDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(PendingDeliveriesDatabase.class)
+            .databaseName(PendingDeliveriesDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ScheduledNotificationDatabase.class)
+            .databaseName(ScheduledNotificationDatabase.NAME)
+            .build())
+        .build()
+    );
   }
 
   public void setCurrentActivity(Activity activity) {

@@ -8,14 +8,12 @@ import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import expo.modules.notifications.action.ActionObject$Table;
 
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_ACTION_TYPE_KEY;
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CATEGORY;
@@ -34,8 +32,8 @@ public class NotificationActionCenter {
   }
 
   public synchronized static void removeCategory(String categoryId) {
-    List<ActionObject> actions = new Select().from(ActionObject.class)
-        .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
+    List<ActionObject> actions = SQLite.select().from(ActionObject.class)
+        .where(ActionObject_Table.categoryId.eq(categoryId))
         .queryList();
     for (ActionObject actionObject : actions) {
       actionObject.delete();
@@ -49,8 +47,8 @@ public class NotificationActionCenter {
     builder.setPriority(Notification.PRIORITY_MAX);
 
     List<ActionObject> actions = new Select().from(ActionObject.class)
-        .where(Condition.column(ActionObject$Table.CATEGORYID).is(categoryId))
-        .orderBy(true, ActionObject$Table.POSITION)
+        .where(ActionObject_Table.categoryId.eq(categoryId))
+        .orderBy(ActionObject_Table.position, true)
         .queryList();
 
     for (ActionObject actionObject : actions) {
@@ -71,7 +69,7 @@ public class NotificationActionCenter {
         pendingIntent
     );
 
-    if (actionObject.getShouldShowTextInput()) {
+    if (actionObject.isShouldShowTextInput()) {
       actionBuilder.addRemoteInput(
           new RemoteInput.Builder(KEY_TEXT_REPLY)
               .setLabel(actionObject.getPlaceholder())

@@ -1,6 +1,8 @@
 package expo.modules.notifications.scheduling.managers;
 
 import android.content.Context;
+
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import org.unimodules.core.interfaces.Function;
 
@@ -135,7 +137,7 @@ class SchedulerManagerImpl implements SchedulersManager {
       mFetchedFromDB = true;
 
       for (Class schedulerClass : getSchedulerClasses()) {
-        List<SchedulerModel> schedulers = new Select().from(schedulerClass).queryList();
+        List<SchedulerModel> schedulers = SQLite.select().from(schedulerClass).queryList();
         for (SchedulerModel schedulerModel : schedulers) {
           SchedulerImpl scheduler = new SchedulerImpl(schedulerModel);
           mSchedulersMap.put(scheduler.getIdAsString(), scheduler);

@@ -1,6 +1,5 @@
 package expo.modules.notifications.scheduling.insecurescheduler.repository;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class ScheduledNotificationRepository implements Repository {
   public void deleteScheduledNotification(String appId, int notificationId) {
 
     List<ScheduledNotification> scheduledNotificationList = new Select().from(ScheduledNotification.class)
-        .where(Condition.column(ScheduledNotification$Table.NOTIFICATIONID).is(notificationId))
+        .where(ScheduledNotification_Table.notificationId.eq(notificationId))
         .queryList();
 
     for (ScheduledNotification scheduledNotification : scheduledNotificationList) {
@@ -39,7 +38,7 @@ public class ScheduledNotificationRepository implements Repository {
   @Override
   public List<ScheduledNotification> getScheduledNotificationsForExperience(String appId) {
     List<ScheduledNotification> scheduledNotificationList = new Select().from(ScheduledNotification.class)
-        .where(Condition.column(ScheduledNotification$Table.APPID).is(appId))
+        .where(ScheduledNotification_Table.appId.eq(appId))
         .queryList();
 
     return scheduledNotificationList;

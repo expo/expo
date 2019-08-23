@@ -2,7 +2,6 @@ package expo.modules.notifications.postoffice;
 
 import android.os.Bundle;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import org.unimodules.core.interfaces.Function;
@@ -13,9 +12,9 @@ import java.util.Map;
 
 import expo.modules.notifications.helpers.Utils;
 import expo.modules.notifications.postoffice.pendingdeliveries.PendingForegroundNotification;
-import expo.modules.notifications.postoffice.pendingdeliveries.PendingForegroundNotification$Table;
+import expo.modules.notifications.postoffice.pendingdeliveries.PendingForegroundNotification_Table;
 import expo.modules.notifications.postoffice.pendingdeliveries.PendingUserInteraction;
-import expo.modules.notifications.postoffice.pendingdeliveries.PendingUserInteraction$Table;
+import expo.modules.notifications.postoffice.pendingdeliveries.PendingUserInteraction_Table;
 
 class PostOffice implements ExpoPostOffice {
 
@@ -44,11 +43,11 @@ class PostOffice implements ExpoPostOffice {
     mMailBoxes.put(appId, mailbox);
 
     List<PendingForegroundNotification> pendingForegroundNotificationList = new Select().from(PendingForegroundNotification.class)
-        .where(Condition.column(PendingForegroundNotification$Table.APPID).is(appId))
+        .where(PendingForegroundNotification_Table.appId.eq(appId))
         .queryList();
 
     List<PendingUserInteraction> pendingUserInteractionList = new Select().from(PendingUserInteraction.class)
-        .where(Condition.column(PendingUserInteraction$Table.APPID).is(appId))
+        .where(PendingUserInteraction_Table.appId.eq(appId))
         .queryList();
 
     for (PendingForegroundNotification pendingForegroundNotification : pendingForegroundNotificationList) {

@@ -73,11 +73,16 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
           'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
 }
 
+def dbflow_version = "4.2.4"
+
 dependencies {
   unimodule 'unimodules-core'
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  api "com.raizlabs.android:DBFlow-Core:2.2.1"
-  api "com.raizlabs.android:DBFlow:2.2.1"
+
+  //DBFlow
+  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+
   api group: 'com.android.support', name: 'support-v4', version: '26.1.0'
   implementation 'com.cronutils:cron-utils:4.1.3'
   api 'com.google.firebase:firebase-core:16.0.9'

@@ -16,7 +16,7 @@ import static expo.modules.notifications.NotificationConstants.ACTION_SUBMIT_BUT
 import static expo.modules.notifications.NotificationConstants.ACTION_TEXT_INPUT;
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CATEGORY;
 
-@Table(databaseName = ActionDatabase.NAME)
+@Table(database = ActionDatabase.class)
 public class ActionObject extends BaseModel {
   @Column
   private String categoryId;
@@ -51,16 +51,16 @@ public class ActionObject extends BaseModel {
   }
 
   public ActionObject(Map<String, Object> map, int position) {
-    this.categoryId = (String) map.get(NOTIFICATION_CATEGORY);
-    this.actionId = (String) map.get(ACTION_ID);
-    this.buttonTitle = (String) map.get(ACTION_BUTTON_TITLE);
-    this.isDestructive = (Boolean) map.get(ACTION_IS_DESTRUCTIVE);
-    this.isAuthenticationRequired = (Boolean) map.get(ACTION_IS_AUTHENTICATION_REQUIRED);
-    this.shouldShowTextInput = (map.get(ACTION_TEXT_INPUT) != null);
-    if (this.shouldShowTextInput && map.get(ACTION_TEXT_INPUT) instanceof Map) {
-      Map<String, Object> subMap = (Map<String, Object>) map.get(ACTION_TEXT_INPUT);
-      this.placeholder = (String) subMap.get(ACTION_PLACEHOLDER);
-      this.submitButtonTitle = (String) subMap.get(ACTION_SUBMIT_BUTTON_TITLE);
+    this.categoryId = (String) map.get("categoryId");
+    this.actionId = (String) map.get("actionId");
+    this.buttonTitle = (String) map.get("buttonTitle");
+    this.isDestructive = (Boolean) map.get("isDestructive");
+    this.isAuthenticationRequired = (Boolean) map.get("isAuthenticationRequired");
+    this.shouldShowTextInput = (map.get("textInput") != null);
+    if (this.shouldShowTextInput && map.get("textInput") instanceof Map) {
+      Map<String, Object> subMap = (Map<String, Object>) map.get("textInput");
+      this.placeholder = (String) subMap.get("placeholder");
+      this.submitButtonTitle = (String) subMap.get("submitButtonTitle");
     }
     this.position = position;
   }
@@ -73,7 +73,7 @@ public class ActionObject extends BaseModel {
     return buttonTitle;
   }
 
-  public boolean getShouldShowTextInput() {
+  public Boolean isShouldShowTextInput() {
     return shouldShowTextInput;
   }
 
@@ -113,19 +113,19 @@ public class ActionObject extends BaseModel {
     this.buttonTitle = buttonTitle;
   }
 
-  public Boolean getIsDestructive() {
+  public Boolean isDestructive() {
     return isDestructive;
   }
 
-  public void setIsDestructive(Boolean destructive) {
+  public void setDestructive(Boolean destructive) {
     isDestructive = destructive;
   }
 
-  public Boolean getIsAuthenticationRequired() {
+  public Boolean isAuthenticationRequired() {
     return isAuthenticationRequired;
   }
 
-  public void setIsAuthenticationRequired(Boolean authenticationRequired) {
+  public void setAuthenticationRequired(Boolean authenticationRequired) {
     isAuthenticationRequired = authenticationRequired;
   }
 

@@ -13,7 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-@Table(databaseName = ChannelPropertiesDatabase.NAME)
+@Table(database = ChannelPropertiesDatabase.class)
 public class ChannelProperties extends BaseModel {
 
   @PrimaryKey
