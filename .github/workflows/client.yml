@@ -40,8 +40,10 @@ jobs:
         echo 'eval "$(direnv export bash)"' >> ~/.ci-env.sh
         echo '--frozen-lockfile true' >> ~/.yarnrc
     - uses: actions/checkout@v1
-    - name: Pull LFS files
-      run: git lfs pull
+    - name: Pull submodules and LFS files
+      run: |
+        git submodule update
+        git lfs pull
     - name: Fetch CocoaPods specs
       run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
     - name: Generate dynamic macros
