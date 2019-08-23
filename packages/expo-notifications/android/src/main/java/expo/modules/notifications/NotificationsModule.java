@@ -303,6 +303,16 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     return new ChannelScopeManager(mModuleRegistry.getModule(StringScoper.class));
   }
 
+  @ExpoMethod
+  public void startObserving(final Promise promise) {
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void stopObserving(final Promise promise) {
+    promise.resolve(null);
+  }
+
   @Override
   public void onDestroy() {
     PostOfficeProxy.getInstance().unregisterModule(mAppId);

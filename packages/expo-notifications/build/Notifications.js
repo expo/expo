@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
@@ -52,16 +51,6 @@ export function createCategoryAsync(categoryId, actions) {
 }
 export function deleteCategoryAsync(categoryId) {
     return ExponentNotifications.deleteCategoryAsync(categoryId);
-}
-/* Re-export */
-export function getPushTokenAsync() {
-    if (!ExponentNotifications.getPushTokenAsync) {
-        throw new UnavailabilityError('Expo.Notifications', 'getPushTokenAsync');
-    }
-    if (!Constants.isDevice) {
-        throw new Error(`Must be on a physical device to get an Expo Push Token`);
-    }
-    return ExponentNotifications.getPushTokenAsync();
 }
 export function createChannelAsync(id, channel) {
     if (Platform.OS !== 'android') {

@@ -10,6 +10,7 @@ def safeExtGet(prop, fallback) {
 
 buildscript {
   repositories {
+    maven { url "https://maven.google.com" }
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     mavenCentral()
