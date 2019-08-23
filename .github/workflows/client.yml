@@ -6,14 +6,13 @@ jobs:
   build-ios-client:
     name: Build iOS Expo Client
     runs-on: macOS-10.14
-    shell: zsh {0}
     
     steps:
     - name: Install Nix
       run: |
         echo >> ~/.bash_profile
         curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
-        echo '. ~/.nix-profile/etc/profile.d/nix.sh' >> ~/.ci-bashrc
+        echo '. ~/.nix-profile/etc/profile.d/nix.sh' >> ~/.ci-env.sh
     - name: Install common packages
       # direnv: configures environment with .envrc files                                        
       # findutils: where, find, etc. for expo-module test                                       
@@ -25,6 +24,7 @@ jobs:
       # rsync: expo-module-scripts uses to copy template files                                  
       # xz: circleci checkout steps                                                             
       run: |
+        . ~/.ci-env.sh
         nix-env -iA \
           nixpkgs.direnv \
           nixpkgs.findutils \
@@ -37,7 +37,7 @@ jobs:
           nixpkgs.xz
         mkdir -p ~/.config/direnv
         echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
-        echo 'eval "$(direnv export bash)"' >> "$BASH_ENV"
+        echo 'eval "$(direnv export bash)"' >> ~/.ci-env.sh
         echo '--frozen-lockfile true' >> ~/.yarnrc
     - uses: actions/checkout@v1
     - name: Pull LFS files
@@ -45,6 +45,10 @@ jobs:
     - name: Fetch CocoaPods specs
       run: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
     - name: Generate dynamic macros
-      run: expotools ios-generate-dynamic-macros
+      run: |
+        . ~/.ci-env.sh
+        expotools ios-generate-dynamic-macros
     - name: Build iOS app for simulator
-      run: nix run expo.procps --command fastlane ios create_simulator_build
+      run: |
+        . ~/.ci-env.sh
+        nix run expo.procps --command fastlane ios create_simulator_build
