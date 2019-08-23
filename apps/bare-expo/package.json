@@ -21,7 +21,7 @@
     "ci:detox-clean": "detox clean-framework-cache && detox build-framework-cache",
     "ci:detox-build-release": "detox build -c ios.sim.release",
     "ci:detox-test-release": "watchman watch-del-all; detox test -c ios.sim.release -l verbose --cleanup",
-    "deep-link": "./scripts/deep-link.sh test-suite",
+    "open": "./scripts/deep-link.sh test-suite",
     "_hard_reset": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle"
   },
   "dependencies": {
