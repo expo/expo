@@ -66,7 +66,7 @@ public class ExpoFirebaseEventDispatcher extends IntentService {
 
           if (version.equals("UNVERSIONED")) {
 
-            new ExpoFcmMessagingService().onMessageReceived(remoteMessage);
+            triggerServiceOnNewMessage(new ExpoFcmMessagingService(), remoteMessage);
 
           } else if (ABIVersion.toNumber(version) < ABIVersion.toNumber(BASE_SDK)) {
 
@@ -82,9 +82,9 @@ public class ExpoFirebaseEventDispatcher extends IntentService {
 
           } else {
 
-            FirebaseMessagingService service = getServiceForAbi(version);
+            ExpoFcmMessagingService service = getServiceForAbi(version);
             if (service != null) {
-              service.onMessageReceived(remoteMessage);
+              triggerServiceOnNewMessage(service, remoteMessage);
             }
 
           }
@@ -104,36 +104,38 @@ public class ExpoFirebaseEventDispatcher extends IntentService {
   private void onNewToken(String token) {
     FcmRegistrationIntentService.registerForeground(getApplicationContext(), token);
 
-    FirebaseMessagingService unversionedService = new ExpoFcmMessagingService();
-    unversionedService.onNewToken(token);
+    ExpoFcmMessagingService unversionedService = new ExpoFcmMessagingService();
+    triggerServiceOnNewToken(unversionedService, token);
 
     for (String abiVersion : getAbiVersionsWithNotificationsUnimodule()) {
-      FirebaseMessagingService service = getServiceForAbi(abiVersion);
+      ExpoFcmMessagingService service = getServiceForAbi(abiVersion);
       if (service != null) {
-        service.onNewToken(token);
+        triggerServiceOnNewToken(service, token);
       }
     }
   }
 
-  FirebaseMessagingService getServiceForAbi(String abi) {
+  ExpoFcmMessagingService getServiceForAbi(String abi) {
     String abiNumber = abi.split(".")[0];
     String className = "abi" + abiNumber +  "_0_0.expo.modules.notifications.push.fcm.ExpoFcmMessagingService";
     try {
       Class<?> serviceClass = Class.forName(className);
       Constructor<?> ctor = serviceClass.getConstructor();
       Object object = ctor.newInstance();
-      return (FirebaseMessagingService) object;
+      return (ExpoFcmMessagingService) object;
     } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
       e.printStackTrace();
     }
     return null;
   }
 
-  void triggerServiceOnNewToken(FirebaseMessagingService service, String token) {
+  void triggerServiceOnNewToken(ExpoFcmMessagingService service, String token) {
+    service.setContext(getApplicationContext());
     service.onNewToken(token);
   }
 
-  void triggerServiceOnNewMessage(FirebaseMessagingService service, RemoteMessage message) {
+  void triggerServiceOnNewMessage(ExpoFcmMessagingService service, RemoteMessage message) {
+    service.setContext(getApplicationContext());
     service.onMessageReceived(message);
   }
 

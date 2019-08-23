@@ -44,6 +44,7 @@ def safeExtGet(prop, fallback) {
 
 buildscript {
   repositories {
+    maven { url "https://maven.google.com" }
     maven { url 'https://maven.fabric.io/public' }
     // If you have maven { url "https://jitpack.io" } as your resolving url,
     // then Jitpack will only return the POM for the Android dependency causing the Gradle sync to fail.

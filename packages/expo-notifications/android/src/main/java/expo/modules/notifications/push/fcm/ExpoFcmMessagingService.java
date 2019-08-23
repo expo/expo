@@ -1,5 +1,6 @@
 package expo.modules.notifications.push.fcm;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -58,5 +59,13 @@ public class ExpoFcmMessagingService extends FirebaseMessagingService {
       appId,
       bundle
     );
+  }
+
+  public void setContext(Context context) {
+    try {
+      this.attachBaseContext(context);
+    } catch (Exception e) {
+      // no op
+    }
   }
 }

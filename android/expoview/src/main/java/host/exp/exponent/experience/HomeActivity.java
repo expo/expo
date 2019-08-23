@@ -29,6 +29,7 @@ import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.keepawake.KeepAwakePackage;
 import expo.modules.medialibrary.MediaLibraryPackage;
+import expo.modules.notifications.NotificationsPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import host.exp.exponent.Constants;
@@ -113,6 +114,7 @@ public class HomeActivity extends BaseExperienceActivity {
         new KeepAwakePackage(),
         new AmplitudePackage(),
         new CameraPackage(),
+        new NotificationsPackage(),
         new FaceDetectorPackage(),
         new MediaLibraryPackage(),
         new TaskManagerPackage() // load expo-task-manager to restore tasks once the client is opened

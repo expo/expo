@@ -5,8 +5,6 @@ import * as Logs from './logs/Logs';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
-import * as Notifications from './Notifications/index';
-export { Notifications };
 export { ErrorRecovery };
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
