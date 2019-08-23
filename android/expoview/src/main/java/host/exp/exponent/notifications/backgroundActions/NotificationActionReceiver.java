@@ -26,7 +26,6 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
     String actionId = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY);
     String experienceId = bundle.getString(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY);
-    String categoryId = bundle.getString(KernelConstants.NOTIFICATION_CATEGORY_ID_KEY);
 
     ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
     PersistableBundle data = exponentNotification.toPersistableBundle("selected");

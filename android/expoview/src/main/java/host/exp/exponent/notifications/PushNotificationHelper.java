@@ -246,7 +246,6 @@ public class PushNotificationHelper {
                   Intent intent = new Intent(context, NotificationActionReceiver.class);
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
-                  intent.putExtra(KernelConstants.NOTIFICATION_CATEGORY_ID_KEY, categoryId);  // TODO: UNUSED
                   intent.putExtra(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
                   return intent;
                 }
