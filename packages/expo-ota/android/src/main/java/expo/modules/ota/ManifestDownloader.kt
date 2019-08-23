@@ -3,8 +3,6 @@ package expo.modules.ota
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
-import java.lang.Exception
-import java.lang.IllegalStateException
 
 private fun createRequest(config: ManifestDownloadParams): Request {
     val requestBuilder = Request.Builder()

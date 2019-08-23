@@ -35,6 +35,6 @@ data class CustomManifestConfig(
 data class ExpoOTAConfig @JvmOverloads constructor(
         val manifestConfig: ManifestDownloadParams,
         val id: String = "default",
-        val manifestComparator: ManifestComparator = VersionNumberManifestCompoarator(),
+        val manifestComparator: ManifestComparator = VersionNumberManifestComparator(),
         val bundleHttpClient: OkHttpClient? = null
 )

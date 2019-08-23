@@ -2,7 +2,6 @@ package expo.modules.ota
 
 import android.text.TextUtils
 import org.json.JSONObject
-import java.lang.IllegalArgumentException
 import java.util.*
 
 interface ManifestComparator {
@@ -11,7 +10,7 @@ interface ManifestComparator {
 
 const val MANIFEST_VERSION_KEY = "version"
 
-class VersionNumberManifestCompoarator: ManifestComparator {
+class VersionNumberManifestComparator: ManifestComparator {
     override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
         val newVersion = newManifest.optString(MANIFEST_VERSION_KEY, "")
         val lastVersion = lastManifest.optString(MANIFEST_VERSION_KEY, "")
@@ -29,7 +28,7 @@ class VersionNumberManifestCompoarator: ManifestComparator {
         } else {
             version2.split(".").toList()
         }
-        for (i in 0..versions1.size) {
+        for (i in 0 until versions1.size) {
             if(i > versions2.size - 1) return 1
             val first = Integer.parseInt(versions1[i])
             val second = Integer.parseInt(versions2[i])
