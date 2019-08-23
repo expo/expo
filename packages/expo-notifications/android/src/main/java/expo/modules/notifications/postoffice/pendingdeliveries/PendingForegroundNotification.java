@@ -5,7 +5,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = PendingDeliveriesDatabase.NAME)
+@Table(database = PendingDeliveriesDatabase.class)
 public class PendingForegroundNotification extends BaseModel {
 
   @Column

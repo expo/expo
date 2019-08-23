@@ -2,7 +2,6 @@ package expo.modules.notifications.channels;
 
 import android.content.Context;
 
-import com.raizlabs.android.dbflow.sql.builder.Condition;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.List;
@@ -19,8 +18,7 @@ public class PersistentChannelManager implements ChannelManager{
   @Override
   public void deleteChannel(String channelId, final Context context) {
     List<ChannelProperties> channelList = new Select().from(ChannelProperties.class)
-            .where(Condition.column(ChannelProperties$Table.CHANNELID)
-            .is(channelId))
+            .where(ChannelProperties_Table.channelId.eq(channelId))
             .queryList();
     for (ChannelProperties channelProperties : channelList) {
       channelProperties.delete();
@@ -30,8 +28,7 @@ public class PersistentChannelManager implements ChannelManager{
   @Override
   public Future<ChannelPOJO> getPropertiesForChannelId(String channelId, final Context context) {
     List<ChannelProperties> channelList = new Select().from(ChannelProperties.class)
-        .where(Condition.column(ChannelProperties$Table.CHANNELID)
-            .is(channelId))
+        .where(ChannelProperties_Table.channelId.eq(channelId))
         .queryList();
     if (channelList.size() == 0) {
       return new SynchronicFuture(null);

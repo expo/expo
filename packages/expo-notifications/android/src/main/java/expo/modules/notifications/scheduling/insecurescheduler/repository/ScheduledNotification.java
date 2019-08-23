@@ -5,7 +5,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = ScheduledNotificationDatabase.NAME)
+@Table(database = ScheduledNotificationDatabase.class)
 public class ScheduledNotification extends BaseModel {
 
   @PrimaryKey
