@@ -35,7 +35,7 @@ UM_REGISTER_MODULE();
 
 UM_VIEW_PROPERTY(type, NSNumber *, PKAddPassButton)
 {
-	[view setAddPassButtonStyle:[value integerValue]];
+  [view setAddPassButtonStyle:[value integerValue]];
 }
 
 @end
