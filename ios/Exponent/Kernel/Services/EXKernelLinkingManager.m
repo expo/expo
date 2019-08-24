@@ -63,7 +63,12 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
         && [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.status == kEXReactAppManagerStatusRunning) {
       // if Home is present and running, open a new app with this url.
       // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
-      [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+
+      // Since this method might have been called on any thread,
+      // let's make sure we create a new app on the main queue.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+      });
     }
   }
 }
@@ -72,9 +77,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
 - (void)linkingModule:(__unused id)linkingModule didOpenUrl:(NSString *)url
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self openUrl:url isUniversalLink:NO];
-  });
+  [self openUrl:url isUniversalLink:NO];
 }
 
 - (BOOL)linkingModule:(__unused id)linkingModule shouldOpenExpoUrl:(NSURL *)url
