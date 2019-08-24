@@ -1,10 +1,8 @@
-
 buildscript {
   repositories {
     google()
     jcenter()
   }
-
   dependencies {
     classpath 'com.android.tools.build:gradle:3.1.3'
   }
@@ -12,13 +10,6 @@ buildscript {
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
-
-group = 'host.exp.exponent'
-version = '6.0.0'
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -42,20 +33,6 @@ uploadArchives {
       configuration = configurations.deployerJars
       repository(url: mavenLocal().url)
     }
-  }
-}
-
-android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
-
-  defaultConfig {
-    minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 8
-    versionName "6.0.0"
-  }
-  lintOptions {
-    abortOnError false
   }
 }
 
