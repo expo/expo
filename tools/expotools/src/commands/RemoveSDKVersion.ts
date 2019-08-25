@@ -11,7 +11,7 @@ import { Platform, getSDKVersionsAsync, getOldestSDKVersionAsync } from '../Proj
 type ActionOptions = {
   platform: Platform;
   sdkVersion?: string;
-}
+};
 
 const SUPPORTED_PLATFORMS: Platform[] = ['ios', 'android'];
 const EXPO_DIR = getExpoRepositoryRootDir();
@@ -21,7 +21,9 @@ async function getOldestOrAskForSDKVersionAsync(platform: Platform): Promise<str
   const defaultSdkVersion = await getOldestSDKVersionAsync(platform);
 
   if (defaultSdkVersion && process.env.CI) {
-    console.log(`${chalk.red('`--sdkVersion`')} not provided - defaulting to ${chalk.cyan(defaultSdkVersion)}`);
+    console.log(
+      `${chalk.red('`--sdkVersion`')} not provided - defaulting to ${chalk.cyan(defaultSdkVersion)}`
+    );
     return defaultSdkVersion;
   }
 
@@ -38,7 +40,7 @@ async function getOldestOrAskForSDKVersionAsync(platform: Platform): Promise<str
         }
         return true;
       },
-    }
+    },
   ]);
   return sdkVersion;
 }
@@ -62,8 +64,9 @@ async function askForPlatformAsync(): Promise<Platform> {
 }
 
 async function action(options: ActionOptions) {
-  const platform = options.platform || await askForPlatformAsync();
-  const sdkVersion = options.sdkVersion || await getOldestOrAskForSDKVersionAsync(options.platform);
+  const platform = options.platform || (await askForPlatformAsync());
+  const sdkVersion =
+    options.sdkVersion || (await getOldestOrAskForSDKVersionAsync(options.platform));
 
   if (!sdkVersion) {
     throw new Error('Oldest SDK version not found. Try to run with `--sdkVersion <SDK version>`.');
@@ -84,12 +87,21 @@ export default (program: Command) => {
     .command('remove-sdk-version')
     .alias('remove-sdk', 'rm-sdk', 'rs')
     .description('Removes SDK version.')
-    .usage(`
+    .usage(
+      `
     
 To remove versioned code for the oldest supported SDK on iOS, run:
 ${chalk.gray('>')} ${chalk.italic.cyan('et remove-sdk-version --platform ios')}`
     )
-    .option('-p, --platform <string>', `Specifies a platform for which the SDK code should be removed. Supported platforms: ${SUPPORTED_PLATFORMS.map(platform => chalk.cyan(platform)).join(', ')}.`)
-    .option('-s, --sdkVersion [string]', 'SDK version to remove. Defaults to the oldest supported SDK version.')
+    .option(
+      '-p, --platform <string>',
+      `Specifies a platform for which the SDK code should be removed. Supported platforms: ${SUPPORTED_PLATFORMS.map(
+        platform => chalk.cyan(platform)
+      ).join(', ')}.`
+    )
+    .option(
+      '-s, --sdkVersion [string]',
+      'SDK version to remove. Defaults to the oldest supported SDK version.'
+    )
     .asyncAction(action);
 };

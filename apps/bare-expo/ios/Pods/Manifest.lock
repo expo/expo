@@ -77,8 +77,6 @@ PODS:
   - EXImagePicker (6.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXInAppPurchases (6.0.0):
-    - UMCore
   - EXKeepAwake (6.0.0):
     - UMCore
   - EXLinearGradient (6.0.0):
@@ -247,7 +245,6 @@ DEPENDENCIES:
   - EXHaptics (from `../../../packages/expo-haptics/ios`)
   - EXImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../../../packages/expo-image-picker/ios`)
-  - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
@@ -385,9 +382,6 @@ EXTERNAL SOURCES:
   EXImagePicker:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-image-picker/ios"
-  EXInAppPurchases:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-in-app-purchases/ios"
   EXKeepAwake:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-keep-awake/ios"
@@ -519,7 +513,6 @@ SPEC CHECKSUMS:
   EXHaptics: f84c93d605e0905c47654e4a6e5dfbff78ed6906
   EXImageManipulator: b2e17bdbd0872cc59b43b76756f76fdb8a849831
   EXImagePicker: ec641e97b73db0fb1ef58b818cffaf7ff6d3c96c
-  EXInAppPurchases: 46e949f61bacd18e6ec8d218c083a4d8f47243f8
   EXKeepAwake: e7cb6516675052b12a7d23291e33078b4239653a
   EXLinearGradient: 40781b77e58f844c8dc4ad310dc9755b4d3792a7
   EXLocalAuthentication: ad4754360d739c82b68a2d3c13e9b8579a255ecc

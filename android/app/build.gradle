@@ -142,9 +142,6 @@ dependencies {
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
   implementation 'com.google.android.gms:play-services-ads:15.0.1'
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
-  implementation "com.raizlabs.android:DBFlow:2.2.1"
   implementation "com.madgag.spongycastle:core:1.53.0.0"
   implementation "com.madgag.spongycastle:prov:1.53.0.0"
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -211,14 +208,6 @@ dependencies {
   // BEGIN_SDK_33
   implementation(project(':expoview-abi33_0_0'))
   // END_SDK_33
-
-  // BEGIN_SDK_32
-  implementation(project(':expoview-abi32_0_0'))
-  // END_SDK_32
-
-  // BEGIN_SDK_31
-  implementation(project(':expoview-abi31_0_0'))
-  // END_SDK_31
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper

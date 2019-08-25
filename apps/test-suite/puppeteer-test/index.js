@@ -92,7 +92,7 @@ async function main(args) {
       const projectRoot = fs.realpathSync(path.resolve(__dirname, '..'));
       await ProjectSettings.setAsync(projectRoot, { https: true });
 
-      const info = await Webpack.startAsync(projectRoot, { nonInteractive: true }, true);
+      const info = await Webpack.startAsync(projectRoot, { nonInteractive: true });
 
       server = info.server;
       url = info.url;

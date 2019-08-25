@@ -19,6 +19,8 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
+import com.raizlabs.android.dbflow.config.DatabaseConfig;
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.apache.commons.io.IOUtils;
@@ -52,6 +54,10 @@ import javax.inject.Inject;
 
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
+
+import host.exp.exponent.notifications.ActionDatabase;
+import host.exp.exponent.notifications.managers.SchedulersDatabase;
+import host.exp.exponent.storage.ExponentDB;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -175,7 +181,18 @@ public class Exponent {
     Analytics.initializeAmplitude(context, application);
 
     // TODO: profile this
-    FlowManager.init(context);
+    FlowManager.init(FlowConfig.builder(context)
+        .addDatabaseConfig(DatabaseConfig.builder(SchedulersDatabase.class)
+            .databaseName(SchedulersDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ActionDatabase.class)
+            .databaseName(ActionDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ExponentDB.class)
+            .databaseName(ExponentDB.NAME)
+            .build())
+        .build()
+    );
 
     if (ExpoViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);

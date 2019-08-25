@@ -1,10 +1,13 @@
 package expo.modules.constants;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.facebook.device.yearclass.YearClass;
 
@@ -19,6 +22,8 @@ import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 
 public class ConstantsService implements InternalModule, ConstantsInterface {
+  private static final String TAG = ConstantsService.class.getSimpleName();
+
   protected Context mContext;
   protected int mStatusBarHeight = 0;
   private String mSessionId = UUID.randomUUID().toString();
@@ -59,6 +64,17 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     constants.put("isDevice", getIsDevice());
     constants.put("systemFonts", getSystemFonts());
     constants.put("systemVersion", getSystemVersion());
+
+    PackageManager packageManager = mContext.getPackageManager();
+    try {
+      PackageInfo pInfo = packageManager.getPackageInfo(mContext.getPackageName(), 0);
+      constants.put("nativeAppVersion", pInfo.versionName);
+
+      int versionCode = (int)getLongVersionCode(pInfo);
+      constants.put("nativeBuildVersion", Integer.toString(versionCode));
+    } catch (PackageManager.NameNotFoundException e) {
+      Log.e(TAG, "Exception: ", e);
+    }
 
     Map<String, Object> platform = new HashMap<>();
     Map<String, Object> androidPlatform = new HashMap<>();
@@ -119,5 +135,12 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
 
   private static boolean isRunningOnStockEmulator() {
     return Build.FINGERPRINT.contains("generic");
+  }
+
+  private static long getLongVersionCode(PackageInfo info) {
+    if (Build.VERSION.SDK_INT >= 28) {
+      return info.getLongVersionCode();
+    }
+    return info.versionCode;
   }
 }

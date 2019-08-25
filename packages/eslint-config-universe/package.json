@@ -1,0 +1,64 @@
+{
+  "name": "eslint-config-universe",
+  "version": "2.0.0-beta.0",
+  "description": "Shared ESLint configs for Node, Web, and universal Expo projects",
+  "main": "default.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git"
+  },
+  "keywords": [
+    "eslint-config",
+    "expo",
+    "react-native"
+  ],
+  "files": [
+    "README.md",
+    "default.js",
+    "native.js",
+    "node.js",
+    "web.js",
+    "shared"
+  ],
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*-test.js"
+    ]
+  },
+  "eslintIgnore": [
+    "/__tests__/fixtures/*"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/eslint-config-universe",
+  "dependencies": {
+    "babel-eslint": "^10.0.2",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-flowtype": "^4.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.0",
+    "eslint-plugin-react": "^7.14.3"
+  },
+  "peerDependencies": {
+    "@typescript-eslint/parser": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "eslint": "^6.1.0",
+    "prettier": "^1.18.2"
+  },
+  "devDependencies": {
+    "@expo/spawn-async": "^1.5.0",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "~6.1.0",
+    "jest": "^24.9.0",
+    "prettier": "^1.18.2"
+  }
+}

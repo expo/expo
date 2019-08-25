@@ -103,9 +103,6 @@ dependencies {
   api 'com.google.android.gms:play-services-location:16.0.0'
   api 'com.google.android.gms:play-services-fitness:16.0.1'
   api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  api "com.raizlabs.android:DBFlow-Core:2.2.1"
-  api "com.raizlabs.android:DBFlow:2.2.1"
   api "com.madgag.spongycastle:core:1.53.0.0"
   api "com.madgag.spongycastle:prov:1.53.0.0"
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -136,13 +133,6 @@ dependencies {
   // expo-av
   // See explanation in expo-av/build.gradle
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
-
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-  // TODO: Remove this method once SDK32 is phased out
-  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  compileOnly 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
   // expo-camera
   implementation 'com.google.firebase:firebase-ml-vision:20.0.0'

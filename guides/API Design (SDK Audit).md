@@ -6,12 +6,14 @@ The foundational set of Expo APIs are those that are maintained by the Expo team
 
 This is the list of APIs that have been audited. One aspect of this is that the APIs have been approved by @ide and @esamelson. The approximate date the API was last reviewed is included to more easily tell how much time has passed and if the API is still likely to be in an approved state.
 
-| API | Owner | Review Date | Notes |
-| --- | ----- | ----------- | ----- |
-| Brightness | Eric | 2018 | |
-| Screen Orientation | Quin | 2018 | Some open issues; some issues on web |
-| Device | James | August 2019 | |
-| Application | James | August 2019 | |
-| Battery | James | August 2019 | Android implementation needs work |
-| Network | James | TBD | |
-| Cellular | James | TBD | |
+| API | Owner | Review Date | Tests | Docs | Notes |
+| --- | ----- | ----------- | ----- | ---- | ----- |
+| Application | James | August 2019 | ⚠️ | ✅ | |
+| Battery | James | August 2019 | ⚠️ | ✅ | Android implementation needs work |
+| Brightness | Eric | 2018 | Revisit test-suite | ✅ | |
+| Cellular | James | TBD | ⚠️ | | |
+| Crypto | Evan | February 2019 | ✅ | ✅ | |
+| Device | James | August 2019 | ⚠️ | ✅ | |
+| Network | James | TBD | ⚠️ | | |
+| Random | Evan | February 2019 | ✅ | ✅ | |
+| Screen Orientation | Quin | 2018 | Revisit test-suite | ✅ | Some open issues; some issues on web |
