@@ -2,10 +2,12 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 export default function Portal({ isVisible, children }) {
-  const style = StyleSheet.flatten([styles.container, { opacity: isVisible ? 0.5 : 0 }]);
+  if (!children) {
+    return null;
+  }
 
   return (
-    <View style={style} pointerEvents="none">
+    <View style={[styles.container, { opacity: isVisible ? 0.5 : 0 }]} pointerEvents="none">
       {children}
     </View>
   );

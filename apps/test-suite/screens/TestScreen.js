@@ -1,5 +1,3 @@
-'use strict';
-import Constants from 'expo-constants';
 import Immutable from 'immutable';
 import React from 'react';
 import { View } from 'react-native';
@@ -7,25 +5,25 @@ import { View } from 'react-native';
 import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
-import setupJasmine from '../utils/setupJasmine';
 import ModulesContext from '../ModulesContext';
+import setupJasmine from '../utils/setupJasmine';
+
+const initialState = {
+  portalChildShouldBeVisible: false,
+  testRunnerError: null,
+  state: Immutable.fromJS({
+    suites: [],
+    path: ['suites'], // Path to current 'children' List in state
+  }),
+  testPortal: null,
+  numFailed: 0,
+  done: false,
+};
 
 class TestRunner extends React.Component {
-  static initialState = {
-    portalChildShouldBeVisible: false,
-    testRunnerError: null,
-    state: Immutable.fromJS({
-      suites: [],
-      path: ['suites'], // Path to current 'children' List in state
-    }),
-  };
-  static defaultProps = {
-    modules: [],
-  };
-
   _lastUri;
 
-  state = TestRunner.initialState;
+  state = initialState;
   // --- Lifecycle -------------------------------------------------------------
 
   foundNewURL = ({ url }) => {
@@ -64,7 +62,7 @@ class TestRunner extends React.Component {
     }
 
     // Reset results state
-    this.setState(TestRunner.initialState);
+    this.setState(initialState);
 
     const { jasmineEnv, jasmine } = await setupJasmine(
       this,
@@ -134,40 +132,25 @@ class TestRunner extends React.Component {
           justifyContent: 'center',
         }}>
         <Suites suites={state.get('suites')} />
-        {testPortal && <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>}
+        <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>
       </View>
     );
   }
 }
 
-TestRunner.initialState = {
-  portalChildShouldBeVisible: false,
-  state: Immutable.fromJS({
-    suites: [],
-    path: ['suites'], // Path to current 'children' List in state
-  }),
-  testPortal: null,
-  numFailed: 0,
-  done: false,
+TestRunner.idefaultProps = {
+  modules: [],
 };
 
-export default class ContextTestScreen extends React.Component {
-  render() {
-    return (
-      <ModulesContext.Consumer>
-        {({ modules, onTestsComplete }) => {
-          const activeModules = modules.filter(({ isActive }) => isActive);
-          console.log('RUN', activeModules);
-          return (
-            <TestRunner {...this.props} onTestsComplete={onTestsComplete} modules={activeModules} />
-          );
-        }}
-      </ModulesContext.Consumer>
-    );
-  }
+export default function ContextTestScreen(props) {
+  const { modules, onTestsComplete } = React.useContext(ModulesContext);
+  const activeModules = modules.filter(({ isActive }) => isActive);
+  console.log('RUN', activeModules);
+  return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={activeModules} />;
 }
 
 ContextTestScreen.navigationOptions = {
   title: 'Test Runner',
 };
+
 ContextTestScreen.path = 'select/:tests';

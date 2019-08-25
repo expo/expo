@@ -8,21 +8,14 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableHighlight,
-  TouchableNativeFeedback,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
+
+import PlatformTouchable from '../components/PlatformTouchable';
 import ModulesContext from '../ModulesContext';
 
-function PlatformTouchable(props) {
-  if (Platform.OS === 'android') {
-    return <TouchableNativeFeedback {...props} />;
-  }
-  return <TouchableHighlight underlayColor="lightgray" {...props} />;
-}
-
-function ListItem({ onPress, isSelected, title }) {
+function CheckListItem({ onPress, isSelected, title }) {
   return (
     <PlatformTouchable onPress={onPress}>
       <View style={styles.listItem}>
@@ -33,9 +26,9 @@ function ListItem({ onPress, isSelected, title }) {
   );
 }
 
-// const modules = getTestModules();
+export default function SelectionList({ navigation }) {
+  const { modules, setIsTestActive, onToggleAll } = React.useContext(ModulesContext);
 
-function SelectionList({ isTesting, onToggleAll, setIsTestActive, modules, navigation }) {
   const selected = modules.filter(({ isActive }) => isActive);
   const allSelected = selected.length === modules.length;
   const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
@@ -45,7 +38,7 @@ function SelectionList({ isTesting, onToggleAll, setIsTestActive, modules, navig
         data={modules}
         keyExtractor={({ name }, index) => `${index}-${name}`}
         renderItem={({ item: { name, isActive } }) => (
-          <ListItem
+          <CheckListItem
             onPress={() => setIsTestActive(name, !isActive)}
             isSelected={isActive}
             title={name}
@@ -76,7 +69,6 @@ function SelectionList({ isTesting, onToggleAll, setIsTestActive, modules, navig
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: 'green',
   },
   listItem: {
     paddingHorizontal: 10,
@@ -106,27 +98,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ContextScreen extends React.Component {
-  render() {
-    return (
-      <ModulesContext.Consumer>
-        {({ modules, setIsTestActive, isTesting, onToggleAll }) => {
-          console.log('data', modules);
-          return (
-            <SelectionList
-              {...this.props}
-              isTesting={isTesting}
-              onToggleAll={onToggleAll}
-              setIsTestActive={setIsTestActive}
-              modules={modules}
-            />
-          );
-        }}
-      </ModulesContext.Consumer>
-    );
-  }
-}
-
-ContextScreen.navigationOptions = {
+SelectionList.navigationOptions = {
   title: 'Test Suite',
 };
