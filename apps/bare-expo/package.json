@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@react-native-community/async-storage": "^1.6.1",
     "expo": "^34.0.1",
     "expo-yarn-workspaces": "^1.2.0",
     "react": "16.8.3",
@@ -93,6 +94,7 @@
     "concurrently": "^4.1.2",
     "detox": "^14.0.2",
     "expo-yarn-workspaces": "^1.2.0",
+    "ios-deploy": "^1.9.4",
     "jest-expo": "^34.0.0",
     "typescript": "^3.4.5"
   },

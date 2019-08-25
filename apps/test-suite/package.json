@@ -26,6 +26,7 @@
     "expo-brightness": "~6.0.0",
     "expo-calendar": "~6.0.0",
     "expo-camera": "~6.0.0",
+    "expo-cellular": "~0.0.1",
     "expo-constants": "~6.0.0",
     "expo-contacts": "~6.0.0",
     "expo-crypto": "~6.0.0",

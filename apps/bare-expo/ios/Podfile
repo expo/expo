@@ -46,6 +46,7 @@ target 'BareExpo' do
   # [Custom] RNGH and Reanimated are installed as node_modules in the root of the workspace
   pod 'RNGestureHandler', :podspec => "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
   pod 'RNReanimated', :podspec => "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
+  pod 'RNCAsyncStorage', :path =>  "#{modules_path}/@react-native-community/async-storage"
 
   use_unimodules!({
     # [Custom] Use the packages directory for unimodules

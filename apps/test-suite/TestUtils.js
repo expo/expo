@@ -1,5 +1,5 @@
 'use strict';
-
+import './utils/catchRequireErrors';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 
@@ -83,19 +83,19 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/Speech')),
       optionalRequire(() => require('./tests/Recording')),
       optionalRequire(() => require('./tests/FileSystem')),
-      optionalRequire(() => require('./tests/ScreenOrientation')),
-      optionalRequire(() => require('./tests/Payments')),
-      optionalRequire(() => require('./tests/AdMobInterstitial')),
-      optionalRequire(() => require('./tests/AdMobBanner')),
-      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
-      optionalRequire(() => require('./tests/AdMobRewarded')),
-      optionalRequire(() => require('./tests/FBBannerAd'))
+      optionalRequire(() => require('./tests/ScreenOrientation'))
+      // optionalRequire(() => require('./tests/Payments')),
+      // optionalRequire(() => require('./tests/AdMobInterstitial')),
+      // optionalRequire(() => require('./tests/AdMobBanner')),
+      // optionalRequire(() => require('./tests/AdMobPublisherBanner')),
+      // optionalRequire(() => require('./tests/AdMobRewarded')),
+      // optionalRequire(() => require('./tests/FBBannerAd'))
     );
   }
 
   if (!global.DETOX && !isInDeviceFarm()) {
     // Invalid placementId in CI (all tests fail)
-    modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
+    // modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)
     modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
     // Popup to request device's location which uses Google's location service
@@ -126,7 +126,13 @@ export function getTestModules() {
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
-  return modules.filter(Boolean);
+  modules.push(optionalRequire(() => require('./tests/Cellular')));
+  // availableTests = modules.filter(Boolean);
+  // return availableTests.reduce(
+  //   (previous, current) => ({ ...previous, [current.name]: current.test }),
+  //   {}
+  // );
+  return modules.filter(v => v);
 }
 
 export async function acceptPermissionsAndRunCommandAsync(fn) {

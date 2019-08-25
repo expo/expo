@@ -47,8 +47,16 @@ if [ "${CURRENT_ENV}" = "test" ]; then
     # Run our default E2E tests
     yarn run ios:detox:test:debug --watch
 else 
+
     echo " ☛  Running the iOS project..."
-    # Build and run the iOS project using `react-native run-ios`
-    node "node_modules/react-native/cli.js" run-ios --no-packager --port ${port}
+    
+    # CONNECTED_DEVICE=$(node ios-deploy -c | grep -oE 'Found ([0-9A-Za-z\-]+)' | sed 's/Found //g')
+    # if [ -z "${CONNECTED_DEVICE}" ]; then
+        # Build and run the iOS project using `react-native run-ios`
+        node "node_modules/react-native/cli.js" run-ios --no-packager --port ${port}
+    # else
+    #     # Build and run the iOS project using `react-native run-ios`
+    #     node "node_modules/react-native/cli.js" run-ios --no-packager --udid ${CONNECTED_DEVICE} --port ${port}
+    # fi
 fi
 
