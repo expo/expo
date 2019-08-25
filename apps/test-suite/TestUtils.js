@@ -30,9 +30,7 @@ export function isInDeviceFarm() {
   return ExponentTest && ExponentTest.isInCI && Platform.OS === 'android';
 }
 
-// List of all modules for tests. Each file path must be statically present for
-// the packager to pick them all up.
-export function getTestModules() {
+function getTestsForPlatform() {
   if (Platform.OS === 'web') {
     const modules = [
       optionalRequire(() => require('./tests/Asset')),
@@ -54,7 +52,7 @@ export function getTestModules() {
     if (ExponentTest && !ExponentTest.isInCI) {
       // modules.push(optionalRequire(() => require('./tests/Speech')));
     }
-    return modules.filter(Boolean);
+    return modules;
   }
 
   const modules = [
@@ -126,13 +124,23 @@ export function getTestModules() {
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
-  modules.push(optionalRequire(() => require('./tests/Cellular')));
   // availableTests = modules.filter(Boolean);
   // return availableTests.reduce(
   //   (previous, current) => ({ ...previous, [current.name]: current.test }),
   //   {}
   // );
-  return modules.filter(v => v);
+  return modules;
+}
+
+// List of all modules for tests. Each file path must be statically present for
+// the packager to pick them all up.
+export function getTestModules() {
+  const modules = getTestsForPlatform();
+  return modules.filter(Boolean).sort((a, b) => {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
 }
 
 export async function acceptPermissionsAndRunCommandAsync(fn) {
