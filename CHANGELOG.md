@@ -19,6 +19,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added the possibility to get MediaLibrary assets from specific time range. ([#5166](https://github.com/expo/expo/pull/5166) by [@tsapeta](https://github.com/tsapeta))
 - added Next.js supports with Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#5275](https://github.com/expo/expo/pull/5275))
 - added support for serving non-personalized Google AdMob Ads by [@sjchmiela](https://github.com/sjchmiela) ([#5323](https://github.com/expo/expo/pull/5323))
+- added [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) to Expo client and standalone apps by [@sjchmiela](https://github.com/sjchmiela) ([#5446](https://github.com/expo/expo/pull/5446))
 
 ### 🐛 Bug fixes
 
