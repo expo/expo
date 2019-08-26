@@ -1,1 +1,1 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/AppLink/FBSDKWebViewAppLinkResolver.h
+../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/FBSDKWebViewAppLinkResolver.h

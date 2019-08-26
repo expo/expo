@@ -1,1 +1,1 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/AppLink/FBSDKAppLinkNavigation.h
+../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/FBSDKAppLinkNavigation.h

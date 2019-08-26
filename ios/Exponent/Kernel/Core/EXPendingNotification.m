@@ -27,7 +27,7 @@
                            userText:nil];
 }
 
-- (instancetype)initWithNotificationResponse:(UNNotificationResponse *)notificationResponse identifiersManager:(id<EXNotificationsIdentifiersManager>)manager
+- (instancetype)initWithNotificationResponse:(UNNotificationResponse *)notificationResponse identifiersManager:(id<EXLegacyUserNotificationManager>)manager
 {
   if (self = [self initWithNotification:notificationResponse.notification]) {
     _isFromBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;

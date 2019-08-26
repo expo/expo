@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelAppRegistry.h"
 #import "EXScreenOrientationManager.h"
+#import "EXScopedBridgeModule.h"
 
 NSNotificationName kEXChangeForegroundTaskSupportedOrientationsNotification = @"EXChangeForegroundTaskSupportedOrientations";
 
