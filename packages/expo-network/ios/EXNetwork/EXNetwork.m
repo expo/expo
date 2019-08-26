@@ -70,7 +70,7 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
     }
     resolve(address);
   } else {
-    NSString *errorMessage = [NSString stringWithFormat:@"%@/%@/%@",  @"No network interfaces could be retrieved. getifaddrs() failed with error number: ", errno, strerror(errno)];
+    NSString *errorMessage = [NSString stringWithFormat:@"%@/%d/%s",  @"No network interfaces could be retrieved. getifaddrs() failed with error number: ", errno, strerror(errno)];
 
     reject(@"ERR_NETWORK_IP_ADDRESS", errorMessage, nil);
   }
@@ -100,7 +100,11 @@ UM_EXPORT_METHOD_AS(getNetworkStateAsync,
     _type = EXNetworkTypeWifi;
   }
   
-  resolve([self type]);
+  resolve(@{
+            @"type": [self type],
+            @"isConnected": @([self connected]),
+            @"isInternetReachable": @([self connected])
+            });
 }
 
 
@@ -119,6 +123,11 @@ UM_EXPORT_METHOD_AS(getNetworkStateAsync,
   _lastFlags = flags;
   
   return reachability;
+}
+
+- (BOOL)connected
+{
+  return ![self.type isEqualToString:EXNetworkTypeUnknown] && ![self.type isEqualToString:EXNetworkTypeNone];
 }
 
 @end

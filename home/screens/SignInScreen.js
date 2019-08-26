@@ -4,7 +4,6 @@ import React from 'react';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 
-import Alerts from '../constants/Alerts';
 import Analytics from '../api/Analytics';
 import SessionActions from '../redux/SessionActions';
 import Colors from '../constants/Colors';

@@ -7,7 +7,7 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(databaseName = ExponentDB.NAME)
+@Table(database = ExponentDB.class)
 public class ExperienceDBObject extends BaseModel {
 
   @Column

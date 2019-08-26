@@ -1,4 +1,4 @@
-import { NativeModulesProxy, EventEmitter, Subscription, Platform } from '@unimodules/core';
+import { EventEmitter, Subscription, Platform } from '@unimodules/core';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -186,10 +186,10 @@ export class Recording {
 
   _pollingLoop = async () => {
     if (isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
-      this._progressUpdateTimeoutVariable = <any>setTimeout(
+      this._progressUpdateTimeoutVariable = setTimeout(
         this._pollingLoop,
         this._progressUpdateIntervalMillis
-      );
+      ) as any;
       try {
         await this.getStatusAsync();
       } catch (error) {

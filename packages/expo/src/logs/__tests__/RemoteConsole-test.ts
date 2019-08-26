@@ -134,13 +134,17 @@ describe('grouping', () => {
   it(`labels groups`, () => {
     console.group('group 1');
     expect(RemoteLogging.enqueueRemoteLogAsync).toHaveBeenCalled();
-    expect((RemoteLogging.enqueueRemoteLogAsync as jest.Mock).mock.calls[0][2]).toEqual(['group 1']);
+    expect((RemoteLogging.enqueueRemoteLogAsync as jest.Mock).mock.calls[0][2]).toEqual([
+      'group 1',
+    ]);
   });
 
   it(`labels collapsed groups`, () => {
     console.groupCollapsed('group 2');
     expect(RemoteLogging.enqueueRemoteLogAsync).toHaveBeenCalled();
-    expect((RemoteLogging.enqueueRemoteLogAsync as jest.Mock).mock.calls[0][2]).toEqual(['group 2']);
+    expect((RemoteLogging.enqueueRemoteLogAsync as jest.Mock).mock.calls[0][2]).toEqual([
+      'group 2',
+    ]);
   });
 
   it(`increases the group depth`, () => {

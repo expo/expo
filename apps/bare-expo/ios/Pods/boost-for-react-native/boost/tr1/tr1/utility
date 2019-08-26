@@ -1,0 +1,41 @@
+//  (C) Copyright John Maddock 2005.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+
+#if !defined(BOOST_TR1_UTILITY_INCLUDED) || defined(BOOST_TR1_NO_RECURSION)
+#ifndef BOOST_TR1_UTILITY_INCLUDED
+#  define BOOST_TR1_UTILITY_INCLUDED
+#endif
+#  ifdef BOOST_TR1_NO_UTILITY_RECURSION2
+#     define BOOST_TR1_NO_UTILITY_RECURSION3
+#  elif defined(BOOST_TR1_NO_UTILITY_RECURSION)
+#     define BOOST_TR1_NO_UTILITY_RECURSION2
+#  elif !defined(BOOST_TR1_NO_RECURSION)
+#     define BOOST_TR1_NO_RECURSION
+#     define BOOST_TR1_NO_UTILITY_RECURSION
+#  endif
+#  include <boost/tr1/detail/config_all.hpp>
+#  if defined(BOOST_HAS_INCLUDE_NEXT) && !defined(BOOST_TR1_DISABLE_INCLUDE_NEXT)
+#     include_next <utility>
+#  else
+#     include BOOST_TR1_STD_HEADER(utility)
+#  endif
+#ifdef BOOST_TR1_NO_UTILITY_RECURSION3
+#  undef BOOST_TR1_NO_UTILITY_RECURSION3
+#elif defined(BOOST_TR1_NO_UTILITY_RECURSION2)
+#  undef BOOST_TR1_NO_UTILITY_RECURSION2
+#elif defined(BOOST_TR1_NO_UTILITY_RECURSION)
+#     undef BOOST_TR1_NO_RECURSION
+#     undef BOOST_TR1_NO_UTILITY_RECURSION
+#  endif
+#endif
+
+#if !defined(BOOST_TR1_FULL_UTILITY_INCLUDED) && !defined(BOOST_TR1_NO_RECURSION)
+#  define BOOST_TR1_FULL_UTILITY_INCLUDED
+#  define BOOST_TR1_NO_RECURSION
+#  include <boost/tr1/utility.hpp>
+#  undef BOOST_TR1_NO_RECURSION
+#endif
+

@@ -83,14 +83,19 @@ NSString *const kFIRInstanceIDKeychainWildcardIdentifier = @"*";
   }
 
   NSMutableDictionary *keychainQuery = [self keychainQueryForService:service account:account];
-
   NSMutableArray<NSData *> *results;
   keychainQuery[(__bridge id)kSecReturnData] = (__bridge id)kCFBooleanTrue;
+#if TARGET_OS_IOS || TARGET_OS_TV
   keychainQuery[(__bridge id)kSecReturnAttributes] = (__bridge id)kCFBooleanTrue;
   keychainQuery[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitAll;
   // FIRInstanceIDKeychain should only take a query and return a result, will handle the query here.
   NSArray *passwordInfos =
       CFBridgingRelease([[FIRInstanceIDKeychain sharedInstance] itemWithQuery:keychainQuery]);
+#elif TARGET_OS_OSX
+  keychainQuery[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
+  NSData *passwordInfos =
+      CFBridgingRelease([[FIRInstanceIDKeychain sharedInstance] itemWithQuery:keychainQuery]);
+#endif
 
   if (!passwordInfos) {
     // Nothing was found, simply return from this sync block.
@@ -106,15 +111,18 @@ NSString *const kFIRInstanceIDKeychainWildcardIdentifier = @"*";
     }
     return @[];
   }
-  NSInteger numPasswords = passwordInfos.count;
   results = [[NSMutableArray alloc] init];
+#if TARGET_OS_IOS || TARGET_OS_TV
+  NSInteger numPasswords = passwordInfos.count;
   for (NSUInteger i = 0; i < numPasswords; i++) {
     NSDictionary *passwordInfo = [passwordInfos objectAtIndex:i];
     if (passwordInfo[(__bridge id)kSecValueData]) {
       [results addObject:passwordInfo[(__bridge id)kSecValueData]];
     }
   }
-
+#elif TARGET_OS_OSX
+  [results addObject:passwordInfos];
+#endif
   // We query the keychain because it didn't exist in cache, now query is done, update the result in
   // the cache.
   if ([service isEqualToString:kFIRInstanceIDKeychainWildcardIdentifier] ||

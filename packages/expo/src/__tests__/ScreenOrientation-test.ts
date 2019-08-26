@@ -1,7 +1,5 @@
 import { NativeModules } from 'react-native';
 import { mockPlatformAndroid, mockPlatformIOS, unmockAllProperties } from 'jest-expo';
-import { Platform } from '@unimodules/core';
-
 
 import * as ScreenOrientation from '../ScreenOrientation/ScreenOrientation';
 

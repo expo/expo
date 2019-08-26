@@ -148,9 +148,11 @@ export default class MenuView extends React.Component {
   _renderNUXRow() {
     let tooltipMessage;
     if (Constants.isDevice) {
-      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
+      tooltipMessage =
+        'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
     } else {
-      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
+      tooltipMessage =
+        'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
     }
     let headingStyles = MENU_NARROW_SCREEN
       ? [styles.nuxHeading, styles.nuxHeadingNarrow]

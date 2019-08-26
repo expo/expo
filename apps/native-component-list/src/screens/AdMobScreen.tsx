@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View, Platform, Switch, Text } from 'react-native';
 import { AdMobBanner, AdMobInterstitial, AdMobRewarded } from 'expo-ads-admob';
 import Button from '../components/Button';
 
@@ -11,7 +11,8 @@ export default class AdMobScreen extends React.Component {
   state = {
     isInterstitialReady: false,
     isRewardedReady: false,
-  }
+    servePersonalizedAds: false,
+  };
 
   constructor(props: object) {
     super(props);
@@ -36,21 +37,23 @@ export default class AdMobScreen extends React.Component {
   onPress = () => {
     AdMobRewarded.showAdAsync();
     this.setState({ isRewardedReady: false });
-  }
+  };
 
   onInterstitialPress = () => {
     AdMobInterstitial.showAdAsync();
     this.setState({ isInterstitialReady: false });
-  }
+  };
 
   reloadRewarded = async () => {
     if (!(await AdMobRewarded.getIsReadyAsync())) {
       let isRewardedReady = false;
       try {
-        await AdMobRewarded.requestAdAsync();
+        await AdMobRewarded.requestAdAsync({
+          servePersonalizedAds: this.state.servePersonalizedAds,
+        });
         isRewardedReady = true;
       } catch (e) {
-        if (e.code === "E_AD_ALREADY_LOADED") {
+        if (e.code === 'E_AD_ALREADY_LOADED') {
           isRewardedReady = true;
         } else {
           console.warn('AdMobRewarded.requestAdAsync', e);
@@ -65,10 +68,12 @@ export default class AdMobScreen extends React.Component {
     if (!(await AdMobInterstitial.getIsReadyAsync())) {
       let isInterstitialReady = false;
       try {
-        await AdMobInterstitial.requestAdAsync();
+        await AdMobInterstitial.requestAdAsync({
+          servePersonalizedAds: this.state.servePersonalizedAds,
+        });
         isInterstitialReady = true;
       } catch (e) {
-        if (e.code === "E_AD_ALREADY_LOADED") {
+        if (e.code === 'E_AD_ALREADY_LOADED') {
           isInterstitialReady = true;
         } else {
           console.warn('AdMobInterstitial.requestAdAsync', e);
@@ -100,6 +105,19 @@ export default class AdMobScreen extends React.Component {
             adUnitID="ca-app-pub-3940256099942544/6300978111"
             testDeviceID="EMULATOR"
           />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 16,
+            }}>
+            <Text>Load personalized ads</Text>
+            <Switch
+              value={this.state.servePersonalizedAds}
+              onValueChange={servePersonalizedAds => this.setState({ servePersonalizedAds })}
+            />
+          </View>
         </View>
       </View>
     );

@@ -41,7 +41,9 @@ You can find the source of the documentation inside the `pages/versions` directo
 
 ### Redirects
 
-Server-side redirects are re-created on each run of `deploy.sh`.  See that file for 
+#### Server-side redirects
+
+These redirects are limited in their expresiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of `deploy.sh`.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -49,6 +51,12 @@ We currently do two client-side redirects, using meta tags with `http-equiv="ref
 - `/versions` -> `/versions/latest`
 
 This method is not great for accessibility and should be avoided where possible.
+
+#### Client-side redirects
+
+Use these for more complex rules than one-to-one path-to-path redirect mapping. For example, we use client-side redirects to strip the `.html` extension off, and to identify if the request is for a version of the documentation that we no longer support.
+
+You can add your own client-side redirect rules in `pages/_error.js`.
 
 ### Adding Images and Assets
 

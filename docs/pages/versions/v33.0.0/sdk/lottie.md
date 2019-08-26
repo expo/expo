@@ -12,15 +12,14 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-<SnackEmbed snackId="@documentation/lottieexample" />
+<SnackEmbed snackId="@documentation/lottie-example" />
 
 ## Importing Lottie
 
 The Lottie SDK currently lives under Expo's **DangerZone** namespace because it's implementation is still in Alpha. You can import it like this:
 
 ```javascript
-import { DangerZone } from 'expo';
-let { Lottie } = DangerZone;
+import LottieView from 'lottie-react-native';
 ```
 
 ## Using the Lottie API

@@ -1,8 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <UIKit/UIKit.h>
-#import <EXBranch/EXBranchManager.h>
 #import "EXKernelService.h"
+
+#if __has_include(<EXBranch/EXBranchManager.h>) || __has_include("EXBranchManager.h")
+#import <EXBranch/EXBranchManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,3 +18,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif
