@@ -336,7 +336,8 @@ export default {
         });
     },
     addActionListener(listener) {
-        // This is used by systems other than Android as well as Android foreground action.
+        // This will be used by platforms other than Android
+        // as well as Android foreground action.
         _actionListener = listener;
         if (Platform.OS !== 'android') {
             return;
@@ -346,22 +347,22 @@ export default {
             TaskManager = require('expo-task-manager');
         }
         catch {
-            throw new Error('expo-task-manager is not installed. You have to install expo-task-manager for `Notifications.addActionListener`.');
+            throw new Error('expo-task-manager is not installed. You have to install expo-task-manager for `Notifications.addActionListener` to work on Android.');
         }
         const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction').default;
         const taskName = ExpoNotificationBackgroundAction.TASK_NAME;
         console.warn(taskName);
-        TaskManager.defineTask(taskName, ({ data }) => {
-            console.warn(`defineTask's data is ${JSON.stringify(data)}`);
-            if (data) {
+        TaskManager.defineTask(taskName, ({ data: notification }) => {
+            console.warn(`defineTask's data is ${JSON.stringify(notification)}`);
+            if (notification) {
                 // We want to try to parse the `data` field because Java send it as a string.
                 try {
-                    data.data = JSON.parse(data.data);
+                    notification.data = JSON.parse(notification.data);
                 }
                 catch {
                     // Do nothing
                 }
-                listener(data);
+                listener(notification);
             }
         });
     },

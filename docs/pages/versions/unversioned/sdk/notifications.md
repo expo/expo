@@ -38,7 +38,7 @@ An [EventSubscription](#eventsubscription) object that you can call remove() on 
 
 Note that you will have to use `Notifications.addListener` somewhere for this function to work.
 
-On Android, if you wish to use [`doNotOpenInForeground`](#arguments-5) option, this function works similar as the [`TaskManager.defineTask`](../../sdk/task-manager/#taskmanagerdefinetasktaskname-task) function, which means that this function must be called in the global scope of your JavaScript bundle. In particular, it **cannot** be called in any of React lifecycle methods like componentDidMount.
+On Android, if you wish to use the [`doNotOpenInForeground`](#arguments-5) option, this function calls [`TaskManager.defineTask`](../../sdk/task-manager/#taskmanagerdefinetasktaskname-task), which means that you will have to install [`expo-task-manager`](../../sdk/task-manager/), and that this function must be called in the global scope of your JavaScript bundle. In particular, it **cannot** be called in any of React lifecycle methods like componentDidMount.
 
 ### Related types
 
