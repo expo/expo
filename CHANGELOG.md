@@ -25,6 +25,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed location background mode was required to use geofencing. ([#5198](https://github.com/expo/expo/pull/5198) by [@tsapeta](https://github.com/tsapeta))
 - fixed `Calendar.createEventAsync` crashing with relativeOffSet due to invalid type conversion from double to integer by [@vivianzzhu91](https://github.com/vivianzzhu91) ([#5134](https://github.com/expo/expo/pull/5134))
 - fixed `AppAuthModule.createOAuthServiceConfiguration` typo resulting in crashes when `registrationEndpoint` is not specified in config.
+- fixed occasional `"ViewManagerAdapter_*" was not found in the UIManager` bugs by [@sjchmiela](https://github.com/sjchmiela) ([#5066](https://github.com/expo/expo/pull/5066))
 
 ## 34.0.0
 
