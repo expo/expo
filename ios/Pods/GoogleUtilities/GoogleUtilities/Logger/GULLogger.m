@@ -17,7 +17,7 @@
 #include <asl.h>
 
 #import <GoogleUtilities/GULAppEnvironmentUtil.h>
-#import "Public/GULLoggerLevel.h"
+#import <GoogleUtilities/GULLoggerLevel.h>
 
 /// ASL client facility name used by GULLogger.
 const char *kGULLoggerASLClientFacilityName = "com.google.utilities.logger";
@@ -164,7 +164,7 @@ void GULLogBasic(GULLoggerLevel level,
   NSString *logMsg = [[NSString alloc] initWithFormat:message arguments:args_ptr];
   logMsg = [NSString stringWithFormat:@"%s - %@[%@] %@", sVersion, service, messageCode, logMsg];
   dispatch_async(sGULClientQueue, ^{
-    asl_log(sGULLoggerClient, NULL, level, "%s", logMsg.UTF8String);
+    asl_log(sGULLoggerClient, NULL, (int)level, "%s", logMsg.UTF8String);
   });
 }
 #pragma clang diagnostic pop

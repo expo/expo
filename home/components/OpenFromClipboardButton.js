@@ -21,7 +21,7 @@ import UrlUtils from '../utils/UrlUtils';
 @withNavigation
 export default class OpenFromClipboardButton extends React.Component {
   render() {
-    let { fullWidthBorder, clipboardContents, isValid } = this.props;
+    let { clipboardContents, isValid } = this.props;
 
     // Show info for iOS simulator about how to make clipboard contents available
     if (!isValid && Platform.OS === 'ios' && !Constants.isDevice) {

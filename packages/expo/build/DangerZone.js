@@ -3,6 +3,7 @@
  * up to date if you plan to use any of these.
  */
 import removedModule from './removedModule';
+/* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
     Lottie: {
         enumerable: true,

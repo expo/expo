@@ -206,7 +206,7 @@ export default class Profile extends React.Component {
     } else {
       let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
       content = (
-        <React.Fragment>
+        <>
           {take(apps, MAX_APPS_TO_DISPLAY).map(this._renderApp)}
           <SeeAllProjectsButton
             apps={otherApps}
@@ -214,7 +214,7 @@ export default class Profile extends React.Component {
             label="See all projects"
             onPress={this._handlePressProjectList}
           />
-        </React.Fragment>
+        </>
       );
     }
 
@@ -241,14 +241,14 @@ export default class Profile extends React.Component {
     } else {
       let otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
       content = (
-        <React.Fragment>
+        <>
           {take(snacks, MAX_SNACKS_TO_DISPLAY).map(this._renderSnack)}
           <SeeAllSnacksButton
             snacks={otherSnacks}
             label="See all Snacks"
             onPress={this._handlePressSnackList}
           />
-        </React.Fragment>
+        </>
       );
     }
 

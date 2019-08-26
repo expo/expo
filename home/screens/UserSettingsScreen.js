@@ -76,9 +76,9 @@ export default class UserSettingsScreen extends React.Component {
 
   _renderMenuGestureOptions() {
     const { legacyMenuGesture } = this.props;
-    const twoFingerGestureDescription = `Two-finger ${forceTouchAvailable
-      ? 'force touch'
-      : 'long-press'}`;
+    const twoFingerGestureDescription = `Two-finger ${
+      forceTouchAvailable ? 'force touch' : 'long-press'
+    }`;
 
     return (
       <View>

@@ -8,13 +8,14 @@
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
 @property (nonatomic, assign) BOOL hasListeners;
+@property (nonatomic, readonly) EXBatteryState batteryState;
 
 @end
 
 @implementation EXBattery
 
 UM_EXPORT_MODULE(ExpoBattery);
-  
+
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -27,9 +28,9 @@ UM_EXPORT_MODULE(ExpoBattery);
   }
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-
+  
   if (moduleRegistry) {
-    [UIDevice.currentDevice setBatteryMonitoringEnabled:YES];
+    UIDevice.currentDevice.batteryMonitoringEnabled = YES;
   }
 }
 
@@ -38,7 +39,8 @@ UM_EXPORT_MODULE(ExpoBattery);
   return @[@"Expo.batteryLevelDidChange", @"Expo.batteryStateDidChange", @"Expo.powerModeDidChange"];
 }
 
-- (void)startObserving {
+- (void)startObserving
+{
   _hasListeners = YES;
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(batteryLevelDidChange:)
@@ -53,10 +55,11 @@ UM_EXPORT_MODULE(ExpoBattery);
                                            selector:@selector(powerModeDidChange:)
                                                name:NSProcessInfoPowerStateDidChangeNotification
                                              object:nil];
-
+  
 }
 
-- (void)stopObserving {
+- (void)stopObserving
+{
   _hasListeners = NO;
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:UIDeviceBatteryLevelDidChangeNotification
@@ -69,12 +72,10 @@ UM_EXPORT_MODULE(ExpoBattery);
                                                 object:nil];
 }
 
-
-- (void)dealloc {}
-
-- (void)invalidate {
+- (void)invalidate
+{
   _eventEmitter = nil;
-  [UIDevice currentDevice].batteryMonitoringEnabled = NO;
+  UIDevice.currentDevice.batteryMonitoringEnabled = NO;
 }
 
 // Called at most once every minute
@@ -83,8 +84,7 @@ UM_EXPORT_MODULE(ExpoBattery);
   if (!_hasListeners) {
     return;
   }
-  
-  NSDictionary *result = @{@"batteryLevel": [self getPowerState][@"batteryLevel"]};
+  NSDictionary *result = @{@"batteryLevel": @(UIDevice.currentDevice.batteryLevel)};
   [_eventEmitter sendEventWithName:@"Expo.batteryLevelDidChange" body:result];
 }
 
@@ -93,7 +93,7 @@ UM_EXPORT_MODULE(ExpoBattery);
   if (!_hasListeners) {
     return;
   }
-  NSDictionary *result = @{@"batteryState": [self getPowerState][@"batteryState"]};
+  NSDictionary *result = @{@"batteryState": @(self.batteryState)};
   [_eventEmitter sendEventWithName:@"Expo.batteryStateDidChange" body:result];
 }
 
@@ -107,11 +107,35 @@ UM_EXPORT_MODULE(ExpoBattery);
   [_eventEmitter sendEventWithName:@"Expo.powerModeDidChange" body:result];
 }
 
+
+UM_EXPORT_METHOD_AS(getBatteryLevelAsync,
+                    getBatteryLevelAsyncWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@(UIDevice.currentDevice.batteryLevel));
+}
+
+UM_EXPORT_METHOD_AS(getBatteryStateAsync,
+                    getBatteryStateAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@([self batteryState]));
+}
+
 UM_EXPORT_METHOD_AS(isLowPowerModeEnabledAsync,
                     isLowPowerModeEnabledAsyncWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve(@(NSProcessInfo.processInfo.isLowPowerModeEnabled));
+}
+
+UM_EXPORT_METHOD_AS(getPowerStateAsync,
+                    getPowerStateAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(@{
+            @"batteryLevel": @(UIDevice.currentDevice.batteryLevel),
+            @"batteryState": @(self.batteryState),
+            @"lowPowerMode": @(NSProcessInfo.processInfo.isLowPowerModeEnabled)
+            });
 }
 
 - (EXBatteryState)batteryState
@@ -129,37 +153,5 @@ UM_EXPORT_METHOD_AS(isLowPowerModeEnabledAsync,
       return EXBatteryStateUnknown;
   }
 }
-
-- (NSDictionary *)getPowerState
-{
-  
-  NSDictionary *powerState =
-  @{
-    @"batteryLevel": @([UIDevice currentDevice].batteryLevel),
-    @"batteryState": @([self batteryState]),
-    @"lowPowerMode": @(NSProcessInfo.processInfo.isLowPowerModeEnabled)
-   };
-  return powerState;
-}
-
-UM_EXPORT_METHOD_AS(getPowerStateAsync,
-                    getPowerStateAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve([self getPowerState]);
-}
-
-UM_EXPORT_METHOD_AS(getBatteryLevelAsync,
-                    getBatteryLevelAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve([self getPowerState][@"batteryLevel"]);
-}
-
-UM_EXPORT_METHOD_AS(getBatteryStateAsync,
-                    getBatteryStateAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
-{
-  resolve([self getPowerState][@"batteryState"]);
-}
-
 
 @end

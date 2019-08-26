@@ -27,11 +27,17 @@ export default {
         }
         await AdMobNativeModule.setTestDeviceID(id);
     },
-    async requestAdAsync() {
+    async requestAdAsync(options = {}) {
         if (!AdMobNativeModule.requestAd) {
             throw new UnavailabilityError(moduleName, 'requestAdAsync');
         }
-        await AdMobNativeModule.requestAd();
+        const params = {
+            ...options.additionalRequestParams,
+        };
+        if (!options.servePersonalizedAds) {
+            params.npa = '1';
+        }
+        await AdMobNativeModule.requestAd(params);
     },
     async showAdAsync() {
         if (!AdMobNativeModule.showAd) {

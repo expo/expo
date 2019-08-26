@@ -5,7 +5,7 @@ import spawnAsync from '@expo/spawn-async';
 import * as Directories from './Directories';
 import * as Log from './Log';
 import * as XDL from './XDL';
-import AppConfig from './typings/AppConfig'
+import AppConfig from './typings/AppConfig';
 
 const CI_USERNAME = 'exponent_ci_bot';
 
@@ -25,7 +25,7 @@ async function _publishTestSuiteNoCacheAsync(id: string, useUnversioned: boolean
 
   Log.collapsed('Modifying slug...');
   let appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
-  let appJson = await appJsonFile.readAsync() as unknown as AppConfig;
+  let appJson = ((await appJsonFile.readAsync()) as unknown) as AppConfig;
   appJson.expo.slug = id;
   await appJsonFile.writeAsync(appJson as any);
 
@@ -36,7 +36,7 @@ async function _publishTestSuiteNoCacheAsync(id: string, useUnversioned: boolean
 
 export async function publishVersionedTestSuiteAsync(sdkVersion: string): Promise<void> {
   let appJsonFile = new JsonFile(path.join(TEST_SUITE_DIR, 'app.json'));
-  const appJson = await appJsonFile.readAsync() as unknown as AppConfig;
+  const appJson = ((await appJsonFile.readAsync()) as unknown) as AppConfig;
   appJson.expo.sdkVersion = sdkVersion;
   await appJsonFile.writeAsync(appJson as any);
 

@@ -101,8 +101,8 @@ export interface NativeConstants {
   isDevice: boolean;
   isHeadless: boolean;
   linkingUri: string;
-  nativeAppVersion: null;
-  nativeBuildVersion: null;
+  nativeAppVersion: string | null;
+  nativeBuildVersion: string | null;
   manifest: AppManifest;
   sessionId: string;
   statusBarHeight: number;
