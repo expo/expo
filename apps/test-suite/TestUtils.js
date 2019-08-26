@@ -126,6 +126,7 @@ export function getTestModules() {
   }
   if (Platform.OS === 'android') modules.push(optionalRequire(() => require('./tests/JSC')));
   if (Constants.isDevice) {
+    modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
   return modules.filter(Boolean);
