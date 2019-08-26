@@ -8,13 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
  * Classification mode for face detection.
  */
 typedef NS_ENUM(NSUInteger, FIRVisionFaceDetectorClassificationMode) {
-  /**
-   * Face classification mode indicating that the detector performs no classification.
-   */
+  /** Face classification mode indicating that the detector performs no classification. */
   FIRVisionFaceDetectorClassificationModeNone = 1,
-  /**
-   * Face classification mode indicating that the detector performs all classifications.
-   */
+  /** Face classification mode indicating that the detector performs all classifications. */
   FIRVisionFaceDetectorClassificationModeAll,
 } NS_SWIFT_NAME(VisionFaceDetectorClassificationMode);
 
@@ -40,13 +36,9 @@ typedef NS_ENUM(NSUInteger, FIRVisionFaceDetectorPerformanceMode) {
  * Landmark detection mode for face detection.
  */
 typedef NS_ENUM(NSUInteger, FIRVisionFaceDetectorLandmarkMode) {
-  /**
-   * Face landmark mode indicating that the detector performs no landmark detection.
-   */
+  /** Face landmark mode indicating that the detector performs no landmark detection. */
   FIRVisionFaceDetectorLandmarkModeNone = 1,
-  /**
-   * Face landmark mode indicating that the detector performs landmark detection.
-   */
+  /** Face landmark mode indicating that the detector performs landmark detection. */
   FIRVisionFaceDetectorLandmarkModeAll,
 } NS_SWIFT_NAME(VisionFaceDetectorLandmarkMode);
 
@@ -55,19 +47,13 @@ typedef NS_ENUM(NSUInteger, FIRVisionFaceDetectorLandmarkMode) {
  * Contour detection mode for face detection.
  */
 typedef NS_ENUM(NSUInteger, FIRVisionFaceDetectorContourMode) {
-  /**
-   * Face contour mode indicating that the detector performs no contour detection.
-   */
+  /** Face contour mode indicating that the detector performs no contour detection. */
   FIRVisionFaceDetectorContourModeNone = 1,
-  /**
-   * Face contour mode indicating that the detector performs contour detection.
-   */
+  /** Face contour mode indicating that the detector performs contour detection. */
   FIRVisionFaceDetectorContourModeAll,
 } NS_SWIFT_NAME(VisionFaceDetectorContourMode);
 
-/**
- * Options for specifying a face detector.
- */
+/** Options for specifying a face detector. */
 NS_SWIFT_NAME(VisionFaceDetectorOptions)
 @interface FIRVisionFaceDetectorOptions : NSObject
 

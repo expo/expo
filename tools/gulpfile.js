@@ -8,17 +8,10 @@ const { Modules } = require('@expo/xdl');
 const chalk = require('chalk');
 const fs = require('fs-extra');
 
-const { renameJNILibsAsync, updateExpoViewAsync } = require('./android-tasks');
+const { renameJNILibsAsync } = require('./android-tasks');
 const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
 const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
-
-function updateExpoViewWithArguments() {
-  if (!argv.abi) {
-    throw new Error('Run with `--abi <abi version>`');
-  }
-  return updateExpoViewAsync(argv.abi);
-}
 
 function renameJNILibsWithABIArgument() {
   if (!argv.abi) {
@@ -74,7 +67,6 @@ gulp.task(
     ])
   ))
 );
-gulp.task('update-exponent-view', updateExpoViewWithArguments);
 gulp.task(
   'android-add-rn-version',
   gulp.series(

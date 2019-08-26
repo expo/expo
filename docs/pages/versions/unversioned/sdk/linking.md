@@ -38,7 +38,7 @@ An object with the following keys:
 
 ### `Linking.parseInitialURLAsync()`
 
-Helper method which wraps React Native's `Linking.getInitalURL()` in `Linking.parse()`. Parses the deep link information out of the URL used to open the experience initially.
+Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`. Parses the deep link information out of the URL used to open the experience initially.
 
 #### Returns
 

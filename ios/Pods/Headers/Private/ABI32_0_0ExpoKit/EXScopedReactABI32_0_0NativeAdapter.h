@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI32_0_0/Expo/Core/UniversalModules/EXScopedReactABI32_0_0NativeAdapter.h
