@@ -66,6 +66,7 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
     optionalRequire(() => require('./tests/Localization')),
+    optionalRequire(() => require('./tests/Network')),
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
     optionalRequire(() => require('./tests/SQLite')),
