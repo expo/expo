@@ -62,6 +62,7 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Asset')),
     optionalRequire(() => require('./tests/Constants')),
     optionalRequire(() => require('./tests/Crypto')),
+    optionalRequire(() => require('./tests/Device')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
     optionalRequire(() => require('./tests/Localization')),
