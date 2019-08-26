@@ -9,7 +9,7 @@ commands:
         type: string
         # Exclude nothing
         default: '$^'
-      require:
+      requireOneOf:
         description: 'The job will halt if no file matching the given regex has been modified'
         type: string
         # Require nothing
@@ -35,33 +35,26 @@ commands:
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
-            echo " - Requiring << parameters.require >>"
+            echo " - Requiring << parameters.requireOneOf >>"
             echo " - Depth << parameters.search_depth >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
 
-            checkModified () {
-              file=$1
-
-              baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-              currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
-              if [ ! $baseFileHash = $currentFileHash ]; then
-                echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
-                set +e
-                # exit 0
-              fi
-            }
-
             # Test all top-level files and directories
             for file in $(find $PWD/* -maxdepth << parameters.search_depth >> -not -path '*/\.*'); do
+              baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+              currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
               if ! [[ $file =~ << parameters.exclude >> ]]; then
-                echo " -- [included] Checking ${file}"
-                checkModified $file
-              elif [[ $file =~ << parameters.require >> ]]; then
-                echo " -- [required] Checking ${file}"
-                checkModified $file
+                if [[ $file =~ << parameters.requireOneOf >> ]]; then
+                  echo " -- [required] ${file}"
+                  if [ ! $baseFileHash = $currentFileHash ]; then
+                    echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
+                    set +e
+                    exit 0
+                  fi
+                fi
               else
-                echo " -- [skip] ${file}"
+                echo " -- [excluded] ${file}"
               fi
             done
 
@@ -75,12 +68,12 @@ commands:
             fi
   halt_if_unchanged:
     parameters:
-      require:
+      requireOneOf:
         description: 'The job will stop if there are no changes in this directory'
         type: string
     steps:
       - run:
-          name: Require the << parameters.require >> directory to have changes
+          name: Require the << parameters.requireOneOf >> directory to have changes
           command: |
 
             ROOT_BRANCH="master"
@@ -94,14 +87,14 @@ commands:
 
             BASE_COMMIT=$(git merge-base HEAD remotes/origin/"${ROOT_BRANCH}")
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
-            echo " - Required << parameters.require >>"
+            echo " - Required << parameters.requireOneOf >>"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
             # Test all top-level directories
             for file in $PWD/*/
             do
               FILE_NAME=$(basename $file)
-              if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
+              if [[ " << parameters.requireOneOf >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
                 baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
                 currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
@@ -655,7 +648,7 @@ jobs:
     steps:
       - setup
       - halt_if_unchanged:
-          require: 'docs'
+          requireOneOf: 'docs'
       - update_submodules
       - yarn_install:
           working_directory: docs
