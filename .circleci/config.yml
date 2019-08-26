@@ -13,7 +13,7 @@ commands:
         description: 'The job will halt if no file matching the given regex has been modified'
         type: string
         # Require nothing
-        default: '$^'
+        default: '*'
       search_depth:
         description: 'The maximum directory depth to search'
         type: integer
