@@ -6,7 +6,6 @@ import {
   Keyboard,
   ListView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -19,6 +18,14 @@ import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import * as Kernel from '../kernel/Kernel';
 import UrlUtils from '../utils/UrlUtils';
+import {
+  GenericCardBody,
+  GenericCardContainer,
+  StyledScrollView,
+  SectionLabelContainer,
+  StyledView,
+} from './Views';
+import { StyledText, GenericCardTitle, SectionLabelText } from './Text';
 
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
@@ -81,18 +88,19 @@ export default class SearchResults extends React.Component {
   _maybeRenderLoading = () => {
     if (this._isLoading() && this.props.query.length > 0) {
       return (
-        <View
+        <StyledView
+          lightBackgroundColor={Colors.light.greyBackground}
+          darkBackgroundColor="#000"
           style={[
             StyleSheet.absoluteFill,
             {
               padding: 30,
               alignItems: 'center',
-              backgroundColor: Colors.greyBackground,
             },
           ]}
           pointerEvents="none">
           <ActivityIndicator />
-        </View>
+        </StyledView>
       );
     }
   };
@@ -104,27 +112,31 @@ export default class SearchResults extends React.Component {
       this.props.query.length >= 1
     ) {
       return (
-        <ScrollView
+        <StyledScrollView
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
           style={styles.scrollContainer}>
-          <View
-            style={[
-              SharedStyles.sectionLabelContainer,
-              { backgroundColor: Colors.greyBackground, marginTop: 7 },
-            ]}>
-            <Text style={SharedStyles.sectionLabelText}>NO RESULTS FOUND</Text>
-          </View>
+          <SectionLabelContainer style={{ marginTop: 7 }}>
+            <SectionLabelText>NO RESULTS FOUND</SectionLabelText>
+          </SectionLabelContainer>
 
           <TouchableNativeFeedbackSafe
             onPress={this._handleOpenUrl}
             fallback={TouchableHighlight}
-            underlayColor="#b7b7b7"
-            style={styles.cardContainer}>
-            <Text style={styles.cardTitleText}>Tap to attempt to open project at</Text>
-            <Text style={styles.urlText}>{this.props.query}</Text>
+            underlayColor="#b7b7b7">
+            <GenericCardContainer style={styles.cardContainer}>
+              <StyledText style={styles.cardTitleText}>
+                Tap to attempt to open project at
+              </StyledText>
+              <StyledText
+                style={styles.urlText}
+                lightColor="rgba(36, 44, 58, 0.4)"
+                darkColor="#888">
+                {this.props.query}
+              </StyledText>
+            </GenericCardContainer>
           </TouchableNativeFeedbackSafe>
-        </ScrollView>
+        </StyledScrollView>
       );
     } else {
       return (
@@ -133,9 +145,10 @@ export default class SearchResults extends React.Component {
           keyboardDismissMode="on-drag"
           dataSource={this.state.dataSource}
           renderRow={this._renderRow}
+          renderScrollComponent={props => <StyledScrollView {...props} />}
           renderSectionHeader={this._renderSectionHeader}
           contentContainerStyle={{ paddingTop: 5, paddingBottom: 15 }}
-          style={{ flex: 1, backgroundColor: Colors.greyBackground }}
+          style={{ flex: 1 }}
         />
       );
     }
@@ -149,13 +162,11 @@ export default class SearchResults extends React.Component {
 
   _renderSectionHeader = (sectionData: Object, sectionId: string) => {
     return (
-      <View
-        key={sectionData}
-        style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground }]}>
-        <Text style={SharedStyles.sectionLabelText}>
+      <SectionLabelContainer key={sectionData}>
+        <SectionLabelText>
           {sectionId === 'AppSearchResult' ? 'PROJECTS' : 'PEOPLE'}
-        </Text>
-      </View>
+        </SectionLabelText>
+      </SectionLabelContainer>
     );
   };
 
@@ -205,18 +216,14 @@ export default class SearchResults extends React.Component {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    backgroundColor: Colors.greyBackground,
     flex: 1,
   },
   cardContainer: {
-    backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
     padding: 13,
   },
   cardTitleText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginBottom: 2,
     ...Platform.select({
@@ -230,7 +237,6 @@ const styles = StyleSheet.create({
     }),
   },
   urlText: {
-    color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 13,
     lineHeight: 16,
   },

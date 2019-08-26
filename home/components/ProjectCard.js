@@ -18,6 +18,8 @@ import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
+import { GenericCardBody, GenericCardContainer, StyledView } from '../components/Views';
+import { StyledText } from '../components/Text';
 
 @withNavigation
 export default class ProjectCard extends React.PureComponent {
@@ -30,30 +32,36 @@ export default class ProjectCard extends React.PureComponent {
           onPress={this._handlePressProject}
           onLongPress={this._handleLongPressProject}
           fallback={TouchableHighlight}
-          underlayColor="#b7b7b7"
-          style={[styles.container, styles.bottomBorder]}>
-          <View>
+          underlayColor="#b7b7b7">
+          <StyledView styles={[styles.container, styles.bottomBorder]}>
             <View style={styles.header}>
               <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
               <View style={styles.infoContainer}>
-                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
                   {projectName}
-                </Text>
+                </StyledText>
                 <View style={styles.projectExtraInfoContainer}>
-                  <Text
+                  <StyledText
+                    lightColor="rgba(36, 44, 58, 0.4)"
+                    darkColor="#ccc"
                     onPress={this._handlePressUsername}
                     style={styles.projectExtraInfoText}
                     ellipsizeMode="tail"
                     numberOfLines={1}>
                     {username}
-                  </Text>
+                  </StyledText>
                 </View>
               </View>
             </View>
             <View style={styles.body}>
-              <Text style={styles.descriptionText}>{description}</Text>
+              <StyledText
+                lightColor="rgba(36, 44, 58, 0.7)"
+                darkColor="#eee"
+                style={styles.descriptionText}>
+                {description}
+              </StyledText>
             </View>
-          </View>
+          </StyledView>
         </TouchableNativeFeedbackSafe>
       </View>
     );
@@ -106,9 +114,7 @@ export default class ProjectCard extends React.PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   spacerContainer: {
@@ -134,7 +140,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   descriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     lineHeight: 19,
   },
   icon: {
@@ -154,7 +159,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   projectNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginRight: 170,
     marginBottom: 2,
@@ -173,7 +177,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   projectExtraInfoText: {
-    color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 13,
     lineHeight: 16,
   },

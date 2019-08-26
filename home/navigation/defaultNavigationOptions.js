@@ -1,15 +1,18 @@
 /* @flow */
 
 import { Platform, StyleSheet } from 'react-native';
+import Colors from '../constants/Colors';
 
-export default {
-  headerStyle: {
-    backgroundColor: '#fff',
-    elevation: 0,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(46, 59, 76, 0.10)',
-  },
-  headerTitleStyle: {
-    fontWeight: Platform.OS === 'ios' ? '600' : '400',
-  },
+export default ({ theme }) => {
+  return {
+    headerStyle: {
+      backgroundColor: Colors[theme].navBackgroundColor,
+      borderBottomColor: Colors[theme].navBorderBottom,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      elevation: 0,
+    },
+    headerTitleStyle: {
+      fontWeight: Platform.OS === 'ios' ? '600' : '400',
+    },
+  };
 };

@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ScrollView } from 'react-navigation';
 import FadeIn from 'react-native-fade-in-image';
 
 import { take, takeRight } from 'lodash';
@@ -24,6 +23,9 @@ import SeeAllSnacksButton from './SeeAllSnacksButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
+import ScrollView from '../components/NavigationScrollView';
+import { SectionLabelText, StyledText } from '../components/Text';
+import { SectionLabelContainer, StyledView } from '../components/Views';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -161,20 +163,22 @@ export default class Profile extends React.Component {
     let { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
     return (
-      <View style={styles.header}>
+      <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
         <View style={styles.headerAvatarContainer}>
           <FadeIn>
             <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
           </FadeIn>
         </View>
-        <Text style={styles.headerFullNameText}>
+        <StyledText style={styles.headerFullNameText}>
           {firstName} {lastName}
-        </Text>
+        </StyledText>
         <View style={styles.headerAccountsList}>
-          <Text style={styles.headerAccountText}>@{username}</Text>
+          <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
+            @{username}
+          </StyledText>
           {this._maybeRenderGithubAccount()}
         </View>
-      </View>
+      </StyledView>
     );
   };
 
@@ -220,9 +224,9 @@ export default class Profile extends React.Component {
 
     return (
       <View style={{ marginBottom: 3 }}>
-        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
-          <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
-        </View>
+        <SectionLabelContainer style={{ marginTop: 10 }}>
+          <SectionLabelText>PUBLISHED PROJECTS</SectionLabelText>
+        </SectionLabelContainer>
         {content}
       </View>
     );
@@ -254,9 +258,9 @@ export default class Profile extends React.Component {
 
     return (
       <View style={{ marginBottom: 3 }}>
-        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
-          <Text style={SharedStyles.sectionLabelText}>SAVED SNACKS</Text>
-        </View>
+        <SectionLabelContainer style={{ marginTop: 10 }}>
+          <SectionLabelText>SAVED SNACKS</SectionLabelText>
+        </SectionLabelContainer>
         {content}
       </View>
     );
@@ -302,7 +306,6 @@ export default class Profile extends React.Component {
       />
     );
   };
-
   _maybeRenderGithubAccount() {
     // ..
   }
@@ -311,16 +314,12 @@ export default class Profile extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
     marginTop: -1,
   },
   header: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: Colors.separator,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.separator,
   },
   headerAvatarContainer: {
     marginTop: 20,
@@ -340,11 +339,10 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerAccountText: {
-    color: 'rgba(36, 44, 58, 0.4)',
+    // color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 14,
   },
   headerFullNameText: {
-    color: '#232B3A',
     fontSize: 20,
     fontWeight: '500',
   },

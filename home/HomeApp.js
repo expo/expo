@@ -4,10 +4,11 @@ import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Appearance, AppearanceProvider } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
-import url from 'url';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import url from 'url';
 
 import './menu/MenuView';
 
@@ -24,6 +25,7 @@ Asset.loadAsync(StackAssets);
 export default class App extends React.Component {
   state = {
     isReady: false,
+    colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
@@ -93,10 +95,12 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <ActionSheetProvider>
-          <Navigation />
+          <Navigation theme={this.props.colorScheme} />
         </ActionSheetProvider>
 
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && (
+          <StatusBar barStyle={this.props.colorScheme === 'dark' ? 'light-content' : 'default'} />
+        )}
         {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
       </View>
     );

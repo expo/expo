@@ -37,7 +37,7 @@ export default class QRCodeButton extends React.Component {
 const styles = StyleSheet.create({
   bottomBorder: {
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
+    borderBottomColor: Colors.light.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   container: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   titleText: {
-    color: Colors.blackText,
+    color: Colors.light.blackText,
     fontSize: 15,
     marginRight: 70,
     marginBottom: 2,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   subtitleText: {
     marginRight: 5,
     flex: 1,
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });

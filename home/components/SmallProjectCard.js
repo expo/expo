@@ -13,12 +13,14 @@ import {
 } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
-import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
+import { StyledText } from './Text';
+import { Separator, StyledView } from './Views';
+import { Ionicons } from './Icons';
 
 @withNavigation
 export default class SmallProjectCard extends React.PureComponent {
@@ -42,49 +44,55 @@ export default class SmallProjectCard extends React.PureComponent {
         onPress={this._handlePressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
-        <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
+        style={styles.container}>
+        <StyledView style={styles.container}>
+          <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
 
-        <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
-          <View style={styles.projectNameContainer}>
-            <View style={{ flex: 1, flexDirection: 'row', flexGrow: 4 }}>
-              {platform ? <PlatformIcon platform={platform} /> : null}
-              <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                {projectName}
-              </Text>
+          <StyledView style={styles.infoContainer}>
+            <View style={styles.projectNameContainer}>
+              <View style={{ flex: 1, flexDirection: 'row', flexGrow: 4 }}>
+                {platform ? <PlatformIcon platform={platform} /> : null}
+                <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                  {projectName}
+                </StyledText>
+              </View>
+              {releaseChannel && releaseChannel !== 'default' ? (
+                <View style={{ flex: 1, flexGrow: 2 }}>
+                  <View style={styles.releaseChannelContainer}>
+                    <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
+                      {releaseChannel}
+                    </Text>
+                  </View>
+                </View>
+              ) : null}
             </View>
-            {releaseChannel && releaseChannel !== 'default' ? (
-              <View style={{ flex: 1, flexGrow: 2 }}>
-                <View style={styles.releaseChannelContainer}>
-                  <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
-                    {releaseChannel}
-                  </Text>
+
+            <View style={styles.projectExtraInfoContainer}>
+              <Text
+                onPress={username ? this._handlePressUsername : null}
+                style={[styles.projectExtraInfoText, isUnlisted && { flexShrink: 4 }]}
+                ellipsizeMode="tail"
+                numberOfLines={1}>
+                {hideUsername ? slug : username || projectUrl}
+              </Text>
+
+              {isUnlisted && (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <StyledView
+                    style={styles.bullet}
+                    lightBackgroundColor="rgba(36, 44, 58, 0.2)"
+                    darkBackgroundColor="#ccc"
+                  />
+                  <View style={styles.unlistedIconContainer}>
+                    <Ionicons name="ios-eye-off" size={15} lightColor="rgba(36, 44, 58, 0.3)" />
+                  </View>
+
+                  <Text style={styles.unlistedText}>Unlisted</Text>
                 </View>
-              </View>
-            ) : null}
-          </View>
-
-          <View style={styles.projectExtraInfoContainer}>
-            <Text
-              onPress={username ? this._handlePressUsername : null}
-              style={[styles.projectExtraInfoText, isUnlisted && { flexShrink: 4 }]}
-              ellipsizeMode="tail"
-              numberOfLines={1}>
-              {hideUsername ? slug : username || projectUrl}
-            </Text>
-
-            {isUnlisted && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.bullet} />
-                <View style={styles.unlistedIconContainer}>
-                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" />
-                </View>
-
-                <Text style={styles.unlistedText}>Unlisted</Text>
-              </View>
-            )}
-          </View>
-        </View>
+              )}
+            </View>
+          </StyledView>
+        </StyledView>
       </TouchableNativeFeedbackSafe>
     );
   }
@@ -129,12 +137,21 @@ function PlatformIcon({ platform }) {
   let icon = null;
   if (platform === 'native') {
     icon = Platform.select({
-      android: <Ionicons name="logo-android" size={17} style={{ marginTop: 1 }} />,
-      ios: <Ionicons name="logo-apple" size={17} style={{ marginTop: 0.5 }} />,
-      default: <Ionicons name="md-tablet-portrait" size={15} style={{ marginTop: 1.5 }} />,
+      android: (
+        <Ionicons name="logo-android" size={17} lightColor="#000" style={{ marginTop: 1 }} />
+      ),
+      ios: <Ionicons name="logo-apple" size={17} lightColor="#000" style={{ marginTop: 0.5 }} />,
+      default: (
+        <Ionicons
+          name="md-tablet-portrait"
+          lightColor="#000"
+          size={15}
+          style={{ marginTop: 1.5 }}
+        />
+      ),
     });
   } else if (platform === 'web') {
-    icon = <Ionicons name="ios-globe" size={15} style={{ marginTop: 2 }} />;
+    icon = <Ionicons name="ios-globe" size={15} lightColor="#000" style={{ marginTop: 2 }} />;
   }
 
   return <View style={styles.platformIconContainer}>{icon}</View>;
@@ -147,14 +164,8 @@ const IconPaddingRight = 10;
 const IconWidth = 40;
 
 const styles = StyleSheet.create({
-  bottomBorder: {
-    flexGrow: 1,
-    borderBottomColor: Colors.separator,
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-  },
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     flex: 1,
   },
   iconContainer: {
@@ -179,6 +190,7 @@ const styles = StyleSheet.create({
     }),
   },
   infoContainer: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
     paddingTop: 13,
     flexDirection: 'column',
     alignSelf: 'stretch',
@@ -190,7 +202,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   projectNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {
@@ -227,14 +238,13 @@ const styles = StyleSheet.create({
     width: Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10,
   },
   projectExtraInfoText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
   bullet: {
     width: 3.5,
     height: 3.5,
     borderRadius: 3.5 / 2,
-    backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
   },
   unlistedIconContainer: {
@@ -242,7 +252,7 @@ const styles = StyleSheet.create({
   },
   unlistedText: {
     marginLeft: 3,
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });
