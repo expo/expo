@@ -33,6 +33,7 @@ import Permissions from '../screens/PermissionsScreen';
 import Print from '../screens/PrintScreen';
 import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
+import SafeAreaContext from '../screens/SafeAreaContextScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import Sharing from '../screens/SharingScreen';
 import SecureStore from '../screens/SecureStoreScreen';
@@ -110,6 +111,7 @@ const optionalScreens: {
   Recording,
   // @ts-ignore
   Reminders,
+  SafeAreaContext,
   ScreenOrientation,
   SecureStore,
   Sensor,
