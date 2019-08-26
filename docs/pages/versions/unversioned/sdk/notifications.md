@@ -30,6 +30,16 @@ Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to
 
 An [EventSubscription](#eventsubscription) object that you can call remove() on when you would like to unsubscribe the listener.
 
+### `Notifications.addActionListener(listener)`
+
+#### Arguments
+
+- **listener (_function_)** -- A callback that is invoked when an action from a remote or local notification is selected, with a `Notification` object. Note that if this listener is called, the listener in `addListener` will not be called. If this function is not set, `addListener` will be called as usual.
+
+Note that you will have to use `Notifications.addListener` somewhere for this function to work.
+
+On Android, if you wish to use [`doNotOpenInForeground`](#arguments-5) option, this function works similar as the [`TaskManager.defineTask`](../../sdk/task-manager/#taskmanagerdefinetasktaskname-task) function, which means that this function must be called in the global scope of your JavaScript bundle. In particular, it **cannot** be called in any of React lifecycle methods like componentDidMount.
+
 ### Related types
 
 ### `EventSubscription`
@@ -131,9 +141,10 @@ Registers a new set of actions under given `name`.
   - **actionId (_string_)** -- A unique identifier of the ID of the action. When a user executes your action, your app will receive this `actionId`.
   - **buttonTitle (_string_)** -- A title of the button triggering this action.
   - **textInput (_object_)** -- An optional object of shape: `{ submitButtonTitle: string, placeholder: string }`, which when provided, will prompt the user to enter a text value.
+  - **doNotOpenInForeground (_boolean_)** -- If this property is truthy, triggering the action will not open the app in foreground (on iOS, as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/unnotificationactionoptionforeground) was **NOT** set)
+    If you wish to use this option on Android devices, you must properly add the action listener with the [`addActionListener`](#addactionlistener) function. On iOS, `addListener` will also work, but we recommend you to also use `addActionListener` for consistent behavior between Android and iOS.
   - **isDestructive (_boolean_)** -- (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648199-destructive) was set)
   - **isAuthenticationRequired (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set)
-  - **doNotOpenInForeground (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will not open the app in foreground (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/unnotificationactionoptionforeground) was **NOT** set)
 
 ### `Notifications.deleteCategoryAsync(name: string)`
 
