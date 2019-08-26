@@ -16,27 +16,20 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.io.output.TeeOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
@@ -44,27 +37,13 @@ import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
-
-import expo.modules.ota.BundleDownloader;
 import expo.modules.ota.BundleLoader;
-import expo.modules.ota.EmbeddedResponse;
-import okhttp3.CacheControl;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
@@ -74,14 +53,16 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
-import host.exp.exponent.network.ExponentHttpClient;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.PermissionsHelper;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
 
 public class Exponent {
@@ -368,19 +349,13 @@ public class Exponent {
             manifest.has("developer")
             );
 
-    bundleLoader.loadJsBundle(params, new BundleLoader.BundleLoadCallback() {
-      @Override
-      public void bundleLoaded(@NotNull String path) {
-        mExpoHandler.post(() -> {
-          bundleListener.onBundleLoaded(path);
-        });
-      }
-
-      @Override
-      public void error(@NotNull Exception e) {
-        bundleListener.onError(e);
-      }
-    });
+    bundleLoader.loadJsBundle(params, (path) -> {
+      mExpoHandler.post(() -> bundleListener.onBundleLoaded(path));
+      return null;
+    }, e -> {
+      bundleListener.onError(e);
+      return null;
+    } );
 
     // Guess whether we'll use the cache based on whether the source file is saved.
     final File sourceFile = new File(directory, fileName);
