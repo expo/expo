@@ -1,0 +1,1 @@
+../../../GoogleDataTransport/GoogleDataTransport/GDTLibrary/Public/GDTRegistrar.h

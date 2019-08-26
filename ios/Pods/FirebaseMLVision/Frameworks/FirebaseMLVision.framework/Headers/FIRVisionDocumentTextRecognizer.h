@@ -8,22 +8,19 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The callback to invoke when the document text recognition completes.
  *
- * @param text Recognized document text in the image or `nil` if there was an error.
+ * @param text Recognized document text in the image or `nil` if there was an error or no text was
+ *     detected.
  * @param error The error or `nil`.
  */
 typedef void (^FIRVisionDocumentTextRecognitionCallback)(FIRVisionDocumentText *_Nullable text,
                                                          NSError *_Nullable error)
     NS_SWIFT_NAME(VisionDocumentTextRecognitionCallback);
 
-/**
- * A cloud document text recognizer that recognizes text in an image.
- */
+/** A cloud document text recognizer that recognizes text in an image. */
 NS_SWIFT_NAME(VisionDocumentTextRecognizer)
 @interface FIRVisionDocumentTextRecognizer : NSObject
 
-/**
- * Unavailable. Use `Vision` factory methods.
- */
+/** Unavailable. Use `Vision` factory methods. */
 - (instancetype)init NS_UNAVAILABLE;
 
 /**

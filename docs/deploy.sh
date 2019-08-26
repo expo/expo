@@ -35,6 +35,9 @@ redirects[versions/latest/sdk/haptic/index.html]=versions/latest/sdk/haptics/
 redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overview/
 # project-lifecycle is now covered by managed-vs-bare
 redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/introduction/managed-vs-bare/
+# exp-cli is now expo-cli
+redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
+redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 
 for i in "${!redirects[@]}" # iterate over keys
 do

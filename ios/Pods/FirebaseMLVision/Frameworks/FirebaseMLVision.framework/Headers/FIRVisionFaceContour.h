@@ -4,9 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Facial contour types.
- */
+/** Facial contour types. */
 typedef NSString *FIRFaceContourType NS_EXTENSIBLE_STRING_ENUM NS_SWIFT_NAME(FaceContourType);
 
 /** All contour points including left and right cheeks. */
@@ -51,25 +49,17 @@ extern FIRFaceContourType const FIRFaceContourTypeNoseBridge;
 /** A set of points that outline the bottom of the nose. */
 extern FIRFaceContourType const FIRFaceContourTypeNoseBottom;
 
-/**
- * A contour on a human face detected in an image.
- */
+/** A contour on a human face detected in an image. */
 NS_SWIFT_NAME(VisionFaceContour)
 @interface FIRVisionFaceContour : NSObject
 
-/**
- * The facial contour type.
- */
+/** The facial contour type. */
 @property(nonatomic, readonly) FIRFaceContourType type;
 
-/**
- * An array of 2D points that make up the facial contour.
- */
+/** An array of 2D points that make up the facial contour. */
 @property(nonatomic, readonly) NSArray<FIRVisionPoint *> *points;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

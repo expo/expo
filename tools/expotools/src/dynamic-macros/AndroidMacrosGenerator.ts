@@ -42,18 +42,22 @@ export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
 
   // android falls back to published dev home if local dev home
   // doesn't exist or had an error.
-  const isLocalManifestEmpty = !macros.BUILD_MACHINE_KERNEL_MANIFEST || macros.BUILD_MACHINE_KERNEL_MANIFEST === '';
+  const isLocalManifestEmpty =
+    !macros.BUILD_MACHINE_KERNEL_MANIFEST || macros.BUILD_MACHINE_KERNEL_MANIFEST === '';
 
   if (isLocalManifestEmpty) {
     macros.BUILD_MACHINE_KERNEL_MANIFEST = macros.DEV_PUBLISHED_KERNEL_MANIFEST;
   }
 
-  console.log(`Using ${chalk.yellow(isLocalManifestEmpty ? 'published dev' : 'local')} version of Expo Home.`);
+  console.log(
+    `Using ${chalk.yellow(isLocalManifestEmpty ? 'published dev' : 'local')} version of Expo Home.`
+  );
 
   delete macros['DEV_PUBLISHED_KERNEL_MANIFEST'];
 
-  const definitions = Object.entries(macros).map(([name, value]) =>
-    `  public static final ${formatJavaType(value)} ${name} = ${formatJavaLiteral(value)};`
+  const definitions = Object.entries(macros).map(
+    ([name, value]) =>
+      `  public static final ${formatJavaType(value)} ${name} = ${formatJavaLiteral(value)};`
   );
 
   source = `
@@ -76,7 +80,7 @@ ${source.trim()}
 async function updateBuildConstants(buildConstantsPath, macros) {
   console.log(
     'Generating build config %s ...',
-    chalk.cyan(path.relative(EXPO_DIR, buildConstantsPath)),
+    chalk.cyan(path.relative(EXPO_DIR, buildConstantsPath))
   );
 
   const [source, existingSource] = await Promise.all([
@@ -94,10 +98,7 @@ export default class AndroidMacrosGenerator {
   async generateAsync(options): Promise<void> {
     const { buildConstantsPath, macros } = options;
 
-    await updateBuildConstants(
-      path.resolve(buildConstantsPath),
-      macros
-    );
+    await updateBuildConstants(path.resolve(buildConstantsPath), macros);
   }
 
   async cleanupAsync(options): Promise<void> {

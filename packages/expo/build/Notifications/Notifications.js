@@ -89,7 +89,6 @@ if (Platform.OS === 'android') {
     AsyncStorage.clear = async function (callback) {
         try {
             let keys = await AsyncStorage.getAllKeys();
-            let result = null;
             if (keys && keys.length) {
                 let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
                 await AsyncStorage.multiRemove(filteredKeys);
@@ -339,6 +338,6 @@ export default {
     },
 };
 function isInRangeInclusive(variable, min, max) {
-    return (variable >= min && variable <= max);
+    return variable >= min && variable <= max;
 }
 //# sourceMappingURL=Notifications.js.map

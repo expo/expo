@@ -56,7 +56,9 @@ export async function updateReactNativeUnimodulesAsync(
     versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting = {};
   }
 
-  versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting['react-native-unimodules'] = reactNativeUnimodulesVersion;
+  versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting![
+    'react-native-unimodules'
+  ] = reactNativeUnimodulesVersion;
   await Versions.setVersionsAsync(versions);
 }
 
@@ -65,7 +67,7 @@ export async function updateExpoKitAndroidAsync(
   appVersion: string,
   sdkVersion: string,
   expokitVersion: string,
-  expokitTag: string = "latest"
+  expokitTag: string = 'latest'
 ) {
   const key = `android-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
   const androidDir = path.join(expoDir, 'android');
