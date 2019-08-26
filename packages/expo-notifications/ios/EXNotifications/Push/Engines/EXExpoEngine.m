@@ -22,7 +22,7 @@
 {
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
   __block NSString *nextExpoPushToken;
-  [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:appId deviceToken:token completionHandler:^(NSString * _Nullable expoPushToken, NSError * _Nullable error) {
+  [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:appId deviceToken:token inDevelopmentMode:NO completionHandler:^(NSString * _Nullable expoPushToken, NSError * _Nullable error) {
     nextExpoPushToken = expoPushToken;
     dispatch_semaphore_signal(sem);
   }];
@@ -33,7 +33,7 @@
 - (void)sendTokenToServer:(NSString *)token
 {
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-  [[EXApiV2Client sharedClient] updateDeviceToken:token completionHandler:^(NSError * _Nullable postError) {
+  [[EXApiV2Client sharedClient] updateDeviceToken:token inDevelopmentMode:NO completionHandler:^(NSError * _Nullable postError) {
     dispatch_semaphore_signal(sem);
   }];
   dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);

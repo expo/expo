@@ -138,8 +138,10 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
       if (self->_currentAPNSToken) {
         NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
+        NSString *tokenStringFormat = [self.currentAPNSToken apnsTokenString];
         [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:experienceId
-                                                        deviceToken:self->_currentAPNSToken
+                                                        deviceToken:tokenStringFormat
+                                                  inDevelopmentMode:[EXProvisioningProfile mainProvisioningProfile].development
                                                   completionHandler:handler];
         return;
       }
@@ -159,8 +161,10 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
 
         if (apnsToken) {
           NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
+          NSString *tokenStringFormat = [apnsToken apnsTokenString];
           [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:experienceId
-                                                          deviceToken:apnsToken
+                                                          deviceToken:tokenStringFormat
+                                                    inDevelopmentMode:[EXProvisioningProfile mainProvisioningProfile].development
                                                     completionHandler:handler];
         } else {
           NSError *error = [NSError errorWithDomain:kEXRemoteNotificationErrorDomain
@@ -193,7 +197,10 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
   }
 
   _isPostingCurrentToken = YES;
-  [[EXApiV2Client sharedClient] updateDeviceToken:currentToken completionHandler:^(NSError * _Nullable error) {
+  NSString *tokenStringFormat = [currentToken apnsTokenString];
+  [[EXApiV2Client sharedClient] updateDeviceToken:tokenStringFormat
+                                inDevelopmentMode:[EXProvisioningProfile mainProvisioningProfile].development
+                                completionHandler:^(NSError * _Nullable error) {
     dispatch_async(self->_queue, ^{
       if (error) {
         DDLogWarn(@"Failed to send the APNS token to the Expo server: %@", error);
