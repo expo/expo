@@ -7,6 +7,7 @@ import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
 let _actionListener;
+let _categoriesWithBackgroundAction = new Set();
 function _maybeInitEmitter() {
     if (!_emitter) {
         _emitter = new EventEmitter();
@@ -115,23 +116,34 @@ export default {
     // User passes set of actions titles.
     createCategoryAsync(categoryId, actions) {
         if (Platform.OS === 'android') {
-            // TODO: only do this when at least a single `doesNotOpenInForeground` is `true`
-            const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-            if (!ExpoNotificationBackgroundAction) {
-                throw new Error('nooo');
+            const hasBackgroundAction = actions.some(action => action.doNotOpenInForeground);
+            if (hasBackgroundAction) {
+                const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
+                // TODO: MOVE THESE TO A SEPERATE FILE
+                if (!ExpoNotificationBackgroundAction) {
+                    throw new Error('nooo');
+                }
+                if (_categoriesWithBackgroundAction.size === 0) {
+                    // Only register once.
+                    ExpoNotificationBackgroundAction.registerTaskAsync({});
+                }
+                _categoriesWithBackgroundAction.add(categoryId);
             }
-            // TODO: ADD LIST TO STORE REGISTERED TASK AND TO REMOVE & unregister THEM WHEN NON-EMPTY->EMPTY
-            ExpoNotificationBackgroundAction.registerTaskAsync({});
         }
         return ExponentNotifications.createCategoryAsync(categoryId, actions);
     },
     deleteCategoryAsync(categoryId) {
         if (Platform.OS === 'android') {
-            const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-            if (!ExpoNotificationBackgroundAction) {
-                throw new Error('nooo');
+            if (_categoriesWithBackgroundAction.has(categoryId)) {
+                const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
+                if (!ExpoNotificationBackgroundAction) {
+                    throw new Error('nooo');
+                }
+                _categoriesWithBackgroundAction.delete(categoryId);
+                if (_categoriesWithBackgroundAction.size === 0) {
+                    ExpoNotificationBackgroundAction.unregisterTaskAsync();
+                }
             }
-            ExpoNotificationBackgroundAction.unregisterTaskAsync();
         }
         return ExponentNotifications.deleteCategoryAsync(categoryId);
     },
@@ -339,7 +351,7 @@ export default {
             TaskManager = require('expo-task-manager');
         }
         catch {
-            throw new Error('expo-task-manager is not installed. You have to install expo-task-manager for `addActionBackgroundListener`.');
+            throw new Error('expo-task-manager is not installed. You have to install expo-task-manager for `Notifications.addActionListener`.');
         }
         const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
         if (!ExpoNotificationBackgroundAction) {
