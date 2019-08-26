@@ -35,20 +35,8 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     mTaskManagerUtils.scheduleJob(context, NotificationBackgroundActionTaskConsumer.mTask,
         Collections.singletonList(data));
 
-    // TODO: make this customizable from the JS's `createCategoryAsync` function
-    showToast(context, "Loading...");
-
     // Remove the notification.
     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
     notificationManager.cancel(experienceId, data.getInt(NotificationConstants.NOTIFICATION_ID_KEY));
-  }
-
-  private void showToast(final Context context, final String text) {
-    Handler handler = new Handler(Looper.getMainLooper());
-    handler.post(new Runnable() {
-      public void run() {
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-      }
-    });
   }
 }
