@@ -5,7 +5,7 @@
 
 @implementation EXApiV2Client (EXRemoteNotifications)
 
-- (NSURLSessionTask *)updateDeviceToken:(NSString *)deviceToken completionHandler:(void (^)(NSError * _Nullable))handler
+- (NSURLSessionTask *)updateDeviceToken:(NSString *)deviceToken inDevelopmentMode:(BOOL)mode  completionHandler:(void (^)(NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
     @"deviceId": [self deviceInstallUUID],
@@ -13,6 +13,9 @@
     @"deviceToken": deviceToken,
     @"type": @"apns",
   }];
+  if (mode) {
+    arguments[@"development"] = @YES;
+  }
   
   return [self callRemoteMethod:@"push/updateDeviceToken"
                       arguments:arguments
@@ -25,6 +28,7 @@
 
 - (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceId
                                         deviceToken:(NSString *)deviceToken
+                                  inDevelopmentMode:(BOOL)mode
                                   completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -34,6 +38,9 @@
     @"deviceToken": deviceToken,
     @"type": @"apns",
   }];
+  if (mode) {
+    arguments[@"development"] = @YES;
+  }
   
   return [self callRemoteMethod:@"push/getExpoPushToken"
                       arguments:arguments
