@@ -72,6 +72,8 @@
 	<string>1201211719949057</string>
 	<key>FacebookDisplayName</key>
 	<string>Expo</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>waze</string>
