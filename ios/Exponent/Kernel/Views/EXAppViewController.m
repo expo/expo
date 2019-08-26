@@ -385,16 +385,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_overrideUserInterfaceStyle
 {
   if (@available(iOS 13.0, *)) {
-    NSString *userInterfaceStyle = _appRecord.appLoader.manifest[@"ios"][@"infoPlist"][@"UIUserInterfaceStyle"];
+    NSString *userInterfaceStyle = _appRecord.appLoader.manifest[@"ios"][@"userInterfaceStyle"];
     self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
   }
 }
 
 - (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
-  if ([userInterfaceStyleString isEqualToString:@"Dark"]) {
+  if ([userInterfaceStyleString isEqualToString:@"dark"]) {
     return UIUserInterfaceStyleDark;
   }
-  if ([userInterfaceStyleString isEqualToString:@"Automatic"]) {
+  if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
     return UIUserInterfaceStyleUnspecified;
   }
   return UIUserInterfaceStyleLight;
