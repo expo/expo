@@ -7,8 +7,10 @@ import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
+import java.lang.Exception
+import java.lang.IllegalStateException
 
-class OtaModule(context: Context) : ExportedModule(context) {
+class OtaModule(context: Context,private val persistence: ExpoOTAPersistence, private val updater: OtaUpdater) : ExportedModule(context) {
 
     private var moduleRegistry: ModuleRegistry? = null
 
@@ -21,13 +23,11 @@ class OtaModule(context: Context) : ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun checkForUpdateAsync(username: String, slug: String, releaseChannel: String, sdkVersion: String, promise: Promise) {
-        val manifestRequestConfig = ExpoManifestConfig(username, slug, releaseChannel, sdkVersion)
-        downloadManifest(manifestRequestConfig, manifestHandler(slug, promise)) { e -> promise.reject("E_FETCH_MANIFEST_FAILED", e) }
+    fun checkForUpdateAsync(promise: Promise) {
+        updater.downloadManifest(manifestHandler(promise)) { e -> promise.reject("E_FETCH_MANIFEST_FAILED", e) }
     }
 
-    private fun manifestHandler(id: String, promise: Promise): (JSONObject) -> Unit = { manifest ->
-        val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, id)
+    private fun manifestHandler(promise: Promise): (JSONObject) -> Unit = { manifest ->
         val manifestComparator = VersionNumberManifestComparator()
         if (manifestComparator.shouldDownloadBundle(persistence.manifest, manifest)) {
             promise.resolve(manifest.toString())
@@ -37,30 +37,35 @@ class OtaModule(context: Context) : ExportedModule(context) {
     }
 
     @ExpoMethod
-    fun reload() {
-        ProcessPhoenix.triggerRebirth(context)
+    fun reload(promise: Promise) {
+        try {
+            ProcessPhoenix.triggerRebirth(context)
+            promise.resolve(true)
+        } catch (e: Exception) {
+            promise.reject(e)
+    }
     }
 
     @ExpoMethod
-    fun reloadFromCache() {
-        reload()
+    fun reloadFromCache(promise: Promise) {
+        reload(promise)
     }
 
     @ExpoMethod
-    fun fetchUpdatesAsync(username: String, slug: String, releaseChannel: String, sdkVersion: String, promise: Promise) {
-        val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, slug)
-        val manifestRequestConfig = ExpoManifestConfig(username, slug, releaseChannel, sdkVersion)
-        val otaConfig = ExpoOTAConfig(manifestRequestConfig, slug)
-        checkAndDownloadUpdate(context, persistence.manifest, otaConfig,
-                handleUpdate(persistence, promise),
-                { promise.resolve(null) },
-                { e -> promise.reject("E_UPDATE_FAILED", e)})
+    fun fetchUpdatesAsync(promise: Promise) {
+        if(persistence.config != null) {
+            updater.checkAndDownloadUpdate(handleUpdate(persistence, promise),
+                    { promise.resolve(null) },
+                    { e -> promise.reject("E_UPDATE_FAILED", e)})
+        } else {
+            throwUninitializedExpoOtaError()
+        }
     }
 
-    private fun handleUpdate(persistance: ExpoOTAPersistence, promise: Promise): (manifest: JSONObject, path: String) -> Unit =
+    private fun handleUpdate(persistence: ExpoOTAPersistence, promise: Promise): (manifest: JSONObject, path: String) -> Unit =
             { manifest, path ->
-                persistance.bundlePath = path
-                persistance.manifest = manifest
+                persistence.bundlePath = path
+                persistence.manifest = manifest
                 promise.resolve(manifest.toString())
             }
 

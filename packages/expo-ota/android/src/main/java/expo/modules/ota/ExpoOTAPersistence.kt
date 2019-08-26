@@ -8,10 +8,12 @@ const val EXPO_OTA_PREFERENCES = "expo_ota"
 const val KEY_BUNDLE_PATH = "bundlePath"
 const val KEY_MANIFEST = "manifest"
 
-class ExpoOTAPersistence(val context: Context, val identifier: String) {
+class ExpoOTAPersistence(val context: Context, val id: String) {
 
-    private val bundlePathKey: String = "$KEY_BUNDLE_PATH-$identifier"
-    private val manifestKey: String = "$KEY_MANIFEST-$identifier"
+    private val bundlePathKey: String = "$KEY_BUNDLE_PATH-$id"
+    private val manifestKey: String = "$KEY_MANIFEST-$id"
+
+    var config: ExpoOTAConfig? = null
 
     private val sharedPreferences: SharedPreferences
         get() = context.getSharedPreferences(EXPO_OTA_PREFERENCES, Context.MODE_PRIVATE)

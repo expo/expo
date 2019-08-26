@@ -9,16 +9,22 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val KEY_MANIFEST_BUNDLE_URL = "bundleUrl"
+const val DEFAULT_EXPO_OTA_ID = "default"
 
-class ExpoOTA(private val context: Context, private val config: ExpoOTAConfig, private val loadFromBundler: Boolean) {
+class ExpoOTA @JvmOverloads constructor(private val context: Context, private val config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID) {
 
-    private val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, config.id)
+    private val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, id)
+    private val updater = OtaUpdater(context, persistence, id)
+
+    init {
+        persistence.config = config
+    }
 
     var bundlePath = if(loadFromBundler) null else persistence.bundlePath
 
     fun init() {
         if (!loadFromBundler) {
-            checkAndDownloadUpdate(context, persistence.manifest, config, this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
+            updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
         }
     }
 

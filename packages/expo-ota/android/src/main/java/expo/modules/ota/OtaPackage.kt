@@ -8,9 +8,12 @@ import org.unimodules.core.ViewManager
 import java.util.Collections.emptyList
 import java.util.Collections.singletonList
 
-class OtaPackage : BasePackage() {
+class OtaPackage @JvmOverloads constructor(val id: String = DEFAULT_EXPO_OTA_ID) : BasePackage() {
+
     override fun createExportedModules(context: Context): List<ExportedModule> {
-        return singletonList<ExportedModule>(OtaModule(context) as ExportedModule)
+        val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, id)
+        val updater = OtaUpdater(context, persistence, id)
+        return singletonList<ExportedModule>(OtaModule(context, persistence, updater) as ExportedModule)
     }
 
     override fun createViewManagers(context: Context): List<ViewManager<*>> {
