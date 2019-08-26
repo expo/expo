@@ -5,12 +5,12 @@ commands:
     description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
     parameters:
       exclude:
-        description: 'Prevent the job from stopping if changes are found in this directory'
+        description: 'The job will halt if no files other than those matching the given regex have been modified'
         type: string
         # Exclude nothing
         default: '$^'
       require:
-        description: 'The job will halt if the matched files have not been modified'
+        description: 'The job will halt if no file matching the given regex has been modified'
         type: string
         # Require nothing
         default: '$^'
@@ -43,16 +43,16 @@ commands:
             checkModified () {
               file=$1
 
-              BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-              CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-              if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+              baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+              currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
+              if [ ! $baseFileHash = $currentFileHash ]; then
                 echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
                 set +e
                 # exit 0
               fi
             }
 
-            # Test all top-level directories
+            # Test all top-level files and directories
             for file in $(find $PWD/* -maxdepth << parameters.search_depth >> -not -path '*/\.*'); do
               if ! [[ $file =~ << parameters.exclude >> ]]; then
                 echo " -- [included] Checking ${file}"
@@ -103,9 +103,9 @@ commands:
               FILE_NAME=$(basename $file)
               if [[ " << parameters.require >> " =~ " ${FILE_NAME} " ]]; then
                 echo " -- Checking ${FILE_NAME}"
-                BASE_FILE_HASH=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
-                CURRENT_FILE_HASH=$(git log -1 --format=format:%H --full-diff "${file}")
-                if [ ! $BASE_FILE_HASH = $CURRENT_FILE_HASH ]; then
+                baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
+                currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
+                if [ ! $baseFileHash = $currentFileHash ]; then
                   echo " --- ▶️ ${FILE_NAME}/ has been modified on this branch. Continuing the job..."
                   set +e
                   exit 0
