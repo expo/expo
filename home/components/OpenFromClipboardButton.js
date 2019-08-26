@@ -11,9 +11,11 @@ import {
   View,
 } from 'react-native';
 import Constants from 'expo-constants';
-import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { StyledText } from './Text';
+import { StyledView } from './Views';
+import { Ionicons } from './Icons';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
@@ -26,7 +28,7 @@ export default class OpenFromClipboardButton extends React.Component {
     // Show info for iOS simulator about how to make clipboard contents available
     if (!isValid && Platform.OS === 'ios' && !Constants.isDevice) {
       return (
-        <View
+        <StyledView
           style={[
             styles.container,
             styles.infoContainer,
@@ -36,7 +38,7 @@ export default class OpenFromClipboardButton extends React.Component {
           <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
             {isValid ? clipboardContents : 'Press ⌘+v to move clipboard to simulator'}
           </Text>
-        </View>
+        </StyledView>
       );
     } else if (!isValid) {
       return null;
@@ -47,23 +49,25 @@ export default class OpenFromClipboardButton extends React.Component {
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[styles.container, styles.bottomBorder]}>
-        <View style={styles.iconContainer}>
-          <Ionicons name={Platform.OS === 'ios' ? 'ios-open' : 'md-open'} size={28} color="#888" />
-        </View>
+        style={styles.container}>
+        <StyledView style={{ flex: 1, flexDirection: 'row', paddingLeft: 5 }}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="md-arrow-dropright-circle" size={25} />
+          </View>
 
-        <View style={styles.infoContainer}>
-          <Text
-            style={[styles.titleText, !isValid && styles.invalidContents]}
-            ellipsizeMode="tail"
-            numberOfLines={1}>
-            Open from Clipboard
-          </Text>
+          <View style={styles.infoContainer}>
+            <StyledText
+              style={[styles.titleText, !isValid && styles.invalidContents]}
+              ellipsizeMode="tail"
+              numberOfLines={1}>
+              Open from Clipboard
+            </StyledText>
 
-          <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-            {clipboardContents}
-          </Text>
-        </View>
+            <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
+              {clipboardContents}
+            </Text>
+          </View>
+        </StyledView>
       </TouchableNativeFeedbackSafe>
     );
   }
@@ -80,17 +84,14 @@ export default class OpenFromClipboardButton extends React.Component {
 const styles = StyleSheet.create({
   bottomBorder: {
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   container: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    paddingLeft: 5,
     flex: 1,
   },
   iconContainer: {
-    width: 50,
+    width: 45,
+    paddingRight: 2,
     paddingTop: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -103,7 +104,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   titleText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginRight: 15,
     marginBottom: 2,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   subtitleText: {
     marginRight: 10,
     flex: 1,
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
   invalidContainer: {

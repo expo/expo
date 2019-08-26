@@ -157,6 +157,6 @@ export default class SignInScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
 });

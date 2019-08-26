@@ -2,10 +2,12 @@
 
 import React from 'react';
 import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
+import { Ionicons } from './Icons';
+import { StyledView } from './Views';
+import { StyledText } from './Text';
 
 export default class SeeAllProjectsButton extends React.Component {
   static defaultProps = {
@@ -24,17 +26,20 @@ export default class SeeAllProjectsButton extends React.Component {
       <TouchableNativeFeedback
         onPress={this.props.onPress}
         underlayColor="#c3c3c3"
-        fallback={TouchableHighlight}
-        style={styles.container}>
-        <Text style={styles.buttonText}>{this.props.label}</Text>
-        <View style={styles.arrowIconContainer}>
-          <Ionicons
-            name="ios-arrow-forward"
-            size={22}
-            color={Colors.greyText}
-            style={{ marginTop: -1, marginLeft: 15 }}
-          />
-        </View>
+        fallback={TouchableHighlight}>
+        <StyledView style={styles.container}>
+          <StyledText style={styles.buttonText} lightColor={Colors.light.blackText}>
+            {this.props.label}
+          </StyledText>
+          <View style={styles.arrowIconContainer}>
+            <Ionicons
+              name="ios-arrow-forward"
+              size={22}
+              color={Colors.light.greyText}
+              style={{ marginTop: -1, marginLeft: 15 }}
+            />
+          </View>
+        </StyledView>
       </TouchableNativeFeedback>
     );
   }
@@ -42,9 +47,8 @@ export default class SeeAllProjectsButton extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    flex: 1,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: Colors.separator,
     paddingTop: 15,
     paddingBottom: 12,
     paddingHorizontal: 15,
@@ -52,7 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {

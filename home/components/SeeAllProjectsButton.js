@@ -2,12 +2,14 @@
 
 import React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import FadeIn from 'react-native-fade-in-image';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
+import { Ionicons } from './Icons';
+import { StyledView } from './Views';
+import { StyledText } from './Text';
 
 const MAX_ICON_COUNT = 4;
 
@@ -31,33 +33,36 @@ export default class SeeAllProjectsButton extends React.Component {
       <TouchableNativeFeedback
         onPress={this.props.onPress}
         underlayColor="#c3c3c3"
-        fallback={TouchableHighlight}
-        style={styles.container}>
-        <Text style={styles.buttonText}>{this.props.label}</Text>
-        <View style={styles.appIconContainer}>
-          {take(apps, maxIconCount).map((app, i) =>
-            app.iconUrl ? (
-              <FadeIn key={i} placeholderColor="#eee">
-                <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
-              </FadeIn>
-            ) : (
-              <View key={i} style={styles.appIconPlaceholder} />
-            )
-          )}
+        fallback={TouchableHighlight}>
+        <StyledView style={styles.container}>
+          <StyledText style={styles.buttonText} lightColor={Colors.light.blackText}>
+            {this.props.label}
+          </StyledText>
+          <View style={styles.appIconContainer}>
+            {take(apps, maxIconCount).map((app, i) =>
+              app.iconUrl ? (
+                <FadeIn key={i} placeholderColor="#eee">
+                  <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
+                </FadeIn>
+              ) : (
+                <View key={i} style={styles.appIconPlaceholder} />
+              )
+            )}
 
-          {otherAppCount > 0 && (
-            <View style={styles.projectsNumberContainer}>
-              <Text style={styles.projectsNumberText}>+{otherAppCount}</Text>
-            </View>
-          )}
+            {otherAppCount > 0 && (
+              <View style={styles.projectsNumberContainer}>
+                <Text style={styles.projectsNumberText}>+{otherAppCount}</Text>
+              </View>
+            )}
 
-          <Ionicons
-            name="ios-arrow-forward"
-            size={22}
-            color={Colors.greyText}
-            style={{ marginTop: -1, marginLeft: 15 }}
-          />
-        </View>
+            <Ionicons
+              name="ios-arrow-forward"
+              size={22}
+              color={Colors.light.greyText}
+              style={{ marginTop: -1, marginLeft: 15 }}
+            />
+          </View>
+        </StyledView>
       </TouchableNativeFeedback>
     );
   }
@@ -65,9 +70,8 @@ export default class SeeAllProjectsButton extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    flex: 1,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: Colors.separator,
     paddingTop: 15,
     paddingBottom: 12,
     paddingHorizontal: 15,
@@ -75,7 +79,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
   projectsNumberText: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     backgroundColor: 'transparent',
   },
   projectsNumberContainer: {
