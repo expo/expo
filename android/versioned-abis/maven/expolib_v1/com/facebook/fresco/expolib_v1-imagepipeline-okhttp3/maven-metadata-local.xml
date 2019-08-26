@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>expolib_v1.com.facebook.fresco</groupId>
+  <artifactId>expolib_v1-imagepipeline-okhttp3</artifactId>
+  <versioning>
+    <release>1.0.1</release>
+    <versions>
+      <version>1.0.1</version>
+    </versions>
+    <lastUpdated>20170809225739</lastUpdated>
+  </versioning>
+</metadata>

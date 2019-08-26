@@ -1,1 +1,0 @@
-../../../RNGestureHandler/ios/RNGestureHandlerButton.h

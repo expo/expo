@@ -12,8 +12,7 @@ export default class NoProjectsOpen extends React.Component {
     if (isAuthenticated) {
       message = 'No projects are currently open.';
     } else {
-      message =
-        'Sign in to your Expo account to see the projects you have recently been working on.';
+      message = 'Sign in to your Expo account to see the projects you have recently been working on.'
     }
 
     return (

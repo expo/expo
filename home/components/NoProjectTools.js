@@ -1,13 +1,16 @@
 /* @flow */
 
 import React from 'react';
-import { Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Keyboard, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 
 export default class QRCodeButton extends React.Component {
   render() {
+    let { fullWidthBorder } = this.props;
+
     return (
       <TouchableNativeFeedbackSafe
         onPress={this._handlePressAsync}

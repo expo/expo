@@ -343,4 +343,4 @@ dependencies {
 }
 
 apply(from: "release.gradle")
-apply from: 'maven-build.gradle'
+apply from: 'expolib-build.gradle'

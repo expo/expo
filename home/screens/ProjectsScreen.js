@@ -3,6 +3,7 @@
  */
 
 import Constants from 'expo-constants';
+import _ from 'lodash';
 import React from 'react';
 import {
   AppState,
@@ -23,6 +24,7 @@ import ScrollView from '../components/NavigationScrollView';
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
+import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import DevIndicator from '../components/DevIndicator';
 import HistoryActions from '../redux/HistoryActions';
@@ -331,7 +333,8 @@ export default class ProjectsScreen extends React.Component {
         <Text style={styles.supportSdksText}>
           Supported SDK
           {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
-          {SupportedExpoSdks.map(semver.major)
+          {SupportedExpoSdks
+            .map(semver.major)
             .sort((a, b) => a - b)
             .join(', ')}
         </Text>

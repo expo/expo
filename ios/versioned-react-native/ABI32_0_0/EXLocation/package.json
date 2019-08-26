@@ -1,0 +1,48 @@
+{
+  "name": "expo-location",
+  "version": "1.1.0",
+  "description": "Expo Location standalone universal module",
+  "main": "build/Location.js",
+  "types": "build/Location.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "postinstall": "expo-module postinstall",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "location",
+    "geolocation",
+    "coords",
+    "geocoding",
+    "compass",
+    "heading"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-location",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "peerDependencies": {
+    "expo-core": "~1.2.0",
+    "expo-permissions-interface": "~1.2.0",
+    "expo-task-manager-interface": "~1.0.0"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.0"
+  }
+}

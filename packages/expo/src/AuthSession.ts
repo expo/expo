@@ -1,8 +1,8 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
 
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 import Linking from './Linking/Linking';
+import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
 
 type AuthSessionOptions = {
   authUrl: string;

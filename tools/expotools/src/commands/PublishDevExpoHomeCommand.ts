@@ -22,7 +22,7 @@ async function maybeUpdateHomeSdkVersionAsync(appJsonPath: string): Promise<void
 
     await fs.outputFile(
       appJsonPath,
-      appJsonContents.replace(/"(sdkVersion|version)": "[^"]*"/g, `"$1": "${iosSdkVersion}"`)
+      appJsonContents.replace(/"(sdkVersion|version)": "[^"]*"/g, `"$1": "${iosSdkVersion}"`),
     );
   }
 }
@@ -44,7 +44,7 @@ async function action(): Promise<void> {
     json5: true,
   });
 
-  const appJson = ((await appJsonFile.readAsync()) as unknown) as AppConfig;
+  const appJson = await appJsonFile.readAsync() as unknown as AppConfig;
 
   appJson.expo.slug = slug;
   delete appJson.expo.kernel;

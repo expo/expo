@@ -4,7 +4,6 @@ framework module FirebaseAnalytics {
   module * { export * }
   link "sqlite3"
   link "z"
-  link framework "CoreData"
   link framework "Security"
   link framework "StoreKit"
   link framework "SystemConfiguration"

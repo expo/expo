@@ -1,7 +1,9 @@
 import * as GL from 'expo-gl';
+import { Asset } from 'expo-asset';
 import React from 'react';
+import * as THREE from 'three';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Renderer, TextureLoader, THREE } from 'expo-three';
+import ExpoTHREE from './ExpoTHREE';
 
 interface State {
   snapshot?: GL.GLSnapshot;
@@ -28,7 +30,7 @@ export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
       });
       this.setState({ snapshot });
     }
-  };
+  }
 
   onContextCreate = async (gl: GL.ExpoWebGLRenderingContext) => {
     const scene = new THREE.Scene();
@@ -39,13 +41,15 @@ export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
       1000
     );
 
-    const renderer = new Renderer({ gl });
+    const renderer = ExpoTHREE.createRenderer({ gl });
     renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
     renderer.setClearColor(0xffffff, 0);
 
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({
-      map: new TextureLoader().load(require('../../../assets/images/swmansion.png')),
+      map: await ExpoTHREE.createTextureAsync({
+        asset: Asset.fromModule(require('../../../assets/images/swmansion.png')),
+      }),
     });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
@@ -65,7 +69,7 @@ export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
       gl.endFrameEXP();
     };
     animate();
-  };
+  }
 
   render() {
     const { snapshot } = this.state;
@@ -75,7 +79,7 @@ export default class GLSnapshotsScreen extends React.PureComponent<{}, State> {
         <GL.GLView
           style={styles.flex}
           onContextCreate={this.onContextCreate}
-          ref={ref => (this.glView = ref!)}
+          ref={ref => this.glView = ref!}
         />
 
         {snapshot && (

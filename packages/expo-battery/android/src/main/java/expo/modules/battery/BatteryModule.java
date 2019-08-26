@@ -99,74 +99,67 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void getBatteryLevelAsync(Promise promise) {
-    Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(
-      null,
-      new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-    if (batteryIntent == null) {
-      promise.resolve(-1);
-      return;
+    try {
+      Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+      int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+      int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+      float batteryLevel = level / (float) scale;
+      promise.resolve(batteryLevel);
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_BATTERY_LEVEL", "Could not get battery level", e);
     }
-
-    int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-    int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-    float batteryLevel = (level != -1 && scale != -1) ? level / (float) scale : -1;
-    promise.resolve(batteryLevel);
   }
 
   @ExpoMethod
   public void getBatteryStateAsync(Promise promise) {
-    Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(
-      null,
-      new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-    if (batteryIntent == null) {
-      promise.resolve(BatteryState.UNKNOWN.getValue());
-      return;
+    try {
+      IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+      Intent batteryStatus = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
+      int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+      promise.resolve(batteryStatusNativeToJS(status).getValue());
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_BATTERY_STATE", "Could not get battery state", e);
     }
-
-    int status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-    promise.resolve(batteryStatusNativeToJS(status).getValue());
   }
 
   @ExpoMethod
   public void isLowPowerModeEnabledAsync(Promise promise) {
-    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-    if (powerManager == null) {
-      promise.reject("ERR_BATTERY_LOW_POWER_UNREADABLE", "Could not get low-power mode");
-      return;
+    try {
+      PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+      boolean lowPowerMode = powerManager.isPowerSaveMode();
+      promise.resolve(lowPowerMode);
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_POWER_SAVER", "Could not get power saver mode", e);
     }
-
-    boolean lowPowerMode = powerManager.isPowerSaveMode();
-    promise.resolve(lowPowerMode);
   }
 
   @ExpoMethod
   public void getPowerStateAsync(Promise promise) {
-    Bundle result = new Bundle();
-    IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-    Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
+    try {
+      Bundle result = new Bundle();
+      IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
 
-    if (batteryIntent == null) {
-      result.putFloat("batteryLevel", -1);
-      result.putInt("batteryState", BatteryState.UNKNOWN.getValue());  
-    } else {
+      Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
       int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
       int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-      float batteryLevel = (level != -1 && scale != -1) ? level / (float) scale : -1;
+      float batteryLevel = level / (float) scale;
       result.putFloat("batteryLevel", batteryLevel);
 
-      int status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      result.putInt("batteryState", batteryStatusNativeToJS(status).getValue());  
-    }
+      Intent batteryStatus = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
+      int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+      result.putInt("batteryState",  batteryStatusNativeToJS(status).getValue());
 
-    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-    if (powerManager == null) {
-      promise.reject("ERR_BATTERY_LOW_POWER_UNREADABLE", "Could not get low-power mode");
-      return;
-    } else {
+      PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
       boolean lowPowerMode = powerManager.isPowerSaveMode();
       result.putBoolean("lowPowerMode", lowPowerMode);
-    }
 
-    promise.resolve(result);
+      promise.resolve(result);
+    } catch (NullPointerException e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_BATTERY_INVALID_ACCESS_POWER_STATE", "Could not get battery power state", e);
+    }
   }
 }

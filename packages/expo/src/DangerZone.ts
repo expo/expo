@@ -6,7 +6,6 @@ import removedModule from './removedModule';
 
 declare var module: any;
 
-/* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
   Lottie: {
     enumerable: true,

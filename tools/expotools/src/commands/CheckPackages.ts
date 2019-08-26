@@ -43,10 +43,6 @@ async function action(options) {
         }
         await runScriptAsync(pkg, 'test', args);
       }
-      if (options.lint) {
-        const args = ['--max-warnings', '0'];
-        await runScriptAsync(pkg, 'lint', args);
-      }
       console.log(`✨ ${chalk.bold.green(pkg.packageName)} checks passed.`);
       passCount++;
     } catch (error) {
@@ -64,7 +60,7 @@ async function action(options) {
     console.log(
       `${chalk.green(`🏁 ${passCount} packages passed`)},`,
       `${chalk.magenta(`${failureCount} ${failureCount === 1 ? 'package' : 'packages'} failed:`)}`,
-      failedPackages.map(failedPackage => chalk.yellow(failedPackage)).join(', ')
+      failedPackages.map(failedPackage => chalk.yellow(failedPackage)).join(', '),
     );
     process.exit(1);
   }
@@ -75,11 +71,7 @@ function consoleErrorOutput(output: string, label: string, color: (string) => st
   console.error(lines.map(line => `${chalk.gray(label)} ${color(line)}`).join('\n'));
 }
 
-async function runScriptAsync(
-  pkg: Package,
-  scriptName: string,
-  args: string[] = []
-): Promise<void> {
+async function runScriptAsync(pkg: Package, scriptName: string, args: string[] = []): Promise<void> {
   if (!pkg.scripts[scriptName]) {
     // Package doesn't have such script.
     console.log(chalk.gray(`🤷‍♂️ Script \`${chalk.cyan(scriptName)}\` not found`));
@@ -95,9 +87,7 @@ async function runScriptAsync(
       cwd: pkg.path,
     });
   } catch (error) {
-    console.error(
-      chalk.bold.red(`Script \`${chalk.cyan(scriptName)}\` failed, see process output:`)
-    );
+    console.error(chalk.bold.red(`Script \`${chalk.cyan(scriptName)}\` failed, see process output:`));
     consoleErrorOutput(error.stdout, 'stdout >', chalk.reset);
     consoleErrorOutput(error.stderr, 'stderr >', chalk.red);
 
@@ -124,23 +114,16 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
       console.error(chalk.yellow(path.relative(pkg.path, filePath)));
     });
 
-    throw new Error(
-      `The build folder for ${pkg.packageName} has uncommitted changes after building.`
-    );
+    throw new Error(`The build folder for ${pkg.packageName} has uncommitted changes after building.`);
   }
 }
 
 export default (program: Command) => {
   program
     .command('check-packages')
-    .option('--no-build', 'Whether to skip `yarn build` check.', false)
-    .option('--no-test', 'Whether to skip `yarn test` check.', false)
-    .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
-    .option(
-      '--no-uniformity-check',
-      'Whether to check the uniformity of committed and generated build files.',
-      false
-    )
+    .option('--no-build', 'Whether to skip `yarn run build` check.', false)
+    .option('--no-test', 'Whether to skip `yarn run test` check.', false)
+    .option('--no-uniformity-check', 'Whether to check the uniformity of committed and generated build files.', false)
     .option('-o, --only <package names>', 'Comma-separated list of package names to check.', '')
     .description('Checks if packages build successfully and their tests pass.')
     .asyncAction(action);

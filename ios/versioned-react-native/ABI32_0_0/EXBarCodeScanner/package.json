@@ -1,0 +1,26 @@
+{
+  "name": "expo-barcode-scanner",
+  "version": "1.1.0",
+  "description": "Expo BarCode Scanner standalone universal module",
+  "main": "index.js",
+  "keywords": [
+    "barcode",
+    "barcode-scanner",
+    "react-native",
+    "expo"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo-core": "~1.2.0"
+  },
+  "dependencies": {
+    "expo-barcode-scanner-interface": "~1.1.0",
+    "lodash.mapvalues": "^4.6.0",
+    "prop-types": "^15.6.0"
+  },
+  "devDependencies": {
+    "flow-bin": "0.79.1"
+  }
+}

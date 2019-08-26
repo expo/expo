@@ -1,4 +1,4 @@
-import Platform from '../Platform';
+import { Platform } from '../index';
 import { CodedError } from './CodedError';
 
 /**
@@ -10,7 +10,9 @@ export class UnavailabilityError extends CodedError {
   constructor(moduleName: string, propertyName: string) {
     super(
       'ERR_UNAVAILABLE',
-      `The method or property ${moduleName}.${propertyName} is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly?`
+      `The method or property ${moduleName}.${propertyName} is not available on ${
+        Platform.OS
+      }, are you sure you've linked all the native dependencies properly?`
     );
   }
 }

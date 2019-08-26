@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { UnavailabilityError, CodedError } from '@unimodules/core';
-import { canUseViewport } from 'fbjs/lib/ExecutionEnvironment';
 function getImageForAsset(asset) {
     if (asset != null && typeof asset === 'object' && asset !== null && asset.downloadAsync) {
         const dataURI = asset.localUri || asset.uri || '';
@@ -131,7 +130,7 @@ export class GLView extends React.Component {
         });
     }
     componentDidMount() {
-        if (canUseViewport && window.addEventListener) {
+        if (window.addEventListener) {
             window.addEventListener('resize', this._updateLayout);
         }
     }
@@ -150,7 +149,7 @@ export class GLView extends React.Component {
         window.removeEventListener('resize', this._updateLayout);
     }
     render() {
-        const { devicePixelRatio = 1 } = canUseViewport ? window : {};
+        const { devicePixelRatio = 1 } = window;
         const { style, ...props } = this.props;
         const { width, height } = this.state;
         const domProps = stripNonDOMProps(props);

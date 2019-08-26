@@ -1,0 +1,28 @@
+{
+  "name": "expo-local-authentication",
+  "version": "1.1.0",
+  "description": "Expo module to authenticate device owner",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "authentication",
+    "auth",
+    "touchID",
+    "faceID",
+    "fingerprint"
+  ],
+  "homepage": "https://docs.expo.io/",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo-constants-interface": "~1.1.0"
+  },
+  "dependencies": {
+    "expo-core": "~1.2.0",
+    "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.77.0"
+  }
+}

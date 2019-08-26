@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`authAsync unavailable on web 1`] = `"The method or property expo-app-auth.authAsync is not available on web, are you sure you've linked all the native dependencies properly?"`;

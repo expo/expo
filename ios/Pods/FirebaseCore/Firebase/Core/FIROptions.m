@@ -179,7 +179,6 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
   if (newOptions) {
     newOptions.optionsDictionary = self.optionsDictionary;
     newOptions.deepLinkURLScheme = self.deepLinkURLScheme;
-    newOptions.appGroupID = self.appGroupID;
     newOptions.editingLocked = self.isEditingLocked;
     newOptions.usingOptionsFromDefaultPlist = self.usingOptionsFromDefaultPlist;
   }
@@ -339,11 +338,6 @@ static NSDictionary *sDefaultOptionsDictionary = nil;
 - (void)setBundleID:(NSString *)bundleID {
   [self checkEditingLocked];
   _optionsDictionary[kFIRBundleID] = [bundleID copy];
-}
-
-- (void)setAppGroupID:(NSString *)appGroupID {
-  [self checkEditingLocked];
-  _appGroupID = [appGroupID copy];
 }
 
 #pragma mark - Internal instance methods

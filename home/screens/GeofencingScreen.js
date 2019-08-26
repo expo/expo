@@ -95,7 +95,7 @@ export default class GeofencingScreen extends React.Component {
         'You will be receiving notifications when the device enters or exits from selected regions.'
       );
     }
-    this.setState(state => ({ isGeofencing: !state.isGeofencing }));
+    this.setState({ isGeofencing: !this.state.isGeofencing });
   };
 
   shiftRegionRadius = () => {
@@ -119,26 +119,21 @@ export default class GeofencingScreen extends React.Component {
     }
   };
 
-  onMapPress = ({ nativeEvent: { coordinate } }) => {
-    this.setState(
-      state => ({
-        geofencingRegions: [
-          ...state.geofencingRegions,
-          {
-            identifier: `${coordinate.latitude},${coordinate.longitude}`,
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude,
-            radius: state.newRegionRadius,
-          },
-        ],
-      }),
-      async () => {
-        if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
-          // update existing geofencing task
-          await Location.startGeofencingAsync(GEOFENCING_TASK, this.state.geofencingRegions);
-        }
-      }
-    );
+  onMapPress = async ({ nativeEvent: { coordinate } }) => {
+    const geofencingRegions = [...this.state.geofencingRegions];
+
+    geofencingRegions.push({
+      identifier: `${coordinate.latitude},${coordinate.longitude}`,
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      radius: this.state.newRegionRadius,
+    });
+    this.setState({ geofencingRegions });
+
+    if (await Location.hasStartedGeofencingAsync(GEOFENCING_TASK)) {
+      // update existing geofencing task
+      await Location.startGeofencingAsync(GEOFENCING_TASK, geofencingRegions);
+    }
   };
 
   renderRegions() {
@@ -224,7 +219,9 @@ async function getSavedRegions() {
 if (Platform.OS !== 'android') {
   TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }) => {
     const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
-    const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${region.longitude} and radius: ${region.radius}m`;
+    const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${
+      region.longitude
+    } and radius: ${region.radius}m`;
 
     await Notifications.presentLocalNotificationAsync({
       title: 'Expo Geofencing',

@@ -1,7 +1,6 @@
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
 import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 function getExpoPackage() {
     try {
         return require('expo/package.json');
@@ -40,7 +39,7 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
+        return { web: UAParser(navigator.userAgent) };
     },
     get isHeadless() {
         return false;
@@ -56,13 +55,8 @@ export default {
         return getExpoPackage().version;
     },
     get linkingUri() {
-        if (canUseDOM) {
-            // On native this is `exp://`
-            return location.origin + location.pathname;
-        }
-        else {
-            return '';
-        }
+        // On native this is `exp://`
+        return location.origin + location.pathname;
     },
     get expoRuntimeVersion() {
         return getExpoPackage().version;
@@ -89,28 +83,18 @@ export default {
         return null;
     },
     get manifest() {
-        // This is defined by @expo/webpack-config.
+        // This is defined by @expo/webpack-config. 
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
     get experienceUrl() {
-        if (canUseDOM) {
-            return location.origin + location.pathname;
-        }
-        else {
-            return '';
-        }
+        return location.origin + location.pathname;
     },
     get debugMode() {
         return __DEV__;
     },
     async getWebViewUserAgentAsync() {
-        if (canUseDOM) {
-            return navigator.userAgent;
-        }
-        else {
-            return null;
-        }
+        return navigator.userAgent;
     },
 };
 //# sourceMappingURL=ExponentConstants.web.js.map

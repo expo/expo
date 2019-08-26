@@ -1,3 +1,4 @@
+
 export default interface AppConfig {
   expo: {
     name: string;
@@ -26,5 +27,5 @@ export default interface AppConfig {
       androidManifestPath: string;
     };
     isKernel?: boolean;
-  };
+  }
 }

@@ -57,9 +57,9 @@ Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.
 
 List of all the native languages provided by the user settings. These are returned in the order the user defines in their native settings.
 
-#### `Localization.region: ?string`
+#### `Localization.country: ?string`
 
-**Available on iOS and Web.**  Region code for your device which came from `Region` setting in `Language & Region`. Ex: `US`, `NZ`.
+Country code for your device.
 
 #### `Localization.isoCurrencyCodes: ?Array<string>`
 
@@ -87,7 +87,7 @@ type NativeEvent = {
   locales: Array<string>,
   timezone: string,
   isoCurrencyCodes: ?Array<string>,
-  region: ?string, // iOS and Web
+  country: ?string,
   isRTL: boolean,
 };
 ```

@@ -23,7 +23,7 @@ import host.exp.exponent.notifications.helpers.ExpoCronDefinitionBuilder;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
-@Table(database = SchedulersDatabase.class)
+@Table(databaseName = SchedulersDatabase.NAME)
 public class CalendarSchedulerModel extends BaseModel implements SchedulerModel {
 
   private static List<String> triggeringActions = Arrays.asList(null,

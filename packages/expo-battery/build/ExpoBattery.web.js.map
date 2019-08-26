@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoBattery.web.js","sourceRoot":"","sources":["../src/ExpoBattery.web.ts"],"names":[],"mappings":"AAAA,eAAe,EAAE,CAAC","sourcesContent":["export default {};\n"]}
+{"version":3,"file":"ExpoBattery.web.js","sourceRoot":"","sources":["../src/ExpoBattery.web.ts"],"names":[],"mappings":"AAAA,eAAe,EAEd,CAAC","sourcesContent":["export default {\n  \n};\n"]}

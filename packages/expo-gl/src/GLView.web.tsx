@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { UnavailabilityError, CodedError } from '@unimodules/core';
-import { canUseViewport } from 'fbjs/lib/ExecutionEnvironment';
 import {
   BaseGLViewProps,
   GLSnapshot,
@@ -152,7 +151,7 @@ export class GLView extends React.Component<GLViewProps, State> {
   }
 
   componentDidMount() {
-    if (canUseViewport && window.addEventListener) {
+    if (window.addEventListener) {
       window.addEventListener('resize', this._updateLayout);
     }
   }
@@ -189,7 +188,7 @@ export class GLView extends React.Component<GLViewProps, State> {
   };
 
   render() {
-    const { devicePixelRatio = 1 } = canUseViewport ? window : {};
+    const { devicePixelRatio = 1 } = window;
     const { style, ...props } = this.props;
     const { width, height } = this.state;
     const domProps = stripNonDOMProps(props);

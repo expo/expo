@@ -147,47 +147,20 @@ An array of file glob strings which point to assets that will be bundled within 
 
 ### `"androidStatusBar"`
 
-Configuration for the status bar on Android.
+Configuration for android statusbar.
 
 ```javascript
 {
   "androidStatusBar": {
     /*
-      Configures the status-bar icons to have a light or dark color.
+      Configure the statusbar icons to have light or dark color.
       Valid values: "light-content", "dark-content".
     */
     "barStyle": STRING,
 
     /*
-      Specifies the background color of the status bar.
-      Six-character hex color string, e.g., "#000000"
-    */
-    "backgroundColor": STRING
-  }
-}
-```
-
-### `"androidNavigationBar"`
-
-Configuration for the bottom navigation bar on Android.
-
-```javascript
-{
-  "androidNavigationBar": {
-    /*
-      Determines whether to show or hide the bottom navigation bar.
-      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
-    */
-    "visible": BOOLEAN,
-    /*
-      Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
-      Valid values: "light-content", "dark-content".
-    */
-    "barStyle": STRING,
-
-    /*
-      Specifies the background color of the navigation bar.
-      Six-character hex color string, e.g., "#000000"
+      Configuration for android statusbar.
+      6 character long hex color string, eg: "#000000"
     */
     "backgroundColor": STRING
   }
@@ -404,8 +377,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
-      
-      Entries must follow the format "applinks:<fully qualified domain>[:port number]". See Apple's docs for details -> https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains
+      Entries must be prefixed with "www."
 
       ExpoKit: use Xcode to set this.
     */
@@ -462,14 +434,6 @@ Configuration for how and when the app should request OTA JavaScript updates
     },
 
     "splash": {
-      /*
-        Local path to a .xib interface builder document which will be used as the
-        loading screen of the standalone iOS app.
-        Note that this will only be used in the standalone app (i.e., after you
-        build the app). It will not be used in the Expo client.
-      */
-      "xib": STRING,
-
       /*
         Color to fill the loading screen background 6 character long hex color string, eg: "#000000"
       */

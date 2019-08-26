@@ -34,6 +34,26 @@ typedef NS_ENUM(NSInteger, FIRConfigType) {
   FIRConfigTypeSDK = 2,
 };
 
+/**
+ * Names of services provided by Firebase.
+ */
+extern NSString *const kFIRServiceAdMob;
+extern NSString *const kFIRServiceAuth;
+extern NSString *const kFIRServiceAuthUI;
+extern NSString *const kFIRServiceDatabase;
+extern NSString *const kFIRServiceDynamicLinks;
+extern NSString *const kFIRServiceInstanceID;
+extern NSString *const kFIRServiceMessaging;
+extern NSString *const kFIRServiceMeasurement;
+extern NSString *const kFIRServiceRemoteConfig;
+extern NSString *const kFIRServiceStorage;
+
+/**
+ * Names of services provided by the Google pod, but logged by the Firebase pod.
+ */
+extern NSString *const kGGLServiceAnalytics;
+extern NSString *const kGGLServiceSignIn;
+
 extern NSString *const kFIRDefaultAppName;
 extern NSString *const kFIRAppReadyToConfigureSDKNotification;
 extern NSString *const kFIRAppDeleteNotification;
@@ -140,8 +160,6 @@ extern NSString *const FIRAuthStateDidChangeInternalNotificationUIDKey;
 
 /**
  * Used by each SDK to send logs about SDK configuration status to Clearcut.
- *
- * @note This API is a no-op, please remove calls to it.
  */
 - (void)sendLogsWithServiceName:(NSString *)serviceName
                         version:(NSString *)version

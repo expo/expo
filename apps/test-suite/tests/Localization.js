@@ -1,6 +1,6 @@
 import * as Localization from 'expo-localization';
-import { Platform } from 'react-native';
 import i18n from 'i18n-js';
+import { Platform } from 'react-native';
 
 const en = {
   good: 'good',
@@ -38,15 +38,14 @@ export function test(t) {
         locales,
         timezone,
         isoCurrencyCodes,
-        region,
+        country,
         isRTL,
       } = await Localization.getLocalizationAsync();
 
       validateString(locale);
       validateString(timezone);
-      if (Platform.OS === 'ios') {
-        validateString(region);
-      }
+      validateString(country);
+
       validateStringArray(isoCurrencyCodes);
       validateStringArray(locales);
       t.expect(locales[0]).toBe(Localization.locale);
@@ -55,15 +54,13 @@ export function test(t) {
   });
 
   t.describe(`Localization defines constants`, () => {
-    if (Platform.OS === 'ios') {
-      t.it('Gets the current device country', async () => {
-        const result = Localization.region;
+    t.it('Gets the current device country', async () => {
+      const result = Localization.country;
 
-        t.expect(result).toBeDefined();
-        t.expect(typeof result).toBe('string');
-        t.expect(result.length > 0).toBe(true);
-      });
-    }
+      t.expect(result).toBeDefined();
+      t.expect(typeof result).toBe('string');
+      t.expect(result.length > 0).toBe(true);
+    });
     t.it('Gets the current locale', async () => {
       const result = Localization.locale;
 

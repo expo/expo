@@ -14,17 +14,17 @@ UM_EXPORT_MODULE(ExpoApplication);
 
 UM_EXPORT_METHOD_AS(getIosIdForVendorAsync, getIosIdForVendorAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve([[UIDevice currentDevice].identifierForVendor UUIDString]);
+    resolve([[UIDevice currentDevice].identifierForVendor UUIDString]);
 }
 
 UM_EXPORT_METHOD_AS(getInstallationTimeAsync, getInstallationTimeAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSURL *urlToDocumentsFolder = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+  NSURL* urlToDocumentsFolder = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
   NSError *error = nil;
   NSDate *installDate = [[[NSFileManager defaultManager] attributesOfItemAtPath:urlToDocumentsFolder.path error:&error] objectForKey:NSFileCreationDate];
-  if (error) {
+  if(error){
     reject(@"ERR_APPLICATION", @"Unable to get installation time of this application.", error);
-  } else {
+  } else{
     NSTimeInterval timeInMilliseconds = [installDate timeIntervalSince1970] * 1000;
     NSNumber *timeNumber = @(timeInMilliseconds);
     resolve(timeNumber);

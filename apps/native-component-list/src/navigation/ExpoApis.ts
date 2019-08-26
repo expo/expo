@@ -4,14 +4,12 @@ import ActionSheet from '../screens/ActionSheetScreen';
 import AppAuth from '../screens/AppAuthScreen';
 import Audio from '../screens/AV/AudioScreen';
 import AuthSession from '../screens/AuthSessionScreen';
-import Battery from '../screens/BatteryScreen';
 import Branch from '../screens/BranchScreen';
 import Brightness from '../screens/BrightnessScreen';
 import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
 import ContactDetail from '../screens/Contacts/ContactDetailScreen';
 import Contacts from '../screens/Contacts/ContactsScreen';
-import Device from '../screens/DeviceScreen';
 import DocumentPicker from '../screens/DocumentPickerScreen';
 import Events from '../screens/EventsScreen';
 import FacebookLogin from '../screens/FacebookLoginScreen';
@@ -72,10 +70,8 @@ const optionalScreens: {
   Audio,
   AuthSession,
   BackgroundFetch,
-  Battery,
   Branch,
   Brightness,
-  Device,
   DocumentPicker,
   Localization,
   FacebookLogin,

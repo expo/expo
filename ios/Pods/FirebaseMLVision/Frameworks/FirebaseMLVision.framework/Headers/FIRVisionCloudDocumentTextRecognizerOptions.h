@@ -2,7 +2,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Options for a cloud document text recognizer. */
+/**
+ * Options for a cloud document text recognizer.
+ */
 NS_SWIFT_NAME(VisionCloudDocumentTextRecognizerOptions)
 @interface FIRVisionCloudDocumentTextRecognizerOptions : NSObject
 
@@ -17,7 +19,9 @@ NS_SWIFT_NAME(VisionCloudDocumentTextRecognizerOptions)
  */
 @property(nonatomic, copy, nullable) NSString *APIKeyOverride;
 
-/** Designated initializer that creates a new instance of cloud document text recognizer options. */
+/**
+ * Designated initializer that creates a new instance of cloud document text recognizer options.
+ */
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 @end

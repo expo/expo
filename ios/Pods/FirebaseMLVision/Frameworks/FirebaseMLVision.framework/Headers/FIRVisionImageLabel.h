@@ -3,7 +3,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Represents a label for an image. */
+/**
+ * Represents a label for an image.
+ */
 NS_SWIFT_NAME(VisionImageLabel)
 @interface FIRVisionImageLabel : NSObject
 
@@ -15,7 +17,9 @@ NS_SWIFT_NAME(VisionImageLabel)
  */
 @property(nonatomic, copy, readonly) NSString *text;
 
-/** Confidence for the label in range [0, 1]. The value is a `floatValue`. */
+/**
+ * Confidence for the label in range [0, 1]. The value is a `floatValue`.
+ */
 @property(nonatomic, readonly, nullable) NSNumber *confidence;
 
 /**
@@ -25,7 +29,9 @@ NS_SWIFT_NAME(VisionImageLabel)
  */
 @property(nonatomic, copy, readonly, nullable) NSString *entityID;
 
-/** Unavailable. */
+/**
+ * Unavailable.
+ */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

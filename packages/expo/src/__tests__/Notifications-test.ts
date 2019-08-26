@@ -111,9 +111,7 @@ describe('Notifications', () => {
       repeat: 'minute',
     });
 
-    expect(
-      NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification
-    ).toHaveBeenCalledTimes(1);
+    expect(NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification).toHaveBeenCalledTimes(1);
   });
 
   it('properly schedules notification when options are correct (time passed as date obj, repeated, Android)', async () => {
@@ -137,9 +135,7 @@ describe('Notifications', () => {
       repeat: 'minute',
     });
 
-    expect(
-      NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification
-    ).toHaveBeenCalledTimes(1);
+    expect(NativeModules.ExponentNotifications.legacyScheduleLocalRepeatingNotification).toHaveBeenCalledTimes(1);
   });
 
   it('properly schedules notification when options are correct (time passed as number, repeated, Android)', async () => {

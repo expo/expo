@@ -19,13 +19,12 @@ async function action(options) {
 
   if (updateReactNativeDocs) {
     const reactNativeWebsiteDir = path.join(DOCS_DIR, 'react-native-website');
-    const reactNativePackageJsonPath = path.join(
-      EXPO_DIR,
-      'react-native-lab',
-      'react-native',
-      'package.json'
+    const reactNativePackageJsonPath = path.join(EXPO_DIR, 'react-native-lab', 'react-native', 'package.json');
+    const reactNativeVersion = await JsonFile.getAsync(
+      reactNativePackageJsonPath,
+      'version',
+      null,
     );
-    const reactNativeVersion = await JsonFile.getAsync(reactNativePackageJsonPath, 'version', null);
 
     if (!reactNativeVersion) {
       throw new Error(`React Native version not found at ${reactNativePackageJsonPath}`);
@@ -55,16 +54,21 @@ async function action(options) {
 
   console.log(`\nSetting version ${chalk.red(sdk)} in ${chalk.yellow('package.json')}...`);
 
-  await JsonFile.setAsync(path.join(DOCS_DIR, 'package.json'), 'version', sdk);
+  await JsonFile.setAsync(
+    path.join(DOCS_DIR, 'package.json'),
+    'version',
+    sdk,
+  );
 
   if (await fs.exists(targetSdkDirectory)) {
     console.log(chalk.magenta(`v${sdk}`), 'directory already exists. Skipping copy operation.');
   } else {
-    console.log(
-      `Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(`v${sdk}`)} directory...`
-    );
+    console.log(`Copying ${chalk.yellow('unversioned')} docs to ${chalk.yellow(`v${sdk}`)} directory...`);
 
-    await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
+    await fs.copy(
+      path.join(SDK_DOCS_DIR, 'unversioned'),
+      targetSdkDirectory,
+    );
   }
 }
 

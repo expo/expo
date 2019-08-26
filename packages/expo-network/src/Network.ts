@@ -1,9 +1,7 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
 
 import ExpoNetwork from './ExpoNetwork';
-import { NetworkState, NetworkStateType } from './Network.types';
-
-export { NetworkState, NetworkStateType };
+import { NetworkState } from './Network.types';
 
 export async function getNetworkStateAsync(): Promise<NetworkState> {
   if (!ExpoNetwork.getNetworkStateAsync) {

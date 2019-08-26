@@ -3,6 +3,7 @@
 import React from 'react';
 import {
   Image,
+  Keyboard,
   Linking,
   Platform,
   Share,
@@ -11,14 +12,14 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import FadeIn from 'react-native-fade-in-image';
-import { withNavigation } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
+import FadeIn from 'react-native-fade-in-image';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 @withNavigation
 export default class SmallProjectCard extends React.PureComponent {

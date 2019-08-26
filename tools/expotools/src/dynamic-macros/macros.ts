@@ -21,17 +21,12 @@ const isTurtle = !!process.env.TURTLE_WORKING_DIR_PATH;
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 
-async function getManifestAsync(
-  url: string,
-  platform: string,
-  sdkVersion: string | null
-): Promise<Manifest> {
-  return await ExponentTools.getManifestAsync(
-    url,
+async function getManifestAsync(url: string, platform: string, sdkVersion: string | null): Promise<Manifest> {
+  return await ExponentTools.getManifestAsync(url,
     {
       'Exponent-Platform': platform,
       'Exponent-SDK-Version': sdkVersion || undefined,
-      Accept: 'application/expo+json,application/json',
+      'Accept': 'application/expo+json,application/json',
     },
     {
       logger: {
@@ -39,7 +34,7 @@ async function getManifestAsync(
         error: () => {},
         info: () => {},
       },
-    }
+    },
   );
 }
 
@@ -130,6 +125,7 @@ export default {
       const sdkVersion = await this.TEMPORARY_SDK_VERSION();
 
       manifest = await getManifestAsync(savedDevHomeUrl, platform, sdkVersion);
+
     } catch (e) {
       const msg = `Unable to download manifest from ${savedDevHomeUrl}: ${e.message}`;
       console[isTurtle ? 'debug' : 'error'](msg);
@@ -160,10 +156,8 @@ export default {
     } catch (e) {
       console.error(
         chalk.red(
-          `Unable to generate manifest from ${chalk.cyan(
-            pathToHome
-          )}: Failed to fetch manifest from ${chalk.cyan(url)}`
-        )
+          `Unable to generate manifest from ${chalk.cyan(pathToHome)}: Failed to fetch manifest from ${chalk.cyan(url)}`,
+        ),
       );
       return '';
     }
@@ -176,4 +170,4 @@ export default {
   INITIAL_URL() {
     return null;
   },
-};
+}

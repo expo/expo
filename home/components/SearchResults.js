@@ -4,6 +4,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Keyboard,
+  Linking,
   ListView,
   Platform,
   ScrollView,

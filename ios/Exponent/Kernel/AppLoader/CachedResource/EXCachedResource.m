@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXCachedResource.h"
-#import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXKernelUtil.h"
 #import "EXUtil.h"
@@ -24,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation EXCachedResource
-
-static dispatch_queue_t _reapingQueue;
 
 - (instancetype)initWithResourceName:(NSString *)resourceName resourceType:(NSString *)resourceType remoteUrl:(nonnull NSURL *)url cachePath:(NSString * _Nullable)cachePath
 {
@@ -278,24 +275,13 @@ static dispatch_queue_t _reapingQueue;
 
 - (NSString *)_defaultCachePath
 {
-  return [[self class] cachePathWithName:@"EXCachedResource"];
-}
-
-+ (NSString *)cachePathWithName:(NSString *)cacheName
-{
-  NSString *cachesDirectory = [EXEnvironment sharedEnvironment].isDetached
-    ? NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES).firstObject
-    : NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
-
-  NSString *sourceDirectory = [cachesDirectory stringByAppendingPathComponent:cacheName];
-  NSString *sourceDirectoryVersioned = [EXEnvironment sharedEnvironment].isDetached
-    ? [sourceDirectory stringByAppendingPathComponent:[EXVersions sharedInstance].temporarySdkVersion]
-    : sourceDirectory;
+  NSString *cachesDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+  NSString *sourceDirectory = [cachesDirectory stringByAppendingPathComponent:@"EXCachedResource"];
   
-  BOOL cacheDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:sourceDirectoryVersioned isDirectory:nil];
+  BOOL cacheDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:sourceDirectory isDirectory:nil];
   if (!cacheDirectoryExists) {
     NSError *error;
-    BOOL created = [[NSFileManager defaultManager] createDirectoryAtPath:sourceDirectoryVersioned
+    BOOL created = [[NSFileManager defaultManager] createDirectoryAtPath:sourceDirectory
                                              withIntermediateDirectories:YES
                                                               attributes:nil
                                                                    error:&error];
@@ -305,41 +291,8 @@ static dispatch_queue_t _reapingQueue;
       DDLogError(@"Could not create source cache directory: %@", error.localizedDescription);
     }
   }
-
-  if (cacheDirectoryExists && [EXEnvironment sharedEnvironment].isDetached) {
-    NSURL *cacheDirectoryUrl = [NSURL fileURLWithPath:sourceDirectoryVersioned];
-    NSError *error;
-    if (![cacheDirectoryUrl setResourceValue:@(YES) forKey:NSURLIsExcludedFromBackupKey error:&error]) {
-      DDLogError(@"Could not exclude source cache directory from backup: %@", error.localizedDescription);
-    }
-  }
-
-  if ([EXEnvironment sharedEnvironment].isDetached) {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      _reapingQueue = dispatch_queue_create("expo.cached-resource.reaping", DISPATCH_QUEUE_SERIAL);
-    });
-
-    dispatch_async(_reapingQueue, ^{
-      NSError *error;
-      NSArray<NSString *>* subfolders = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:sourceDirectory error:&error];
-      if (error) {
-        DDLogError(@"Could not read old SDK version cache directories: %@", error.localizedDescription);
-      } else {
-        for (NSString *subfolder in subfolders) {
-          if (![subfolder isEqualToString:[EXVersions sharedInstance].temporarySdkVersion]) {
-            NSString *path = [sourceDirectory stringByAppendingPathComponent:subfolder];
-            NSError *error;
-            if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
-              DDLogError(@"Failed to reap old SDK version cache directories: %@", error.localizedDescription);
-            }
-          }
-        }
-      }
-    });
-  }
   
-  return (cacheDirectoryExists) ? sourceDirectoryVersioned : nil;
+  return (cacheDirectoryExists) ? sourceDirectory : nil;
 }
 
 @end

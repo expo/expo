@@ -5,7 +5,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Type of all facial landmarks. */
+/**
+ * Type of all facial landmarks.
+ */
 typedef NSString *FIRFaceLandmarkType NS_EXTENSIBLE_STRING_ENUM NS_SWIFT_NAME(FaceLandmarkType);
 
 /** Center of the bottom lip. */
@@ -38,17 +40,25 @@ extern FIRFaceLandmarkType const FIRFaceLandmarkTypeRightCheek;
 /** Midpoint between the nostrils where the nose meets the face. */
 extern FIRFaceLandmarkType const FIRFaceLandmarkTypeNoseBase;
 
-/** A landmark on a human face detected in an image. */
+/**
+ * A landmark on a human face detected in an image.
+ */
 NS_SWIFT_NAME(VisionFaceLandmark)
 @interface FIRVisionFaceLandmark : NSObject
 
-/** The type of the facial landmark. */
+/**
+ * The type of the facial landmark.
+ */
 @property(nonatomic, readonly) FIRFaceLandmarkType type;
 
-/** 2D position of the facial landmark. */
+/**
+ * 2D position of the facial landmark.
+ */
 @property(nonatomic, readonly) FIRVisionPoint *position;
 
-/** Unavailable. */
+/**
+ * Unavailable.
+ */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

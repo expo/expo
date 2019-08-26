@@ -81,8 +81,7 @@ UM_EXPORT_METHOD_AS(setTestDeviceID,
 }
 
 UM_EXPORT_METHOD_AS(requestAd,
-                    requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
-                    resolver:(UMPromiseResolveBlock)resolve
+                    requestAd:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_requestAdRejecter == nil) {
@@ -96,11 +95,6 @@ UM_EXPORT_METHOD_AS(requestAd,
       } else {
         request.testDevices = @[_testDeviceID];
       }
-    }
-    if (additionalRequestParams) {
-      GADExtras *extras = [[GADExtras alloc] init];
-      extras.additionalParameters = additionalRequestParams;
-      [request registerAdNetworkExtras:extras];
     }
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{

@@ -1,5 +1,6 @@
 import * as TaskManager from 'expo-task-manager';
-import { Platform, NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
+import { Platform, NativeModulesProxy } from '@unimodules/core';
 const { ExpoBackgroundFetch } = NativeModulesProxy;
 var BackgroundFetchResult;
 (function (BackgroundFetchResult) {
@@ -40,5 +41,5 @@ export async function unregisterTaskAsync(taskName) {
     }
     await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
-export { BackgroundFetchResult as Result, BackgroundFetchStatus as Status };
+export { BackgroundFetchResult as Result, BackgroundFetchStatus as Status, };
 //# sourceMappingURL=BackgroundFetch.js.map

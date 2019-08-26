@@ -2,7 +2,6 @@ import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
 import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
 function getExpoPackage() {
   try {
@@ -48,7 +47,7 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
+    return { web: UAParser(navigator.userAgent) };
   },
   get isHeadless(): false {
     return false;
@@ -64,12 +63,8 @@ export default {
     return getExpoPackage().version;
   },
   get linkingUri(): string {
-    if (canUseDOM) {
-      // On native this is `exp://`
-      return location.origin + location.pathname;
-    } else {
-      return '';
-    }
+    // On native this is `exp://`
+    return location.origin + location.pathname;
   },
   get expoRuntimeVersion(): string {
     return getExpoPackage().version;
@@ -97,25 +92,17 @@ export default {
     return null;
   },
   get manifest(): WebManifest {
-    // This is defined by @expo/webpack-config.
+    // This is defined by @expo/webpack-config. 
     // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
   },
   get experienceUrl(): string {
-    if (canUseDOM) {
-      return location.origin + location.pathname;
-    } else {
-      return '';
-    }
+    return location.origin + location.pathname;
   },
   get debugMode(): boolean {
     return __DEV__;
   },
-  async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (canUseDOM) {
-      return navigator.userAgent;
-    } else {
-      return null;
-    }
+  async getWebViewUserAgentAsync(): Promise<string> {
+    return navigator.userAgent;
   },
 } as NativeConstants;

@@ -5,7 +5,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** An image or image buffer used in vision detection, with optional metadata. */
+/**
+ * An image or image buffer used in vision detection, with optional metadata.
+ */
 NS_SWIFT_NAME(VisionImage)
 @interface FIRVisionImage : NSObject
 
@@ -41,7 +43,9 @@ NS_SWIFT_NAME(VisionImage)
  */
 - (instancetype)initWithBuffer:(CMSampleBufferRef)sampleBuffer NS_DESIGNATED_INITIALIZER;
 
-/** Unavailable. */
+/**
+ * Unavailable.
+ */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

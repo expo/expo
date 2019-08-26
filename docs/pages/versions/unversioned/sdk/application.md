@@ -57,9 +57,9 @@ The internal build version of the native application that the app store may use 
 
 ### `Application.androidId`
 
-**Android only.** The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID). This is a hexademical `string` unique to each combination of app-signing key, user, and device. The value may change if a factory reset is performed on the device or if an APK signing key changes. For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26) and higher, see [Android 8.0 Behavior Changes](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all). On iOS and web, this value is `null`.
+**Android only.** The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID). This is a hexademical `string` unique to each combination of app-signing key, user, and device. The value may change if a factory reset is performed on the device or if an APK signing key changes. For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26) and higher, see [Android 8.0 Behavior Changes.](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all) On iOS and web, this value is `null`.
 
-Note: In versions of the platform lower than Android 8.0 (API level 26), this value remains constant for the lifetime of the user's device. See the [Android_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID) official docs for more information.
+Note: In versions of the platform lower than Android 8.0 (API level 26), this value remains constant for the lifetime of the user's device. See [Android_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID) official docs for more information.
 
 - E.g., `"dd96dec43fb81c97"`
 
@@ -67,7 +67,7 @@ Note: In versions of the platform lower than Android 8.0 (API level 26), this va
 
 ### `Application.getIosIdForVendorAsync()`
 
-**iOS only.** Gets the iOS "identifier for vendor" [(IDFV)](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor) value, a string ID that uniquely identifies a device to the app’s vendor. This method may sometimes return `nil`, in which case wait and call the method again later. This might happen when the device has been restarted before the user has unlocked the device.
+**iOS only.** Gets the iOS "identifier for vendor" [(IDFV)](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor) value, an alphanumeric string that uniquely identifies a device to the app’s vendor. This method may sometimes return `nil`, in which case wait and call the method again later. This might happen when the device has been restarted before the user has unlocked the device.
 
 The OS will change the vendor identifier if all apps from the current app's vendor have been uninstalled.
 
@@ -84,7 +84,7 @@ await Application.getIosIdForVendorAsync();
 
 ### `Application.getInstallReferrerAsync()`
 
-**Android only.** Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer) from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
+**Android only.** Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer) from the Google Play Store.
 
 #### Returns
 
@@ -101,16 +101,16 @@ await Application.getInstallReferrerAsync();
 
 Gets the time the app was installed onto the device, not counting subsequent updates. If the app is uninstalled and reinstalled, this method returns the time the app was reinstalled.
 
-On iOS, this method uses the [`NSFileCreationDate`](https://developer.apple.com/documentation/foundation/nsfilecreationdate?language=occ) of the app's document root directory. On Android, this method uses [`PackageInfo.firstInstallTime`](https://developer.android.com/reference/android/content/pm/PackageInfo.html#firstInstallTime). On web, this method returns `null`.
+On iOS, it depends on the [`NSFileCreationDate`](https://developer.apple.com/documentation/foundation/nsfilecreationdate?language=occ) of the app's document root directory. On Android, it depends on the [`PackageInfo.firstInstallTime`](https://developer.android.com/reference/android/content/pm/PackageInfo.html#firstInstallTime). On web, this method returns `null`.
 
 #### Returns
 
-Returns a `Promise` that resolves to a `Date` object that specifies the time the app was installed on the device.
+Returns a `Promise` that resolves to a `Date` object that represents the first time the app was installed on the device.
 
 **Examples**
 
 ```js
-await Application.getInstallationTimeAsync();
+await Application.getFirstInstallTimeAsync();
 // 2019-07-18T18:08:26.121Z
 ```
 
@@ -120,7 +120,7 @@ await Application.getInstallationTimeAsync();
 
 #### Returns
 
-Returns a `Promise` that resolves to a `Date` object that specifies the last time the app was updated via the Google Play Store (Android).
+Returns a `Promise` that resolves to a `Date` object that represents the last time the app was updated via the Google Play Store (Android).
 
 **Examples**
 

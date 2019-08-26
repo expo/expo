@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#import <Foundation/Foundation.h>
-
 // Make sure these codes do not overlap with any contained in the FIRAMessageCode enum.
 typedef NS_ENUM(NSInteger, GULReachabilityMessageCode) {
   // GULReachabilityChecker.m

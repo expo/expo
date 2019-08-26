@@ -55,8 +55,7 @@ Background fetch task receives no data, but your task should return a value that
 This return value is to let iOS know what the result of your background fetch was, so the platform can better schedule future background fetches. Also, your app has up to 30 seconds to perform the task, otherwise your app will be terminated and future background fetches may be delayed.
 
 ```javascript
-import * as BackgroundFetch from 'expo-background-fetch';
-import * as TaskManager from 'expo-task-manager';
+import { BackgroundFetch, TaskManager } from 'expo';
 
 TaskManager.defineTask(YOUR_TASK_NAME, () => {
   try {

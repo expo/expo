@@ -49,24 +49,12 @@ export default {
 
     await AdMobNativeModule.setTestDeviceID(id);
   },
-  async requestAdAsync(
-    options: {
-      servePersonalizedAds?: boolean;
-      additionalRequestParams?: { [key: string]: string };
-    } = {}
-  ): Promise<void> {
+  async requestAdAsync(): Promise<void> {
     if (!AdMobNativeModule.requestAd) {
       throw new UnavailabilityError(moduleName, 'requestAdAsync');
     }
 
-    const params: { [key: string]: string } = {
-      ...options.additionalRequestParams,
-    };
-    if (!options.servePersonalizedAds) {
-      params.npa = '1';
-    }
-
-    await AdMobNativeModule.requestAd(params);
+    await AdMobNativeModule.requestAd();
   },
   async showAdAsync(): Promise<void> {
     if (!AdMobNativeModule.showAd) {
