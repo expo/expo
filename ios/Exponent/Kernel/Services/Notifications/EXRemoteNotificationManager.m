@@ -7,6 +7,7 @@
 #import "EXRemoteNotificationManager.h"
 #import "NSData+EXRemoteNotifications.h"
 #import "EXUserNotificationCenter.h"
+#import "EXScopedBridgeModule.h"
 
 #import <React/RCTUtils.h>
 

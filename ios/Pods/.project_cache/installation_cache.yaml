@@ -4446,6 +4446,63 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (1.0.0)
+  EXNotifications:
+    BUILD_SETTINGS_CHECKSUM:
+      EXNotifications: 46c9ac9c982af283fa7c2c41e4d61141
+    CHECKSUM: ed29d0adef64a1dc88229fde5e1f642eb92ecbca
+    FILES:
+      - "../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client+EXRemoteNotifications.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client+EXRemoteNotifications.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Result.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Result.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/AppDelegate/EXNotificationsAppDelegate.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/AppDelegate/EXNotificationsAppDelegate.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXNotificationConverter/EXNotificationConverter.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXNotificationConverter/EXNotificationConverter.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXUserNotificationCenter.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/EXUserNotificationCenter.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/IdProvider/EXAppIdProvider.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/IdProvider/EXBareAppIdProvider.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/IdProvider/EXBareAppIdProvider.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/JSApi/EXNotifications.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/JSApi/EXNotifications.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/NSData+EXRemoteNotifications.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/NSData+EXRemoteNotifications.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXMailbox.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXPostOffice.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXSimplePostOffice.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXSimplePostOffice.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXThreadSafePostOffice.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXThreadSafePostOffice.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXNotificationRepository.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXSimpleNotificationRepository.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXSimpleNotificationRepository.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXSimpleTokenDispatcher.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXSimpleTokenDispatcher.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXThreadSafeTokenDispatcher.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXThreadSafeTokenDispatcher.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXTokenDispatcher.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXBareEngine.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXBareEngine.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXEngine.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXExpoEngine.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXExpoEngine.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXOnTokenChangeListener.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/EXPushEngineProvider.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/EXSimplePushEngineProvider.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Push/EXSimplePushEngineProvider.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Receiver/EXUserNotificationManager.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Receiver/EXUserNotificationManager.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Scoper/EXBareScoper.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Scoper/EXBareScoper.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Scoper/EXMessageUnscoper.h"
+      - "../../packages/expo-notifications/ios/EXNotifications/Scoper/EXMessageUnscoper.m"
+      - "../../packages/expo-notifications/ios/EXNotifications/Scoper/EXScoper.h"
+    PROJECT_NAME: EXNotifications
+    SPECS:
+      - EXNotifications (1.0.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 01facc4b997afa118e7a72afc53a6858
@@ -4884,16 +4941,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 87126328340af0aa5af6b38ee95f5645
-      Release: 87126328340af0aa5af6b38ee95f5645
+      Debug: d04a96ab78ccec3d274a3ac199d5254a
+      Release: d04a96ab78ccec3d274a3ac199d5254a
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1aeb8b1ccac3cd876fdb52df41d00242
-      Release: 1aeb8b1ccac3cd876fdb52df41d00242
+      Debug: 07956388521bbfe0ac8b19805492a97f
+      Release: 07956388521bbfe0ac8b19805492a97f
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1aeb8b1ccac3cd876fdb52df41d00242
-      Release: 1aeb8b1ccac3cd876fdb52df41d00242
+      Debug: 07956388521bbfe0ac8b19805492a97f
+      Release: 07956388521bbfe0ac8b19805492a97f
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: 984e9f934a23b843d02efe3856627b34

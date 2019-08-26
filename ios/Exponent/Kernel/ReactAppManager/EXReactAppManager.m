@@ -2,7 +2,7 @@
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXUserNotificationManager.h"
+#import "EXUserNotificationManagerLegacy.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
 #import "EXKernelDevKeyCommands.h"

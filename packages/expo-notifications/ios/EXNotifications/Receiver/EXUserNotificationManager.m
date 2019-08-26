@@ -20,10 +20,15 @@
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response];
+  NSMutableDictionary *userInteractionBundle = [EXNotificationConverter convertToDictionary:response.notification.request.content];
+  
+  userInteractionBundle[@"remote"] = @([response.notification.request.trigger isKindOfClass: [UNPushNotificationTrigger class]]);
+  userInteractionBundle[@"actionId"] = response.actionIdentifier != UNNotificationDefaultActionIdentifier? response.actionIdentifier : nil;
+  userInteractionBundle[@"userTest"] = [response isKindOfClass:[UNTextInputNotificationResponse class]]?
+  ((UNTextInputNotificationResponse *) response).userText : nil;
   
   NSString *appId = response.notification.request.content.userInfo[@"appId"];
-  [[EXThreadSafePostOffice sharedInstance] notifyAboutUserInteractionForAppId:appId userInteraction:[pendingNotification propertiesUserInteractionFormat]];
+  [[EXThreadSafePostOffice sharedInstance] notifyAboutUserInteractionForAppId:appId userInteraction:userInteractionBundle];
   completionHandler();
 }
 

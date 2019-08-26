@@ -11,7 +11,7 @@
 #import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesManager.h"
-#import "EXUserNotificationManager.h"
+#import "EXUserNotificationManagerLegacy.h"
 #import "EXUserNotificationCenter.h"
 
 #import <UMCore/UMModuleRegistryProvider.h>
@@ -26,7 +26,7 @@
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
-@property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
+@property (nonatomic, strong) EXUserNotificationManagerLegacy *notificationsManager;
 @property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
@@ -116,10 +116,10 @@
   return _updatesManager;
 }
 
-- (EXUserNotificationManager *)notificationsManager
+- (EXUserNotificationManagerLegacy *)notificationsManager
 {
   if (!_notificationsManager) {
-    _notificationsManager = [[EXUserNotificationManager alloc] init];
+    _notificationsManager = [[EXUserNotificationManagerLegacy alloc] init];
   }
   return _notificationsManager;
 }

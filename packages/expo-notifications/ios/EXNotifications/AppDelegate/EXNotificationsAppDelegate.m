@@ -10,7 +10,9 @@ UM_REGISTER_SINGLETON_MODULE(EXNotificationAppDelegate)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
-  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationManager sharedInstance];
+  if ([UNUserNotificationCenter currentNotificationCenter].delegate == nil) {
+    [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationManager sharedInstance];
+  }
   
   return false;
 }
