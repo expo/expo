@@ -2,12 +2,7 @@ import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import {
-  CodedError,
-  RCTDeviceEventEmitter,
-  UnavailabilityError,
-  NativeModulesProxy,
-} from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 import {
   Notification,
@@ -152,11 +147,8 @@ export default {
     if (Platform.OS === 'android') {
       const hasBackgroundAction = actions.some(action => action.doNotOpenInForeground);
       if (hasBackgroundAction) {
-        const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-        // TODO: MOVE THESE TO A SEPERATE FILE
-        if (!ExpoNotificationBackgroundAction) {
-          throw new Error('nooo');
-        }
+        const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction')
+          .default;
 
         if (_categoriesWithBackgroundAction.size === 0) {
           // Only register once.
@@ -171,10 +163,8 @@ export default {
   deleteCategoryAsync(categoryId: string): Promise<void> {
     if (Platform.OS === 'android') {
       if (_categoriesWithBackgroundAction.has(categoryId)) {
-        const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-        if (!ExpoNotificationBackgroundAction) {
-          throw new Error('nooo');
-        }
+        const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction')
+          .default;
 
         _categoriesWithBackgroundAction.delete(categoryId);
         if (_categoriesWithBackgroundAction.size === 0) {
@@ -447,11 +437,7 @@ export default {
       );
     }
 
-    const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-    if (!ExpoNotificationBackgroundAction) {
-      throw new Error('nooo');
-    }
-
+    const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction').default;
     const taskName = ExpoNotificationBackgroundAction.TASK_NAME;
     console.warn(taskName);
     TaskManager.defineTask(taskName, ({ data }) => {

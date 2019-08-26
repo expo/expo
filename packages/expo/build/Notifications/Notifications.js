@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import { CodedError, RCTDeviceEventEmitter, UnavailabilityError, NativeModulesProxy, } from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 let _emitter;
 let _initialNotification;
@@ -118,11 +118,8 @@ export default {
         if (Platform.OS === 'android') {
             const hasBackgroundAction = actions.some(action => action.doNotOpenInForeground);
             if (hasBackgroundAction) {
-                const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-                // TODO: MOVE THESE TO A SEPERATE FILE
-                if (!ExpoNotificationBackgroundAction) {
-                    throw new Error('nooo');
-                }
+                const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction')
+                    .default;
                 if (_categoriesWithBackgroundAction.size === 0) {
                     // Only register once.
                     ExpoNotificationBackgroundAction.registerTaskAsync({});
@@ -135,10 +132,8 @@ export default {
     deleteCategoryAsync(categoryId) {
         if (Platform.OS === 'android') {
             if (_categoriesWithBackgroundAction.has(categoryId)) {
-                const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-                if (!ExpoNotificationBackgroundAction) {
-                    throw new Error('nooo');
-                }
+                const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction')
+                    .default;
                 _categoriesWithBackgroundAction.delete(categoryId);
                 if (_categoriesWithBackgroundAction.size === 0) {
                     ExpoNotificationBackgroundAction.unregisterTaskAsync();
@@ -353,10 +348,7 @@ export default {
         catch {
             throw new Error('expo-task-manager is not installed. You have to install expo-task-manager for `Notifications.addActionListener`.');
         }
-        const { ExpoNotificationBackgroundAction } = NativeModulesProxy;
-        if (!ExpoNotificationBackgroundAction) {
-            throw new Error('nooo');
-        }
+        const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction').default;
         const taskName = ExpoNotificationBackgroundAction.TASK_NAME;
         console.warn(taskName);
         TaskManager.defineTask(taskName, ({ data }) => {
