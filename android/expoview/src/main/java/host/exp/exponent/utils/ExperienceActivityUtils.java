@@ -10,9 +10,11 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
+
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+
 import org.json.JSONObject;
 
 public class ExperienceActivityUtils {
@@ -102,5 +104,55 @@ public class ExperienceActivityUtils {
         }
       }
     });
+  }
+
+  public static void setNavigationBar(final JSONObject manifest, final Activity activity) {
+    JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
+    if (navBarOptions == null) {
+      return;
+    }
+    
+    String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
+
+    // Set background color of navigation bar
+    if (navBarColor != null && ColorParser.isValid(navBarColor)) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        activity.getWindow().setNavigationBarColor(Color.parseColor(navBarColor));
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+
+    // Set icon color of navigation bar
+    String navBarAppearance = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE);
+    if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        if (navBarAppearance.equals("dark-content")) {
+          View decorView = activity.getWindow().getDecorView();
+          int flags = decorView.getSystemUiVisibility();
+          flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+          decorView.setSystemUiVisibility(flags);
+        }
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+
+    // Set visibility of navigation bar
+    if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)) {
+      Boolean visible = navBarOptions.optBoolean(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
+      if (!visible) {
+        // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
+        // design your app to hide the status bar whenever you hide the navigation bar."
+        View decorView = activity.getWindow().getDecorView();
+        int flags = decorView.getSystemUiVisibility();
+        flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        decorView.setSystemUiVisibility(flags);
+      }
+    }
   }
 }

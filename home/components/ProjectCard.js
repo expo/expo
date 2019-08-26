@@ -22,7 +22,7 @@ import UrlUtils from '../utils/UrlUtils';
 @withNavigation
 export default class ProjectCard extends React.PureComponent {
   render() {
-    let { id, description, projectName, username } = this.props;
+    let { description, projectName, username } = this.props;
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>

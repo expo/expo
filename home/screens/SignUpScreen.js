@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import SessionActions from '../redux/SessionActions';
 
 import Analytics from '../api/Analytics';
-import Alerts from '../constants/Alerts';
 import AuthApi from '../api/AuthApi';
 import CloseButton from '../components/CloseButton';
 import Colors from '../constants/Colors';
@@ -93,7 +92,7 @@ export default class SignUpScreen extends React.Component {
         style={styles.container}>
         <Form>
           <Form.Input
-            onChangeText={this._updateValue.bind(this, 'firstName')}
+            onChangeText={() => this._updateValue('firstName')}
             onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
             autoFocus
@@ -107,7 +106,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._lastNameInput = view;
             }}
-            onChangeText={this._updateValue.bind(this, 'lastName')}
+            onChangeText={() => this._updateValue('lastName')}
             onSubmitEditing={() => this._handleSubmitEditing('lastName')}
             value={this.state.lastName}
             autoCorrect={false}
@@ -120,7 +119,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._usernameInput = view;
             }}
-            onChangeText={this._updateValue.bind(this, 'username')}
+            onChangeText={() => this._updateValue('username')}
             onSubmitEditing={() => this._handleSubmitEditing('username')}
             value={this.state.username}
             autoCorrect={false}
@@ -134,7 +133,7 @@ export default class SignUpScreen extends React.Component {
               this._emailInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('email')}
-            onChangeText={this._updateValue.bind(this, 'email')}
+            onChangeText={() => this._updateValue('email')}
             autoCorrect={false}
             autoCapitalize="none"
             value={this.state.email}
@@ -147,7 +146,7 @@ export default class SignUpScreen extends React.Component {
               this._passwordInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('password')}
-            onChangeText={this._updateValue.bind(this, 'password')}
+            onChangeText={() => this._updateValue('password')}
             value={this.state.password}
             autoCorrect={false}
             autoCapitalize="none"
@@ -160,7 +159,7 @@ export default class SignUpScreen extends React.Component {
               this._passwordConfirmationInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
-            onChangeText={this._updateValue.bind(this, 'passwordConfirmation')}
+            onChangeText={() => this._updateValue('passwordConfirmation')}
             value={this.state.passwordConfirmation}
             hideBottomBorder
             autoCorrect={false}
@@ -226,7 +225,7 @@ export default class SignUpScreen extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      let signUpResult = await AuthApi.signUpAsync(this.state);
+      await AuthApi.signUpAsync(this.state);
       Analytics.track(Analytics.events.USER_CREATED_ACCOUNT, { github: false });
 
       let signInResult = await AuthApi.signInAsync(this.state.email, this.state.password);

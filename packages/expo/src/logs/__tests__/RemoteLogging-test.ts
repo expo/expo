@@ -123,7 +123,9 @@ describe('addTransportErrorListener', () => {
 
     expect(mockListener).toHaveBeenCalledTimes(1);
     expect((mockListener as jest.Mock).mock.calls[0][0].error).toBeDefined();
-    expect((mockListener as jest.Mock).mock.calls[0][0].error.message).toMatch('Intentional network failure');
+    expect((mockListener as jest.Mock).mock.calls[0][0].error.message).toMatch(
+      'Intentional network failure'
+    );
     expect((mockListener as jest.Mock).mock.calls[0][0].response).not.toBeDefined();
   });
 

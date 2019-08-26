@@ -8,6 +8,7 @@ apply plugin: 'com.jakewharton.butterknife'
 group = 'host.exp.exponent'
 version = '34.0.0'
 
+
 //Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
@@ -36,6 +37,8 @@ uploadArchives {
   }
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
+
+def dbflow_version = "4.2.4"
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -73,9 +76,6 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName "1.0"
-    ndk {
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-    }
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -172,12 +172,6 @@ dependencies {
   // BEGIN_SDK_33
   api 'host.exp:reactandroid-abi33_0_0:1.0.0'
   // END_SDK_33
-  // BEGIN_SDK_32
-  api 'host.exp:reactandroid-abi32_0_0:1.0.0'
-  // END_SDK_32
-  // BEGIN_SDK_31
-  api 'host.exp:reactandroid-abi31_0_0:1.0.0'
-  // END_SDK_31
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -217,9 +211,6 @@ dependencies {
   api 'com.google.android.gms:play-services-location:16.0.0'
   api 'com.google.android.gms:play-services-fitness:16.0.1'
   api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  api "com.raizlabs.android:DBFlow-Core:2.2.1"
-  api "com.raizlabs.android:DBFlow:2.2.1"
   api "com.madgag.spongycastle:core:1.53.0.0"
   api "com.madgag.spongycastle:prov:1.53.0.0"
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -251,12 +242,10 @@ dependencies {
   // See explanation in expo-av/build.gradle
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
 
-  implementation 'com.cronutils:cron-utils:4.1.3'
+  //dbflow
+  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
+  compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
+  compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
 
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-  // TODO: Remove this method once SDK32 is phased out
-  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp:3.6.0'
-  compileOnly 'expolib_v1.com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
-  compileOnly 'expolib_v1.com.squareup.okio:okio:1.13.0'
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+  implementation 'com.cronutils:cron-utils:4.1.3'
 }
