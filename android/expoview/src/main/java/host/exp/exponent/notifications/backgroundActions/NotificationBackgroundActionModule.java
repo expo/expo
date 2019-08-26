@@ -1,7 +1,6 @@
 package host.exp.exponent.notifications.backgroundActions;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;

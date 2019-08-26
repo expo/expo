@@ -500,7 +500,6 @@ public class NotificationHelper {
               PendingIntent contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
               builder.setContentIntent(contentIntent);
 
-              // TODO: TEST THIS
               if (data.containsKey("categoryId")) {
                 final String manifestUrl = experience.manifestUrl;
                 NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
@@ -522,6 +521,7 @@ public class NotificationHelper {
                     intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                     final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceId, body, id, false, false);
                     intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
+                    intent.putExtra(KernelConstants.NOTIFICATION_EXPERIENCE_ID_KEY, experienceId);
                     return intent;
                   }
                 });
