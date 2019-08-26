@@ -715,7 +715,8 @@ PODS:
     - GoogleMaps
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
-  - Google-Mobile-Ads-SDK (7.22.0)
+  - Google-Mobile-Ads-SDK (7.49.0):
+    - GoogleAppMeasurement (~> 6.0)
   - GoogleAPIClientForREST/Core (1.3.9):
     - GTMSessionFetcher (>= 1.1.7)
   - GoogleAPIClientForREST/Vision (1.3.9):
@@ -1164,7 +1165,7 @@ DEPENDENCIES:
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
-  - Google-Mobile-Ads-SDK (~> 7.22.0)
+  - Google-Mobile-Ads-SDK (~> 7.49.0)
   - GoogleMaps (~> 2.5.0)
   - GoogleSignIn (~> 4.1)
   - JKBigInteger2 (= 0.0.5)
@@ -1906,7 +1907,7 @@ SPEC CHECKSUMS:
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
-  Google-Mobile-Ads-SDK: 1bdf1a4244d0553b1840239874c209c01aef055f
+  Google-Mobile-Ads-SDK: df315e371b29cf935f7ea872e7bdec39462a100e
   GoogleAPIClientForREST: 44c7b678cbab11d26a47eab7309d6179b1a61f0c
   GoogleAppMeasurement: 47285fa897e5a125df56b9ef8750a1d81e4598a8
   GoogleDataTransport: ffbadce4ab93c88fb9dd8e6366c47bfcb4a32193
@@ -1940,6 +1941,6 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
 
-PODFILE CHECKSUM: 0c31289bb12ff2856e0f1c12c1c4125815c933d5
+PODFILE CHECKSUM: 8fc66f8b63ba76c726ebc38aa0950f2321687a0c
 
-COCOAPODS: 1.7.3
+COCOAPODS: 1.7.5
