@@ -440,9 +440,7 @@ export default {
 
     const ExpoNotificationBackgroundAction = require('./ExpoNotificationBackgroundAction').default;
     const taskName = ExpoNotificationBackgroundAction.TASK_NAME;
-    console.warn(taskName);
     TaskManager.defineTask(taskName, ({ data: notification }) => {
-      console.warn(`defineTask's data is ${JSON.stringify(notification)}`);
       if (notification) {
         // We want to try to parse the `data` field because Java send it as a string.
         try {
