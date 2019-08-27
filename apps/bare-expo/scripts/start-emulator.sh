@@ -17,7 +17,7 @@ echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 $DIR/setup-project.sh
 
 if ! $ANDROID_HOME/tools/android list avd | grep -q bare-expo; then
-    echo " ⚠️  No emulator for bare expo found, creating one..."
+    echo " ⚠️  No emulator for bare Expo found, creating one..."
     $DIR/create-emulator.sh 22
 fi
 
