@@ -1,6 +1,6 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+#if __has_include(<EXBranch/EXBranchManager.h>)
 
-#if __has_include(<EXBranch/EXBranchManager.h>) || __has_include("EXBranchManager.h")
+// Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXScopedBranchManager.h"
 #import "EXScopedBranch.h"

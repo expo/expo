@@ -21,7 +21,7 @@
   "expo-contacts": "~6.0.0",
   "expo-crypto": "~6.0.0",
   "expo-document-picker": "~6.0.0",
-  "expo-face-detector": "~6.0.0",
+  "expo-face-detector": "~6.0.1",
   "expo-facebook": "~6.0.0",
   "expo-file-system": "~6.0.2",
   "expo-font": "~6.0.1",
@@ -72,5 +72,6 @@
   "unimodules-task-manager-interface": "~3.0.0",
   "expo-video-thumbnails": "~2.0.0",
   "expo-in-app-purchases": "~6.0.0",
+  "expo-branch": "~1.0.0",
   "react-native-appearance": "~0.0.7"
 }
