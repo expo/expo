@@ -409,6 +409,13 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     
     // insert loadedFromCache: boolean key into manifest
     NSMutableDictionary *mutableManifest = [(NSDictionary *)manifest mutableCopy];
+    
+    // ONLY EXPO CLIENT START
+    // add to map experienceId -> sdkVersion
+    // it's used for notification dispatching
+    [self addSDKForExperienceId: manifest];
+    // ONLY EXPO CLIENT END
+    
     BOOL loadedFromCache = YES;
     if (cachedResourceBehavior == EXCachedResourceNoCache) {
       loadedFromCache = NO;
@@ -438,6 +445,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   RCTAssert(_appFetcher != nil, @"Tried to fetch a JS Bundle before appFetcher was initialized");
   [_appFetcher fetchJSBundleWithManifest:manifest cacheBehavior:cacheBehavior timeoutInterval:timeoutInterval progress:progressBlock success:successBlock error:errorBlock];
+}
+
+- (void)addSDKForExperienceId:(NSMutableDictionary *)manifest
+{
+  NSUserDefaults *registry = [[NSUserDefaults alloc] initWithSuiteName:@"EXPERIENCE_ID_REGISTRY"];
+  [registry setObject:manifest[@"version"] forKey:manifest[@"id"]];
 }
 
 @end
