@@ -172,7 +172,7 @@ public class WebBrowserModule extends ExportedModule {
     }
 
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    if(!arguments.getBoolean(SHOW_IN_RECENTS, false)) {
+    if (!arguments.getBoolean(SHOW_IN_RECENTS, false)) {
       intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
       intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     }
