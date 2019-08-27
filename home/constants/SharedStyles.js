@@ -48,7 +48,6 @@ export default StyleSheet.create({
     }),
   },
   noticeDescriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     textAlign: 'center',
     marginBottom: 20,
     ...Platform.select({

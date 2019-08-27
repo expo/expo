@@ -1,11 +1,13 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
+import ScrollView from './NavigationScrollView';
+import { StyledText } from './Text';
 
 @withNavigation
 export default class ProfileUnauthenticated extends React.Component {
@@ -17,9 +19,14 @@ export default class ProfileUnauthenticated extends React.Component {
         : 'To access your own projects, please sign in or create an Expo account.';
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.titleText}>{title}</Text>
+        <StyledText style={styles.titleText}>{title}</StyledText>
 
-        <Text style={styles.descriptionText}>{description}</Text>
+        <StyledText
+          style={styles.descriptionText}
+          darkColor="#ccc"
+          lightColor="rgba(36, 44, 58, 0.7)">
+          {description}
+        </StyledText>
 
         {this._renderSignInButton()}
         <View style={{ marginBottom: 20 }} />
@@ -56,7 +63,6 @@ export default class ProfileUnauthenticated extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.greyBackground,
   },
   contentContainer: {
     flex: 1,
@@ -65,7 +71,6 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   titleText: {
-    color: '#232b3a',
     marginBottom: 15,
     fontWeight: '400',
     ...Platform.select({
@@ -78,7 +83,6 @@ const styles = StyleSheet.create({
     }),
   },
   descriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     textAlign: 'center',
     marginHorizontal: 15,
     marginBottom: 20,
