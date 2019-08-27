@@ -159,19 +159,13 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - gitlfs-{{ arch }}-{{ .Branch }}
+            - gitlfs-{{ arch }}
             - gitlfs
       - run:
-          name: Pull Git LFS files, retry until done
-          command: |
-            while true; do 
-              time git reset --hard HEAD
-              time git clean -fd 
-              time git lfs pull 
-              break; 
-            done
+          name: Pull Git LFS files
+          command: git lfs pull
       - save_cache:
-          key: gitlfs-{{ arch }}-{{ .Branch }}
+          key: gitlfs-{{ arch }}
           paths:
             # Save the LFS cache directory to save Github bandwidth
             - .git/lfs
