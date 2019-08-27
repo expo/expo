@@ -90,7 +90,7 @@ async function action(): Promise<void> {
 export default (program: Command) => {
   program
     .command('publish-dev-expo-home')
-    .alias('publish-dev-home')
+    .alias('publish-dev-home', 'pdh')
     .description('Publishes Expo Home for development.')
     .asyncAction(action);
 };
