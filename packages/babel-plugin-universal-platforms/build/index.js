@@ -9,15 +9,6 @@ function isPlatformSelect(path) {
         path.node.callee.property.name === 'select' &&
         core_1.types.isObjectExpression(path.node.arguments[0]));
 }
-const binaryOperations = {
-    '&&': (a, b) => a && b,
-    '||': (a, b) => a || b,
-    '!==': (a, b) => a !== b,
-    '===': (a, b) => a === b,
-    '!=': (a, b) => a != b,
-    '==': (a, b) => a == b,
-};
-const isLiteral = (node) => core_1.types.isLiteral(node) || (core_1.types.isIdentifier(node) && node.name === 'undefined');
 function default_1(api, options) {
     const { platform, mode } = options;
     const isDevelopment = mode !== 'production';
@@ -56,39 +47,7 @@ function default_1(api, options) {
                     p.replaceWith(core_1.types.stringLiteral(mode));
                 }
             }
-        },
-        UnaryExpression: {
-            /**
-             * Transforms redundant boolean expressions
-             * `!false => true`
-             * `!true => false`
-             */
-            exit(p) {
-                if (p.node.operator === '!' && isLiteral(p.node.argument)) {
-                    const literal = p.node.argument;
-                    p.replaceWith(core_1.types.booleanLiteral(!literal.value));
-                }
-            },
-        },
-        'BinaryExpression|LogicalExpression': {
-            exit(p) {
-                if (binaryOperations[p.node.operator] &&
-                    isLiteral(p.node.left) &&
-                    isLiteral(p.node.right)) {
-                    p.replaceWith(core_1.types.booleanLiteral(binaryOperations[p.node.operator](p.node.left.value, p.node.right.value)));
-                }
-                else if (p.node.operator === '&&' &&
-                    isLiteral(p.node.left) &&
-                    p.node.left.value === false) {
-                    p.replaceWith(core_1.types.booleanLiteral(false));
-                }
-                else if (p.node.operator === '||' &&
-                    isLiteral(p.node.left) &&
-                    p.node.left.value === true) {
-                    p.replaceWith(core_1.types.booleanLiteral(true));
-                }
-            },
-        },
+        }
     };
     function destroyBranch(p) {
         // @ts-ignore

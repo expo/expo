@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts Platform.OS to a static value for Terser 1`] = `"const value = \\"ios\\";"`;
+
+exports[`converts Platform.OS to a static value for Terser 2`] = `"const value = \\"ios\\";"`;
+
+exports[`leaves Platform.select if the matching platform's value is a method 1`] = `
+"const value = Platform.select({
+  android() {}
+
+});"
+`;
+
+exports[`leaves Platform.select if the matching platform's value is a method 2`] = `
+"const value = Platform.select({
+    android() {}
+});"
+`;
+
+exports[`removes unmatched platforms but leaves Platform.select if other platforms may match at runtime 1`] = `
+"const defaults = {
+  default: 'default'
+};
+const value = Platform.select({ ...defaults
+});"
+`;
+
+exports[`removes unmatched platforms but leaves Platform.select if other platforms may match at runtime 2`] = `
+"const defaults = {
+    default: \\"default\\"
+}, value = Platform.select({
+    ...defaults
+});"
+`;
+
+exports[`removes unmatched platforms but leaves Platform.select with indeterminate platforms 1`] = `
+"const value = Platform.select({
+  ['andr' + 'oid']: () => {}
+});"
+`;
+
+exports[`removes unmatched platforms but leaves Platform.select with indeterminate platforms 2`] = `
+"const value = Platform.select({
+    android: () => {}
+});"
+`;
+
+exports[`removes unmatched platforms but leaves Platform.select with indeterminate platforms and the default case 1`] = `
+"const value = Platform.select({
+  default: 'default',
+
+  ['w' + 'eb']() {}
+
+});"
+`;
+
+exports[`removes unmatched platforms but leaves Platform.select with indeterminate platforms and the default case 2`] = `
+"const value = Platform.select({
+    default: \\"default\\",
+    web() {}
+});"
+`;
+
+exports[`replaces Platform.select with "undefined" if no platforms match 1`] = `"const value = void 0;"`;
+
+exports[`replaces Platform.select with the default value if no platform matches 1`] = `
+"const value = {
+  test: true
+};"
+`;
+
+exports[`replaces Platform.select with the default value if no platform matches 2`] = `
+"const value = {
+    test: !0
+};"
+`;
+
+exports[`replaces Platform.select with the value for the matching platform 1`] = `
+"const defaults = {
+  default: 'default'
+};
+
+const value = () => {};"
+`;
+
+exports[`replaces Platform.select with the value for the matching platform 2`] = `
+"const defaults = {
+    default: \\"default\\"
+}, value = () => {};"
+`;

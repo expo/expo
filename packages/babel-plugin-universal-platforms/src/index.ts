@@ -1,6 +1,4 @@
-import { types as t, NodePath, traverse } from '@babel/core';
-
-type ValueLiteral = t.StringLiteral | t.NumericLiteral | t.BooleanLiteral | t.BigIntLiteral;
+import { NodePath, traverse, types as t } from '@babel/core';
 
 function isPlatformSelect(path: NodePath<t.CallExpression>): boolean {
   return (
@@ -12,18 +10,6 @@ function isPlatformSelect(path: NodePath<t.CallExpression>): boolean {
     t.isObjectExpression(path.node.arguments[0])
   );
 }
-
-const binaryOperations: { [key: string]: (a: any, b: any) => boolean } = {
-  '&&': (a, b) => a && b,
-  '||': (a, b) => a || b,
-  '!==': (a, b) => a !== b,
-  '===': (a, b) => a === b,
-  '!=': (a, b) => a != b,
-  '==': (a, b) => a == b,
-};
-
-const isLiteral = (node: t.Node): boolean =>
-  t.isLiteral(node) || (t.isIdentifier(node) && node.name === 'undefined');
 
 export type UniversalPlatformPluginOptions = {
   platform: string;
@@ -67,51 +53,7 @@ export default function(api: any, options: UniversalPlatformPluginOptions) {
           p.replaceWith(t.stringLiteral(mode));
         }
       }
-    },
-    UnaryExpression: {
-      /**
-       * Transforms redundant boolean expressions
-       * `!false => true`
-       * `!true => false`
-       */
-
-      exit(p: NodePath<t.UnaryExpression>) {
-        if (p.node.operator === '!' && isLiteral(p.node.argument)) {
-          const literal = p.node.argument as ValueLiteral;
-          p.replaceWith(t.booleanLiteral(!literal.value));
-        }
-      },
-    },
-    'BinaryExpression|LogicalExpression': {
-      exit(p: NodePath<t.BinaryExpression | t.LogicalExpression>) {
-        if (
-          binaryOperations[p.node.operator] &&
-          isLiteral(p.node.left) &&
-          isLiteral(p.node.right)
-        ) {
-          p.replaceWith(
-            t.booleanLiteral(
-              binaryOperations[p.node.operator](
-                (p.node.left as ValueLiteral).value,
-                (p.node.right as ValueLiteral).value
-              )
-            )
-          );
-        } else if (
-          p.node.operator === '&&' &&
-          isLiteral(p.node.left) &&
-          (p.node.left as ValueLiteral).value === false
-        ) {
-          p.replaceWith(t.booleanLiteral(false));
-        } else if (
-          p.node.operator === '||' &&
-          isLiteral(p.node.left) &&
-          (p.node.left as ValueLiteral).value === true
-        ) {
-          p.replaceWith(t.booleanLiteral(true));
-        }
-      },
-    },
+    }
   };
 
   function destroyBranch(p: NodePath<t.IfStatement | t.ConditionalExpression>) {

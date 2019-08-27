@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`converts switch-statement predicates for Terser 1`] = `"console.log(\\"web\\");"`;
+
+exports[`if statements only saves Android code 1`] = `
+"if (\\"android\\" === 'ios') {
+  console.log('iOS');
+} else if (\\"android\\" == \\"android\\") {
+  console.log('Android');
+} else if (\\"web\\" === \\"android\\") {
+  console.log('web');
+} else {
+  console.log('and beyond');
+}"
+`;
+
+exports[`if statements only saves Android code 2`] = `"console.log(\\"Android\\");"`;
+
+exports[`if statements only saves custom code 1`] = `
+"if (\\"custom\\" === 'ios') {
+  console.log('iOS');
+} else if (\\"custom\\" == \\"android\\") {
+  console.log('Android');
+} else if (\\"web\\" === \\"custom\\") {
+  console.log('web');
+} else {
+  console.log('and beyond');
+}"
+`;
+
+exports[`if statements only saves custom code 2`] = `"console.log(\\"and beyond\\");"`;
+
+exports[`if statements only saves iOS code 1`] = `
+"if (\\"ios\\" === 'ios') {
+  console.log('iOS');
+} else if (\\"ios\\" == \\"android\\") {
+  console.log('Android');
+} else if (\\"web\\" === \\"ios\\") {
+  console.log('web');
+} else {
+  console.log('and beyond');
+}"
+`;
+
+exports[`if statements only saves iOS code 2`] = `"console.log(\\"iOS\\");"`;
+
+exports[`if statements only saves web code 1`] = `
+"if (\\"web\\" === 'ios') {
+  console.log('iOS');
+} else if (\\"web\\" == \\"android\\") {
+  console.log('Android');
+} else if (\\"web\\" === \\"web\\") {
+  console.log('web');
+} else {
+  console.log('and beyond');
+}"
+`;
+
+exports[`if statements only saves web code 2`] = `"console.log(\\"web\\");"`;

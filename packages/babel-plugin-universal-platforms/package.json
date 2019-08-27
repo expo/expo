@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/master/packages/babel-plugin-universal-platforms#readme",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/node"
   },
   "dependencies": {
     "@babel/core": "^7.1.0",
