@@ -21,7 +21,8 @@
 {
   if (self = [super init])
   {
-    _defaults = [[NSUserDefaults alloc] initWithSuiteName:@"expo.host.notifications.bare"];
+    NSString *className = NSStringFromClass([self class]);
+    _defaults = [[NSUserDefaults alloc] initWithSuiteName:className];
     _listeners = [NSMutableDictionary new];
     _engine = engine;
   }

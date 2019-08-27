@@ -32,7 +32,7 @@
     return;
   }
   
-  [self.notificationRepository addUserInteractionForAppId:appId       userInteraction:userInteraction];
+  [self.notificationRepository addUserInteractionForAppId:appId userInteraction:userInteraction];
 }
 
 - (void)notifyAboutForegroundNotificationForAppId:(NSString*)appId
@@ -47,7 +47,7 @@
   [self.notificationRepository addForegroundNotificationForAppId:appId foregroundNotification:notification];
 }
 
-- (void)registerModuleAndGetPendingDeliveriesWithAppId:(NSString*)appId
+- (void)registerModuleAndGetPendingDeliveriesWithAppId:(NSString *)appId
                                                       mailbox:(id<EXMailbox>)mailbox
 {
   NSLog(@"REGISTER");
