@@ -2,12 +2,15 @@
 
 import React from 'react';
 import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+
+import { StyledText } from './Text';
+import { StyledView } from './Views';
+import { Ionicons } from './Icons';
 
 @withNavigation
 export default class QRCodeButton extends React.Component {
@@ -18,27 +21,29 @@ export default class QRCodeButton extends React.Component {
       <TouchableNativeFeedbackSafe
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
-        underlayColor="#b7b7b7"
-        style={[styles.container, fullWidthBorder && styles.bottomBorder]}>
-        <View style={styles.iconContainer}>
-          <Ionicons
-            name={Platform.OS === 'ios' ? 'ios-qr-scanner' : 'md-qr-scanner'}
-            size={28}
-            color="#888"
-          />
-        </View>
-
-        <View style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
-          <Text style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
-            Scan QR Code
-          </Text>
-
-          <View style={styles.subtitleContainer}>
-            <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-              Open your projects without typing
-            </Text>
+        underlayColor="#b7b7b7">
+        <StyledView style={[styles.container, fullWidthBorder && styles.bottomBorder]}>
+          <View style={styles.iconContainer}>
+            <Ionicons
+              name={Platform.OS === 'ios' ? 'ios-qr-scanner' : 'md-qr-scanner'}
+              lightColor="#888"
+              darkColor="#fff"
+              size={28}
+            />
           </View>
-        </View>
+
+          <StyledView style={[styles.infoContainer, !fullWidthBorder && styles.bottomBorder]}>
+            <StyledText style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+              Scan QR Code
+            </StyledText>
+
+            <View style={styles.subtitleContainer}>
+              <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
+                Open your projects without typing
+              </Text>
+            </View>
+          </StyledView>
+        </StyledView>
       </TouchableNativeFeedbackSafe>
     );
   }
@@ -55,12 +60,10 @@ export default class QRCodeButton extends React.Component {
 const styles = StyleSheet.create({
   bottomBorder: {
     flexGrow: 1,
-    borderBottomColor: Colors.light.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     paddingLeft: 5,
     flex: 1,
   },
@@ -77,7 +80,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   titleText: {
-    color: Colors.light.blackText,
     fontSize: 15,
     marginRight: 70,
     marginBottom: 2,
