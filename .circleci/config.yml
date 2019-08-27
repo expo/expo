@@ -158,14 +158,18 @@ commands:
   git_lfs_pull:
     steps:
       - restore_cache:
-          key: git-lfs--v2.8.1-{{ arch }}
+          keys:
+            - gitlfs-{{ arch }}-{{ .Branch }}
+            - gitlfs
       - run:
-          command: git lfs pull
+          name: Pull Git LFS files, retry until done
+          command: |
+            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
       - save_cache:
-          key: git-lfs--v2.8.1-{{ arch }}
+          key: gitlfs-{{ arch }}-{{ .Branch }}
           paths:
             # Save the LFS cache directory to save Github bandwidth
-            - ~/expo/.git/lfs
+            - .git/lfs
   restore_yarn_cache:
     parameters:
       working_directory:
@@ -259,6 +263,8 @@ executors:
       FASTLANE_SKIP_UPDATE_CHECK: 1
       FASTLANE_DISABLE_COLORS: 1
       CI: 1
+      # Prevent automatic download of LFS files
+      GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
   docs:
