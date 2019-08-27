@@ -155,6 +155,20 @@ commands:
       - run:
           name: Fetch CocoaPods
           command: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+  git_lfs_pull:
+    steps:
+      - restore_cache:
+          keys:
+            - gitlfs-{{ arch }}
+            - gitlfs
+      - run:
+          name: Pull Git LFS files
+          command: git lfs pull
+      - save_cache:
+          key: gitlfs-{{ arch }}
+          paths:
+            # Save the LFS cache directory to save Github bandwidth
+            - .git/lfs
   restore_yarn_cache:
     parameters:
       working_directory:
@@ -248,6 +262,8 @@ executors:
       FASTLANE_SKIP_UPDATE_CHECK: 1
       FASTLANE_DISABLE_COLORS: 1
       CI: 1
+      # Prevent automatic download of LFS files
+      GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
   docs:
@@ -456,7 +472,7 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
-      - run: git lfs pull
+      - git_lfs_pull
       - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
@@ -474,7 +490,7 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
-      - run: git lfs pull
+      - git_lfs_pull
       - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
@@ -501,7 +517,7 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
-      - run: git lfs pull
+      - git_lfs_pull
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
