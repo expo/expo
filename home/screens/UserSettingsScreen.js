@@ -1,8 +1,8 @@
 /* @flow */
 
 import Constants from 'expo-constants';
-import React from 'react';
-import { NativeModules, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import * as React from 'react';
+import { NativeModules, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -29,6 +29,7 @@ export default class UserSettingsScreen extends React.Component {
 
     return {
       legacyMenuGesture: settings.legacyMenuGesture,
+      preferredAppearance: settings.preferredAppearance,
     };
   }
 
@@ -40,6 +41,7 @@ export default class UserSettingsScreen extends React.Component {
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag">
         {this._renderMenuGestureOptions()}
+        {Platform.OS === 'ios' ? this._renderAppearanceOptions() : null}
 
         <View style={{ marginTop: 30 }}>
           <TouchableHighlight
@@ -59,6 +61,14 @@ export default class UserSettingsScreen extends React.Component {
   _handlePressSignOut = () => {
     this.props.dispatch(SessionActions.signOut());
     requestAnimationFrame(this.props.navigation.pop);
+  };
+
+  _setPreferredAppearance = (preferredAppearance: 'light' | 'dark' | 'automatic') => {
+    Analytics.track(Analytics.events.USER_UPDATED_SETTINGS, {
+      preferredAppearance,
+    });
+
+    this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
   };
 
   _setLegacyMenuGestureAsync = (useLegacyGesture: boolean) => {
@@ -116,6 +126,61 @@ export default class UserSettingsScreen extends React.Component {
       </View>
     );
   }
+
+  _renderAppearanceOptions() {
+    const { preferredAppearance } = this.props;
+
+    return (
+      <View style={{marginTop: 25}}>
+        <SectionLabelContainer>
+          <SectionLabelText>THEME</SectionLabelText>
+        </SectionLabelContainer>
+        <TouchableHighlight
+          onPress={() => this._setPreferredAppearance('no-preference')}
+          underlayColor={Colors.light.greyUnderlayColor}
+          style={styles.button}>
+          <GenericCardContainer>
+            <GenericCardBody style={styles.cardBody}>
+              <GenericCardTitle>Automatic</GenericCardTitle>
+            </GenericCardBody>
+            {preferredAppearance === 'no-preference' && this._renderCheckmark()}
+          </GenericCardContainer>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          onPress={() => this._setPreferredAppearance('light')}
+          underlayColor={Colors.light.greyUnderlayColor}
+          style={styles.button}>
+          <GenericCardContainer>
+            <GenericCardBody style={styles.cardBody}>
+              <GenericCardTitle>Light</GenericCardTitle>
+            </GenericCardBody>
+            {preferredAppearance === 'light' && this._renderCheckmark()}
+          </GenericCardContainer>
+        </TouchableHighlight>
+
+        <TouchableHighlight
+          onPress={() => this._setPreferredAppearance('dark')}
+          underlayColor={Colors.light.greyUnderlayColor}
+          style={styles.button}>
+          <GenericCardContainer>
+            <GenericCardBody style={styles.cardBody}>
+              <GenericCardTitle>Dark</GenericCardTitle>
+            </GenericCardBody>
+            {preferredAppearance === 'dark' && this._renderCheckmark()}
+          </GenericCardContainer>
+        </TouchableHighlight>
+
+
+        <View style={SharedStyles.genericCardDescriptionContainer}>
+          <Text style={SharedStyles.genericCardDescriptionText}>
+            Automatic is only supported on operating systems that allow you to control the system-wide color scheme.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
 
   _renderCheckmark() {
     return (
