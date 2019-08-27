@@ -1,5 +1,6 @@
 import * as Network from 'expo-network';
 import { Platform } from 'react-native';
+import { isDeviceFarm } from '../utils/Environment';
 
 export const name = 'Network';
 let Ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -82,18 +83,20 @@ export async function test(t) {
         t.expect(error).toBeDefined();
         t.expect(typeof macAddress).toEqual('undefined');
       });
-      t.it(`returns valid Mac address when pass in null as network interface name`, async () => {
-        let macAddress;
-        let error;
-        try {
-          macAddress = await Network.getMacAddressAsync(null);
-        } catch (e) {
-          error = e;
-        }
-        t.expect(typeof error).toEqual('undefined');
-        t.expect(macAddress).toBeDefined();
-        t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
-      });
+      if (!isDeviceFarm()) {
+        t.it(`returns valid Mac address when pass in null as network interface name`, async () => {
+          let macAddress;
+          let error;
+          try {
+            macAddress = await Network.getMacAddressAsync(null);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(typeof error).toEqual('undefined');
+          t.expect(macAddress).toBeDefined();
+          t.expect(macAddressRegex.test(macAddress)).toBeTruthy();
+        });
+      }
     }
   });
   t.describe(`Network.getNetworkStateAsync()`, () => {

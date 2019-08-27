@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { ImageProps, View, StyleProp, ViewStyle } from 'react-native';
+import { ImageProps, View } from 'react-native';
 
 import { PlaybackNativeSource, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
+
 export type NaturalSize = {
   width: number;
   height: number;
