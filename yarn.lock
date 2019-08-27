@@ -958,7 +958,7 @@
   optionalDependencies:
     sharp-cli "1.10.0"
 
-"@expo/json-file@^8.1.11", "@expo/json-file@^8.1.6":
+"@expo/json-file@^8.1.11", "@expo/json-file@^8.1.6", "@expo/json-file@^8.1.9":
   version "8.1.11"
   resolved "https://registry.yarnpkg.com/@expo/json-file/-/json-file-8.1.11.tgz#3749484d4b5f3653d55f70e70af4223817ab3f25"
   integrity sha512-l92eSoTY8WoWnhMcJGvA0vekDoiFnS1HLL7HfyI39pfushpTiAfzebyxWj9tPYS+fsJcHzpyv5r3wg4U6vWU8g==
@@ -6010,13 +6010,6 @@ expo-cli@^3.0.10:
   optionalDependencies:
     "@expo/traveling-fastlane-darwin" "1.9.11"
     "@expo/traveling-fastlane-linux" "1.9.11"
-
-expo-file-system@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-6.0.0.tgz#7fa5da4f5138f4efe488fd4d4d7b2f49863b25ea"
-  integrity sha512-SIVytgYHUm77bTXeHjNnS804KIPih3dEEcr8BGUOFxr1asbyaaf6/pFaWonrbLDRf5odjI1+daG0ktiQt2jZuw==
-  dependencies:
-    uuid-js "^0.7.5"
 
 expo-three@4.0.6:
   version "4.0.6"
@@ -12278,54 +12271,6 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0, react-native-tab-vie
   integrity sha512-Bke8KkDcDhvB/z0AS7MnQKMD2p6Kwfc1rSKlMOvg9CC5CnClQ2QEnhPSbwegKDYhUkBI92iH/BYy7hNSm5kbUQ==
   dependencies:
     prop-types "^15.6.1"
-
-react-native-unimodules@^0.5.3, react-native-unimodules@~0.5.2:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.5.4.tgz#d4d779576a027f0455b14d396b0e002cb57963fe"
-  integrity sha512-47ZJzZriaVtvDJp24HLu6xcKBaDScDcx71yIDmahsKKJtbEHmXl7jPz1y/2FhAKSb174m9niu3F97Di5Bo+91g==
-  dependencies:
-    "@unimodules/core" "~3.0.2"
-    "@unimodules/react-native-adapter" "~3.0.0"
-    chalk "^2.4.2"
-    expo-app-loader-provider "~6.0.0"
-    expo-asset "~6.0.0"
-    expo-constants "~6.0.0"
-    expo-file-system "~6.0.1"
-    expo-permissions "~6.0.0"
-    unimodules-barcode-scanner-interface "~3.0.0"
-    unimodules-camera-interface "~3.0.0"
-    unimodules-constants-interface "~3.0.0"
-    unimodules-face-detector-interface "~3.0.0"
-    unimodules-file-system-interface "~3.0.0"
-    unimodules-font-interface "~3.0.0"
-    unimodules-image-loader-interface "~3.0.0"
-    unimodules-permissions-interface "~3.0.0"
-    unimodules-sensors-interface "~3.0.0"
-    unimodules-task-manager-interface "~3.0.0"
-
-react-native-unimodules@~0.5.0:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.5.2.tgz#02ace4a3633906ebe43ff42164482795965d38a0"
-  integrity sha512-/wRMjdLsSgIOrnr7FRtXiv2Km0KH0IRXDky2uGp0K4i7NLEme7Fn4e3mEbqALfa7t3lIa2KLU15mVsp41TKlEg==
-  dependencies:
-    "@unimodules/core" "3.0.2"
-    "@unimodules/react-native-adapter" "3.0.0"
-    chalk "^2.4.2"
-    expo-app-loader-provider "6.0.0"
-    expo-asset "6.0.0"
-    expo-constants "6.0.0"
-    expo-file-system "6.0.0"
-    expo-permissions "6.0.0"
-    unimodules-barcode-scanner-interface "3.0.0"
-    unimodules-camera-interface "3.0.0"
-    unimodules-constants-interface "3.0.0"
-    unimodules-face-detector-interface "3.0.0"
-    unimodules-file-system-interface "3.0.0"
-    unimodules-font-interface "3.0.0"
-    unimodules-image-loader-interface "3.0.0"
-    unimodules-permissions-interface "3.0.0"
-    unimodules-sensors-interface "3.0.0"
-    unimodules-task-manager-interface "3.0.0"
 
 react-native-view-shot@2.6.0:
   version "2.6.0"
