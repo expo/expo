@@ -2,7 +2,7 @@
 
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-
+import { isDeviceFarm } from './utils/Environment';
 import ExponentTest from './ExponentTest';
 
 function browserSupportsWebGL() {
@@ -24,10 +24,6 @@ function optionalRequire(requirer) {
     // eslint-disable-next-line
     return;
   }
-}
-
-export function isInDeviceFarm() {
-  return ExponentTest && ExponentTest.isInCI && Platform.OS === 'android';
 }
 
 // List of all modules for tests. Each file path must be statically present for
@@ -89,14 +85,17 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/ScreenOrientation')),
       optionalRequire(() => require('./tests/Payments')),
       optionalRequire(() => require('./tests/AdMobInterstitial')),
-      optionalRequire(() => require('./tests/AdMobBanner')),
-      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
       optionalRequire(() => require('./tests/AdMobRewarded')),
       optionalRequire(() => require('./tests/FBBannerAd'))
     );
   }
 
-  if (!global.DETOX && !isInDeviceFarm()) {
+  if (!global.DETOX && !isDeviceFarm()) {
+    // Times out sometimes
+    modules.push(
+      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
+      optionalRequire(() => require('./tests/AdMobBanner'))
+    );
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)
