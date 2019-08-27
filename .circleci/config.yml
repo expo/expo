@@ -158,11 +158,11 @@ commands:
   git_lfs_pull:
     steps:
       - restore_cache:
-          key: git-lfs--v2.8.0-{{ arch }}
+          key: git-lfs--v2.8.1-{{ arch }}
       - run:
           command: git lfs pull
       - save_cache:
-          key: git-lfs--v2.8.0-{{ arch }}
+          key: git-lfs--v2.8.1-{{ arch }}
           paths:
             # Save the LFS cache directory to save Github bandwidth
             - ~/expo/.git/lfs
@@ -465,7 +465,6 @@ jobs:
     steps:
       - install_nix
       - setup
-      - git_lfs_pull
       - git_lfs_pull
       - guard_sdk_tests
       - update_submodules
