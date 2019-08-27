@@ -15,6 +15,8 @@
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
 #import "EXScopedBranch.h"
+#import "EXScopedScoper.h"
+#import "EXScopedAppIdProvider.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -30,6 +32,16 @@
 {
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
+#if __has_include(<EXNotifications/EXBareScoper.h>)
+  EXScopedScoper *scoper = [[EXScopedScoper alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerInternalModule:scoper];
+#endif
+  
+#if __has_include(<EXNotifications/EXBareAppIdProvider.h>)
+  EXScopedAppIdProvider *provider = [[EXScopedAppIdProvider alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerInternalModule:provider];
+#endif
+  
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];

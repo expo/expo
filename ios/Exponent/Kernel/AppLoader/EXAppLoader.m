@@ -450,7 +450,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)addSDKForExperienceId:(NSMutableDictionary *)manifest
 {
   NSUserDefaults *registry = [[NSUserDefaults alloc] initWithSuiteName:@"EXPERIENCE_ID_REGISTRY"];
-  [registry setObject:manifest[@"version"] forKey:manifest[@"id"]];
+  [registry setObject:manifest[@"sdkVersion"] forKey:manifest[@"id"]];
 }
 
 @end

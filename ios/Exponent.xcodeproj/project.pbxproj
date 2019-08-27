@@ -15,6 +15,8 @@
 		08FCA2B1B8F4B2420E552303 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC01B7874B93745E639DFA6 /* libPods-Tests.a */; };
 		09642C2C78D047D0AFCB7C1D /* RNSharedElementTransitionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		0C03E4B62315211300D96D43 /* EXUserNotificationsDispatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C03E4B52315211300D96D43 /* EXUserNotificationsDispatcher.m */; };
+		0C03E4BA23154AC600D96D43 /* EXScopedAppIdProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C03E4B923154AC600D96D43 /* EXScopedAppIdProvider.m */; };
+		0C03E4BD23154FC300D96D43 /* EXScopedScoper.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C03E4BC23154FC300D96D43 /* EXScopedScoper.m */; };
 		0CC6F95E225F5B1B00322635 /* EXStandaloneAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */; };
 		0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
@@ -369,6 +371,10 @@
 		0799CFD921839B520039E97C /* EXSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSession.m; sourceTree = "<group>"; };
 		0C03E4B42315211300D96D43 /* EXUserNotificationsDispatcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationsDispatcher.h; sourceTree = "<group>"; };
 		0C03E4B52315211300D96D43 /* EXUserNotificationsDispatcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUserNotificationsDispatcher.m; sourceTree = "<group>"; };
+		0C03E4B823154AC600D96D43 /* EXScopedAppIdProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedAppIdProvider.h; sourceTree = "<group>"; };
+		0C03E4B923154AC600D96D43 /* EXScopedAppIdProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedAppIdProvider.m; sourceTree = "<group>"; };
+		0C03E4BB23154FC300D96D43 /* EXScopedScoper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedScoper.h; sourceTree = "<group>"; };
+		0C03E4BC23154FC300D96D43 /* EXScopedScoper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedScoper.m; sourceTree = "<group>"; };
 		0CC6F95C225F5B1B00322635 /* EXStandaloneAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXStandaloneAppDelegate.h; sourceTree = "<group>"; };
 		0CC6F95D225F5B1B00322635 /* EXStandaloneAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXStandaloneAppDelegate.m; sourceTree = "<group>"; };
 		0CC6F95F225F5C7700322635 /* ExpoKitAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExpoKitAppDelegate.h; sourceTree = "<group>"; };
@@ -1019,6 +1025,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C03E4B723154A9400D96D43 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				0C03E4B823154AC600D96D43 /* EXScopedAppIdProvider.h */,
+				0C03E4B923154AC600D96D43 /* EXScopedAppIdProvider.m */,
+				0C03E4BB23154FC300D96D43 /* EXScopedScoper.h */,
+				0C03E4BC23154FC300D96D43 /* EXScopedScoper.m */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
 		255747E7222D515400D91513 /* EXScopedFileSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -1095,6 +1112,7 @@
 		31DBC6AA20B5B4C60049A476 /* UniversalModules */ = {
 			isa = PBXGroup;
 			children = (
+				0C03E4B723154A9400D96D43 /* Notifications */,
 				31361A5E2261C64100662769 /* Permissions */,
 				255747E7222D515400D91513 /* EXScopedFileSystem */,
 				B5FB73781FF6DADB001C764B /* EXConstantsBinding.h */,
@@ -2557,6 +2575,7 @@
 				BB50E88E20B9C0D3003C752D /* RNRotationHandler.m in Sources */,
 				7043DF9E2283303800272D74 /* RNSVGSvgView.m in Sources */,
 				BB5BD32720AEFCB4007E02FC /* REAEventNode.m in Sources */,
+				0C03E4BD23154FC300D96D43 /* EXScopedScoper.m in Sources */,
 				B5FB74B01FF6DADC001C764B /* EXScreenOrientation.m in Sources */,
 				B5D0D679204F4C0400DDFC99 /* EXReactAppManager.m in Sources */,
 				255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */,
@@ -2718,6 +2737,7 @@
 				31AD9A4D2285B53100F19090 /* RCTConvert+AirMap.m in Sources */,
 				7043DF872283303800272D74 /* RNSVGLinearGradientManager.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
+				0C03E4BA23154AC600D96D43 /* EXScopedAppIdProvider.m in Sources */,
 				7043DF992283303800272D74 /* RNSVGPattern.m in Sources */,
 				B532EB672058431000569CF2 /* EXMenuGestureRecognizer.m in Sources */,
 				7043DFAD2283303800272D74 /* RNSVGNode.m in Sources */,
