@@ -164,7 +164,12 @@ commands:
       - run:
           name: Pull Git LFS files, retry until done
           command: |
-            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
+            while true; do 
+              time git reset --hard HEAD
+              time git clean -fd 
+              time git lfs pull 
+              break; 
+            done
       - save_cache:
           key: gitlfs-{{ arch }}-{{ .Branch }}
           paths:
