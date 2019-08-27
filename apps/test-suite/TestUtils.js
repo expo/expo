@@ -84,7 +84,6 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/ScreenOrientation')),
       optionalRequire(() => require('./tests/Payments')),
       optionalRequire(() => require('./tests/AdMobInterstitial')),
-      optionalRequire(() => require('./tests/AdMobBanner')),
       optionalRequire(() => require('./tests/AdMobRewarded')),
       optionalRequire(() => require('./tests/FBBannerAd'))
     );
@@ -92,7 +91,10 @@ export function getTestModules() {
 
   if (!global.DETOX && !isDeviceFarm()) {
     // Times out sometimes
-    modules.push(optionalRequire(() => require('./tests/AdMobPublisherBanner')));
+    modules.push(
+      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
+      optionalRequire(() => require('./tests/AdMobBanner'))
+    );
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)
