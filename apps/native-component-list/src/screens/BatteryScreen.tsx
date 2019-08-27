@@ -5,6 +5,10 @@ import { ScrollView } from 'react-native';
 import MonoText from '../components/MonoText';
 
 export default function BatteryScreen() {
+  if (!Battery.isSupported) {
+    return <MonoText>Battery API is not supported on this device</MonoText>;
+  }
+
   const [batteryLevel, setBatteryLevel] = React.useState(-1);
   const [batteryState, setBatteryState] = React.useState(Battery.BatteryState.UNKNOWN);
   const [lowPowerMode, setLowPowerMode] = React.useState(false);
