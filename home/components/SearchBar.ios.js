@@ -43,6 +43,7 @@ class PlaceholderButtonSearchBar extends React.Component {
               <TextInput
                 editable={false}
                 placeholder="Find a project or enter a URL..."
+                placeholderTextColor={this.context === 'dark' ? '#646464' : '#ccc'}
                 placeholderStyle={styles.searchInputPlaceholderText}
                 style={styles.searchInput}
               />
@@ -100,6 +101,7 @@ export default class SearchBar extends React.Component {
             autoCorrect={false}
             returnKeyType="search"
             placeholder="Find a project or enter a URL..."
+            placeholderTextColor={this.context === 'dark' ? '#646464' : '#ccc'}
             placeholderStyle={styles.searchInputPlaceholderText}
             onSubmitEditing={this._handleSubmit}
             style={[styles.searchInput, { color: this.context === 'dark' ? '#fff' : '#000' }]}
