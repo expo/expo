@@ -20,7 +20,6 @@ export default class AppearanceScreen extends React.Component<{}, State> {
 
   componentDidMount() {
     this.subscription = Appearance.addChangeListener(({ colorScheme }: { colorScheme: any }) => {
-      console.log('color scheme:', colorScheme);
       this.setState({ colorScheme });
     });
   }
@@ -31,7 +30,6 @@ export default class AppearanceScreen extends React.Component<{}, State> {
   }
 
   render() {
-    console.log('rendering color scheme:', this.state.colorScheme);
     const { colorScheme } = this.state;
     const isDark = colorScheme === 'dark';
 
