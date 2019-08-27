@@ -72,6 +72,7 @@ export default class Profile extends React.Component {
     // NOTE(brentvatne): investigate why `user` is null when there
     // is an error, even if it loaded before. This seems undesirable,
     // can it be avoided with apollo-client?
+
     if (this.props.data.error && !this.props.data.user) {
       return this._renderError();
     }
@@ -122,13 +123,16 @@ export default class Profile extends React.Component {
 
   _renderError = () => {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
-      <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <Text style={SharedStyles.noticeDescriptionText}>
+      <ScrollView style={{flex: 1}} contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+        <StyledText
+          style={SharedStyles.noticeDescriptionText}
+          lightColor="rgba(36, 44, 58, 0.7)"
+          darkColor="#ccc">
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
-        </Text>
+        </StyledText>
 
         <PrimaryButton plain onPress={this._handleRefreshAsync} fallback={TouchableOpacity}>
           Try again
@@ -139,7 +143,7 @@ export default class Profile extends React.Component {
             <ActivityIndicator />
           </View>
         )}
-      </View>
+      </ScrollView>
     );
   };
 
