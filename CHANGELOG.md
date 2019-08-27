@@ -27,6 +27,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed `Calendar.createEventAsync` crashing with relativeOffSet due to invalid type conversion from double to integer by [@vivianzzhu91](https://github.com/vivianzzhu91) ([#5134](https://github.com/expo/expo/pull/5134))
 - fixed `AppAuthModule.createOAuthServiceConfiguration` typo resulting in crashes when `registrationEndpoint` is not specified in config.
 - fixed occasional `"ViewManagerAdapter_*" was not found in the UIManager` bugs by [@sjchmiela](https://github.com/sjchmiela) ([#5066](https://github.com/expo/expo/pull/5066))
+- fixed crashes when adding attachments with `MailComposer` by [@sjchmiela](https://github.com/sjchmiela) ([#5449](https://github.com/expo/expo/pull/5449))
 
 ## 34.0.0
 
