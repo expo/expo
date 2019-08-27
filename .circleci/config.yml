@@ -357,6 +357,7 @@ jobs:
     executor: js
     steps:
       - setup
+      - git_lfs_pull
       - guard_sdk_tests
       - update_submodules
       - restore_yarn_cache
@@ -470,9 +471,9 @@ jobs:
     steps:
       - install_nix
       - setup
-      - git_lfs_pull
       - guard_sdk_tests
       - update_submodules
+      - git_lfs_pull
       - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
