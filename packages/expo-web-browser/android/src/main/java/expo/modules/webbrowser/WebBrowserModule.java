@@ -32,7 +32,7 @@ public class WebBrowserModule extends ExportedModule {
   private final static String PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage";
   private final static String DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage";
 
-  private final static String SHOW_IN_RECENTS = "showInAndroidRecents";
+  private final static String SHOW_IN_RECENTS = "showInRecents";
 
   private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String ERROR_CODE = "EXWebBrowser";
