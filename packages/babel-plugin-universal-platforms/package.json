@@ -2,9 +2,8 @@
   "name": "babel-plugin-universal-platforms",
   "version": "1.0.0",
   "description": "Removes unused platforms from the Platform module of unimodules/core",
-  "main": "index.js",
+  "main": "build/index.js",
   "files": [
-    "index.js",
     "build/*"
   ],
   "scripts": {

@@ -1,11 +1,11 @@
 import { transformSync } from '@babel/core';
 // @ts-ignore
 import dedent from 'dedent';
-import universalPlatform, { Options } from '..';
+import universalPlatformPlugin, { UniversalPlatformPluginOptions } from '..';
 
-function transform(input: string, options: Options): string {
+function transform(input: string, options: UniversalPlatformPluginOptions): string {
   const value = transformSync(dedent(input), {
-    plugins: [[universalPlatform, options]],
+    plugins: [[universalPlatformPlugin, options]],
     babelrc: false,
     configFile: false,
   });
@@ -39,7 +39,7 @@ it(`removes __DEV__ and process.env.NODE_ENV`, () => {
 });
 
 // react-native-web redefines this value.
-// Terser should shake it during the bundling.
+// Terser should remove it during the bundling.
 it(`keeps __DEV__ redefinition`, () => {
   const code = transform(
     `
@@ -56,7 +56,7 @@ it(`keeps __DEV__ redefinition`, () => {
 });
 
 // react-native-web redefines this value.
-// Terser should shake it during the bundling.
+// Terser should remove it during the bundling.
 it(`should pass over process.env.NODE_ENV redefinition`, () => {
   const code = transform(
     `
@@ -70,7 +70,7 @@ it(`should pass over process.env.NODE_ENV redefinition`, () => {
   expect(code).toMatch(`process.env.NODE_ENV = 'production'`);
 });
 
-it(`switch statement is converted for Terser`, () => {
+it(`converts switch-statement predicates for Terser`, () => {
   const code = transform(
     `
     switch (Platform.OS) {
@@ -90,7 +90,7 @@ it(`switch statement is converted for Terser`, () => {
   expect(code).toMatch('switch ("web")');
 });
 
-describe('if Statements', () => {
+describe(`if statements`, () => {
   const DEFAULT_BLOCK = `
   if (Platform.OS === 'ios') {
     console.log('iOS')
@@ -116,7 +116,7 @@ describe('if Statements', () => {
   }
 });
 
-describe('Platform.OS', () => {
+describe(`Platform.OS`, () => {
   it(`is converted to a static value for Terser`, () => {
     const code = transform(
       `
@@ -133,8 +133,8 @@ describe('Platform.OS', () => {
   });
 });
 
-describe('Platform.select', () => {
-  it('should replace Platform.select with value for default case if there is no matching platform', () => {
+describe(`Platform.select`, () => {
+  it(`replaces Platform.select with the default value if no platform matches`, () => {
     const code = transform(
       `
       const value = Platform.select({
@@ -155,7 +155,7 @@ describe('Platform.select', () => {
     expect(code).toMatchSnapshot();
   });
 
-  it('should replace Platform.select with value for matching platform', () => {
+  it(`replaces Platform.select with the value for the matching platform`, () => {
     const code = transform(
       `
       const defaults = { default: 'default' };
@@ -175,7 +175,7 @@ describe('Platform.select', () => {
     expect(code).toMatchSnapshot();
   });
 
-  it('should remove non-matching platforms but leave Platform.select', () => {
+  it(`removes unmatched platforms but leaves Platform.select if other platforms may match at runtime`, () => {
     const code = transform(
       `
       const defaults = { default: 'default' };
@@ -196,7 +196,7 @@ describe('Platform.select', () => {
     expect(code).toMatchSnapshot();
   });
 
-  it('should replace Platform.select with undefined if no cases are matching', () => {
+  it(`replaces Platform.select with "undefined" if no platforms match`, () => {
     const code = transform(
       `
       const value = Platform.select({
@@ -212,7 +212,7 @@ describe('Platform.select', () => {
     expect(code).toEqual('const value = undefined;');
   });
 
-  it('should remove non-matching platforms but leave Platform.select with unknown cases 1', () => {
+  it(`removes unmatched platforms but leaves Platform.select with indeterminate platforms`, () => {
     const code = transform(
       `
       const value = Platform.select({
@@ -232,7 +232,7 @@ describe('Platform.select', () => {
     expect(code).toMatchSnapshot();
   });
 
-  it('should remove non-matching platforms but leave Platform.select with unknown cases and default case', () => {
+  it(`removes unmatched platforms but leaves Platform.select with indeterminate platforms and the default case`, () => {
     const code = transform(
       `
       const value = Platform.select({
@@ -243,13 +243,13 @@ describe('Platform.select', () => {
       { platform: 'web', mode: 'development' }
     );
 
-    expect(code).toMatch("['w' + 'eb']() {}");
+    expect(code).toMatch(`['w' + 'eb']() {}`);
     expect(code).toMatch('Platform.select');
-    expect(code).toMatch("default: 'default',");
+    expect(code).toMatch(`default: 'default',`);
     expect(code).toMatchSnapshot();
   });
 
-  it('should remove non-matching platforms but leave Platform.select with method', () => {
+  it(`leaves Platform.select if the matching platform's value is a method`, () => {
     const code = transform(
       `
       const value = Platform.select({

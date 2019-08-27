@@ -12,14 +12,14 @@ The platform for which you want to compile: `'ios'`, `'android'`, `'web'`.
 
 Dictates whether or not the build is in development or production mode: `'development', 'production'`
 
-### Input
+### Example Input
 
 ```js
 if (__DEV__ || process.env.NODE_ENV === 'production') {
 }
 ```
 
-### Output
+### Example Output
 
 ```js
 if (true || 'development' === 'production') {
@@ -28,11 +28,11 @@ if (true || 'development' === 'production') {
 
 # Examples
 
-The following examples show what the output of a lexical block looks like after it's been transpiled with `expo build:web` (`babel-plugin-universal-platforms` & Webpack's Terser).
+The following examples show what the output of a lexical block looks like after it's been optimized with `expo build:web` (`babel-plugin-universal-platforms` & Webpack's Terser).
 
 ## If Statements
 
-### Input
+### Example Input
 
 ```js
 import { Platform } from '@unimodules/core';
@@ -81,7 +81,7 @@ console.log('Output', 'web');
 
 ## `Platform.select`
 
-### Input
+### Example Input
 
 ```js
 import { Platform } from 'react-native';
@@ -116,7 +116,7 @@ console.log('Output', 'web');
 
 ## Switch Statements
 
-### Input
+### Example Input
 
 ```js
 import { Platform } from 'react-native';

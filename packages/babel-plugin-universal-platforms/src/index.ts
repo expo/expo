@@ -24,23 +24,22 @@ const binaryOperations: { [key: string]: (a: any, b: any) => boolean } = {
 
 const isLiteral = (node: t.Node): boolean =>
   t.isLiteral(node) || (t.isIdentifier(node) && node.name === 'undefined');
-// /Literal$/.test(node.type) || (node.type === 'Identifier' && node.name === 'undefined');
 
-export type Options = {
+export type UniversalPlatformPluginOptions = {
   platform: string;
   mode: string;
 };
 
-export default function(api: any, options: Options) {
+export default function(api: any, options: UniversalPlatformPluginOptions) {
   const { platform, mode } = options;
   const isDevelopment = mode !== 'production';
   if (!platform) {
-    throw new Error('babel-plugin-universal-platforms: platform option must be defined');
+    throw new Error('babel-plugin-universal-platforms: "platform" option must be defined');
   }
 
   const collapseTestVisitor = {
     /**
-     * Transforms static ID values for Terser to shake
+     * Transforms static ID values for Terser to analyze
      * `__DEV__ => <true | false>`
      * `__PLATFORM__ => <"ios" | "android" | "web" | string>`
      */

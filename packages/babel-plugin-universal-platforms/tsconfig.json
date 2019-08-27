@@ -2,8 +2,7 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "target": "es2015",
-    "lib": ["dom", "es2016"],
-    "jsx": "react",
+    "lib": ["es2015"],
     "strict": true,
     "module": "commonjs",
     "declarationMap": true,
