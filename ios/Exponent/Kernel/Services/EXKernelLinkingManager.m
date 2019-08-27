@@ -9,6 +9,7 @@
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTUtils.h>
 
 NSString *kEXExpoDeepLinkSeparator = @"--/";
 NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
@@ -66,7 +67,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
       // Since this method might have been called on any thread,
       // let's make sure we create a new app on the main queue.
-      dispatch_async(dispatch_get_main_queue(), ^{
+      RCTExecuteOnMainQueue(^{
         [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
       });
     }
