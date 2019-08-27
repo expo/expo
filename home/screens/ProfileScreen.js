@@ -1,5 +1,4 @@
 /* @flow */
-import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
   findNodeHandle,
@@ -21,6 +20,8 @@ import SessionActions from '../redux/SessionActions';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
+
+import { MaterialIcons } from '../components/Icons';
 
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
@@ -101,7 +102,7 @@ class SignOutButtonAndroid extends React.Component {
           style={{ position: 'absolute', top: 5, left: 0 }}
         />
         <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-          <MaterialIcons name="more-vert" size={27} color="#000" />
+          <MaterialIcons name="more-vert" size={27} lightColor="#000" />
         </TouchableOpacity>
       </View>
     );
@@ -135,22 +136,6 @@ class UserSettingsButtonIOS extends React.Component {
 
   _handlePress = () => {
     this.props.navigation.navigate('UserSettings');
-  };
-}
-
-@onlyIfAuthenticated
-@connect()
-class SignOutButtonIOS extends React.Component {
-  render() {
-    return (
-      <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-        <Text style={{ fontSize: 16, color: '#4E9BDE' }}>Sign Out</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  _handlePress = () => {
-    this.props.dispatch(SessionActions.signOut());
   };
 }
 

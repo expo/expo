@@ -4,7 +4,7 @@ interface Console {
 
 declare var Console: {
   prototype: Console;
-  new(): Console;
+  new (): Console;
 };
 
 declare var console: Console;

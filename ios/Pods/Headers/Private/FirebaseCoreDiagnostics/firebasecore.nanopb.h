@@ -1,0 +1,1 @@
+../../../FirebaseCoreDiagnostics/Firebase/CoreDiagnostics/FIRCDLibrary/Protogen/nanopb/firebasecore.nanopb.h

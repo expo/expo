@@ -100,33 +100,33 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
 - (void)launchImagePicker:(EXImagePickerTarget)target
 {
-  self.picker = [[UIImagePickerController alloc] init];
-
-  if (target == EXImagePickerTargetCamera) {
-#if TARGET_IPHONE_SIMULATOR
-    self.reject(@"CAMERA_MISSING", @"Camera not available on simulator", nil);
-    return;
-#else
-    self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    if ([[self.options objectForKey:@"cameraType"] isEqualToString:@"front"]) {
-      self.picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-    } else { // "back"
-      self.picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-    }
-#endif
-  } else { // RNImagePickerTargetLibrarySingleImage
-    self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  }
-
-  self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
-
-  if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
-    self.picker.allowsEditing = true;
-  }
-  self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
-  self.picker.delegate = self;
-
   dispatch_async(dispatch_get_main_queue(), ^{
+    self.picker = [[UIImagePickerController alloc] init];
+
+    if (target == EXImagePickerTargetCamera) {
+  #if TARGET_IPHONE_SIMULATOR
+      self.reject(@"CAMERA_MISSING", @"Camera not available on simulator", nil);
+      return;
+  #else
+      self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+      if ([[self.options objectForKey:@"cameraType"] isEqualToString:@"front"]) {
+        self.picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+      } else { // "back"
+        self.picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+      }
+  #endif
+    } else { // RNImagePickerTargetLibrarySingleImage
+      self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    }
+
+    self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
+
+    if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
+      self.picker.allowsEditing = true;
+    }
+    self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
+    self.picker.delegate = self;
+
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
     id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
     [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];

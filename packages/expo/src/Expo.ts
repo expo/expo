@@ -4,7 +4,6 @@ import * as AR from './AR';
 import * as ErrorRecovery from './ErrorRecovery/ErrorRecovery';
 import * as Logs from './logs/Logs';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
-import * as StoreReview from './StoreReview/StoreReview';
 import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
 
@@ -19,7 +18,6 @@ export { default as Notifications } from './Notifications/Notifications';
 export { AR };
 export { ScreenOrientation };
 export { SplashScreen };
-export { StoreReview };
 export { Updates };
 export { default as AppLoading } from './launch/AppLoading';
 export { default as AuthSession } from './AuthSession';

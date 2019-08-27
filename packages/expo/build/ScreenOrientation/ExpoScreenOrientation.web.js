@@ -1,4 +1,5 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { canUseViewport, canUseEventListeners } from 'fbjs/lib/ExecutionEnvironment';
 import { Orientation, WebOrientationLock, WebOrientation, } from './ScreenOrientation.types';
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 const OrientationLockAPIToWeb = {
@@ -17,8 +18,8 @@ const OrientationWebToAPI = {
     [WebOrientation.LANDSCAPE_PRIMARY]: Orientation.LANDSCAPE_LEFT,
     [WebOrientation.LANDSCAPE_SECONDARY]: Orientation.LANDSCAPE_RIGHT,
 };
-const { screen } = window;
-const orientation = screen.orientation || screen.msOrientation || null;
+const { screen } = canUseViewport && window;
+const orientation = canUseViewport && (screen.orientation || screen.msOrientation || null);
 async function emitOrientationEvent() {
     const [orientationLock, orientationInfo] = await Promise.all([
         getOrientationLockAsync(),
@@ -29,11 +30,13 @@ async function emitOrientationEvent() {
         orientationInfo,
     });
 }
-if (orientation) {
-    orientation.addEventListener('change', emitOrientationEvent);
-}
-else {
-    window.addEventListener('orientationchange', emitOrientationEvent);
+if (canUseEventListeners) {
+    if (orientation) {
+        orientation.addEventListener('change', emitOrientationEvent);
+    }
+    else {
+        window.addEventListener('orientationchange', emitOrientationEvent);
+    }
 }
 function _convertToLegacyOrientationLock(orientationLock) {
     switch (orientationLock) {

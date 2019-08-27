@@ -37,6 +37,7 @@ function githubUrl(path) {
   if (pathAsMarkdown.startsWith('/versions/latest')) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/unversioned');
   }
+
   return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
 }
 

@@ -343,10 +343,13 @@ NS_ASSUME_NONNULL_BEGIN
   UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
   UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
   switch (mask) {
-    case UIInterfaceOrientationMaskPortrait:
+    case UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown:
       if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
         newOrientation = UIInterfaceOrientationPortrait;
       }
+      break;
+    case UIInterfaceOrientationMaskPortrait:
+      newOrientation = UIInterfaceOrientationPortrait;
       break;
     case UIInterfaceOrientationMaskPortraitUpsideDown:
       newOrientation = UIInterfaceOrientationPortraitUpsideDown;

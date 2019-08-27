@@ -13,6 +13,7 @@ import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../FeatureFlags';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import isIPhoneX from '../utils/isIPhoneX';
+import { StyledView } from '../components/Views';
 
 let TabTitles: Object = {
   new: 'New projects',
@@ -60,10 +61,10 @@ export default class ExploreScreen extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.greyBackground }}>
+      <StyledView style={{ flex: 1 }} darkColor="#000" lightColor={Colors.light.greyBackground}>
         {this._renderSearchBar()}
         {this._renderContent()}
-      </View>
+      </StyledView>
     );
   }
 
@@ -94,9 +95,9 @@ export default class ExploreScreen extends React.Component {
       );
     } else {
       return (
-        <View style={styles.titleBarIOS}>
+        <StyledView style={styles.titleBarIOS}>
           <SearchBar.PlaceholderButton />
-        </View>
+        </StyledView>
       );
     }
   }
@@ -111,20 +112,13 @@ let navBarBorder = {};
 if (FeatureFlags.HIDE_EXPLORE_TABS) {
   navBarBorder = {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.navBarBorderBottom,
+    borderBottomColor: Colors.light.navBarBorderBottom,
   };
 }
 
 const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 15,
-    backgroundColor: Colors.greyBackground,
-    borderRightWidth: 1,
-    borderRightColor: '#f6f6f6',
-  },
   tabBarAndroid: {
     paddingTop: 5,
     paddingBottom: 5,
@@ -136,13 +130,11 @@ const styles = StyleSheet.create({
   },
   titleBarIOS: {
     height: 70 + NOTCH_HEIGHT,
-    backgroundColor: '#fff',
     paddingTop: 20 + NOTCH_HEIGHT,
     ...navBarBorder,
   },
   titleBarAndroid: {
     height: 79,
-    backgroundColor: '#fff',
     paddingTop: 26,
     marginBottom: 0,
     ...navBarBorder,

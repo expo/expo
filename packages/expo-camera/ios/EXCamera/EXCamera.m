@@ -300,6 +300,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   if (_barCodeScanner) {
     [_barCodeScanner setIsEnabled:barCodeScanning];
+  } else if (barCodeScanning) {
+    UMLogError(@"BarCodeScanner module not found. Make sure `expo-barcode-scanner` is installed and linked correctly.");
   }
 }
 
@@ -314,6 +316,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   if (_faceDetectorManager) {
     [_faceDetectorManager setIsEnabled:faceDetecting];
+  } else if (faceDetecting) {
+    UMLogError(@"FaceDetector module not found. Make sure `expo-face-detector` is installed and linked correctly.");
   }
 }
 

@@ -18,7 +18,7 @@ public class BatteryLevelReceiver extends BroadcastReceiver {
     Intent batteryIntent = BatteryModule.mContext.getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
     int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-    float batteryLevel = level / (float) scale;
+    float batteryLevel = (level != -1 && scale != -1) ? level / (float) scale : -1;
     BatteryModule.onBatteryLevelChange(batteryLevel);
   }
 }

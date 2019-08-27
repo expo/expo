@@ -1,0 +1,18 @@
+{
+  "name": "UMPermissionsInterface",
+  "version": "3.0.0",
+  "summary": "An interface for permissions modules",
+  "description": "An interface for permissions modules",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-permissions-interface",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "UMPermissionsInterface/**/*.{h,m}",
+  "preserve_paths": "UMPermissionsInterface/**/*.{h,m}",
+  "requires_arc": true
+}

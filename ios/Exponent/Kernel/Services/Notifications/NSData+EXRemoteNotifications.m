@@ -8,8 +8,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)apnsTokenString
 {
-  NSCharacterSet *brackets = [NSCharacterSet characterSetWithCharactersInString:@"<>"];
-  return [[[self description] stringByTrimmingCharactersInSet:brackets] stringByReplacingOccurrencesOfString:@" " withString:@""];
+  return [self stringWithDeviceToken:self];
+}
+
+- (NSString *)stringWithDeviceToken:(NSData *)deviceToken {
+  const char *data = [deviceToken bytes];
+  NSMutableString *token = [NSMutableString string];
+  
+  for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+    [token appendFormat:@"%02.2hhX", data[i]];
+  }
+  
+  return [token copy];
 }
 
 @end
