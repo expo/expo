@@ -5,6 +5,7 @@ import { forEach } from 'lodash';
 import { AdMobBanner } from 'expo-ads-admob';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
+import { isDeviceFarm } from '../utils/Environment';
 
 export const name = 'AdMobBanner';
 
@@ -29,18 +30,19 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       originalMountAndWaitFor(child, propName, setPortalChild);
 
     t.describe('when given valid adUnitID', () => {
-      t.it('calls adViewDidReceiveAd', async () => {
-        await mountAndWaitFor(
-          <AdMobBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />,
-          'onAdViewDidReceiveAd'
-        );
-      });
-
-      t.it('displays an ad', async () => {
-        await mountAndWaitFor(
-          <AdMobBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />
-        );
-      });
+      if (!isDeviceFarm()) {
+        t.it('calls adViewDidReceiveAd', async () => {
+          await mountAndWaitFor(
+            <AdMobBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />,
+            'onAdViewDidReceiveAd'
+          );
+        });
+        t.it('displays an ad', async () => {
+          await mountAndWaitFor(
+            <AdMobBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />
+          );
+        });
+      }
 
       forEach(sizes, size => {
         t.describe(`when given size = ${size}`, () => {
