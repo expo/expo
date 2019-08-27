@@ -20,6 +20,7 @@
     "expo-ads-admob": "~6.0.0",
     "expo-ads-facebook": "~6.0.0",
     "expo-analytics-segment": "~6.0.0",
+    "expo-application": "^0.0.1-rc.0",    
     "expo-asset": "~6.0.0",
     "expo-av": "~6.0.0",
     "expo-barcode-scanner": "~6.0.0",
