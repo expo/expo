@@ -164,7 +164,8 @@ commands:
       - save_cache:
           key: git-lfs--v2.8.0-{{ arch }}
           paths:
-            - ~/bin/git-lfs
+            # Save the LFS cache directory to save Github bandwidth
+            - ~/.git/lfs
   restore_yarn_cache:
     parameters:
       working_directory:
@@ -464,9 +465,9 @@ jobs:
     steps:
       - install_nix
       - setup
+      - git_lfs_pull
       - guard_sdk_tests
       - update_submodules
-      - git_lfs_pull
       - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
