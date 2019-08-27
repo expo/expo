@@ -1,9 +1,9 @@
 import { types as t, NodePath } from '@babel/core';
-export declare type Options = {
+export declare type UniversalPlatformPluginOptions = {
     platform: string;
     mode: string;
 };
-export default function (api: any, options: Options): {
+export default function (api: any, options: UniversalPlatformPluginOptions): {
     name: string;
     visitor: {
         IfStatement: (p: NodePath<t.Conditional>) => void;

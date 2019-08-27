@@ -22,11 +22,11 @@ function default_1(api, options) {
     const { platform, mode } = options;
     const isDevelopment = mode !== 'production';
     if (!platform) {
-        throw new Error('babel-plugin-universal-platforms: platform option must be defined');
+        throw new Error('babel-plugin-universal-platforms: "platform" option must be defined');
     }
     const collapseTestVisitor = {
         /**
-         * Transforms static ID values for Terser to shake
+         * Transforms static ID values for Terser to analyze
          * `__DEV__ => <true | false>`
          * `__PLATFORM__ => <"ios" | "android" | "web" | string>`
          */
@@ -43,7 +43,7 @@ function default_1(api, options) {
             }
         },
         /**
-         * Transforms member expressions for Terser to shake
+         * Transforms member expressions for Terser to analyze
          * `process.env.NODE_ENV => <true | false>`
          * `Platform.OS => <"ios" | "android" | "web" | string>`
          */
@@ -142,7 +142,7 @@ function default_1(api, options) {
                         additionalProperties.push(property);
                     }
                 });
-                // If we got exact mach, we can strip the rest
+                // If we got an exact match, we can strip the rest
                 if (targetCase) {
                     canStripPlatformSelect = true;
                 }
