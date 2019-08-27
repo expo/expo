@@ -160,7 +160,7 @@ export default class ProjectsScreen extends React.Component {
           {this._renderConstants()}
         </ScrollView>
 
-        <Themed.StatusBar barStyle="default" />
+        <Themed.StatusBar />
       </View>
     );
   }

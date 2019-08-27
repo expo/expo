@@ -4,6 +4,7 @@ import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
 import { Appearance, AppearanceProvider } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
@@ -22,7 +23,16 @@ import LocalStorage from './storage/LocalStorage';
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
 
+@connect(data => App.getDataProps(data))
 export default class App extends React.Component {
+  static getDataProps(data) {
+    let { settings } = data;
+
+    return {
+      preferredAppearance: settings.preferredAppearance,
+    };
+  }
+
   state = {
     isReady: false,
     colorScheme: Appearance.getColorScheme(),
@@ -92,16 +102,24 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
+    let { preferredAppearance } = this.props;
+    let theme =
+      preferredAppearance === 'no-preference' ? this.props.colorScheme : preferredAppearance;
+
     return (
       <View style={styles.container}>
         <ActionSheetProvider>
-          <Navigation theme={this.props.colorScheme} />
+          <Navigation theme={theme} />
         </ActionSheetProvider>
 
         {Platform.OS === 'ios' && (
-          <StatusBar barStyle={this.props.colorScheme === 'dark' ? 'light-content' : 'default'} />
+          <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
         )}
-        {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+        {Platform.OS === 'android' ||
+          (Platform.OS == 'ios' &&
+            parseInt(Platform.Version, 10) >= 13 &&
+            theme === 'light' &&
+            this.props.colorScheme === 'dark' && <View style={styles.statusBarUnderlay} />)}
       </View>
     );
   }
@@ -114,7 +132,14 @@ const styles = StyleSheet.create({
   },
   statusBarUnderlay: {
     height: Constants.statusBarHeight,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    ...Platform.select({
+      ios: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+      },
+      android: {
+        backgroundColor: 'rgba(0,0,0,0.2)',
+      },
+    }),
     position: 'absolute',
     top: 0,
     left: 0,
