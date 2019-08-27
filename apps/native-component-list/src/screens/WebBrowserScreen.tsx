@@ -88,7 +88,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
-      showInAndroidRecents: this.state.showInRecents,
+      showInRecents: this.state.showInRecents,
     };
     const result = await WebBrowser.openBrowserAsync(url, args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
