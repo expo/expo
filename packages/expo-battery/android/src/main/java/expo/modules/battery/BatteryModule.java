@@ -2,6 +2,7 @@ package expo.modules.battery;
 
 import android.content.Context;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.unimodules.core.ExportedModule;
@@ -16,7 +17,6 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.util.Log;
 
 public class BatteryModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoBattery";
