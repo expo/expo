@@ -155,7 +155,8 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
     // https://stackoverflow.com/a/54460047/4047926
     PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
     if (powerManager == null) {
-      // On default platforms we return false when the method is not available
+      // The PowerManager instance should never be null, but if it is, we return false and match the behavior of
+      // the default implementation of this method on platforms that don't expose this information
       return false;
     }
 
