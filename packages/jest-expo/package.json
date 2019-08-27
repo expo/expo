@@ -21,6 +21,12 @@
   "jest": {
     "preset": "jest-expo/universal"
   },
+  "peerDependencies": {
+    "lodash": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-test-renderer": "*"
+  },
   "dependencies": {
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
