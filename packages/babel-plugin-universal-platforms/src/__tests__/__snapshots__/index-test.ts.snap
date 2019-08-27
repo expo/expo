@@ -2,7 +2,14 @@
 
 exports[`Platform.OS is converted to a static value for Terser 1`] = `"const value = \\"ios\\";"`;
 
-exports[`Platform.select should remove non-matching platforms but leave Platform.select 1`] = `
+exports[`Platform.select leaves Platform.select if the matching platform's value is a method 1`] = `
+"const value = Platform.select({
+  android() {}
+
+});"
+`;
+
+exports[`Platform.select removes unmatched platforms but leaves Platform.select if other platforms may match at runtime 1`] = `
 "const defaults = {
   default: 'default'
 };
@@ -10,20 +17,13 @@ const value = Platform.select({ ...defaults
 });"
 `;
 
-exports[`Platform.select should remove non-matching platforms but leave Platform.select with method 1`] = `
-"const value = Platform.select({
-  android() {}
-
-});"
-`;
-
-exports[`Platform.select should remove non-matching platforms but leave Platform.select with unknown cases 1 1`] = `
+exports[`Platform.select removes unmatched platforms but leaves Platform.select with indeterminate platforms 1`] = `
 "const value = Platform.select({
   ['andr' + 'oid']: () => {}
 });"
 `;
 
-exports[`Platform.select should remove non-matching platforms but leave Platform.select with unknown cases and default case 1`] = `
+exports[`Platform.select removes unmatched platforms but leaves Platform.select with indeterminate platforms and the default case 1`] = `
 "const value = Platform.select({
   default: 'default',
 
@@ -32,13 +32,13 @@ exports[`Platform.select should remove non-matching platforms but leave Platform
 });"
 `;
 
-exports[`Platform.select should replace Platform.select with value for default case if there is no matching platform 1`] = `
+exports[`Platform.select replaces Platform.select with the default value if no platform matches 1`] = `
 "const value = {
   test: true
 };"
 `;
 
-exports[`Platform.select should replace Platform.select with value for matching platform 1`] = `
+exports[`Platform.select replaces Platform.select with the value for the matching platform 1`] = `
 "const defaults = {
   default: 'default'
 };
@@ -46,25 +46,25 @@ exports[`Platform.select should replace Platform.select with value for matching 
 const value = () => {};"
 `;
 
-exports[`if Statements only saves Android code 1`] = `
+exports[`if statements only saves Android code 1`] = `
 "{
   console.log('Android');
 }"
 `;
 
-exports[`if Statements only saves custom code 1`] = `
+exports[`if statements only saves custom code 1`] = `
 "{
   console.log('and beyond');
 }"
 `;
 
-exports[`if Statements only saves iOS code 1`] = `
+exports[`if statements only saves iOS code 1`] = `
 "{
   console.log('iOS');
 }"
 `;
 
-exports[`if Statements only saves web code 1`] = `
+exports[`if statements only saves web code 1`] = `
 "{
   console.log('web');
 }"
