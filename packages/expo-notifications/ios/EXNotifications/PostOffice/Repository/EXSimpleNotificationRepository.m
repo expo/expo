@@ -15,8 +15,11 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    self.foregroundNotifications = [[NSUserDefaults alloc] initWithSuiteName:@"EX_POST_OFFICE_FN"];
-    self.userIntercations = [[NSUserDefaults alloc] initWithSuiteName:@"EX_POST_OFFICE_UI"];
+    NSString *className = NSStringFromClass([self class]);
+    NSString *foregorundNotificationSuiteName = [NSString stringWithFormat:@"%@/%@", @"FN_", className];
+    NSString *userInteractionSuiteName = [NSString stringWithFormat:@"%@/%@", @"UI_", className];
+    self.foregroundNotifications = [[NSUserDefaults alloc] initWithSuiteName:foregorundNotificationSuiteName];
+    self.userIntercations = [[NSUserDefaults alloc] initWithSuiteName:userInteractionSuiteName];
   }
   return self;
 }
