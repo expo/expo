@@ -46,7 +46,7 @@ export default class EmptyProfileProjectsNotice extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
     paddingTop: 5,
     alignItems: 'flex-start',
     paddingHorizontal: 15,
