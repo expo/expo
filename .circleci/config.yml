@@ -165,7 +165,7 @@ commands:
           key: git-lfs--v2.8.0-{{ arch }}
           paths:
             # Save the LFS cache directory to save Github bandwidth
-            - ~/.git/lfs
+            - ~/expo/.git/lfs
   restore_yarn_cache:
     parameters:
       working_directory:
@@ -465,6 +465,7 @@ jobs:
     steps:
       - install_nix
       - setup
+      - git_lfs_pull
       - git_lfs_pull
       - guard_sdk_tests
       - update_submodules
