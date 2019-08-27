@@ -30,7 +30,7 @@ export default {
     },
     get isSupported() {
         // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
-        return (canUseDOM && ('getBattery' in navigator || ('battery' in navigator && 'Promise' in window)));
+        return (canUseDOM && ('getBattery' in navigator || 'battery' in navigator));
     },
     async getBatteryLevelAsync() {
         const batteryManager = await getBatteryManagerAsync();

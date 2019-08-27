@@ -64,7 +64,7 @@ export default {
   get isSupported(): boolean {
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
     return (
-      canUseDOM && ('getBattery' in navigator || ('battery' in navigator && 'Promise' in window))
+      canUseDOM && ('getBattery' in navigator || 'battery' in navigator)
     );
   },
 
