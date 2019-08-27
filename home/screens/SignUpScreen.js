@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { Keyboard, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
 import SessionActions from '../redux/SessionActions';
@@ -12,6 +12,7 @@ import CloseButton from '../components/CloseButton';
 import Colors from '../constants/Colors';
 import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
+import { StyledScrollView as ScrollView } from '../components/Views';
 
 const DEBUG = false;
 
@@ -87,6 +88,7 @@ export default class SignUpScreen extends React.Component {
   render() {
     return (
       <ScrollView
+        lightBackgroundColor={Colors.light.greyBackground}
         contentContainerStyle={{ paddingTop: 20 }}
         keyboardShouldPersistTaps="always"
         style={styles.container}>
@@ -251,6 +253,5 @@ export default class SignUpScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.greyBackground,
   },
 });

@@ -28,9 +28,8 @@ export default class ProfileCard extends React.Component {
         <TouchableNativeFeedbackSafe
           onPress={this._handlePressProfile}
           fallback={TouchableHighlight}
-          underlayColor="#b7b7b7"
-          style={[styles.container, styles.bottomBorder]}>
-          <StyledView styles={[styles.container, styles.bottomBorder]}>
+          underlayColor="#b7b7b7">
+          <StyledView styles={styles.container}>
             <View style={styles.header}>
               <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
               <View style={styles.infoContainer}>

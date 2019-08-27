@@ -99,7 +99,7 @@ export default class SearchScreen extends React.Component {
 
   render() {
     return (
-      <StyledView style={styles.container} darkColor="#000">
+      <StyledView style={styles.container} darkBackgroundColor="#000">
         <View style={styles.searchBarContainer}>
           <SearchBar emitter={this.state.emitter} />
         </View>

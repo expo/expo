@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Keyboard,
-  ListView,
+  SectionList,
   Platform,
   StyleSheet,
   Text,
@@ -31,19 +31,15 @@ const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
 export default class SearchResults extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
-      rowHasChanged: (r1, r2) => r1 !== r2,
-      lastQueryHadNoResults: false,
-    }),
+    sections: [],
   };
 
   componentWillMount() {
-    this._maybeUpdateDataSource(this.props);
+    this._maybeUpdateSections(this.props);
   }
 
   componentWillReceiveProps(nextProps: Object) {
-    this._maybeUpdateDataSource(nextProps);
+    this._maybeUpdateSections(nextProps);
   }
 
   render() {
@@ -55,29 +51,25 @@ export default class SearchResults extends React.Component {
     );
   }
 
-  _maybeUpdateDataSource = (newProps: Object) => {
+  _maybeUpdateSections = (newProps: Object) => {
     if (!newProps.data) {
       return;
     }
 
     if (newProps.data.results !== this.props.data.results) {
       let { dataSource } = this.state;
-      let { results } = newProps.data;
-      let populatedSectionIds = [];
+      let results = newProps.data?.results || {};
 
-      results = results || {};
+      let sections = [];
+      Object.keys(results).forEach(key => {
+        sections.push({ title: key, data: results[key] });
+      });
 
-      if (results.UserSearchResult) {
-        populatedSectionIds = populatedSectionIds.concat('UserSearchResult');
-      }
+      // note(brentvatne):
+      // Filter out Snack search results until this is supported
+      sections = sections.filter(section => SectionIds.includes(section.title));
 
-      if (results.AppSearchResult) {
-        populatedSectionIds = populatedSectionIds.concat('AppSearchResult');
-      }
-
-      let newDataSource = dataSource.cloneWithRowsAndSections(results, populatedSectionIds);
-
-      this.setState({ dataSource: newDataSource });
+      this.setState({ sections });
     }
   };
 
@@ -106,13 +98,10 @@ export default class SearchResults extends React.Component {
   };
 
   _renderContent = () => {
-    if (
-      this.state.dataSource.getRowCount() === 0 &&
-      !this._isLoading() &&
-      this.props.query.length >= 1
-    ) {
+    if (this.state.sections.length === 0 && !this._isLoading() && this.props.query.length >= 1) {
       return (
         <StyledScrollView
+          lightBackgroundColor={Colors.light.greyBackground}
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
           style={styles.scrollContainer}>
@@ -140,12 +129,15 @@ export default class SearchResults extends React.Component {
       );
     } else {
       return (
-        <ListView
+        <SectionList
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
-          dataSource={this.state.dataSource}
-          renderRow={this._renderRow}
-          renderScrollComponent={props => <StyledScrollView {...props} />}
+          keyExtractor={item => item.id}
+          sections={this.state.sections}
+          renderItem={this._renderItem}
+          renderScrollComponent={props => (
+            <StyledScrollView {...props} lightBackgroundColor={Colors.light.greyBackground} />
+          )}
           renderSectionHeader={this._renderSectionHeader}
           contentContainerStyle={{ paddingTop: 5, paddingBottom: 15 }}
           style={{ flex: 1 }}
@@ -160,35 +152,29 @@ export default class SearchResults extends React.Component {
     Kernel.openURLAsync(url);
   };
 
-  _renderSectionHeader = (sectionData: Object, sectionId: string) => {
+  _renderSectionHeader = ({ section }) => {
+    let title;
+    if (section.title === 'AppSearchResult') {
+      title = 'PROJECTS';
+    } else {
+      title = 'PEOPLE';
+    }
+
     return (
-      <SectionLabelContainer key={sectionData}>
-        <SectionLabelText>
-          {sectionId === 'AppSearchResult' ? 'PROJECTS' : 'PEOPLE'}
-        </SectionLabelText>
+      <SectionLabelContainer key={section}>
+        <SectionLabelText>{title}</SectionLabelText>
       </SectionLabelContainer>
     );
   };
 
-  _isLastAppSearchResult = (index: number) => {
-    let appSectionIdx = SectionIds.indexOf('AppSearchResult');
-    let appSectionLength = this.state.dataSource.getSectionLengths()[appSectionIdx];
-    return parseInt(index, 0) + 1 === appSectionLength;
-  };
-
-  _isLastUserSearchResult = (index: number) => {
-    let userSectionIdx = SectionIds.indexOf('UserSearchResult');
-    let userSectionLength = this.state.dataSource.getSectionLengths()[userSectionIdx];
-    return parseInt(index, 0) + 1 === userSectionLength;
-  };
-
-  _renderRow = (rowData: Object, sectionId: string, rowId: number) => {
-    if (sectionId === 'AppSearchResult') {
-      let { app } = rowData;
+  _renderItem = ({ item, index, section }) => {
+    let isLastItem = index === section.data.length - 1;
+    if (section.title === 'AppSearchResult') {
+      let { app } = item;
 
       return (
         <ProjectCard
-          style={{ marginBottom: this._isLastAppSearchResult(rowId) ? 0 : 15 }}
+          style={{ marginBottom: isLastItem ? 15 : 0 }}
           id={app.id}
           iconUrl={app.iconUrl}
           projectName={app.name}
@@ -197,12 +183,12 @@ export default class SearchResults extends React.Component {
           description={app.description}
         />
       );
-    } else if (sectionId === 'UserSearchResult') {
-      let { user } = rowData;
+    } else if (section.title === 'UserSearchResult') {
+      let { user } = item;
 
       return (
         <ProfileCard
-          style={{ marginBottom: this._isLastUserSearchResult(rowId) ? 7 : 0 }}
+          style={{ marginBottom: isLastItem ? 7 : 0 }}
           fullName={user.fullName}
           username={user.username}
           appCount={user.appCount}
@@ -210,6 +196,8 @@ export default class SearchResults extends React.Component {
           isLegacy={user.isLegacy}
         />
       );
+    } else {
+      return <StyledText>{section.title}</StyledText>;
     }
   };
 }

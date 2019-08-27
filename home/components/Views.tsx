@@ -41,12 +41,14 @@ function useThemeBorderColor(props: Props, colorName: ThemedColors) {
   }
 }
 
-export const StyledScrollView = (props: StyledScrollViewProps) => {
-  let { style, ...otherProps } = props;
-  let backgroundColor = useThemeBackgroundColor(props, 'absolute');
+export const StyledScrollView = React.forwardRef(
+  (props: StyledScrollViewProps, ref?: React.Ref<ScrollView>) => {
+    let { style, ...otherProps } = props;
+    let backgroundColor = useThemeBackgroundColor(props, 'absolute');
 
-  return <ScrollView {...otherProps} style={[{ backgroundColor }, style]} />;
-};
+    return <ScrollView {...otherProps} style={[{ backgroundColor }, style]} ref={ref} />;
+  }
+);
 
 export const Separator = (props: View['props']) => {
   let theme = useTheme();
