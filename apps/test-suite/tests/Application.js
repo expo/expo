@@ -1,5 +1,6 @@
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
+import ExponentTest from '../ExponentTest';
 
 export const name = 'Application';
 export async function test({ describe, it, expect, jasmine }) {
@@ -91,17 +92,19 @@ export async function test({ describe, it, expect, jasmine }) {
         expect(androidId).toEqual(jasmine.any(String));
       });
 
-      it(`Application.getInstallReferrerAsync() returns String`, async () => {
-        let error = null;
-        let installReferrer;
-        try {
-          installReferrer = await Application.getInstallReferrerAsync();
-        } catch (e) {
-          error = e;
-        }
-        expect(installReferrer).toEqual(jasmine.any(String));
-        expect(error).toBeNull();
-      });
+      if (ExponentTest && !ExponentTest.isInCI) {
+        it(`Application.getInstallReferrerAsync() returns String`, async () => {
+          let error = null;
+          let installReferrer;
+          try {
+            installReferrer = await Application.getInstallReferrerAsync();
+          } catch (e) {
+            error = e;
+          }
+          expect(installReferrer).toEqual(jasmine.any(String));
+          expect(error).toBeNull();
+        });
+      }
       it(`Application.getLastUpdateTimeAsync() returns String`, async () => {
         let error = null;
         let lastUpdateTime;
