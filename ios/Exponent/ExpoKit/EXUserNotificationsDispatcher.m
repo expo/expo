@@ -6,7 +6,7 @@
 
 @interface EXUserNotificationsDispatcher()
 
-@property (strong)NSMutableDictionary<NSString *, id>* delegates;
+@property (strong)NSMutableDictionary<NSString *, id> *delegates;
 
 @end
 

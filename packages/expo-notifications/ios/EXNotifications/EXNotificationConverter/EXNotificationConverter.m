@@ -12,7 +12,7 @@
   notification[@"body"] = notificationContent.body;
   notification[@"sound"] = @([UNNotificationSound defaultSound] == notificationContent.sound);
   notification[@"count"] = notificationContent.badge;
-  notification[@"cateogryId"] = notificationContent.categoryIdentifier;
+  notification[@"categoryId"] = notificationContent.categoryIdentifier;
   notification[@"data"] = notificationContent.userInfo[@"body"];
   notification[@"appId"] = notificationContent.userInfo[@"appId"];
   notification[@"id"] = notificationContent.userInfo[@"id"];

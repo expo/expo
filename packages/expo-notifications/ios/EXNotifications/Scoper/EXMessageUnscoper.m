@@ -8,7 +8,7 @@
 {
   NSMutableDictionary *mutableMsg = [message mutableCopy];
   for (NSString *key in [message allKeys]) {
-    if ([message[key] class] == [NSString class]) {
+    if ([message[key] isKindOfClass:[NSString class]]) {
       mutableMsg[key] = [scoper getUnscopedString:message[key]];
     }
   }
