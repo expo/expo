@@ -142,7 +142,10 @@ try {
     createDownloadResumable: jest.fn(() => Promise.resolve()),
   }));
 } catch (error) {
-  console.warn(error);
+  // Allow this module to be optional for bare-workflow
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    throw error;
+  }
 }
 
 jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
@@ -188,7 +191,10 @@ try {
     return ReactNativeAdapter;
   });
 } catch (error) {
-  console.warn(error);
+  // Allow this module to be optional for bare-workflow
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    throw error;
+  }
 }
 
 // The UIManager module is not idempotent and causes issues if we load it again after resetting
