@@ -4,8 +4,8 @@
 
 ORIGINAL_ABI_VERSION=`echo $1`
 MAJOR_ABI_VERSION=`echo $1 | sed 's/\..*//g'`
-ABI_VERSION=`echo $1 | sed 's/\./_/g'`
-ABI_VERSION="abi$ABI_VERSION"
+ABI_VERSION_NUMBER=`echo $1 | sed 's/\./_/g'`
+ABI_VERSION="abi$ABI_VERSION_NUMBER"
 TOOLS_DIR=`pwd`
 
 pushd ../android
@@ -119,4 +119,4 @@ find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | 
 # Update AndroidManifest
 sed -i '' "/ADD DEV SETTINGS HERE \-\-\>/$SED_APPEND_COMMAND\ \ \ \ \<!-- BEGIN_SDK_$MAJOR_ABI_VERSION --\>$NEWLINE\ \ \ \ \<activity android:name=\"$ABI_VERSION.com.facebook.react.devsupport.DevSettingsActivity\"\/\>$NEWLINE\ \ \ \ \<!-- END_SDK_$MAJOR_ABI_VERSION --\>$NEWLINE" ../template-files/android/AndroidManifest.xml
 popd
-./add-stripe-activity-to-manifest.sh ../template-files/android/AndroidManifest.xml $ABI_VERSION
+./add-stripe-activity-to-manifest.sh ../template-files/android/AndroidManifest.xml $ABI_VERSION_NUMBER

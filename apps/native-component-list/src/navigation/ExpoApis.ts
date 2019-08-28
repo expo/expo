@@ -11,6 +11,7 @@ import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
 import ContactDetail from '../screens/Contacts/ContactDetailScreen';
 import Contacts from '../screens/Contacts/ContactsScreen';
+import Device from '../screens/DeviceScreen';
 import DocumentPicker from '../screens/DocumentPickerScreen';
 import Events from '../screens/EventsScreen';
 import FacebookLogin from '../screens/FacebookLoginScreen';
@@ -74,6 +75,7 @@ const optionalScreens: {
   Battery,
   Branch,
   Brightness,
+  Device,
   DocumentPicker,
   Localization,
   FacebookLogin,

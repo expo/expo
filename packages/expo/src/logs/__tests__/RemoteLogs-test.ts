@@ -9,9 +9,9 @@ jest.mock('expo-constants', () => require('../../__mocks__/Constants-development
 
 let originalFetch;
 
-const mockOriginalConsole = {
+const mockOriginalConsole = ({
   error: jest.fn(),
-} as any as Console;
+} as any) as Console;
 
 beforeAll(() => {
   originalFetch = global.fetch;

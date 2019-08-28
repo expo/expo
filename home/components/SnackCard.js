@@ -1,25 +1,15 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Image,
-  Keyboard,
-  Linking,
-  Platform,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Linking, Platform, Share, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
-import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from 'react-native-fade-in-image';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { StyledText } from './Text';
+import { Separator, StyledView } from './Views';
+import { Ionicons } from './Icons';
 
 function isDescriptionEmpty(description) {
   if (!description || description === 'No description') {
@@ -32,28 +22,29 @@ function isDescriptionEmpty(description) {
 @withNavigation
 export default class SnackCard extends React.PureComponent {
   render() {
-    let { description, projectName, projectUrl, username, slug } = this.props;
+    let { description, projectName } = this.props;
 
     return (
       <TouchableNativeFeedbackSafe
         onLongPress={this._handleLongPressProject}
         onPress={this._handlePressProject}
         fallback={TouchableHighlight}
-        underlayColor="#b7b7b7"
-        style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
-        <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
-          <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-            {projectName}
-          </Text>
+        underlayColor="#b7b7b7">
+        <StyledView style={styles.container}>
+          <StyledView style={styles.infoContainer}>
+            <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+              {projectName}
+            </StyledText>
 
-          {isDescriptionEmpty(description) ? null : (
-            <View style={[styles.projectExtraInfoContainer, { marginTop: 5 }]}>
-              <Text style={styles.projectExtraInfoText} ellipsizeMode="tail" numberOfLines={1}>
-                {description}
-              </Text>
-            </View>
-          )}
-        </View>
+            {isDescriptionEmpty(description) ? null : (
+              <View style={[styles.projectExtraInfoContainer, { marginTop: 5 }]}>
+                <StyledText style={styles.projectExtraInfoText} ellipsizeMode="tail" numberOfLines={1} darkColor="#ccc">
+                  {description}
+                </StyledText>
+              </View>
+            )}
+          </StyledView>
+        </StyledView>
       </TouchableNativeFeedbackSafe>
     );
   }
@@ -77,33 +68,21 @@ export default class SnackCard extends React.PureComponent {
   };
 }
 
-// note(brentvatne): we need to know this value so we can set the width of extra info container so
-// it properly sizes the url, otherwise it just overflows. I think this is a yoga bug
-const IconPaddingLeft = 15;
-const IconPaddingRight = 10;
-const IconWidth = 40;
-
 const styles = StyleSheet.create({
-  bottomBorder: {
-    flexGrow: 1,
-    borderBottomColor: Colors.separator,
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-  },
   container: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
     flexDirection: 'row',
-    backgroundColor: '#fff',
     flex: 1,
     paddingBottom: 3,
-    paddingHorizontal: 16,
   },
   infoContainer: {
     paddingTop: 13,
+    paddingHorizontal: 16,
     flexDirection: 'column',
     alignSelf: 'stretch',
     paddingBottom: 10,
   },
   projectNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {
@@ -120,7 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   projectExtraInfoText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });

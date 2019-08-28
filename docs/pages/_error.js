@@ -26,6 +26,7 @@ export default class Error extends React.Component {
     let { pathname, search } = window.location;
 
     if (window.location.search === REDIRECT_SUFFIX) {
+      Sentry.captureMessage(`Redirect failed`);
       this.setState({ redirectFailed: true });
       return;
     }
@@ -217,9 +218,21 @@ const RENAMED_PAGES = {
   '/versions/latest/sdk/': '/versions/latest/sdk/overview/',
   '/versions/latest/guides/building-standalone-apps/':
     '/versions/latest/distribution/building-standalone-apps/',
-  '/versions/latest/guides/genymotion/': '/versions/latest/guides/android-studio-emulator/',
+  '/versions/latest/guides/genymotion/': '/versions/latest/workflow/android-studio-emulator/',
   '/versions/latest/workflow/upgrading-expo/':
     '/versions/latest/workflow/upgrading-expo-sdk-walkthrough/',
   '/versions/latest/workflow/create-react-native-app/':
     'versions/latest/workflow/glossary-of-terms/#create-react-native-app',
+  '/versions/latest/expokit/': '/versions/latest/expokit/overview/',
+  '/versions/latest/guides/detach/': '/versions/latest/expokit/eject/',
+  '/versions/latest/expokit/detach/': '/versions/latest/expokit/eject/',
+  // Lots of old links pointing to guides when they have moved elsewhere
+  '/versions/latest/guides/configuration/': '/versions/latest/workflow/configuration/',
+  '/versions/latest/guides/expokit/': '/versions/latest/expokit/overview/',
+  '/versions/latest/guides/publishing/': '/versions/latest/workflow/publishing/',
+  '/versions/latest/guides/linking/': '/versions/latest/workflow/linking/',
+  '/versions/latest/guides/linking/': '/versions/latest/workflow/linking/',
+  '/versions/latest/guides/up-and-running/': '/versions/latest/workflow/up-and-running/',
+  '/versions/latest/guides/debugging/': '/versions/latest/workflow/debugging/',
+  '/versions/latest/guides/logging/': '/versions/latest/workflow/logging/',
 };

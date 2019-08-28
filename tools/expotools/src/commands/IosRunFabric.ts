@@ -12,11 +12,7 @@ async function action(options) {
 
   await spawnAsync(
     '/bin/sh',
-    [
-      fabricPath,
-      templateSubstitutions.FABRIC_API_KEY,
-      templateSubstitutions.FABRIC_API_SECRET,
-    ],
+    [fabricPath, templateSubstitutions.FABRIC_API_KEY, templateSubstitutions.FABRIC_API_SECRET],
     {
       stdio: 'inherit',
       cwd: iosDir,
@@ -27,7 +23,12 @@ async function action(options) {
 export default (program: Command) => {
   program
     .command('ios-run-fabric')
-    .description('Runs Fabric script that is meant to be run as a Run Script in "Build Phases" section of Xcode project.')
-    .option('--fabricPath [string]', 'Path to Fabric\'s run script. Defaults to "ios/Pods/Fabric/run".')
+    .description(
+      'Runs Fabric script that is meant to be run as a Run Script in "Build Phases" section of Xcode project.'
+    )
+    .option(
+      '--fabricPath [string]',
+      'Path to Fabric\'s run script. Defaults to "ios/Pods/Fabric/run".'
+    )
     .asyncAction(action);
-}
+};

@@ -1,16 +1,13 @@
 /* @flow */
 
 import React from 'react';
-import { Keyboard, Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Linking, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 
 export default class QRCodeButton extends React.Component {
   render() {
-    let { fullWidthBorder } = this.props;
-
     return (
       <TouchableNativeFeedbackSafe
         onPress={this._handlePressAsync}
@@ -40,7 +37,7 @@ export default class QRCodeButton extends React.Component {
 const styles = StyleSheet.create({
   bottomBorder: {
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
+    borderBottomColor: Colors.light.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   container: {
@@ -56,7 +53,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   titleText: {
-    color: Colors.blackText,
+    color: Colors.light.blackText,
     fontSize: 15,
     marginRight: 70,
     marginBottom: 2,
@@ -73,7 +70,7 @@ const styles = StyleSheet.create({
   subtitleText: {
     marginRight: 5,
     flex: 1,
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });
