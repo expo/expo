@@ -98,6 +98,16 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'react-native-appearance': {
+    repoUrl: 'https://github.com/expo/react-native-appearance.git',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios/Appearance',
+        targetIosPath: 'Api/Appearance',
+      },
+    ],
+  },
   'amazon-cognito-identity-js': {
     repoUrl: 'https://github.com/aws/amazon-cognito-identity-js.git',
     installableInManagedApps: false,
@@ -223,6 +233,26 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         )} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`
       ),
       chalk.bold.yellow(`See commit ${chalk.cyan('0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
+    ],
+  },
+  'react-native-safe-area-context': {
+    repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
+    steps: [
+      {
+        sourceIosPath: 'ios/SafeAreaView',
+        targetIosPath: 'Api/SafeAreaContext',
+        sourceAndroidPath: 'android/src/main/java/com/th3rdwave/safeareacontext',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+      },
+    ],
+    warnings: [
+      chalk.bold.yellow(
+        `Last time checked, ${chalk.green('react-native-safe-area-context')} used ${chalk.blue(
+          'androidx'
+        )} which wasn't at that time supported by Expo. Please ensure that the project builds on Android after upgrading or remove this warning.`
+      ),
     ],
   },
   'react-native-datetimepicker': {
@@ -498,7 +528,7 @@ async function action(options: ActionOptions) {
       console.log(
         chalk.yellow(
           `\nSuccessfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(
-            `Exponent/Versioned/Modules/${step.targetIosPath}`
+            `Exponent/Versioned/Core/${step.targetIosPath}`
           )}`
         )
       );

@@ -39,7 +39,7 @@ export default class SearchBar extends React.Component {
           value={this.state.text}
           autoCapitalize="none"
           autoCorrect={false}
-          underlineColorAndroid={Colors.tintColor}
+          underlineColorAndroid={Colors.light.tintColor}
           onSubmitEditing={this._handleSubmit}
           onChangeText={this._handleChangeText}
           style={styles.searchInput}

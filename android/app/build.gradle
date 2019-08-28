@@ -34,21 +34,10 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 115
-    versionName '2.12.0'
+    versionCode 117
+    versionName '2.12.2'
     // END VERSIONS
-    ndk {
-      // We use different `abiFilters` for distributing
-      // to be able to bundle old, incompatible SDKs.
 
-      // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-      abiFilters 'armeabi-v7a', 'x86'
-      // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-      /* UNCOMMENT WHEN DISTRIBUTING
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-      END UNCOMMENT WHEN DISTRIBUTING */
-    }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
@@ -141,10 +130,6 @@ dependencies {
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
-  implementation 'com.google.android.gms:play-services-ads:15.0.1'
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
-  implementation "com.raizlabs.android:DBFlow:2.2.1"
   implementation "com.madgag.spongycastle:core:1.53.0.0"
   implementation "com.madgag.spongycastle:prov:1.53.0.0"
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'

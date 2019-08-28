@@ -187,7 +187,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
       <MapView.Polyline
         coordinates={savedLocations}
         strokeWidth={3}
-        strokeColor={Colors.tintColor}
+        strokeColor={Colors.light.tintColor}
       />
     );
   }

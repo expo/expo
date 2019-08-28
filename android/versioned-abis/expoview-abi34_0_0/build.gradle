@@ -40,9 +40,6 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
     versionName "1.0"
-    ndk {
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-    }
   }
 
   buildTypes {
@@ -103,9 +100,6 @@ dependencies {
   api 'com.google.android.gms:play-services-location:16.0.0'
   api 'com.google.android.gms:play-services-fitness:16.0.1'
   api 'com.google.android.gms:play-services-wallet:16.0.1' //may need 10.+
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  api "com.raizlabs.android:DBFlow-Core:2.2.1"
-  api "com.raizlabs.android:DBFlow:2.2.1"
   api "com.madgag.spongycastle:core:1.53.0.0"
   api "com.madgag.spongycastle:prov:1.53.0.0"
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'

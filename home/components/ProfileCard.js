@@ -14,6 +14,8 @@ import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-fee
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
+import { GenericCardBody, GenericCardContainer, StyledView } from '../components/Views';
+import { StyledText } from '../components/Text';
 import Colors from '../constants/Colors';
 
 @withNavigation
@@ -26,34 +28,43 @@ export default class ProfileCard extends React.Component {
         <TouchableNativeFeedbackSafe
           onPress={this._handlePressProfile}
           fallback={TouchableHighlight}
-          underlayColor="#b7b7b7"
-          style={[styles.container, styles.bottomBorder]}>
-          <View>
+          underlayColor="#b7b7b7">
+          <StyledView styles={styles.container}>
             <View style={styles.header}>
               <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
               <View style={styles.infoContainer}>
-                <Text style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
+                <StyledText style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
                   {isLegacy ? username : fullName}
-                </Text>
+                </StyledText>
                 <View style={styles.profileExtraInfoContainer}>
                   {!isLegacy && (
-                    <Text
+                    <StyledText
+                      lightColor="rgba(36, 44, 58, 0.4)"
+                      darkColor="#ccc"
                       style={styles.profileExtraInfoText}
                       ellipsizeMode="tail"
                       numberOfLines={1}>
                       @{username}
-                    </Text>
+                    </StyledText>
                   )}
-                  {!isLegacy && <View style={styles.bullet} />}
-                  <Text
+                  {!isLegacy && (
+                    <StyledView
+                      style={styles.bullet}
+                      lightBackgroundColor="rgba(36, 44, 58, 0.2)"
+                      darkBackgroundColor="#ccc"
+                    />
+                  )}
+                  <StyledText
+                    lightColor="rgba(36, 44, 58, 0.7)"
+                    darkColor="#eee"
                     onPress={appCount > 0 ? this._handlePressProjects : null}
                     style={styles.profileExtraInfoText}>
                     {appCount} {appCount === 1 ? 'project' : 'projects'}
-                  </Text>
+                  </StyledText>
                 </View>
               </View>
             </View>
-          </View>
+          </StyledView>
         </TouchableNativeFeedbackSafe>
       </View>
     );
@@ -98,9 +109,7 @@ export default class ProfileCard extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   header: {
@@ -119,7 +128,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   descriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     lineHeight: 19,
   },
   iconClipContainer: {
@@ -143,7 +151,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   profileNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginRight: 170,
     marginBottom: 2,
@@ -165,11 +172,9 @@ const styles = StyleSheet.create({
     width: 3.5,
     height: 3.5,
     borderRadius: 3.5 / 2,
-    backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
   },
   profileExtraInfoText: {
-    color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 13,
     lineHeight: 16,
   },

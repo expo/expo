@@ -2,6 +2,7 @@ import { Record } from 'immutable';
 
 const SettingsState = Record({
   legacyMenuGesture: false,
+  preferredAppearance: 'no-preference',
 });
 
 export default (state, action) => {
@@ -11,6 +12,10 @@ export default (state, action) => {
     case 'setIsLegacyMenuBehaviorEnabled': {
       const { legacyMenuGesture } = action.payload;
       return state.merge({ legacyMenuGesture });
+    }
+    case 'setPreferredAppearance': {
+      const { preferredAppearance } = action.payload;
+      return state.merge({ preferredAppearance });
     }
     default:
       return state || new SettingsState();

@@ -1,7 +1,7 @@
 import './utils/catchRequireErrors';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-
+import { isDeviceFarm } from './utils/Environment';
 import ExponentTest from './ExponentTest';
 
 function optionalRequire(requirer) {
