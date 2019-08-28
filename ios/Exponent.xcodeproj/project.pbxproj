@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -36,6 +35,8 @@
 		314410DD223BF73B00310599 /* RNCWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D4223BF73A00310599 /* RNCWKWebView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		314410DE223BF73B00310599 /* RNCUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D6223BF73B00310599 /* RNCUIWebView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		314410DF223BF73B00310599 /* RNCUIWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 314410D8223BF73B00310599 /* RNCUIWebViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3151637B23146FC300AA029B /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3151637723146FC300AA029B /* RNCSafeAreaView.m */; };
+		3151637C23146FC300AA029B /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */; };
 		31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B292265DC9700358D65 /* EXScopedSegment.m */; };
 		31571B2D2265DD5800358D65 /* EXScopedLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = 31571B2C2265DD5800358D65 /* EXScopedLocalAuthentication.m */; };
 		317168FA213DA0E000766458 /* EXScopedReactNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 317168F9213DA0E000766458 /* EXScopedReactNativeAdapter.m */; };
@@ -411,6 +412,10 @@
 		314410D8223BF73B00310599 /* RNCUIWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCUIWebViewManager.m; sourceTree = "<group>"; };
 		314410D9223BF73B00310599 /* RNCWKWebViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCWKWebViewManager.h; sourceTree = "<group>"; };
 		314410DA223BF73B00310599 /* RNCUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCUIWebView.h; sourceTree = "<group>"; };
+		3151637723146FC300AA029B /* RNCSafeAreaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaView.m; sourceTree = "<group>"; };
+		3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewManager.m; sourceTree = "<group>"; };
+		3151637923146FC300AA029B /* RNCSafeAreaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaView.h; sourceTree = "<group>"; };
+		3151637A23146FC300AA029B /* RNCSafeAreaViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewManager.h; sourceTree = "<group>"; };
 		31571B282265DC9700358D65 /* EXScopedSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedSegment.h; sourceTree = "<group>"; };
 		31571B292265DC9700358D65 /* EXScopedSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedSegment.m; sourceTree = "<group>"; };
 		31571B2B2265DD5800358D65 /* EXScopedLocalAuthentication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedLocalAuthentication.h; sourceTree = "<group>"; };
@@ -1055,6 +1060,17 @@
 				314410D1223BF73A00310599 /* RNCWKWebViewManager.m */,
 			);
 			path = WebView;
+			sourceTree = "<group>";
+		};
+		3151637623146FC300AA029B /* SafeAreaContext */ = {
+			isa = PBXGroup;
+			children = (
+				3151637723146FC300AA029B /* RNCSafeAreaView.m */,
+				3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */,
+				3151637923146FC300AA029B /* RNCSafeAreaView.h */,
+				3151637A23146FC300AA029B /* RNCSafeAreaViewManager.h */,
+			);
+			path = SafeAreaContext;
 			sourceTree = "<group>";
 		};
 		317306052242459A006D1BC0 /* NetInfo */ = {
@@ -1766,6 +1782,7 @@
 				BBD0318A200011C9009F0434 /* Cognito */,
 				317306052242459A006D1BC0 /* NetInfo */,
 				BB5BD2FA20AEFCB4007E02FC /* Reanimated */,
+				3151637623146FC300AA029B /* SafeAreaContext */,
 				BB36BC5C2135C98D00AFFD58 /* Screens */,
 				B5FB728D1FF6DADB001C764B /* Components */,
 				B5FB73801FF6DADB001C764B /* EXErrorRecovery.h */,
@@ -2573,6 +2590,7 @@
 				B5FB74DF1FF6DADC001C764B /* EXDevSettings.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */,
+				3151637C23146FC300AA029B /* RNCSafeAreaViewManager.m in Sources */,
 				7043DF832283303800272D74 /* RNSVGSvgViewManager.m in Sources */,
 				7043DF982283303800272D74 /* RNSVGViewBox.m in Sources */,
 				BB5BD31C20AEFCB4007E02FC /* REAModule.m in Sources */,
@@ -2677,6 +2695,7 @@
 				31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */,
 				B5FB74B51FF6DADC001C764B /* EXUtil.m in Sources */,
 				B5576085204A423B0041D9C8 /* EXHomeModuleManager.m in Sources */,
+				3151637B23146FC300AA029B /* RNCSafeAreaView.m in Sources */,
 				BB5BD31F20AEFCB4007E02FC /* READebugNode.m in Sources */,
 				31AD9A442285B53100F19090 /* AIRMapCalloutManager.m in Sources */,
 				314410DF223BF73B00310599 /* RNCUIWebViewManager.m in Sources */,
