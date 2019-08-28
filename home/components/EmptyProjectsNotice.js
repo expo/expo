@@ -37,7 +37,7 @@ export default class EmptyProjectsNotice extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
   contentContainer: {
     flex: 1,

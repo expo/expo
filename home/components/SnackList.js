@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   largeProjectCardList: {
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
   largeProjectCard: {
     marginBottom: 10,

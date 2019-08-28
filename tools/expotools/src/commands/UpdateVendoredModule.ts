@@ -98,6 +98,16 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'react-native-appearance': {
+    repoUrl: 'https://github.com/expo/react-native-appearance.git',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios/Appearance',
+        targetIosPath: 'Api/Appearance',
+      },
+    ],
+  },
   'amazon-cognito-identity-js': {
     repoUrl: 'https://github.com/aws/amazon-cognito-identity-js.git',
     installableInManagedApps: false,
@@ -518,7 +528,7 @@ async function action(options: ActionOptions) {
       console.log(
         chalk.yellow(
           `\nSuccessfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(
-            `Exponent/Versioned/Modules/${step.targetIosPath}`
+            `Exponent/Versioned/Core/${step.targetIosPath}`
           )}`
         )
       );
