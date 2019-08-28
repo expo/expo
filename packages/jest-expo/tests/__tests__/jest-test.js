@@ -3,10 +3,12 @@ describe(`jest-expo/universal`, () => {
     const { OS } = require('../default-extension');
     const { Platform } = require('@unimodules/core');
     expect(OS).toContain(Platform.OS);
+    expect(OS).toMatchSnapshot();
   });
   it(`resolves to fallback extensions`, () => {
     const { OS } = require('../fallback-extension');
     const { Platform } = require('@unimodules/core');
     expect(OS).toContain(Platform.OS);
+    expect(OS).toMatchSnapshot();
   });
 });
