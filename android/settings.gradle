@@ -1,13 +1,13 @@
 include ':app'
 
-include ':expoannotations'
-project(':expoannotations').projectDir = new File(rootDir, "expoannotations")
-include ':expoannotationsprocessors'
-project(':expoannotationsprocessors').projectDir = new File(rootDir, "expoannotationsprocessors")
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
 project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
+include ':expoannotations'
+project(':expoannotations').projectDir = new File(rootDir, "expoannotations")
+include ':expoannotationsprocessors'
+project(':expoannotationsprocessors').projectDir = new File(rootDir, "expoannotationsprocessors")
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
