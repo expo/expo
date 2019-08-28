@@ -682,8 +682,9 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
           eventValues.putNull(CalendarContract.Events.LAST_DATE);
           eventValues.putNull(CalendarContract.Events.DTEND);
 
-          eventValues.put(CalendarContract.Events.DURATION, String.format("P%dS", duration));
+          eventValues.put(CalendarContract.Events.DURATION, String.format("PT%dS", duration));
         }
+
         String rule = createRecurrenceRule(frequency, interval, endDate, occurrence);
         if (rule != null) {
           eventValues.put(CalendarContract.Events.RRULE, rule);
