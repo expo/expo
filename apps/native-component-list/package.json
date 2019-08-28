@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^2.0.1",
-    "@react-native-community/apple-authentication": "https://github.com/react-native-community/apple-authentication",
     "@react-native-community/netinfo": "~3.2.1",
     "@react-navigation/web": "^1.0.0-alpha.7",
     "date-format": "^2.0.0",
@@ -21,6 +20,7 @@
     "expo-ads-admob": "~6.0.0",
     "expo-ads-facebook": "~6.0.0",
     "expo-app-auth": "~6.0.0",
+    "expo-apple-authentication": "~1.0.0",
     "expo-asset": "~6.0.0",
     "expo-av": "~6.0.0",
     "expo-background-fetch": "~6.0.0",

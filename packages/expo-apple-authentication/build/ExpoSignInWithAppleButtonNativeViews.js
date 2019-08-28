@@ -1,9 +1,18 @@
 import { requireNativeViewManager } from '@unimodules/core';
-const ExpoSignInWithAppleButtonSignInWhite = requireNativeViewManager('ExpoSignInWithAppleButtonSignInWhite');
-const ExpoSignInWithAppleButtonSignInWhiteOutline = requireNativeViewManager('ExpoSignInWithAppleButtonSignInWhiteOutline');
-const ExpoSignInWithAppleButtonSignInBlack = requireNativeViewManager('ExpoSignInWithAppleButtonSignInBlack');
-const ExpoSignInWithAppleButtonContinueWhite = requireNativeViewManager('ExpoSignInWithAppleButtonContinueWhite');
-const ExpoSignInWithAppleButtonContinueWhiteOutline = requireNativeViewManager('ExpoSignInWithAppleButtonContinueWhiteOutline');
-const ExpoSignInWithAppleButtonContinueBlack = requireNativeViewManager('ExpoSignInWithAppleButtonContinueBlack');
+import { Platform } from 'react-native';
+let ExpoSignInWithAppleButtonSignInWhite;
+let ExpoSignInWithAppleButtonSignInWhiteOutline;
+let ExpoSignInWithAppleButtonSignInBlack;
+let ExpoSignInWithAppleButtonContinueWhite;
+let ExpoSignInWithAppleButtonContinueWhiteOutline;
+let ExpoSignInWithAppleButtonContinueBlack;
+if (Platform.OS === 'ios') {
+    ExpoSignInWithAppleButtonSignInWhite = requireNativeViewManager('ExpoSignInWithAppleButtonSignInWhite');
+    ExpoSignInWithAppleButtonSignInWhiteOutline = requireNativeViewManager('ExpoSignInWithAppleButtonSignInWhiteOutline');
+    ExpoSignInWithAppleButtonSignInBlack = requireNativeViewManager('ExpoSignInWithAppleButtonSignInBlack');
+    ExpoSignInWithAppleButtonContinueWhite = requireNativeViewManager('ExpoSignInWithAppleButtonContinueWhite');
+    ExpoSignInWithAppleButtonContinueWhiteOutline = requireNativeViewManager('ExpoSignInWithAppleButtonContinueWhiteOutline');
+    ExpoSignInWithAppleButtonContinueBlack = requireNativeViewManager('ExpoSignInWithAppleButtonContinueBlack');
+}
 export { ExpoSignInWithAppleButtonSignInWhite, ExpoSignInWithAppleButtonSignInWhiteOutline, ExpoSignInWithAppleButtonSignInBlack, ExpoSignInWithAppleButtonContinueWhite, ExpoSignInWithAppleButtonContinueWhiteOutline, ExpoSignInWithAppleButtonContinueBlack, };
 //# sourceMappingURL=ExpoSignInWithAppleButtonNativeViews.js.map

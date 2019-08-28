@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import ExpoCAppleAuthenticationNative from './ExpoAppleAuthenticationNative';
+import ExpoAppleAuthenticationNative from './ExpoAppleAuthenticationNative';
 
 import {
   SignInWithAppleOptions,
@@ -12,10 +12,10 @@ import {
  * Generally users need to be on iOS 13+.
  */
 export function isAvailableAsync(): Promise<boolean> {
-  if (!ExpoCAppleAuthenticationNative.isAvailableAsync) {
+  if (!ExpoAppleAuthenticationNative.isAvailableAsync) {
     throw new Error(`The method 'ExpoAppleAuthentication.isAvailableAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
   }
-  return ExpoCAppleAuthenticationNative.isAvailableAsync();
+  return ExpoAppleAuthenticationNative.isAvailableAsync();
 }
 
 /**
@@ -40,10 +40,10 @@ export function isAvailableAsync(): Promise<boolean> {
  * ```
  */
 export function requestAsync(options: SignInWithAppleOptions): Promise<SignInWithAppleCredential> {
-  if (!ExpoCAppleAuthenticationNative.requestAsync) {
+  if (!ExpoAppleAuthenticationNative.requestAsync) {
     throw new Error(`The method 'ExpoAppleAuthentication.requestAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
   }
-  return ExpoCAppleAuthenticationNative.requestAsync(options);
+  return ExpoAppleAuthenticationNative.requestAsync(options);
 }
 
 /**
@@ -72,10 +72,10 @@ export function requestAsync(options: SignInWithAppleOptions): Promise<SignInWit
  * ```
  */
 export function getCredentialStateAsync(userId: string): Promise<SignInWithAppleCredentialState> {
-  if (!ExpoCAppleAuthenticationNative.requestAsync) {
+  if (!ExpoAppleAuthenticationNative.requestAsync) {
     throw new Error(`The method 'ExpoAppleAuthentication.getCredentialStateAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
   }
-  return ExpoCAppleAuthenticationNative.getCredentialStateAsync(userId);
+  return ExpoAppleAuthenticationNative.getCredentialStateAsync(userId);
 }
 
 //

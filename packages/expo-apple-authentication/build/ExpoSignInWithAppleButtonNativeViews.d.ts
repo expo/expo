@@ -1,7 +1,7 @@
-declare const ExpoSignInWithAppleButtonSignInWhite: import("react").ComponentType<any>;
-declare const ExpoSignInWithAppleButtonSignInWhiteOutline: import("react").ComponentType<any>;
-declare const ExpoSignInWithAppleButtonSignInBlack: import("react").ComponentType<any>;
-declare const ExpoSignInWithAppleButtonContinueWhite: import("react").ComponentType<any>;
-declare const ExpoSignInWithAppleButtonContinueWhiteOutline: import("react").ComponentType<any>;
-declare const ExpoSignInWithAppleButtonContinueBlack: import("react").ComponentType<any>;
+declare let ExpoSignInWithAppleButtonSignInWhite: any;
+declare let ExpoSignInWithAppleButtonSignInWhiteOutline: any;
+declare let ExpoSignInWithAppleButtonSignInBlack: any;
+declare let ExpoSignInWithAppleButtonContinueWhite: any;
+declare let ExpoSignInWithAppleButtonContinueWhiteOutline: any;
+declare let ExpoSignInWithAppleButtonContinueBlack: any;
 export { ExpoSignInWithAppleButtonSignInWhite, ExpoSignInWithAppleButtonSignInWhiteOutline, ExpoSignInWithAppleButtonSignInBlack, ExpoSignInWithAppleButtonContinueWhite, ExpoSignInWithAppleButtonContinueWhiteOutline, ExpoSignInWithAppleButtonContinueBlack, };

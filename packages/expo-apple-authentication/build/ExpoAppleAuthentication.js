@@ -1,14 +1,14 @@
 import { Platform } from 'react-native';
-import ExpoCAppleAuthenticationNative from './ExpoAppleAuthenticationNative';
+import ExpoAppleAuthenticationNative from './ExpoAppleAuthenticationNative';
 /**
  * A method which returns a Promise which resolves to a boolean if you are able to perform a Sign In with Apple.
  * Generally users need to be on iOS 13+.
  */
 export function isAvailableAsync() {
-    if (!ExpoCAppleAuthenticationNative.isAvailableAsync) {
+    if (!ExpoAppleAuthenticationNative.isAvailableAsync) {
         throw new Error(`The method 'ExpoAppleAuthentication.isAvailableAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
     }
-    return ExpoCAppleAuthenticationNative.isAvailableAsync();
+    return ExpoAppleAuthenticationNative.isAvailableAsync();
 }
 /**
  * Perform a Sign In with Apple request with the given SignInWithAppleOptions.
@@ -32,10 +32,10 @@ export function isAvailableAsync() {
  * ```
  */
 export function requestAsync(options) {
-    if (!ExpoCAppleAuthenticationNative.requestAsync) {
+    if (!ExpoAppleAuthenticationNative.requestAsync) {
         throw new Error(`The method 'ExpoAppleAuthentication.requestAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
     }
-    return ExpoCAppleAuthenticationNative.requestAsync(options);
+    return ExpoAppleAuthenticationNative.requestAsync(options);
 }
 /**
  * You can query the current state of a user ID.
@@ -63,10 +63,10 @@ export function requestAsync(options) {
  * ```
  */
 export function getCredentialStateAsync(userId) {
-    if (!ExpoCAppleAuthenticationNative.requestAsync) {
+    if (!ExpoAppleAuthenticationNative.requestAsync) {
         throw new Error(`The method 'ExpoAppleAuthentication.getCredentialStateAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
     }
-    return ExpoCAppleAuthenticationNative.getCredentialStateAsync(userId);
+    return ExpoAppleAuthenticationNative.getCredentialStateAsync(userId);
 }
 //
 // TODO - came up with idea how to deliver this mechanism
