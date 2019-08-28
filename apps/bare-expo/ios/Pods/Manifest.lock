@@ -1,11 +1,11 @@
 PODS:
   - Amplitude-iOS (4.6.0)
   - Analytics (3.7.0)
-  - AppAuth (1.1.0):
-    - AppAuth/Core (= 1.1.0)
-    - AppAuth/ExternalUserAgent (= 1.1.0)
-  - AppAuth/Core (1.1.0)
-  - AppAuth/ExternalUserAgent (1.1.0)
+  - AppAuth (1.2.0):
+    - AppAuth/Core (= 1.2.0)
+    - AppAuth/ExternalUserAgent (= 1.2.0)
+  - AppAuth/Core (1.2.0)
+  - AppAuth/ExternalUserAgent (1.2.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
   - EXAmplitude (6.0.0):
@@ -122,6 +122,8 @@ PODS:
   - EXSQLite (6.0.0):
     - UMCore
     - UMFileSystemInterface
+  - EXStoreReview (1.0.0):
+    - UMCore
   - EXUpdates (1.0.0):
     - UMCore
   - EXWebBrowser (6.0.0):
@@ -262,6 +264,7 @@ DEPENDENCIES:
   - EXSMS (from `../../../packages/expo-sms/ios`)
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
+  - EXStoreReview (from `../../../packages/expo-store-review/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - Folly (from `../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
@@ -433,6 +436,9 @@ EXTERNAL SOURCES:
   EXSQLite:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-sqlite/ios"
+  EXStoreReview:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-store-review/ios"
   EXUpdates:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-updates/ios"
@@ -485,7 +491,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Amplitude-iOS: ac1715ae68104b7a51723209ad574f60ab22ae5f
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
-  AppAuth: a08c77b389d259e1dd343010352dde2c0c5df689
+  AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
@@ -530,6 +536,7 @@ SPEC CHECKSUMS:
   EXSMS: cb30013923b89b795840634ba486a79f29eee368
   EXSpeech: f540155550a79e861a411d3a02b3d6e6dc1ed9c8
   EXSQLite: 8dab6a5ab1b78be7925073d6071eb22095d4dda6
+  EXStoreReview: 240aa065fa7674a68a73036029f20d6629ca31ad
   EXUpdates: 2025a95a0dea48b5716de33af696b96d7471020f
   EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
@@ -554,4 +561,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 89d36f5a85f14250f85476dcc6c968499f450490
 
-COCOAPODS: 1.7.3
+COCOAPODS: 1.7.5
