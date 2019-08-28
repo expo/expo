@@ -45,10 +45,10 @@ export default class SmallProjectCard extends React.PureComponent {
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
         style={styles.container}>
-        <StyledView style={styles.container}>
+        <StyledView style={[styles.container, this.props.fullWidthBorder && styles.border]}>
           <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
 
-          <StyledView style={styles.infoContainer}>
+          <StyledView style={[styles.infoContainer, !this.props.fullWidthBorder && styles.border]}>
             <View style={styles.projectNameContainer}>
               <View style={{ flex: 1, flexDirection: 'row', flexGrow: 4 }}>
                 {platform ? <PlatformIcon platform={platform} /> : null}
@@ -168,6 +168,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
   },
+  border: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+  },
   iconContainer: {
     paddingLeft: IconPaddingLeft,
     paddingRight: IconPaddingRight,
@@ -190,7 +193,6 @@ const styles = StyleSheet.create({
     }),
   },
   infoContainer: {
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
     paddingTop: 13,
     flexDirection: 'column',
     alignSelf: 'stretch',
