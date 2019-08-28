@@ -30,6 +30,7 @@
     "lodash": "*",
     "react": "*",
     "react-native": "*",
+    "react-native-web": "*",
     "react-test-renderer": "*"
   },
   "dependencies": {
