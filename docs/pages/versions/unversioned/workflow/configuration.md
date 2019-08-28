@@ -448,6 +448,13 @@ Configuration for how and when the app should request OTA JavaScript updates
       "googleMapsApiKey": STRING,
 
       /*
+        Google Mobile Ads App ID for your standalone app.
+
+        https://developers.google.com/admob/ios/quick-start#update_your_infoplist
+      */
+      "googleMobileAdsAppId": STRING,
+
+      /*
         Google Sign-In iOS SDK keys for your standalone app.
 
         developers.google.com/identity/sign-in/ios/start-integrating
@@ -695,7 +702,14 @@ Configuration for how and when the app should request OTA JavaScript updates
           Your Google Maps Android SDK API key
         */
         "apiKey": STRING
-      }
+      },
+
+      /*
+        Google Mobile Ads App ID for your standalone app.
+
+        https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml
+      */
+      "googleMobileAdsAppId": STRING,
 
       /*
         Google Sign-In Android SDK keys for your standalone app.

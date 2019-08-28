@@ -10,6 +10,34 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 > **Note**: Not compatible with web.
 
+## Configuration
+
+For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to `app.json` under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid `app.json` would look like:
+
+```json
+{
+  "expo": {
+    "name": "Ads Showcase",
+    // ...
+    "android": {
+      // ...
+      "config": {
+        // ...
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713" // sample id, replace with your own
+      }
+    },
+    "ios": {
+      // ...
+      "config": {
+        // ...
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511" // sample id, replace with your own
+      }
+    }
+  }
+}
+
+```
+
 ## Usage
 
 ```javascript

@@ -359,6 +359,13 @@
       android:value="${GOOGLE_MAPS_API_KEY}"/>
     <!-- END GOOGLE MAPS CONFIG -->
 
+    <!-- ADD GOOGLE MOBILE ADS CONFIG HERE -->
+    <!-- BEGIN GOOGLE MOBILE ADS CONFIG -->
+    <meta-data
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="ca-app-pub-3940256099942544~3347511713"/>
+    <!-- END GOOGLE MOBILE ADS CONFIG -->
+
     <!-- ADD BRANCH CONFIG HERE -->
 
     <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
