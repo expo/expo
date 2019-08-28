@@ -181,8 +181,11 @@ const TabNavigator =
         navigationOptions: {
           header: null,
         },
-        barStyle: {
+        barStyleLight: {
           backgroundColor: '#fff',
+        },
+        barStyleDark: {
+          backgroundColor: '#000',
         },
       });
 
