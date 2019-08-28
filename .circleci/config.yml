@@ -167,7 +167,7 @@ commands:
       - save_cache:
           key: gitlfs-{{ arch }}
           paths:
-            # Save the LFS cache directory to save Github bandwidth
+            # Save the LFS cache directory to save GitHub bandwidth
             - .git/lfs
   restore_yarn_cache:
     parameters:
