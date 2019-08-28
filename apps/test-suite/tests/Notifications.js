@@ -11,6 +11,16 @@ import * as TestUtils from '../TestUtils';
 
 export const name = 'Notifications';
 
+export function canRunAsync({ isAutomated }) {
+  return !isAutomated;
+}
+export function requiresPermissions() {
+  return [
+    Permissions.NOTIFICATIONS,
+    Permissions.USER_FACING_NOTIFICATIONS,
+  ]
+}
+
 const localNotificationFactory = overrides => ({
   title: 'Notification title',
   body: 'Body text of the notification',
@@ -49,45 +59,55 @@ const waitForCallOfListener = (notificationOverrides, options) =>
     }
   });
 
-export async function test(t) {
+export async function test({
+  beforeAll,
+  describe,
+  it,
+  xit,
+  xdescribe,
+  beforeEach,
+  jasmine,
+  expect,
+  ...t
+}) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
+  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   describeWithPermissions('Notifications', () => {
-    t.beforeAll(async () => {
+    beforeAll(async () => {
       await Permissions.askAsync(Permissions.NOTIFICATIONS);
     });
 
-    t.afterEach(async () => {
+    afterEach(async () => {
       if (Platform.OS === 'android') {
         await Notifications.dismissAllNotificationsAsync();
       }
     });
 
-    t.describe('getExpoPushTokenAsync', () => {
-      t.it('resolves with a string', async () => {
+    describe('getExpoPushTokenAsync', () => {
+      it('resolves with a string', async () => {
         const expoPushToken = await Notifications.getExpoPushTokenAsync();
-        t.expect(typeof expoPushToken === 'string').toBe(true);
+        expect(typeof expoPushToken === 'string').toBe(true);
       });
     });
 
-    t.describe('presentLocalNotificationAsync', () => {
-      t.it('resolves with notificationId', async () => {
+    describe('presentLocalNotificationAsync', () => {
+      it('resolves with notificationId', async () => {
         let error = null;
         try {
           const notificationId = await Notifications.presentLocalNotificationAsync(
             localNotificationFactory()
           );
-          t.expect(notificationId).toBeDefined();
+          expect(notificationId).toBeDefined();
         } catch (e) {
           error = e;
         }
-        t.expect(error).toBeNull();
+        expect(error).toBeNull();
       });
 
       // It turns out iOS rejects such notifications, while Android does not.
       if (Platform.OS === 'ios') {
-        t.it('rejects notification with empty body', async () => {
+        it('rejects notification with empty body', async () => {
           let error = null;
           try {
             await Notifications.presentLocalNotificationAsync(
@@ -96,11 +116,11 @@ export async function test(t) {
           } catch (e) {
             error = e;
           }
-          t.expect(error).not.toBeNull();
+          expect(error).not.toBeNull();
         });
       }
 
-      t.it('rejects notification with empty title', async () => {
+      it('rejects notification with empty title', async () => {
         let error = null;
         try {
           await Notifications.presentLocalNotificationAsync(
@@ -109,53 +129,53 @@ export async function test(t) {
         } catch (e) {
           error = e;
         }
-        t.expect(error).not.toBeNull();
+        expect(error).not.toBeNull();
       });
     });
 
-    t.describe('addListener', () => {
-      t.it('is notified of new notifications', async () => {
+    describe('addListener', () => {
+      it('is notified of new notifications', async () => {
         const notificationsListener = t.jasmine.createSpy('notificationsListener');
         const subscription = Notifications.addListener(notificationsListener);
         await Notifications.presentLocalNotificationAsync(localNotificationFactory());
         await waitFor(500);
-        t.expect(notificationsListener).toHaveBeenCalled();
+        expect(notificationsListener).toHaveBeenCalled();
         subscription.remove();
       });
 
-      t.it('reported notifications have origin=received', async () => {
+      it('reported notifications have origin=received', async () => {
         const notifications = await waitForCallOfListener();
-        t.expect(isMatch(notifications[0], { origin: 'received' })).toBe(true);
+        expect(isMatch(notifications[0], { origin: 'received' })).toBe(true);
       });
 
-      t.it('reported notifications have proper data attached', async () => {
+      it('reported notifications have proper data attached', async () => {
         const data = { scheduledAt: new Date().getTime() };
         const notifications = await waitForCallOfListener({ data }, { timeout: 1000 });
         let hasMatched = false;
         notifications.forEach(notification => {
           hasMatched = hasMatched || isMatch(notification, { data });
         });
-        t.expect(hasMatched).toBe(true);
+        expect(hasMatched).toBe(true);
       });
     });
 
-    t.describe('scheduleLocalNotificationAsync', () => {
+    describe('scheduleLocalNotificationAsync', () => {
       // Android schedules notifications in a too unpredictable manner for it to be testable.
       if (Platform.OS === 'ios') {
-        t.it('schedules local notifications', async () => {
-          const notificationsListener = t.jasmine.createSpy('notificationsListener');
+        it('schedules local notifications', async () => {
+          const notificationsListener = jasmine.createSpy('notificationsListener');
           const subscription = Notifications.addListener(notificationsListener);
           Notifications.scheduleLocalNotificationAsync(localNotificationFactory(), {
             time: new Date().getTime() + 1000,
           });
           await waitFor(800);
-          t.expect(notificationsListener).not.toHaveBeenCalled();
+          expect(notificationsListener).not.toHaveBeenCalled();
           await waitFor(500);
-          t.expect(notificationsListener).toHaveBeenCalled();
+          expect(notificationsListener).toHaveBeenCalled();
           subscription.remove();
         });
 
-        t.it('data is properly set', async () => {
+        it('data is properly set', async () => {
           const data = { scheduledAt: new Date().getTime() };
           const notifications = await waitForCallOfListener(
             { data },
@@ -171,14 +191,14 @@ export async function test(t) {
           notifications.forEach(notification => {
             hasMatched = hasMatched || isMatch(notification, { data });
           });
-          t.expect(hasMatched).toBe(true);
+          expect(hasMatched).toBe(true);
         });
       }
     });
 
     if (Platform.OS === 'android') {
-      t.describe('cancelScheduledNotificationAsync', () => {
-        t.it('cancels a scheduled notification', async () => {
+      describe('cancelScheduledNotificationAsync', () => {
+        it('cancels a scheduled notification', async () => {
           let error = null;
           try {
             const data = { scheduledAt: new Date().getTime() };
@@ -197,16 +217,16 @@ export async function test(t) {
             notifications.forEach(notification => {
               hasMatched = hasMatched || isMatch(notification, { data });
             });
-            t.expect(hasMatched).toBe(false);
+            expect(hasMatched).toBe(false);
           } catch (e) {
             error = e;
           }
-          t.expect(error).toBeNull();
+          expect(error).toBeNull();
         });
       });
 
-      t.describe('cancelAllScheduledNotificationsAsync', () => {
-        t.it('cancels a scheduled notification', async () => {
+      describe('cancelAllScheduledNotificationsAsync', () => {
+        it('cancels a scheduled notification', async () => {
           let error = null;
           try {
             const data = { scheduledAt: new Date().getTime() };
@@ -222,30 +242,30 @@ export async function test(t) {
             notifications.forEach(notification => {
               hasMatched = hasMatched || isMatch(notification, { data });
             });
-            t.expect(hasMatched).toBe(false);
+            expect(hasMatched).toBe(false);
           } catch (e) {
             error = e;
           }
-          t.expect(error).toBeNull();
+          expect(error).toBeNull();
         });
       });
     }
 
     if (Platform.OS === 'ios') {
-      t.describe('getBadgeNumberAsync', () => {
-        t.it('resolves with a number', async () => {
+      describe('getBadgeNumberAsync', () => {
+        it('resolves with a number', async () => {
           const badgeNumber = await Notifications.getBadgeNumberAsync();
-          t.expect(typeof badgeNumber === 'number').toBe(true);
+          expect(typeof badgeNumber === 'number').toBe(true);
         });
       });
 
-      t.describe('setBadgeNumberAsync', () => {
-        t.afterEach(async () => await Notifications.setBadgeNumberAsync(0));
+      describe('setBadgeNumberAsync', () => {
+        afterEach(async () => await Notifications.setBadgeNumberAsync(0));
 
-        t.it('sets the badge number', async () => {
+        it('sets the badge number', async () => {
           await Notifications.setBadgeNumberAsync(10);
           const badgeNumber = await Notifications.getBadgeNumberAsync();
-          t.expect(badgeNumber).toEqual(10);
+          expect(badgeNumber).toEqual(10);
         });
       });
     }
@@ -272,7 +292,7 @@ export async function test(t) {
         },
       },
     };
-    t.describe('Push notifications related', () => {
+    describe('Push notifications related', () => {
       async function sendPushNotificationAsync(type) {
         let receivedPushNotification = false;
         const subscription = Notifications.addListener(async notification => {
@@ -302,14 +322,14 @@ export async function test(t) {
       }
 
       async function testNotificationResponse(notification, sentMessage, type) {
-        t.expect(notification).toBeDefined();
+        expect(notification).toBeDefined();
         switch (type) {
           case 'simple':
-            t.expect(notification.data).toEqual(sentMessage.data);
+            expect(notification.data).toEqual(sentMessage.data);
             break;
           case 'image': {
             const newData = { ...sentMessage.data, _richContent: sentMessage.richContent };
-            t.expect(notification.data).toEqual(newData);
+            expect(notification.data).toEqual(newData);
             break;
           }
           default:
@@ -317,21 +337,13 @@ export async function test(t) {
         }
       }
 
-      t.it(
-        'Simple push notification',
-        async () => {
-          t.expect(await sendPushNotificationAsync('simple')).toBe(true);
-        },
-        10000
-      );
+      it('Simple push notification', async () => {
+        expect(await sendPushNotificationAsync('simple')).toBe(true);
+      }, 10000);
 
-      t.it(
-        'Image push notification',
-        async () => {
-          t.expect(await sendPushNotificationAsync('image')).toBe(true);
-        },
-        10000
-      );
+      it('Image push notification', async () => {
+        expect(await sendPushNotificationAsync('image')).toBe(true);
+      }, 10000);
     });
   });
 }

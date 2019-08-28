@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import { getTestModules } from './TestUtils';
+import { getTestModulesAsync } from './TestUtils';
 import ModulesContext from './ModulesContext';
 import useLinking from './utils/useLinking';
 
@@ -81,25 +81,25 @@ export default function ModulesProvider({ children }) {
 
   React.useEffect(() => {
     const modulesMap = {};
-    const MODULES = getTestModules();
-
-    for (let module of MODULES) {
-      if (!module) continue;
-      if (!module.name || module.name === '') {
-        throw new Error(
-          'Module name is invalid. Expected a string with the name of the test to be exported: ' +
-            JSON.stringify(module) +
-            ' '
-        );
-      }
-      const key = module.name.replace(' ', '_');
-      modulesMap[key] = {
-        key,
-        isActive: true,
-        ...module,
-      };
-    }
     const parseModulesAsync = async () => {
+      const MODULES = await getTestModulesAsync();
+
+      for (let module of MODULES) {
+        if (!module) continue;
+        if (!module.name || module.name === '') {
+          throw new Error(
+            'Module name is invalid. Expected a string with the name of the test to be exported: ' +
+              JSON.stringify(module) +
+              ' '
+          );
+        }
+        const key = module.name.replace(' ', '_');
+        modulesMap[key] = {
+          key,
+          isActive: true,
+          ...module,
+        };
+      }
       const rehydratedModulesMap = await rehydrateModules(modulesMap);
       setModules(rehydratedModulesMap);
       setLoaded(true);

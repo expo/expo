@@ -8,6 +8,10 @@ import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'AdMobBanner';
 
+export function canRunAsync({ isDetox }) {
+  return !isDetox;
+}
+
 const validAdUnitID = 'ca-app-pub-3940256099942544/6300978111';
 const invalidAdUnitID = 'id';
 
@@ -21,30 +25,30 @@ const sizes = [
   'smartBannerLandscape',
 ];
 
-export function test(t, { setPortalChild, cleanupPortal }) {
-  t.describe('AdMobBanner', () => {
-    t.afterEach(async () => await cleanupPortal());
+export function test({ describe, afterEach, it, expect, ...t }, { setPortalChild, cleanupPortal }) {
+  describe('AdMobBanner', () => {
+    afterEach(async () => await cleanupPortal());
 
     const mountAndWaitFor = (child, propName = 'onAdViewDidReceiveAd') =>
       originalMountAndWaitFor(child, propName, setPortalChild);
 
-    t.describe('when given valid adUnitID', () => {
-      t.it('calls adViewDidReceiveAd', async () => {
+    describe('when given valid adUnitID', () => {
+      it('calls adViewDidReceiveAd', async () => {
         await mountAndWaitFor(
           <AdMobBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />,
           'onAdViewDidReceiveAd'
         );
       });
 
-      t.it('displays an ad', async () => {
+      it('displays an ad', async () => {
         await mountAndWaitFor(
           <AdMobBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />
         );
       });
 
       forEach(sizes, size => {
-        t.describe(`when given size = ${size}`, () => {
-          t.it('displays an ad', async () => {
+        describe(`when given size = ${size}`, () => {
+          it('displays an ad', async () => {
             await mountAndWaitFor(
               <AdMobBanner bannerSize={size} adUnitID={validAdUnitID} testDeviceID="EMULATOR" />
             );
@@ -53,8 +57,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('when given invalid adUnitID', () => {
-      t.it('calls didFailToReceiveAdWithError', async () => {
+    describe('when given invalid adUnitID', () => {
+      it('calls didFailToReceiveAdWithError', async () => {
         await mountAndWaitFor(
           <AdMobBanner bannerSize="banner" adUnitID={invalidAdUnitID} testDeviceID="EMULATOR" />,
           'onDidFailToReceiveAdWithError'

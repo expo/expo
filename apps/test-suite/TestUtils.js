@@ -1,21 +1,8 @@
-'use strict';
 import './utils/catchRequireErrors';
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 
 import ExponentTest from './ExponentTest';
-
-function browserSupportsWebGL() {
-  try {
-    const canvas = document.createElement('canvas');
-    return (
-      !!window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch (e) {
-    return false;
-  }
-}
 
 function optionalRequire(requirer) {
   try {
@@ -26,10 +13,6 @@ function optionalRequire(requirer) {
   }
 }
 
-export function isInDeviceFarm() {
-  return ExponentTest && ExponentTest.isInCI && Platform.OS === 'android';
-}
-
 function getTestsForPlatform() {
   if (Platform.OS === 'web') {
     const modules = [
@@ -37,93 +20,58 @@ function getTestsForPlatform() {
       optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Basic')),
       optionalRequire(() => require('./tests/Constants')),
-      optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Contacts')),
       optionalRequire(() => require('./tests/Crypto')),
       optionalRequire(() => require('./tests/Font')),
       optionalRequire(() => require('./tests/Random')),
       optionalRequire(() => require('./tests/Localization')),
     ];
-
-    if (browserSupportsWebGL()) {
-      modules.push(optionalRequire(() => require('./tests/GLView')));
-    }
-
-    if (ExponentTest && !ExponentTest.isInCI) {
-      // modules.push(optionalRequire(() => require('./tests/Speech')));
-    }
     return modules;
   }
 
   const modules = [
-    require('./tests/Basic'),
+    optionalRequire(() => require('./tests/AdMobBanner')),
+    optionalRequire(() => require('./tests/AdMobInterstitial')),
+    optionalRequire(() => require('./tests/AdMobPublisherBanner')),
+    optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/Asset')),
+    optionalRequire(() => require('./tests/Audio')),
+    optionalRequire(() => require('./tests/BarCodeScanner')),
+    optionalRequire(() => require('./tests/Basic')),
+    optionalRequire(() => require('./tests/Brightness')),
+    optionalRequire(() => require('./tests/Calendar')),
+    // optionalRequire(() => require('./tests/Camera')),
     optionalRequire(() => require('./tests/Constants')),
+    optionalRequire(() => require('./tests/Contacts')),
     optionalRequire(() => require('./tests/Crypto')),
+    optionalRequire(() => require('./tests/FBBannerAd')),
+    optionalRequire(() => require('./tests/FBNativeAd')),
+    optionalRequire(() => require('./tests/FileSystem')),
+    optionalRequire(() => require('./tests/Font')),
     optionalRequire(() => require('./tests/GLView')),
+    optionalRequire(() => require('./tests/GoogleSignIn')),
     optionalRequire(() => require('./tests/Haptics')),
+    optionalRequire(() => require('./tests/ImageManipulator')),
+    optionalRequire(() => require('./tests/JSC')),
+    optionalRequire(() => require('./tests/Linking')),
     optionalRequire(() => require('./tests/Localization')),
+    optionalRequire(() => require('./tests/Location')),
+    optionalRequire(() => require('./tests/MediaLibrary')),
+    optionalRequire(() => require('./tests/Notifications')),
+    optionalRequire(() => require('./tests/Payments')),
+    optionalRequire(() => require('./tests/Permissions')),
+    optionalRequire(() => require('./tests/Random')),
+    optionalRequire(() => require('./tests/Recording')),
+    optionalRequire(() => require('./tests/ScreenOrientation')),
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
+    optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/SQLite')),
-    optionalRequire(() => require('./tests/Random')),
+    optionalRequire(() => require('./tests/SVG')),
+    optionalRequire(() => require('./tests/TaskManager')),
+    optionalRequire(() => require('./tests/Video')),
   ];
 
-  if (global.DETOX) {
-    modules.push(
-      modules.push(optionalRequire(() => require('./tests/Permissions'))),
-      modules.push(optionalRequire(() => require('./tests/Calendar'))),
-      modules.push(optionalRequire(() => require('./tests/Video'))),
-      modules.push(optionalRequire(() => require('./tests/Audio')))
-    );
-  } else {
-    modules.push(
-      optionalRequire(() => require('./tests/Speech')),
-      optionalRequire(() => require('./tests/Recording')),
-      optionalRequire(() => require('./tests/FileSystem')),
-      optionalRequire(() => require('./tests/ScreenOrientation'))
-      // optionalRequire(() => require('./tests/Payments')),
-      // optionalRequire(() => require('./tests/AdMobInterstitial')),
-      // optionalRequire(() => require('./tests/AdMobBanner')),
-      // optionalRequire(() => require('./tests/AdMobPublisherBanner')),
-      // optionalRequire(() => require('./tests/AdMobRewarded')),
-      // optionalRequire(() => require('./tests/FBBannerAd'))
-    );
-  }
-
-  if (!global.DETOX && !isInDeviceFarm()) {
-    // Invalid placementId in CI (all tests fail)
-    // modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
-    // Requires interaction (sign in popup)
-    modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
-    // Popup to request device's location which uses Google's location service
-    modules.push(optionalRequire(() => require('./tests/Location')));
-    // Fails to redirect because of malformed URL in published version with release channel parameter
-    modules.push(optionalRequire(() => require('./tests/Linking')));
-    // Requires permission
-    modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Contacts')));
-    modules.push(optionalRequire(() => require('./tests/Permissions')));
-    modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
-    modules.push(optionalRequire(() => require('./tests/Notifications')));
-    if (Constants.isDevice) {
-      modules.push(optionalRequire(() => require('./tests/Brightness')));
-    }
-    // Crashes app when mounting component
-    modules.push(optionalRequire(() => require('./tests/Video')));
-    // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
-    // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
-    modules.push(optionalRequire(() => require('./tests/TaskManager')));
-    // Audio tests are flaky in CI due to asynchronous fetching of resources
-    modules.push(optionalRequire(() => require('./tests/Audio')));
-    // The Camera tests are flaky on iOS, i.e. they fail randomly
-    if (Constants.isDevice && Platform.OS === 'android')
-      modules.push(optionalRequire(() => require('./tests/Camera')));
-  }
-  if (Platform.OS === 'android') modules.push(optionalRequire(() => require('./tests/JSC')));
-  if (Constants.isDevice) {
-    modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
-  }
   // availableTests = modules.filter(Boolean);
   // return availableTests.reduce(
   //   (previous, current) => ({ ...previous, [current.name]: current.test }),
@@ -134,9 +82,30 @@ function getTestsForPlatform() {
 
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
-export function getTestModules() {
-  const modules = getTestsForPlatform();
-  return modules.filter(Boolean).sort((a, b) => {
+export async function getTestModulesAsync() {
+  const modules = getTestsForPlatform().filter(Boolean);
+
+  let availableTests = [];
+
+  const isDeviceFarm = ExponentTest && ExponentTest.isInCI && Platform.OS === 'android';
+
+  const env = {
+    isDeviceFarm,
+    isAutomated: isDeviceFarm || !!global.DETOX,
+    isDevice: Constants.isDevice,
+    isDetox: !!global.DETOX,
+    OS: Platform.OS,
+  };
+
+  for (const module of modules) {
+    if (module.canRunAsync) {
+      if (await module.canRunAsync(env)) availableTests.push(module);
+    } else {
+      availableTests.push(module);
+    }
+  }
+
+  return availableTests.sort((a, b) => {
     if (a.name < b.name) return -1;
     if (a.name > b.name) return 1;
     return 0;

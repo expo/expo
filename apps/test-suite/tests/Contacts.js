@@ -7,6 +7,14 @@ import * as TestUtils from '../TestUtils';
 
 export const name = 'Contacts';
 
+export function canRunAsync({ isAutomated }) {
+  return !isAutomated;
+}
+
+export function requiresPermissions() {
+  return [Permissions.CONTACTS];
+}
+
 async function sortContacts(expect, sortField) {
   const { data: contacts } = await Contacts.getContactsAsync({
     fields: [sortField],

@@ -5,8 +5,8 @@ import { Asset } from 'expo-asset';
 
 export const name = 'Asset';
 
-export function test(t) {
-  t.describe('Asset', () => {
+export function test({ describe, afterEach, it, expect, jasmine, ...t }) {
+  describe('Asset', () => {
     [
       {
         module: require('../assets/black-128x256.png'),
@@ -23,21 +23,21 @@ export function test(t) {
         hash: '69d77ab5cba970d7934a5f5bcd8fdd11',
       },
     ].forEach(({ module, name, type, ...more }) =>
-      t.describe(`${name}.${type}`, () => {
-        t.it(`has correct name, type, ${Object.keys(more).join(', ')}`, async () => {
+      describe(`${name}.${type}`, () => {
+        it(`has correct name, type, ${Object.keys(more).join(', ')}`, async () => {
           const asset = Asset.fromModule(module);
-          t.expect(asset.name).toBe(name);
-          t.expect(asset.type).toBe(type);
-          Object.keys(more).forEach(member => t.expect(asset[member]).toBe(more[member]));
+          expect(asset.name).toBe(name);
+          expect(asset.type).toBe(type);
+          Object.keys(more).forEach(member => expect(asset[member]).toBe(more[member]));
         });
 
-        t.it("when downloaded, has a 'file://' localUri", async () => {
+        it("when downloaded, has a 'file://' localUri", async () => {
           const asset = Asset.fromModule(module);
           await asset.downloadAsync();
-          t.expect(asset.localUri).toMatch(new RegExp(`^file:\/\/.*\.${type}`));
+          expect(asset.localUri).toMatch(new RegExp(`^file:\/\/.*\.${type}`));
         });
 
-        t.it(
+        it(
           'when downloaded, exists in cache with matching hash and has ' +
             'localUri pointing to the cached file',
           async () => {
@@ -49,9 +49,9 @@ export function test(t) {
               md5: true,
             });
 
-            t.expect(exists).toBeTruthy();
-            t.expect(md5).toBe(asset.hash);
-            t.expect(cacheUri).toBe(asset.localUri);
+            expect(exists).toBeTruthy();
+            expect(md5).toBe(asset.hash);
+            expect(cacheUri).toBe(asset.localUri);
           }
         );
       })

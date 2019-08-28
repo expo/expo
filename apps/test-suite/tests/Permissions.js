@@ -5,10 +5,24 @@ import { Platform } from 'react-native';
 
 export const name = 'Permissions';
 
-export function test(t) {
-  t.describe('Permissions.getAsync', () => {
-    t.describe('of Permissions.NOTIFICATIONS', () => {
-      t.it('has proper shape', async () => {
+export function canRunAsync({ isAutomated }) {
+  return !isAutomated;
+}
+
+export function requiresPermissions() {
+  return [
+    Permissions.NOTIFICATIONS,
+    Permissions.USER_FACING_NOTIFICATIONS,
+    Permissions.CALENDAR,
+    Permissions.CAMERA,
+    Permissions.AUDIO_RECORDING,
+  ];
+}
+
+export function test({ describe, afterEach, it, expect, jasmine, ...t }) {
+  describe('Permissions.getAsync', () => {
+    describe('of Permissions.NOTIFICATIONS', () => {
+      it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.NOTIFICATIONS);
         const keys = Object.keys(result);
         const notificationsResult =
@@ -16,24 +30,24 @@ export function test(t) {
         const notificationsResultKeys = notificationsResult && Object.keys(notificationsResult);
 
         // check top-level
-        t.expect(keys).toContain('status');
-        t.expect(keys).toContain('expires');
-        t.expect(keys).toContain('permissions');
-        t.expect(notificationsResult).toBeDefined();
+        expect(keys).toContain('status');
+        expect(keys).toContain('expires');
+        expect(keys).toContain('permissions');
+        expect(notificationsResult).toBeDefined();
 
         // check component level
-        t.expect(notificationsResultKeys).toContain('status');
-        t.expect(notificationsResultKeys).toContain('expires');
+        expect(notificationsResultKeys).toContain('status');
+        expect(notificationsResultKeys).toContain('expires');
         if (Platform.OS === 'ios') {
-          t.expect(notificationsResultKeys).toContain('allowsSound');
-          t.expect(notificationsResultKeys).toContain('allowsAlert');
-          t.expect(notificationsResultKeys).toContain('allowsBadge');
+          expect(notificationsResultKeys).toContain('allowsSound');
+          expect(notificationsResultKeys).toContain('allowsAlert');
+          expect(notificationsResultKeys).toContain('allowsBadge');
         }
       });
     });
 
-    t.describe('of Permissions.USER_FACING_NOTIFICATIONS', () => {
-      t.it('has proper shape', async () => {
+    describe('of Permissions.USER_FACING_NOTIFICATIONS', () => {
+      it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
         const keys = Object.keys(result);
         const notificationsResult =
@@ -41,74 +55,74 @@ export function test(t) {
         const notificationsResultKeys = notificationsResult && Object.keys(notificationsResult);
 
         // check top-level
-        t.expect(keys).toContain('status');
-        t.expect(keys).toContain('expires');
-        t.expect(keys).toContain('permissions');
-        t.expect(notificationsResult).toBeDefined();
+        expect(keys).toContain('status');
+        expect(keys).toContain('expires');
+        expect(keys).toContain('permissions');
+        expect(notificationsResult).toBeDefined();
 
         // check component level
-        t.expect(notificationsResultKeys).toContain('status');
-        t.expect(notificationsResultKeys).toContain('expires');
+        expect(notificationsResultKeys).toContain('status');
+        expect(notificationsResultKeys).toContain('expires');
         if (Platform.OS === 'ios') {
-          t.expect(notificationsResultKeys).toContain('allowsSound');
-          t.expect(notificationsResultKeys).toContain('allowsAlert');
-          t.expect(notificationsResultKeys).toContain('allowsBadge');
+          expect(notificationsResultKeys).toContain('allowsSound');
+          expect(notificationsResultKeys).toContain('allowsAlert');
+          expect(notificationsResultKeys).toContain('allowsBadge');
         }
       });
 
       if (Platform.OS === 'android') {
-        t.it('is equal to status of notifications permission', async () => {
+        it('is equal to status of notifications permission', async () => {
           const localResult = await Permissions.getAsync(Permissions.NOTIFICATIONS);
           const remoteResult = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
 
-          t.expect(remoteResult.status).toEqual(localResult.status);
-          t.expect(remoteResult.granted).toEqual(localResult.granted);
+          expect(remoteResult.status).toEqual(localResult.status);
+          expect(remoteResult.granted).toEqual(localResult.granted);
         });
       }
     });
 
-    t.describe('of Permissions.AUDIO_RECORDING', () => {
-      t.it('has proper shape', async () => {
+    describe('of Permissions.AUDIO_RECORDING', () => {
+      it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.AUDIO_RECORDING);
         const keys = Object.keys(result);
         const permissionsKeys = Object.keys(result.permissions);
 
         // check top-level
-        t.expect(keys).toContain('status');
-        t.expect(keys).toContain('expires');
-        t.expect(keys).toContain('permissions');
+        expect(keys).toContain('status');
+        expect(keys).toContain('expires');
+        expect(keys).toContain('permissions');
 
         // check component level
-        t.expect(permissionsKeys).toContain(Permissions.AUDIO_RECORDING);
+        expect(permissionsKeys).toContain(Permissions.AUDIO_RECORDING);
 
         const recordingPermissions = Object.keys(result.permissions[Permissions.AUDIO_RECORDING]);
-        t.expect(recordingPermissions).toContain('status');
-        t.expect(recordingPermissions).toContain('expires');
+        expect(recordingPermissions).toContain('status');
+        expect(recordingPermissions).toContain('expires');
       });
     });
 
-    t.describe('of [Permissions.CAMERA, Permissions.CALENDAR]', () => {
-      t.it('has proper shape', async () => {
+    describe('of [Permissions.CAMERA, Permissions.CALENDAR]', () => {
+      it('has proper shape', async () => {
         const result = await Permissions.getAsync(Permissions.CAMERA, Permissions.CALENDAR);
         const keys = Object.keys(result);
         const permissionsKeys = Object.keys(result.permissions);
 
         // check top-level
-        t.expect(keys).toContain('status');
-        t.expect(keys).toContain('expires');
-        t.expect(keys).toContain('permissions');
+        expect(keys).toContain('status');
+        expect(keys).toContain('expires');
+        expect(keys).toContain('permissions');
 
         // check component level
-        t.expect(permissionsKeys).toContain(Permissions.CAMERA);
-        t.expect(permissionsKeys).toContain(Permissions.CALENDAR);
+        expect(permissionsKeys).toContain(Permissions.CAMERA);
+        expect(permissionsKeys).toContain(Permissions.CALENDAR);
 
         const cameraPermissionKeys = Object.keys(result.permissions[Permissions.CAMERA]);
-        t.expect(cameraPermissionKeys).toContain('status');
-        t.expect(cameraPermissionKeys).toContain('expires');
+        expect(cameraPermissionKeys).toContain('status');
+        expect(cameraPermissionKeys).toContain('expires');
 
         const calendarPermissionKeys = Object.keys(result.permissions[Permissions.CALENDAR]);
-        t.expect(calendarPermissionKeys).toContain('status');
-        t.expect(calendarPermissionKeys).toContain('expires');
+        expect(calendarPermissionKeys).toContain('status');
+        expect(calendarPermissionKeys).toContain('expires');
       });
     });
   });

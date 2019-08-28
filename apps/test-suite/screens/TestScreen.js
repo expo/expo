@@ -7,6 +7,7 @@ import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
 import ModulesContext from '../ModulesContext';
 import setupJasmine from '../utils/setupJasmine';
+import { requirePackageTests } from '../TestUtils';
 
 const initialState = {
   portalChildShouldBeVisible: false,
@@ -106,12 +107,10 @@ class TestRunner extends React.Component {
 
     await Promise.all(
       modules.map(m =>
-        jasmine.describe(m.name, () =>
-          m.test(jasmine, {
-            setPortalChild: this.setPortalChild,
-            cleanupPortal: this.cleanupPortal,
-          })
-        )
+        m.test(jasmine, {
+          setPortalChild: this.setPortalChild,
+          cleanupPortal: this.cleanupPortal,
+        })
       )
     );
 
@@ -138,7 +137,7 @@ class TestRunner extends React.Component {
   }
 }
 
-TestRunner.idefaultProps = {
+TestRunner.defaultProps = {
   modules: [],
 };
 

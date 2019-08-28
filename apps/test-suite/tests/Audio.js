@@ -7,6 +7,12 @@ import { Platform } from 'react-native';
 import { retryForStatus, waitFor } from './helpers';
 
 export const name = 'Audio';
+
+export function canRunAsync({ isAutomated }) {
+  // Audio tests are flaky in CI due to asynchronous fetching of resources
+  return !isAutomated;
+}
+
 const mainTestingSource = require('../assets/LLizard.mp3');
 const soundUri = 'http://www.noiseaddicts.com/samples_1w72b820/280.mp3';
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
@@ -14,13 +20,13 @@ const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 const redirectingSoundUri = 'http://bit.ly/2qBMx80';
 const authenticatedStaticFilesBackend = 'https://authenticated-static-files-hagckpsbra.now.sh';
 
-export function test(t) {
-  t.describe('Audio class', () => {
-    t.describe('Audio.setAudioModeAsync', () => {
+export function test({ describe, afterEach, beforeAll, beforeEach, it, expect, jasmine, ...t }) {
+  describe('Audio class', () => {
+    describe('Audio.setAudioModeAsync', () => {
       // These tests should work according to the documentation,
       // but the implementation doesn't return anything from the Promise.
 
-      // t.it('sets one set of the options', async () => {
+      // it('sets one set of the options', async () => {
       //   const mode = {
       //     playsInSilentModeIOS: true,
       //     allowsRecordingIOS: true,
@@ -31,14 +37,14 @@ export function test(t) {
       //   };
       //   try {
       //     const receivedMode = await Audio.setAudioModeAsync(mode);
-      //     t.expect(receivedMode).toBeDefined();
-      //     receivedMode && t.expect(receivedMode).toEqual(t.jasmine.objectContaining(mode));
+      //     expect(receivedMode).toBeDefined();
+      //     receivedMode && expect(receivedMode).toEqual(t.jasmine.objectContaining(mode));
       //   } catch (error) {
       //     t.fail(error);
       //   }
       // });
 
-      // t.it('sets another set of the options', async () => {
+      // it('sets another set of the options', async () => {
       //   const mode = {
       //     playsInSilentModeIOS: false,
       //     allowsRecordingIOS: false,
@@ -49,15 +55,15 @@ export function test(t) {
       //   };
       //   try {
       //     const receivedMode = await Audio.setAudioModeAsync(mode);
-      //     t.expect(receivedMode).toBeDefined();
-      //     receivedMode && t.expect(receivedMode).toEqual(t.jasmine.objectContaining(mode));
+      //     expect(receivedMode).toBeDefined();
+      //     receivedMode && expect(receivedMode).toEqual(t.jasmine.objectContaining(mode));
       //   } catch (error) {
       //     t.fail(error);
       //   }
       // });
 
       if (Platform.OS === 'ios') {
-        t.it('rejects an invalid promise', async () => {
+        it('rejects an invalid promise', async () => {
           const mode = {
             playsInSilentModeIOS: false,
             allowsRecordingIOS: true,
@@ -73,47 +79,47 @@ export function test(t) {
           } catch (err) {
             error = err;
           }
-          t.expect(error).not.toBeNull();
-          error && t.expect(error.toString()).toMatch('Impossible audio mode');
+          expect(error).not.toBeNull();
+          error && expect(error.toString()).toMatch('Impossible audio mode');
         });
       }
     });
   });
 
-  t.describe('Audio instances', () => {
+  describe('Audio instances', () => {
     let soundObject = null;
 
-    t.beforeAll(async () => {
+    beforeAll(async () => {
       await Audio.setIsEnabledAsync(true);
     });
 
-    t.beforeEach(() => {
+    beforeEach(() => {
       soundObject = new Audio.Sound();
     });
 
-    t.afterEach(async () => {
+    afterEach(async () => {
       await soundObject.unloadAsync();
       soundObject = null;
     });
 
-    t.describe('Audio.loadAsync', () => {
-      t.it('loads the file with `require`', async () => {
+    describe('Audio.loadAsync', () => {
+      it('loads the file with `require`', async () => {
         await soundObject.loadAsync(require('../assets/LLizard.mp3'));
         await retryForStatus(soundObject, { isLoaded: true });
       });
 
-      t.it('loads the file from `Asset`', async () => {
+      it('loads the file from `Asset`', async () => {
         await soundObject.loadAsync(Asset.fromModule(require('../assets/LLizard.mp3')));
         await retryForStatus(soundObject, { isLoaded: true });
       });
 
-      t.it('loads the file from the Internet', async () => {
+      it('loads the file from the Internet', async () => {
         await soundObject.loadAsync({ uri: soundUri });
         await retryForStatus(soundObject, { isLoaded: true });
       });
 
-      t.describe('cookie session', () => {
-        t.afterEach(async () => {
+      describe('cookie session', () => {
+        afterEach(async () => {
           try {
             await fetch(`${authenticatedStaticFilesBackend}/sign_out`, {
               method: 'DELETE',
@@ -124,52 +130,71 @@ export function test(t) {
           }
         });
 
-        t.it(
-          'is shared with fetch session',
-          async () => {
-            let error = null;
-            try {
-              await soundObject.loadAsync({
-                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
-              });
-            } catch (err) {
-              error = err;
-            }
-            t.expect(error).toBeDefined();
-            if (Platform.OS === 'android') {
-              t.expect(error.toString()).toMatch('Response code: 401');
-            } else {
-              t.expect(error.toString()).toMatch('error code -1013');
-            }
-            const signInResponse = await (await fetch(
-              `${authenticatedStaticFilesBackend}/sign_in`,
-              {
-                method: 'POST',
-                credentials: true,
-              }
-            )).text();
-            t.expect(signInResponse).toMatch('Signed in successfully!');
-            error = null;
-            try {
-              await soundObject.loadAsync({
-                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
-              });
-            } catch (err) {
-              error = err;
-            }
-            t.expect(error).toBeNull();
-          },
-          30000
-        );
-      });
-
-      t.it(
-        'supports adding custom headers to media request',
-        async () => {
+        it('is shared with fetch session', async () => {
           let error = null;
           try {
             await soundObject.loadAsync({
               uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+            });
+          } catch (err) {
+            error = err;
+          }
+          expect(error).toBeDefined();
+          if (Platform.OS === 'android') {
+            expect(error.toString()).toMatch('Response code: 401');
+          } else {
+            expect(error.toString()).toMatch('error code -1013');
+          }
+          const signInResponse = await (await fetch(`${authenticatedStaticFilesBackend}/sign_in`, {
+            method: 'POST',
+            credentials: true,
+          })).text();
+          expect(signInResponse).toMatch('Signed in successfully!');
+          error = null;
+          try {
+            await soundObject.loadAsync({
+              uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+            });
+          } catch (err) {
+            error = err;
+          }
+          expect(error).toBeNull();
+        }, 30000);
+      });
+
+      it('supports adding custom headers to media request', async () => {
+        let error = null;
+        try {
+          await soundObject.loadAsync({
+            uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+          });
+        } catch (err) {
+          error = err;
+        }
+        if (!error) {
+          throw new Error('Backend unexpectedly allowed unauthenticated request.');
+        }
+        error = null;
+        try {
+          await soundObject.loadAsync({
+            uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+            headers: {
+              authorization: 'mellon',
+            },
+          });
+        } catch (err) {
+          error = err;
+        }
+        expect(error).toBeNull();
+      }, 30000);
+
+      if (Platform.OS === 'android') {
+        it('supports adding custom headers to media request (MediaPlayer implementation)', async () => {
+          let error = null;
+          try {
+            await soundObject.loadAsync({
+              uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+              androidImplementation: 'MediaPlayer',
             });
           } catch (err) {
             error = err;
@@ -181,6 +206,7 @@ export function test(t) {
           try {
             await soundObject.loadAsync({
               uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
+              androidImplementation: 'MediaPlayer',
               headers: {
                 authorization: 'mellon',
               },
@@ -188,45 +214,11 @@ export function test(t) {
           } catch (err) {
             error = err;
           }
-          t.expect(error).toBeNull();
-        },
-        30000
-      );
-
-      if (Platform.OS === 'android') {
-        t.it(
-          'supports adding custom headers to media request (MediaPlayer implementation)',
-          async () => {
-            let error = null;
-            try {
-              await soundObject.loadAsync({
-                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
-                androidImplementation: 'MediaPlayer',
-              });
-            } catch (err) {
-              error = err;
-            }
-            if (!error) {
-              throw new Error('Backend unexpectedly allowed unauthenticated request.');
-            }
-            error = null;
-            try {
-              await soundObject.loadAsync({
-                uri: `${authenticatedStaticFilesBackend}/LLizard.mp3`,
-                androidImplementation: 'MediaPlayer',
-                headers: {
-                  authorization: 'mellon',
-                },
-              });
-            } catch (err) {
-              error = err;
-            }
-            t.expect(error).toBeNull();
-          }
-        );
+          expect(error).toBeNull();
+        });
       }
 
-      t.it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
+      it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
         let error = null;
         try {
           await soundObject.loadAsync({
@@ -236,74 +228,65 @@ export function test(t) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeNull();
+        expect(error).toBeNull();
       });
 
       if (Platform.OS === 'android') {
-        t.it(
-          'rejects the file from the Internet that redirects to non-standard content',
-          async () => {
-            let hasBeenRejected = false;
-            try {
-              await soundObject.loadAsync({
-                uri: hlsStreamUriWithRedirect,
-              });
-              await retryForStatus(soundObject, { isLoaded: true });
-            } catch (error) {
-              hasBeenRejected = true;
-            }
-            t.expect(hasBeenRejected).toBe(true);
+        it('rejects the file from the Internet that redirects to non-standard content', async () => {
+          let hasBeenRejected = false;
+          try {
+            await soundObject.loadAsync({
+              uri: hlsStreamUriWithRedirect,
+            });
+            await retryForStatus(soundObject, { isLoaded: true });
+          } catch (error) {
+            hasBeenRejected = true;
           }
-        );
-        t.it(
-          'loads the file from the Internet that redirects to non-standard content when overrideFileExtensionAndroid is provided',
-          async () => {
-            let hasBeenRejected = false;
-            try {
-              await soundObject.loadAsync({
-                uri: hlsStreamUriWithRedirect,
-                overrideFileExtensionAndroid: 'm3u8',
-              });
-              await retryForStatus(soundObject, { isLoaded: true });
-            } catch (error) {
-              hasBeenRejected = true;
-            }
-            t.expect(hasBeenRejected).toBe(false);
+          expect(hasBeenRejected).toBe(true);
+        });
+        it('loads the file from the Internet that redirects to non-standard content when overrideFileExtensionAndroid is provided', async () => {
+          let hasBeenRejected = false;
+          try {
+            await soundObject.loadAsync({
+              uri: hlsStreamUriWithRedirect,
+              overrideFileExtensionAndroid: 'm3u8',
+            });
+            await retryForStatus(soundObject, { isLoaded: true });
+          } catch (error) {
+            hasBeenRejected = true;
           }
-        );
+          expect(hasBeenRejected).toBe(false);
+        });
       } else {
-        t.it(
-          'loads the file from the Internet that redirects to non-standard content',
-          async () => {
-            let hasBeenRejected = false;
-            try {
-              await soundObject.loadAsync({
-                uri: hlsStreamUriWithRedirect,
-              });
-              await retryForStatus(soundObject, { isLoaded: true });
-            } catch (error) {
-              hasBeenRejected = true;
-            }
-            t.expect(hasBeenRejected).toBe(false);
+        it('loads the file from the Internet that redirects to non-standard content', async () => {
+          let hasBeenRejected = false;
+          try {
+            await soundObject.loadAsync({
+              uri: hlsStreamUriWithRedirect,
+            });
+            await retryForStatus(soundObject, { isLoaded: true });
+          } catch (error) {
+            hasBeenRejected = true;
           }
-        );
+          expect(hasBeenRejected).toBe(false);
+        });
       }
 
-      t.it('loads HLS stream', async () => {
+      it('loads HLS stream', async () => {
         await soundObject.loadAsync({
           uri: hlsStreamUri,
         });
         await retryForStatus(soundObject, { isLoaded: true });
       });
 
-      t.it('loads the file from the Internet (with redirecting URL)', async () => {
+      it('loads the file from the Internet (with redirecting URL)', async () => {
         await soundObject.loadAsync({
           uri: redirectingSoundUri,
         });
         await retryForStatus(soundObject, { isLoaded: true });
       });
 
-      t.it('rejects if a file is already loaded', async () => {
+      it('rejects if a file is already loaded', async () => {
         await soundObject.loadAsync({ uri: soundUri });
         await retryForStatus(soundObject, { isLoaded: true });
         let hasBeenRejected = false;
@@ -311,14 +294,14 @@ export function test(t) {
           await soundObject.loadAsync(mainTestingSource);
         } catch (error) {
           hasBeenRejected = true;
-          error && t.expect(error.toString()).toMatch('already loaded');
+          error && expect(error.toString()).toMatch('already loaded');
         }
-        t.expect(hasBeenRejected).toBe(true);
+        expect(hasBeenRejected).toBe(true);
       });
     });
 
-    t.describe('Audio.loadAsync(require, initialStatus)', () => {
-      t.it('sets an initial status', async () => {
+    describe('Audio.loadAsync(require, initialStatus)', () => {
+      it('sets an initial status', async () => {
         const options = {
           shouldPlay: true,
           isLooping: true,
@@ -331,8 +314,8 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.setStatusAsync', () => {
-      t.it('sets a status', async () => {
+    describe('Audio.setStatusAsync', () => {
+      it('sets a status', async () => {
         const options = {
           shouldPlay: true,
           isLooping: true,
@@ -345,27 +328,27 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.unloadAsync(require, initialStatus)', () => {
-      t.it('unloads the object when it is loaded', async () => {
+    describe('Audio.unloadAsync(require, initialStatus)', () => {
+      it('unloads the object when it is loaded', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await retryForStatus(soundObject, { isLoaded: true });
         await soundObject.unloadAsync();
         await retryForStatus(soundObject, { isLoaded: false });
       });
 
-      t.it("rejects if the object isn't loaded", async () => {
+      it("rejects if the object isn't loaded", async () => {
         let hasBeenRejected = false;
         try {
           await soundObject.unloadAsync();
         } catch (error) {
           hasBeenRejected = true;
         }
-        t.expect(hasBeenRejected).toBe(false);
+        expect(hasBeenRejected).toBe(false);
       });
     });
 
-    /*t.describe('Audio.setOnPlaybackStatusUpdate', () => {
-      t.it('sets callbacks that gets called when playing and stopping', async () => {
+    /*describe('Audio.setOnPlaybackStatusUpdate', () => {
+      it('sets callbacks that gets called when playing and stopping', async () => {
         const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
         await soundObject.loadAsync(mainTestingSource);
@@ -374,7 +357,7 @@ export function test(t) {
         await retryForStatus(soundObject, { isPlaying: true });
         await soundObject.stopAsync();
         await retryForStatus(soundObject, { isPlaying: false });
-        t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith({ isLoaded: false });
+        expect(onPlaybackStatusUpdate).toHaveBeenCalledWith({ isLoaded: false });
         t
           .expect(onPlaybackStatusUpdate)
           .toHaveBeenCalledWith(t.jasmine.objectContaining({ isLoaded: true }));
@@ -386,7 +369,7 @@ export function test(t) {
           .toHaveBeenCalledWith(t.jasmine.objectContaining({ isPlaying: false }));
       });
 
-      t.it(
+      it(
         'sets callbacks that gets called with didJustFinish when playback finishes',
         async () => {
           const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
@@ -411,16 +394,16 @@ export function test(t) {
       );
     });*/
 
-    t.describe('Audio.playAsync', () => {
-      t.it('plays the sound', async () => {
+    describe('Audio.playAsync', () => {
+      it('plays the sound', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await soundObject.playAsync();
         await retryForStatus(soundObject, { isPlaying: true });
       });
     });
 
-    t.describe('Audio.replayAsync', () => {
-      t.it('replays the sound', async () => {
+    describe('Audio.replayAsync', () => {
+      it('replays the sound', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await retryForStatus(soundObject, { isLoaded: true });
         await soundObject.playAsync();
@@ -430,10 +413,10 @@ export function test(t) {
         soundObject.replayAsync();
         await retryForStatus(soundObject, { isPlaying: true });
         const statusAfter = await soundObject.getStatusAsync();
-        t.expect(statusAfter.positionMillis).toBeLessThan(statusBefore.positionMillis);
+        expect(statusAfter.positionMillis).toBeLessThan(statusBefore.positionMillis);
       });
 
-      /*t.it('calls the onPlaybackStatusUpdate with hasJustBeenInterrupted = true', async () => {
+      /*it('calls the onPlaybackStatusUpdate with hasJustBeenInterrupted = true', async () => {
         const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         await soundObject.loadAsync(mainTestingSource);
         soundObject.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
@@ -447,8 +430,8 @@ export function test(t) {
       });*/
     });
 
-    t.describe('Audio.pauseAsync', () => {
-      t.it('pauses the sound', async () => {
+    describe('Audio.pauseAsync', () => {
+      it('pauses the sound', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await soundObject.playAsync();
         await retryForStatus(soundObject, { isPlaying: true });
@@ -459,8 +442,8 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.stopAsync', () => {
-      t.it('stops the sound', async () => {
+    describe('Audio.stopAsync', () => {
+      it('stops the sound', async () => {
         await soundObject.loadAsync(mainTestingSource, { shouldPlay: true });
         await retryForStatus(soundObject, { isPlaying: true });
         await soundObject.stopAsync();
@@ -468,8 +451,8 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.setPositionAsync', () => {
-      t.it('sets the position', async () => {
+    describe('Audio.setPositionAsync', () => {
+      it('sets the position', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await retryForStatus(soundObject, { positionMillis: 0 });
         await soundObject.setPositionAsync(1000);
@@ -477,15 +460,15 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.setPositionAsync', () => {
-      t.it('sets the position', async () => {
+    describe('Audio.setPositionAsync', () => {
+      it('sets the position', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await retryForStatus(soundObject, { positionMillis: 0 });
         await soundObject.setPositionAsync(1000);
         await retryForStatus(soundObject, { positionMillis: 1000 });
       });
 
-      t.it('sets the position with tolerance', async () => {
+      it('sets the position with tolerance', async () => {
         await soundObject.loadAsync(mainTestingSource);
         await retryForStatus(soundObject, { positionMillis: 0 });
         await soundObject.setPositionAsync(999, {
@@ -496,35 +479,35 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.setVolumeAsync', () => {
-      t.beforeEach(async () => {
+    describe('Audio.setVolumeAsync', () => {
+      beforeEach(async () => {
         await soundObject.loadAsync(mainTestingSource, { volume: 1 });
         await retryForStatus(soundObject, { volume: 1 });
       });
 
-      t.it('sets the volume', async () => {
+      it('sets the volume', async () => {
         await soundObject.setVolumeAsync(0.5);
         await retryForStatus(soundObject, { volume: 0.5 });
       });
 
       const testVolumeFailure = (valueDescription, value) =>
-        t.it(`rejects if volume value is ${valueDescription}`, async () => {
+        it(`rejects if volume value is ${valueDescription}`, async () => {
           let hasBeenRejected = false;
           try {
             await soundObject.setVolumeAsync(value);
           } catch (error) {
             hasBeenRejected = true;
-            error && t.expect(error.toString()).toMatch(/value .+ between/);
+            error && expect(error.toString()).toMatch(/value .+ between/);
           }
-          t.expect(hasBeenRejected).toBe(true);
+          expect(hasBeenRejected).toBe(true);
         });
 
       testVolumeFailure('too big', 2);
       testVolumeFailure('negative', -0.5);
     });
 
-    t.describe('Audio.setIsMutedAsync', () => {
-      t.it('sets whether the audio is muted', async () => {
+    describe('Audio.setIsMutedAsync', () => {
+      it('sets whether the audio is muted', async () => {
         await soundObject.loadAsync(mainTestingSource, { isMuted: true });
         await retryForStatus(soundObject, { isMuted: true });
         await soundObject.setIsMutedAsync(false);
@@ -532,8 +515,8 @@ export function test(t) {
       });
     });
 
-    t.describe('Audio.setIsLoopingAsync', () => {
-      t.it('sets whether the audio is looped', async () => {
+    describe('Audio.setIsLoopingAsync', () => {
+      it('sets whether the audio is looped', async () => {
         await soundObject.loadAsync(mainTestingSource, { isLooping: false });
         await retryForStatus(soundObject, { isLooping: false });
         await soundObject.setIsLoopingAsync(true);
@@ -541,8 +524,8 @@ export function test(t) {
       });
     });
 
-    /*t.describe('Audio.setProgressUpdateIntervalAsync', () => {
-      t.it('sets update interval', async () => {
+    /*describe('Audio.setProgressUpdateIntervalAsync', () => {
+      it('sets update interval', async () => {
         const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         await soundObject.loadAsync(mainTestingSource, { shouldPlay: true });
         await retryForStatus(soundObject, { isPlaying: true });
@@ -550,75 +533,79 @@ export function test(t) {
         await soundObject.setProgressUpdateIntervalAsync(100);
         await new Promise(resolve => {
           setTimeout(() => {
-            t.expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(5);
+            expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(5);
             resolve();
           }, 800);
         });
       });
     });*/
 
-    t.describe('Audio.setRateAsync', () => {
+    describe('Audio.setRateAsync', () => {
       let rate = 0;
       let shouldError = false;
       let shouldCorrectPitch = false;
       let pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low;
 
-      t.beforeEach(async () => {
+      beforeEach(async () => {
         const rate = 0.9;
 
         const status = await soundObject.loadAsync(mainTestingSource, { rate });
-        t.expect(status.rate).toBeCloseTo(rate, 2);
+        expect(status.rate).toBeCloseTo(rate, 2);
       });
 
-      t.afterEach(async () => {
+      afterEach(async () => {
         let hasBeenRejected = false;
 
         try {
-          const status = await soundObject.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
-          t.expect(status.rate).toBeCloseTo(rate, 2);
-          t.expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
-          t.expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);
+          const status = await soundObject.setRateAsync(
+            rate,
+            shouldCorrectPitch,
+            pitchCorrectionQuality
+          );
+          expect(status.rate).toBeCloseTo(rate, 2);
+          expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
+          expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);
         } catch (error) {
           hasBeenRejected = true;
         }
 
-        t.expect(hasBeenRejected).toEqual(shouldError);
+        expect(hasBeenRejected).toEqual(shouldError);
 
         rate = 0;
         shouldError = false;
         shouldCorrectPitch = false;
       });
 
-      t.it('sets rate with shouldCorrectPitch = true', async () => {
+      it('sets rate with shouldCorrectPitch = true', async () => {
         rate = 1.5;
         shouldCorrectPitch = true;
       });
 
-      t.it('sets rate with shouldCorrectPitch = false', async () => {
+      it('sets rate with shouldCorrectPitch = false', async () => {
         rate = 0.75;
         shouldCorrectPitch = false;
       });
 
-      t.it('sets pitchCorrectionQuality to Low', async () => {
+      it('sets pitchCorrectionQuality to Low', async () => {
         rate = 0.5;
         shouldCorrectPitch = true;
         pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low;
       });
 
-      t.it('sets pitchCorrectionQuality to Medium', async () => {
+      it('sets pitchCorrectionQuality to Medium', async () => {
         pitchCorrectionQuality = Audio.PitchCorrectionQuality.Medium;
       });
 
-      t.it('sets pitchCorrectionQuality to High', async () => {
+      it('sets pitchCorrectionQuality to High', async () => {
         pitchCorrectionQuality = Audio.PitchCorrectionQuality.High;
       });
 
-      t.it('rejects too high rate', async () => {
+      it('rejects too high rate', async () => {
         rate = 40;
         shouldError = true;
       });
 
-      t.it('rejects negative rate', async () => {
+      it('rejects negative rate', async () => {
         rate = -10;
         shouldError = true;
       });

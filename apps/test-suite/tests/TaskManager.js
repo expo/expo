@@ -8,9 +8,27 @@ const UNDEFINED_TASK_NAME = 'undefined task';
 
 export const name = 'TaskManager';
 
-export async function test(t) {
+export function canRunAsync({ isAutomated }) {
+  // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
+  // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
+  return !isAutomated;
+}
+
+export async function test({
+  beforeAll,
+  describe,
+  it,
+  xit,
+  xdescribe,
+  beforeEach,
+  afterAll,
+  fail,
+  jasmine,
+  expect,
+  ...t
+}) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
+  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
   const locationOptions = {
     accuracy: Location.Accuracy.Low,
     showsBackgroundLocationIndicator: false,
@@ -23,30 +41,30 @@ export async function test(t) {
   getOptions() is being called from within LocationTaskConsumer.java in the expo-location module
   several times without checking for null
   */
-  t.describe('TaskManager', () => {
-    t.describe('isTaskDefined()', () => {
-      t.it('returns true if task is defined', () => {
-        t.expect(TaskManager.isTaskDefined(DEFINED_TASK_NAME)).toBe(true);
+  describe('TaskManager', () => {
+    describe('isTaskDefined()', () => {
+      it('returns true if task is defined', () => {
+        expect(TaskManager.isTaskDefined(DEFINED_TASK_NAME)).toBe(true);
       });
-      t.it('returns false if task is not defined', () => {
-        t.expect(TaskManager.isTaskDefined(UNDEFINED_TASK_NAME)).toBe(false);
+      it('returns false if task is not defined', () => {
+        expect(TaskManager.isTaskDefined(UNDEFINED_TASK_NAME)).toBe(false);
       });
     });
 
     describeWithPermissions('isTaskRegisteredAsync()', async () => {
-      t.beforeAll(async () => {
+      beforeAll(async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME);
       });
 
-      t.it('returns true for registered tasks', async () => {
-        t.expect(await TaskManager.isTaskRegisteredAsync(DEFINED_TASK_NAME)).toBe(true);
+      it('returns true for registered tasks', async () => {
+        expect(await TaskManager.isTaskRegisteredAsync(DEFINED_TASK_NAME)).toBe(true);
       });
 
-      t.it('returns false for unregistered tasks', async () => {
-        t.expect(await TaskManager.isTaskRegisteredAsync(UNDEFINED_TASK_NAME)).toBe(false);
+      it('returns false for unregistered tasks', async () => {
+        expect(await TaskManager.isTaskRegisteredAsync(UNDEFINED_TASK_NAME)).toBe(false);
       });
 
-      t.afterAll(async () => {
+      afterAll(async () => {
         await Location.stopLocationUpdatesAsync(DEFINED_TASK_NAME);
       });
     });
@@ -54,42 +72,42 @@ export async function test(t) {
     describeWithPermissions('getTaskOptionsAsync()', async () => {
       let taskOptions;
 
-      t.it('returns null for unregistered tasks', async () => {
+      it('returns null for unregistered tasks', async () => {
         taskOptions = await TaskManager.getTaskOptionsAsync(DEFINED_TASK_NAME);
-        t.expect(taskOptions).toBe(null);
+        expect(taskOptions).toBe(null);
       });
 
-      t.it('returns correct options after register', async () => {
+      it('returns correct options after register', async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
         taskOptions = await TaskManager.getTaskOptionsAsync(DEFINED_TASK_NAME);
-        t.expect(taskOptions).toEqual(t.jasmine.objectContaining(locationOptions));
+        expect(taskOptions).toEqual(jasmine.objectContaining(locationOptions));
       });
 
-      t.it('returns null when unregistered', async () => {
+      it('returns null when unregistered', async () => {
         await Location.stopLocationUpdatesAsync(DEFINED_TASK_NAME);
         taskOptions = await TaskManager.getTaskOptionsAsync(DEFINED_TASK_NAME);
-        t.expect(taskOptions).toBe(null);
+        expect(taskOptions).toBe(null);
       });
     });
 
     describeWithPermissions('getRegisteredTasksAsync()', async () => {
       let registeredTasks;
 
-      t.it('returns empty array if there are no tasks', async () => {
+      it('returns empty array if there are no tasks', async () => {
         registeredTasks = await TaskManager.getRegisteredTasksAsync();
-        t.expect(registeredTasks).toBeDefined();
-        t.expect(registeredTasks.length).toBe(0);
+        expect(registeredTasks).toBeDefined();
+        expect(registeredTasks.length).toBe(0);
       });
 
-      t.it('returns correct array after registering the task', async () => {
+      it('returns correct array after registering the task', async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
 
         registeredTasks = await TaskManager.getRegisteredTasksAsync();
 
-        t.expect(registeredTasks).toBeDefined();
-        t.expect(registeredTasks.length).toBe(1);
-        t.expect(registeredTasks.find(task => task.taskName === DEFINED_TASK_NAME)).toEqual(
-          t.jasmine.objectContaining({
+        expect(registeredTasks).toBeDefined();
+        expect(registeredTasks.length).toBe(1);
+        expect(registeredTasks.find(task => task.taskName === DEFINED_TASK_NAME)).toEqual(
+          jasmine.objectContaining({
             taskName: DEFINED_TASK_NAME,
             taskType: 'location',
             options: locationOptions,
@@ -97,24 +115,24 @@ export async function test(t) {
         );
       });
 
-      t.afterAll(async () => {
+      afterAll(async () => {
         await Location.stopLocationUpdatesAsync(DEFINED_TASK_NAME);
       });
     });
 
     describeWithPermissions('unregisterAllTasksAsync()', () => {
-      t.it('unregisters tasks correctly', async () => {
+      it('unregisters tasks correctly', async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
         await TaskManager.unregisterAllTasksAsync();
 
-        t.expect(await TaskManager.isTaskRegisteredAsync(DEFINED_TASK_NAME)).toBe(false);
-        t.expect((await TaskManager.getRegisteredTasksAsync()).length).toBe(0);
-        t.expect(await Location.hasStartedLocationUpdatesAsync(DEFINED_TASK_NAME)).toBe(false);
+        expect(await TaskManager.isTaskRegisteredAsync(DEFINED_TASK_NAME)).toBe(false);
+        expect((await TaskManager.getRegisteredTasksAsync()).length).toBe(0);
+        expect(await Location.hasStartedLocationUpdatesAsync(DEFINED_TASK_NAME)).toBe(false);
       });
     });
 
     describeWithPermissions('rejections', () => {
-      t.it('should reject when trying to unregister task with different consumer', async () => {
+      it('should reject when trying to unregister task with different consumer', async () => {
         await Location.startLocationUpdatesAsync(DEFINED_TASK_NAME, locationOptions);
 
         let error;
@@ -123,8 +141,8 @@ export async function test(t) {
         } catch (e) {
           error = e;
         }
-        t.expect(error).toBeDefined();
-        t.expect(error.message).toMatch(/Invalid task consumer/);
+        expect(error).toBeDefined();
+        expect(error.message).toMatch(/Invalid task consumer/);
 
         await Location.stopLocationUpdatesAsync(DEFINED_TASK_NAME);
       });

@@ -50,8 +50,10 @@ function jasmineSetStateReporter(jasmineEnv, app, onStart, onComplete) {
             .pop()
             .pop(),
           children =>
-            children.update(children.size - 1, child =>
-              child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
+            children.update(
+              children.size - 1,
+              child =>
+                child && child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
             )
         ),
       }));
@@ -71,10 +73,13 @@ function jasmineSetStateReporter(jasmineEnv, app, onStart, onComplete) {
             .pop()
             .pop(),
           children =>
-            children.update(children.size - 1, child =>
-              child.update('specs', specs =>
-                specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
-              )
+            children.update(
+              children.size - 1,
+              child =>
+                child &&
+                child.update('specs', specs =>
+                  specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
+                )
             )
         ),
       }));
