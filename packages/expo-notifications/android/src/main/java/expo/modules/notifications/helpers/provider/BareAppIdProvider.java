@@ -17,6 +17,8 @@ public class BareAppIdProvider implements InternalModule, AppIdProvider{
         mContext = context.getApplicationContext();
     }
 
+    protected BareAppIdProvider() { }
+
     public String getAppId() {
         String appId = Configuration.getValueFor(Configuration.APP_ID_KEY, mContext);
         return appId;
