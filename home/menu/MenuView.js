@@ -87,6 +87,7 @@ class MenuView extends React.Component {
       StatusBar._currentValues = null;
     }
   };
+
   restoreStatusBar = () => {
     if (
       NativeModules.StatusBarManager._applyPropertiesAndForget &&

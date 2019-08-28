@@ -12329,6 +12329,15 @@ react-navigation-material-bottom-tabs@1.0.0:
     prop-types "^15.6.0"
     react-navigation-tabs "1.0.0"
 
+react-navigation-material-bottom-tabs@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/react-navigation-material-bottom-tabs/-/react-navigation-material-bottom-tabs-1.1.1.tgz#17e12719958c1d6770b3138789608f54d5cb7f57"
+  integrity sha512-1+F+DZXMoKCN9uewAnOvXCROA693ThS5vTnYRufpAAiZPooLVEAfWyQCNuQIWY0BQIT56/NJJuGC+rIKj/YoAA==
+  dependencies:
+    hoist-non-react-statics "^2.5.0"
+    prop-types "^15.6.0"
+    react-navigation-tabs "~1.2.0"
+
 react-navigation-stack@~1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.5.0.tgz#f2ddee8b441158cd26c631359bc12810cd41228f"
