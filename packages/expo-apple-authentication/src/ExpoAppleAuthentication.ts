@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { UnavailabilityError } from '@unimodules/core';
 import ExpoAppleAuthenticationNative from './ExpoAppleAuthenticationNative';
 
 import {
@@ -11,9 +11,9 @@ import {
  * A method which returns a Promise which resolves to a boolean if you are able to perform a Sign In with Apple.
  * Generally users need to be on iOS 13+.
  */
-export function isAvailableAsync(): Promise<boolean> {
+export async function isAvailableAsync(): Promise<boolean> {
   if (!ExpoAppleAuthenticationNative.isAvailableAsync) {
-    throw new Error(`The method 'ExpoAppleAuthentication.isAvailableAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
+    return false;
   }
   return ExpoAppleAuthenticationNative.isAvailableAsync();
 }
@@ -39,9 +39,9 @@ export function isAvailableAsync(): Promise<boolean> {
  * })
  * ```
  */
-export function requestAsync(options: SignInWithAppleOptions): Promise<SignInWithAppleCredential> {
+export async function requestAsync(options: SignInWithAppleOptions): Promise<SignInWithAppleCredential> {
   if (!ExpoAppleAuthenticationNative.requestAsync) {
-    throw new Error(`The method 'ExpoAppleAuthentication.requestAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
+    throw new UnavailabilityError('expo-apple-authentication', 'requestAsync');
   }
   return ExpoAppleAuthenticationNative.requestAsync(options);
 }
@@ -71,31 +71,9 @@ export function requestAsync(options: SignInWithAppleOptions): Promise<SignInWit
  * })
  * ```
  */
-export function getCredentialStateAsync(userId: string): Promise<SignInWithAppleCredentialState> {
-  if (!ExpoAppleAuthenticationNative.requestAsync) {
-    throw new Error(`The method 'ExpoAppleAuthentication.getCredentialStateAsync' is not available on ${Platform.OS}, are you sure you've linked all the native dependencies properly or are you sure it is availble on your device?`);
+export async function getCredentialStateAsync(userId: string): Promise<SignInWithAppleCredentialState> {
+  if (!ExpoAppleAuthenticationNative.getCredentialStateAsync) {
+    throw new UnavailabilityError('expo-apple-authentication', 'getCredentialStateAsync');
   }
   return ExpoAppleAuthenticationNative.getCredentialStateAsync(userId);
 }
-
-//
-// TODO - came up with idea how to deliver this mechanism
-//
-// /**
-//  * Adds a listener for when a token has been revoked.
-//  * This means that the user has signed out and you should update your UI to reflect this
-//  *
-//  * @example
-//  * ```ts
-//  * import * as SignInWithApple from "expo-apple-authentication";
-//  *
-//  * // Subscribe
-//  * const unsubscribe = SignInWithApple.addRevokeListener(() => {
-//  *   // Handle the token being revoked
-//  * })
-//  *
-//  * // Unsubscribe
-//  * unsubscribe();
-//  * ```
-//  */
-// function addRevokeListener(revokeListener: () => void): () => void;

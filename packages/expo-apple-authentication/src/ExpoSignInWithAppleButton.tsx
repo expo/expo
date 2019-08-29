@@ -48,10 +48,10 @@ import {
  * }
  * ```
  */
-const ExpoSingInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonProps> = (props) => {
+const ExpoSignInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonProps> = (props) => {
   if (!ExpoSignInWithAppleButtonSignInWhite) {
     if (__DEV__) {
-      console.warn('\'ExpoSingInWithAppleButton\' is not available.')
+      console.warn('\'ExpoSignInWithAppleButton\' is not available.')
     }
     return null;
   }
@@ -90,4 +90,4 @@ function selectButtonComponent(type: SignInWithAppleButtonType, style: SignInWit
   return ButtonComponents[type][style];
 }
 
-export default ExpoSingInWithAppleButton
+export default ExpoSignInWithAppleButton

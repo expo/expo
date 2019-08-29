@@ -96,7 +96,7 @@ UM_EXPORT_METHOD_AS(requestAsync,
     ctrl.delegate = self;
     [ctrl performRequests];
   } else {
-    reject(@"RNCAppleSignIn", @"This feature is not available on your iPhone.", nil);
+    reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"This feature is not available on your iPhone.", nil);
   }
 }
 
@@ -112,12 +112,12 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
                                       completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState,
                                                    NSError * _Nullable error) {
       if (error) {
-        return reject(@"RNCAppleSignIn", [error localizedDescription], nil);
+        return reject(@"ERR_APPLE_AUTHENTICATION", [error localizedDescription], nil);
       }
       resolve(@(credentialState));
     }];
   } else {
-    reject(@"RNCAppleSignIn", @"This feature is not available on your iPhone.", nil);
+    reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"This feature is not available on your iPhone.", nil);
   }
 }
 
@@ -140,7 +140,9 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
                          @"authorizationCode": UMNullIfNil(credential.authorizationCode),
                          @"identityToken": UMNullIfNil(credential.identityToken)
                          };
-  _promiseResolve(user);
+  if (_promiseResolve) {
+    _promiseResolve(user);
+  }
   _promiseResolve = nil;
   _promiseReject = nil;
 }
@@ -148,7 +150,9 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
 - (void)authorizationController:(ASAuthorizationController *)controller
            didCompleteWithError:(NSError *)error API_AVAILABLE(ios(13.0))
 {
-  _promiseReject(@"RNCAppleSignIn", error.description, error);
+  if (_promiseReject) {
+    _promiseReject(@"ERR_APPLE_AUTHENTICATION", error.description, error);
+  }
   _promiseResolve = nil;
   _promiseReject = nil;
 }
