@@ -7,10 +7,11 @@ import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
+import java.io.IOException
 import java.lang.Exception
 import java.lang.IllegalStateException
 
-class OtaModule(context: Context,private val persistence: ExpoOTAPersistence, private val updater: OtaUpdater) : ExportedModule(context) {
+class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, private val updater: OtaUpdater) : ExportedModule(context) {
 
     private var moduleRegistry: ModuleRegistry? = null
 
@@ -29,7 +30,7 @@ class OtaModule(context: Context,private val persistence: ExpoOTAPersistence, pr
 
     private fun manifestHandler(promise: Promise): (JSONObject) -> Unit = { manifest ->
         val manifestComparator = VersionNumberManifestComparator()
-        if (manifestComparator.shouldDownloadBundle(persistence.manifest, manifest)) {
+        if (manifestComparator.shouldDownloadBundle(persistence.newestManifest, manifest)) {
             promise.resolve(manifest.toString())
         } else {
             promise.resolve(false)
@@ -39,11 +40,12 @@ class OtaModule(context: Context,private val persistence: ExpoOTAPersistence, pr
     @ExpoMethod
     fun reload(promise: Promise) {
         try {
+            updater.markDownloadedAsCurrent()
             ProcessPhoenix.triggerRebirth(context)
             promise.resolve(true)
         } catch (e: Exception) {
             promise.reject(e)
-    }
+        }
     }
 
     @ExpoMethod
@@ -52,20 +54,29 @@ class OtaModule(context: Context,private val persistence: ExpoOTAPersistence, pr
     }
 
     @ExpoMethod
+    fun clearUpdateCacheAsync(promise: Promise) {
+        val bundles = updater.removeAllCachedBundles()
+        if(bundles.isNotEmpty()) {
+            promise.resolve(bundles.toString())
+        } else {
+            promise.resolve(true)
+        }
+    }
+
+    @ExpoMethod
     fun fetchUpdatesAsync(promise: Promise) {
-        if(persistence.config != null) {
-            updater.checkAndDownloadUpdate(handleUpdate(persistence, promise),
+        if (persistence.config != null) {
+            updater.checkAndDownloadUpdate(handleUpdate(promise),
                     { promise.resolve(null) },
-                    { e -> promise.reject("E_UPDATE_FAILED", e)})
+                    { e -> promise.reject("E_UPDATE_FAILED", e) })
         } else {
             throwUninitializedExpoOtaError()
         }
     }
 
-    private fun handleUpdate(persistence: ExpoOTAPersistence, promise: Promise): (manifest: JSONObject, path: String) -> Unit =
+    private fun handleUpdate(promise: Promise): (manifest: JSONObject, path: String) -> Unit =
             { manifest, path ->
-                persistence.bundlePath = path
-                persistence.manifest = manifest
+                updater.saveDownloadedManifestAndBundlePath(manifest, path)
                 promise.resolve(manifest.toString())
             }
 

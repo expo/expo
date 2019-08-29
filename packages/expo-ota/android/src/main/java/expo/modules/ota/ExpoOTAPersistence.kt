@@ -1,52 +1,115 @@
 package expo.modules.ota
 
 import android.content.Context
-import android.content.SharedPreferences
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.HashMap
 
-const val EXPO_OTA_PREFERENCES = "expo_ota"
 const val KEY_BUNDLE_PATH = "bundlePath"
+const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"
+const val KEY_EXPIRED_BUNDLES_PATH = "expiredBundlesPath"
 const val KEY_MANIFEST = "manifest"
+const val KEY_DOWNLOADED_MANIFEST = "downloadedManifest"
 
-class ExpoOTAPersistence(val context: Context, val id: String) {
-
-    private val bundlePathKey: String = "$KEY_BUNDLE_PATH-$id"
-    private val manifestKey: String = "$KEY_MANIFEST-$id"
+class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
     var config: ExpoOTAConfig? = null
 
-    private val sharedPreferences: SharedPreferences
-        get() = context.getSharedPreferences(EXPO_OTA_PREFERENCES, Context.MODE_PRIVATE)
-
     var bundlePath: String?
         @Synchronized get() {
-            return sharedPreferences.getString(bundlePathKey, null)
+            return storage.readString(KEY_BUNDLE_PATH, null)
         }
         @Synchronized set(value) {
-            sharedPreferences.edit().putString(bundlePathKey, value).apply()
+            val recentPath = storage.readString(KEY_BUNDLE_PATH, null)
+            if (value != recentPath) {
+                if(value != null) {
+                    storage.writeString(KEY_BUNDLE_PATH, value)
+                    if (recentPath != null) {
+                        addExpiredBundlesPath(recentPath)
+                    }
+                }
+            }
+        }
+
+    var downloadedBundlePath: String?
+        @Synchronized get() {
+            return storage.readString(KEY_DOWNLOADED_BUNDLE_PATH, null)
+        }
+        @Synchronized set(value) {
+            val recentPath = storage.readString(KEY_DOWNLOADED_BUNDLE_PATH, null)
+            if (value != recentPath) {
+                if(value != null) {
+                    storage.writeString(KEY_DOWNLOADED_BUNDLE_PATH, value)
+                    if (recentPath != null) {
+                        addExpiredBundlesPath(recentPath)
+                    }
+                }
+            }
         }
 
     var manifest: JSONObject
         @Synchronized get() {
-            return JSONObject(sharedPreferences.getString(manifestKey, "{}"))
+            return JSONObject(storage.readString(KEY_MANIFEST, "{}"))
         }
         @Synchronized set(value) {
-            sharedPreferences.edit().putString(manifestKey, value.toString()).apply()
+            storage.writeString(KEY_MANIFEST, value.toString())
         }
+
+    val newestManifest: JSONObject
+        @Synchronized get() {
+            return if (downloadedManifest != null) downloadedManifest!! else manifest
+        }
+
+    var downloadedManifest: JSONObject?
+        @Synchronized get() {
+            val persisted = storage.readString(KEY_DOWNLOADED_MANIFEST, null)
+            return if (persisted != null) JSONObject(persisted) else null
+        }
+        @Synchronized set(value) {
+            storage.writeString(KEY_DOWNLOADED_MANIFEST, value.toString())
+        }
+
+    val expiredBundlesPaths: Set<String>
+        @Synchronized get() {
+            return storage.readStringSet(KEY_EXPIRED_BUNDLES_PATH, Collections.emptySet())!!
+        }
+
+    fun makeDownloadedCurrent() {
+        val downloaded = downloadedBundlePath
+        bundlePath = downloaded
+        storage.removeKey(KEY_DOWNLOADED_BUNDLE_PATH)
+
+        val downloadedManifest = downloadedManifest
+        if (downloadedManifest != null) {
+            manifest = downloadedManifest
+        }
+        storage.removeKey(KEY_DOWNLOADED_MANIFEST)
+    }
+
+    @Synchronized
+    fun addExpiredBundlesPath(path: String) {
+        storage.writeStringSet(KEY_EXPIRED_BUNDLES_PATH, expiredBundlesPaths.plus(path))
+    }
+
+    @Synchronized
+    fun replaceExpiredBundles(set: Set<String>) {
+        storage.writeStringSet(KEY_EXPIRED_BUNDLES_PATH, set)
+    }
 
 }
 
 enum class ExpoOTAPersistenceFactory {
     INSTANCE;
 
-    private val persistencesMap = HashMap<String, ExpoOTAPersistence>()
+    private val persistenceMap = HashMap<String, ExpoOTAPersistence>()
 
-    @Synchronized fun persistence(context: Context, id: String): ExpoOTAPersistence {
-        return if(persistencesMap.containsKey(id)) {
-            persistencesMap[id]!!
+    @Synchronized
+    fun persistence(context: Context, id: String): ExpoOTAPersistence {
+        return if (persistenceMap.containsKey(id)) {
+            persistenceMap[id]!!
         } else {
-            val persistence = ExpoOTAPersistence(context.applicationContext, id)
-            persistencesMap[id] = persistence
+            val persistence = ExpoOTAPersistence(context.applicationContext, KeyValueStorage(context, id))
+            persistenceMap[id] = persistence
             persistence
         }
     }

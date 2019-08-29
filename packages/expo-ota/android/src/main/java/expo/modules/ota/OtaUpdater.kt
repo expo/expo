@@ -7,13 +7,14 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashSet
 
 class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val id: String) {
     fun checkAndDownloadUpdate(success: (manifest: JSONObject, path: String) -> Unit,
                                updateUnavailable: (manifest: JSONObject) -> Unit,
                                error: (Exception?) -> Unit) {
         downloadManifest({ manifest ->
-            if (persistence.config!!.manifestComparator.shouldDownloadBundle(persistence.manifest, manifest)) {
+            if (persistence.config!!.manifestComparator.shouldDownloadBundle(persistence.newestManifest, manifest)) {
                 downloadBundle(manifest, {
                     success(manifest, it)
                 }) { error(it) }
@@ -54,6 +55,49 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
         } else {
             throwUninitializedExpoOtaError()
         }
+    }
+
+    fun removeAllCachedBundles(): Set<String> {
+        var toRemove = persistence.expiredBundlesPaths
+        if(persistence.bundlePath != null) {
+            toRemove = toRemove.minus(persistence.bundlePath!!)
+        }
+        val result = removeBundles(toRemove)
+        persistence.replaceExpiredBundles(result)
+        return result
+    }
+
+    fun removeBundles(bundles: Set<String>): Set<String> {
+        var nonRemovedFiles = Collections.emptySet<String>()
+        bundles.forEach {
+            if (!removeFile(it)) {
+                nonRemovedFiles = nonRemovedFiles.plus(it)
+            }
+        }
+        return nonRemovedFiles
+    }
+
+    fun saveDownloadedManifestAndBundlePath(manifest: JSONObject, path: String) {
+        persistence.downloadedManifest = manifest
+        persistence.downloadedBundlePath = path
+    }
+
+    fun markDownloadedAsCurrent() {
+        persistence.makeDownloadedCurrent()
+    }
+
+    private fun removeFile(path: String): Boolean {
+        val file = File(path)
+        try {
+            if (file.exists()) {
+                return file.delete()
+            } else {
+                return true
+            }
+        } catch (ignore: IOException) {
+            return false
+        }
+        return true
     }
 
     private fun httpClient(params: ManifestDownloadParams) = params.okHttpClient ?: OkHttpClient()

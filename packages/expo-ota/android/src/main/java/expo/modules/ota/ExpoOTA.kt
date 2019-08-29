@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 const val KEY_MANIFEST_BUNDLE_URL = "bundleUrl"
 const val DEFAULT_EXPO_OTA_ID = "default"
 
-class ExpoOTA @JvmOverloads constructor(private val context: Context, private val config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID) {
+class ExpoOTA @JvmOverloads constructor(context: Context, config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID) {
 
     private val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, id)
     private val updater = OtaUpdater(context, persistence, id)
@@ -26,11 +26,14 @@ class ExpoOTA @JvmOverloads constructor(private val context: Context, private va
         if (!loadFromBundler) {
             updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
         }
+        if (persistence.expiredBundlesPaths.isNotEmpty()) {
+            val bundles = updater.removeBundles(persistence.expiredBundlesPaths)
+            persistence.replaceExpiredBundles(bundles)
+        }
     }
 
     private fun saveManifestAndBundle(manifest: JSONObject, path: String) {
-        persistence.manifest = manifest
-        persistence.bundlePath = path
+        updater.saveDownloadedManifestAndBundlePath(manifest, path)
     }
 
 }
