@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-port=$1
-if [ -z "${port}" ]; then
-  port=8081
-fi
+port=${1:-8081}
 
 PACKAGER_STATUS_URL="http://localhost:${port}/status"
 # Check if Metro is running

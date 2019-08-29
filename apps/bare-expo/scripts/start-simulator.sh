@@ -4,15 +4,8 @@
 
 
 SIMULATOR_NAME="bare-expo"
-port=$2
-if [ -z "${port}" ]; then
-  port=8081
-fi
-
-CURRENT_ENV=$NODE_ENV
-if [ -z "${CURRENT_ENV}" ]; then
-  CURRENT_ENV="development"
-fi
+port=${2:-8081}
+CURRENT_ENV=${NODE_ENV:-"development"}
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
