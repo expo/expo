@@ -11,7 +11,7 @@ import {
   SignInWithAppleButtonProps,
   SignInWithAppleButtonStyle,
   SignInWithAppleButtonType,
-} from './ExpoAppleAuthentication.types';
+} from './AppleAuthentication.types';
 
 /**
  * This component displays the "Sign In with Apple" button on your screen.

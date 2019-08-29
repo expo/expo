@@ -1,4 +1,4 @@
-import ExpoAppleAuthenticationNative from './ExpoAppleAuthenticationNative';
+import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 import { StyleProp, ViewStyle } from 'react-native';
 
 const {
@@ -8,7 +8,7 @@ const {
   UserDetectionStatus,
   ButtonType,
   ButtonStyle,
-} = ExpoAppleAuthenticationNative;
+} = ExpoAppleAuthentication;
 
 export interface SignInWithAppleButtonProps {
   /**
