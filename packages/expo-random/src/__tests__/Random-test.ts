@@ -5,7 +5,7 @@ jest.unmock('../ExpoRandom');
 
 jest.mock('../ExpoRandom', () => ({
   getRandomBytesAsync: jest.fn(async () => 0),
-  getRandomBase64StringAsync: jest.fn(async () => 0)
+  getRandomBase64StringAsync: jest.fn(async () => 0),
 }));
 
 jest.mock('base64-js', () => ({ toByteArray: jest.fn(() => {}) }));
@@ -17,10 +17,10 @@ it(`accepts valid byte counts`, async () => {
   }
 });
 
-it(`invokes an alternative method`,async () => {
-    ExpoRandom.getRandomBytesAsync = null;
-    await expect(Random.getRandomBytesAsync(1024));
-    expect(ExpoRandom.getRandomBase64StringAsync).toHaveBeenCalled()
+it(`invokes an alternative method`, async () => {
+  ExpoRandom.getRandomBytesAsync = null;
+  await expect(Random.getRandomBytesAsync(1024));
+  expect(ExpoRandom.getRandomBase64StringAsync).toHaveBeenCalled();
 });
 
 it(`asserts invalid byte count errors`, async () => {
