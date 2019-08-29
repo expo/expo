@@ -1,5 +1,5 @@
-import * as Random from '../Random';
 import ExpoRandom from '../ExpoRandom';
+import * as Random from '../Random';
 
 jest.unmock('../ExpoRandom');
 
@@ -17,7 +17,7 @@ it(`accepts valid byte counts`, async () => {
   }
 });
 
-it(`invokes toByteArray`,async () => {
+it(`invokes an alternative method`,async () => {
     ExpoRandom.getRandomBytesAsync = null;
     await expect(Random.getRandomBytesAsync(1024));
     expect(ExpoRandom.getRandomBase64StringAsync).toHaveBeenCalled()
