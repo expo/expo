@@ -30,7 +30,7 @@ export async function getExponentPushTokenAsync(): Promise<string> {
   const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
   const tokenArguments: { [key: string]: string } = {
     deviceId: Constants.installationId,
-    experienceId: experienceId,
+    experienceId,
     // Also uses `experienceId` for `appId` because there's no `appId` for web.
     appId: experienceId,
     deviceToken: JSON.stringify(data),
@@ -60,7 +60,7 @@ export async function getExponentPushTokenAsync(): Promise<string> {
 
 export async function getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
   const data = await _subscribeUserToPushAsync();
-  return { type: Platform.OS, data: data };
+  return { type: Platform.OS, data };
 }
 
 async function _subscribeUserToPushAsync(): Promise<Object> {

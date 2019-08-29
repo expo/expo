@@ -26,7 +26,7 @@ export async function getExponentPushTokenAsync() {
         deviceToken: JSON.stringify(data),
         type: 'web',
     };
-    const response = await fetch('https://exp.host/--/api/v2/push/getExpoPushToken', {
+    const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
         method: 'POST',
         body: JSON.stringify(tokenArguments),
     })
