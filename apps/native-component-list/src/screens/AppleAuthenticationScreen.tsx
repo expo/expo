@@ -54,12 +54,11 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
           SignInWithApple.SignInWithAppleScope.Email,
         ],
         requestedOperation: operation,
+        user: this.state.credentials && this.state.credentials.user ? this.state.credentials.user : undefined,
         state: 'this-is-a-test',
       });
       if (credentials.type === 'success') {
         this.setState({ credentials });
-      } else {
-        this.setState({ credentials: null });
       }
     } catch (err) {
       console.error(err);

@@ -208,7 +208,12 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
 - (void)authorizationController:(ASAuthorizationController *)controller
            didCompleteWithError:(NSError *)error API_AVAILABLE(ios(13.0))
 {
-  if (_promiseReject) {
+  if (error.code == 1001) {
+    // user canceled authentication attempt
+    if (_promiseResolve) {
+      _promiseResolve(@{@"type": @"cancel"});
+    }
+  } else if (_promiseReject) {
     _promiseReject(@"ERR_APPLE_AUTHENTICATION", error.description, error);
   }
   _promiseResolve = nil;
