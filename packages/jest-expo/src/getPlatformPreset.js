@@ -34,6 +34,7 @@ function getPlatformPreset(displayOptions, extensions) {
     displayName: displayOptions,
     testMatch,
     moduleFileExtensions,
+    snapshotResolver: require.resolve(`./snapshot/resolver.${extensions[0]}.js`),
     haste: {
       ...expoPreset.haste,
       defaultPlatform: extensions[0],
