@@ -38,9 +38,9 @@ static NSMutableDictionary *g_startTimesWithTags = nil;
 - (instancetype)initWithLoggingBehavior:(NSString *)loggingBehavior
 {
   if ((self = [super init])) {
-    _isActive = [FBSDKSettings.loggingBehaviors containsObject:loggingBehavior];
+    _active = [FBSDKSettings.loggingBehaviors containsObject:loggingBehavior];
     _loggingBehavior = loggingBehavior;
-    if (_isActive) {
+    if (_active) {
       _internalContents = [[NSMutableString alloc] init];
       _loggerSerialNumber = [FBSDKLogger generateSerialNumber];
     }
@@ -58,7 +58,7 @@ static NSMutableDictionary *g_startTimesWithTags = nil;
 
 - (void)setContents:(NSString *)contents
 {
-  if (_isActive) {
+  if (_active) {
     _internalContents = [NSMutableString stringWithString:contents];
   }
 }
@@ -67,14 +67,14 @@ static NSMutableDictionary *g_startTimesWithTags = nil;
 
 - (void)appendString:(NSString *)string
 {
-  if (_isActive) {
+  if (_active) {
     [_internalContents appendString:string];
   }
 }
 
 - (void)appendFormat:(NSString *)formatString, ...
 {
-  if (_isActive) {
+  if (_active) {
     va_list vaArguments;
     va_start(vaArguments, formatString);
     NSString *logString = [[NSString alloc] initWithFormat:formatString arguments:vaArguments];
@@ -87,14 +87,14 @@ static NSMutableDictionary *g_startTimesWithTags = nil;
 
 - (void)appendKey:(NSString *)key value:(NSString *)value
 {
-  if (_isActive && value.length) {
+  if (_active && value.length) {
     [_internalContents appendFormat:@"  %@:\t%@\n", key, value];
   }
 }
 
 - (void)emitToNSLog
 {
-  if (_isActive) {
+  if (_active) {
 
     for (NSString *key in [g_stringsToReplace keyEnumerator]) {
       [_internalContents replaceOccurrencesOfString:key
@@ -162,7 +162,7 @@ static NSMutableDictionary *g_startTimesWithTags = nil;
     NSNumber *startTimeNumber = g_startTimesWithTags[tagAsNumber];
 
     // Only log if there's been an associated start time.
-    if (startTimeNumber) {
+    if (startTimeNumber != nil) {
       uint64_t elapsed = [FBSDKInternalUtility currentTimeInMilliseconds] - startTimeNumber.unsignedLongLongValue;
       [g_startTimesWithTags removeObjectForKey:tagAsNumber];  // served its purpose, remove
 

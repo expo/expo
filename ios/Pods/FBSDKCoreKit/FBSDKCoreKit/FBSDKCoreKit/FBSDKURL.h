@@ -26,7 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
  Provides a set of utilities for working with NSURLs, such as parsing of query parameters
  and handling for App Link requests.
  */
+NS_SWIFT_NAME(AppLinkURL)
 @interface FBSDKURL : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 /*!
  Creates a link target from a raw URL.
@@ -35,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
  to support better FBSDKMeasurementEvent notifications
  @param url The instance of `NSURL` to create FBSDKURL from.
  */
-+ (FBSDKURL *)URLWithURL:(NSURL *)url;
++ (instancetype)URLWithURL:(NSURL *)url
+NS_SWIFT_NAME(init(url:));
 
 /*!
  Creates a link target from a raw URL received from an external application. This is typically called from the app delegate's
@@ -43,7 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
  @param url The instance of `NSURL` to create FBSDKURL from.
  @param sourceApplication the bundle ID of the app that is requesting your app to open the URL. The same sourceApplication in application:openURL:sourceApplication:annotation:
  */
-+ (FBSDKURL *)URLWithInboundURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication;
++ (instancetype)URLWithInboundURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication
+NS_SWIFT_NAME(init(inboundURL:sourceApplication:));
 
 /*!
  Gets the target URL.  If the link is an App Link, this is the target of the App Link.

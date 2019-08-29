@@ -22,6 +22,7 @@
 
 @class FBSDKErrorRecoveryConfiguration;
 
+NS_SWIFT_NAME(ErrorRecoveryAttempter)
 @interface FBSDKErrorRecoveryAttempter : NSObject<FBSDKErrorRecoveryAttempting>
 
 // can return nil if configuration is not supported.
