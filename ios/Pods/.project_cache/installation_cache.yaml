@@ -24,7 +24,7 @@ CACHE_KEYS:
       - ABI33_0_0EXAdsAdMob (5.0.0-rc.0)
   ABI33_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI33_0_0EXAdsFacebook: fbe8a95b26082715e8f7a374d1a5e84b
+      ABI33_0_0EXAdsFacebook: 896adfbba85b4f1614d7969830255084
     CHECKSUM: f374128d04c7d0ed11a589242b38a856bc05eea5
     FILES:
       - "../versioned-react-native/ABI33_0_0/EXAdsFacebook/ABI33_0_0EXAdsFacebook/ABI33_0_0EXAdIconViewManager.h"
@@ -1266,7 +1266,7 @@ CACHE_KEYS:
       - ABI34_0_0EXAdsAdMob (5.0.0)
   ABI34_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI34_0_0EXAdsFacebook: 9fba100957c106a7fe5f3b6d375febe9
+      ABI34_0_0EXAdsFacebook: e72fc4c29a1cc5a13728b9522cb59b61
     CHECKSUM: a4d5cbca9bc8a0519b860523a2e85af552b374a3
     FILES:
       - "../versioned-react-native/ABI34_0_0/EXAdsFacebook/ABI34_0_0EXAdsFacebook/ABI34_0_0EXAdIconViewManager.h"
@@ -2570,7 +2570,7 @@ CACHE_KEYS:
       - EXAdsAdMob (6.0.0)
   EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      EXAdsFacebook: 23db7abfb4a004640e98a4d7ab2f6ffa
+      EXAdsFacebook: 58f4dc86c2af0e186948afa45deacdc8
     CHECKSUM: e80bc258520c71bce17cb4c1f984391b4a8940b8
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
@@ -3299,11 +3299,11 @@ CACHE_KEYS:
       - Fabric (1.10.2)
   FBAudienceNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      FBAudienceNetwork: bd6243aad8ca51aa081ea358e0b5df3d
-    CHECKSUM: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
+      FBAudienceNetwork: 0da38de9a1d3b00f2207eb2377ebb6a1
+    CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
     PROJECT_NAME: Facebook
     SPECS:
-      - FBAudienceNetwork (5.1.1)
+      - FBAudienceNetwork (5.5.0)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
@@ -3535,8 +3535,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: c5fafa8fc773d835233f6e49ce94c537
-      Release: c5fafa8fc773d835233f6e49ce94c537
+      Debug: 458137b8a60c6afa663a52efec45fbec
+      Release: 458137b8a60c6afa663a52efec45fbec
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: ab9f096d3992690fb973619eac622134
