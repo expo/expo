@@ -26,7 +26,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-location"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
