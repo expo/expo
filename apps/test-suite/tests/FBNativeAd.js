@@ -17,6 +17,11 @@ const {
 
 AdSettings.addTestDevice(AdSettings.currentDeviceHash);
 
+export function canRunAsync({ isAutomated }) {
+  // Invalid placementId in CI (all tests fail)
+  return !isAutomated;
+}
+
 export const name = 'NativeAd';
 
 // if tests didn't pass check placementId
@@ -64,27 +69,30 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
   </View>
 ));
 
-export function test(t, { setPortalChild, cleanupPortal }) {
-  t.describe('FacebookAds.NativeAd', () => {
+export function test(
+  { describe, afterEach, it, expect, jasmine, ...t },
+  { setPortalChild, cleanupPortal }
+) {
+  describe('FacebookAds.NativeAd', () => {
     let nativeAd;
     t.beforeAll(async () => {
       nativeAd = await mountAndWaitFor(<FullNativeAd adsManager={adsManager} />);
     });
-    t.afterEach(async () => await cleanupPortal());
+    afterEach(async () => await cleanupPortal());
 
     const mountAndWaitFor = (child, propName = 'onAdLoaded') =>
       originalMountAndWaitFor(child, propName, setPortalChild);
 
-    t.describe('when given a valid placementId', () => {
-      t.it('nativeAd properly mounted', async () => {
-        t.expect(nativeAd).not.toBeNull();
-        t.expect(typeof nativeAd).toEqual('object');
+    describe('when given a valid placementId', () => {
+      it('nativeAd properly mounted', async () => {
+        expect(nativeAd).not.toBeNull();
+        expect(typeof nativeAd).toEqual('object');
       });
 
       variables.forEach(variable => {
-        t.it(`checking if variable ${variable} is not null`, () => {
+        it(`checking if variable ${variable} is not null`, () => {
           let value = nativeAd[variable];
-          t.expect(value).not.toBeNull();
+          expect(value).not.toBeNull();
         });
       });
     });

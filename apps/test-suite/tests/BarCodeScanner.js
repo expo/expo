@@ -12,9 +12,13 @@ import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 export const name = 'BarCodeScanner';
 const style = { width: 200, height: 200 };
 
+export function canRunAsync({ isDevice }) {
+  return isDevice;
+}
+
 export async function test(t, { setPortalChild, cleanupPortal }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
+  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   describeWithPermissions('BarCodeScanner', () => {
     const mountAndWaitFor = (child, propName = 'ref') =>
@@ -31,52 +35,52 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.beforeEach(async () => {
       const { status } = await Permissions.getAsync(Permissions.CAMERA);
-      t.expect(status).toEqual('granted');
+      expect(status).toEqual('granted');
     });
 
-    t.afterEach(async () => {
+    afterEach(async () => {
       await cleanupPortal();
     });
 
-    t.describe('when created', () => {
-      t.it('displays the view', async () => {
+    describe('when created', () => {
+      it('displays the view', async () => {
         await mountAndWaitFor(<BarCodeScanner style={style} />);
       });
     });
 
-    t.describe('scanFromURLAsync', () => {
-      t.it('returns empty result when there is no barcode', async () => {
+    describe('scanFromURLAsync', () => {
+      it('returns empty result when there is no barcode', async () => {
         const asset = await Asset.fromModule(require('../assets/black-128x256.png'));
         const result = await BarCodeScanner.scanFromURLAsync(asset.uri);
 
-        t.expect(result).toBeDefined();
-        t.expect(result.length).toEqual(0);
+        expect(result).toBeDefined();
+        expect(result.length).toEqual(0);
       });
 
-      t.it('scans a QR code from asset', async () => {
+      it('scans a QR code from asset', async () => {
         const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg'));
         const result = await BarCodeScanner.scanFromURLAsync(asset.uri);
 
-        t.expect(result).toBeDefined();
-        t.expect(result.length).toEqual(1);
-        t.expect(result[0]).toBeDefined();
-        t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
-        t.expect(result[0].data).toEqual('https://expo.io/');
+        expect(result).toBeDefined();
+        expect(result.length).toEqual(1);
+        expect(result[0]).toBeDefined();
+        expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
+        expect(result[0].data).toEqual('https://expo.io/');
       });
 
-      t.it('scans a QR code from photo asset', async () => {
+      it('scans a QR code from photo asset', async () => {
         // Public domain photo from https://commons.wikimedia.org/wiki/File:QR_Code_Damaged.jpg
         const asset = await Asset.fromModule(require('../assets/qrcode_photo_wikipedia.jpg'));
         const result = await BarCodeScanner.scanFromURLAsync(asset.uri);
 
-        t.expect(result).toBeDefined();
-        t.expect(result.length).toEqual(1);
-        t.expect(result[0]).toBeDefined();
-        t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
-        t.expect(result[0].data).toEqual('http://en.m.wikipedia.org');
+        expect(result).toBeDefined();
+        expect(result.length).toEqual(1);
+        expect(result[0]).toBeDefined();
+        expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
+        expect(result[0].data).toEqual('http://en.m.wikipedia.org');
       });
 
-      t.it('scans a QR code from base64 URL', async () => {
+      it('scans a QR code from base64 URL', async () => {
         const url =
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyAQMAAAAk8RryAAAABlBMVEX/' +
           '//8AAABVwtN+AAAAcElEQVQY04XFMQrAMAgFUCGr4FUCXQO9uuAq/KsEugq2m2bqWx79kQRn1EzGyu' +
@@ -84,42 +88,42 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           'uJbEmlT/eAEXiXvHFX7hfQAAAABJRU5ErkJggg==';
         const result = await BarCodeScanner.scanFromURLAsync(url);
 
-        t.expect(result).toBeDefined();
-        t.expect(result.length).toEqual(1);
-        t.expect(result[0]).toBeDefined();
-        t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
-        t.expect(result[0].data).toEqual('test');
+        expect(result).toBeDefined();
+        expect(result.length).toEqual(1);
+        expect(result[0]).toBeDefined();
+        expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
+        expect(result[0].data).toEqual('test');
       });
 
       if (Platform.OS === 'android') {
-        t.it('scans a Data Matrix code from asset', async () => {
+        it('scans a Data Matrix code from asset', async () => {
           const asset = await Asset.fromModule(require('../assets/datamatrix_expo.png'));
           const result = await BarCodeScanner.scanFromURLAsync(asset.uri);
 
-          t.expect(result).toBeDefined();
-          t.expect(result.length).toEqual(1);
-          t.expect(result[0]).toBeDefined();
-          t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.datamatrix);
-          t.expect(result[0].data).toEqual('https://expo.io/');
+          expect(result).toBeDefined();
+          expect(result.length).toEqual(1);
+          expect(result[0]).toBeDefined();
+          expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.datamatrix);
+          expect(result[0].data).toEqual('https://expo.io/');
         });
       }
 
-      t.it('respects barCodeTypes parameter', async () => {
+      it('respects barCodeTypes parameter', async () => {
         const asset = await Asset.fromModule(require('../assets/datamatrix_expo.png'));
         const result = await BarCodeScanner.scanFromURLAsync(asset.uri, [
           BarCodeScanner.Constants.BarCodeType.qr,
         ]);
 
-        t.expect(result).toBeDefined();
-        t.expect(result.length).toEqual(0);
+        expect(result).toBeDefined();
+        expect(result.length).toEqual(0);
       });
 
-      t.it('works with multiple codes', async () => {
+      it('works with multiple codes', async () => {
         const asset = await Asset.fromModule(require('../assets/multiple_codes.png'));
         const result = await BarCodeScanner.scanFromURLAsync(asset.uri);
 
-        t.expect(result).toBeDefined();
-        t.expect(result.length > 0).toBe(true);
+        expect(result).toBeDefined();
+        expect(result.length > 0).toBe(true);
       });
     });
   });

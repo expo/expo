@@ -29,23 +29,24 @@ const components = [
   'Mask',
 ];
 
-export function test(t, { setPortalChild, cleanupPortal }) {
+export function test(
+  { describe, afterEach, it, expect, jasmine, ...t },
+  { setPortalChild, cleanupPortal }
+) {
   const mountAndWaitFor = (child, propName = 'ref') =>
     originalMountAndWaitFor(child, propName, setPortalChild);
 
-  t.describe(name, () => {
-    t.afterEach(async () => await cleanupPortal());
+  afterEach(async () => await cleanupPortal());
 
-    for (const component of components) {
-      t.it(component, async () => {
-        const SVGComponent = Svg[component];
+  for (const component of components) {
+    it(component, async () => {
+      const SVGComponent = Svg[component];
 
-        await mountAndWaitFor(
-          <Svg.Svg key={`svg-${component}`}>
-            <SVGComponent />
-          </Svg.Svg>
-        );
-      });
-    }
-  });
+      await mountAndWaitFor(
+        <Svg.Svg key={`svg-${component}`}>
+          <SVGComponent />
+        </Svg.Svg>
+      );
+    });
+  }
 }

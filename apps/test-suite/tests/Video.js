@@ -9,6 +9,12 @@ import { Platform } from 'react-native';
 import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'Video';
+
+export function canRunAsync({ isAutomated }) {
+  // Crashes app when mounting component
+  return !isAutomated;
+}
+
 const imageRemoteSource = { uri: 'http://via.placeholder.com/350x150' };
 const videoRemoteSource = { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
 const redirectingVideoRemoteSource = { uri: 'http://bit.ly/2mcW40Q' };
@@ -21,9 +27,8 @@ let source = null; // Local URI of the downloaded default source is set in a bef
 
 const style = { width: 200, height: 200 };
 
-export function test(t, { setPortalChild, cleanupPortal }) {
-  t.describe('Video', () => {
-    t.beforeAll(async () => {
+export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine, ...t }, { setPortalChild, cleanupPortal }) {
+    beforeAll(async () => {
       const mp4Asset = Asset.fromModule(mp4Source);
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
@@ -42,7 +47,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       instance = ref;
     };
 
-    t.afterEach(async () => {
+    afterEach(async () => {
       instance = null;
       await cleanupPortal();
     });
@@ -51,9 +56,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       originalMountAndWaitFor(child, propName, setPortalChild);
 
     const testPropValues = (propName, values, moreTests) =>
-      t.describe(`Video.props.${propName}`, () => {
+      describe(`Video.props.${propName}`, () => {
         forEach(values, value =>
-          t.it(`sets it to \`${value}\``, async () => {
+          it(`sets it to \`${value}\``, async () => {
             let instance = null;
             const refSetter = ref => {
               instance = ref;
@@ -75,9 +80,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
 
     const testNoCrash = (propName, values) =>
-      t.describe(`Video.props.${propName}`, () => {
+      describe(`Video.props.${propName}`, () => {
         forEach(values, value =>
-          t.it(`setting to \`${value}\` doesn't crash`, async () => {
+          it(`setting to \`${value}\` doesn't crash`, async () => {
             const element = React.createElement(Video, { style, source, [propName]: value });
             await mountAndWaitFor(element, 'onLoad');
           })
@@ -85,9 +90,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
 
     const testPropSetter = (propName, propSetter, values, moreTests) =>
-      t.describe(`Video.${propSetter}`, () => {
+      describe(`Video.${propSetter}`, () => {
         forEach(values, value =>
-          t.it(`sets it to \`${value}\``, async () => {
+          it(`sets it to \`${value}\``, async () => {
             let instance = null;
             const refSetter = ref => {
               instance = ref;
@@ -101,7 +106,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             await mountAndWaitFor(element);
             await instance[propSetter](value);
             const status = await instance.getStatusAsync();
-            t.expect(status).toEqual(t.jasmine.objectContaining({ [propName]: value }));
+            expect(status).toEqual(jasmine.objectContaining({ [propName]: value }));
           })
         );
 
@@ -110,50 +115,50 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         }
       });
 
-    t.describe('Video.props.onLoadStart', () => {
-      t.it('gets called when the source starts loading', async () => {
+    describe('Video.props.onLoadStart', () => {
+      it('gets called when the source starts loading', async () => {
         await mountAndWaitFor(<Video style={style} source={source} />, 'onLoadStart');
       });
     });
 
-    t.describe('Video.props.onLoad', () => {
-      t.it('gets called when the source loads', async () => {
+    describe('Video.props.onLoad', () => {
+      it('gets called when the source loads', async () => {
         await mountAndWaitFor(<Video style={style} source={source} />, 'onLoad');
       });
 
-      t.it('gets called right when the video starts to play if it should autoplay', async () => {
+      it('gets called right when the video starts to play if it should autoplay', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={videoRemoteSource} shouldPlay />,
           'onLoad'
         );
-        t.expect(status.positionMillis).toEqual(0);
+        expect(status.positionMillis).toEqual(0);
       });
     });
 
-    t.describe('Video.props.source', () => {
-      t.it('mounts even when the source is undefined', async () => {
+    describe('Video.props.source', () => {
+      it('mounts even when the source is undefined', async () => {
         await mountAndWaitFor(<Video style={style} />, 'ref');
       });
 
-      t.it('loads `require` source', async () => {
+      it('loads `require` source', async () => {
         const status = await mountAndWaitFor(<Video style={style} source={mp4Source} />);
-        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
       });
 
-      t.it('loads `Asset` source', async () => {
+      it('loads `Asset` source', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={Asset.fromModule(mp4Source)} />
         );
-        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
       });
 
-      t.it('loads `uri` source', async () => {
+      it('loads `uri` source', async () => {
         const status = await mountAndWaitFor(<Video style={style} source={videoRemoteSource} />);
-        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
       });
 
       if (Platform.OS === 'android') {
-        t.it(
+        it(
           'calls onError when the file from the Internet redirects to a non-standard content',
           async () => {
             const error = await mountAndWaitFor(
@@ -165,10 +170,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
               />,
               'onError'
             );
-            t.expect(error.toLowerCase()).toContain('format');
+            expect(error.toLowerCase()).toContain('format');
           }
         );
-        t.it(
+        it(
           'loads the file from the Internet that redirects to non-standard content when overrideFileExtensionAndroid is provided',
           async () => {
             let hasBeenRejected = false;
@@ -179,15 +184,15 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                   source={{ uri: hlsStreamUriWithRedirect, overrideFileExtensionAndroid: 'm3u8' }}
                 />
               );
-              t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+              expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
             } catch (error) {
               hasBeenRejected = true;
             }
-            t.expect(hasBeenRejected).toBe(false);
+            expect(hasBeenRejected).toBe(false);
           }
         );
       } else {
-        t.it(
+        it(
           'loads the file from the Internet that redirects to non-standard content',
           async () => {
             let hasBeenRejected = false;
@@ -195,44 +200,44 @@ export function test(t, { setPortalChild, cleanupPortal }) {
               const status = await mountAndWaitFor(
                 <Video style={style} source={{ uri: hlsStreamUriWithRedirect }} />
               );
-              t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+              expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
             } catch (error) {
               hasBeenRejected = true;
             }
-            t.expect(hasBeenRejected).toBe(false);
+            expect(hasBeenRejected).toBe(false);
           }
         );
       }
 
-      t.it('loads HLS stream', async () => {
+      it('loads HLS stream', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={{ uri: hlsStreamUri }} />
         );
-        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
       });
 
-      t.it('loads redirecting `uri` source', async () => {
+      it('loads redirecting `uri` source', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={redirectingVideoRemoteSource} />
         );
-        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
+        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
       });
 
       // These two are flaky on iOS, sometimes they pass, sometimes they timeout.
-      t.it(
+      it(
         'calls onError when given image source',
         async () => {
           const error = await mountAndWaitFor(
             <Video style={style} source={imageSource} shouldPlay />,
             'onError'
           );
-          t.expect(error).toBeDefined();
+          expect(error).toBeDefined();
         },
         30000
       );
 
       if (Platform.OS === 'ios') {
-        t.it(
+        it(
           'calls onError with a reason when unsupported format given (WebM)',
           async () => {
             const error = await mountAndWaitFor(
@@ -244,7 +249,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             // (we'd expect "This media format is not supported."),
             // so let's check whether there is a reason-description separator,
             // which is included only if `localizedFailureReason` is not nil.
-            t.expect(error).toContain(' - ');
+            expect(error).toContain(' - ');
           },
           30000
         );
@@ -259,8 +264,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       Video.RESIZE_MODE_STRETCH,
     ]);
 
-    t.describe(`Video.props.posterSource`, () => {
-      t.it("doesn't crash if is set to required image", async () => {
+    describe(`Video.props.posterSource`, () => {
+      it("doesn't crash if is set to required image", async () => {
         const props = {
           style,
           source,
@@ -269,7 +274,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await mountAndWaitFor(<Video {...props} />);
       });
 
-      t.it("doesn't crash if is set to uri", async () => {
+      it("doesn't crash if is set to uri", async () => {
         const props = {
           style,
           source,
@@ -279,55 +284,55 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe(`Video.props.onReadyForDisplay`, () => {
-      t.it('gets called with the `naturalSize` object', async () => {
+    describe(`Video.props.onReadyForDisplay`, () => {
+      it('gets called with the `naturalSize` object', async () => {
         const props = {
           style,
           source,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        t.expect(status.naturalSize).toBeDefined();
-        t.expect(status.naturalSize.width).toBeDefined();
-        t.expect(status.naturalSize.height).toBeDefined();
-        t.expect(status.naturalSize.orientation).toBeDefined();
+        expect(status.naturalSize).toBeDefined();
+        expect(status.naturalSize.width).toBeDefined();
+        expect(status.naturalSize.height).toBeDefined();
+        expect(status.naturalSize.orientation).toBeDefined();
       });
 
-      t.it('gets called with the `status` object', async () => {
+      it('gets called with the `status` object', async () => {
         const props = {
           style,
           source,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        t.expect(status.status).toBeDefined();
-        t.expect(status.status.isLoaded).toBe(true);
+        expect(status.status).toBeDefined();
+        expect(status.status.isLoaded).toBe(true);
       });
 
-      t.it('gets called when the component uses native controls', async () => {
+      it('gets called when the component uses native controls', async () => {
         const props = {
           style,
           source,
           useNativeControls: true,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        t.expect(status.status).toBeDefined();
-        t.expect(status.status.isLoaded).toBe(true);
+        expect(status.status).toBeDefined();
+        expect(status.status.isLoaded).toBe(true);
       });
 
-      t.it("gets called when the component doesn't use native controls", async () => {
+      it("gets called when the component doesn't use native controls", async () => {
         const props = {
           style,
           source,
           useNativeControls: false,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        t.expect(status.status).toBeDefined();
-        t.expect(status.status.isLoaded).toBe(true);
+        expect(status.status).toBeDefined();
+        expect(status.status.isLoaded).toBe(true);
       });
     });
 
-    t.describe('Video fullscreen player', () => {
-      t.it('presents the player and calls callback func', async () => {
-        const onFullscreenUpdate = t.jasmine.createSpy('onFullscreenUpdate');
+    describe('Video fullscreen player', () => {
+      it('presents the player and calls callback func', async () => {
+        const onFullscreenUpdate = jasmine.createSpy('onFullscreenUpdate');
         await mountAndWaitFor(
           <Video
             style={style}
@@ -338,8 +343,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           'onReadyForDisplay'
         );
         const expectUpdate = fullscreenUpdate =>
-          t.expect(onFullscreenUpdate).toHaveBeenCalledWith(
-            t.jasmine.objectContaining({
+          expect(onFullscreenUpdate).toHaveBeenCalledWith(
+            jasmine.objectContaining({
               fullscreenUpdate,
             })
           );
@@ -352,7 +357,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       if (Platform.OS === 'android') {
-        t.it("raises an error if the code didn't wait for completion", async () => {
+        it("raises an error if the code didn't wait for completion", async () => {
           let presentationError = null;
           let dismissalError = null;
           try {
@@ -368,12 +373,12 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             dismissalError = error;
           }
 
-          t.expect(presentationError).toBeDefined();
-          t.expect(dismissalError).toBeDefined();
+          expect(presentationError).toBeDefined();
+          expect(dismissalError).toBeDefined();
         });
       }
 
-      t.it('rejects dismissal request if present request is being handled', async () => {
+      it('rejects dismissal request if present request is being handled', async () => {
         await mountAndWaitFor(
           <Video style={style} source={source} ref={refSetter} />,
           'onReadyForDisplay'
@@ -385,12 +390,12 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeDefined();
+        expect(error).toBeDefined();
         await presentationPromise;
         await instance.dismissFullscreenPlayer();
       });
 
-      t.it('rejects presentation request if present request is already being handled', async () => {
+      it('rejects presentation request if present request is already being handled', async () => {
         await mountAndWaitFor(
           <Video style={style} source={source} ref={refSetter} />,
           'onReadyForDisplay'
@@ -402,13 +407,13 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeDefined();
+        expect(error).toBeDefined();
         await presentationPromise;
         await instance.dismissFullscreenPlayer();
       });
 
       // NOTE(2018-10-17): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
+      const unreliablyIt = Platform.OS === 'ios' ? xit : it;
 
       unreliablyIt(
         'rejects all but the last request to change fullscreen mode before the video loads',
@@ -443,9 +448,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             // test this behavior at all. Normally I would put
             // `t.pending` here, but as for the end of 2017 it doesn't work.
           } else {
-            t.expect(firstErrored).toBe(true);
-            // t.expect(secondErrored).toBe(true);
-            t.expect(thirdErrored).toBe(false);
+            expect(firstErrored).toBe(true);
+            // expect(secondErrored).toBe(true);
+            expect(thirdErrored).toBe(false);
           }
           const pleaseDismiss = async () => {
             try {
@@ -463,7 +468,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     // it is possible to set them through props successfully.
     testPropValues('volume', [0.5, 1.0, 2.0, -0.5]);
     testPropSetter('volume', 'setVolumeAsync', [0, 0.5, 1], () => {
-      t.it('errors when trying to set it to 2', async () => {
+      it('errors when trying to set it to 2', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -472,11 +477,11 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeDefined();
-        t.expect(error.toString()).toMatch(/value .+ between/);
+        expect(error).toBeDefined();
+        expect(error.toString()).toMatch(/value .+ between/);
       });
 
-      t.it('errors when trying to set it to -0.5', async () => {
+      it('errors when trying to set it to -0.5', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -485,8 +490,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeDefined();
-        t.expect(error.toString()).toMatch(/value .+ between/);
+        expect(error).toBeDefined();
+        expect(error.toString()).toMatch(/value .+ between/);
       });
     });
 
@@ -500,7 +505,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     // it is possible to set them through props successfully.
     testPropValues('rate', [0.5, 1.0, 2, 34, -0.5]);
     testPropSetter('rate', 'setRateAsync', [0, 0.5, 1], () => {
-      t.it('errors when trying to set it above 32', async () => {
+      it('errors when trying to set it above 32', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -509,11 +514,11 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeDefined();
-        t.expect(error.toString()).toMatch(/value .+ between/);
+        expect(error).toBeDefined();
+        expect(error.toString()).toMatch(/value .+ between/);
       });
 
-      t.it('errors when trying to set it under 0', async () => {
+      it('errors when trying to set it under 0', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -522,17 +527,17 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         } catch (err) {
           error = err;
         }
-        t.expect(error).toBeDefined();
-        t.expect(error.toString()).toMatch(/value .+ between/);
+        expect(error).toBeDefined();
+        expect(error.toString()).toMatch(/value .+ between/);
       });
     });
 
     testPropValues('shouldPlay', [true, false]);
     testPropValues('shouldCorrectPitch', [true, false]);
 
-    t.describe('Video.onPlaybackStatusUpdate', () => {
-      t.it('gets called with `didJustFinish = true` when video is done playing', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+    describe('Video.onPlaybackStatusUpdate', () => {
+      it('gets called with `didJustFinish = true` when video is done playing', async () => {
+        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           onPlaybackStatusUpdate,
           source,
@@ -549,8 +554,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await retryForStatus(instance, { isPlaying: true });
         await new Promise(resolve => {
           setTimeout(() => {
-            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              t.jasmine.objectContaining({ didJustFinish: true })
+            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
@@ -558,9 +563,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    /*t.describe('Video.setProgressUpdateIntervalAsync', () => {
-      t.it('sets frequence of the progress updates', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+    /*describe('Video.setProgressUpdateIntervalAsync', () => {
+      it('sets frequence of the progress updates', async () => {
+        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           style,
           source,
@@ -574,7 +579,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await new Promise(resolve => {
           setTimeout(() => {
             const expectedArgsCount = Platform.OS === 'android' ? 5 : 9;
-            t.expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(expectedArgsCount);
+            expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(expectedArgsCount);
 
             const realMillis = map(
               takeRight(filter(flatten(onPlaybackStatusUpdate.calls.allArgs()), 'isPlaying'), 4),
@@ -583,7 +588,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
 
             for (let i = 3; i > 0; i--) {
               const difference = Math.abs(realMillis[i] - realMillis[i - 1] - updateInterval);
-              t.expect(difference).toBeLessThan(updateInterval / 2 + 1);
+              expect(difference).toBeLessThan(updateInterval / 2 + 1);
             }
 
             resolve();
@@ -592,8 +597,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });*/
 
-    t.describe('Video.setPositionAsync', () => {
-      t.it('sets position of the video', async () => {
+    describe('Video.setPositionAsync', () => {
+      it('sets position of the video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isBuffering: false });
@@ -605,9 +610,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('Video.loadAsync', () => {
+    describe('Video.loadAsync', () => {
       // NOTE(2018-03-08): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
+      const unreliablyIt = Platform.OS === 'ios' ? xit : it;
       unreliablyIt('loads the video', async () => {
         const props = { style };
         const instance = await mountAndWaitFor(<Video {...props} />, 'ref');
@@ -623,8 +628,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await instance.loadAsync(source, { ...initialStatus, positionMillis: 1000 });
         await retryForStatus(instance, { isLoaded: true, ...initialStatus });
         const status = await instance.getStatusAsync();
-        t.expect(status.positionMillis).toBeLessThan(1100);
-        t.expect(status.positionMillis).toBeGreaterThan(900);
+        expect(status.positionMillis).toBeLessThan(1100);
+        expect(status.positionMillis).toBeGreaterThan(900);
       });
 
       unreliablyIt('keeps the video instance after load when using poster', async () => {
@@ -635,8 +640,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('Video.unloadAsync', () => {
-      t.it('unloads the video', async () => {
+    describe('Video.unloadAsync', () => {
+      it('unloads the video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isLoaded: true });
@@ -645,8 +650,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('Video.pauseAsync', () => {
-      t.it('pauses the video', async () => {
+    describe('Video.pauseAsync', () => {
+      it('pauses the video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
@@ -654,15 +659,15 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await instance.pauseAsync();
         await retryForStatus(instance, { isPlaying: false });
         const { positionMillis } = await instance.getStatusAsync();
-        t.expect(positionMillis).toBeGreaterThan(0);
+        expect(positionMillis).toBeGreaterThan(0);
       });
     });
 
-    t.describe('Video.playAsync', () => {
+    describe('Video.playAsync', () => {
       // NOTE(2018-03-08): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
+      const unreliablyIt = Platform.OS === 'ios' ? xit : it;
 
-      t.it('plays the stopped video', async () => {
+      it('plays the stopped video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isLoaded: true });
@@ -670,7 +675,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await retryForStatus(instance, { isPlaying: true });
       });
 
-      t.it('plays the paused video', async () => {
+      it('plays the paused video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isLoaded: true });
@@ -683,7 +688,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       unreliablyIt('does not play video that played to an end', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           onPlaybackStatusUpdate,
           source,
@@ -699,20 +704,20 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              t.jasmine.objectContaining({ didJustFinish: true })
+            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
         });
         await instance.playAsync();
-        t.expect((await instance.getStatusAsync()).isPlaying).toBe(false);
+        expect((await instance.getStatusAsync()).isPlaying).toBe(false);
       });
     });
 
-    t.describe('Video.playFromPositionAsync', () => {
-      t.it('plays a video that played to an end', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+    describe('Video.playFromPositionAsync', () => {
+      it('plays a video that played to an end', async () => {
+        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
         const props = { onPlaybackStatusUpdate, source, style, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isBuffering: false, isLoaded: true });
@@ -723,8 +728,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              t.jasmine.objectContaining({ didJustFinish: true })
+            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
@@ -734,8 +739,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('Video.replayAsync', () => {
-      t.it('replays the video', async () => {
+    describe('Video.replayAsync', () => {
+      it('replays the video', async () => {
         await mountAndWaitFor(<Video source={source} ref={refSetter} style={style} shouldPlay />);
         await retryForStatus(instance, { isPlaying: true });
         await waitFor(500);
@@ -743,11 +748,11 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await instance.replayAsync();
         await retryForStatus(instance, { isPlaying: true });
         const statusAfter = await instance.getStatusAsync();
-        t.expect(statusAfter.positionMillis).toBeLessThan(statusBefore.positionMillis);
+        expect(statusAfter.positionMillis).toBeLessThan(statusBefore.positionMillis);
       });
 
-      t.it('plays a video that played to an end', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+      it('plays a video that played to an end', async () => {
+        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
         const props = { onPlaybackStatusUpdate, source, style, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isBuffering: false, isLoaded: true });
@@ -758,8 +763,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              t.jasmine.objectContaining({ didJustFinish: true })
+            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
@@ -768,8 +773,8 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await retryForStatus(instance, { isPlaying: true });
       });
 
-      /*t.it('calls the onPlaybackStatusUpdate with hasJustBeenInterrupted = true', async () => {
-        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+      /*it('calls the onPlaybackStatusUpdate with hasJustBeenInterrupted = true', async () => {
+        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           style,
           source,
@@ -783,12 +788,12 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await instance.replayAsync();
         t
           .expect(onPlaybackStatusUpdate)
-          .toHaveBeenCalledWith(t.jasmine.objectContaining({ hasJustBeenInterrupted: true }));
+          .toHaveBeenCalledWith(jasmine.objectContaining({ hasJustBeenInterrupted: true }));
       });*/
     });
 
-    t.describe('Video.stopAsync', () => {
-      t.it('stops a playing video', async () => {
+    describe('Video.stopAsync', () => {
+      it('stops a playing video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
@@ -796,7 +801,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await retryForStatus(instance, { isPlaying: false, positionMillis: 0 });
       });
 
-      t.it('stops a paused video', async () => {
+      it('stops a paused video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
@@ -807,5 +812,5 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await retryForStatus(instance, { isPlaying: false, positionMillis: 0 });
       });
     });
-  });
+  
 }
