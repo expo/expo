@@ -42,6 +42,16 @@ def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
+def getLastSupportedABI(){
+  def lastSupportedVersion = "abi_999_0_0"
+  (gradle.ext.has("supportedABIS") ? gradle.ext.supportedABIS : ["abi_0_0_0"]).forEach ({ version ->
+    if (version < lastSupportedVersion) {
+      lastSupportedVersion = version
+    }
+  })
+  lastSupportedVersion.substring(3).split("_")[0]
+}
+
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -93,9 +103,16 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+  
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+  }
+
+  kapt {
+    arguments {
+      arg("lastSupportedABI", getLastSupportedABI())
+    }
   }
 }
 

@@ -18,16 +18,21 @@ import host.expo.annotations.RemoveOnceSdkIsNoLongerSupported
 @AutoService(Processor::class)
 class SDKSupportAnnotationProcessor : AbstractProcessor() {
   override fun process(elements: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {
+    val lastSupportedABI = getLastSupportedABI()
     roundEnvironment.getElementsAnnotatedWith(RemoveOnceSdkIsNoLongerSupported::class.java).forEach {
       val version = it.getAnnotation(RemoveOnceSdkIsNoLongerSupported::class.java).version
-      if (version < LAST_SUPPORTED_SDK) {
+      if (version < lastSupportedABI) {
         processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, "SDK $version is no longer supported, remove this code", it)
       }
     }
     return true
   }
 
-  companion object {
-    private const val LAST_SUPPORTED_SDK = 33
+  override fun getSupportedOptions(): Set<String> {
+    return setOf("lastSupportedABI")
+  }
+
+  private fun getLastSupportedABI(): Int {
+    return processingEnv.options["lastSupportedABI"]?.toInt() ?: 0
   }
 }

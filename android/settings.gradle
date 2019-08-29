@@ -11,11 +11,12 @@ project(':expoannotationsprocessors').projectDir = new File(rootDir, "expoannota
 include ':ReactAndroid'
 project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
-[
-    // ADD_NEW_SUPPORTED_ABIS_HERE
-    "abi34_0_0",
-    "abi33_0_0",
-].forEach({ abiVariant ->
+gradle.ext.supportedABIS = [
+  // ADD_NEW_SUPPORTED_ABIS_HERE
+  "abi34_0_0",
+  "abi33_0_0",
+]
+gradle.ext.supportedABIS.forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
