@@ -97,10 +97,10 @@
     "@babel/plugin-transform-modules-commonjs": "^7.1.0",
     "@types/react": "^16.8.14",
     "@types/react-native": "^0.57.46",
-    "@types/react-test-renderer": "^16.8.1",
+    "@types/react-test-renderer": "16.8.3",
     "expo-module-scripts": "^1.0.0",
     "react": "16.8.3",
-    "react-dom": "^16.8.6",
+    "react-dom": "16.8.3",
     "react-native": "0.59.8"
   },
   "gitHead": "57b5feebc85ee6164018437d954c2f38f414a2fc"
