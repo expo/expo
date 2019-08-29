@@ -60,6 +60,8 @@ async function registerForPushNotificationsAsync() {
     }),
   });
 }
+
+export default registerForPushNotificationsAsync
 ```
 
 ## 2. Call Expo's Push API with the user's token
