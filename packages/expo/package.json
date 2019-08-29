@@ -35,7 +35,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo"
   },
   "keywords": [
     "expo"

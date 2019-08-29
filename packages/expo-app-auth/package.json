@@ -27,7 +27,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-app-auth"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues?q=is%3Aopen+is%3Aissue+label%3AAppAuth"

@@ -24,7 +24,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-local-authentication"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
