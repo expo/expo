@@ -20,13 +20,13 @@ export async function getExponentPushTokenAsync() {
     const experienceId = `@${Constants.manifest.owner}/${Constants.manifest.slug}`;
     const tokenArguments = {
         deviceId: Constants.installationId,
-        experienceId: experienceId,
+        experienceId,
         // Also uses `experienceId` for `appId` because there's no `appId` for web.
         appId: experienceId,
         deviceToken: JSON.stringify(data),
         type: 'web',
     };
-    const response = await fetch('http://expo.test/--/api/v2/push/getExpoPushToken', {
+    const response = await fetch('https://exp.host/--/api/v2/push/getExpoPushToken', {
         method: 'POST',
         body: JSON.stringify(tokenArguments),
     })
@@ -44,7 +44,7 @@ export async function getExponentPushTokenAsync() {
 }
 export async function getDevicePushTokenAsync() {
     const data = await _subscribeUserToPushAsync();
-    return { type: Platform.OS, data: data };
+    return { type: Platform.OS, data };
 }
 async function _subscribeUserToPushAsync() {
     if (!Constants.manifest.notification || !Constants.manifest.notification.vapidPublicKey) {
@@ -52,6 +52,7 @@ async function _subscribeUserToPushAsync() {
     }
     guardPermission();
     const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+    await navigator.serviceWorker.ready;
     if (!registration.active) {
         throw new Error('Notifications might not be working because the service worker API is not active.');
     }

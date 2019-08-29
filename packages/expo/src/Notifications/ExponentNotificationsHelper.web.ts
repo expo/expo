@@ -73,6 +73,8 @@ async function _subscribeUserToPushAsync(): Promise<Object> {
   guardPermission();
 
   const registration = await navigator.serviceWorker.register('/expo-service-worker.js');
+  await navigator.serviceWorker.ready;
+
   if (!registration.active) {
     throw new Error(
       'Notifications might not be working because the service worker API is not active.'
