@@ -499,6 +499,14 @@ export async function test(t) {
     }
 
     if (Platform.OS === 'ios') {
+      t.describe("getDefaultCalendarAsync()", () => {
+        t.it('get default calendar', async () => {
+          const calendar = await Calendar.getDefaultCalendarAsync();
+
+          testCalendarShape(calendar);
+        });
+      });
+
       t.describe('requestRemindersPermissionsAsync()', () => {
         t.it('requests for Reminders permissions', async () => {
           const results = await Calendar.requestRemindersPermissionsAsync();
