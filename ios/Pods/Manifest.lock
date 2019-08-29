@@ -72,7 +72,7 @@ PODS:
     - EXGL-CPP
   - ABI33_0_0EXGoogleSignIn (5.0.0-rc.0):
     - ABI33_0_0UMCore
-    - GoogleSignIn (~> 4.4)
+    - GoogleSignIn
   - ABI33_0_0EXHaptics (5.0.0-rc.0):
     - ABI33_0_0UMCore
   - ABI33_0_0EXImageManipulator (5.0.0-rc.0):
@@ -302,7 +302,7 @@ PODS:
     - EXGL-CPP
   - ABI34_0_0EXGoogleSignIn (5.0.0):
     - ABI34_0_0UMCore
-    - GoogleSignIn (~> 4.4)
+    - GoogleSignIn
   - ABI34_0_0EXHaptics (5.0.0):
     - ABI34_0_0UMCore
   - ABI34_0_0EXImageManipulator (5.0.0):
@@ -459,9 +459,13 @@ PODS:
     - ReactABI34_0_0
   - ABI34_0_0UMSensorsInterface (2.0.0)
   - ABI34_0_0UMTaskManagerInterface (2.0.0)
-  - Amplitude-iOS (3.14.1)
-  - Analytics (3.6.10)
-  - AppAuth (0.95.1)
+  - Amplitude-iOS (4.7.1)
+  - Analytics (3.7.0)
+  - AppAuth (1.2.0):
+    - AppAuth/Core (= 1.2.0)
+    - AppAuth/ExternalUserAgent (= 1.2.0)
+  - AppAuth/Core (1.2.0)
+  - AppAuth/ExternalUserAgent (1.2.0)
   - Bolts (1.9.0):
     - Bolts/AppLinks (= 1.9.0)
     - Bolts/Tasks (= 1.9.0)
@@ -472,14 +476,11 @@ PODS:
   - Branch (0.27.1):
     - Branch/Core (= 0.27.1)
   - Branch/Core (0.27.1)
-  - CocoaLumberjack (3.2.1):
-    - CocoaLumberjack/Default (= 3.2.1)
-    - CocoaLumberjack/Extensions (= 3.2.1)
-  - CocoaLumberjack/Default (3.2.1)
-  - CocoaLumberjack/Extensions (3.2.1):
-    - CocoaLumberjack/Default
-  - Crashlytics (3.13.1):
-    - Fabric (~> 1.10.1)
+  - CocoaLumberjack (3.5.3):
+    - CocoaLumberjack/Core (= 3.5.3)
+  - CocoaLumberjack/Core (3.5.3)
+  - Crashlytics (3.13.4):
+    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (6.0.0):
     - Google-Mobile-Ads-SDK
@@ -568,7 +569,7 @@ PODS:
     - EXGL-CPP/UEXGL (= 6.0.0)
   - EXGL-CPP/UEXGL (6.0.0)
   - EXGoogleSignIn (6.0.0):
-    - GoogleSignIn (~> 4.4)
+    - GoogleSignIn
     - UMCore
   - EXHaptics (6.0.0):
     - UMCore
@@ -640,7 +641,7 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (6.0.0):
     - UMCore
-  - Fabric (1.10.1)
+  - Fabric (1.10.2)
   - FBAudienceNetwork (5.1.1)
   - FBSDKCoreKit (4.40.0):
     - Bolts (~> 1.9)
@@ -732,10 +733,10 @@ PODS:
   - GoogleDataTransportCCTSupport (1.0.1):
     - GoogleDataTransport (~> 1.1)
     - nanopb
-  - GoogleMaps (2.5.0):
-    - GoogleMaps/Maps (= 2.5.0)
-  - GoogleMaps/Base (2.5.0)
-  - GoogleMaps/Maps (2.5.0):
+  - GoogleMaps (3.3.0):
+    - GoogleMaps/Maps (= 3.3.0)
+  - GoogleMaps/Base (3.3.0)
+  - GoogleMaps/Maps (3.3.0):
     - GoogleMaps/Base
   - GoogleMobileVision/Detector (1.6.0):
     - GoogleToolboxForMac/Logger (~> 2.1)
@@ -744,22 +745,15 @@ PODS:
     - Protobuf (~> 3.1)
   - GoogleMobileVision/FaceDetector (1.6.0):
     - GoogleMobileVision/Detector (~> 1.6)
-  - GoogleSignIn (4.4.0):
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
+  - GoogleSignIn (5.0.0):
+    - AppAuth (~> 1.1)
+    - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleToolboxForMac/DebugUtils (2.2.1):
-    - GoogleToolboxForMac/Defines (= 2.2.1)
   - GoogleToolboxForMac/Defines (2.2.1)
   - GoogleToolboxForMac/Logger (2.2.1):
     - GoogleToolboxForMac/Defines (= 2.2.1)
   - "GoogleToolboxForMac/NSData+zlib (2.2.1)":
     - GoogleToolboxForMac/Defines (= 2.2.1)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.1)":
-    - GoogleToolboxForMac/DebugUtils (= 2.2.1)
-    - GoogleToolboxForMac/Defines (= 2.2.1)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.1)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.2.1)"
   - GoogleUtilities/AppDelegateSwizzler (6.2.5):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -778,6 +772,9 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (6.2.5):
     - GoogleUtilities/Logger
+  - GTMAppAuth (1.0.0):
+    - AppAuth/Core (~> 1.0)
+    - GTMSessionFetcher (~> 1.1)
   - GTMSessionFetcher (1.2.2):
     - GTMSessionFetcher/Full (= 1.2.2)
   - GTMSessionFetcher/Core (1.2.2)
@@ -1097,13 +1094,13 @@ DEPENDENCIES:
   - ABI34_0_0UMReactNativeAdapter (from `./versioned-react-native/ABI34_0_0/UMReactNativeAdapter`)
   - ABI34_0_0UMSensorsInterface (from `./versioned-react-native/ABI34_0_0/UMSensorsInterface`)
   - ABI34_0_0UMTaskManagerInterface (from `./versioned-react-native/ABI34_0_0/UMTaskManagerInterface`)
-  - Amplitude-iOS (~> 3.8)
-  - Analytics (~> 3.5)
-  - AppAuth (~> 0.4)
+  - Amplitude-iOS (~> 4.6)
+  - Analytics (~> 3.7)
+  - AppAuth (~> 1.2)
   - Bolts (= 1.9.0)
   - Branch (~> 0.27.1)
-  - CocoaLumberjack (~> 3.2.1)
-  - Crashlytics (~> 3.8)
+  - CocoaLumberjack (~> 3.5.3)
+  - Crashlytics (~> 3.13.4)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
@@ -1158,7 +1155,7 @@ DEPENDENCIES:
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
-  - Fabric (~> 1.6)
+  - Fabric (~> 1.10.2)
   - FBAudienceNetwork (= 5.1.1)
   - FBSDKCoreKit (= 4.40.0)
   - FBSDKLoginKit (= 4.40.0)
@@ -1166,9 +1163,8 @@ DEPENDENCIES:
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - Google-Mobile-Ads-SDK (~> 7.49.0)
-  - GoogleMaps (~> 2.5.0)
-  - GoogleSignIn (~> 4.1)
-  - JKBigInteger2 (= 0.0.5)
+  - GoogleMaps (~> 3.3)
+  - GoogleSignIn (~> 5.0)
   - lottie-ios (~> 2.5.0)
   - React/ART (from `../react-native-lab/react-native`)
   - React/Core (from `../react-native-lab/react-native`)
@@ -1259,6 +1255,7 @@ SPEC REPOS:
     - GoogleSignIn
     - GoogleToolboxForMac
     - GoogleUtilities
+    - GTMAppAuth
     - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
@@ -1734,7 +1731,7 @@ SPEC CHECKSUMS:
   ABI33_0_0EXFileSystem: 6f8e931d4d281fac1fb04897552ebb4361147536
   ABI33_0_0EXFont: 853a0d33e3d3658e41eb704184302bf230f0ed18
   ABI33_0_0EXGL: 3011993b8fe7360f494a35a272059e31cff18692
-  ABI33_0_0EXGoogleSignIn: 3e32fac3f0398184e464fa5b5c42b9686813df8e
+  ABI33_0_0EXGoogleSignIn: b4b7e127f2b10a30660004a9a8998f11fb708530
   ABI33_0_0EXHaptics: 6abebc012a48d4b78baeb8bc659b18022f1f95ea
   ABI33_0_0EXImageManipulator: 2d3a60ee978960c96b99ac896108c87fab7a3520
   ABI33_0_0EXImagePicker: 0ce0642cd652f2f50989a5618880f1e6b60b6ff5
@@ -1792,7 +1789,7 @@ SPEC CHECKSUMS:
   ABI34_0_0EXFileSystem: f8e8400ec240af7e25694a409fc2056d05ac650d
   ABI34_0_0EXFont: c9d3ddb8d85f8b71c57770870797170b27fae03e
   ABI34_0_0EXGL: c98e3397a3f5cd1e42a1d211b61bdcc7df0ab26d
-  ABI34_0_0EXGoogleSignIn: 2e025b1e5637afe744a34bb2cb35a89c4764e547
+  ABI34_0_0EXGoogleSignIn: 568eef0bd21e38d8eb91baf9886e7755eca7b0c0
   ABI34_0_0EXHaptics: c8b80cf86f94206cdc2b00eff925acf64c2abfbc
   ABI34_0_0EXImageManipulator: 87d493124a91430724611c8229522cac3a386238
   ABI34_0_0EXImagePicker: 3b3bd84fa807adee69e589116c378d62701cb82b
@@ -1829,14 +1826,14 @@ SPEC CHECKSUMS:
   ABI34_0_0UMReactNativeAdapter: 3f274e2bace393b4be7c20f14f4902b689aa76ea
   ABI34_0_0UMSensorsInterface: 2f11e03d4b9c9fd1aac8afe19fcf9840e8023b3b
   ABI34_0_0UMTaskManagerInterface: 2e6fff68b1824e161529307933bf2b14f63152de
-  Amplitude-iOS: 4a3c8807b2ea5369dc11e87e23825bff01e5a922
-  Analytics: 63744ad4afa65c3bcdcdb7a94b62515bde5b3900
-  AppAuth: cd34aac431e5c77c46ec7f03935377faa8c5808b
+  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
+  Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
+  AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 1ace77c04b6e3efbf982bf4364f0662bfac156a0
-  CocoaLumberjack: 2800c03334042fe80589423c8d80e582dcaec482
-  Crashlytics: 5aa8e90dcbf2f34898b4f5a0037787531246cca0
+  CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
+  Crashlytics: 2dfd686bcb918dc10ee0e76f7f853fe42c7bd552
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: bbdb1922a9474cd9118e03576077ea594e4d409b
   EXAdsFacebook: e80bc258520c71bce17cb4c1f984391b4a8940b8
@@ -1865,7 +1862,7 @@ SPEC CHECKSUMS:
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXGL: dc4ae6520b142a74e28e6f4472d27a26fc211f37
   EXGL-CPP: 06949fa99656c36b488ff51155ca865c871f3d3d
-  EXGoogleSignIn: c1338c16b0d4592d00cec09e1a43e9486df0dba0
+  EXGoogleSignIn: a992334b98a2ba9c1495803072583cb329b8540f
   EXHaptics: f84c93d605e0905c47654e4a6e5dfbff78ed6906
   EXImageManipulator: b2e17bdbd0872cc59b43b76756f76fdb8a849831
   EXImagePicker: ec641e97b73db0fb1ef58b818cffaf7ff6d3c96c
@@ -1891,7 +1888,7 @@ SPEC CHECKSUMS:
   EXTaskManager: 2cff8c104c212fa67cab08a10946ba268a4cf5e5
   EXVideoThumbnails: 3c3b2231e6b6c19af2ac32c7b5f398b1a8948a5e
   EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
-  Fabric: f6f21452846788bb44595d73e9909d79d328e617
+  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
@@ -1912,11 +1909,12 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 47285fa897e5a125df56b9ef8750a1d81e4598a8
   GoogleDataTransport: ffbadce4ab93c88fb9dd8e6366c47bfcb4a32193
   GoogleDataTransportCCTSupport: 3451e7d8ba19093e533362a6d78d6d9014c6a037
-  GoogleMaps: c087b8e5dfe87ca6ebf59adb9b4894a4146bec4f
+  GoogleMaps: cfee83da305b9aaeccf92c24ac79df11c3003492
   GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
-  GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
+  GoogleSignIn: a62edd0516721d2a3db1259a5681b91f9b41c06a
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GoogleUtilities: e7dc37039b19df7fe543479d3e4a02ac8d11bb69
+  GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
@@ -1941,6 +1939,6 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
 
-PODFILE CHECKSUM: 8fc66f8b63ba76c726ebc38aa0950f2321687a0c
+PODFILE CHECKSUM: 5bbb641a9c3bd3d2d385fa1f8796bf1a59ebde78
 
 COCOAPODS: 1.7.5

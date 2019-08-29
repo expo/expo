@@ -16,6 +16,7 @@
         limitations under the License.
  */
 
+NS_ASSUME_NONNULL_BEGIN
 
 /*! @brief Represents an in-flight external user-agent session.
  */
@@ -29,6 +30,16 @@
         @c OIDAuthorizationService.presentAuthorizationRequest:presentingViewController:callback:
  */
 - (void)cancel;
+
+/*! @brief Cancels the code flow session, invoking the request's callback with a cancelled error.
+    @remarks Has no effect if called more than once, or after a
+        @c OIDExternalUserAgentSession.resumeExternalUserAgentFlowWithURL: message was received.
+        Will cause an error with code: @c ::OIDErrorCodeProgramCanceledAuthorizationFlow to be
+        passed to the @c callback block passed to
+        @c OIDAuthorizationService.presentAuthorizationRequest:presentingViewController:callback:
+    @param completion The block to be called when the cancel operation ends
+ */
+- (void)cancelWithCompletion:(nullable void (^)(void))completion;
 
 /*! @brief Clients should call this method with the result of the external user-agent code flow if
         it becomes available.
@@ -50,3 +61,5 @@
 - (void)failExternalUserAgentFlowWithError:(NSError *)error;
 
 @end
+
+NS_ASSUME_NONNULL_END

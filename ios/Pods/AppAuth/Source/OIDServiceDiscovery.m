@@ -30,6 +30,7 @@ static NSString *const kTokenEndpointKey = @"token_endpoint";
 static NSString *const kUserinfoEndpointKey = @"userinfo_endpoint";
 static NSString *const kJWKSURLKey = @"jwks_uri";
 static NSString *const kRegistrationEndpointKey = @"registration_endpoint";
+static NSString *const kEndSessionEndpointKey = @"end_session_endpoint";
 static NSString *const kScopesSupportedKey = @"scopes_supported";
 static NSString *const kResponseTypesSupportedKey = @"response_types_supported";
 static NSString *const kResponseModesSupportedKey = @"response_modes_supported";
@@ -71,7 +72,9 @@ static NSString *const kRequireRequestURIRegistrationKey = @"require_request_uri
 static NSString *const kOPPolicyURIKey = @"op_policy_uri";
 static NSString *const kOPTosURIKey = @"op_tos_uri";
 
-@implementation OIDServiceDiscovery
+@implementation OIDServiceDiscovery {
+  NSDictionary *_discoveryDictionary;
+}
 
 - (nonnull instancetype)init OID_UNAVAILABLE_USE_INITIALIZER(@selector(initWithDictionary:error:))
 
@@ -91,6 +94,13 @@ static NSString *const kOPTosURIKey = @"op_tos_uri";
                                   description:jsonError.localizedDescription];
     return nil;
   }
+  if (![json isKindOfClass:[NSDictionary class]]) {
+    *error = [OIDErrorUtilities errorWithCode:OIDErrorCodeInvalidDiscoveryDocument
+                              underlyingError:nil
+                                  description:@"Discovery document isn't a dictionary"];
+    return nil;
+  }
+
   return [self initWithDictionary:json error:error];
 }
 
@@ -221,6 +231,10 @@ static NSString *const kOPTosURIKey = @"op_tos_uri";
 
 - (nullable NSURL *)registrationEndpoint {
   return [NSURL URLWithString:_discoveryDictionary[kRegistrationEndpointKey]];
+}
+
+- (nullable NSURL *)endSessionEndpoint {
+    return [NSURL URLWithString:_discoveryDictionary[kEndSessionEndpointKey]];
 }
 
 - (nullable NSArray<NSString *> *)scopesSupported {

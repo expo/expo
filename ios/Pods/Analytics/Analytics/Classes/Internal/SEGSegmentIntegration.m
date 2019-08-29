@@ -119,7 +119,11 @@ static BOOL GetAdTrackingEnabled()
 
 - (void)setupFlushTimer
 {
-    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 target:self selector:@selector(flush) userInfo:nil repeats:YES];
+    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:self.configuration.flushInterval
+                                                       target:self
+                                                     selector:@selector(flush)
+                                                     userInfo:nil
+                                                      repeats:YES];
 }
 
 /*
@@ -160,6 +164,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     dict[@"device"] = ({
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
         dict[@"manufacturer"] = @"Apple";
+        dict[@"type"] = @"ios";
         dict[@"model"] = GetDeviceModel();
         dict[@"id"] = [[device identifierForVendor] UUIDString];
         if (NSClassFromString(SEGAdvertisingClassIdentifier)) {
@@ -342,8 +347,6 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 
 - (void)track:(SEGTrackPayload *)payload
 {
-    SEGLog(@"segment integration received payload %@", payload);
-
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [dictionary setValue:payload.event forKey:@"event"];
     [dictionary setValue:payload.properties forKey:@"properties"];
@@ -461,10 +464,8 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 - (void)queuePayload:(NSDictionary *)payload
 {
     @try {
-        if (self.queue.count > 1000) {
-            // Remove the oldest element.
-            [self.queue removeObjectAtIndex:0];
-        }
+        // Trim the queue to maxQueueSize - 1 before we add a new element.
+        trimQueue(self.queue, self.analytics.configuration.maxQueueSize - 1);
         [self.queue addObject:payload];
         [self persistQueue];
         [self flushQueueByLength];
@@ -517,8 +518,8 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 - (void)reset
 {
     [self dispatchBackgroundAndWait:^{
-        [self.storage removeKey:SEGUserIdKey];
 #if TARGET_OS_TV
+        [self.storage removeKey:SEGUserIdKey];
         [self.storage removeKey:SEGTraitsKey];
 #else
         [self.storage removeKey:kSEGUserIdFilename];
