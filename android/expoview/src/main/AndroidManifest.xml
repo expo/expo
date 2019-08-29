@@ -1,5 +1,6 @@
 <manifest package="host.exp.expoview"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
 
     <!-- WHEN_VERSIONING_REMOVE_FROM_HERE -->
     <supports-screens
