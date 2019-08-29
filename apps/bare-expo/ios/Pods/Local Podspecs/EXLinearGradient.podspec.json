@@ -1,0 +1,23 @@
+{
+  "name": "EXLinearGradient",
+  "version": "6.0.0",
+  "summary": "Provides a React component that renders a gradient view.",
+  "description": "Provides a React component that renders a gradient view.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/linear-gradient/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXLinearGradient/**/*.{h,m}",
+  "preserve_paths": "EXLinearGradient/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  }
+}

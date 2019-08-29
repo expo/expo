@@ -71,7 +71,7 @@ export default class ProjectList extends React.PureComponent {
           if (props.renderLoadingIndicator) {
             return <ScrollView {...props} />;
           } else {
-            return <InfiniteScrollView {...props} />
+            return <InfiniteScrollView {...props} />;
           }
         }}
         canLoadMore={this._canLoadMore()}
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   largeProjectCardList: {
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
   largeProjectCard: {
     marginBottom: 10,

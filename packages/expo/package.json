@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "34.0.3",
+  "version": "34.0.4",
   "description": "The Expo SDK",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo.js",
@@ -24,7 +24,7 @@
     "generate-lazy": "expo-module babel --config-file ./babel.config.build.js --source-maps --out-file build/ExpoLazy.js build/Expo.js",
     "build": "EXPO_NONINTERACTIVE=1 expo-module build && npm run generate-lazy",
     "clean": "expo-module clean",
-    "lint": "eslint tools",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare && npm run generate-lazy",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -32,15 +32,6 @@
   },
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "eslintConfig": {
-    "extends": "universe/native",
-    "overrides": {
-      "files": "**/__tests__/*.js",
-      "env": {
-        "node": true
-      }
-    }
   },
   "repository": {
     "type": "git",
@@ -70,7 +61,7 @@
     "expo-app-loader-provider": "~6.0.0",
     "expo-asset": "~6.0.0",
     "expo-constants": "~6.0.0",
-    "expo-file-system": "~6.0.1",
+    "expo-file-system": "~6.0.2",
     "expo-font": "~6.0.1",
     "expo-keep-awake": "~6.0.0",
     "expo-linear-gradient": "~6.0.0",
@@ -111,5 +102,5 @@
     "react-dom": "^16.8.6",
     "react-native": "0.59.8"
   },
-  "gitHead": "8f2c682f599a1a9bb1f69fc33003df1436fe2877"
+  "gitHead": "57b5feebc85ee6164018437d954c2f38f414a2fc"
 }

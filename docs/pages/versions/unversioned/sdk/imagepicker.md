@@ -72,7 +72,7 @@ The `uri` property is a URI to the local image or video file (usable as the sour
 The `base64` property is included if the `base64` option is truthy, and is a Base64-encoded string of the selected image's JPEG data; prepared it with `data:image/jpeg;base64,` to create a data URI, which you can use as the source of an `Image` element, for example.
 The `exif` field is included if the `exif` option is truthy, and is an object containing the image's EXIF data. The names of this object's properties are EXIF tags and the values are the respective EXIF values for those tags.
 
-<SnackEmbed snackId="@documentation/imagepicker-from-camera-roll" />
+<SnackEmbed snackId="@charliecruzan/imagepickerfromcameraroll34" />
 
 When you run this example and pick an image, you will see the image that you picked show up in your app, and something similar to the following logged to your console:
 

@@ -2,7 +2,7 @@ self: super:
 
 {
   fastlane =
-    assert (builtins.compareVersions "2.123.0" super.fastlane.version) == 1;
+    assert (builtins.compareVersions "2.123.0" super.fastlane.version) != 1;
     super.bundlerApp {
       pname = "fastlane";
       gemdir = ./fastlane;

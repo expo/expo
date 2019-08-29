@@ -8,6 +8,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
+- Google Mobile Ads now require `expo.[platform].config.googleMobileAdsAppId` configuration value present in `app.json`. The value can be found by following the guide in [this Google Support answer](https://support.google.com/admob/answer/7356431). ([#5447](https://github.com/expo/expo/pull/5447)) by [@sjchmiela](https://github.com/sjchmiela)
+- Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
@@ -15,15 +17,26 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added rich content supports for push notifications by [@hesyifei](https://github.com/hesyifei) ([#4787](https://github.com/expo/expo/pull/4787))
 - added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages by [@hesyifei](https://github.com/hesyifei) ([#4685](https://github.com/expo/expo/pull/4685))
 - added the possibility to get MediaLibrary assets from specific time range. ([#5166](https://github.com/expo/expo/pull/5166) by [@tsapeta](https://github.com/tsapeta))
+- added Next.js supports with Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#5275](https://github.com/expo/expo/pull/5275))
+- added support for serving non-personalized Google AdMob Ads by [@sjchmiela](https://github.com/sjchmiela) ([#5323](https://github.com/expo/expo/pull/5323))
+- added [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) to Expo client and standalone apps by [@sjchmiela](https://github.com/sjchmiela) ([#5446](https://github.com/expo/expo/pull/5446))
 
 ### 🐛 Bug fixes
+
+- fixed MediaLibrary assets' width and height were sometimes equal to 0. ([#4935](https://github.com/expo/expo/pull/4935) by [@lukmccall](https://github.com/lukmccall))
+- fixed location background mode was required to use geofencing. ([#5198](https://github.com/expo/expo/pull/5198) by [@tsapeta](https://github.com/tsapeta))
+- fixed `Calendar.createEventAsync` crashing with relativeOffSet due to invalid type conversion from double to integer by [@vivianzzhu91](https://github.com/vivianzzhu91) ([#5134](https://github.com/expo/expo/pull/5134))
+- fixed `AppAuthModule.createOAuthServiceConfiguration` typo resulting in crashes when `registrationEndpoint` is not specified in config.
+- fixed occasional `"ViewManagerAdapter_*" was not found in the UIManager` bugs by [@sjchmiela](https://github.com/sjchmiela) ([#5066](https://github.com/expo/expo/pull/5066))
+- fixed crashes when adding attachments with `MailComposer` by [@sjchmiela](https://github.com/sjchmiela) ([#5449](https://github.com/expo/expo/pull/5449))
+- fixed `ImagePicker.launchImageLibraryAsync` not working on iOS 13. ([#5434](https://github.com/expo/expo/pull/5434) by [@tsapeta](https://github.com/tsapeta))
 
 ## 34.0.0
 
 ### 📚 3rd party library updates
 
 - `react-native-gesture-handler` updated from `1.2.1` to `1.3.0`
-- `react-native-branch` updated from `2.2.5` to `3.0.1`
+- `react-native-branch` updated from `2.2.5` to `3.1.1`
 - `react-native-reanimated` updated from `1.0.1` to `1.1.0`
 - `react-native-svg` updated from `9.4.0` to `9.5.1`
 - `react-native-webview` updated from `5.8.0` to `5.12.0`
@@ -39,6 +52,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added `fallbackLabel` option to `LocalAuthentication.authenticateAsync` on iOS which allows to customize a title of the fallback button when the system doesn't recognize the user and asks to authenticate via device passcode. ([#4612](https://github.com/expo/expo/pull/4612) by [@changLiuUNSW](https://github.com/changLiuUNSW))
 - added `native` mode for Android SplashScreen on standalone apps by [@bbarthec](https://github.com/bbarthec) ([#4567](https://github.com/expo/expo/pull/4567))
 - added support for video recording in `ImagePicker.launchCameraAsync`. ([#4903](https://github.com/expo/expo/pull/4903) by [@lukmccall](https://github.com/lukmccall))
+- added support for `ph://` URLs to `expo-file-system` ([#5195](https://github.com/expo/expo/pull/5195) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🐛 Bug fixes
 
@@ -46,6 +60,10 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed picking images over 2000px on Android by [@bbarthec](https://github.com/bbarthec) ([#4731](https://github.com/expo/expo/pull/4731))
 - fixed `Calendar.getEventsAsync` crashing if `calendarId` is SQL keyword by [@lukmccall](https://github.com/lukmccall) ([#4836](https://github.com/expo/expo/pull/4836))
 - fixed `BOOL` interpretation on 32-bit iOS devices by [@lukmccall](https://github.com/lukmccall) ([#4862](https://github.com/expo/expo/pull/4862))
+- fixed AV rejecting to further load an asset once any loading error occured ([#5105](https://github.com/expo/expo/pull/5105)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed AV resetting player whenever props changed ([#5106](https://github.com/expo/expo/pull/5106)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed bar code scanning crash if the result couldn't be converted to string ([#5183](https://github.com/expo/expo/pull/5183)) by [@sjchmiela](https://github.com/sjchmiela))
+- fixed camera crash in standalone apps ([#5194](https://github.com/expo/expo/pull/5194)) by [@sjchmiela](https://github.com/sjchmiela))
 
 ## 33.0.0
 

@@ -62,7 +62,6 @@ export default class LocationDiagnosticsScreen extends React.Component {
       ({ taskName }) => taskName === LOCATION_UPDATES_TASK
     );
     const savedLocations = await getSavedLocations();
-    const accuracy = (task && task.options.accuracy) || this.state.accuracy;
 
     this.eventSubscription = locationEventsEmitter.addListener('update', locations => {
       this.setState({ savedLocations: locations });
@@ -72,8 +71,8 @@ export default class LocationDiagnosticsScreen extends React.Component {
       alert('Click `Start tracking` to start getting location updates.');
     }
 
-    this.setState({
-      accuracy,
+    this.setState(state => ({
+      accuracy: (task && task.options.accuracy) || state.accuracy,
       isTracking,
       savedLocations,
       initialRegion: {
@@ -82,7 +81,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
         latitudeDelta: 0.004,
         longitudeDelta: 0.002,
       },
-    });
+    }));
   };
 
   handleAppStateChange = nextAppState => {
@@ -154,13 +153,14 @@ export default class LocationDiagnosticsScreen extends React.Component {
   };
 
   toggleLocationIndicator = async () => {
-    const showsBackgroundLocationIndicator = !this.state.showsBackgroundLocationIndicator;
-
-    this.setState({ showsBackgroundLocationIndicator }, async () => {
-      if (this.state.isTracking) {
-        await this.startLocationUpdates();
+    this.setState(
+      state => ({ showsBackgroundLocationIndicator: !state.showsBackgroundLocationIndicator }),
+      async () => {
+        if (this.state.isTracking) {
+          await this.startLocationUpdates();
+        }
       }
-    });
+    );
   };
 
   onCenterMap = async () => {
@@ -187,7 +187,7 @@ export default class LocationDiagnosticsScreen extends React.Component {
       <MapView.Polyline
         coordinates={savedLocations}
         strokeWidth={3}
-        strokeColor={Colors.tintColor}
+        strokeColor={Colors.light.tintColor}
       />
     );
   }

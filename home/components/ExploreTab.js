@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { FlatList } from 'react-navigation';
+import { FlatList, useTheme } from 'react-navigation';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import dedent from 'dedent';
@@ -19,6 +19,8 @@ import FeatureFlags from '../FeatureFlags';
 import ProjectCard from './ProjectCard';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
+import { SectionLabelContainer } from './Views';
+import { StyledText, SectionLabelText } from './Text';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -30,7 +32,7 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as quickly as possible.
 `;
 
-export default class ExploreTab extends React.Component {
+class ExploreTab extends React.Component {
   state = {
     isRefetching: false,
   };
@@ -47,13 +49,16 @@ export default class ExploreTab extends React.Component {
 
   _renderError() {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <Text style={SharedStyles.noticeDescriptionText}>
+        <StyledText
+          style={SharedStyles.noticeDescriptionText}
+          lightColor="rgba(36, 44, 58, 0.7)"
+          darkColor="#ccc">
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
-        </Text>
+        </StyledText>
 
         <PrimaryButton plain onPress={this._refetchDataAsync} fallback={TouchableOpacity}>
           Try again
@@ -84,6 +89,7 @@ export default class ExploreTab extends React.Component {
 
   _renderContent() {
     let extraOptions = {};
+    let { theme } = this.props;
 
     if (FeatureFlags.INFINITE_SCROLL_EXPLORE_TABS) {
       extraOptions = {
@@ -98,7 +104,10 @@ export default class ExploreTab extends React.Component {
         data={this.props.data.apps}
         ListHeaderComponent={this._renderHeader}
         renderItem={this._renderItem}
-        style={styles.container}
+        style={[
+          styles.container,
+          { backgroundColor: theme === 'dark' ? '#000' : Colors.light.greyBackground },
+        ]}
         keyExtractor={item => item.id}
         contentContainerStyle={{ paddingBottom: 5 }}
         {...extraOptions}
@@ -109,9 +118,9 @@ export default class ExploreTab extends React.Component {
   _renderHeader = () => {
     if (this.props.listTitle) {
       return (
-        <View style={SharedStyles.sectionLabelContainer}>
-          <Text style={SharedStyles.sectionLabelText}>{this.props.listTitle}</Text>
-        </View>
+        <SectionLabelContainer>
+          <SectionLabelText>{this.props.listTitle}</SectionLabelText>
+        </SectionLabelContainer>
       );
     } else {
       return <View />;
@@ -135,12 +144,15 @@ export default class ExploreTab extends React.Component {
   };
 }
 
+export default props => {
+  let theme = useTheme();
+
+  return <ExploreTab {...props} theme={theme} />;
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: FeatureFlags.HIDE_EXPLORE_TABS && Platform.OS === 'ios' ? 5 : 10,
-    backgroundColor: Colors.greyBackground,
-    borderRightWidth: 1,
-    borderRightColor: '#f6f6f6',
   },
 });

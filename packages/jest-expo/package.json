@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "34.0.0",
+  "version": "34.0.1",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -8,8 +8,13 @@
     "url": "git://github.com/expo/jest-expo.git"
   },
   "files": [
+    "android",
     "bin",
+    "ios",
+    "node",
     "src",
+    "universal",
+    "web",
     "jest-preset.js"
   ],
   "bin": {
@@ -21,12 +26,17 @@
   "jest": {
     "preset": "jest-expo/universal"
   },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
   "dependencies": {
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
     "json5": "^2.1.0",
     "lodash": "^4.5.0",
-    "react-test-renderer": "^16.8.6"
+    "react-test-renderer": "~16.8.3"
   },
   "devDependencies": {
     "react": "16.8.3"

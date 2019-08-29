@@ -34,21 +34,10 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 115
-    versionName '2.12.0'
+    versionCode 117
+    versionName '2.12.2'
     // END VERSIONS
-    ndk {
-      // We use different `abiFilters` for distributing
-      // to be able to bundle old, incompatible SDKs.
 
-      // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-      abiFilters 'armeabi-v7a', 'x86'
-      // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-      /* UNCOMMENT WHEN DISTRIBUTING
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-      END UNCOMMENT WHEN DISTRIBUTING */
-    }
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
@@ -141,10 +130,6 @@ dependencies {
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
-  implementation 'com.google.android.gms:play-services-ads:15.0.1'
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
-  implementation "com.raizlabs.android:DBFlow:2.2.1"
   implementation "com.madgag.spongycastle:core:1.53.0.0"
   implementation "com.madgag.spongycastle:prov:1.53.0.0"
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -212,14 +197,6 @@ dependencies {
   implementation(project(':expoview-abi33_0_0'))
   // END_SDK_33
 
-  // BEGIN_SDK_32
-  implementation(project(':expoview-abi32_0_0'))
-  // END_SDK_32
-
-  // BEGIN_SDK_31
-  implementation(project(':expoview-abi31_0_0'))
-  // END_SDK_31
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
   implementation 'com.amplitude:android-sdk:2.9.2'
@@ -242,6 +219,7 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
+        'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-payments-stripe',
         'expo-updates'
