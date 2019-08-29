@@ -52,6 +52,8 @@ const AppContainer = createAppContainer(AppNavigator);
 export default AppContainer;
 ```
 
+- To start your project, run `expo start --web`.
+
 ### Build and publish your website
 
 To build your website, run:
@@ -62,12 +64,13 @@ expo build:web
 
 If you wish to use services such as [ZEIT Now](https://zeit.co/now) to host your website, you should ask the service to run `expo build:web`.
 
-For [ZEIT Now](https://zeit.co/now) specifically, you could simply set `scripts.build` to `"expo build:web"` in your `package.json` file. Learn more [here](https://zeit.co/guides/upgrade-to-zero-configuration#frameworks-with-zero-configuration).
+For [ZEIT Now](https://zeit.co/now) specifically, you could simply set `scripts.build` and `scripts.now-build` to `"expo build:web"` in your `package.json` file. Then run `now` to publish. Learn more [here](https://zeit.co/guides/upgrade-to-zero-configuration#frameworks-with-zero-configuration).
 
 ```json
 {
   "scripts": {
-    "build": "expo build:web"
+    "build": "expo build:web",
+    "now-build": "expo build:web"
   }
 }
 ```
@@ -77,6 +80,45 @@ You also export the website as static files by running the following commands. L
 ```
 expo build:web
 yarn next export
+```
+
+### Web push notifications support
+
+With `expo start`, [web push notifications](../../guides/push-notifications) are supported without any additional configuration.
+
+To use it with other services such as ZEIT Now, you would need to set appropriate configuration to let `/expo-service-worker.js` serve the file content of `/.expo/expo-service-worker.js`, and let `/service-worker.js` serve the file content of a service worker (for example, it would be `/_next/static/service-worker.js` if you uses [next-offline](https://github.com/hanford/next-offline)). If you do not use any other service worker, create a blank file and point `/service-worker.js` to that.
+
+Here is an example `now.json` configuration file assuming that you are using next-offline.
+
+```json
+
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "^/expo-service-worker.js$",
+      "dest": "/.expo/expo-service-worker.js",
+      "headers": {
+        "cache-control": "public, max-age=43200, immutable",
+        "Service-Worker-Allowed": "/"
+      }
+    },
+    {
+      "src": "^/service-worker.js$",
+      "dest": "/_next/static/service-worker.js",
+      "headers": {
+        "cache-control": "public, max-age=43200, immutable",
+        "Service-Worker-Allowed": "/"
+      }
+    }
+  ],
+  "builds": [
+    {
+      "src": "next.config.js",
+      "use": "@now/next"
+    }
+  ]
+}
 ```
 
 ### Customizing `pages/_document.js`
@@ -91,7 +133,6 @@ By default, Expo creates a `pages/_document.js` file for you (which `import` the
 - In the production mode (`--no-dev`), reload is not supported. You have to restart (i.e., run `expo start --no-dev --web` again) to rebuild the page.
 - You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
 - Only the Next.js default page-based routing is supported.
-- [Web push notifications](../../guides/push-notifications) are not yet supported.
 
 ## Learn more about Next.js
 
