@@ -1,17 +1,26 @@
-import ExpoRandom from '../ExpoRandom';
 import * as Random from '../Random';
+import ExpoRandom from '../ExpoRandom';
 
-it(`invokes native method correctly`, async () => {
-  ExpoRandom.getRandomBase64StringAsync.mockImplementationOnce(async () => '');
-  const value = await Random.getRandomBytesAsync(0);
-  expect(value instanceof Uint8Array).toBe(true);
-  expect(ExpoRandom.getRandomBase64StringAsync).toHaveBeenLastCalledWith(0);
+jest.unmock('../ExpoRandom');
+
+jest.mock('../ExpoRandom', () => ({
+  getRandomBytesAsync: jest.fn(async () => 0),
+  getRandomBase64StringAsync: jest.fn(async () => 0)
+}));
+
+jest.mock('base64-js', () => ({ toByteArray: jest.fn(() => {}) }));
+
+it(`accepts valid byte counts`, async () => {
+  for (const value of [0, 1024, 512.5]) {
+    await expect(Random.getRandomBytesAsync(value));
+    expect(ExpoRandom.getRandomBytesAsync).lastCalledWith(Math.floor(value));
+  }
 });
 
-it(`returns an array with the desired number of bytes`, async () => {
-  ExpoRandom.getRandomBase64StringAsync.mockImplementationOnce(async () => 'r6ip');
-  const value = await Random.getRandomBytesAsync(3);
-  expect(value.length).toBe(3);
+it(`invokes toByteArray`,async () => {
+    ExpoRandom.getRandomBytesAsync = null;
+    await expect(Random.getRandomBytesAsync(1024));
+    expect(ExpoRandom.getRandomBase64StringAsync).toHaveBeenCalled()
 });
 
 it(`asserts invalid byte count errors`, async () => {
@@ -21,10 +30,4 @@ it(`asserts invalid byte count errors`, async () => {
   await expect(Random.getRandomBytesAsync(null as any)).rejects.toThrowError(TypeError);
   await expect(Random.getRandomBytesAsync({} as any)).rejects.toThrowError(TypeError);
   await expect(Random.getRandomBytesAsync(NaN)).rejects.toThrowError(TypeError);
-});
-
-it(`accepts valid byte counts`, async () => {
-  await expect(Random.getRandomBytesAsync(0));
-  await expect(Random.getRandomBytesAsync(1024));
-  await expect(Random.getRandomBytesAsync(512.5));
 });
