@@ -4,7 +4,13 @@ title: Push Notifications
 
 Push Notifications are an important feature to, as _"growth hackers"_ would say, retain and re-engage users and monetize on their attention, or something. From my point of view it's just super handy to know when a relevant event happens in an app so I can jump back into it and read more. Let's look at how to do this with Expo. Spoiler alert: it's almost too easy.
 
-> **Note:** iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
+> **Note:**
+>
+> iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
+>
+> For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for push notifications to work.
+>
+> [Next.js with Expo for Web](../../guides/using-nextjs) does not yet support push notifications.
 
 There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to). This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34)!
 
@@ -79,7 +85,11 @@ Push notifications have to come from somewhere, and that somewhere is your serve
 
 Check out the source if you would like to implement it in another language.
 
-> **Note:** For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key,and upload the key to Expo.
+> **Note:**
+>
+> For Android, you'll also need to upload your Firebase Cloud Messaging server key to Expo so that Expo can send notifications to your app. **This step is necessary** unless you are not creating your own APK and using just the Expo client app from Google Play. Follow the guide on [Using FCM for Push Notifications](../../guides/using-fcm) to learn how to create a Firebase project, get your FCM server key, and upload the key to Expo.
+>
+> For Expo for Web, you'll also need to upload VAPID keys to Expo so that Expo can send notifications to your app. **This step is necessary** for push notifications on web to work. Follow the guide on [Using VAPID for Web Push Notifications](../../guides/using-vapid) to learn how to generate or upload your VAPID keys and store them on Expo's server.
 
 The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
@@ -215,7 +225,7 @@ If you send a single message that isn't wrapped in an array to a single recipien
 
 Each push ticket indicates whether Expo successfully received the notification and, when successful, a receipt ID to later retrieve a push receipt. When there is an error receiving a message, the ticket's status will be "error" and the ticket will contain information about the error and might not contain a receipt ID. More information about the response format is documented below.
 
-> **Note:** Even if a ticket says "ok", it doesn't guarantee that the notification will be delivered nor that the device has received the message; "ok" in a push ticket means that Expo successfully received the message and enqueued it to be delivered to the Android or iOS push notification service. 
+> **Note:** Even if a ticket says "ok", it doesn't guarantee that the notification will be delivered nor that the device has received the message; "ok" in a push ticket means that Expo successfully received the message and enqueued it to be delivered to the Android or iOS push notification service.
 
 #### Push receipts
 
@@ -279,7 +289,8 @@ type PushMessage = {
    * Time to Live: the number of seconds for which the message may be kept
    * around for redelivery if it hasn't been delivered yet. Defaults to
    * `undefined` in order to use the respective defaults of each provider.
-   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM.
+   * These are 0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM and web
+   * push notifications.
    *
    * On Android, we make a best effort to deliver messages with zero TTL
    * immediately and do not throttle them.
@@ -384,6 +395,13 @@ type PushMessage = {
   },
 
   /**
+   * (Android and web only)
+   * Remote url of a custom icon that replaces the default notification icon.
+   * This value overrides `notification.icon` in `app.json`.
+   */
+  icon?: string,
+
+  /**
    * A timestamp since the UNIX epoch specifying when the message expires. This
    * has the same effect as the `ttl` field and is just an absolute timestamp
    * instead of a relative time.
@@ -450,11 +468,6 @@ type PushMessage = {
   // Android-specific fields
 
   /**
-   * Remote url of a custom icon that replaces the default notification icon.
-  */
-  icon?: string,
-
-  /**
    * ID of the Notification Channel through which to display this notification
    * on Android devices. If an ID is specified but the corresponding channel
    * does not exist on the device (i.e. has not yet been created by your app),
@@ -465,7 +478,42 @@ type PushMessage = {
    * the "Default" channel is user-facing and you may not be able to fully
    * delete it.
    */
-  channelId?: string
+  channelId?: string,
+
+  // Web-specific fields
+
+  /**
+   * The web path that will be opened/focused after the user clicks the
+   * notification.
+   * Defaults to "/" (root)
+   */
+  webPath?: string,
+
+  /**
+   * URL or `mailto:` URL which provides a point of contact in case the
+   * push service needs to contact the message sender.
+   * Defaults to the value stored on Expo's server.
+   * Learn more here: https://docs.expo.io/versions/latest/guides/using-vapid/
+   */
+  vapidSubject?: string,
+
+  /**
+   * When a new notification is shown with the same tag, any old notifications
+   * with that tag are removed before the new notification is shown.
+   * Defaults to none, which means the new notification will not replace any
+   * old notifications.
+   */
+  _tag?: string,
+
+  /**
+   * Only applicable when `_tag` is set.
+   * Whether a new notification of the same tag will play a sound, vibrate and
+   * wake up the users device.
+   * Defaults to `false`, which means that the new notification replacing an
+   * existing one (i.e., with the same `_tag`) will have no sound, vibration
+   * and the screen is kept asleep.
+   */
+  _renotify?: boolean
 }
 ```
 
@@ -565,3 +613,5 @@ When your push notification credentials have expired, simply run `expo build:ios
 - **Does Expo read or share the contents of push notifications?** Expo does not read or share the contents of push notifications and our services keep push notifications only as long as needed to deliver them to push notification services run by Apple and Google. If the Expo team is actively debugging the push notifications service, we may see notification contents (ex: at a breakpoint) but Expo cannot see push notification contents otherwise.
 
 - **How does Expo encrypt connections to push notification services, like Apple's and Google's?** Expo's connections to Apple and Google are encrypted and use HTTPS.
+
+- **What browsers does Expo for Web's push notifications support?** It works on all browsers that support Push API such as Chrome and Firefox. Check the full list here: https://caniuse.com/#feat=push-api.
