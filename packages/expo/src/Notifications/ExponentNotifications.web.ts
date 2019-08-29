@@ -1,7 +1,11 @@
 import UUID from 'uuid-js';
 
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
-import { guardPermission, getExponentPushTokenAsync, getDevicePushTokenAsync } from './ExponentNotificationsHelper.web';
+import {
+  guardPermission,
+  getExponentPushTokenAsync,
+  getDevicePushTokenAsync,
+} from './ExponentNotificationsHelper.web';
 
 // Register `message`'s event listener (side-effect)
 import './ExponentNotifications.fx.web';
