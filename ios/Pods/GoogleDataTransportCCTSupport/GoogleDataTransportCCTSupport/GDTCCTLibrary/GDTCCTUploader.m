@@ -192,7 +192,10 @@
 
 - (void)appWillBackground:(GDTApplication *)app {
   _backgroundID = [app beginBackgroundTaskWithExpirationHandler:^{
-    [app endBackgroundTask:self->_backgroundID];
+    if (self->_backgroundID != GDTBackgroundIdentifierInvalid) {
+      [app endBackgroundTask:self->_backgroundID];
+      self->_backgroundID = GDTBackgroundIdentifierInvalid;
+    }
   }];
 }
 
