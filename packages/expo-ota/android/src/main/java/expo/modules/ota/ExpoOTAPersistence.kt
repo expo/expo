@@ -98,8 +98,7 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
 }
 
-enum class ExpoOTAPersistenceFactory {
-    INSTANCE;
+object ExpoOTAPersistenceFactory {
 
     private val persistenceMap = HashMap<String, ExpoOTAPersistence>()
 

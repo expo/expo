@@ -11,7 +11,7 @@ import java.util.Collections.singletonList
 class OtaPackage @JvmOverloads constructor(private val id: String = DEFAULT_EXPO_OTA_ID) : BasePackage() {
 
     override fun createExportedModules(context: Context): List<ExportedModule> {
-        val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, id)
+        val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
         val updater = OtaUpdater(context, persistence, id)
         return singletonList<ExportedModule>(OtaModule(context, persistence, updater) as ExportedModule)
     }

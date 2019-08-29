@@ -13,7 +13,7 @@ const val DEFAULT_EXPO_OTA_ID = "default"
 
 class ExpoOTA @JvmOverloads constructor(context: Context, config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID) {
 
-    private val persistence = ExpoOTAPersistenceFactory.INSTANCE.persistence(context, id)
+    private val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
     private val updater = OtaUpdater(context, persistence, id)
 
     init {
