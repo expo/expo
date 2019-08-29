@@ -201,8 +201,6 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNCAsyncStorage (1.6.1):
-    - React
   - RNGestureHandler (1.3.0):
     - React
   - RNReanimated (1.1.0):
@@ -285,7 +283,6 @@ DEPENDENCIES:
   - React/RCTText (from `../../../react-native-lab/react-native`)
   - React/RCTVibration (from `../../../react-native-lab/react-native`)
   - React/RCTWebSocket (from `../../../react-native-lab/react-native`)
-  - "RNCAsyncStorage (from `../../../node_modules/@react-native-community/async-storage`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated/RNReanimated.podspec`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
@@ -454,8 +451,6 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../../../react-native-lab/react-native"
-  RNCAsyncStorage:
-    :path: "../../../node_modules/@react-native-community/async-storage"
   RNGestureHandler:
     :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
   RNReanimated:
@@ -550,7 +545,6 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
-  RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   UMBarCodeScannerInterface: 84ea2d6b58ff0dc27ef9b68bab71286be18ee020
@@ -565,6 +559,6 @@ SPEC CHECKSUMS:
   UMSensorsInterface: 0ed023ce9b96f2ca6fada7bda05b7760da60b293
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 41a9b6ea74f90bfb023af7dc6097adcd28a1f773
+PODFILE CHECKSUM: 89d36f5a85f14250f85476dcc6c968499f450490
 
 COCOAPODS: 1.7.5
