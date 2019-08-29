@@ -10,8 +10,6 @@ const {
   ButtonStyle,
 } = ExpoAppleAuthentication;
 
-export type RequestStatus = 'success' | 'revoke' | 'cancel';
-
 export interface SignInWithAppleButtonProps {
   /**
    * The callback which is called when the user pressed the button.
@@ -78,12 +76,12 @@ export interface SignInWithAppleOptions {
 */
 export interface SignInWithAppleCredential {
   /**
-   * A string indicating the status type of the requested credential.
-   * 'success' if the credential was retrieved successfully,
-   * 'revoke' if the credential was revoked,
-   * or 'cancel' if the user canceled the Sign In operation.
+   * A value indicating the status type of the requested credential.
+   * Success if the credential was retrieved successfully,
+   * Revoke if the credential was revoked,
+   * or Cancel if the user canceled the Sign In operation.
    */
-  type: RequestStatus;
+  type: SignInWithAppleStatus;
 
   /**
     * A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -254,10 +252,19 @@ export enum SignInWithAppleButtonStyle {
 }
 
 /**
+ * Indicates the status of the attempt to retrieve the requested credential.
+ */
+export enum SignInWithAppleStatus {
+  Success = 'success',
+  Revoke = 'revoke',
+  Cancel = 'cancel',
+}
+
+/**
  * Event sent to the listener when the user's credentials have been revoked.
  */
 export type RevokeEvent = {
-  type: RequestStatus;
+  type: SignInWithAppleStatus;
 }
 
 /**

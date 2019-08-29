@@ -103,4 +103,13 @@ export var SignInWithAppleButtonStyle;
     SignInWithAppleButtonStyle[SignInWithAppleButtonStyle["White"] = ButtonStyle && ButtonStyle.White] = "White";
     SignInWithAppleButtonStyle[SignInWithAppleButtonStyle["WhiteOutline"] = ButtonStyle && ButtonStyle.WhiteOutline] = "WhiteOutline";
 })(SignInWithAppleButtonStyle || (SignInWithAppleButtonStyle = {}));
+/**
+ * Indicates the status of the attempt to retrieve the requested credential.
+ */
+export var SignInWithAppleStatus;
+(function (SignInWithAppleStatus) {
+    SignInWithAppleStatus["Success"] = "success";
+    SignInWithAppleStatus["Revoke"] = "revoke";
+    SignInWithAppleStatus["Cancel"] = "cancel";
+})(SignInWithAppleStatus || (SignInWithAppleStatus = {}));
 //# sourceMappingURL=AppleAuthentication.types.js.map
