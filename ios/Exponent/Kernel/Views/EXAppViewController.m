@@ -179,6 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_loadingView.manifest = manifest;
+      [self _overrideUserInterfaceStyle];
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
@@ -377,6 +378,26 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
   }
   [UIViewController attemptRotationToDeviceOrientation];
+}
+
+#pragma mark - user interface style
+
+- (void)_overrideUserInterfaceStyle
+{
+  if (@available(iOS 13.0, *)) {
+    NSString *userInterfaceStyle = _appRecord.appLoader.manifest[@"ios"][@"userInterfaceStyle"];
+    self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
+  }
+}
+
+- (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
+  if ([userInterfaceStyleString isEqualToString:@"dark"]) {
+    return UIUserInterfaceStyleDark;
+  }
+  if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
+    return UIUserInterfaceStyleUnspecified;
+  }
+  return UIUserInterfaceStyleLight;
 }
 
 #pragma mark - Internal

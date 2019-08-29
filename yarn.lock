@@ -12153,10 +12153,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-appearance@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.0.7.tgz#47b81bb8a5e55f6f4298604e6af0f7491626849c"
-  integrity sha512-koqGKX2c/WUkOmtQWEoQtFFwEoXH2K9mO+3gZ2kocJx7xynAqtqpczbYk2DtwEdoUCVrxA/otlzTWdS5yY6mnA==
+react-native-appearance@~0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.0.8.tgz#b887931c7ea03664792e509c657a01fb7b2ad83b"
+  integrity sha512-nxYAMjjj+OBtczK3EwGQdghJQkPtupqoraKF//fIbcgNRZ9dMhoUMmbLOV9oLLY5Wxu3DbxGsebGGZdEtyVVjQ==
   dependencies:
     fbemitter "^2.1.1"
     invariant "^2.2.4"
