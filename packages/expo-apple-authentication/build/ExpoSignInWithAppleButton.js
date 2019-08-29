@@ -36,10 +36,10 @@ import { SignInWithAppleButtonStyle, SignInWithAppleButtonType, } from './ExpoAp
  * }
  * ```
  */
-const ExpoSingInWithAppleButton = (props) => {
+const ExpoSignInWithAppleButton = (props) => {
     if (!ExpoSignInWithAppleButtonSignInWhite) {
         if (__DEV__) {
-            console.warn('\'ExpoSingInWithAppleButton\' is not available.');
+            console.warn('\'ExpoSignInWithAppleButton\' is not available.');
         }
         return null;
     }
@@ -62,5 +62,5 @@ const ButtonComponents = {
 function selectButtonComponent(type, style) {
     return ButtonComponents[type][style];
 }
-export default ExpoSingInWithAppleButton;
+export default ExpoSignInWithAppleButton;
 //# sourceMappingURL=ExpoSignInWithAppleButton.js.map

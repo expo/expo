@@ -87,8 +87,12 @@ UM_EXPORT_METHOD_AS(requestAsync,
     ASAuthorizationAppleIDProvider* appleIDProvider = [[ASAuthorizationAppleIDProvider alloc] init];
     ASAuthorizationAppleIDRequest* request = [appleIDProvider createRequest];
     request.requestedScopes = options[@"requestedScopes"];
-    if (options[@"requestedOperation"]) {
-      request.requestedOperation = options[@"requestedOperation"];
+    request.requestedOperation = options[@"requestedOperation"];
+    if (options[@"user"]) {
+      request.requestedOperation = options[@"user"];
+    }
+    if (options[@"scope"]) {
+      request.requestedOperation = options[@"scope"];
     }
     
     ASAuthorizationController* ctrl = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];

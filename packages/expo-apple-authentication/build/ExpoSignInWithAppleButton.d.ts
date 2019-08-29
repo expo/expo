@@ -35,5 +35,5 @@ import { SignInWithAppleButtonProps } from './ExpoAppleAuthentication.types';
  * }
  * ```
  */
-declare const ExpoSingInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonProps>;
-export default ExpoSingInWithAppleButton;
+declare const ExpoSignInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonProps>;
+export default ExpoSignInWithAppleButton;

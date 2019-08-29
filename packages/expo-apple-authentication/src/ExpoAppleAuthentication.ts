@@ -5,6 +5,7 @@ import {
   SignInWithAppleOptions,
   SignInWithAppleCredential,
   SignInWithAppleCredentialState,
+  SignInWithAppleOperation,
 } from './ExpoAppleAuthentication.types';
 
 /**
@@ -42,6 +43,9 @@ export async function isAvailableAsync(): Promise<boolean> {
 export async function requestAsync(options: SignInWithAppleOptions): Promise<SignInWithAppleCredential> {
   if (!ExpoAppleAuthenticationNative.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'requestAsync');
+  }
+  if (!options.requestedOperation) {
+    options.requestedOperation = SignInWithAppleOperation.Login;
   }
   return ExpoAppleAuthenticationNative.requestAsync(options);
 }
