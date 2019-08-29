@@ -6,21 +6,6 @@
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
-#import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"
-
-@implementation FBSDKInternalUtility (ABI33_0_0EXFacebook)
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-+ (BOOL)isRegisteredURLScheme:(NSString *)urlScheme
-{
-  // !!!: Make FB SDK think we can open fb<app id>:// urls
-  return ![@[FBSDK_CANOPENURL_FACEBOOK, FBSDK_CANOPENURL_MESSENGER, FBSDK_CANOPENURL_FBAPI, FBSDK_CANOPENURL_SHARE_EXTENSION]
-           containsObject:urlScheme];
-}
-#pragma clang diagnostic pop
-
-@end
 
 NSString * const ABI33_0_0EXFacebookLoginErrorDomain = @"E_FBLOGIN";
 NSString * const ABI33_0_0EXFacebookLoginBehaviorErrorDomain = @"E_FBLOGIN_BEHAVIOR";
