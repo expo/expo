@@ -101,6 +101,17 @@ export interface SignInWithAppleCredential {
     realUserStatus?: SignInWithAppleUserDetectionStatus;
 }
 /**
+ * Tokenized object representing the different portions of the user's full name.
+ */
+export interface SignInWithAppleFullName {
+    namePrefix?: string;
+    givenName?: string;
+    middleName?: string;
+    familyName?: string;
+    nameSuffix?: string;
+    nickname?: string;
+}
+/**
  * Controls which scopes you are requesting when the call `SignInWithApple.requestAsync()`.
  *
  * @note Note that it is possible that you will not be granted all of the scopes which you request.

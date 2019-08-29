@@ -142,10 +142,10 @@ UM_EXPORT_METHOD_AS(requestAsync,
     request.requestedScopes = options[@"requestedScopes"];
     request.requestedOperation = options[@"requestedOperation"];
     if (options[@"user"]) {
-      request.requestedOperation = options[@"user"];
+      request.user = options[@"user"];
     }
-    if (options[@"scope"]) {
-      request.requestedOperation = options[@"scope"];
+    if (options[@"state"]) {
+      request.state = options[@"state"];
     }
     
     ASAuthorizationController* ctrl = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
@@ -188,7 +188,7 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
 {
   ASAuthorizationAppleIDCredential* credential = authorization.credential;
   NSDictionary* user = @{
-                         @"fullName": UMNullIfNil(credential.fullName),
+                         @"fullName": [self _serializeFullName:credential.fullName],
                          @"email": UMNullIfNil(credential.email),
                          @"user": credential.user,
                          @"authorizedScopes": credential.authorizedScopes,
@@ -213,6 +213,18 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
   }
   _promiseResolve = nil;
   _promiseReject = nil;
+}
+
+- (NSDictionary *)_serializeFullName:(NSPersonNameComponents *)nameComponents
+{
+  return @{
+           @"namePrefix": UMNullIfNil(nameComponents.namePrefix),
+           @"givenName": UMNullIfNil(nameComponents.givenName),
+           @"middleName": UMNullIfNil(nameComponents.middleName),
+           @"familyName": UMNullIfNil(nameComponents.familyName),
+           @"nameSuffix": UMNullIfNil(nameComponents.nameSuffix),
+           @"nickname": UMNullIfNil(nameComponents.nickname)
+           };
 }
 
 @end
