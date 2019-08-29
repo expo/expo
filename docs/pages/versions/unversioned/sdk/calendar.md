@@ -32,6 +32,14 @@ Gets an array of calendar objects with details about the different calendars sto
 
 An array of [calendar objects](#calendar 'Calendar') matching the provided entity type (if provided).
 
+### `Calendar.getDefaultCalendarAsync()`
+
+**iOS only**. Gets an instance of the default calendar object.
+
+#### Returns
+
+A [calendar object](#calendar 'Calendar').
+
 ### `Calendar.requestRemindersPermissionsAsync()`
 
 **iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
