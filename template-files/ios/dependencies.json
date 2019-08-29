@@ -21,7 +21,7 @@
   },
   {
     "name": "FBAudienceNetwork",
-    "version": "5.1.1",
+    "version": "5.5.0",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
