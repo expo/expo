@@ -5,22 +5,8 @@ import * as FS from 'expo-file-system';
 
 export const name = 'FileSystem';
 
-export function canRunAsync({ isDetox }) {
-  return !isDetox;
-}
-
-export async function test({
-  beforeAll,
-  describe,
-  it,
-  xit,
-  xdescribe,
-  beforeEach,
-  jasmine,
-  expect,
-  ...t
-}) {
-  describe('FileSystem', () => {
+export async function test(t) {
+  t.describe('FileSystem', () => {
     const throws = async run => {
       let error = null;
       try {
@@ -28,10 +14,10 @@ export async function test({
       } catch (e) {
         error = e;
       }
-      expect(error).toBeTruthy();
+      t.expect(error).toBeTruthy();
     };
 
-    it(
+    t.it(
       'delete(idempotent) -> !exists -> download(md5, uri) -> exists ' + '-> delete -> !exists',
       async () => {
         const localUri = FS.documentDirectory + 'download1.png';
@@ -39,9 +25,9 @@ export async function test({
         const assertExists = async expectedToExist => {
           let { exists } = await FS.getInfoAsync(localUri);
           if (expectedToExist) {
-            expect(exists).toBeTruthy();
+            t.expect(exists).toBeTruthy();
           } else {
-            expect(exists).not.toBeTruthy();
+            t.expect(exists).not.toBeTruthy();
           }
         };
 
@@ -53,9 +39,9 @@ export async function test({
           localUri,
           { md5: true }
         );
-        expect(md5).toBe('1e02045c10b8f1145edc7c8375998f87');
+        t.expect(md5).toBe('1e02045c10b8f1145edc7c8375998f87');
         await assertExists(true);
-        expect(headers['Content-Type']).toBe('image/png');
+        t.expect(headers['Content-Type']).toBe('image/png');
 
         await FS.deleteAsync(localUri);
         await assertExists(false);
@@ -63,7 +49,7 @@ export async function test({
       9000
     );
 
-    it('Can read/write Base64', async () => {
+    t.it('Can read/write Base64', async () => {
       const asset = await Asset.fromModule(require('../assets/icons/app.png'));
       await asset.downloadAsync();
 
@@ -75,21 +61,21 @@ export async function test({
         };
 
         const b64 = await FS.readAsStringAsync(asset.localUri, options);
-        expect(b64).toBeDefined();
-        expect(typeof b64).toBe('string');
-        expect(b64.length % 4).toBe(0);
+        t.expect(b64).toBeDefined();
+        t.expect(typeof b64).toBe('string');
+        t.expect(b64.length % 4).toBe(0);
 
         const localUri = FS.documentDirectory + 'b64.png';
 
         await FS.writeAsStringAsync(localUri, b64, { encoding: FS.EncodingType.Base64 });
 
-        expect(await FS.readAsStringAsync(localUri, { encoding: FS.EncodingType.Base64 })).toBe(
+        t.expect(await FS.readAsStringAsync(localUri, { encoding: FS.EncodingType.Base64 })).toBe(
           b64
         );
       }
     });
 
-    it('delete(idempotent) -> delete[error]', async () => {
+    t.it('delete(idempotent) -> delete[error]', async () => {
       const localUri = FS.documentDirectory + 'willDelete.png';
 
       await FS.deleteAsync(localUri, { idempotent: true });
@@ -100,52 +86,56 @@ export async function test({
       } catch (e) {
         error = e;
       }
-      expect(error.message).toMatch(/not.*found/);
+      t.expect(error.message).toMatch(/not.*found/);
     });
 
-    it('download(md5, uri) -> read -> delete -> !exists -> read[error]', async () => {
-      const localUri = FS.documentDirectory + 'download1.txt';
+    t.it(
+      'download(md5, uri) -> read -> delete -> !exists -> read[error]',
+      async () => {
+        const localUri = FS.documentDirectory + 'download1.txt';
 
-      const { md5 } = await FS.downloadAsync(
-        'https://s3-us-west-1.amazonaws.com/test-suite-data/text-file.txt',
-        localUri,
-        { md5: true }
-      );
-      expect(md5).toBe('86d73d2f11e507365f7ea8e7ec3cc4cb');
+        const { md5 } = await FS.downloadAsync(
+          'https://s3-us-west-1.amazonaws.com/test-suite-data/text-file.txt',
+          localUri,
+          { md5: true }
+        );
+        t.expect(md5).toBe('86d73d2f11e507365f7ea8e7ec3cc4cb');
 
-      const string = await FS.readAsStringAsync(localUri);
-      expect(string).toBe('hello, world\nthis is a test file\n');
+        const string = await FS.readAsStringAsync(localUri);
+        t.expect(string).toBe('hello, world\nthis is a test file\n');
 
-      await FS.deleteAsync(localUri, { idempotent: true });
+        await FS.deleteAsync(localUri, { idempotent: true });
 
-      let error;
-      try {
-        await FS.readAsStringAsync(localUri);
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-    }, 9000);
+        let error;
+        try {
+          await FS.readAsStringAsync(localUri);
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error).toBeTruthy();
+      },
+      9000
+    );
 
-    it('delete(idempotent) -> !exists -> write -> read -> write -> read', async () => {
+    t.it('delete(idempotent) -> !exists -> write -> read -> write -> read', async () => {
       const localUri = FS.documentDirectory + 'write1.txt';
 
       await FS.deleteAsync(localUri, { idempotent: true });
 
       const { exists } = await FS.getInfoAsync(localUri);
-      expect(exists).not.toBeTruthy();
+      t.expect(exists).not.toBeTruthy();
 
       const writeAndVerify = async expected => {
         await FS.writeAsStringAsync(localUri, expected);
         const string = await FS.readAsStringAsync(localUri);
-        expect(string).toBe(expected);
+        t.expect(string).toBe(expected);
       };
 
       await writeAndVerify('hello, world');
       await writeAndVerify('hello, world!!!!!!');
     });
 
-    it('delete(new) -> 2 * [write -> move -> !exists(orig) -> read(new)]', async () => {
+    t.it('delete(new) -> 2 * [write -> move -> !exists(orig) -> read(new)]', async () => {
       const from = FS.documentDirectory + 'from.txt';
       const to = FS.documentDirectory + 'to.txt';
       const contents = ['contents 1', 'contents 2'];
@@ -159,13 +149,13 @@ export async function test({
         await FS.moveAsync({ from, to });
 
         const { exists } = await FS.getInfoAsync(from);
-        expect(exists).not.toBeTruthy();
+        t.expect(exists).not.toBeTruthy();
 
-        expect(await FS.readAsStringAsync(to)).toBe(contents[i]);
+        t.expect(await FS.readAsStringAsync(to)).toBe(contents[i]);
       }
     });
 
-    it('delete(new) -> 2 * [write -> copy -> exists(orig) -> read(new)]', async () => {
+    t.it('delete(new) -> 2 * [write -> copy -> exists(orig) -> read(new)]', async () => {
       const from = FS.documentDirectory + 'from.txt';
       const to = FS.documentDirectory + 'to.txt';
       const contents = ['contents 1', 'contents 2'];
@@ -179,13 +169,13 @@ export async function test({
         await FS.copyAsync({ from, to });
 
         const { exists } = await FS.getInfoAsync(from);
-        expect(exists).toBeTruthy();
+        t.expect(exists).toBeTruthy();
 
-        expect(await FS.readAsStringAsync(to)).toBe(contents[i]);
+        t.expect(await FS.readAsStringAsync(to)).toBe(contents[i]);
       }
     });
 
-    it(
+    t.it(
       'delete(dir) -> write(dir/file)[error] -> mkdir(dir) ->' +
         'mkdir(dir)[error] -> write(dir/file) -> read',
       async () => {
@@ -202,7 +192,7 @@ export async function test({
         } catch (e) {
           error = e;
         }
-        expect(error).toBeTruthy();
+        t.expect(error).toBeTruthy();
 
         await FS.makeDirectoryAsync(dir);
 
@@ -212,15 +202,15 @@ export async function test({
         } catch (e) {
           error = e;
         }
-        expect(error).toBeTruthy();
+        t.expect(error).toBeTruthy();
 
         await FS.writeAsStringAsync(path, contents);
 
-        expect(await FS.readAsStringAsync(path)).toBe(contents);
+        t.expect(await FS.readAsStringAsync(path)).toBe(contents);
       }
     );
 
-    it(
+    t.it(
       'delete(dir) -> write(dir/dir2/file)[error] -> ' +
         'mkdir(dir/dir2, intermediates) -> ' +
         'mkdir(dir/dir2, intermediates) -> write(dir/dir2/file) -> read',
@@ -238,7 +228,7 @@ export async function test({
         } catch (e) {
           error = e;
         }
-        expect(error).toBeTruthy();
+        t.expect(error).toBeTruthy();
 
         await FS.makeDirectoryAsync(dir, {
           intermediates: true,
@@ -250,7 +240,7 @@ export async function test({
         } catch (e) {
           error = e;
         }
-        expect(error).toBeTruthy();
+        t.expect(error).toBeTruthy();
 
         error = null;
         try {
@@ -260,11 +250,11 @@ export async function test({
         } catch (e) {
           error = e;
         }
-        expect(error).toBe(null);
+        t.expect(error).toBe(null);
 
         await FS.writeAsStringAsync(path, contents);
 
-        expect(await FS.readAsStringAsync(path)).toBe(contents);
+        t.expect(await FS.readAsStringAsync(path)).toBe(contents);
       }
     );
 
@@ -272,7 +262,7 @@ export async function test({
     This test fails in CI because of an exception being thrown by deleteAsync in the nativeModule.
     I traced it down to the FileUtils.forceDelete call here:
     https://github.com/expo/expo/blob/bcd136b096df84e0b0f72a15acbda45491de8201/packages/expo-file-system/android/src/main/java/expo/modules/filesystem/FileSystemModule.java#L294
-    it(
+    t.it(
       'delete(dir, idempotent) -> make tree -> check contents ' +
         '-> check directory listings' +
         '-> move -> check directory listings' +
@@ -299,7 +289,7 @@ export async function test({
         await FS.writeAsStringAsync(dir + '/child2/file5', 'contents5');
 
         const checkContents = async (path, contents) =>
-          expect(await FS.readAsStringAsync(path)).toBe(contents);
+          t.expect(await FS.readAsStringAsync(path)).toBe(contents);
 
         await checkContents(dir + '/file1', 'contents1');
         await checkContents(dir + '/file2', 'contents2');
@@ -309,7 +299,7 @@ export async function test({
 
         const checkDirectory = async (path, expected) => {
           const list = await FS.readDirectoryAsync(path);
-          expect(list.sort()).toEqual(expected.sort());
+          t.expect(list.sort()).toEqual(expected.sort());
         };
 
         const checkRoot = async root => {
@@ -323,7 +313,7 @@ export async function test({
           } catch (e) {
             error = e;
           }
-          expect(error).toBeTruthy();
+          t.expect(error).toBeTruthy();
         };
 
         await checkRoot(dir);
@@ -342,27 +332,31 @@ export async function test({
     );
     */
 
-    it('delete(idempotent) -> download(md5) -> getInfo(size)', async () => {
-      const localUri = FS.documentDirectory + 'download1.png';
+    t.it(
+      'delete(idempotent) -> download(md5) -> getInfo(size)',
+      async () => {
+        const localUri = FS.documentDirectory + 'download1.png';
 
-      await FS.deleteAsync(localUri, { idempotent: true });
+        await FS.deleteAsync(localUri, { idempotent: true });
 
-      const { md5 } = await FS.downloadAsync(
-        'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
-        localUri,
-        { md5: true }
-      );
-      expect(md5).toBe('1e02045c10b8f1145edc7c8375998f87');
+        const { md5 } = await FS.downloadAsync(
+          'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
+          localUri,
+          { md5: true }
+        );
+        t.expect(md5).toBe('1e02045c10b8f1145edc7c8375998f87');
 
-      const { size, modificationTime } = await FS.getInfoAsync(localUri);
-      expect(size).toBe(3230);
-      const nowTime = 0.001 * new Date().getTime();
-      expect(nowTime - modificationTime).toBeLessThan(3600);
+        const { size, modificationTime } = await FS.getInfoAsync(localUri);
+        t.expect(size).toBe(3230);
+        const nowTime = 0.001 * new Date().getTime();
+        t.expect(nowTime - modificationTime).toBeLessThan(3600);
 
-      await FS.deleteAsync(localUri);
-    }, 30000);
+        await FS.deleteAsync(localUri);
+      },
+      30000
+    );
 
-    it('throws out-of-scope exceptions', async () => {
+    t.it('throws out-of-scope exceptions', async () => {
       const p = FS.documentDirectory;
 
       await throws(() => FS.getInfoAsync(p + '../hello/world'));
@@ -382,7 +376,7 @@ export async function test({
       await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
     });
 
-    it('missing parameters', async () => {
+    t.it('missing parameters', async () => {
       const p = FS.documentDirectory + 'test';
 
       await throws(() => FS.moveAsync({ from: p }));
@@ -391,80 +385,96 @@ export async function test({
       await throws(() => FS.copyAsync({ to: p }));
     });
 
-    it('can read root directories', async () => {
+    t.it('can read root directories', async () => {
       await FS.readDirectoryAsync(FS.documentDirectory);
       await FS.readDirectoryAsync(FS.cacheDirectory);
     });
 
-    it('download(network failure)', async () => {
-      const localUri = FS.documentDirectory + 'download1.png';
+    t.it(
+      'download(network failure)',
+      async () => {
+        const localUri = FS.documentDirectory + 'download1.png';
 
-      const assertExists = async expectedToExist => {
-        let { exists } = await FS.getInfoAsync(localUri);
-        if (expectedToExist) {
-          expect(exists).toBeTruthy();
-        } else {
-          expect(exists).not.toBeTruthy();
+        const assertExists = async expectedToExist => {
+          let { exists } = await FS.getInfoAsync(localUri);
+          if (expectedToExist) {
+            t.expect(exists).toBeTruthy();
+          } else {
+            t.expect(exists).not.toBeTruthy();
+          }
+        };
+
+        await FS.deleteAsync(localUri, { idempotent: true });
+        await assertExists(false);
+
+        let error;
+        try {
+          await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, { md5: true });
+        } catch (e) {
+          error = e;
         }
-      };
+        t.expect(error).toBeTruthy();
+        await assertExists(false);
+        await FS.deleteAsync(localUri, { idempotent: true });
+      },
+      30000
+    );
 
-      await FS.deleteAsync(localUri, { idempotent: true });
-      await assertExists(false);
+    t.it(
+      'download(404)',
+      async () => {
+        const localUri = FS.documentDirectory + 'download1.png';
 
-      let error;
-      try {
-        await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, { md5: true });
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-      await assertExists(false);
-      await FS.deleteAsync(localUri, { idempotent: true });
-    }, 30000);
+        const assertExists = async expectedToExist => {
+          let { exists } = await FS.getInfoAsync(localUri);
+          if (expectedToExist) {
+            t.expect(exists).toBeTruthy();
+          } else {
+            t.expect(exists).not.toBeTruthy();
+          }
+        };
 
-    it('download(404)', async () => {
-      const localUri = FS.documentDirectory + 'download1.png';
+        await FS.deleteAsync(localUri, { idempotent: true });
+        await assertExists(false);
 
-      const assertExists = async expectedToExist => {
-        let { exists } = await FS.getInfoAsync(localUri);
-        if (expectedToExist) {
-          expect(exists).toBeTruthy();
-        } else {
-          expect(exists).not.toBeTruthy();
+        const { status } = await FS.downloadAsync('https://expo.io/404', localUri, {
+          md5: true,
+        });
+        await assertExists(true);
+        t.expect(status).toBe(404);
+
+        await FS.deleteAsync(localUri);
+        await assertExists(false);
+      },
+      30000
+    );
+
+    t.it(
+      'download(nonexistent local path)',
+      async () => {
+        try {
+          const remoteUrl = 'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png';
+          const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
+          await FS.downloadAsync(remoteUrl, localUri);
+        } catch (err) {
+          t.expect(err.message).toMatch(/Directory for .* doesn't exist/);
         }
-      };
+      },
+      30000
+    );
 
-      await FS.deleteAsync(localUri, { idempotent: true });
-      await assertExists(false);
-
-      const { status } = await FS.downloadAsync('https://expo.io/404', localUri, {
-        md5: true,
-      });
-      await assertExists(true);
-      expect(status).toBe(404);
-
-      await FS.deleteAsync(localUri);
-      await assertExists(false);
-    }, 30000);
-
-    it('download(nonexistent local path)', async () => {
-      try {
+    t.it(
+      'mkdir(multi-level) + download(multi-level local path)',
+      async () => {
         const remoteUrl = 'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png';
-        const localUri = FS.documentDirectory + 'doesnt/exists/download1.png';
-        await FS.downloadAsync(remoteUrl, localUri);
-      } catch (err) {
-        expect(err.message).toMatch(/Directory for .* doesn't exist/);
-      }
-    }, 30000);
+        const localDirUri = FS.documentDirectory + 'foo/bar/baz';
+        const localFileUri = localDirUri + 'download1.png';
 
-    it('mkdir(multi-level) + download(multi-level local path)', async () => {
-      const remoteUrl = 'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png';
-      const localDirUri = FS.documentDirectory + 'foo/bar/baz';
-      const localFileUri = localDirUri + 'download1.png';
+        await FS.makeDirectoryAsync(localDirUri, { intermediates: true });
 
-      await FS.makeDirectoryAsync(localDirUri, { intermediates: true });
-
-      await FS.downloadAsync(remoteUrl, localFileUri);
-    }, 30000);
+        await FS.downloadAsync(remoteUrl, localFileUri);
+      },
+      30000
+    );
   });
 }

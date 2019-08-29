@@ -9,10 +9,6 @@ import { retryForStatus, waitFor } from './helpers';
 
 export const name = 'Recording';
 
-export function canRunAsync({ isAutomated, isDevice }) {
-  return !isAutomated;
-}
-
 const defaultRecordingDurationMillis = 500;
 
 const amrSettings = {
@@ -52,19 +48,9 @@ const amrSettings = {
 // > This happens if stop() is called immediately after start().
 // > Source: https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
 
-export async function test({
-  beforeAll,
-  describe,
-  it,
-  xit,
-  xdescribe,
-  beforeEach,
-  jasmine,
-  expect,
-  ...t
-}) {
+export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
+  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Recording', () => {
     t.beforeAll(async () => {
@@ -88,32 +74,32 @@ export async function test({
     const pausingIsSupported = Platform.OS !== 'android' || Platform.Version >= 25;
     let recordingObject = null;
 
-    beforeEach(async () => {
+    t.beforeEach(async () => {
       const { status } = await Permissions.getAsync(Permissions.AUDIO_RECORDING);
-      expect(status).toEqual('granted');
+      t.expect(status).toEqual('granted');
       recordingObject = new Audio.Recording();
     });
 
-    afterEach(() => {
+    t.afterEach(() => {
       recordingObject = null;
     });
 
-    describe('Recording.prepareToRecordAsync(preset)', () => {
-      afterEach(async () => {
+    t.describe('Recording.prepareToRecordAsync(preset)', () => {
+      t.afterEach(async () => {
         await recordingObject.startAsync();
         await waitFor(defaultRecordingDurationMillis);
         await recordingObject.stopAndUnloadAsync();
       });
 
-      it('sets high preset successfully', async () => {
+      t.it('sets high preset successfully', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
       });
 
-      it('sets low preset successfully', async () => {
+      t.it('sets low preset successfully', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
       });
 
-      it('sets custom preset successfully', async () => {
+      t.it('sets custom preset successfully', async () => {
         const commonOptions = {
           bitRate: 8000,
           sampleRate: 8000,
@@ -141,60 +127,60 @@ export async function test({
 
     // Such function exists in the documentation, but not in the implementation.
 
-    // describe('Recording.isPreparedToRecord()', () => {
+    // t.describe('Recording.isPreparedToRecord()', () => {
     //   t.beforeEach(
     //     async () =>
     //       await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY)
     //   );
-    //   afterEach(async () => await recordingObject.stopAndUnloadAsync());
+    //   t.afterEach(async () => await recordingObject.stopAndUnloadAsync());
 
-    //   it('returns a boolean', () => {
+    //   t.it('returns a boolean', () => {
     //     const returnedValue = recordingObject.isPreparedToRecord();
     //     const valueIsABoolean = returnedValue === false || returnedValue === true;
-    //     expect(valueIsABoolean).toBe(true);
+    //     t.expect(valueIsABoolean).toBe(true);
     //   });
     // });
 
-    describe('Recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate)', () => {
-      it('sets a function that gets called when status updates', async () => {
-        const onRecordingStatusUpdate = jasmine.createSpy('onRecordingStatusUpdate');
+    t.describe('Recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate)', () => {
+      t.it('sets a function that gets called when status updates', async () => {
+        const onRecordingStatusUpdate = t.jasmine.createSpy('onRecordingStatusUpdate');
         recordingObject.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
-        expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
-          jasmine.objectContaining({ canRecord: false })
+        t.expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
+          t.jasmine.objectContaining({ canRecord: false })
         );
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
-        expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
-          jasmine.objectContaining({ canRecord: true })
+        t.expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
+          t.jasmine.objectContaining({ canRecord: true })
         );
         await recordingObject.startAsync();
         await waitFor(defaultRecordingDurationMillis);
         await recordingObject.stopAndUnloadAsync();
       });
 
-      it('sets a function that gets called when recording finishes', async () => {
-        const onRecordingStatusUpdate = jasmine.createSpy('onRecordingStatusUpdate');
+      t.it('sets a function that gets called when recording finishes', async () => {
+        const onRecordingStatusUpdate = t.jasmine.createSpy('onRecordingStatusUpdate');
         recordingObject.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
-        expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
-          jasmine.objectContaining({ canRecord: false })
+        t.expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
+          t.jasmine.objectContaining({ canRecord: false })
         );
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
-        expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
-          jasmine.objectContaining({ canRecord: true })
+        t.expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
+          t.jasmine.objectContaining({ canRecord: true })
         );
         await recordingObject.startAsync();
         await waitFor(defaultRecordingDurationMillis);
         await recordingObject.stopAndUnloadAsync();
-        expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
-          jasmine.objectContaining({ isDoneRecording: true, canRecord: false })
+        t.expect(onRecordingStatusUpdate).toHaveBeenCalledWith(
+          t.jasmine.objectContaining({ isDoneRecording: true, canRecord: false })
         );
       });
     });
 
-    /*describe('Recording.setProgressUpdateInterval(millis)', () => {
-      afterEach(async () => await recordingObject.stopAndUnloadAsync());
+    /*t.describe('Recording.setProgressUpdateInterval(millis)', () => {
+      t.afterEach(async () => await recordingObject.stopAndUnloadAsync());
 
-      it('sets frequence of the progress updates', async () => {
-        const onRecordingStatusUpdate = jasmine.createSpy('onRecordingStatusUpdate');
+      t.it('sets frequence of the progress updates', async () => {
+        const onRecordingStatusUpdate = t.jasmine.createSpy('onRecordingStatusUpdate');
         recordingObject.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
@@ -203,7 +189,7 @@ export async function test({
         await new Promise(resolve => {
           setTimeout(() => {
             const expectedArgsCount = Platform.OS === 'android' ? 5 : 10;
-            expect(onRecordingStatusUpdate.calls.count()).toBeGreaterThan(expectedArgsCount);
+            t.expect(onRecordingStatusUpdate.calls.count()).toBeGreaterThan(expectedArgsCount);
 
             const realMillis = map(
               takeRight(filter(flatten(onRecordingStatusUpdate.calls.allArgs()), 'isRecording'), 4),
@@ -212,7 +198,7 @@ export async function test({
 
             for (let i = 3; i > 0; i--) {
               const difference = Math.abs(realMillis[i] - realMillis[i - 1] - updateInterval);
-              expect(difference).toBeLessThan(updateInterval / 2 + 1);
+              t.expect(difference).toBeLessThan(updateInterval / 2 + 1);
             }
 
             resolve();
@@ -221,20 +207,20 @@ export async function test({
       });
     });*/
 
-    describe('Recording.startAsync()', () => {
-      afterEach(async () => {
+    t.describe('Recording.startAsync()', () => {
+      t.afterEach(async () => {
         await waitFor(defaultRecordingDurationMillis);
         await recordingObject.stopAndUnloadAsync();
       });
 
-      it('starts a clean recording', async () => {
+      t.it('starts a clean recording', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
         await retryForStatus(recordingObject, { isRecording: true });
       });
 
       if (pausingIsSupported) {
-        it('starts a paused recording', async () => {
+        t.it('starts a paused recording', async () => {
           await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
           await recordingObject.startAsync();
           await retryForStatus(recordingObject, { isRecording: true });
@@ -247,8 +233,8 @@ export async function test({
     });
 
     if (pausingIsSupported) {
-      describe('Recording.pauseAsync()', () => {
-        it('pauses the recording', async () => {
+      t.describe('Recording.pauseAsync()', () => {
+        t.it('pauses the recording', async () => {
           await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
           await recordingObject.startAsync();
           await retryForStatus(recordingObject, { isRecording: true });
@@ -260,24 +246,24 @@ export async function test({
       });
     }
 
-    describe('Recording.getURI()', () => {
-      it('returns null before the recording is prepared', async () => {
-        expect(recordingObject.getURI()).toBeNull();
+    t.describe('Recording.getURI()', () => {
+      t.it('returns null before the recording is prepared', async () => {
+        t.expect(recordingObject.getURI()).toBeNull();
       });
 
-      it('returns a string once the recording is prepared', async () => {
+      t.it('returns a string once the recording is prepared', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
         await waitFor(defaultRecordingDurationMillis);
-        expect(recordingObject.getURI()).toContain('file:///');
+        t.expect(recordingObject.getURI()).toContain('file:///');
         await recordingObject.stopAndUnloadAsync();
       });
     });
 
-    describe('Recording.createNewLoadedSound()', () => {
+    t.describe('Recording.createNewLoadedSound()', () => {
       let originalConsoleWarn;
 
-      beforeAll(() => {
+      t.beforeAll(() => {
         originalConsoleWarn = console.warn;
         console.warn = (...args) => {
           if (typeof args[0] === 'string' && args[0].indexOf('deprecated') > -1) {
@@ -287,23 +273,23 @@ export async function test({
         };
       });
 
-      afterAll(() => {
+      t.afterAll(() => {
         console.warn = originalConsoleWarn;
         originalConsoleWarn = null;
       });
 
-      it('fails if called before the recording is prepared', async () => {
+      t.it('fails if called before the recording is prepared', async () => {
         let error = null;
         try {
           await recordingObject.createNewLoadedSound();
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
+        t.expect(error).toBeDefined();
       });
 
       if (Platform.OS !== 'android') {
-        it('fails if called before the recording is started', async () => {
+        t.it('fails if called before the recording is started', async () => {
           await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
           let error = null;
           try {
@@ -311,12 +297,12 @@ export async function test({
           } catch (err) {
             error = err;
           }
-          expect(error).toBeDefined();
+          t.expect(error).toBeDefined();
           await recordingObject.stopAndUnloadAsync();
         });
       }
 
-      it('fails if called before the recording is recording', async () => {
+      t.it('fails if called before the recording is recording', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
         await waitFor(defaultRecordingDurationMillis);
@@ -326,11 +312,11 @@ export async function test({
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
+        t.expect(error).toBeDefined();
         await recordingObject.stopAndUnloadAsync();
       });
 
-      it('returns a sound object once the recording is done', async () => {
+      t.it('returns a sound object once the recording is done', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
 
@@ -344,12 +330,12 @@ export async function test({
               await retryForStatus(sound, { isBuffering: false });
               const status = await sound.getStatusAsync();
               // Android is slow and we have to take it into account when checking recording duration.
-              expect(status.durationMillis).toBeGreaterThan(recordingDuration * (7 / 10));
-              expect(sound).toBeDefined();
+              t.expect(status.durationMillis).toBeGreaterThan(recordingDuration * (7 / 10));
+              t.expect(sound).toBeDefined();
             } catch (err) {
               error = err;
             }
-            expect(error).toBeNull();
+            t.expect(error).toBeNull();
 
             resolve();
           }, recordingDuration);
@@ -357,7 +343,7 @@ export async function test({
       });
 
       if (Platform.OS === 'android') {
-        it('raises an error when the recording is in an unreadable format', async () => {
+        t.it('raises an error when the recording is in an unreadable format', async () => {
           await recordingObject.prepareToRecordAsync(amrSettings);
           await recordingObject.startAsync();
 
@@ -371,7 +357,7 @@ export async function test({
               } catch (err) {
                 error = err;
               }
-              expect(error).toBeDefined();
+              t.expect(error).toBeDefined();
 
               resolve();
             }, recordingDuration);
@@ -380,19 +366,19 @@ export async function test({
       }
     });
 
-    describe('Recording.createNewLoadedSoundAsync()', () => {
-      it('fails if called before the recording is prepared', async () => {
+    t.describe('Recording.createNewLoadedSoundAsync()', () => {
+      t.it('fails if called before the recording is prepared', async () => {
         let error = null;
         try {
           await recordingObject.createNewLoadedSoundAsync();
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
+        t.expect(error).toBeDefined();
       });
 
       if (Platform.OS !== 'android') {
-        it('fails if called before the recording is started', async () => {
+        t.it('fails if called before the recording is started', async () => {
           await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
           let error = null;
           try {
@@ -400,12 +386,12 @@ export async function test({
           } catch (err) {
             error = err;
           }
-          expect(error).toBeDefined();
+          t.expect(error).toBeDefined();
           await recordingObject.stopAndUnloadAsync();
         });
       }
 
-      it('fails if called before the recording is recording', async () => {
+      t.it('fails if called before the recording is recording', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
         await waitFor(defaultRecordingDurationMillis);
@@ -415,11 +401,11 @@ export async function test({
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
+        t.expect(error).toBeDefined();
         await recordingObject.stopAndUnloadAsync();
       });
 
-      it('returns a sound object once the recording is done', async () => {
+      t.it('returns a sound object once the recording is done', async () => {
         await recordingObject.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY);
         await recordingObject.startAsync();
 
@@ -433,12 +419,12 @@ export async function test({
               await retryForStatus(sound, { isBuffering: false });
               const status = await sound.getStatusAsync();
               // Android is slow and we have to take it into account when checking recording duration.
-              expect(status.durationMillis).toBeGreaterThan(recordingDuration * (7 / 10));
-              expect(sound).toBeDefined();
+              t.expect(status.durationMillis).toBeGreaterThan(recordingDuration * (7 / 10));
+              t.expect(sound).toBeDefined();
             } catch (err) {
               error = err;
             }
-            expect(error).toBeNull();
+            t.expect(error).toBeNull();
 
             resolve();
           }, recordingDuration);
@@ -446,7 +432,7 @@ export async function test({
       });
 
       if (Platform.OS === 'android') {
-        it('raises an error when the recording is in an unreadable format', async () => {
+        t.it('raises an error when the recording is in an unreadable format', async () => {
           await recordingObject.prepareToRecordAsync(amrSettings);
           await recordingObject.startAsync();
 
@@ -460,7 +446,7 @@ export async function test({
               } catch (err) {
                 error = err;
               }
-              expect(error).toBeDefined();
+              t.expect(error).toBeDefined();
 
               resolve();
             }, recordingDuration);

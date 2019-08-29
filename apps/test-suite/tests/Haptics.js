@@ -2,44 +2,44 @@ import * as Haptics from 'expo-haptics';
 
 export const name = 'Haptics';
 
-export async function test({beforeAll, describe, it, xit, xdescribe, beforeEach, jasmine,expect, ...t}) {
-  describe('Haptics', async () => {
-    it('selectionAsync()', async () => {
+export async function test(t) {
+  t.describe('Haptics', async () => {
+    t.it('selectionAsync()', async () => {
       const result = await Haptics.selectionAsync();
-      expect(result).toBeUndefined();
+      t.expect(result).toBeUndefined();
     });
 
-    describe('notificationAsync()', async () => {
-      it('success', async () => {
+    t.describe('notificationAsync()', async () => {
+      t.it('success', async () => {
         const result = await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        expect(result).toBeUndefined();
+        t.expect(result).toBeUndefined();
       });
 
-      it('warning', async () => {
+      t.it('warning', async () => {
         const result = await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        expect(result).toBeUndefined();
+        t.expect(result).toBeUndefined();
       });
 
-      it('error', async () => {
+      t.it('error', async () => {
         const result = await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        expect(result).toBeUndefined();
+        t.expect(result).toBeUndefined();
       });
     });
 
-    describe('impactAsync()', async () => {
-      it('light', async () => {
+    t.describe('impactAsync()', async () => {
+      t.it('light', async () => {
         const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        expect(result).toBeUndefined();
+        t.expect(result).toBeUndefined();
       });
 
-      it('medium', async () => {
+      t.it('medium', async () => {
         const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        expect(result).toBeUndefined();
+        t.expect(result).toBeUndefined();
       });
 
-      it('heavy', async () => {
+      t.it('heavy', async () => {
         const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        expect(result).toBeUndefined();
+        t.expect(result).toBeUndefined();
       });
     });
   });

@@ -18,11 +18,6 @@ const config = {
 
 GoogleSignIn.allowInClient();
 
-export function canRunAsync({ isAutomated }) {
-  // Requires interaction (sign in popup)
-  return !isAutomated;
-}
-
 const longerTimeout = 10000;
 export async function test({
   describe,

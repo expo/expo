@@ -4,8 +4,8 @@ import { Asset } from 'expo-asset';
 
 export const name = 'Asset';
 
-export async function test({beforeAll, describe, it, xit, xdescribe, beforeEach, jasmine,expect, ...t}) {
-  describe(name, () => {
+export async function test(t) {
+  t.describe(name, () => {
     [
       {
         module: require('../assets/black-128x256.png'),
@@ -20,20 +20,20 @@ export async function test({beforeAll, describe, it, xit, xdescribe, beforeEach,
         type: 'ttf',
       },
     ].forEach(({ module, name, type, ...more }) =>
-      describe(`${name}.${type}`, () => {
-        it(`has correct name, type, ${Object.keys(more).join(', ')}`, async () => {
+      t.describe(`${name}.${type}`, () => {
+        t.it(`has correct name, type, ${Object.keys(more).join(', ')}`, async () => {
           const asset = Asset.fromModule(module);
           await asset.downloadAsync();
-          expect(asset.name).toMatch(new RegExp(`${name}.*\.${type}`));
-          expect(asset.type).toBe(type);
+          t.expect(asset.name).toMatch(new RegExp(`${name}.*\.${type}`));
+          t.expect(asset.type).toBe(type);
           console.log(asset);
-          Object.keys(more).forEach(member => expect(asset[member]).toBe(more[member]));
+          Object.keys(more).forEach(member => t.expect(asset[member]).toBe(more[member]));
         });
 
-        it("when downloaded, has a 'file://' localUri", async () => {
+        t.it("when downloaded, has a 'file://' localUri", async () => {
           const asset = Asset.fromModule(module);
           await asset.downloadAsync();
-          expect(asset.localUri).toMatch(new RegExp(`.*\.${type}`));
+          t.expect(asset.localUri).toMatch(new RegExp(`.*\.${type}`));
         });
       })
     );

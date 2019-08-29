@@ -1,14 +1,12 @@
-import * as React from 'react';
+import React from 'react';
+import { createStackNavigator } from 'react-navigation';
 
-import { createStackNavigator, createAppContainer } from 'react-navigation';
-import ModulesProvider from './ModulesProvider';
-
-import Select from './screens/SelectScreen';
+import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
 
-const AppNavigator = createStackNavigator(
+const MainNavigator = createStackNavigator(
   {
-    Select,
+    Select: { screen: SelectScreen, path: 'select/:tests' },
     RunTests,
   },
   {
@@ -20,26 +18,5 @@ const AppNavigator = createStackNavigator(
     }),
   }
 );
-AppNavigator.path = 'test-suite';
 
-const MainNavigator = createStackNavigator(
-  {
-    TestSuite: AppNavigator,
-  },
-  {
-    headerMode: 'none',
-    transitionConfig: () => ({
-      transitionSpec: {
-        duration: 0,
-      },
-    }),
-  }
-);
-
-const App = createAppContainer(MainNavigator);
-
-export default props => (
-  <ModulesProvider>
-    <App uriPrefix="bareexpo://" {...props} />
-  </ModulesProvider>
-);
+export default MainNavigator;

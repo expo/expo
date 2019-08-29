@@ -7,10 +7,10 @@ export const name = 'Segment';
 const ANDROID_WRITE_KEY = 'android-write-key';
 const IOS_WRITE_KEY = 'ios-write-key';
 
-export function test({ describe, afterEach, it, expect, jasmine, ...t }) {
-  describe('Segment initialization', () => {
-    it('works on all platforms', () => {
-      expect(
+export function test(t) {
+  t.describe('Segment initialization', () => {
+    t.it('works on all platforms', () => {
+      t.expect(
         Segment.initialize({
           androidWriteKey: ANDROID_WRITE_KEY,
           iosWriteKey: IOS_WRITE_KEY,
@@ -19,39 +19,39 @@ export function test({ describe, afterEach, it, expect, jasmine, ...t }) {
     });
   });
 
-  describe('All segment methods are available', () => {
+  t.describe('All segment methods are available', () => {
     // Initialize segment for this test
     Segment.initialize({
       androidWriteKey: ANDROID_WRITE_KEY,
       iosWriteKey: IOS_WRITE_KEY,
     });
 
-    it('identify(userId)', () => {
-      expect(Segment.identify('userId')).toBe(undefined);
+    t.it('identify(userId)', () => {
+      t.expect(Segment.identify('userId')).toBe(undefined);
     });
 
-    it('identifyWithTraits(userId, traits)', () => {
-      expect(Segment.identifyWithTraits('userId', { some: 'traits' })).toBe(undefined);
+    t.it('identifyWithTraits(userId, traits)', () => {
+      t.expect(Segment.identifyWithTraits('userId', { some: 'traits' })).toBe(undefined);
     });
 
-    it('reset()', () => {
-      expect(Segment.reset()).toBe(undefined);
+    t.it('reset()', () => {
+      t.expect(Segment.reset()).toBe(undefined);
     });
 
-    it('group(groupId)', () => {
-      expect(Segment.group('testSuiteGroupId')).toBe(undefined);
+    t.it('group(groupId)', () => {
+      t.expect(Segment.group('testSuiteGroupId')).toBe(undefined);
     });
 
-    it('groupWithTraits(groupId, traits)', () => {
-      expect(Segment.groupWithTraits('testSuiteGroupId', { trait: true })).toBe(undefined);
+    t.it('groupWithTraits(groupId, traits)', () => {
+      t.expect(Segment.groupWithTraits('testSuiteGroupId', { trait: true })).toBe(undefined);
     });
 
-    it('track(event)', () => {
-      expect(Segment.track('event')).toBe(undefined);
+    t.it('track(event)', () => {
+      t.expect(Segment.track('event')).toBe(undefined);
     });
 
-    it('trackWithProperties(event, properties)', () => {
-      expect(
+    t.it('trackWithProperties(event, properties)', () => {
+      t.expect(
         Segment.trackWithProperties('event', {
           some: 'properties',
           nested: { object: { purposeOfLife: 42 } },
@@ -59,51 +59,51 @@ export function test({ describe, afterEach, it, expect, jasmine, ...t }) {
       ).toBe(undefined);
     });
 
-    it('screen(screenName)', () => {
-      expect(Segment.screen('screenName')).toBe(undefined);
+    t.it('screen(screenName)', () => {
+      t.expect(Segment.screen('screenName')).toBe(undefined);
     });
 
-    it('screenWithProperties(screenName, properties)', () => {
-      expect(Segment.screenWithProperties('screenName', { some: 'properties' })).toBe(undefined);
+    t.it('screenWithProperties(screenName, properties)', () => {
+      t.expect(Segment.screenWithProperties('screenName', { some: 'properties' })).toBe(undefined);
     });
 
-    it('flush()', () => {
-      expect(Segment.flush()).toBe(undefined);
+    t.it('flush()', () => {
+      t.expect(Segment.flush()).toBe(undefined);
     });
 
-    it('non-existant method fails', () => {
-      expect(() => {
+    t.it('non-existant method fails', () => {
+      t.expect(() => {
         Segment.doesNotExist();
       }).toThrow();
     });
   });
 
-  describe('Segment.enabled state toggle', () => {
-    it('Segment.getEnabledAsync() returns true', async () => {
+  t.describe('Segment.enabled state toggle', () => {
+    t.it('Segment.getEnabledAsync() returns true', async () => {
       const enabled = await Segment.getEnabledAsync();
-      expect(enabled).toBe(true);
+      t.expect(enabled).toBe(true);
     });
 
     if (Constants.appOwnership === 'expo') {
-      it('Segment.setEnabledAsync() rejects with a meaningful message', async () => {
+      t.it('Segment.setEnabledAsync() rejects with a meaningful message', async () => {
         let error = null;
         try {
           await Segment.setEnabledAsync(false);
         } catch (e) {
           error = e;
         }
-        expect(error).not.toBeNull();
-        expect(error).toMatch('not supported in Expo Client');
+        t.expect(error).not.toBeNull();
+        t.expect(error).toMatch('not supported in Expo Client');
       });
     }
   });
 
-  describe('Segment.alias', () => {
-    it('resolves when no options passed', async () => {
+  t.describe('Segment.alias', () => {
+    t.it('resolves when no options passed', async () => {
       await Segment.alias('testSuiteId');
     });
 
-    it('resolves when some options passed', async () => {
+    t.it('resolves when some options passed', async () => {
       await Segment.alias('testSuiteId', {
         'Google Analytics Integration Key': { enabled: false },
       });

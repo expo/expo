@@ -12,17 +12,9 @@ import { waitFor, mountAndWaitFor as originalMountAndWaitFor, retryForStatus } f
 export const name = 'Camera';
 const style = { width: 200, height: 200 };
 
-export function canRunAsync({ isAutomated, isDevice, OS }) {
-  // The Camera tests are flaky on iOS, i.e. they fail randomly
-  return isDevice && !isAutomated && OS === 'android';
-}
-
-export async function test(
-  { beforeAll, afterAll, xdescribe, describe, it, expect, ...t },
-  { setPortalChild, cleanupPortal }
-) {
+export async function test(t, { setPortalChild, cleanupPortal }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
-  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
+  const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Camera', () => {
     let instance = null;
@@ -38,7 +30,7 @@ export async function test(
         setTimeout(() => resolve(response), 1500);
       });
 
-    beforeAll(async () => {
+    t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
         return Permissions.askAsync(Permissions.CAMERA);
       });
@@ -50,77 +42,77 @@ export async function test(
       t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 3;
     });
 
-    afterAll(() => {
+    t.afterAll(() => {
       t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 
-    beforeEach(async () => {
+    t.beforeEach(async () => {
       const { status } = await Permissions.getAsync(Permissions.CAMERA);
-      expect(status).toEqual('granted');
+      t.expect(status).toEqual('granted');
     });
 
-    afterEach(async () => {
+    t.afterEach(async () => {
       instance = null;
       await cleanupPortal();
     });
 
     if (Platform.OS === 'android') {
-      describe('Camera.getSupportedRatiosAsync', () => {
-        it('returns an array of strings', async () => {
+      t.describe('Camera.getSupportedRatiosAsync', () => {
+        t.it('returns an array of strings', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
           const ratios = await instance.getSupportedRatiosAsync();
-          expect(ratios instanceof Array).toBe(true);
-          expect(ratios.length).toBeGreaterThan(0);
+          t.expect(ratios instanceof Array).toBe(true);
+          t.expect(ratios.length).toBeGreaterThan(0);
         });
       });
     }
 
-    describe('Camera.takePictureAsync', () => {
-      it('returns a local URI', async () => {
+    t.describe('Camera.takePictureAsync', () => {
+      t.it('returns a local URI', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         const picture = await instance.takePictureAsync();
-        expect(picture).toBeDefined();
-        expect(picture.uri).toMatch(/^file:\/\//);
+        t.expect(picture).toBeDefined();
+        t.expect(picture.uri).toMatch(/^file:\/\//);
       });
 
-      it('returns `width` and `height` of the image', async () => {
+      t.it('returns `width` and `height` of the image', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         let picture = await instance.takePictureAsync();
-        expect(picture).toBeDefined();
-        expect(picture.width).toBeDefined();
-        expect(picture.height).toBeDefined();
+        t.expect(picture).toBeDefined();
+        t.expect(picture.width).toBeDefined();
+        t.expect(picture.height).toBeDefined();
       });
 
-      it('returns EXIF only if requested', async () => {
+      t.it('returns EXIF only if requested', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         let picture = await instance.takePictureAsync({ exif: false });
-        expect(picture).toBeDefined();
-        expect(picture.exif).not.toBeDefined();
+        t.expect(picture).toBeDefined();
+        t.expect(picture.exif).not.toBeDefined();
 
         picture = await instance.takePictureAsync({ exif: true });
-        expect(picture).toBeDefined();
-        expect(picture.exif).toBeDefined();
+        t.expect(picture).toBeDefined();
+        t.expect(picture.exif).toBeDefined();
       });
 
-      it('returns Base64 only if requested', async () => {
+      t.it('returns Base64 only if requested', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         let picture = await instance.takePictureAsync({ base64: false });
-        expect(picture).toBeDefined();
-        expect(picture.base64).not.toBeDefined();
+        t.expect(picture).toBeDefined();
+        t.expect(picture.base64).not.toBeDefined();
 
         picture = await instance.takePictureAsync({ base64: true });
-        expect(picture).toBeDefined();
-        expect(picture.base64).toBeDefined();
+        t.expect(picture).toBeDefined();
+        t.expect(picture.base64).toBeDefined();
       });
 
-      it('returns proper `exif.Flash % 2 = 0` if the flash is off', async () => {
+      t.it('returns proper `exif.Flash % 2 = 0` if the flash is off', async () => {
         await mountAndWaitFor(
           <Camera ref={refSetter} flashMode={Camera.Constants.FlashMode.off} style={style} />
         );
         let picture = await instance.takePictureAsync({ exif: true });
-        expect(picture).toBeDefined();
-        expect(picture.exif).toBeDefined();
-        expect(picture.exif.Flash % 2 === 0).toBe(true);
+        t.expect(picture).toBeDefined();
+        t.expect(picture.exif).toBeDefined();
+        t.expect(picture.exif.Flash % 2 === 0).toBe(true);
       });
 
       if (Platform.OS === 'ios') {
@@ -129,20 +121,20 @@ export async function test(
         // that has no flash and it returns Flash = 0, meaning that the flash did not fire,
         // but is present.)
 
-        it('returns proper `exif.Flash % 2 = 1` if the flash is on', async () => {
+        t.it('returns proper `exif.Flash % 2 = 1` if the flash is on', async () => {
           await mountAndWaitFor(
             <Camera ref={refSetter} flashMode={Camera.Constants.FlashMode.on} style={style} />
           );
           let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.Flash % 2 === 1).toBe(true);
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.Flash % 2 === 1).toBe(true);
         });
       }
 
       // https://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/whitebalance.html
 
-      it('returns `exif.WhiteBalance = 1` if white balance is manually set', async () => {
+      t.it('returns `exif.WhiteBalance = 1` if white balance is manually set', async () => {
         await mountAndWaitFor(
           <Camera
             style={style}
@@ -151,113 +143,116 @@ export async function test(
           />
         );
         let picture = await instance.takePictureAsync({ exif: true });
-        expect(picture).toBeDefined();
-        expect(picture.exif).toBeDefined();
-        expect(picture.exif.WhiteBalance).toEqual(1);
+        t.expect(picture).toBeDefined();
+        t.expect(picture.exif).toBeDefined();
+        t.expect(picture.exif.WhiteBalance).toEqual(1);
       });
 
-      it('returns `exif.WhiteBalance = 0` if white balance is set to auto', async () => {
+      t.it('returns `exif.WhiteBalance = 0` if white balance is set to auto', async () => {
         await mountAndWaitFor(
           <Camera style={style} ref={refSetter} whiteBalance={Camera.Constants.WhiteBalance.auto} />
         );
         let picture = await instance.takePictureAsync({ exif: true });
-        expect(picture).toBeDefined();
-        expect(picture.exif).toBeDefined();
-        expect(picture.exif.WhiteBalance).toEqual(0);
+        t.expect(picture).toBeDefined();
+        t.expect(picture.exif).toBeDefined();
+        t.expect(picture.exif.WhiteBalance).toEqual(0);
       });
 
       if (Platform.OS === 'ios') {
-        it('returns `exif.LensModel ~= back` if camera type is set to back', async () => {
+        t.it('returns `exif.LensModel ~= back` if camera type is set to back', async () => {
           await mountAndWaitFor(
             <Camera style={style} ref={refSetter} type={Camera.Constants.Type.back} />
           );
           let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.LensModel).toMatch('back');
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.LensModel).toMatch('back');
         });
 
-        it('returns `exif.LensModel ~= front` if camera type is set to front', async () => {
+        t.it('returns `exif.LensModel ~= front` if camera type is set to front', async () => {
           await mountAndWaitFor(
             <Camera style={style} ref={refSetter} type={Camera.Constants.Type.front} />
           );
           let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.LensModel).toMatch('front');
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.LensModel).toMatch('front');
         });
 
-        it('returns `exif.DigitalZoom ~= false` if zoom is not set', async () => {
+        t.it('returns `exif.DigitalZoom ~= false` if zoom is not set', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
           let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.DigitalZoomRatio).toBeFalsy();
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.DigitalZoomRatio).toBeFalsy();
         });
 
-        it('returns `exif.DigitalZoom ~= false` if zoom is set to 0', async () => {
+        t.it('returns `exif.DigitalZoom ~= false` if zoom is set to 0', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} zoom={0} />);
           let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.DigitalZoomRatio).toBeFalsy();
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.DigitalZoomRatio).toBeFalsy();
         });
 
         let smallerRatio = null;
 
-        it('returns `exif.DigitalZoom > 0` if zoom is set', async () => {
+        t.it('returns `exif.DigitalZoom > 0` if zoom is set', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} zoom={0.5} />);
           let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.DigitalZoomRatio).toBeGreaterThan(0);
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.DigitalZoomRatio).toBeGreaterThan(0);
           smallerRatio = picture.exif.DigitalZoomRatio;
         });
 
-        it('returns `exif.DigitalZoom`s monotonically increasing with the zoom value', async () => {
-          await mountAndWaitFor(<Camera style={style} ref={refSetter} zoom={1} />);
-          let picture = await instance.takePictureAsync({ exif: true });
-          expect(picture).toBeDefined();
-          expect(picture.exif).toBeDefined();
-          expect(picture.exif.DigitalZoomRatio).toBeGreaterThan(smallerRatio);
-        });
+        t.it(
+          'returns `exif.DigitalZoom`s monotonically increasing with the zoom value',
+          async () => {
+            await mountAndWaitFor(<Camera style={style} ref={refSetter} zoom={1} />);
+            let picture = await instance.takePictureAsync({ exif: true });
+            t.expect(picture).toBeDefined();
+            t.expect(picture.exif).toBeDefined();
+            t.expect(picture.exif.DigitalZoomRatio).toBeGreaterThan(smallerRatio);
+          }
+        );
       }
     });
 
-    describe('Camera.recordAsync', () => {
-      beforeEach(async () => {
+    t.describe('Camera.recordAsync', () => {
+      t.beforeEach(async () => {
         if (Platform.OS === 'ios') {
           await waitFor(500);
         }
       });
 
-      it('returns a local URI', async () => {
+      t.it('returns a local URI', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         const recordingPromise = instance.recordAsync();
         await waitFor(2500);
         instance.stopRecording();
         const response = await recordingPromise;
-        expect(response).toBeDefined();
-        expect(response.uri).toMatch(/^file:\/\//);
+        t.expect(response).toBeDefined();
+        t.expect(response.uri).toMatch(/^file:\/\//);
       });
 
       let recordedFileUri = null;
 
-      it('stops the recording after maxDuration', async () => {
+      t.it('stops the recording after maxDuration', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         const response = await instance.recordAsync({ maxDuration: 2 });
         recordedFileUri = response.uri;
       });
 
-      it('the video has a duration near maxDuration', async () => {
+      t.it('the video has a duration near maxDuration', async () => {
         await mountAndWaitFor(
           <Video style={style} source={{ uri: recordedFileUri }} ref={refSetter} />,
           'onLoad'
         );
         await retryForStatus(instance, { isBuffering: false });
         const video = await instance.getStatusAsync();
-        expect(video.durationMillis).toBeLessThan(2250);
-        expect(video.durationMillis).toBeGreaterThan(1750);
+        t.expect(video.durationMillis).toBeLessThan(2250);
+        t.expect(video.durationMillis).toBeGreaterThan(1750);
       });
 
       // Test for the fix to: https://github.com/expo/expo/issues/1976
@@ -272,11 +267,11 @@ export async function test(
         await retryForStatus(instance, { isBuffering: false });
         const video = await instance.getStatusAsync();
 
-        expect(video.durationMillis).toBeLessThan(2250);
-        expect(video.durationMillis).toBeGreaterThan(1750);
+        t.expect(video.durationMillis).toBeLessThan(2250);
+        t.expect(video.durationMillis).toBeGreaterThan(1750);
       };
 
-      it('records using the front camera', async () => {
+      t.it('records using the front camera', async () => {
         await testFrontCameraRecording(
           <Camera
             ref={refSetter}
@@ -288,7 +283,7 @@ export async function test(
       });
 
       if (Platform.OS === 'android') {
-        it('records using the front camera and Camera2 API', async () => {
+        t.it('records using the front camera and Camera2 API', async () => {
           await testFrontCameraRecording(
             <Camera
               ref={refSetter}
@@ -300,23 +295,23 @@ export async function test(
         });
       }
 
-      it('stops the recording after maxFileSize', async () => {
+      t.it('stops the recording after maxFileSize', async () => {
         await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
         await instance.recordAsync({ maxFileSize: 256 * 1024 }); // 256 KiB
       });
 
-      describe('can record consecutive clips', () => {
+      t.describe('can record consecutive clips', () => {
         let defaultTimeoutInterval = null;
-        beforeAll(() => {
+        t.beforeAll(() => {
           defaultTimeoutInterval = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
           t.jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeoutInterval * 2;
         });
 
-        afterAll(() => {
+        t.afterAll(() => {
           t.jasmine.DEFAULT_TIMEOUT_INTERVAL = defaultTimeoutInterval;
         });
 
-        it('started/stopped manually', async () => {
+        t.it('started/stopped manually', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
           const recordFor = duration =>
@@ -326,8 +321,8 @@ export async function test(
               instance.stopRecording();
               try {
                 const recordedVideo = await recordingPromise;
-                expect(recordedVideo).toBeDefined();
-                expect(recordedVideo.uri).toBeDefined();
+                t.expect(recordedVideo).toBeDefined();
+                t.expect(recordedVideo.uri).toBeDefined();
                 resolve();
               } catch (error) {
                 reject(error);
@@ -339,7 +334,7 @@ export async function test(
           await recordFor(1000);
         });
 
-        it('started/stopped automatically', async () => {
+        t.it('started/stopped automatically', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
           const recordFor = duration =>

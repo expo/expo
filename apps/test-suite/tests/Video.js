@@ -9,12 +9,6 @@ import { Platform } from 'react-native';
 import { waitFor, retryForStatus, mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'Video';
-
-export function canRunAsync({ isAutomated }) {
-  // Crashes app when mounting component
-  return !isAutomated;
-}
-
 const imageRemoteSource = { uri: 'http://via.placeholder.com/350x150' };
 const videoRemoteSource = { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
 const redirectingVideoRemoteSource = { uri: 'http://bit.ly/2mcW40Q' };
@@ -27,8 +21,9 @@ let source = null; // Local URI of the downloaded default source is set in a bef
 
 const style = { width: 200, height: 200 };
 
-export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine, ...t }, { setPortalChild, cleanupPortal }) {
-    beforeAll(async () => {
+export function test(t, { setPortalChild, cleanupPortal }) {
+  t.describe('Video', () => {
+    t.beforeAll(async () => {
       const mp4Asset = Asset.fromModule(mp4Source);
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
@@ -47,7 +42,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       instance = ref;
     };
 
-    afterEach(async () => {
+    t.afterEach(async () => {
       instance = null;
       await cleanupPortal();
     });
@@ -56,9 +51,9 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       originalMountAndWaitFor(child, propName, setPortalChild);
 
     const testPropValues = (propName, values, moreTests) =>
-      describe(`Video.props.${propName}`, () => {
+      t.describe(`Video.props.${propName}`, () => {
         forEach(values, value =>
-          it(`sets it to \`${value}\``, async () => {
+          t.it(`sets it to \`${value}\``, async () => {
             let instance = null;
             const refSetter = ref => {
               instance = ref;
@@ -80,9 +75,9 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
 
     const testNoCrash = (propName, values) =>
-      describe(`Video.props.${propName}`, () => {
+      t.describe(`Video.props.${propName}`, () => {
         forEach(values, value =>
-          it(`setting to \`${value}\` doesn't crash`, async () => {
+          t.it(`setting to \`${value}\` doesn't crash`, async () => {
             const element = React.createElement(Video, { style, source, [propName]: value });
             await mountAndWaitFor(element, 'onLoad');
           })
@@ -90,9 +85,9 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
 
     const testPropSetter = (propName, propSetter, values, moreTests) =>
-      describe(`Video.${propSetter}`, () => {
+      t.describe(`Video.${propSetter}`, () => {
         forEach(values, value =>
-          it(`sets it to \`${value}\``, async () => {
+          t.it(`sets it to \`${value}\``, async () => {
             let instance = null;
             const refSetter = ref => {
               instance = ref;
@@ -106,7 +101,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
             await mountAndWaitFor(element);
             await instance[propSetter](value);
             const status = await instance.getStatusAsync();
-            expect(status).toEqual(jasmine.objectContaining({ [propName]: value }));
+            t.expect(status).toEqual(t.jasmine.objectContaining({ [propName]: value }));
           })
         );
 
@@ -115,50 +110,50 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         }
       });
 
-    describe('Video.props.onLoadStart', () => {
-      it('gets called when the source starts loading', async () => {
+    t.describe('Video.props.onLoadStart', () => {
+      t.it('gets called when the source starts loading', async () => {
         await mountAndWaitFor(<Video style={style} source={source} />, 'onLoadStart');
       });
     });
 
-    describe('Video.props.onLoad', () => {
-      it('gets called when the source loads', async () => {
+    t.describe('Video.props.onLoad', () => {
+      t.it('gets called when the source loads', async () => {
         await mountAndWaitFor(<Video style={style} source={source} />, 'onLoad');
       });
 
-      it('gets called right when the video starts to play if it should autoplay', async () => {
+      t.it('gets called right when the video starts to play if it should autoplay', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={videoRemoteSource} shouldPlay />,
           'onLoad'
         );
-        expect(status.positionMillis).toEqual(0);
+        t.expect(status.positionMillis).toEqual(0);
       });
     });
 
-    describe('Video.props.source', () => {
-      it('mounts even when the source is undefined', async () => {
+    t.describe('Video.props.source', () => {
+      t.it('mounts even when the source is undefined', async () => {
         await mountAndWaitFor(<Video style={style} />, 'ref');
       });
 
-      it('loads `require` source', async () => {
+      t.it('loads `require` source', async () => {
         const status = await mountAndWaitFor(<Video style={style} source={mp4Source} />);
-        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
-      it('loads `Asset` source', async () => {
+      t.it('loads `Asset` source', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={Asset.fromModule(mp4Source)} />
         );
-        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
-      it('loads `uri` source', async () => {
+      t.it('loads `uri` source', async () => {
         const status = await mountAndWaitFor(<Video style={style} source={videoRemoteSource} />);
-        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
       if (Platform.OS === 'android') {
-        it(
+        t.it(
           'calls onError when the file from the Internet redirects to a non-standard content',
           async () => {
             const error = await mountAndWaitFor(
@@ -170,10 +165,10 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
               />,
               'onError'
             );
-            expect(error.toLowerCase()).toContain('format');
+            t.expect(error.toLowerCase()).toContain('format');
           }
         );
-        it(
+        t.it(
           'loads the file from the Internet that redirects to non-standard content when overrideFileExtensionAndroid is provided',
           async () => {
             let hasBeenRejected = false;
@@ -184,15 +179,15 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
                   source={{ uri: hlsStreamUriWithRedirect, overrideFileExtensionAndroid: 'm3u8' }}
                 />
               );
-              expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+              t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
             } catch (error) {
               hasBeenRejected = true;
             }
-            expect(hasBeenRejected).toBe(false);
+            t.expect(hasBeenRejected).toBe(false);
           }
         );
       } else {
-        it(
+        t.it(
           'loads the file from the Internet that redirects to non-standard content',
           async () => {
             let hasBeenRejected = false;
@@ -200,44 +195,44 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
               const status = await mountAndWaitFor(
                 <Video style={style} source={{ uri: hlsStreamUriWithRedirect }} />
               );
-              expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+              t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
             } catch (error) {
               hasBeenRejected = true;
             }
-            expect(hasBeenRejected).toBe(false);
+            t.expect(hasBeenRejected).toBe(false);
           }
         );
       }
 
-      it('loads HLS stream', async () => {
+      t.it('loads HLS stream', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={{ uri: hlsStreamUri }} />
         );
-        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
-      it('loads redirecting `uri` source', async () => {
+      t.it('loads redirecting `uri` source', async () => {
         const status = await mountAndWaitFor(
           <Video style={style} source={redirectingVideoRemoteSource} />
         );
-        expect(status).toEqual(jasmine.objectContaining({ isLoaded: true }));
+        t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
       // These two are flaky on iOS, sometimes they pass, sometimes they timeout.
-      it(
+      t.it(
         'calls onError when given image source',
         async () => {
           const error = await mountAndWaitFor(
             <Video style={style} source={imageSource} shouldPlay />,
             'onError'
           );
-          expect(error).toBeDefined();
+          t.expect(error).toBeDefined();
         },
         30000
       );
 
       if (Platform.OS === 'ios') {
-        it(
+        t.it(
           'calls onError with a reason when unsupported format given (WebM)',
           async () => {
             const error = await mountAndWaitFor(
@@ -249,7 +244,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
             // (we'd expect "This media format is not supported."),
             // so let's check whether there is a reason-description separator,
             // which is included only if `localizedFailureReason` is not nil.
-            expect(error).toContain(' - ');
+            t.expect(error).toContain(' - ');
           },
           30000
         );
@@ -264,8 +259,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       Video.RESIZE_MODE_STRETCH,
     ]);
 
-    describe(`Video.props.posterSource`, () => {
-      it("doesn't crash if is set to required image", async () => {
+    t.describe(`Video.props.posterSource`, () => {
+      t.it("doesn't crash if is set to required image", async () => {
         const props = {
           style,
           source,
@@ -274,7 +269,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await mountAndWaitFor(<Video {...props} />);
       });
 
-      it("doesn't crash if is set to uri", async () => {
+      t.it("doesn't crash if is set to uri", async () => {
         const props = {
           style,
           source,
@@ -284,55 +279,55 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });
 
-    describe(`Video.props.onReadyForDisplay`, () => {
-      it('gets called with the `naturalSize` object', async () => {
+    t.describe(`Video.props.onReadyForDisplay`, () => {
+      t.it('gets called with the `naturalSize` object', async () => {
         const props = {
           style,
           source,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        expect(status.naturalSize).toBeDefined();
-        expect(status.naturalSize.width).toBeDefined();
-        expect(status.naturalSize.height).toBeDefined();
-        expect(status.naturalSize.orientation).toBeDefined();
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBeDefined();
       });
 
-      it('gets called with the `status` object', async () => {
+      t.it('gets called with the `status` object', async () => {
         const props = {
           style,
           source,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        expect(status.status).toBeDefined();
-        expect(status.status.isLoaded).toBe(true);
+        t.expect(status.status).toBeDefined();
+        t.expect(status.status.isLoaded).toBe(true);
       });
 
-      it('gets called when the component uses native controls', async () => {
+      t.it('gets called when the component uses native controls', async () => {
         const props = {
           style,
           source,
           useNativeControls: true,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        expect(status.status).toBeDefined();
-        expect(status.status.isLoaded).toBe(true);
+        t.expect(status.status).toBeDefined();
+        t.expect(status.status.isLoaded).toBe(true);
       });
 
-      it("gets called when the component doesn't use native controls", async () => {
+      t.it("gets called when the component doesn't use native controls", async () => {
         const props = {
           style,
           source,
           useNativeControls: false,
         };
         const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
-        expect(status.status).toBeDefined();
-        expect(status.status.isLoaded).toBe(true);
+        t.expect(status.status).toBeDefined();
+        t.expect(status.status.isLoaded).toBe(true);
       });
     });
 
-    describe('Video fullscreen player', () => {
-      it('presents the player and calls callback func', async () => {
-        const onFullscreenUpdate = jasmine.createSpy('onFullscreenUpdate');
+    t.describe('Video fullscreen player', () => {
+      t.it('presents the player and calls callback func', async () => {
+        const onFullscreenUpdate = t.jasmine.createSpy('onFullscreenUpdate');
         await mountAndWaitFor(
           <Video
             style={style}
@@ -343,8 +338,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
           'onReadyForDisplay'
         );
         const expectUpdate = fullscreenUpdate =>
-          expect(onFullscreenUpdate).toHaveBeenCalledWith(
-            jasmine.objectContaining({
+          t.expect(onFullscreenUpdate).toHaveBeenCalledWith(
+            t.jasmine.objectContaining({
               fullscreenUpdate,
             })
           );
@@ -357,7 +352,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
 
       if (Platform.OS === 'android') {
-        it("raises an error if the code didn't wait for completion", async () => {
+        t.it("raises an error if the code didn't wait for completion", async () => {
           let presentationError = null;
           let dismissalError = null;
           try {
@@ -373,12 +368,12 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
             dismissalError = error;
           }
 
-          expect(presentationError).toBeDefined();
-          expect(dismissalError).toBeDefined();
+          t.expect(presentationError).toBeDefined();
+          t.expect(dismissalError).toBeDefined();
         });
       }
 
-      it('rejects dismissal request if present request is being handled', async () => {
+      t.it('rejects dismissal request if present request is being handled', async () => {
         await mountAndWaitFor(
           <Video style={style} source={source} ref={refSetter} />,
           'onReadyForDisplay'
@@ -390,12 +385,12 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
+        t.expect(error).toBeDefined();
         await presentationPromise;
         await instance.dismissFullscreenPlayer();
       });
 
-      it('rejects presentation request if present request is already being handled', async () => {
+      t.it('rejects presentation request if present request is already being handled', async () => {
         await mountAndWaitFor(
           <Video style={style} source={source} ref={refSetter} />,
           'onReadyForDisplay'
@@ -407,13 +402,13 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
+        t.expect(error).toBeDefined();
         await presentationPromise;
         await instance.dismissFullscreenPlayer();
       });
 
       // NOTE(2018-10-17): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? xit : it;
+      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
 
       unreliablyIt(
         'rejects all but the last request to change fullscreen mode before the video loads',
@@ -448,9 +443,9 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
             // test this behavior at all. Normally I would put
             // `t.pending` here, but as for the end of 2017 it doesn't work.
           } else {
-            expect(firstErrored).toBe(true);
-            // expect(secondErrored).toBe(true);
-            expect(thirdErrored).toBe(false);
+            t.expect(firstErrored).toBe(true);
+            // t.expect(secondErrored).toBe(true);
+            t.expect(thirdErrored).toBe(false);
           }
           const pleaseDismiss = async () => {
             try {
@@ -468,7 +463,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
     // it is possible to set them through props successfully.
     testPropValues('volume', [0.5, 1.0, 2.0, -0.5]);
     testPropSetter('volume', 'setVolumeAsync', [0, 0.5, 1], () => {
-      it('errors when trying to set it to 2', async () => {
+      t.it('errors when trying to set it to 2', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -477,11 +472,11 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
-        expect(error.toString()).toMatch(/value .+ between/);
+        t.expect(error).toBeDefined();
+        t.expect(error.toString()).toMatch(/value .+ between/);
       });
 
-      it('errors when trying to set it to -0.5', async () => {
+      t.it('errors when trying to set it to -0.5', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -490,8 +485,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
-        expect(error.toString()).toMatch(/value .+ between/);
+        t.expect(error).toBeDefined();
+        t.expect(error.toString()).toMatch(/value .+ between/);
       });
     });
 
@@ -505,7 +500,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
     // it is possible to set them through props successfully.
     testPropValues('rate', [0.5, 1.0, 2, 34, -0.5]);
     testPropSetter('rate', 'setRateAsync', [0, 0.5, 1], () => {
-      it('errors when trying to set it above 32', async () => {
+      t.it('errors when trying to set it above 32', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -514,11 +509,11 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
-        expect(error.toString()).toMatch(/value .+ between/);
+        t.expect(error).toBeDefined();
+        t.expect(error.toString()).toMatch(/value .+ between/);
       });
 
-      it('errors when trying to set it under 0', async () => {
+      t.it('errors when trying to set it under 0', async () => {
         let error = null;
         try {
           const props = { style, source, ref: refSetter };
@@ -527,17 +522,17 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         } catch (err) {
           error = err;
         }
-        expect(error).toBeDefined();
-        expect(error.toString()).toMatch(/value .+ between/);
+        t.expect(error).toBeDefined();
+        t.expect(error.toString()).toMatch(/value .+ between/);
       });
     });
 
     testPropValues('shouldPlay', [true, false]);
     testPropValues('shouldCorrectPitch', [true, false]);
 
-    describe('Video.onPlaybackStatusUpdate', () => {
-      it('gets called with `didJustFinish = true` when video is done playing', async () => {
-        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
+    t.describe('Video.onPlaybackStatusUpdate', () => {
+      t.it('gets called with `didJustFinish = true` when video is done playing', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           onPlaybackStatusUpdate,
           source,
@@ -554,8 +549,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await retryForStatus(instance, { isPlaying: true });
         await new Promise(resolve => {
           setTimeout(() => {
-            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              jasmine.objectContaining({ didJustFinish: true })
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
@@ -563,9 +558,9 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });
 
-    /*describe('Video.setProgressUpdateIntervalAsync', () => {
-      it('sets frequence of the progress updates', async () => {
-        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
+    /*t.describe('Video.setProgressUpdateIntervalAsync', () => {
+      t.it('sets frequence of the progress updates', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           style,
           source,
@@ -579,7 +574,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await new Promise(resolve => {
           setTimeout(() => {
             const expectedArgsCount = Platform.OS === 'android' ? 5 : 9;
-            expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(expectedArgsCount);
+            t.expect(onPlaybackStatusUpdate.calls.count()).toBeGreaterThan(expectedArgsCount);
 
             const realMillis = map(
               takeRight(filter(flatten(onPlaybackStatusUpdate.calls.allArgs()), 'isPlaying'), 4),
@@ -588,7 +583,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
 
             for (let i = 3; i > 0; i--) {
               const difference = Math.abs(realMillis[i] - realMillis[i - 1] - updateInterval);
-              expect(difference).toBeLessThan(updateInterval / 2 + 1);
+              t.expect(difference).toBeLessThan(updateInterval / 2 + 1);
             }
 
             resolve();
@@ -597,8 +592,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });*/
 
-    describe('Video.setPositionAsync', () => {
-      it('sets position of the video', async () => {
+    t.describe('Video.setPositionAsync', () => {
+      t.it('sets position of the video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isBuffering: false });
@@ -610,9 +605,9 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });
 
-    describe('Video.loadAsync', () => {
+    t.describe('Video.loadAsync', () => {
       // NOTE(2018-03-08): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? xit : it;
+      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
       unreliablyIt('loads the video', async () => {
         const props = { style };
         const instance = await mountAndWaitFor(<Video {...props} />, 'ref');
@@ -628,8 +623,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await instance.loadAsync(source, { ...initialStatus, positionMillis: 1000 });
         await retryForStatus(instance, { isLoaded: true, ...initialStatus });
         const status = await instance.getStatusAsync();
-        expect(status.positionMillis).toBeLessThan(1100);
-        expect(status.positionMillis).toBeGreaterThan(900);
+        t.expect(status.positionMillis).toBeLessThan(1100);
+        t.expect(status.positionMillis).toBeGreaterThan(900);
       });
 
       unreliablyIt('keeps the video instance after load when using poster', async () => {
@@ -640,8 +635,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });
 
-    describe('Video.unloadAsync', () => {
-      it('unloads the video', async () => {
+    t.describe('Video.unloadAsync', () => {
+      t.it('unloads the video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isLoaded: true });
@@ -650,8 +645,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });
 
-    describe('Video.pauseAsync', () => {
-      it('pauses the video', async () => {
+    t.describe('Video.pauseAsync', () => {
+      t.it('pauses the video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
@@ -659,15 +654,15 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await instance.pauseAsync();
         await retryForStatus(instance, { isPlaying: false });
         const { positionMillis } = await instance.getStatusAsync();
-        expect(positionMillis).toBeGreaterThan(0);
+        t.expect(positionMillis).toBeGreaterThan(0);
       });
     });
 
-    describe('Video.playAsync', () => {
+    t.describe('Video.playAsync', () => {
       // NOTE(2018-03-08): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? xit : it;
+      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
 
-      it('plays the stopped video', async () => {
+      t.it('plays the stopped video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isLoaded: true });
@@ -675,7 +670,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await retryForStatus(instance, { isPlaying: true });
       });
 
-      it('plays the paused video', async () => {
+      t.it('plays the paused video', async () => {
         const props = { style, source, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isLoaded: true });
@@ -688,7 +683,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
 
       unreliablyIt('does not play video that played to an end', async () => {
-        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           onPlaybackStatusUpdate,
           source,
@@ -704,20 +699,20 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              jasmine.objectContaining({ didJustFinish: true })
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
         });
         await instance.playAsync();
-        expect((await instance.getStatusAsync()).isPlaying).toBe(false);
+        t.expect((await instance.getStatusAsync()).isPlaying).toBe(false);
       });
     });
 
-    describe('Video.playFromPositionAsync', () => {
-      it('plays a video that played to an end', async () => {
-        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
+    t.describe('Video.playFromPositionAsync', () => {
+      t.it('plays a video that played to an end', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         const props = { onPlaybackStatusUpdate, source, style, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isBuffering: false, isLoaded: true });
@@ -728,8 +723,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              jasmine.objectContaining({ didJustFinish: true })
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
@@ -739,8 +734,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
       });
     });
 
-    describe('Video.replayAsync', () => {
-      it('replays the video', async () => {
+    t.describe('Video.replayAsync', () => {
+      t.it('replays the video', async () => {
         await mountAndWaitFor(<Video source={source} ref={refSetter} style={style} shouldPlay />);
         await retryForStatus(instance, { isPlaying: true });
         await waitFor(500);
@@ -748,11 +743,11 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await instance.replayAsync();
         await retryForStatus(instance, { isPlaying: true });
         const statusAfter = await instance.getStatusAsync();
-        expect(statusAfter.positionMillis).toBeLessThan(statusBefore.positionMillis);
+        t.expect(statusAfter.positionMillis).toBeLessThan(statusBefore.positionMillis);
       });
 
-      it('plays a video that played to an end', async () => {
-        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
+      t.it('plays a video that played to an end', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         const props = { onPlaybackStatusUpdate, source, style, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isBuffering: false, isLoaded: true });
@@ -763,8 +758,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         });
         await new Promise(resolve => {
           setTimeout(() => {
-            expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
-              jasmine.objectContaining({ didJustFinish: true })
+            t.expect(onPlaybackStatusUpdate).toHaveBeenCalledWith(
+              t.jasmine.objectContaining({ didJustFinish: true })
             );
             resolve();
           }, 1000);
@@ -773,8 +768,8 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await retryForStatus(instance, { isPlaying: true });
       });
 
-      /*it('calls the onPlaybackStatusUpdate with hasJustBeenInterrupted = true', async () => {
-        const onPlaybackStatusUpdate = jasmine.createSpy('onPlaybackStatusUpdate');
+      /*t.it('calls the onPlaybackStatusUpdate with hasJustBeenInterrupted = true', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
         const props = {
           style,
           source,
@@ -788,12 +783,12 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await instance.replayAsync();
         t
           .expect(onPlaybackStatusUpdate)
-          .toHaveBeenCalledWith(jasmine.objectContaining({ hasJustBeenInterrupted: true }));
+          .toHaveBeenCalledWith(t.jasmine.objectContaining({ hasJustBeenInterrupted: true }));
       });*/
     });
 
-    describe('Video.stopAsync', () => {
-      it('stops a playing video', async () => {
+    t.describe('Video.stopAsync', () => {
+      t.it('stops a playing video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
@@ -801,7 +796,7 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await retryForStatus(instance, { isPlaying: false, positionMillis: 0 });
       });
 
-      it('stops a paused video', async () => {
+      t.it('stops a paused video', async () => {
         const props = { style, source, shouldPlay: true, ref: refSetter };
         await mountAndWaitFor(<Video {...props} />);
         await retryForStatus(instance, { isPlaying: true });
@@ -812,5 +807,5 @@ export function test({ describe, beforeAll, afterEach, it, xit, expect, jasmine,
         await retryForStatus(instance, { isPlaying: false, positionMillis: 0 });
       });
     });
-  
+  });
 }

@@ -9,23 +9,6 @@ import { mountAndWaitFor } from './helpers';
 export const name = 'GLView';
 const style = { width: 200, height: 200 };
 
-function browserSupportsWebGL() {
-  try {
-    const canvas = document.createElement('canvas');
-    return (
-      !!window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch (e) {
-    return false;
-  }
-}
-
-export function canRunAsync({ isAutomated, OS }) {
-  if (OS === 'web') return browserSupportsWebGL();
-  return true;
-}
-
 export async function test(
   { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
   { setPortalChild, cleanupPortal }
