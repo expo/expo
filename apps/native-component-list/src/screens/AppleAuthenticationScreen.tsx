@@ -31,19 +31,33 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
     this.setState({ isAvailable });
   }
 
-  signIn = async () => {
+  request = async (operation: SignInWithApple.SignInWithAppleOperation) => {
     try {
       const credentials = await SignInWithApple.requestAsync({
         requestedScopes: [
           SignInWithApple.SignInWithAppleScope.FullName,
           SignInWithApple.SignInWithAppleScope.Email,
         ],
+        requestedOperation: operation,
+        state: 'this-is-a-test',
       });
       this.setState({ credentials })
     } catch (err) {
       console.error(err);
     }
   };
+
+  signIn = async () => {
+    await this.request(SignInWithApple.SignInWithAppleOperation.Login);
+  }
+
+  refresh = async () => {
+    await this.request(SignInWithApple.SignInWithAppleOperation.Refresh);
+  }
+
+  signOut = async () => {
+    await this.request(SignInWithApple.SignInWithAppleOperation.Logout);
+  }
 
   checkCredentials = async () => {
     const result = SignInWithApple.getCredentialStateAsync(this.state.credentials!.user);
@@ -71,6 +85,8 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
         {this.state.credentials && (
           <View style={styles.checkCredentialsContainer}>
             <Button title="Check credentials" onPress={this.checkCredentials}/>
+            <Button title="Refresh" onPress={this.refresh}/>
+            <Button title="Sign out" onPress={this.signOut}/>
           </View>
         )}
         <View style={styles.buttonContainer}>
