@@ -10,11 +10,7 @@ UM_REGISTER_SINGLETON_MODULE(EXGoogleSignInDelegate)
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-  id annotation = options[UIApplicationOpenURLOptionsAnnotationKey];
-  NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
-  return [[GIDSignIn sharedInstance] handleURL:url
-                          sourceApplication:sourceApplication
-                                 annotation:annotation];
+  return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
 @end
