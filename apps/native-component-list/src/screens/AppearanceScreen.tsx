@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Appearance } from 'react-native-appearance';
-import { ColorSchemeName } from 'react-native-appearance/src/Appearance.types';
+import { Appearance, ColorSchemeName, AppearanceListener } from 'react-native-appearance';
 
 interface State {
   colorScheme: ColorSchemeName;
@@ -12,14 +11,14 @@ export default class AppearanceScreen extends React.Component<{}, State> {
     title: 'Appearance',
   };
 
-  subscription: any;
+  subscription: AppearanceListener;
 
   state: State = {
     colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
-    this.subscription = Appearance.addChangeListener(({ colorScheme }: { colorScheme: any }) => {
+    this.subscription = Appearance.addChangeListener(({ colorScheme }: { colorScheme: ColorSchemeName }) => {
       this.setState({ colorScheme });
     });
   }
