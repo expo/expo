@@ -2,11 +2,16 @@
 
 #import <EXAppleAuthentication/EXAppleAuthentication.h>
 #import <UMCore/UMDefines.h>
+#import <UMCore/UMUtilities.h>
 
 @interface EXAppleAuthentication ()
 
 @property (nonatomic, strong) UMPromiseResolveBlock promiseResolve;
 @property (nonatomic, strong) UMPromiseRejectBlock promiseReject;
+
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
+@property (nonatomic, assign) BOOL hasListeners;
 
 @end
 
@@ -17,6 +22,25 @@ UM_EXPORT_MODULE(ExpoAppleAuthentication);
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
+}
+
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+{
+  if (_moduleRegistry) {
+    [self invalidate];
+  }
+  _moduleRegistry = moduleRegistry;
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"Expo.appleIdCredentialRevoked"];
+}
+
+- (void)invalidate
+{
+  _eventEmitter = nil;
 }
 
 - (NSDictionary *)constantsToExport
@@ -62,6 +86,35 @@ UM_EXPORT_MODULE(ExpoAppleAuthentication);
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
+}
+
+- (void)startObserving
+{
+  if (@available(iOS 13.0, *)) {
+    _hasListeners = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(credentialRevoked:)
+                                                 name:ASAuthorizationAppleIDProviderCredentialRevokedNotification
+                                               object:nil];
+  }
+}
+
+- (void)stopObserving
+{
+  if (@available(iOS 13.0, *)) {
+    _hasListeners = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:ASAuthorizationAppleIDProviderCredentialRevokedNotification
+                                                  object:nil];
+  }
+}
+
+- (void)credentialRevoked:(NSNotification *)notification
+{
+  if (!_hasListeners) {
+    return;
+  }
+  [_eventEmitter sendEventWithName:@"Expo.appleIdCredentialRevoked" body:@{@"type": @"revoke"}];
 }
 
 UM_EXPORT_METHOD_AS(isAvailableAsync,
@@ -142,7 +195,8 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
                          @"realUserStatus": @(credential.realUserStatus),
                          @"state": UMNullIfNil(credential.state),
                          @"authorizationCode": UMNullIfNil(credential.authorizationCode),
-                         @"identityToken": UMNullIfNil(credential.identityToken)
+                         @"identityToken": UMNullIfNil(credential.identityToken),
+                         @"type": @"success"
                          };
   if (_promiseResolve) {
     _promiseResolve(user);

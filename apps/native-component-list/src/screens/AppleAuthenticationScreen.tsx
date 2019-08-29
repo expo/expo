@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button, Slider } from 'react-native';
+import { Alert, StyleSheet, View, Text, Button, Slider } from 'react-native';
+import { Subscription } from '@unimodules/core';
 
 import * as SignInWithApple from 'expo-apple-authentication';
 
@@ -8,7 +9,7 @@ interface State {
   buttonStyle: SignInWithApple.SignInWithAppleButtonStyle;
   buttonType: SignInWithApple.SignInWithAppleButtonType;
   cornerRadius: number;
-  credentials?: SignInWithApple.SignInWithAppleCredential;
+  credentials?: SignInWithApple.SignInWithAppleCredential | null;
 }
 
 export default class AppleAuthenticationScreen extends React.Component<{}, State> {
@@ -22,8 +23,22 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
     cornerRadius: 5,
   };
 
+  _subscription?: Subscription;
+
   componentDidMount() {
     this.checkAvailability();
+    this._subscription = SignInWithApple.addRevokeListener(this.revokeListener);
+  }
+
+  componentWillUnmount() {
+    if (this._subscription) {
+      this._subscription.remove();
+    }
+  }
+
+  revokeListener = () => {
+    this.setState({ credentials: null });
+    Alert.alert('Credentials revoked!');
   }
 
   checkAvailability = async () => {
@@ -41,7 +56,11 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
         requestedOperation: operation,
         state: 'this-is-a-test',
       });
-      this.setState({ credentials })
+      if (credentials.type === 'success') {
+        this.setState({ credentials });
+      } else {
+        this.setState({ credentials: null });
+      }
     } catch (err) {
       console.error(err);
     }
@@ -60,7 +79,9 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
   }
 
   checkCredentials = async () => {
-    const result = SignInWithApple.getCredentialStateAsync(this.state.credentials!.user);
+    if (this.state.credentials && this.state.credentials.user) {
+      await SignInWithApple.getCredentialStateAsync(this.state.credentials.user);
+    }
   }
 
   render() {

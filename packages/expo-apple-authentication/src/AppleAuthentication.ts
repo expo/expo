@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 import {
@@ -6,6 +6,7 @@ import {
   SignInWithAppleCredential,
   SignInWithAppleCredentialState,
   SignInWithAppleOperation,
+  RevokeListener,
 } from './AppleAuthentication.types';
 
 /**
@@ -80,4 +81,27 @@ export async function getCredentialStateAsync(userId: string): Promise<SignInWit
     throw new UnavailabilityError('expo-apple-authentication', 'getCredentialStateAsync');
   }
   return ExpoAppleAuthentication.getCredentialStateAsync(userId);
+}
+
+const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentication);
+
+/**
+ * Adds a listener for when a token has been revoked.
+ * This means that the user has signed out and you should update your UI to reflect this
+ *
+ * @example
+ * ```ts
+ * import * as SignInWithApple from "expo-apple-authentication";
+ *
+ * // Subscribe
+ * const unsubscribe = SignInWithApple.addRevokeListener(() => {
+ *   // Handle the token being revoked
+ * })
+ *
+ * // Unsubscribe
+ * unsubscribe();
+ * ```
+ */
+export function addRevokeListener(listener: RevokeListener): Subscription {
+  return ExpoAppleAuthenticationEventEmitter.addListener('Expo.appleIdCredentialRevoked', listener);
 }

@@ -10,6 +10,8 @@ const {
   ButtonStyle,
 } = ExpoAppleAuthentication;
 
+export type RequestStatus = 'success' | 'revoke' | 'cancel';
+
 export interface SignInWithAppleButtonProps {
   /**
    * The callback which is called when the user pressed the button.
@@ -76,20 +78,28 @@ export interface SignInWithAppleOptions {
 */
 export interface SignInWithAppleCredential {
   /**
+   * A string indicating the status type of the requested credential.
+   * 'success' if the credential was retrieved successfully,
+   * 'revoke' if the credential was revoked,
+   * or 'cancel' if the user canceled the Sign In operation.
+   */
+  type: RequestStatus;
+
+  /**
     * A JSON Web Token (JWT) that securely communicates information about the user to your app.
     */
-  identityToken: string;
+  identityToken?: string;
 
   /**
     * 	A short-lived token used by your app for proof of authorization when interacting with the app’s server counterpart.
     */
-  authorizationCode: string;
+  authorizationCode?: string;
 
   /**
     * An arbitrary string that your app provided to the request that generated the credential.
     * You can set this in `SignInWithAppleOptions`.
     */
-  user: string;
+  user?: string;
 
   /**
     * An identifier associated with the authenticated user.
@@ -102,7 +112,7 @@ export interface SignInWithAppleCredential {
   /**
     * The contact information the user authorized your app to access.
     */
-  authorizedScopes: SignInWithAppleScope[];
+  authorizedScopes?: SignInWithAppleScope[];
 
   /**
     * The user’s name. Might not present if you didn't request access or if the user denied access.
@@ -117,7 +127,7 @@ export interface SignInWithAppleCredential {
   /**
     * A value that indicates whether the user appears to be a real person.
     */
-  realUserStatus: SignInWithAppleUserDetectionStatus;
+  realUserStatus?: SignInWithAppleUserDetectionStatus;
 }
 
 /**
@@ -230,3 +240,15 @@ export enum SignInWithAppleButtonStyle {
   White = ButtonStyle && ButtonStyle.White,
   WhiteOutline = ButtonStyle && ButtonStyle.WhiteOutline,
 }
+
+/**
+ * Event sent to the listener when the user's credentials have been revoked.
+ */
+export type RevokeEvent = {
+  type: RequestStatus;
+}
+
+/**
+ * Listener that is called when the user's credentials have been revoked.
+ */
+export type RevokeListener = (event: RevokeEvent) => void;
