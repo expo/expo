@@ -1,5 +1,5 @@
 PODS:
-  - Amplitude-iOS (4.6.0)
+  - Amplitude-iOS (4.7.1)
   - Analytics (3.7.0)
   - AppAuth (1.2.0):
     - AppAuth/Core (= 1.2.0)
@@ -66,7 +66,7 @@ PODS:
     - EXGL-CPP/UEXGL (= 6.0.0)
   - EXGL-CPP/UEXGL (6.0.0)
   - EXGoogleSignIn (6.0.0):
-    - GoogleSignIn (~> 4.4)
+    - GoogleSignIn
     - UMCore
   - EXHaptics (6.0.0):
     - UMCore
@@ -133,19 +133,18 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - GoogleSignIn (4.4.0):
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - "GoogleToolboxForMac/NSString+URLArguments (~> 2.1)"
+  - GoogleSignIn (5.0.0):
+    - AppAuth (~> 1.1)
+    - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleToolboxForMac/DebugUtils (2.2.1):
-    - GoogleToolboxForMac/Defines (= 2.2.1)
-  - GoogleToolboxForMac/Defines (2.2.1)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.2.1)":
-    - GoogleToolboxForMac/DebugUtils (= 2.2.1)
-    - GoogleToolboxForMac/Defines (= 2.2.1)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.1)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.2.1)"
+  - GTMAppAuth (1.0.0):
+    - AppAuth/Core (~> 1.0)
+    - GTMSessionFetcher (~> 1.1)
+  - GTMSessionFetcher (1.2.2):
+    - GTMSessionFetcher/Full (= 1.2.2)
   - GTMSessionFetcher/Core (1.2.2)
+  - GTMSessionFetcher/Full (1.2.2):
+    - GTMSessionFetcher/Core (= 1.2.2)
   - React (0.59.8):
     - React/Core (= 0.59.8)
   - React/Core (0.59.8):
@@ -298,13 +297,13 @@ DEPENDENCIES:
   - yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - Amplitude-iOS
     - Analytics
     - AppAuth
     - boost-for-react-native
     - GoogleSignIn
-    - GoogleToolboxForMac
+    - GTMAppAuth
     - GTMSessionFetcher
 
 EXTERNAL SOURCES:
@@ -489,7 +488,7 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Amplitude-iOS: ac1715ae68104b7a51723209ad574f60ab22ae5f
+  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -515,7 +514,7 @@ SPEC CHECKSUMS:
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
   EXGL: dc4ae6520b142a74e28e6f4472d27a26fc211f37
   EXGL-CPP: 06949fa99656c36b488ff51155ca865c871f3d3d
-  EXGoogleSignIn: c1338c16b0d4592d00cec09e1a43e9486df0dba0
+  EXGoogleSignIn: a992334b98a2ba9c1495803072583cb329b8540f
   EXHaptics: f84c93d605e0905c47654e4a6e5dfbff78ed6906
   EXImageManipulator: b2e17bdbd0872cc59b43b76756f76fdb8a849831
   EXImagePicker: ec641e97b73db0fb1ef58b818cffaf7ff6d3c96c
@@ -541,8 +540,8 @@ SPEC CHECKSUMS:
   EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  GoogleSignIn: 7ff245e1a7b26d379099d3243a562f5747e23d39
-  GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
+  GoogleSignIn: a62edd0516721d2a3db1259a5681b91f9b41c06a
+  GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
@@ -561,4 +560,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 89d36f5a85f14250f85476dcc6c968499f450490
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.0.beta.1
