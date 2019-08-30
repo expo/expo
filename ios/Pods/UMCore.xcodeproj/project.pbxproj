@@ -1,0 +1,502 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A4790B1E1B7D06CF83192AAB4B820B8 /* UMModuleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = EE1C37FB9ED5D6FDD5DF52B6ED5C5D7F /* UMModuleRegistry.m */; };
+		10D8B82DEEF7CB20EC41C8E29859A570 /* UMJavaScriptContextProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 58E6BC8CA33BB26A0F15271E008C1EC8 /* UMJavaScriptContextProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		194B2F40C1037BD4CA3759CAF4743955 /* UMAppDelegateWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8DA6A4073672CD7B318BC9EFACD63D /* UMAppDelegateWrapper.m */; };
+		2092105EA86FCE66A2D6F75D9A3F252B /* UMCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 072C6DB37D6B5F7368BC4E80B082CE81 /* UMCore-dummy.m */; };
+		25D629CCFD6EE16BDA97C6C85B432922 /* UMInternalModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3044E8D143E723AE0F86DB52F7325035 /* UMInternalModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3DAD802A6557A5A567E47D3656A3D3C3 /* UMUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = F695C9906A67D0C9BAEC33C59431B38C /* UMUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		42A771B37C46ACED7867C9579AB785BD /* UMLogHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = FDCFA4669051B6895CB5AA6EB1201752 /* UMLogHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		447C9B2C86F2902A3F5B9579FC14734B /* UMUtilitiesInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = FDEB477AAAB9F5BBAF59BB3A1D6816EA /* UMUtilitiesInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		499B963074787D8629D84BB677CFFC87 /* UMExportedModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 49020E9E7A87089F9BD44104BAFD0710 /* UMExportedModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4E570B6C378F476089315B9769C29098 /* UMViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C078F36DA1DC1A753CA069A076A954 /* UMViewManager.m */; };
+		532CF48902D16BE3BD07CED5A48FD7DE /* UMEventEmitterService.h in Headers */ = {isa = PBXBuildFile; fileRef = 285233909F2EAE6052FE99B698F22B50 /* UMEventEmitterService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		594AB61F28397C8AD77B3933A7241F72 /* UMDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = CD525E08B567152B782EFE7602403580 /* UMDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5D8D274F254754A42CA3CC1AB7984F08 /* UMViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3E417C1941FC2B58F8A0414BA2457B /* UMViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		76940BF40085125D4167A12A9F748DCF /* UMEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2077D8B3EA95A8933CF3ED8A367C06AD /* UMEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		86B56332C7AA7C98FCFC253093763479 /* UMModuleRegistryProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = DBD33E13E305D5D2BB4302740D1F11B9 /* UMModuleRegistryProvider.m */; };
+		8E36AB6CE5902D60A412EB5584D3F6E7 /* UMSingletonModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 03EA0D5B565713FAC4FA8B1C1975C466 /* UMSingletonModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8F5C987E738AB0EAE2A57E4D58943603 /* UMAppDelegateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2795596D5DF65849CD24A2AA5F61287F /* UMAppDelegateWrapper.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		95AE27D0AE0F927E866910557E27D55E /* UMAppLifecycleService.h in Headers */ = {isa = PBXBuildFile; fileRef = B6ECB042BD6D96587F13C8F56841A20E /* UMAppLifecycleService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9AC00FFF123FDAAB1B456B9126C246BF /* UMUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 3947C04EC706F9A94107BD0C80ECAE99 /* UMUtilities.m */; };
+		9B86BEB7BCA41E0AAAD48A1D69688333 /* UMLogManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E37A2CDCF7A2F1772B099DE2C3ECFA /* UMLogManager.m */; };
+		A22E87C7DA825BC07BFB84316C9B5BE7 /* UMUIManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DA9E18730FA0C7CF0C3360673B04161 /* UMUIManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A640F7172EC21EDC9F416888E8F78A17 /* UMModuleRegistryConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = EFEF25F79E68996DAF81EAED1D65AB96 /* UMModuleRegistryConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AF0BEE7A19968E8F84A02F2383C00305 /* UMLogManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A5CE430E22499210B092DC068C2ED691 /* UMLogManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C1B90138321C0B9EBF53D72D87361D61 /* UMAppLifecycleListener.h in Headers */ = {isa = PBXBuildFile; fileRef = A0674678D0B84ED6572F428248AA0EF1 /* UMAppLifecycleListener.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D4AF7B0321EF311CBE965285E68A99F0 /* UMKernelService.h in Headers */ = {isa = PBXBuildFile; fileRef = 03EBE1678B192D408FA4A5F48646811D /* UMKernelService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D62C536B22435B278C1FAA6D4666778A /* UMModuleRegistryProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E0B4ED54D09BF7313422CB4482CEA38 /* UMModuleRegistryProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DE013591192486972671F76915175514 /* UMExportedModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E9BDE60D95972B433FBF274FE8E430E5 /* UMExportedModule.m */; };
+		F09D91E18F1132E565A0545E85722261 /* UMModuleRegistryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F8FF617ACA359C09C257E417199463B6 /* UMModuleRegistryDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F4C97CAB9EDB94EE574DB39EDD0A49DC /* UMSingletonModule.m in Sources */ = {isa = PBXBuildFile; fileRef = D73590B7A66877ABC8D3C02D2D932D74 /* UMSingletonModule.m */; };
+		FF3B47629E0FFAE165ECA9F0E3D96CFA /* UMModuleRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = E956C557005AEE6E3F632C05AB00DBD1 /* UMModuleRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		03EA0D5B565713FAC4FA8B1C1975C466 /* UMSingletonModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMSingletonModule.h; path = UMCore/UMSingletonModule.h; sourceTree = "<group>"; };
+		03EBE1678B192D408FA4A5F48646811D /* UMKernelService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMKernelService.h; sourceTree = "<group>"; };
+		072C6DB37D6B5F7368BC4E80B082CE81 /* UMCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UMCore-dummy.m"; sourceTree = "<group>"; };
+		0E0B4ED54D09BF7313422CB4482CEA38 /* UMModuleRegistryProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMModuleRegistryProvider.h; sourceTree = "<group>"; };
+		2077D8B3EA95A8933CF3ED8A367C06AD /* UMEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMEventEmitter.h; sourceTree = "<group>"; };
+		2795596D5DF65849CD24A2AA5F61287F /* UMAppDelegateWrapper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMAppDelegateWrapper.h; path = UMCore/UMAppDelegateWrapper.h; sourceTree = "<group>"; };
+		285233909F2EAE6052FE99B698F22B50 /* UMEventEmitterService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMEventEmitterService.h; sourceTree = "<group>"; };
+		2B3FA496B1DF9CAB03EFAEC898AD61D0 /* UMCore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = UMCore.xcconfig; sourceTree = "<group>"; };
+		2DB701701BEBC06F3CD4CEA8DC016F10 /* UMCore-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UMCore-prefix.pch"; sourceTree = "<group>"; };
+		3044E8D143E723AE0F86DB52F7325035 /* UMInternalModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMInternalModule.h; sourceTree = "<group>"; };
+		3947C04EC706F9A94107BD0C80ECAE99 /* UMUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMUtilities.m; path = UMCore/UMUtilities.m; sourceTree = "<group>"; };
+		49020E9E7A87089F9BD44104BAFD0710 /* UMExportedModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMExportedModule.h; path = UMCore/UMExportedModule.h; sourceTree = "<group>"; };
+		57D0FFA24C99D383A3BBCDF50149B766 /* UMCore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = UMCore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		58E6BC8CA33BB26A0F15271E008C1EC8 /* UMJavaScriptContextProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMJavaScriptContextProvider.h; sourceTree = "<group>"; };
+		5DA9E18730FA0C7CF0C3360673B04161 /* UMUIManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMUIManager.h; sourceTree = "<group>"; };
+		A0674678D0B84ED6572F428248AA0EF1 /* UMAppLifecycleListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppLifecycleListener.h; sourceTree = "<group>"; };
+		A5CE430E22499210B092DC068C2ED691 /* UMLogManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMLogManager.h; sourceTree = "<group>"; };
+		B028FE6A90DCDB619E0BA9877EB50D3B /* libUMCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libUMCore.a; path = libUMCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6ECB042BD6D96587F13C8F56841A20E /* UMAppLifecycleService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMAppLifecycleService.h; sourceTree = "<group>"; };
+		CC3E417C1941FC2B58F8A0414BA2457B /* UMViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMViewManager.h; path = UMCore/UMViewManager.h; sourceTree = "<group>"; };
+		CD525E08B567152B782EFE7602403580 /* UMDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMDefines.h; path = UMCore/UMDefines.h; sourceTree = "<group>"; };
+		D0C078F36DA1DC1A753CA069A076A954 /* UMViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMViewManager.m; path = UMCore/UMViewManager.m; sourceTree = "<group>"; };
+		D73590B7A66877ABC8D3C02D2D932D74 /* UMSingletonModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMSingletonModule.m; path = UMCore/UMSingletonModule.m; sourceTree = "<group>"; };
+		DBD33E13E305D5D2BB4302740D1F11B9 /* UMModuleRegistryProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = UMModuleRegistryProvider.m; sourceTree = "<group>"; };
+		DD8DA6A4073672CD7B318BC9EFACD63D /* UMAppDelegateWrapper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMAppDelegateWrapper.m; path = UMCore/UMAppDelegateWrapper.m; sourceTree = "<group>"; };
+		E956C557005AEE6E3F632C05AB00DBD1 /* UMModuleRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMModuleRegistry.h; sourceTree = "<group>"; };
+		E9BDE60D95972B433FBF274FE8E430E5 /* UMExportedModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = UMExportedModule.m; path = UMCore/UMExportedModule.m; sourceTree = "<group>"; };
+		EE1C37FB9ED5D6FDD5DF52B6ED5C5D7F /* UMModuleRegistry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = UMModuleRegistry.m; sourceTree = "<group>"; };
+		EFEF25F79E68996DAF81EAED1D65AB96 /* UMModuleRegistryConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMModuleRegistryConsumer.h; sourceTree = "<group>"; };
+		F695C9906A67D0C9BAEC33C59431B38C /* UMUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = UMUtilities.h; path = UMCore/UMUtilities.h; sourceTree = "<group>"; };
+		F6E37A2CDCF7A2F1772B099DE2C3ECFA /* UMLogManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = UMLogManager.m; sourceTree = "<group>"; };
+		F8FF617ACA359C09C257E417199463B6 /* UMModuleRegistryDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMModuleRegistryDelegate.h; sourceTree = "<group>"; };
+		FDCFA4669051B6895CB5AA6EB1201752 /* UMLogHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMLogHandler.h; sourceTree = "<group>"; };
+		FDEB477AAAB9F5BBAF59BB3A1D6816EA /* UMUtilitiesInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = UMUtilitiesInterface.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2CDDC859001AE14528926E22E36A3914 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4360C8C1DA414EFBC6A472DAD9C84362 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				2B3FA496B1DF9CAB03EFAEC898AD61D0 /* UMCore.xcconfig */,
+				072C6DB37D6B5F7368BC4E80B082CE81 /* UMCore-dummy.m */,
+				2DB701701BEBC06F3CD4CEA8DC016F10 /* UMCore-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/UMCore";
+			sourceTree = "<group>";
+		};
+		59CAF7F9BBD6811A285F10EF14612651 /* UMCore */ = {
+			isa = PBXGroup;
+			children = (
+				2795596D5DF65849CD24A2AA5F61287F /* UMAppDelegateWrapper.h */,
+				DD8DA6A4073672CD7B318BC9EFACD63D /* UMAppDelegateWrapper.m */,
+				CD525E08B567152B782EFE7602403580 /* UMDefines.h */,
+				49020E9E7A87089F9BD44104BAFD0710 /* UMExportedModule.h */,
+				E9BDE60D95972B433FBF274FE8E430E5 /* UMExportedModule.m */,
+				03EA0D5B565713FAC4FA8B1C1975C466 /* UMSingletonModule.h */,
+				D73590B7A66877ABC8D3C02D2D932D74 /* UMSingletonModule.m */,
+				F695C9906A67D0C9BAEC33C59431B38C /* UMUtilities.h */,
+				3947C04EC706F9A94107BD0C80ECAE99 /* UMUtilities.m */,
+				CC3E417C1941FC2B58F8A0414BA2457B /* UMViewManager.h */,
+				D0C078F36DA1DC1A753CA069A076A954 /* UMViewManager.m */,
+				9492581CF3D4C15ED525051DF6E6CC2B /* Pod */,
+				69DB681E0B5DE44DE92059647AFA0679 /* Protocols */,
+				C5837DE79C327490DB7C99F98A67EA5D /* Services */,
+				4360C8C1DA414EFBC6A472DAD9C84362 /* Support Files */,
+				5F212ADF73FB3095F0224062FCEE1D7B /* UMModuleRegistry */,
+				CAC0F660625FD34B8636EF116F3CC0D0 /* UMModuleRegistryProvider */,
+			);
+			name = UMCore;
+			path = "../../packages/@unimodules/core/ios";
+			sourceTree = "<group>";
+		};
+		5D3DA4FD3C300BEA02EE4DA710D751E9 = {
+			isa = PBXGroup;
+			children = (
+				CE24A71B48610856B4F52988E3992292 /* Frameworks */,
+				60E4343AFCB9D142F97B90059FEF73D2 /* Products */,
+				59CAF7F9BBD6811A285F10EF14612651 /* UMCore */,
+			);
+			sourceTree = "<group>";
+		};
+		5F212ADF73FB3095F0224062FCEE1D7B /* UMModuleRegistry */ = {
+			isa = PBXGroup;
+			children = (
+				E956C557005AEE6E3F632C05AB00DBD1 /* UMModuleRegistry.h */,
+				EE1C37FB9ED5D6FDD5DF52B6ED5C5D7F /* UMModuleRegistry.m */,
+				F8FF617ACA359C09C257E417199463B6 /* UMModuleRegistryDelegate.h */,
+			);
+			name = UMModuleRegistry;
+			path = UMCore/UMModuleRegistry;
+			sourceTree = "<group>";
+		};
+		60E4343AFCB9D142F97B90059FEF73D2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B028FE6A90DCDB619E0BA9877EB50D3B /* libUMCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69DB681E0B5DE44DE92059647AFA0679 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				A0674678D0B84ED6572F428248AA0EF1 /* UMAppLifecycleListener.h */,
+				B6ECB042BD6D96587F13C8F56841A20E /* UMAppLifecycleService.h */,
+				2077D8B3EA95A8933CF3ED8A367C06AD /* UMEventEmitter.h */,
+				285233909F2EAE6052FE99B698F22B50 /* UMEventEmitterService.h */,
+				3044E8D143E723AE0F86DB52F7325035 /* UMInternalModule.h */,
+				58E6BC8CA33BB26A0F15271E008C1EC8 /* UMJavaScriptContextProvider.h */,
+				03EBE1678B192D408FA4A5F48646811D /* UMKernelService.h */,
+				FDCFA4669051B6895CB5AA6EB1201752 /* UMLogHandler.h */,
+				EFEF25F79E68996DAF81EAED1D65AB96 /* UMModuleRegistryConsumer.h */,
+				5DA9E18730FA0C7CF0C3360673B04161 /* UMUIManager.h */,
+				FDEB477AAAB9F5BBAF59BB3A1D6816EA /* UMUtilitiesInterface.h */,
+			);
+			name = Protocols;
+			path = UMCore/Protocols;
+			sourceTree = "<group>";
+		};
+		9492581CF3D4C15ED525051DF6E6CC2B /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				57D0FFA24C99D383A3BBCDF50149B766 /* UMCore.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		C5837DE79C327490DB7C99F98A67EA5D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A5CE430E22499210B092DC068C2ED691 /* UMLogManager.h */,
+				F6E37A2CDCF7A2F1772B099DE2C3ECFA /* UMLogManager.m */,
+			);
+			name = Services;
+			path = UMCore/Services;
+			sourceTree = "<group>";
+		};
+		CAC0F660625FD34B8636EF116F3CC0D0 /* UMModuleRegistryProvider */ = {
+			isa = PBXGroup;
+			children = (
+				0E0B4ED54D09BF7313422CB4482CEA38 /* UMModuleRegistryProvider.h */,
+				DBD33E13E305D5D2BB4302740D1F11B9 /* UMModuleRegistryProvider.m */,
+			);
+			name = UMModuleRegistryProvider;
+			path = UMCore/UMModuleRegistryProvider;
+			sourceTree = "<group>";
+		};
+		CE24A71B48610856B4F52988E3992292 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D72EDC5CA46DC80D9EB67DCFE8302138 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F5C987E738AB0EAE2A57E4D58943603 /* UMAppDelegateWrapper.h in Headers */,
+				C1B90138321C0B9EBF53D72D87361D61 /* UMAppLifecycleListener.h in Headers */,
+				95AE27D0AE0F927E866910557E27D55E /* UMAppLifecycleService.h in Headers */,
+				594AB61F28397C8AD77B3933A7241F72 /* UMDefines.h in Headers */,
+				76940BF40085125D4167A12A9F748DCF /* UMEventEmitter.h in Headers */,
+				532CF48902D16BE3BD07CED5A48FD7DE /* UMEventEmitterService.h in Headers */,
+				499B963074787D8629D84BB677CFFC87 /* UMExportedModule.h in Headers */,
+				25D629CCFD6EE16BDA97C6C85B432922 /* UMInternalModule.h in Headers */,
+				10D8B82DEEF7CB20EC41C8E29859A570 /* UMJavaScriptContextProvider.h in Headers */,
+				D4AF7B0321EF311CBE965285E68A99F0 /* UMKernelService.h in Headers */,
+				42A771B37C46ACED7867C9579AB785BD /* UMLogHandler.h in Headers */,
+				AF0BEE7A19968E8F84A02F2383C00305 /* UMLogManager.h in Headers */,
+				FF3B47629E0FFAE165ECA9F0E3D96CFA /* UMModuleRegistry.h in Headers */,
+				A640F7172EC21EDC9F416888E8F78A17 /* UMModuleRegistryConsumer.h in Headers */,
+				F09D91E18F1132E565A0545E85722261 /* UMModuleRegistryDelegate.h in Headers */,
+				D62C536B22435B278C1FAA6D4666778A /* UMModuleRegistryProvider.h in Headers */,
+				8E36AB6CE5902D60A412EB5584D3F6E7 /* UMSingletonModule.h in Headers */,
+				A22E87C7DA825BC07BFB84316C9B5BE7 /* UMUIManager.h in Headers */,
+				3DAD802A6557A5A567E47D3656A3D3C3 /* UMUtilities.h in Headers */,
+				447C9B2C86F2902A3F5B9579FC14734B /* UMUtilitiesInterface.h in Headers */,
+				5D8D274F254754A42CA3CC1AB7984F08 /* UMViewManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		153171642F5C5CBC05FD3EF6B23A3F36 /* UMCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F5A64F792E8965E42DF84E29D288D81 /* Build configuration list for PBXNativeTarget "UMCore" */;
+			buildPhases = (
+				D72EDC5CA46DC80D9EB67DCFE8302138 /* Headers */,
+				83379AA543B82A2C5CB682F6B595488E /* Sources */,
+				2CDDC859001AE14528926E22E36A3914 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UMCore;
+			productName = UMCore;
+			productReference = B028FE6A90DCDB619E0BA9877EB50D3B /* libUMCore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		64516D1C6610EB1DAE9F281D2F72DD7F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 1B0BC3241B59D0BEBA201E8495CDC7E0 /* Build configuration list for PBXProject "UMCore" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5D3DA4FD3C300BEA02EE4DA710D751E9;
+			productRefGroup = 60E4343AFCB9D142F97B90059FEF73D2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				153171642F5C5CBC05FD3EF6B23A3F36 /* UMCore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		83379AA543B82A2C5CB682F6B595488E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				194B2F40C1037BD4CA3759CAF4743955 /* UMAppDelegateWrapper.m in Sources */,
+				2092105EA86FCE66A2D6F75D9A3F252B /* UMCore-dummy.m in Sources */,
+				DE013591192486972671F76915175514 /* UMExportedModule.m in Sources */,
+				9B86BEB7BCA41E0AAAD48A1D69688333 /* UMLogManager.m in Sources */,
+				0A4790B1E1B7D06CF83192AAB4B820B8 /* UMModuleRegistry.m in Sources */,
+				86B56332C7AA7C98FCFC253093763479 /* UMModuleRegistryProvider.m in Sources */,
+				F4C97CAB9EDB94EE574DB39EDD0A49DC /* UMSingletonModule.m in Sources */,
+				9AC00FFF123FDAAB1B456B9126C246BF /* UMUtilities.m in Sources */,
+				4E570B6C378F476089315B9769C29098 /* UMViewManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		960773C28FC2BA0A02C3BA8EDDE12A02 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2B3FA496B1DF9CAB03EFAEC898AD61D0 /* UMCore.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMCore/UMCore-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMCore;
+				PRODUCT_NAME = UMCore;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B2EA0E3FEB02BD26964EB27A1C30F1AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		EB540E68B6EC040E32925FCAC567A36B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2B3FA496B1DF9CAB03EFAEC898AD61D0 /* UMCore.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/UMCore/UMCore-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = UMCore;
+				PRODUCT_NAME = UMCore;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EBADAC9F37E2BF3EC1DF9178F8A849F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1B0BC3241B59D0BEBA201E8495CDC7E0 /* Build configuration list for PBXProject "UMCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBADAC9F37E2BF3EC1DF9178F8A849F5 /* Debug */,
+				B2EA0E3FEB02BD26964EB27A1C30F1AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F5A64F792E8965E42DF84E29D288D81 /* Build configuration list for PBXNativeTarget "UMCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				960773C28FC2BA0A02C3BA8EDDE12A02 /* Debug */,
+				EB540E68B6EC040E32925FCAC567A36B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 64516D1C6610EB1DAE9F281D2F72DD7F /* Project object */;
+}

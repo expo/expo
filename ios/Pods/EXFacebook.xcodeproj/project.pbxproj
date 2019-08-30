@@ -1,0 +1,449 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		042945DCA7146E39CFACFB06557F1C4C /* EXFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = CD38021DEB4BB0EB21CDE5ACE20ADE8A /* EXFacebook.m */; };
+		05AE0E2A070CB45D41FC0061CA1FB07F /* EXFacebook-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3278BFF48F88C73578C4E8E5C3A555EE /* EXFacebook-dummy.m */; };
+		52CD370EAA03E3ED8B9596A8D205D5CE /* EXFacebookAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E956FCC9F736AB8E5C256E3D40D245A5 /* EXFacebookAppDelegate.m */; };
+		67797797B20F122BD819E12981C75799 /* EXFacebook.h in Headers */ = {isa = PBXBuildFile; fileRef = BC9BBE6DFD2E486D654D0F1C9A6BDDD4 /* EXFacebook.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		689A03C457463A25B32305A9198C5602 /* EXFacebookAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 28F3F34C9CEF63D5474DA0A3CD7609DB /* EXFacebookAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1116645BDF22B60A8C9CCC08B6475D50 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 58A87A1DF4E3E597CB15A4B54052EECE /* Facebook.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A39E4BE75C1BA270EA144E071C27BB60;
+			remoteInfo = FBSDKCoreKit;
+		};
+		13D85FF0A39DB4656C643A68DA4DAC6E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
+			remoteInfo = UMConstantsInterface;
+		};
+		1D31EF409020CF5404715633C39A7641 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 58A87A1DF4E3E597CB15A4B54052EECE /* Facebook.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = ADB556720D679EF418E52AD93F42CD25;
+			remoteInfo = FBSDKLoginKit;
+		};
+		8E63E63B0C68EDD0D3CF8562CF116858 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F75862FFD78881E3999A69791CDBD1C1 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		28F3F34C9CEF63D5474DA0A3CD7609DB /* EXFacebookAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFacebookAppDelegate.h; path = EXFacebook/EXFacebookAppDelegate.h; sourceTree = "<group>"; };
+		3278BFF48F88C73578C4E8E5C3A555EE /* EXFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFacebook-dummy.m"; sourceTree = "<group>"; };
+		58A87A1DF4E3E597CB15A4B54052EECE /* Facebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Facebook; path = Facebook.xcodeproj; sourceTree = "<group>"; };
+		AE7151EC534B5A1EACB6272710D3E60D /* libEXFacebook.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXFacebook.a; path = libEXFacebook.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0CB287A995662E244B547C4AA2CA8D4 /* EXFacebook.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFacebook.xcconfig; sourceTree = "<group>"; };
+		BC9BBE6DFD2E486D654D0F1C9A6BDDD4 /* EXFacebook.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFacebook.h; path = EXFacebook/EXFacebook.h; sourceTree = "<group>"; };
+		CD38021DEB4BB0EB21CDE5ACE20ADE8A /* EXFacebook.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFacebook.m; path = EXFacebook/EXFacebook.m; sourceTree = "<group>"; };
+		CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
+		D0A3C59BF6754F4B355C3BB2C1243E23 /* EXFacebook-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFacebook-prefix.pch"; sourceTree = "<group>"; };
+		E956FCC9F736AB8E5C256E3D40D245A5 /* EXFacebookAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFacebookAppDelegate.m; path = EXFacebook/EXFacebookAppDelegate.m; sourceTree = "<group>"; };
+		EDEAC1E88B5E7E8380E54C338014F62C /* EXFacebook.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFacebook.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F75862FFD78881E3999A69791CDBD1C1 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2F25F9E23AD4A380DE182F3C8D7B521B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8B2CF0B49C26036E53F8530856D64E00 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				EDEAC1E88B5E7E8380E54C338014F62C /* EXFacebook.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		946C2859E82A3FE0F6C33EB056310515 /* EXFacebook */ = {
+			isa = PBXGroup;
+			children = (
+				BC9BBE6DFD2E486D654D0F1C9A6BDDD4 /* EXFacebook.h */,
+				CD38021DEB4BB0EB21CDE5ACE20ADE8A /* EXFacebook.m */,
+				28F3F34C9CEF63D5474DA0A3CD7609DB /* EXFacebookAppDelegate.h */,
+				E956FCC9F736AB8E5C256E3D40D245A5 /* EXFacebookAppDelegate.m */,
+				8B2CF0B49C26036E53F8530856D64E00 /* Pod */,
+				F7197AE03B8660450C8D6A5037279A25 /* Support Files */,
+			);
+			name = EXFacebook;
+			path = "../../packages/expo-facebook/ios";
+			sourceTree = "<group>";
+		};
+		9CD844BE133F90471B16ED19A65A110A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AE7151EC534B5A1EACB6272710D3E60D /* libEXFacebook.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A9859CF56C5094511074A06DDECCCA0D = {
+			isa = PBXGroup;
+			children = (
+				D770201E4A904FECEA0F0D50432192EE /* Dependencies */,
+				946C2859E82A3FE0F6C33EB056310515 /* EXFacebook */,
+				F713D1D4EFDBDB2AC903D39530C09937 /* Frameworks */,
+				9CD844BE133F90471B16ED19A65A110A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D770201E4A904FECEA0F0D50432192EE /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				58A87A1DF4E3E597CB15A4B54052EECE /* Facebook */,
+				CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface */,
+				F75862FFD78881E3999A69791CDBD1C1 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		F713D1D4EFDBDB2AC903D39530C09937 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F7197AE03B8660450C8D6A5037279A25 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B0CB287A995662E244B547C4AA2CA8D4 /* EXFacebook.xcconfig */,
+				3278BFF48F88C73578C4E8E5C3A555EE /* EXFacebook-dummy.m */,
+				D0A3C59BF6754F4B355C3BB2C1243E23 /* EXFacebook-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXFacebook";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		16D6235CD783919B5EA4345CBFB354D7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				67797797B20F122BD819E12981C75799 /* EXFacebook.h in Headers */,
+				689A03C457463A25B32305A9198C5602 /* EXFacebookAppDelegate.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FEAA3FBA5C5225363EE9E6D0B5B3183B /* EXFacebook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9AAB4E3EA762EDC1EBF5303FA91050E9 /* Build configuration list for PBXNativeTarget "EXFacebook" */;
+			buildPhases = (
+				16D6235CD783919B5EA4345CBFB354D7 /* Headers */,
+				46756F39981AA4BB658CF177BA72D681 /* Sources */,
+				2F25F9E23AD4A380DE182F3C8D7B521B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3435C40403E8A977F46B31B59F39827A /* PBXTargetDependency */,
+				3B93DC157ECD390E393B6935F0BCE1AC /* PBXTargetDependency */,
+				9728AEFDF3F6474F920321DD06295844 /* PBXTargetDependency */,
+				81AA734B82DC98FAA3990B19CB717A56 /* PBXTargetDependency */,
+			);
+			name = EXFacebook;
+			productName = EXFacebook;
+			productReference = AE7151EC534B5A1EACB6272710D3E60D /* libEXFacebook.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7B08DCB84A5C5F1A47DA827D1A6014D5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 952626A25396D8D9559455337FF9A969 /* Build configuration list for PBXProject "EXFacebook" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A9859CF56C5094511074A06DDECCCA0D;
+			productRefGroup = 9CD844BE133F90471B16ED19A65A110A /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = F75862FFD78881E3999A69791CDBD1C1 /* UMCore */;
+				},
+				{
+					ProjectRef = CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface */;
+				},
+				{
+					ProjectRef = 58A87A1DF4E3E597CB15A4B54052EECE /* Facebook */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				FEAA3FBA5C5225363EE9E6D0B5B3183B /* EXFacebook */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		46756F39981AA4BB658CF177BA72D681 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05AE0E2A070CB45D41FC0061CA1FB07F /* EXFacebook-dummy.m in Sources */,
+				042945DCA7146E39CFACFB06557F1C4C /* EXFacebook.m in Sources */,
+				52CD370EAA03E3ED8B9596A8D205D5CE /* EXFacebookAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3435C40403E8A977F46B31B59F39827A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBSDKCoreKit;
+			targetProxy = 1116645BDF22B60A8C9CCC08B6475D50 /* PBXContainerItemProxy */;
+		};
+		3B93DC157ECD390E393B6935F0BCE1AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBSDKLoginKit;
+			targetProxy = 1D31EF409020CF5404715633C39A7641 /* PBXContainerItemProxy */;
+		};
+		81AA734B82DC98FAA3990B19CB717A56 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 8E63E63B0C68EDD0D3CF8562CF116858 /* PBXContainerItemProxy */;
+		};
+		9728AEFDF3F6474F920321DD06295844 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMConstantsInterface;
+			targetProxy = 13D85FF0A39DB4656C643A68DA4DAC6E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0F32799837DF117433BCC67AD3B98154 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B0CB287A995662E244B547C4AA2CA8D4 /* EXFacebook.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFacebook/EXFacebook-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFacebook;
+				PRODUCT_NAME = EXFacebook;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1C5AEE8356CBC35EA33F14470F9A8E2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		267E71527904EDF9557F45C81E022114 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B0CB287A995662E244B547C4AA2CA8D4 /* EXFacebook.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXFacebook/EXFacebook-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXFacebook;
+				PRODUCT_NAME = EXFacebook;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8C6157BAEA92549F7DD19FBEB6AF55A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		952626A25396D8D9559455337FF9A969 /* Build configuration list for PBXProject "EXFacebook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8C6157BAEA92549F7DD19FBEB6AF55A4 /* Debug */,
+				1C5AEE8356CBC35EA33F14470F9A8E2A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9AAB4E3EA762EDC1EBF5303FA91050E9 /* Build configuration list for PBXNativeTarget "EXFacebook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0F32799837DF117433BCC67AD3B98154 /* Debug */,
+				267E71527904EDF9557F45C81E022114 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7B08DCB84A5C5F1A47DA827D1A6014D5 /* Project object */;
+}
