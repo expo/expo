@@ -281,8 +281,8 @@ PODS:
   - ABI34_0_0EXFacebook (5.0.0):
     - ABI34_0_0UMConstantsInterface
     - ABI34_0_0UMCore
-    - FBSDKCoreKit (~> 4.0)
-    - FBSDKLoginKit (~> 4.0)
+    - FBSDKCoreKit
+    - FBSDKLoginKit
   - ABI34_0_0EXFaceDetector (6.0.0-rc.0):
     - ABI34_0_0UMCore
     - ABI34_0_0UMFaceDetectorInterface
@@ -466,12 +466,6 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.2.0)
   - AppAuth/Core (1.2.0)
   - AppAuth/ExternalUserAgent (1.2.0)
-  - Bolts (1.9.0):
-    - Bolts/AppLinks (= 1.9.0)
-    - Bolts/Tasks (= 1.9.0)
-  - Bolts/AppLinks (1.9.0):
-    - Bolts/Tasks
-  - Bolts/Tasks (1.9.0)
   - boost-for-react-native (1.63.0)
   - Branch (0.27.1):
     - Branch/Core (= 0.27.1)
@@ -544,8 +538,8 @@ PODS:
     - UMCore
     - UMFileSystemInterface
   - EXFacebook (6.0.0):
-    - FBSDKCoreKit (~> 4.0)
-    - FBSDKLoginKit (~> 4.0)
+    - FBSDKCoreKit (~> 5.4)
+    - FBSDKLoginKit (~> 5.4)
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (6.0.1):
@@ -642,11 +636,16 @@ PODS:
   - EXWebBrowser (6.0.0):
     - UMCore
   - Fabric (1.10.2)
-  - FBAudienceNetwork (5.1.1)
-  - FBSDKCoreKit (4.40.0):
-    - Bolts (~> 1.9)
-  - FBSDKLoginKit (4.40.0):
-    - FBSDKCoreKit
+  - FBAudienceNetwork (5.5.0):
+    - FBSDKCoreKit/Basics (>= 5.2.1)
+  - FBSDKCoreKit (5.4.1):
+    - FBSDKCoreKit/Basics (= 5.4.1)
+    - FBSDKCoreKit/Core (= 5.4.1)
+  - FBSDKCoreKit/Basics (5.4.1)
+  - FBSDKCoreKit/Core (5.4.1):
+    - FBSDKCoreKit/Basics
+  - FBSDKLoginKit (5.4.1):
+    - FBSDKCoreKit (~> 5.0)
   - Firebase/Core (6.7.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.1.1)
@@ -1097,7 +1096,6 @@ DEPENDENCIES:
   - Amplitude-iOS (~> 4.6)
   - Analytics (~> 3.7)
   - AppAuth (~> 1.2)
-  - Bolts (= 1.9.0)
   - Branch (~> 0.27.1)
   - CocoaLumberjack (~> 3.5.3)
   - Crashlytics (~> 3.13.4)
@@ -1156,9 +1154,9 @@ DEPENDENCIES:
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.10.2)
-  - FBAudienceNetwork (= 5.1.1)
-  - FBSDKCoreKit (= 4.40.0)
-  - FBSDKLoginKit (= 4.40.0)
+  - FBAudienceNetwork (= 5.5.0)
+  - FBSDKCoreKit (~> 5.4.1)
+  - FBSDKLoginKit (~> 5.4.1)
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
@@ -1226,7 +1224,6 @@ SPEC REPOS:
     - Amplitude-iOS
     - Analytics
     - AppAuth
-    - Bolts
     - boost-for-react-native
     - Branch
     - CocoaLumberjack
@@ -1784,7 +1781,7 @@ SPEC CHECKSUMS:
   ABI34_0_0EXContacts: ff7c940f74eab561caa79db33d2f3c4a31aa967b
   ABI34_0_0EXCrypto: 954bc12ce681d7dd701f1325b9be98530b831278
   ABI34_0_0EXDocumentPicker: 7c826abfc4a785f05c185bd2960ea388f57d727d
-  ABI34_0_0EXFacebook: c6f758666481685fe65f7b679ac3c7f5a2f1fcfb
+  ABI34_0_0EXFacebook: 41bdb1c723b83b2cb39b4d6b0266fa727d20d56f
   ABI34_0_0EXFaceDetector: b28b7c629e41bde97595bd138af95ac2a84da54b
   ABI34_0_0EXFileSystem: f8e8400ec240af7e25694a409fc2056d05ac650d
   ABI34_0_0EXFont: c9d3ddb8d85f8b71c57770870797170b27fae03e
@@ -1829,7 +1826,6 @@ SPEC CHECKSUMS:
   Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
-  Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 1ace77c04b6e3efbf982bf4364f0662bfac156a0
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
@@ -1856,7 +1852,7 @@ SPEC CHECKSUMS:
   EXCrypto: 0b51b301dc3748114a18752d2533e4167bad1730
   EXDevice: d08fdca5e11432c4389f04a3ecec51d31f1c160d
   EXDocumentPicker: 043c0521b52ae061070fd84b405459e0b7cba940
-  EXFacebook: b71969e92a4d76632ee743d26e88c61b4d9a3e45
+  EXFacebook: 655b2c9808463d29873ca2649324d95380937105
   EXFaceDetector: 3b6c6e2f1ac1a9018e92fa6dc63194eb67900c4e
   EXFileSystem: 091907902fcec9f9182b656fdead41a82f30986a
   EXFont: c862449210fc86aa11d24a202cb22c71a0d39609
@@ -1889,9 +1885,9 @@ SPEC CHECKSUMS:
   EXVideoThumbnails: 3c3b2231e6b6c19af2ac32c7b5f398b1a8948a5e
   EXWebBrowser: def838b95aa9d396f9ce71ace4e614ee16e7ee30
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
-  FBAudienceNetwork: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
-  FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
-  FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
+  FBAudienceNetwork: 1ea26a004014ee6700dce1b7beb5e853887f498e
+  FBSDKCoreKit: 5144671077d67f07d7d243dbc7fd57a171f73954
+  FBSDKLoginKit: ff38b353b6843353f090028eb1b895c78aa82796
   Firebase: 291d7b0a7b393f252358083b5d224884126fa46d
   FirebaseAnalytics: 843c7f64a8f9c79f0d03281197ebe7bb1d58d477
   FirebaseCore: 32b48f41c84a56fbde73b35ed01a830b3b6dc048
@@ -1939,6 +1935,6 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
 
-PODFILE CHECKSUM: f09ef97670da816e4b2a8b6868b58390dbc77d61
+PODFILE CHECKSUM: 512d1c2d1d5a1a374f26139f599086d3526d13fc
 
 COCOAPODS: 1.8.0.beta.1

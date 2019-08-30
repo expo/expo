@@ -23,7 +23,7 @@
 @implementation FBSDKGraphRequestMetadata
 
 - (instancetype)initWithRequest:(FBSDKGraphRequest *)request
-              completionHandler:(FBSDKGraphRequestHandler)handler
+              completionHandler:(FBSDKGraphRequestBlock)handler
                 batchParameters:(NSDictionary *)batchParameters {
 
   if ((self = [super init])) {

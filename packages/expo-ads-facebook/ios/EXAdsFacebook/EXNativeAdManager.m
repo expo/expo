@@ -96,13 +96,13 @@ UM_EXPORT_METHOD_AS(registerViewsForInteraction,
     }
 
     if (adIconView) {
-      if (![adIconView isKindOfClass:[FBAdIconView class]]) {
-        reject(@"E_INVALID_VIEW_CLASS", @"View returned for passed ad icon view tag is not an instance of FBAdIconView", nil);
+      if (![adIconView isKindOfClass:[FBMediaView class]]) {
+        reject(@"E_INVALID_VIEW_CLASS", @"View returned for passed ad icon view tag is not an instance of FBMediaView", nil);
         return;
       }
     }
 
-    [(EXNativeAdView *)nativeAdView registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:clickableViews];
+    [(EXNativeAdView *)nativeAdView registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBMediaView *)adIconView clickableViews:clickableViews];
     resolve(@[]);
   }];
 }

@@ -35,6 +35,7 @@
 
 #define FB_CLASS_EXPORT __attribute__((visibility("default")))
 #define FB_DEPRECATED __attribute__((deprecated))
+#define FB_DEPRECATED_WITH_MESSAGE(M) __attribute__((deprecated(M)))
 
 #if __has_feature(objc_generics)
 #define FB_NSArrayOf(x) NSArray<x>
@@ -59,18 +60,6 @@
 #define nullable
 #define __nullable
 #endif
-
-#ifndef FB_IOS9_SDK_OR_LATER
-#define FB_IOS9_SDK_OR_LATER (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0)
-#endif
-
-#ifndef FBInterfaceOrientationMask
-#if !FB_IOS9_SDK_OR_LATER
-#define FBInterfaceOrientationMask NSUInteger
-#else
-#define FBInterfaceOrientationMask UIInterfaceOrientationMask
-#endif // FB_IOS9_SDK_OR_LATER
-#endif // FBInterfaceOrientationMask
 
 #ifndef FB_SUBCLASSING_RESTRICTED
 #if defined(__has_attribute) && __has_attribute(objc_subclassing_restricted)

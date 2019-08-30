@@ -24,7 +24,7 @@ CACHE_KEYS:
       - ABI33_0_0EXAdsAdMob (5.0.0-rc.0)
   ABI33_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI33_0_0EXAdsFacebook: fbe8a95b26082715e8f7a374d1a5e84b
+      ABI33_0_0EXAdsFacebook: 896adfbba85b4f1614d7969830255084
     CHECKSUM: f374128d04c7d0ed11a589242b38a856bc05eea5
     FILES:
       - "../versioned-react-native/ABI33_0_0/EXAdsFacebook/ABI33_0_0EXAdsFacebook/ABI33_0_0EXAdIconViewManager.h"
@@ -238,7 +238,7 @@ CACHE_KEYS:
       - ABI33_0_0EXDocumentPicker (5.0.0-rc.0)
   ABI33_0_0EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI33_0_0EXFacebook: 69704a1888f1f33ea207adc6a9c75a98
+      ABI33_0_0EXFacebook: 734d8d419ae0804e1a580fcfca08cae0
     CHECKSUM: f369211a9d5dbdc0aec650eb1fdf4efe84752a06
     FILES:
       - "../versioned-react-native/ABI33_0_0/EXFacebook/ABI33_0_0EXFacebook/ABI33_0_0EXFacebook.h"
@@ -488,7 +488,7 @@ CACHE_KEYS:
       - ABI33_0_0EXPermissions (5.0.0-rc.0)
   ABI33_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
-      ABI33_0_0ExpoKit: d080fabdf6069127150321bd8dba3f90
+      ABI33_0_0ExpoKit: ef0e6b0c4333f5441e449332de588f83
     CHECKSUM: 1afc847b076900220fc7fe09047fe8358f2e5115
     FILES:
       - "../versioned-react-native/ABI33_0_0/Expo/Core/ABI33_0_0EXUnversioned.h"
@@ -1266,7 +1266,7 @@ CACHE_KEYS:
       - ABI34_0_0EXAdsAdMob (5.0.0)
   ABI34_0_0EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI34_0_0EXAdsFacebook: 9fba100957c106a7fe5f3b6d375febe9
+      ABI34_0_0EXAdsFacebook: e72fc4c29a1cc5a13728b9522cb59b61
     CHECKSUM: a4d5cbca9bc8a0519b860523a2e85af552b374a3
     FILES:
       - "../versioned-react-native/ABI34_0_0/EXAdsFacebook/ABI34_0_0EXAdsFacebook/ABI34_0_0EXAdIconViewManager.h"
@@ -1480,8 +1480,8 @@ CACHE_KEYS:
       - ABI34_0_0EXDocumentPicker (5.0.0)
   ABI34_0_0EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      ABI34_0_0EXFacebook: db344f044b16c065b8e7696e45a2f579
-    CHECKSUM: c6f758666481685fe65f7b679ac3c7f5a2f1fcfb
+      ABI34_0_0EXFacebook: f23922320c644959b33054ab3717df6d
+    CHECKSUM: 41bdb1c723b83b2cb39b4d6b0266fa727d20d56f
     FILES:
       - "../versioned-react-native/ABI34_0_0/EXFacebook/ABI34_0_0EXFacebook/ABI34_0_0EXFacebook.h"
       - "../versioned-react-native/ABI34_0_0/EXFacebook/ABI34_0_0EXFacebook/ABI34_0_0EXFacebook.m"
@@ -1730,7 +1730,7 @@ CACHE_KEYS:
       - ABI34_0_0EXPermissions (5.0.0)
   ABI34_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
-      ABI34_0_0ExpoKit: 3893c8f83f8e12663136ba75e62c1441
+      ABI34_0_0ExpoKit: 97c6c34f3fa36bccdaa750d96cf757c2
     CHECKSUM: b40978b82b5abf30a2f9d5015d6dfffc58781f08
     FILES:
       - "../versioned-react-native/ABI34_0_0/Expo/Core/ABI34_0_0EXUnversioned.h"
@@ -2511,15 +2511,6 @@ CACHE_KEYS:
       - AppAuth (1.2.0)
       - AppAuth/Core (1.2.0)
       - AppAuth/ExternalUserAgent (1.2.0)
-  Bolts:
-    BUILD_SETTINGS_CHECKSUM:
-      Bolts: ea7655d8e568ddaead3a8d7fc4b25ea8
-    CHECKSUM: ac6567323eac61e203f6a9763667d0f711be34c8
-    PROJECT_NAME: Bolts
-    SPECS:
-      - Bolts (1.9.0)
-      - Bolts/AppLinks (1.9.0)
-      - Bolts/Tasks (1.9.0)
   boost-for-react-native:
     BUILD_SETTINGS_CHECKSUM:
       boost-for-react-native: 29b96ed64a3f188f65aef1e5e0d55d0a
@@ -2579,7 +2570,7 @@ CACHE_KEYS:
       - EXAdsAdMob (6.0.0)
   EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      EXAdsFacebook: 23db7abfb4a004640e98a4d7ab2f6ffa
+      EXAdsFacebook: 58f4dc86c2af0e186948afa45deacdc8
     CHECKSUM: e80bc258520c71bce17cb4c1f984391b4a8940b8
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
@@ -2865,8 +2856,8 @@ CACHE_KEYS:
       - EXDocumentPicker (6.0.0)
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
-      EXFacebook: b1fbfb46c0a67b7dbd047e75b122d664
-    CHECKSUM: b71969e92a4d76632ee743d26e88c61b4d9a3e45
+      EXFacebook: abea3ef79476e083995184af2c4950a7
+    CHECKSUM: 655b2c9808463d29873ca2649324d95380937105
     FILES:
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
@@ -3308,25 +3299,27 @@ CACHE_KEYS:
       - Fabric (1.10.2)
   FBAudienceNetwork:
     BUILD_SETTINGS_CHECKSUM:
-      FBAudienceNetwork: bd6243aad8ca51aa081ea358e0b5df3d
-    CHECKSUM: 56c2dc9b5f075f4a9757d7dc8a83d3972270f645
+      FBAudienceNetwork: 0da38de9a1d3b00f2207eb2377ebb6a1
+    CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
     PROJECT_NAME: Facebook
     SPECS:
-      - FBAudienceNetwork (5.1.1)
+      - FBAudienceNetwork (5.5.0)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
-      FBSDKCoreKit: 4e55242fc5d0f34510f02174b2be9420
-    CHECKSUM: ae214474b25033399c131dc81d258e412582a2ba
+      FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
+    CHECKSUM: 5144671077d67f07d7d243dbc7fd57a171f73954
     PROJECT_NAME: Facebook
     SPECS:
-      - FBSDKCoreKit (4.40.0)
+      - FBSDKCoreKit (5.4.1)
+      - FBSDKCoreKit/Basics (5.4.1)
+      - FBSDKCoreKit/Core (5.4.1)
   FBSDKLoginKit:
     BUILD_SETTINGS_CHECKSUM:
-      FBSDKLoginKit: ad4263f74afe44fa3defbf0e90e71fbe
-    CHECKSUM: 7a1e411d46acc8834588eca437daf34de42e1d52
+      FBSDKLoginKit: 72881b173101b43cccd14b82d97d4691
+    CHECKSUM: ff38b353b6843353f090028eb1b895c78aa82796
     PROJECT_NAME: Facebook
     SPECS:
-      - FBSDKLoginKit (4.40.0)
+      - FBSDKLoginKit (5.4.1)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase: edb040c94d569207ed4eee19e7aaa404
@@ -3542,16 +3535,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 84f60ee54c0f364fd645386b4b598b37
-      Release: 84f60ee54c0f364fd645386b4b598b37
+      Debug: 458137b8a60c6afa663a52efec45fbec
+      Release: 458137b8a60c6afa663a52efec45fbec
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4fd2b8f15627cea509d43952a28f22e4
-      Release: 4fd2b8f15627cea509d43952a28f22e4
+      Debug: ab9f096d3992690fb973619eac622134
+      Release: ab9f096d3992690fb973619eac622134
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 4fd2b8f15627cea509d43952a28f22e4
-      Release: 4fd2b8f15627cea509d43952a28f22e4
+      Debug: ab9f096d3992690fb973619eac622134
+      Release: ab9f096d3992690fb973619eac622134
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: 984e9f934a23b843d02efe3856627b34
