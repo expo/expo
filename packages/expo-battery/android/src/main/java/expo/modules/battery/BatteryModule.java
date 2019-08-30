@@ -33,10 +33,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   public enum BatteryState {
-    UNKNOWN(0),
-    UNPLUGGED(1),
-    CHARGING(2),
-    FULL(3);
+    UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
 
     private final int value;
 
@@ -48,7 +45,6 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
       return value;
     }
   }
-
 
   @Override
   public String getName() {
@@ -90,7 +86,8 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
       return BatteryState.FULL;
     } else if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
       return BatteryState.CHARGING;
-    } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING || status == BatteryManager.BATTERY_STATUS_DISCHARGING) {
+    } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING
+        || status == BatteryManager.BATTERY_STATUS_DISCHARGING) {
       return BatteryState.UNPLUGGED;
     } else {
       return BatteryState.UNKNOWN;
@@ -99,9 +96,8 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void getBatteryLevelAsync(Promise promise) {
-    Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(
-      null,
-      new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null,
+        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     if (batteryIntent == null) {
       promise.resolve(-1);
       return;
@@ -115,9 +111,8 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void getBatteryStateAsync(Promise promise) {
-    Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(
-      null,
-      new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null,
+        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     if (batteryIntent == null) {
       promise.resolve(BatteryState.UNKNOWN.getValue());
       return;
@@ -129,25 +124,18 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void isLowPowerModeEnabledAsync(Promise promise) {
-    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-    if (powerManager == null) {
-      promise.reject("ERR_BATTERY_LOW_POWER_UNREADABLE", "Could not get low-power mode");
-      return;
-    }
-
-    boolean lowPowerMode = powerManager.isPowerSaveMode();
-    promise.resolve(lowPowerMode);
+    promise.resolve(isLowPowerModeEnabled());
   }
 
   @ExpoMethod
   public void getPowerStateAsync(Promise promise) {
     Bundle result = new Bundle();
     IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-    Intent batteryIntent = this.mContext.getApplicationContext().registerReceiver(null, ifilter);
+    Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null, ifilter);
 
     if (batteryIntent == null) {
       result.putFloat("batteryLevel", -1);
-      result.putInt("batteryState", BatteryState.UNKNOWN.getValue());  
+      result.putInt("batteryState", BatteryState.UNKNOWN.getValue());
     } else {
       int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
       int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
@@ -155,18 +143,20 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
       result.putFloat("batteryLevel", batteryLevel);
 
       int status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      result.putInt("batteryState", batteryStatusNativeToJS(status).getValue());  
+      result.putInt("batteryState", batteryStatusNativeToJS(status).getValue());
     }
-
-    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-    if (powerManager == null) {
-      promise.reject("ERR_BATTERY_LOW_POWER_UNREADABLE", "Could not get low-power mode");
-      return;
-    } else {
-      boolean lowPowerMode = powerManager.isPowerSaveMode();
-      result.putBoolean("lowPowerMode", lowPowerMode);
-    }
+    result.putBoolean("lowPowerMode", isLowPowerModeEnabled());
 
     promise.resolve(result);
+  }
+
+  private boolean isLowPowerModeEnabled() {
+    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+    if (powerManager == null) {
+      // We default to false on web and any future platforms that haven't been implemented yet
+      return false;
+    }
+
+    return powerManager.isPowerSaveMode();
   }
 }
