@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 API_LEVEL=$1
 emulator_name="bare-expo"

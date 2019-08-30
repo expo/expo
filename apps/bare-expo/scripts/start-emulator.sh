@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 port=${2:-8081}
 
@@ -21,7 +21,7 @@ else
     echo " ⚠️  Starting emulator..."
     echo "no" | $ANDROID_HOME/emulator/emulator "-avd" "bare-expo" "-skin" "480x800" "-no-audio" "-no-boot-anim" "-port" "5554" "-no-snapshot" "-partition-size" "1024" &
 
-    $DIR/wait_for_emulator.sh
+    $DIR/wait-for-emulator.sh
     sleep 30
 
     $ANDROID_HOME/platform-tools/adb wait-for-device

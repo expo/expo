@@ -2,7 +2,6 @@
 
 # set -e
 
-
 SIMULATOR_NAME="bare-expo"
 port=${2:-8081}
 CURRENT_ENV=${NODE_ENV:-"development"}
