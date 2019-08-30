@@ -1,8 +1,6 @@
 import ExpoRandom from '../ExpoRandom';
 import * as Random from '../Random';
 
-jest.unmock('../ExpoRandom');
-
 jest.mock('../ExpoRandom', () => ({
   getRandomBytesAsync: jest.fn(async () => 0),
   getRandomBase64StringAsync: jest.fn(async () => 0),
