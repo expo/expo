@@ -151,12 +151,9 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   private boolean isLowPowerModeEnabled() {
-    // Should never be null
-    // https://stackoverflow.com/a/54460047/4047926
     PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
     if (powerManager == null) {
-      // The PowerManager instance should never be null, but if it is, we return false and match the behavior of
-      // the default implementation of this method on platforms that don't expose this information
+      // We default to false on web and any future platforms that haven't been implemented yet
       return false;
     }
 
