@@ -21,11 +21,13 @@
   },
   {
     "name": "FBAudienceNetwork",
-    "version": "5.1.1"
+    "version": "5.1.1",
+    "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
     "name": "FBSDKCoreKit",
-    "version": "4.40.0"
+    "version": "4.40.0",
+    "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
     "name": "Bolts",
@@ -39,7 +41,8 @@
   },
   {
     "name": "FBSDKLoginKit",
-    "version": "4.40.0"
+    "version": "4.40.0",
+    "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
     "name": "Fabric",

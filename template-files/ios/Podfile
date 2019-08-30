@@ -1,6 +1,10 @@
 source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '10.0'
 
+install! 'cocoapods',
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true
+
 target '${TARGET_NAME}' do
 ${EXPONENT_CLIENT_DEPS}
 
