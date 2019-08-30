@@ -100,7 +100,7 @@ Here is an example `now.json` configuration file:
   "version": 2,
   "routes": [
     {
-      "src": "^/expo-service-worker.js$",
+      "src": "/expo-service-worker.js",
       "dest": "/static/expo-service-worker.js",
       "headers": {
         "cache-control": "public, max-age=43200, immutable",
@@ -109,7 +109,7 @@ Here is an example `now.json` configuration file:
     },
     // If you are using next-offline, change the object below according to their guide.
     {
-      "src": "^/service-worker.js$",
+      "src": "/service-worker.js",
       "dest": "/static/service-worker.js",
       "headers": {
         "cache-control": "public, max-age=43200, immutable",
