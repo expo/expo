@@ -121,6 +121,8 @@ Here is an example `now.json` configuration file assuming that you are using nex
 }
 ```
 
+If you are using next-offline, you should also set `dontAutoRegisterSw` to `true` (`withOffline({ dontAutoRegisterSw: true })`) since Expo is handling the service worker registration.
+
 ### Customizing `pages/_document.js`
 
 Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
