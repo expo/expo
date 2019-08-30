@@ -18,6 +18,13 @@ awk '
   // { if (removing == 0) stopRemoving = 0 }
 ' expoview/build.gradle > $VERSIONED_ABI_PATH/build.gradle
 sed -i '' "s/\/\/ WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES/implementation project(\":expoview\")/g" $VERSIONED_ABI_PATH/build.gradle
+# prepare DBFlow DatabaseHolder
+sed -E -i '' "s/(\"targetModuleName\", \")(Expoview\")/\1${ABI_VERSION}\2/g" $VERSIONED_ABI_PATH/build.gradle
+
+# add DBFlow Database Holder to Exponent.class
+sed -E -i  '' "/ADD HERE NEXT DATABASE HOLDER/a \\
+\.addDatabaseHolder(${ABI_VERSION}ExpoviewGeneratedDatabaseHolder\.class)\\
+" expoview/src/main/java/host/exp/expoview/Exponent.java
 
 # Prepare an empty AndroidManifest.xml of the new project
 awk '
