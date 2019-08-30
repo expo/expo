@@ -103,7 +103,7 @@ class Brush {
 
     private double getVal(SVGLength length, double relative, float scale, float textSize) {
         return PropHelper.fromRelative(length, relative, 0, mUseObjectBoundingBox &&
-                length.unit == SVGLengthUnitType.SVG_LENGTHTYPE_NUMBER ? relative : scale, textSize);
+                length.unit == SVGLength.UnitType.NUMBER ? relative : scale, textSize);
     }
 
     void setupPaint(Paint paint, RectF pathBoundingBox, float scale, float opacity) {

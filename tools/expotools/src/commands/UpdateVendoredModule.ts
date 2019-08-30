@@ -172,6 +172,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/Svg',
         sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',

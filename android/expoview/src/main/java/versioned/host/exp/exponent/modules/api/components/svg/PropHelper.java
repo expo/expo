@@ -186,42 +186,42 @@ class PropHelper {
         if (length == null) {
             return offset;
         }
-        SVGLengthUnitType unitType = length.unit;
+        SVGLength.UnitType unitType = length.unit;
         double value = length.value;
         double unit = 1;
         switch (unitType) {
-            case SVG_LENGTHTYPE_NUMBER:
-            case SVG_LENGTHTYPE_PX:
+            case NUMBER:
+            case PX:
                 break;
 
-            case SVG_LENGTHTYPE_PERCENTAGE:
+            case PERCENTAGE:
                 return value / 100 * relative + offset;
 
-            case SVG_LENGTHTYPE_EMS:
+            case EMS:
                 unit = fontSize;
                 break;
-            case SVG_LENGTHTYPE_EXS:
+            case EXS:
                 unit = fontSize / 2;
                 break;
 
-            case SVG_LENGTHTYPE_CM:
+            case CM:
                 unit = 35.43307;
                 break;
-            case SVG_LENGTHTYPE_MM:
+            case MM:
                 unit = 3.543307;
                 break;
-            case SVG_LENGTHTYPE_IN:
+            case IN:
                 unit = 90;
                 break;
-            case SVG_LENGTHTYPE_PT:
+            case PT:
                 unit = 1.25;
                 break;
-            case SVG_LENGTHTYPE_PC:
+            case PC:
                 unit = 15;
                 break;
 
             default:
-            case SVG_LENGTHTYPE_UNKNOWN:
+            case UNKNOWN:
                 return value * scale + offset;
         }
         return value * unit * scale + offset;
