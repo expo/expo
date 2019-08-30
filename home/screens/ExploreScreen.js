@@ -61,7 +61,10 @@ export default class ExploreScreen extends React.Component {
 
   render() {
     return (
-      <StyledView style={{ flex: 1 }} darkBackgroundColor="#000" lightBackgroundColor={Colors.light.greyBackground}>
+      <StyledView
+        style={{ flex: 1 }}
+        darkBackgroundColor="#000"
+        lightBackgroundColor={Colors.light.greyBackground}>
         {this._renderSearchBar()}
         {this._renderContent()}
       </StyledView>
@@ -81,7 +84,7 @@ export default class ExploreScreen extends React.Component {
   _renderSearchBar() {
     if (Platform.OS === 'android') {
       return (
-        <View style={styles.titleBarAndroid}>
+        <StyledView style={styles.titleBarAndroid}>
           <View style={styles.titleAndroid}>
             <Text numberOfLines={1} style={styles.titleTextAndroid}>
               {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Explore'}
@@ -91,7 +94,7 @@ export default class ExploreScreen extends React.Component {
           <View style={styles.rightButtonAndroid}>
             <SearchButton />
           </View>
-        </View>
+        </StyledView>
       );
     } else {
       return (
@@ -107,8 +110,6 @@ export default class ExploreScreen extends React.Component {
   };
 }
 
-let navBarBorder = {};
-
 if (FeatureFlags.HIDE_EXPLORE_TABS) {
   navBarBorder = {
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -119,25 +120,14 @@ if (FeatureFlags.HIDE_EXPLORE_TABS) {
 const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
 
 const styles = StyleSheet.create({
-  tabBarAndroid: {
-    paddingTop: 5,
-    paddingBottom: 5,
-    // note(brentvatne): B&B design called for a border here but in the
-    // app it didn't look as nice as in the design, so we'll see if they
-    // feel the same
-    // borderTopWidth: StyleSheet.hairlineWidth * 2,
-    // marginTop: 1,
-  },
   titleBarIOS: {
     height: 70 + NOTCH_HEIGHT,
     paddingTop: 20 + NOTCH_HEIGHT,
-    ...navBarBorder,
   },
   titleBarAndroid: {
     height: 79,
     paddingTop: 26,
     marginBottom: 0,
-    ...navBarBorder,
   },
   titleAndroid: {
     flex: 1,
