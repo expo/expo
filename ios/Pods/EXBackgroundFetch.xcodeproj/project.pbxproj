@@ -1,0 +1,418 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		29ACCC7A18FEF7383323D79A3CDA672B /* EXBackgroundFetch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 038680836565ECB88B91279667A3ED31 /* EXBackgroundFetch-dummy.m */; };
+		AB75B0DA948C8A633C79B9E6FA24FFF6 /* EXBackgroundFetchTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9599443E382C9B0A83CBC2CE845605D1 /* EXBackgroundFetchTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B3F999F0933422B5817529B475AB67C6 /* EXBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = E6D309A29CE1D6C95D77D53A13886B26 /* EXBackgroundFetch.m */; };
+		D0AF37C54E078D2AF05EA5D01BDBC379 /* EXBackgroundFetchTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = 73445ECB375A04BA1FA04AF00D7D9524 /* EXBackgroundFetchTaskConsumer.m */; };
+		E21169A97857674FDA3C06E0ACD0673B /* EXBackgroundFetch.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C0F1B3B25D5967352188FC75E1C0BDF /* EXBackgroundFetch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6BBE7FD06B738EDA7F94006694911AAF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 72BD1A624439F4690EC30BAFFE717CFF /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		730AD3ACDF414C45B7551327A8A6A196 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BDED71367B1520A20534D21C679D9009 /* UMTaskManagerInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
+			remoteInfo = UMTaskManagerInterface;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		038680836565ECB88B91279667A3ED31 /* EXBackgroundFetch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBackgroundFetch-dummy.m"; sourceTree = "<group>"; };
+		1C0F1B3B25D5967352188FC75E1C0BDF /* EXBackgroundFetch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBackgroundFetch.h; path = EXBackgroundFetch/EXBackgroundFetch.h; sourceTree = "<group>"; };
+		72BD1A624439F4690EC30BAFFE717CFF /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		73445ECB375A04BA1FA04AF00D7D9524 /* EXBackgroundFetchTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBackgroundFetchTaskConsumer.m; path = EXBackgroundFetch/EXBackgroundFetchTaskConsumer.m; sourceTree = "<group>"; };
+		7554D47FD414B96E3EE6C9711EBEF968 /* EXBackgroundFetch.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBackgroundFetch.xcconfig; sourceTree = "<group>"; };
+		8D705483529D0C37CA6DFC1678106E0C /* EXBackgroundFetch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBackgroundFetch.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9041672206476B5B8A95577A3FD3D3E4 /* EXBackgroundFetch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBackgroundFetch-prefix.pch"; sourceTree = "<group>"; };
+		9599443E382C9B0A83CBC2CE845605D1 /* EXBackgroundFetchTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBackgroundFetchTaskConsumer.h; path = EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h; sourceTree = "<group>"; };
+		BDED71367B1520A20534D21C679D9009 /* UMTaskManagerInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMTaskManagerInterface; path = UMTaskManagerInterface.xcodeproj; sourceTree = "<group>"; };
+		E6D309A29CE1D6C95D77D53A13886B26 /* EXBackgroundFetch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBackgroundFetch.m; path = EXBackgroundFetch/EXBackgroundFetch.m; sourceTree = "<group>"; };
+		FDB0AE0BD07538DBE1EBB6C9C5D33BD4 /* libEXBackgroundFetch.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBackgroundFetch.a; path = libEXBackgroundFetch.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8F79A5E9AF4198585451B0B25106DF63 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2CB993A2E7049E4EB937239A48F7EA17 = {
+			isa = PBXGroup;
+			children = (
+				9107D52558731076C033B9D854D1112A /* Dependencies */,
+				8988D2B16267F4778313B1B6284EE55A /* EXBackgroundFetch */,
+				54DD2F9203960895CF4498875C01F34D /* Frameworks */,
+				ACBF79E158D36DD784059AC9B7709666 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		54DD2F9203960895CF4498875C01F34D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		65C348DB9B28CA2520B13293151A86E6 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				8D705483529D0C37CA6DFC1678106E0C /* EXBackgroundFetch.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		8988D2B16267F4778313B1B6284EE55A /* EXBackgroundFetch */ = {
+			isa = PBXGroup;
+			children = (
+				1C0F1B3B25D5967352188FC75E1C0BDF /* EXBackgroundFetch.h */,
+				E6D309A29CE1D6C95D77D53A13886B26 /* EXBackgroundFetch.m */,
+				9599443E382C9B0A83CBC2CE845605D1 /* EXBackgroundFetchTaskConsumer.h */,
+				73445ECB375A04BA1FA04AF00D7D9524 /* EXBackgroundFetchTaskConsumer.m */,
+				65C348DB9B28CA2520B13293151A86E6 /* Pod */,
+				B5006118AE7974F4839500BE65760382 /* Support Files */,
+			);
+			name = EXBackgroundFetch;
+			path = "../../packages/expo-background-fetch/ios";
+			sourceTree = "<group>";
+		};
+		9107D52558731076C033B9D854D1112A /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				72BD1A624439F4690EC30BAFFE717CFF /* UMCore */,
+				BDED71367B1520A20534D21C679D9009 /* UMTaskManagerInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		ACBF79E158D36DD784059AC9B7709666 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FDB0AE0BD07538DBE1EBB6C9C5D33BD4 /* libEXBackgroundFetch.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B5006118AE7974F4839500BE65760382 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7554D47FD414B96E3EE6C9711EBEF968 /* EXBackgroundFetch.xcconfig */,
+				038680836565ECB88B91279667A3ED31 /* EXBackgroundFetch-dummy.m */,
+				9041672206476B5B8A95577A3FD3D3E4 /* EXBackgroundFetch-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXBackgroundFetch";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2EFAF0B96C9AB565BDBFA70F3CFDF616 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E21169A97857674FDA3C06E0ACD0673B /* EXBackgroundFetch.h in Headers */,
+				AB75B0DA948C8A633C79B9E6FA24FFF6 /* EXBackgroundFetchTaskConsumer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		280658D584B63A5E8CB5F0405789A353 /* EXBackgroundFetch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 78FDBBA42F6224C080499707400EF85E /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */;
+			buildPhases = (
+				2EFAF0B96C9AB565BDBFA70F3CFDF616 /* Headers */,
+				021463BC164DFC20BBF51DCF80DAC939 /* Sources */,
+				8F79A5E9AF4198585451B0B25106DF63 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4592BFF23DED0FAF04E12BCE5C703F22 /* PBXTargetDependency */,
+				B3BA6FD64D6A65434E986A7CA71BCE5E /* PBXTargetDependency */,
+			);
+			name = EXBackgroundFetch;
+			productName = EXBackgroundFetch;
+			productReference = FDB0AE0BD07538DBE1EBB6C9C5D33BD4 /* libEXBackgroundFetch.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		35EA4A6D7F7AA83A113ED137ADA22297 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 1299C83AD861366B0E06F259E430137D /* Build configuration list for PBXProject "EXBackgroundFetch" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2CB993A2E7049E4EB937239A48F7EA17;
+			productRefGroup = ACBF79E158D36DD784059AC9B7709666 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 72BD1A624439F4690EC30BAFFE717CFF /* UMCore */;
+				},
+				{
+					ProjectRef = BDED71367B1520A20534D21C679D9009 /* UMTaskManagerInterface */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				280658D584B63A5E8CB5F0405789A353 /* EXBackgroundFetch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		021463BC164DFC20BBF51DCF80DAC939 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29ACCC7A18FEF7383323D79A3CDA672B /* EXBackgroundFetch-dummy.m in Sources */,
+				B3F999F0933422B5817529B475AB67C6 /* EXBackgroundFetch.m in Sources */,
+				D0AF37C54E078D2AF05EA5D01BDBC379 /* EXBackgroundFetchTaskConsumer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4592BFF23DED0FAF04E12BCE5C703F22 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 6BBE7FD06B738EDA7F94006694911AAF /* PBXContainerItemProxy */;
+		};
+		B3BA6FD64D6A65434E986A7CA71BCE5E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMTaskManagerInterface;
+			targetProxy = 730AD3ACDF414C45B7551327A8A6A196 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		05F1B69101F796071C1F29520318119B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7554D47FD414B96E3EE6C9711EBEF968 /* EXBackgroundFetch.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBackgroundFetch;
+				PRODUCT_NAME = EXBackgroundFetch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A65E88A7B2B9CBA5E5DB6EAF9742FB3F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		EDD3B2182E4D0A9F2D2051E94D180621 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7554D47FD414B96E3EE6C9711EBEF968 /* EXBackgroundFetch.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBackgroundFetch/EXBackgroundFetch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBackgroundFetch;
+				PRODUCT_NAME = EXBackgroundFetch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F33F9945B58DEC40F6ECB6879887CC59 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1299C83AD861366B0E06F259E430137D /* Build configuration list for PBXProject "EXBackgroundFetch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F33F9945B58DEC40F6ECB6879887CC59 /* Debug */,
+				A65E88A7B2B9CBA5E5DB6EAF9742FB3F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		78FDBBA42F6224C080499707400EF85E /* Build configuration list for PBXNativeTarget "EXBackgroundFetch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EDD3B2182E4D0A9F2D2051E94D180621 /* Debug */,
+				05F1B69101F796071C1F29520318119B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 35EA4A6D7F7AA83A113ED137ADA22297 /* Project object */;
+}
