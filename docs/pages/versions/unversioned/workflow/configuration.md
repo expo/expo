@@ -264,7 +264,13 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING
+    "androidCollapsedTitle": STRING,
+
+    /*
+     The URL-safe base64-encoded VAPID public key used for web push notifications.
+     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
+    */
+    "vapidPublicKey": STRING
   }
 }
 ```
@@ -446,6 +452,13 @@ Configuration for how and when the app should request OTA JavaScript updates
         developers.google.com/maps/documentation/ios-sdk/start
       */
       "googleMapsApiKey": STRING,
+
+      /*
+        Google Mobile Ads App ID for your standalone app.
+
+        https://developers.google.com/admob/ios/quick-start#update_your_infoplist
+      */
+      "googleMobileAdsAppId": STRING,
 
       /*
         Google Sign-In iOS SDK keys for your standalone app.
@@ -695,7 +708,14 @@ Configuration for how and when the app should request OTA JavaScript updates
           Your Google Maps Android SDK API key
         */
         "apiKey": STRING
-      }
+      },
+
+      /*
+        Google Mobile Ads App ID for your standalone app.
+
+        https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml
+      */
+      "googleMobileAdsAppId": STRING,
 
       /*
         Google Sign-In Android SDK keys for your standalone app.

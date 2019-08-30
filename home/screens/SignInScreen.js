@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { ScrollView, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 import { connect } from 'react-redux';
 
 import Analytics from '../api/Analytics';
@@ -12,6 +12,7 @@ import Form from '../components/Form';
 import PrimaryButton from '../components/PrimaryButton';
 import AuthApi from '../api/AuthApi';
 import ApolloClient from '../api/ApolloClient';
+import { StyledScrollView as ScrollView } from '../components/Views';
 
 const DEBUG = false;
 
@@ -61,6 +62,7 @@ export default class SignInScreen extends React.Component {
   render() {
     return (
       <ScrollView
+        lightBackgroundColor={Colors.light.greyBackground}
         style={styles.container}
         contentContainerStyle={{ paddingTop: 15 }}
         keyboardShouldPersistTaps="always"
@@ -157,6 +159,5 @@ export default class SignInScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.greyBackground,
   },
 });

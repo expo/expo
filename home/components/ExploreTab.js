@@ -20,7 +20,7 @@ import ProjectCard from './ProjectCard';
 import PrimaryButton from './PrimaryButton';
 import SharedStyles from '../constants/SharedStyles';
 import { SectionLabelContainer } from './Views';
-import { SectionLabelText } from './Text';
+import { StyledText, SectionLabelText } from './Text';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -49,13 +49,16 @@ class ExploreTab extends React.Component {
 
   _renderError() {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <Text style={SharedStyles.noticeDescriptionText}>
+        <StyledText
+          style={SharedStyles.noticeDescriptionText}
+          lightColor="rgba(36, 44, 58, 0.7)"
+          darkColor="#ccc">
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
-        </Text>
+        </StyledText>
 
         <PrimaryButton plain onPress={this._refetchDataAsync} fallback={TouchableOpacity}>
           Try again

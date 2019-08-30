@@ -34,6 +34,7 @@ import Permissions from '../screens/PermissionsScreen';
 import Print from '../screens/PrintScreen';
 import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
+import SafeAreaContext from '../screens/SafeAreaContextScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import Sharing from '../screens/SharingScreen';
 import SecureStore from '../screens/SecureStoreScreen';
@@ -62,6 +63,7 @@ const MediaLibraryScreens = optionalRequire(() =>
 );
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
+const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 
 const optionalScreens: {
   [key: string]: React.ComponentType | undefined;
@@ -69,6 +71,7 @@ const optionalScreens: {
   Accelerometer,
   ActionSheet,
   AppAuth,
+  Appearance,
   Audio,
   AuthSession,
   BackgroundFetch,
@@ -112,6 +115,7 @@ const optionalScreens: {
   Recording,
   // @ts-ignore
   Reminders,
+  SafeAreaContext,
   ScreenOrientation,
   SecureStore,
   Sensor,

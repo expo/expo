@@ -319,7 +319,9 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     return;
   }
   NSString *path = [fileSystem generatePathInDirectory:directory withExtension:@".mov"];
-  [[NSFileManager defaultManager] moveItemAtURL:videoURL
+
+  // We copy the file as `moveItemAtURL:toURL:error` started throwing an error in iOS 13 due to missing permissions :O
+  [[NSFileManager defaultManager] copyItemAtURL:videoURL
                                           toURL:[NSURL fileURLWithPath:path]
                                           error:&error];
   if (error != nil) {

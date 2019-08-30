@@ -49,6 +49,8 @@ import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPack
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
+import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
+import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaViewManager;
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage;
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
@@ -203,7 +205,8 @@ public class ExponentPackage implements ReactPackage {
         new LottiePackage(),
         new RNGestureHandlerPackage(),
         new RNScreensPackage(),
-        new RNCWebViewPackage()
+        new RNCWebViewPackage(),
+        new SafeAreaContextPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

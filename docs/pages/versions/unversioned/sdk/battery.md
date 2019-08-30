@@ -71,7 +71,7 @@ await Battery.getBatteryStateAsync();
 
 ### `Battery.isLowPowerModeEnabledAsync()`
 
-Gets the current status of Low Power mode on iOS and Power Saver mode on Android. This method throws an error with the code [`ERR_BATTERY_LOW_POWER_UNREADABLE`](#error-codes) if the low-power state cannot be read. On web, the reported low-power state is always `false`, even if the device is actually in low-power mode.
+Gets the current status of Low Power mode on iOS and Power Saver mode on Android. If a platform doesn't support Low Power mode reporting (like web, older Android devices), the reported low-power state is always `false`, even if the device is actually in low-power mode.
 
 #### Returns
 
@@ -163,12 +163,6 @@ Subscribe to Low Power Mode (iOS) or Power Saver Mode (Android) updates. The eve
 - **`BatteryState.UNPLUGGED`** - if battery is not charging or discharging
 - **`BatteryState.CHARGING`** - if battery is charging
 - **`BatteryState.FULL`** - if the battery level is full
-
-## Error Codes
-
-| Code                                     | Description                                                                                                                       |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| ERR_BATTERY_LOW_POWER_UNREADABLE         | Unable to access Low Power Mode (iOS) or Power Saver (Android).                                                                   |
 
 **Examples**
 

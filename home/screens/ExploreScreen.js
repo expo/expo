@@ -61,7 +61,7 @@ export default class ExploreScreen extends React.Component {
 
   render() {
     return (
-      <StyledView style={{ flex: 1 }} darkColor="#000" lightColor={Colors.light.greyBackground}>
+      <StyledView style={{ flex: 1 }} darkBackgroundColor="#000" lightBackgroundColor={Colors.light.greyBackground}>
         {this._renderSearchBar()}
         {this._renderContent()}
       </StyledView>
@@ -95,7 +95,7 @@ export default class ExploreScreen extends React.Component {
       );
     } else {
       return (
-        <StyledView style={styles.titleBarIOS}>
+        <StyledView style={styles.titleBarIOS} darkBackgroundColor="#000">
           <SearchBar.PlaceholderButton />
         </StyledView>
       );

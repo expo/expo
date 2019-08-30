@@ -25,7 +25,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-crypto"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -34,7 +35,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/crypto/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/universal"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
