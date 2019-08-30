@@ -33,7 +33,7 @@ public class ManifestException extends ExponentException {
     String extraMessage = "";
     if (ExpoViewBuildConfig.DEBUG) {
       // This will get hit in a detached app.
-      extraMessage = " Are you sure XDE or exp is running?";
+      extraMessage = " Are you sure expo-cli is running?";
     }
 
     if (mManifestUrl == null) {
