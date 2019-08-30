@@ -70,6 +70,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Reanimated',
         sourceAndroidPath: 'android/src/main/java/com/swmansion/reanimated',
