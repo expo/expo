@@ -14,11 +14,13 @@ export async function test({ describe, it, expect, jasmine }) {
   describe(`getBatteryState()`, () => {
     it(`returns a valid BatteryState enum value`, async () => {
       const batteryState = await Battery.getBatteryStateAsync();
-
-      expect(batteryState).toBeDefined();
-      expect(batteryState).toEqual(jasmine.any(Number));
-      expect(batteryState).toBeGreaterThanOrEqual(0);
-      expect(batteryState).toBeLessThanOrEqual(4);
+      expect(
+        [
+          Battery.BatteryState.CHARGING,
+          Battery.BatteryState.FULL,
+          Battery.BatteryState.UNPLUGGED,
+        ].includes(batteryState)
+      ).toBe(true);
     });
   });
   describe(`isLowPowerModeEnabledAsync()`, () => {
