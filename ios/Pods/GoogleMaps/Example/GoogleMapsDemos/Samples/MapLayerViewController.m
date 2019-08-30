@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/MapLayerViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -33,8 +29,9 @@
   _mapView = [GMSMapView mapWithFrame:CGRectZero camera:camera];
   self.view = _mapView;
 
+  GMSMapView *mapView = _mapView;
   dispatch_async(dispatch_get_main_queue(), ^{
-    _mapView.myLocationEnabled = YES;
+    mapView.myLocationEnabled = YES;
   });
 
   UIBarButtonItem *myLocationButton =

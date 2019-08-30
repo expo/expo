@@ -47,7 +47,7 @@ static NSString *const kFormUrlEncodedAllowedCharacters =
   return [[self class] encodeBase64urlNoPadding:randomData];
 }
 
-+ (NSData *)sha265:(NSString *)inputString {
++ (NSData *)sha256:(NSString *)inputString {
   NSData *verifierData = [inputString dataUsingEncoding:NSUTF8StringEncoding];
   NSMutableData *sha256Verifier = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(verifierData.bytes, (CC_LONG)verifierData.length, sha256Verifier.mutableBytes);

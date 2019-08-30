@@ -10,9 +10,9 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-NS_ASSUME_NONNULL_BEGIN;
-
 @class GMSPanoramaLink;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSPanorama represents metadata for a specific panorama on the Earth. This class is not
@@ -31,4 +31,4 @@ NS_ASSUME_NONNULL_BEGIN;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

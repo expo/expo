@@ -19,11 +19,11 @@ Pod::Spec.new do |s|
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
     ss.exclude_files = "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
 
-    ss.dependency 'Amplitude-iOS', '~> 3.8'
-    ss.dependency 'Analytics', '~> 3.5'
-    ss.dependency 'AppAuth', '~> 0.4'
-    ss.dependency 'CocoaLumberjack', '~> 3.2.1'
-    ss.dependency 'Crashlytics', '~> 3.8'
+    ss.dependency 'Amplitude-iOS', '~> 4.6'
+    ss.dependency 'Analytics', '~> 3.7'
+    ss.dependency 'AppAuth', '~> 1.2'
+    ss.dependency 'CocoaLumberjack', '~> 3.5.3'
+    ss.dependency 'Crashlytics', '~> 3.13.4'
     ss.dependency 'FBAudienceNetwork', '5.1.1'
     ss.dependency 'FBSDKCoreKit', '4.40.0'
     # We want to inhibit warnings in this pod and
@@ -32,12 +32,11 @@ Pod::Spec.new do |s|
     # remove once it stops depending on it.
     ss.dependency 'Bolts', '1.9.0'
     ss.dependency 'FBSDKLoginKit', '4.40.0'
-    ss.dependency 'Fabric', '~> 1.6'
-    ss.dependency 'GoogleSignIn', '~> 4.1'
-    ss.dependency 'GoogleMaps', '~> 2.5.0'
+    ss.dependency 'Fabric', '~> 1.10.2'
+    ss.dependency 'GoogleSignIn', '~> 5.0'
+    ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
-    ss.dependency 'JKBigInteger2', '0.0.5'
     ss.dependency 'Branch', '~> 0.27.1'
     ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.49.0'
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0

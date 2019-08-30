@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2016, Deusty, LLC
+// Copyright (c) 2010-2019, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -14,7 +14,6 @@
 //   prior written permission of Deusty, LLC.
 
 #import "DDAbstractDatabaseLogger.h"
-#import <math.h>
 
 
 #if !__has_feature(objc_arc)
@@ -52,7 +51,7 @@
 #pragma mark Override Me
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (BOOL)db_log:(DDLogMessage *)logMessage {
+- (BOOL)db_log:(__unused DDLogMessage *)logMessage {
     // Override me and add your implementation.
     //
     // Return YES if an item was added to the buffer.
@@ -127,7 +126,7 @@
 - (void)updateAndResumeSaveTimer {
     if ((_saveTimer != NULL) && (_saveInterval > 0.0) && (_unsavedTime > 0.0)) {
         uint64_t interval = (uint64_t)(_saveInterval * (NSTimeInterval) NSEC_PER_SEC);
-        dispatch_time_t startTime = dispatch_time(_unsavedTime, interval);
+        dispatch_time_t startTime = dispatch_time(_unsavedTime, (int64_t)interval);
 
         dispatch_source_set_timer(_saveTimer, startTime, interval, 1ull * NSEC_PER_SEC);
 
@@ -162,7 +161,7 @@
 
 - (void)updateDeleteTimer {
     if ((_deleteTimer != NULL) && (_deleteInterval > 0.0) && (_maxAge > 0.0)) {
-        uint64_t interval = (uint64_t)(_deleteInterval * (NSTimeInterval) NSEC_PER_SEC);
+        int64_t interval = (int64_t)(_deleteInterval * (NSTimeInterval) NSEC_PER_SEC);
         dispatch_time_t startTime;
 
         if (_lastDeleteTime > 0) {
@@ -171,7 +170,7 @@
             startTime = dispatch_time(DISPATCH_TIME_NOW, interval);
         }
 
-        dispatch_source_set_timer(_deleteTimer, startTime, interval, 1ull * NSEC_PER_SEC);
+        dispatch_source_set_timer(_deleteTimer, startTime, (uint64_t)interval, 1ull * NSEC_PER_SEC);
     }
 }
 
@@ -217,7 +216,7 @@
 
     dispatch_sync(globalLoggingQueue, ^{
         dispatch_sync(self.loggerQueue, ^{
-            result = _saveThreshold;
+            result = self->_saveThreshold;
         });
     });
 
@@ -227,15 +226,15 @@
 - (void)setSaveThreshold:(NSUInteger)threshold {
     dispatch_block_t block = ^{
         @autoreleasepool {
-            if (_saveThreshold != threshold) {
-                _saveThreshold = threshold;
+            if (self->_saveThreshold != threshold) {
+                self->_saveThreshold = threshold;
 
                 // Since the saveThreshold has changed,
                 // we check to see if the current unsavedCount has surpassed the new threshold.
                 //
                 // If it has, we immediately save the log.
 
-                if ((_unsavedCount >= _saveThreshold) && (_saveThreshold > 0)) {
+                if ((self->_unsavedCount >= self->_saveThreshold) && (self->_saveThreshold > 0)) {
                     [self performSaveAndSuspendSaveTimer];
                 }
             }
@@ -277,7 +276,7 @@
 
     dispatch_sync(globalLoggingQueue, ^{
         dispatch_sync(self.loggerQueue, ^{
-            result = _saveInterval;
+            result = self->_saveInterval;
         });
     });
 
@@ -290,8 +289,8 @@
             // C99 recommended floating point comparison macro
             // Read: isLessThanOrGreaterThan(floatA, floatB)
 
-            if (/* saveInterval != interval */ islessgreater(_saveInterval, interval)) {
-                _saveInterval = interval;
+            if (/* saveInterval != interval */ islessgreater(self->_saveInterval, interval)) {
+                self->_saveInterval = interval;
 
                 // There are several cases we need to handle here.
                 //
@@ -306,8 +305,8 @@
                 // 4. If the saveInterval decreased, then we need to reset the timer so that it fires at an earlier date.
                 //    (Plus we might need to do an immediate save.)
 
-                if (_saveInterval > 0.0) {
-                    if (_saveTimer == NULL) {
+                if (self->_saveInterval > 0.0) {
+                    if (self->_saveTimer == NULL) {
                         // Handles #2
                         //
                         // Since the saveTimer uses the unsavedTime to calculate it's first fireDate,
@@ -324,7 +323,7 @@
 
                         [self updateAndResumeSaveTimer];
                     }
-                } else if (_saveTimer) {
+                } else if (self->_saveTimer) {
                     // Handles #1
 
                     [self destroySaveTimer];
@@ -368,7 +367,7 @@
 
     dispatch_sync(globalLoggingQueue, ^{
         dispatch_sync(self.loggerQueue, ^{
-            result = _maxAge;
+            result = self->_maxAge;
         });
     });
 
@@ -381,11 +380,11 @@
             // C99 recommended floating point comparison macro
             // Read: isLessThanOrGreaterThan(floatA, floatB)
 
-            if (/* maxAge != interval */ islessgreater(_maxAge, interval)) {
-                NSTimeInterval oldMaxAge = _maxAge;
+            if (/* maxAge != interval */ islessgreater(self->_maxAge, interval)) {
+                NSTimeInterval oldMaxAge = self->_maxAge;
                 NSTimeInterval newMaxAge = interval;
 
-                _maxAge = interval;
+                self->_maxAge = interval;
 
                 // There are several cases we need to handle here.
                 //
@@ -420,7 +419,7 @@
                 if (shouldDeleteNow) {
                     [self performDelete];
 
-                    if (_deleteTimer) {
+                    if (self->_deleteTimer) {
                         [self updateDeleteTimer];
                     } else {
                         [self createAndStartDeleteTimer];
@@ -465,7 +464,7 @@
 
     dispatch_sync(globalLoggingQueue, ^{
         dispatch_sync(self.loggerQueue, ^{
-            result = _deleteInterval;
+            result = self->_deleteInterval;
         });
     });
 
@@ -478,8 +477,8 @@
             // C99 recommended floating point comparison macro
             // Read: isLessThanOrGreaterThan(floatA, floatB)
 
-            if (/* deleteInterval != interval */ islessgreater(_deleteInterval, interval)) {
-                _deleteInterval = interval;
+            if (/* deleteInterval != interval */ islessgreater(self->_deleteInterval, interval)) {
+                self->_deleteInterval = interval;
 
                 // There are several cases we need to handle here.
                 //
@@ -494,8 +493,8 @@
                 // 4. If the deleteInterval decreased, then we need to reset the timer so that it fires at an earlier date.
                 //    (Plus we might need to do an immediate delete.)
 
-                if (_deleteInterval > 0.0) {
-                    if (_deleteTimer == NULL) {
+                if (self->_deleteInterval > 0.0) {
+                    if (self->_deleteTimer == NULL) {
                         // Handles #2
                         //
                         // Since the deleteTimer uses the lastDeleteTime to calculate it's first fireDate,
@@ -511,7 +510,7 @@
 
                         [self updateDeleteTimer];
                     }
-                } else if (_deleteTimer) {
+                } else if (self->_deleteTimer) {
                     // Handles #1
 
                     [self destroyDeleteTimer];
@@ -555,7 +554,7 @@
 
     dispatch_sync(globalLoggingQueue, ^{
         dispatch_sync(self.loggerQueue, ^{
-            result = _deleteOnEverySave;
+            result = self->_deleteOnEverySave;
         });
     });
 
@@ -564,7 +563,7 @@
 
 - (void)setDeleteOnEverySave:(BOOL)flag {
     dispatch_block_t block = ^{
-        _deleteOnEverySave = flag;
+        self->_deleteOnEverySave = flag;
     };
 
     // The design of the setter logic below is taken from the DDAbstractLogger implementation.

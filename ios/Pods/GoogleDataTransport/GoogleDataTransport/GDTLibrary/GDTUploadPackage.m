@@ -18,6 +18,7 @@
 
 #import <GoogleDataTransport/GDTClock.h>
 #import <GoogleDataTransport/GDTConsoleLogger.h>
+#import <GoogleDataTransport/GDTStoredEvent.h>
 
 #import "GDTLibrary/Private/GDTStorage_Private.h"
 #import "GDTLibrary/Private/GDTUploadCoordinator.h"
@@ -140,11 +141,12 @@ static NSString *const kTargetKey = @"GDTUploadPackageTargetKey";
   GDTTarget target = [aDecoder decodeIntegerForKey:kTargetKey];
   self = [self initWithTarget:target];
   if (self) {
-    _events = [aDecoder decodeObjectOfClass:[NSSet class] forKey:kEventsKey];
+    NSSet *classes = [NSSet setWithObjects:[NSSet class], [GDTStoredEvent class], nil];
+    _events = [aDecoder decodeObjectOfClasses:classes forKey:kEventsKey];
     _deliverByTime = [aDecoder decodeObjectOfClass:[GDTClock class] forKey:kDeliverByTimeKey];
     _isHandled = [aDecoder decodeBoolForKey:kIsHandledKey];
-    // Isn't technically NSSecureCoding, because we don't know the class of this object.
-    _handler = [aDecoder decodeObjectForKey:kHandlerKey];
+    // _handler isn't technically NSSecureCoding, because we don't know the class of this object.
+    // but it gets decoded anyway.
   }
   return self;
 }

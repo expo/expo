@@ -163,16 +163,23 @@ static NSString *const ktargetToInFlightPackagesKey =
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
   GDTUploadCoordinator *sharedCoordinator = [GDTUploadCoordinator sharedInstance];
-  sharedCoordinator->_targetToInFlightPackages =
-      [aDecoder decodeObjectOfClass:[NSMutableDictionary class]
-                             forKey:ktargetToInFlightPackagesKey];
+  @try {
+    sharedCoordinator->_targetToInFlightPackages =
+        [aDecoder decodeObjectOfClass:[NSMutableDictionary class]
+                               forKey:ktargetToInFlightPackagesKey];
+
+  } @catch (NSException *exception) {
+    sharedCoordinator->_targetToInFlightPackages = [NSMutableDictionary dictionary];
+  }
   return sharedCoordinator;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
   // All packages that have been given to uploaders need to be tracked so that their expiration
   // timers can be called.
-  [aCoder encodeObject:_targetToInFlightPackages forKey:ktargetToInFlightPackagesKey];
+  if (_targetToInFlightPackages.count > 0) {
+    [aCoder encodeObject:_targetToInFlightPackages forKey:ktargetToInFlightPackagesKey];
+  }
 }
 
 #pragma mark - GDTLifecycleProtocol
@@ -192,10 +199,16 @@ static NSString *const ktargetToInFlightPackagesKey =
 
   // Create an immediate background task to run until the end of the current queue of work.
   __block GDTBackgroundIdentifier bgID = [app beginBackgroundTaskWithExpirationHandler:^{
-    [app endBackgroundTask:bgID];
+    if (bgID != GDTBackgroundIdentifierInvalid) {
+      [app endBackgroundTask:bgID];
+      bgID = GDTBackgroundIdentifierInvalid;
+    }
   }];
   dispatch_async(_coordinationQueue, ^{
-    [app endBackgroundTask:bgID];
+    if (bgID != GDTBackgroundIdentifierInvalid) {
+      [app endBackgroundTask:bgID];
+      bgID = GDTBackgroundIdentifierInvalid;
+    }
   });
 }
 

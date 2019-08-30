@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** If YES, every call to -storeLog results in background task and serializes the singleton to disk.
  */
-@property(nonatomic, readonly) BOOL runningInBackground;
+@property(nonatomic) BOOL runningInBackground;
 
 /** Returns the path to the keyed archive of the singleton. This is where the singleton is saved
  * to disk during certain app lifecycle events.
