@@ -29,4 +29,16 @@ do
   find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g"
 done < ../tools/android-packages-to-keep.txt
 
+IFS='/' read -r -a array <<< $2; 
+UNIMODULE_NAME=${array[0]};
+
+if [ $UNIMODULE_NAME = "expo-notifications" ]
+then
+  # Rename ORM classes
+  while read CLASS_NAME
+  do
+    find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -E -i '' "s/($CLASS_NAME)/$ABI_VERSION\1/g";
+  done < ../tools/classes-to-rename.txt
+fi
+
 popd
