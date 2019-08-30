@@ -19,7 +19,7 @@ cd "\$(dirname "\$0")/.."
 # Run 'react-native start --help' to get more parameters
 yarn start --port ${port}
 EOF
-  # Permission is required by system of unix likely.
+  # execute the file in a new command line window
   chmod 0755 ${commandFile}
   open ${commandFile}
   
