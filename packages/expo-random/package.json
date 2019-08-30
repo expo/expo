@@ -35,7 +35,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-random",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/universal"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
