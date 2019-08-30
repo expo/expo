@@ -86,7 +86,7 @@ yarn next export
 
 With `expo start`, [web push notifications](../../guides/push-notifications) are supported without any additional configuration.
 
-To use it with other services such as ZEIT Now, you would need to set appropriate configuration to let `/expo-service-worker.js` serve the file content of `/.expo/expo-service-worker.js`, and let `/service-worker.js` serve the file content of a service worker (for example, it would be `/_next/static/service-worker.js` if you uses [next-offline](https://github.com/hanford/next-offline)). If you do not use any other service worker, create a blank file and point `/service-worker.js` to that.
+To use it with other services such as ZEIT Now, you would need appropriate configuration to let `/expo-service-worker.js` serve the file content of `/.expo/expo-service-worker.js`, and let `/service-worker.js` serve the file content of a service worker (for example, it would be `/_next/static/service-worker.js` if you uses [next-offline](https://github.com/hanford/next-offline), or `/.expo/service-worker.js` (which will be a blank file) if do not use any other service worker).
 
 Here is an example `now.json` configuration file assuming that you are using next-offline.
 
