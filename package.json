@@ -18,6 +18,10 @@
       "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
+    ],
+    "nohoist": [
+      "**/react-navigation",
+      "**/react-navigation/**"
     ]
   },
   "dependencies": {
