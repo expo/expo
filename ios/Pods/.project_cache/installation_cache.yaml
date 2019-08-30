@@ -3330,27 +3330,27 @@ CACHE_KEYS:
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase: edb040c94d569207ed4eee19e7aaa404
-    CHECKSUM: a2b5951f30ff38fd3b3bdae9c7d340f940fd3c51
+    CHECKSUM: 291d7b0a7b393f252358083b5d224884126fa46d
     PROJECT_NAME: Firebase
     SPECS:
-      - Firebase/Core (6.6.0)
-      - Firebase/CoreOnly (6.6.0)
-      - Firebase/MLVision (6.6.0)
-      - Firebase/MLVisionFaceModel (6.6.0)
+      - Firebase/Core (6.7.0)
+      - Firebase/CoreOnly (6.7.0)
+      - Firebase/MLVision (6.7.0)
+      - Firebase/MLVisionFaceModel (6.7.0)
   FirebaseAnalytics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseAnalytics: f8d9a2bdbc4413d2d4baad16c34b7840
-    CHECKSUM: 48414ae5cbf6976d8a2f7177e0466540e5ab33ce
+    CHECKSUM: 843c7f64a8f9c79f0d03281197ebe7bb1d58d477
     PROJECT_NAME: FirebaseAnalytics
     SPECS:
-      - FirebaseAnalytics (6.1.0)
+      - FirebaseAnalytics (6.1.1)
   FirebaseCore:
     BUILD_SETTINGS_CHECKSUM:
-      FirebaseCore: 71037696a590b99e0ad68497176eaf64
-    CHECKSUM: 8c9e08bce0c72a3affd83927d8184cf244918bc8
+      FirebaseCore: 6cb7797c3edea3a4b722192d4bf80b19
+    CHECKSUM: 32b48f41c84a56fbde73b35ed01a830b3b6dc048
     PROJECT_NAME: FirebaseCore
     SPECS:
-      - FirebaseCore (6.2.0)
+      - FirebaseCore (6.2.1)
   FirebaseCoreDiagnostics:
     BUILD_SETTINGS_CHECKSUM:
       FirebaseCoreDiagnostics: 8a89283cf19dccf6e8b555a523dd7a11
@@ -3428,18 +3428,18 @@ CACHE_KEYS:
   GoogleAPIClientForREST:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAPIClientForREST: 604879f93a818ca5e4dfcc6eca60be64
-    CHECKSUM: 44c7b678cbab11d26a47eab7309d6179b1a61f0c
+    CHECKSUM: 4acfffd77f1c3c8741b6be9eaed0e603278efbde
     PROJECT_NAME: GoogleAPIClientForREST
     SPECS:
-      - GoogleAPIClientForREST/Core (1.3.9)
-      - GoogleAPIClientForREST/Vision (1.3.9)
+      - GoogleAPIClientForREST/Core (1.3.10)
+      - GoogleAPIClientForREST/Vision (1.3.10)
   GoogleAppMeasurement:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAppMeasurement: f2d8f81814afe1dc407ce095cebd6d01
-    CHECKSUM: 47285fa897e5a125df56b9ef8750a1d81e4598a8
+    CHECKSUM: 86a82f0e1f20b8eedf8e20326530138fd71409de
     PROJECT_NAME: GoogleAppMeasurement
     SPECS:
-      - GoogleAppMeasurement (6.1.0)
+      - GoogleAppMeasurement (6.1.1)
   GoogleDataTransport:
     BUILD_SETTINGS_CHECKSUM:
       GoogleDataTransport: 5d12673ba5a26842c5e7e8121f9dc890
