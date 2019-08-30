@@ -19,11 +19,7 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
-import com.raizlabs.android.dbflow.config.DatabaseConfig;
-import com.raizlabs.android.dbflow.config.ExpoNotificationsGeneratedDatabaseHolder;
-import com.raizlabs.android.dbflow.config.ExpoviewGeneratedDatabaseHolder;
-import com.raizlabs.android.dbflow.config.FlowConfig;
-import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.config.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -205,6 +201,7 @@ public class Exponent {
     FlowManager.init(FlowConfig.builder(context)
         .addDatabaseHolder(ExpoviewGeneratedDatabaseHolder.class)
         .addDatabaseHolder(ExpoNotificationsGeneratedDatabaseHolder.class)
+        // ADD HERE NEXT DATABASE HOLDER
         .build()
     );
   }
