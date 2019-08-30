@@ -88,13 +88,14 @@ With `expo start`, [web push notifications](../../guides/push-notifications) are
 
 To use it with other services such as ZEIT Now, you would need appropriate configuration to
 - let `/expo-service-worker.js` serve the file content of `/static/expo-service-worker.js`, and
-- let `/service-worker.js` serve the file content of a service worker.
-  - For example, it would be `/_next/static/service-worker.js` if you uses [next-offline](https://github.com/hanford/next-offline), or `/static/service-worker.js` (which will be a blank file) if do not use any other service worker).
+- let `/service-worker.js` serve the file content of a service worker, which be:
+  - `/static/service-worker.js` (which will by default be a blank file) if you do not want to use any other service worker, or
+  - `/_next/static/service-worker.js` if you are using [next-offline](https://github.com/hanford/next-offline), or
+  - your own service worker file.
 
 Here is an example `now.json` configuration file:
 
-```json
-
+```jsonc
 {
   "version": 2,
   "routes": [
