@@ -1,29 +1,29 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
-import { SignInWithAppleOperation, } from './AppleAuthentication.types';
+import { Operation, } from './AppleAuthentication.types';
 /**
  * A method which returns a Promise which resolves to a boolean if you are able to perform a Sign In with Apple.
  * Generally users need to be on iOS 13+.
  */
 export async function isAvailableAsync() {
-    if (!ExpoAppleAuthentication.isAvailableAsync) {
+    if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.isAvailableAsync) {
         return false;
     }
     return ExpoAppleAuthentication.isAvailableAsync();
 }
 /**
- * Perform a Sign In with Apple request with the given SignInWithAppleOptions.
- * The method will return a Promise which will resolve to a SignInWithAppleCredential on success.
+ * Perform a Sign In with Apple request with the given `RequestOptions`.
+ * The method will return a Promise which will resolve to a `Credential` on success.
  * You should make sure you include error handling.
  *
  * @example
  * ```ts
- * import * as SignInWithApple from "expo-apple-authentication";
+ * import * as AppleAuthentication from "expo-apple-authentication";
  *
- * SignInWithApple.requestAsync({
+ * AppleAuthentication.requestAsync({
  *   requestedScopes: [
- *     SignInWithApple.Scope.FullName,
- *     SignInWithApple.Scope.Email,
+ *     AppleAuthentication.Scope.FullName,
+ *     AppleAuthentication.Scope.Email,
  *   ]
  * }).then(credentials => {
  *   // Handle successful authenticated
@@ -37,7 +37,7 @@ export async function requestAsync(options) {
         throw new UnavailabilityError('expo-apple-authentication', 'requestAsync');
     }
     if (!options.requestedOperation) {
-        options.requestedOperation = SignInWithAppleOperation.Login;
+        options.requestedOperation = Operation.Login;
     }
     return ExpoAppleAuthentication.requestAsync(options);
 }
@@ -49,17 +49,17 @@ export async function requestAsync(options) {
  *
  * @example
  * ```ts
- * import * as SignInWithApple from "expo-apple-authentication";
+ * import * as AppleAuthentication from "expo-apple-authentication";
  *
- * SignInWithApple.getCredentialStateAsync(userId).then(state => {
+ * AppleAuthentication.getCredentialStateAsync(userId).then(state => {
  *   switch (state) {
- *     case SignInWithAppleCredential.CredentialState.Authorized:
+ *     case Credential.CredentialState.Authorized:
  *       // Handle the authorised state
  *       break;
- *     case SignInWithAppleCredential.CredentialState.Revoked:
+ *     case Credential.CredentialState.Revoked:
  *       // The user has signed out
  *       break;
- *     case SignInWithAppleCredential.CredentialState.NotFound:
+ *     case Credential.CredentialState.NotFound:
  *       // The user id was not found
  *       break;
  *   }
@@ -79,10 +79,10 @@ const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentica
  *
  * @example
  * ```ts
- * import * as SignInWithApple from "expo-apple-authentication";
+ * import * as AppleAuthentication from "expo-apple-authentication";
  *
  * // Subscribe
- * const unsubscribe = SignInWithApple.addRevokeListener(() => {
+ * const unsubscribe = AppleAuthentication.addRevokeListener(() => {
  *   // Handle the token being revoked
  * })
  *

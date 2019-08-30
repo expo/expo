@@ -1,115 +1,117 @@
-import ExpoAppleAuthentication from './ExpoAppleAuthentication';
-const { Scope, Operation, CredentialState, UserDetectionStatus, ButtonType, ButtonStyle, } = ExpoAppleAuthentication;
 /**
- * Controls which scopes you are requesting when the call `SignInWithApple.requestAsync()`.
+ * Controls which scopes you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
  * @note Note that it is possible that you will not be granted all of the scopes which you request.
- * You need to check which ones you are granted in the `SignInWithAppleCredential` you get back.
+ * You need to check which ones you are granted in the `Credential` you get back.
  *
  * @see [Apple documention](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope) for more details.
  */
-export var SignInWithAppleScope;
-(function (SignInWithAppleScope) {
+export var Scope;
+(function (Scope) {
     /**
      * A scope that includes the user’s full name.
      */
-    SignInWithAppleScope[SignInWithAppleScope["FullName"] = Scope && Scope.FullName] = "FullName";
+    Scope[Scope["FullName"] = 0] = "FullName";
     /**
      * A scope that includes the user’s email address.
      */
-    SignInWithAppleScope[SignInWithAppleScope["Email"] = Scope && Scope.Email] = "Email";
-})(SignInWithAppleScope || (SignInWithAppleScope = {}));
+    Scope[Scope["Email"] = 1] = "Email";
+})(Scope || (Scope = {}));
 /**
- * Controls what operation you are requesting when the call `SignInWithApple.requestAsync()`.
+ * Controls what operation you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidoperation) for more details.
  */
-export var SignInWithAppleOperation;
-(function (SignInWithAppleOperation) {
-    /**
-     * An operation used to authenticate a user.
-     */
-    SignInWithAppleOperation[SignInWithAppleOperation["Login"] = Operation && Operation.Login] = "Login";
-    /**
-     * An operation that ends an authenticated session.
-     */
-    SignInWithAppleOperation[SignInWithAppleOperation["Logout"] = Operation && Operation.Logout] = "Logout";
-    /**
-     * An operation that refreshes the logged-in user’s credentials.
-     */
-    SignInWithAppleOperation[SignInWithAppleOperation["Refresh"] = Operation && Operation.Refresh] = "Refresh";
+export var Operation;
+(function (Operation) {
     /**
      * An operation that depends on the particular kind of credential provider.
      */
-    SignInWithAppleOperation[SignInWithAppleOperation["Implicit"] = Operation && Operation.Implicit] = "Implicit";
-})(SignInWithAppleOperation || (SignInWithAppleOperation = {}));
+    Operation[Operation["Implicit"] = 0] = "Implicit";
+    /**
+     * An operation used to authenticate a user.
+     */
+    Operation[Operation["Login"] = 1] = "Login";
+    /**
+     * An operation that refreshes the logged-in user’s credentials.
+     */
+    Operation[Operation["Refresh"] = 2] = "Refresh";
+    /**
+     * An operation that ends an authenticated session.
+     */
+    Operation[Operation["Logout"] = 3] = "Logout";
+})(Operation || (Operation = {}));
 /**
- * Defines the state that the credential is in when responding to your call to `SignInWithApple.getCredentialStateAsync()`.
+ * Defines the state that the credential is in when responding to your call to `AppleAuthentication.getCredentialStateAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate) for more details.
  */
-export var SignInWithAppleCredentialState;
-(function (SignInWithAppleCredentialState) {
-    /**
-     * The user is authorized.
-     */
-    SignInWithAppleCredentialState[SignInWithAppleCredentialState["Authorized"] = CredentialState && CredentialState.Authorized] = "Authorized";
+export var CredentialState;
+(function (CredentialState) {
     /**
      * Authorization for the given user has been revoked.
      */
-    SignInWithAppleCredentialState[SignInWithAppleCredentialState["Revoked"] = CredentialState && CredentialState.Revoked] = "Revoked";
+    CredentialState[CredentialState["Revoked"] = 0] = "Revoked";
+    /**
+     * The user is authorized.
+     */
+    CredentialState[CredentialState["Authorized"] = 1] = "Authorized";
     /**
      * The user can’t be found.
      */
-    SignInWithAppleCredentialState[SignInWithAppleCredentialState["NotFound"] = CredentialState && CredentialState.NotFound] = "NotFound";
-})(SignInWithAppleCredentialState || (SignInWithAppleCredentialState = {}));
+    CredentialState[CredentialState["NotFound"] = 2] = "NotFound";
+    /**
+     * Undocumented by Apple yet.
+     */
+    CredentialState[CredentialState["Transferred"] = 3] = "Transferred";
+})(CredentialState || (CredentialState = {}));
 /**
  * A value that indicates whether the user appears to be a real person.
- * You get this in the realUserStatus property of a SignInWithAppleCredential object.
+ * You get this in the realUserStatus property of a `Credential` object.
  * It can be used as one metric to help prevent fraud.
  *
  * @see [Apple documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus) for more details.
  */
-export var SignInWithAppleUserDetectionStatus;
-(function (SignInWithAppleUserDetectionStatus) {
+export var UserDetectionStatus;
+(function (UserDetectionStatus) {
     /**
-     * The user appears to be a real person.
+     * User detection not supported on current platform.
      */
-    SignInWithAppleUserDetectionStatus[SignInWithAppleUserDetectionStatus["LikelyReal"] = UserDetectionStatus && UserDetectionStatus.LikelyReal] = "LikelyReal";
+    UserDetectionStatus[UserDetectionStatus["Unsupported"] = 0] = "Unsupported";
     /**
-     * The system hasn’t determined whether the user might be a real person.
+     * We could not determine the value. New users in the ecosystem will get this value as well, so you should not blacklist but instead treat these users as any new user through standard email sign up flows.
      */
-    SignInWithAppleUserDetectionStatus[SignInWithAppleUserDetectionStatus["Unknown"] = UserDetectionStatus && UserDetectionStatus.Unknown] = "Unknown";
+    UserDetectionStatus[UserDetectionStatus["Unknown"] = 1] = "Unknown";
     /**
-     * The system can’t determine this user’s status as a real person.
+     * A hint that we have high confidence that the user is real.
      */
-    SignInWithAppleUserDetectionStatus[SignInWithAppleUserDetectionStatus["Unsupported"] = UserDetectionStatus && UserDetectionStatus.Unsupported] = "Unsupported";
-})(SignInWithAppleUserDetectionStatus || (SignInWithAppleUserDetectionStatus = {}));
+    UserDetectionStatus[UserDetectionStatus["LikelyReal"] = 2] = "LikelyReal";
+})(UserDetectionStatus || (UserDetectionStatus = {}));
 /**
- * Controls the text that is shown of the `SignInWithAppleButton`.
+ * Controls the text that is shown on the authenticating button.
  */
-export var SignInWithAppleButtonType;
-(function (SignInWithAppleButtonType) {
-    SignInWithAppleButtonType[SignInWithAppleButtonType["Default"] = ButtonType && ButtonType.Default] = "Default";
-    SignInWithAppleButtonType[SignInWithAppleButtonType["SignIn"] = ButtonType && ButtonType.SignIn] = "SignIn";
-    SignInWithAppleButtonType[SignInWithAppleButtonType["Continue"] = ButtonType && ButtonType.Continue] = "Continue";
-})(SignInWithAppleButtonType || (SignInWithAppleButtonType = {}));
+export var ButtonType;
+(function (ButtonType) {
+    ButtonType[ButtonType["SignIn"] = 0] = "SignIn";
+    ButtonType[ButtonType["Continue"] = 1] = "Continue";
+    ButtonType[ButtonType["Default"] = 2] = "Default";
+})(ButtonType || (ButtonType = {}));
 /**
- * Controls the style of the `SignInWithAppleButton`.
+ * Controls the style of the authenticating button.
  */
-export var SignInWithAppleButtonStyle;
-(function (SignInWithAppleButtonStyle) {
-    SignInWithAppleButtonStyle[SignInWithAppleButtonStyle["Black"] = ButtonStyle && ButtonStyle.Black] = "Black";
-    SignInWithAppleButtonStyle[SignInWithAppleButtonStyle["White"] = ButtonStyle && ButtonStyle.White] = "White";
-    SignInWithAppleButtonStyle[SignInWithAppleButtonStyle["WhiteOutline"] = ButtonStyle && ButtonStyle.WhiteOutline] = "WhiteOutline";
-})(SignInWithAppleButtonStyle || (SignInWithAppleButtonStyle = {}));
+export var ButtonStyle;
+(function (ButtonStyle) {
+    ButtonStyle[ButtonStyle["White"] = 0] = "White";
+    ButtonStyle[ButtonStyle["WhiteOutline"] = 1] = "WhiteOutline";
+    ButtonStyle[ButtonStyle["Black"] = 2] = "Black";
+})(ButtonStyle || (ButtonStyle = {}));
 /**
  * Indicates the status of the attempt to retrieve the requested credential.
  */
-export var SignInWithAppleStatus;
-(function (SignInWithAppleStatus) {
-    SignInWithAppleStatus["Success"] = "success";
-    SignInWithAppleStatus["Revoke"] = "revoke";
-    SignInWithAppleStatus["Cancel"] = "cancel";
-})(SignInWithAppleStatus || (SignInWithAppleStatus = {}));
+export var Status;
+(function (Status) {
+    Status["Success"] = "success";
+    Status["Revoke"] = "revoke";
+    Status["Cancel"] = "cancel";
+})(Status || (Status = {}));
 //# sourceMappingURL=AppleAuthentication.types.js.map

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SignInWithAppleButtonProps } from './AppleAuthentication.types';
+import { ButtonProps } from './AppleAuthentication.types';
 /**
  * This component displays the "Sign In with Apple" button on your screen.
  * The App Store Guidelines require you to use this component to start the sign in process instead of a custom button.
@@ -35,5 +35,5 @@ import { SignInWithAppleButtonProps } from './AppleAuthentication.types';
  * }
  * ```
  */
-declare const ExpoSignInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonProps>;
+declare const ExpoSignInWithAppleButton: React.FunctionComponent<ButtonProps>;
 export default ExpoSignInWithAppleButton;

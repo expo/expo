@@ -7,10 +7,11 @@ import {
   ExpoSignInWithAppleButtonContinueWhiteOutline,
   ExpoSignInWithAppleButtonContinueBlack,
 } from './ExpoSignInWithAppleButtonNativeViews';
+
 import {
-  SignInWithAppleButtonProps,
-  SignInWithAppleButtonStyle,
-  SignInWithAppleButtonType,
+  ButtonProps,
+  ButtonStyle,
+  ButtonType,
 } from './AppleAuthentication.types';
 
 /**
@@ -48,7 +49,7 @@ import {
  * }
  * ```
  */
-const ExpoSignInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonProps> = (props) => {
+const ExpoSignInWithAppleButton: React.FunctionComponent<ButtonProps> = (props) => {
   if (!ExpoSignInWithAppleButtonSignInWhite) {
     if (__DEV__) {
       console.warn('\'ExpoSignInWithAppleButton\' is not available.')
@@ -74,19 +75,19 @@ const ExpoSignInWithAppleButton: React.FunctionComponent<SignInWithAppleButtonPr
 }
 
 const ButtonComponents: { [type : number]: { [style: number]: React.ElementType } } = {
-  [SignInWithAppleButtonType.SignIn]: {
-    [SignInWithAppleButtonStyle.White]: ExpoSignInWithAppleButtonSignInWhite,
-    [SignInWithAppleButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonSignInWhiteOutline,
-    [SignInWithAppleButtonStyle.Black]: ExpoSignInWithAppleButtonSignInBlack,
+  [ButtonType.SignIn]: {
+    [ButtonStyle.White]: ExpoSignInWithAppleButtonSignInWhite,
+    [ButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonSignInWhiteOutline,
+    [ButtonStyle.Black]: ExpoSignInWithAppleButtonSignInBlack,
   },
-  [SignInWithAppleButtonType.Continue]: {
-    [SignInWithAppleButtonStyle.White]: ExpoSignInWithAppleButtonContinueWhite,
-    [SignInWithAppleButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonContinueWhiteOutline,
-    [SignInWithAppleButtonStyle.Black]: ExpoSignInWithAppleButtonContinueBlack,
+  [ButtonType.Continue]: {
+    [ButtonStyle.White]: ExpoSignInWithAppleButtonContinueWhite,
+    [ButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonContinueWhiteOutline,
+    [ButtonStyle.Black]: ExpoSignInWithAppleButtonContinueBlack,
   },
 };
 
-function selectButtonComponent(type: SignInWithAppleButtonType, style: SignInWithAppleButtonStyle): React.ElementType {
+function selectButtonComponent(type: ButtonType, style: ButtonStyle): React.ElementType {
   return ButtonComponents[type][style];
 }
 

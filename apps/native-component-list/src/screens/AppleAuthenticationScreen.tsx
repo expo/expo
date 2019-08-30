@@ -2,14 +2,14 @@ import React from 'react';
 import { Alert, StyleSheet, View, Text, Button, Slider } from 'react-native';
 import { Subscription } from '@unimodules/core';
 
-import * as SignInWithApple from 'expo-apple-authentication';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 interface State {
   isAvailable?: boolean;
-  buttonStyle: SignInWithApple.SignInWithAppleButtonStyle;
-  buttonType: SignInWithApple.SignInWithAppleButtonType;
+  buttonStyle: AppleAuthentication.ButtonStyle;
+  buttonType: AppleAuthentication.ButtonType;
   cornerRadius: number;
-  credentials?: SignInWithApple.SignInWithAppleCredential | null;
+  credentials?: AppleAuthentication.Credential | null;
 }
 
 export default class AppleAuthenticationScreen extends React.Component<{}, State> {
@@ -18,8 +18,8 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
   };
 
   readonly state: State = {
-    buttonStyle: SignInWithApple.SignInWithAppleButtonStyle.White,
-    buttonType: SignInWithApple.SignInWithAppleButtonType.SignIn,
+    buttonStyle: AppleAuthentication.ButtonStyle.White,
+    buttonType: AppleAuthentication.ButtonType.SignIn,
     cornerRadius: 5,
   };
 
@@ -27,7 +27,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
 
   componentDidMount() {
     this.checkAvailability();
-    this._subscription = SignInWithApple.addRevokeListener(this.revokeListener);
+    this._subscription = AppleAuthentication.addRevokeListener(this.revokeListener);
   }
 
   componentWillUnmount() {
@@ -42,16 +42,16 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
   }
 
   checkAvailability = async () => {
-    const isAvailable = await SignInWithApple.isAvailableAsync();
+    const isAvailable = await AppleAuthentication.isAvailableAsync();
     this.setState({ isAvailable });
   }
 
-  request = async (operation: SignInWithApple.SignInWithAppleOperation) => {
+  request = async (operation: AppleAuthentication.Operation) => {
     try {
-      const credentials = await SignInWithApple.requestAsync({
+      const credentials = await AppleAuthentication.requestAsync({
         requestedScopes: [
-          SignInWithApple.SignInWithAppleScope.FullName,
-          SignInWithApple.SignInWithAppleScope.Email,
+          AppleAuthentication.Scope.FullName,
+          AppleAuthentication.Scope.Email,
         ],
         requestedOperation: operation,
         user: this.state.credentials && this.state.credentials.user ? this.state.credentials.user : undefined,
@@ -66,20 +66,27 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
   };
 
   signIn = async () => {
-    await this.request(SignInWithApple.SignInWithAppleOperation.Login);
+    await this.request(AppleAuthentication.Operation.Login);
   }
 
   refresh = async () => {
-    await this.request(SignInWithApple.SignInWithAppleOperation.Refresh);
+    await this.request(AppleAuthentication.Operation.Refresh);
   }
 
   signOut = async () => {
-    await this.request(SignInWithApple.SignInWithAppleOperation.Logout);
+    await this.request(AppleAuthentication.Operation.Logout);
   }
 
   checkCredentials = async () => {
     if (this.state.credentials && this.state.credentials.user) {
-      await SignInWithApple.getCredentialStateAsync(this.state.credentials.user);
+      const credentialState = await AppleAuthentication.getCredentialStateAsync(this.state.credentials.user);
+      const alertMessages = {
+        [AppleAuthentication.CredentialState.Revoked]: 'Your authorization has been revoked.',
+        [AppleAuthentication.CredentialState.Authorized]: 'You\'re authorized.',
+        [AppleAuthentication.CredentialState.NotFound]: 'You\'re not registered yet.',
+        [AppleAuthentication.CredentialState.Transferred]: 'Credentials transferred.', // Whatever that means...
+      };
+      alert(alertMessages[credentialState]);
     }
   }
 
@@ -104,13 +111,13 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
       <View style={styles.container}>
         {this.state.credentials && (
           <View style={styles.checkCredentialsContainer}>
-            <Button title="Check credentials" onPress={this.checkCredentials}/>
-            <Button title="Refresh" onPress={this.refresh}/>
-            <Button title="Sign out" onPress={this.signOut}/>
+            <Button title="Check credentials" onPress={this.checkCredentials} />
+            <Button title="Refresh" onPress={this.refresh} />
+            <Button title="Sign out" onPress={this.signOut} />
           </View>
         )}
         <View style={styles.buttonContainer}>
-          <SignInWithApple.SignInWithAppleButton
+          <AppleAuthentication.SignInWithAppleButton
             buttonStyle={this.state.buttonStyle}
             buttonType={this.state.buttonType}
             cornerRadius={this.state.cornerRadius}
@@ -125,16 +132,16 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
             </Text>
             <View style={styles.controlsButtonsContainer}>
               <Button
-                title={`${SignInWithApple.SignInWithAppleButtonStyle[SignInWithApple.SignInWithAppleButtonStyle.White]}`}
-                onPress={() => this.setState({ buttonStyle: SignInWithApple.SignInWithAppleButtonStyle.White })}
+                title={`${AppleAuthentication.ButtonStyle[AppleAuthentication.ButtonStyle.White]}`}
+                onPress={() => this.setState({ buttonStyle: AppleAuthentication.ButtonStyle.White })}
               />
               <Button
-                title={`${SignInWithApple.SignInWithAppleButtonStyle[SignInWithApple.SignInWithAppleButtonStyle.WhiteOutline]}`}
-                onPress={() => this.setState({ buttonStyle: SignInWithApple.SignInWithAppleButtonStyle.WhiteOutline })}
+                title={`${AppleAuthentication.ButtonStyle[AppleAuthentication.ButtonStyle.WhiteOutline]}`}
+                onPress={() => this.setState({ buttonStyle: AppleAuthentication.ButtonStyle.WhiteOutline })}
               />
               <Button
-                title={`${SignInWithApple.SignInWithAppleButtonStyle[SignInWithApple.SignInWithAppleButtonStyle.Black]}`}
-                onPress={() => this.setState({ buttonStyle: SignInWithApple.SignInWithAppleButtonStyle.Black })}
+                title={`${AppleAuthentication.ButtonStyle[AppleAuthentication.ButtonStyle.Black]}`}
+                onPress={() => this.setState({ buttonStyle: AppleAuthentication.ButtonStyle.Black })}
               />
             </View>
           </View><View style={styles.controlsContainer}>
@@ -143,12 +150,12 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
             </Text>
             <View style={styles.controlsButtonsContainer}>
               <Button
-                title={`${SignInWithApple.SignInWithAppleButtonType[SignInWithApple.SignInWithAppleButtonType.SignIn]}`}
-                onPress={() => this.setState({ buttonType: SignInWithApple.SignInWithAppleButtonType.SignIn })}
+                title={`${AppleAuthentication.ButtonType[AppleAuthentication.ButtonType.SignIn]}`}
+                onPress={() => this.setState({ buttonType: AppleAuthentication.ButtonType.SignIn })}
               />
               <Button
-                title={`${SignInWithApple.SignInWithAppleButtonType[SignInWithApple.SignInWithAppleButtonType.Continue]}`}
-                onPress={() => this.setState({ buttonType: SignInWithApple.SignInWithAppleButtonType.Continue })}
+                title={`${AppleAuthentication.ButtonType[AppleAuthentication.ButtonType.Continue]}`}
+                onPress={() => this.setState({ buttonType: AppleAuthentication.ButtonType.Continue })}
               />
             </View>
           </View>

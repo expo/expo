@@ -1,6 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppleAuthentication/EXAppleAuthentication.h>
+#import <EXAppleAuthentication/EXAppleAuthenticationMappings.h>
+
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
 
@@ -41,46 +43,6 @@ UM_EXPORT_MODULE(ExpoAppleAuthentication);
 - (void)invalidate
 {
   _eventEmitter = nil;
-}
-
-- (NSDictionary *)constantsToExport
-{
-  if (@available(iOS 13.0, *)) {
-    return @{
-      @"Scope": @{
-          @"FullName": ASAuthorizationScopeFullName,
-          @"Email": ASAuthorizationScopeEmail,
-      },
-      @"Operation": @{
-          @"Login": ASAuthorizationOperationLogin,
-          @"Refresh": ASAuthorizationOperationRefresh,
-          @"Logout": ASAuthorizationOperationLogout,
-          @"Implicit": ASAuthorizationOperationImplicit,
-      },
-      @"CredentialState": @{
-          @"Authorized": @(ASAuthorizationAppleIDProviderCredentialAuthorized),
-          @"Revoked": @(ASAuthorizationAppleIDProviderCredentialRevoked),
-          @"NotFound": @(ASAuthorizationAppleIDProviderCredentialNotFound),
-      },
-      @"UserDetectionStatus": @{
-          @"LikelyReal": @(ASUserDetectionStatusLikelyReal),
-          @"Unknown": @(ASUserDetectionStatusUnknown),
-          @"Unsupported": @(ASUserDetectionStatusUnsupported),
-      },
-      @"ButtonType": @{
-          @"Default": @(ASAuthorizationAppleIDButtonTypeDefault),
-          @"SignIn": @(ASAuthorizationAppleIDButtonTypeSignIn),
-          @"Continue": @(ASAuthorizationAppleIDButtonTypeContinue),
-      },
-      @"ButtonStyle": @{
-          @"Black": @(ASAuthorizationAppleIDButtonStyleBlack),
-          @"White": @(ASAuthorizationAppleIDButtonStyleWhite),
-          @"WhiteOutline": @(ASAuthorizationAppleIDButtonStyleWhiteOutline),
-      },
-    };
-  }
-  
-  return @{};
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -124,7 +86,6 @@ UM_EXPORT_METHOD_AS(isAvailableAsync,
   if (@available(iOS 13.0, *)) {
     return resolve(@(YES));
   }
-  
   resolve(@(NO));
 }
 
@@ -139,8 +100,13 @@ UM_EXPORT_METHOD_AS(requestAsync,
     
     ASAuthorizationAppleIDProvider* appleIDProvider = [[ASAuthorizationAppleIDProvider alloc] init];
     ASAuthorizationAppleIDRequest* request = [appleIDProvider createRequest];
-    request.requestedScopes = options[@"requestedScopes"];
-    request.requestedOperation = options[@"requestedOperation"];
+
+    NSArray<NSNumber *> *requestedScopes = options[@"requestedScopes"];
+    NSNumber *requestedOperation = options[@"requestedOperation"];
+
+    request.requestedScopes = [EXAppleAuthenticationMappings importScopes:requestedScopes];
+    request.requestedOperation = [EXAppleAuthenticationMappings importOperation:requestedOperation];
+
     if (options[@"user"]) {
       request.user = options[@"user"];
     }
@@ -162,7 +128,6 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
                                    resolver:(UMPromiseResolveBlock)resolve
                                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  
   if (@available(iOS 13.0, *)) {
     ASAuthorizationAppleIDProvider* appleIDProvider = [[ASAuthorizationAppleIDProvider alloc] init];
     [appleIDProvider getCredentialStateForUserID:userID
@@ -171,7 +136,7 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
       if (error) {
         return reject(@"ERR_APPLE_AUTHENTICATION", [error localizedDescription], nil);
       }
-      resolve(@(credentialState));
+      resolve([EXAppleAuthenticationMappings exportCredentialState:credentialState]);
     }];
   } else {
     reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"This feature is not available on your iPhone.", nil);

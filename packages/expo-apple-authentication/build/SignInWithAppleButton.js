@@ -1,6 +1,6 @@
 import React from 'react';
 import { ExpoSignInWithAppleButtonSignInWhite, ExpoSignInWithAppleButtonSignInWhiteOutline, ExpoSignInWithAppleButtonSignInBlack, ExpoSignInWithAppleButtonContinueWhite, ExpoSignInWithAppleButtonContinueWhiteOutline, ExpoSignInWithAppleButtonContinueBlack, } from './ExpoSignInWithAppleButtonNativeViews';
-import { SignInWithAppleButtonStyle, SignInWithAppleButtonType, } from './AppleAuthentication.types';
+import { ButtonStyle, ButtonType, } from './AppleAuthentication.types';
 /**
  * This component displays the "Sign In with Apple" button on your screen.
  * The App Store Guidelines require you to use this component to start the sign in process instead of a custom button.
@@ -48,15 +48,15 @@ const ExpoSignInWithAppleButton = (props) => {
     return (<SignInWithAppleButtonComponent onButtonPress={onPress} {...restProps}/>);
 };
 const ButtonComponents = {
-    [SignInWithAppleButtonType.SignIn]: {
-        [SignInWithAppleButtonStyle.White]: ExpoSignInWithAppleButtonSignInWhite,
-        [SignInWithAppleButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonSignInWhiteOutline,
-        [SignInWithAppleButtonStyle.Black]: ExpoSignInWithAppleButtonSignInBlack,
+    [ButtonType.SignIn]: {
+        [ButtonStyle.White]: ExpoSignInWithAppleButtonSignInWhite,
+        [ButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonSignInWhiteOutline,
+        [ButtonStyle.Black]: ExpoSignInWithAppleButtonSignInBlack,
     },
-    [SignInWithAppleButtonType.Continue]: {
-        [SignInWithAppleButtonStyle.White]: ExpoSignInWithAppleButtonContinueWhite,
-        [SignInWithAppleButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonContinueWhiteOutline,
-        [SignInWithAppleButtonStyle.Black]: ExpoSignInWithAppleButtonContinueBlack,
+    [ButtonType.Continue]: {
+        [ButtonStyle.White]: ExpoSignInWithAppleButtonContinueWhite,
+        [ButtonStyle.WhiteOutline]: ExpoSignInWithAppleButtonContinueWhiteOutline,
+        [ButtonStyle.Black]: ExpoSignInWithAppleButtonContinueBlack,
     },
 };
 function selectButtonComponent(type, style) {

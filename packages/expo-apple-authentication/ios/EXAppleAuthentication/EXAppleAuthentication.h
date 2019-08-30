@@ -10,4 +10,3 @@
 @interface EXAppleAuthentication : UMExportedModule <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding, UMModuleRegistryConsumer, UMEventEmitter>
 
 @end
-  

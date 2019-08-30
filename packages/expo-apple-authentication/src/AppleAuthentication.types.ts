@@ -1,16 +1,7 @@
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 import { StyleProp, ViewStyle } from 'react-native';
 
-const {
-  Scope,
-  Operation,
-  CredentialState,
-  UserDetectionStatus,
-  ButtonType,
-  ButtonStyle,
-} = ExpoAppleAuthentication;
-
-export interface SignInWithAppleButtonProps {
+export interface ButtonProps {
   /**
    * The callback which is called when the user pressed the button.
    */
@@ -19,12 +10,12 @@ export interface SignInWithAppleButtonProps {
   /**
    * Controls the text that is shown on the button.
    */
-  buttonType: SignInWithAppleButtonType;
+  buttonType: ButtonType;
 
   /**
    * Controls the style of the button.
    */
-  buttonStyle: SignInWithAppleButtonStyle;
+  buttonStyle: ButtonStyle;
 
   /**
    * The radius of the corners of the button.
@@ -35,28 +26,28 @@ export interface SignInWithAppleButtonProps {
 }
 
 /**
-* The options you can supply when making a call to `SignInWithApple.requestAsync()`.
+* The options you can supply when making a call to `AppleAuthentication.requestAsync()`.
 *
 * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest) for more details.
 */
-export interface SignInWithAppleOptions {
+export interface RequestOptions {
   /**
     * The scopes that you are requesting.
     * @defaults `[]` (no scopes).
     */
-  requestedScopes?: SignInWithAppleScope[];
+  requestedScopes?: Scope[];
 
   /**
     * The operation that you would like to perform.
-    * @defaults `SignInWithApple.Operation.Login`
+    * @defaults `AppleAuthentication.Operation.Implicit`
     */
-  requestedOperation?: SignInWithAppleOperation;
+  requestedOperation?: Operation;
 
   /**
     * Must be set for `Refresh` and `Logout` operations
     *
     * Typically you leave this property set to nil the first time you authenticate a user.
-    * Otherwise, if you previously received an `SignInWithAppleCredential` set this property to the value from the user property.
+    * Otherwise, if you previously received an `Credential` set this property to the value from the user property.
     * Must be set for Refresh and Logout operations.
   */
   user?: string;
@@ -70,18 +61,18 @@ export interface SignInWithAppleOptions {
 }
 
 /**
-* The user credentials returned to a successful call to `SignInWithApple.requestAsync()`.
+* The user credentials returned to a successful call to `AppleAuthentication.requestAsync()`.
 *
 * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential) for more details.
 */
-export interface SignInWithAppleCredential {
+export interface Credential {
   /**
    * A value indicating the status type of the requested credential.
    * Success if the credential was retrieved successfully,
    * Revoke if the credential was revoked,
    * or Cancel if the user canceled the Sign In operation.
    */
-  type: SignInWithAppleStatus;
+  type: Status;
 
   /**
     * A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -95,7 +86,7 @@ export interface SignInWithAppleCredential {
 
   /**
     * An arbitrary string that your app provided to the request that generated the credential.
-    * You can set this in `SignInWithAppleOptions`.
+    * You can set this in `RequestOptions`.
     */
   user?: string;
 
@@ -110,7 +101,7 @@ export interface SignInWithAppleCredential {
   /**
     * The contact information the user authorized your app to access.
     */
-  authorizedScopes?: SignInWithAppleScope[];
+  authorizedScopes?: Scope[];
 
   /**
     * The user’s name. Might not present if you didn't request access or if the user denied access.
@@ -125,13 +116,13 @@ export interface SignInWithAppleCredential {
   /**
     * A value that indicates whether the user appears to be a real person.
     */
-  realUserStatus?: SignInWithAppleUserDetectionStatus;
+  realUserStatus?: UserDetectionStatus;
 }
 
 /**
  * Tokenized object representing the different portions of the user's full name.
  */
-export interface SignInWithAppleFullName {
+export interface FullName {
   namePrefix?: string;
   givenName?: string;
   middleName?: string;
@@ -141,120 +132,125 @@ export interface SignInWithAppleFullName {
 }
 
 /**
- * Controls which scopes you are requesting when the call `SignInWithApple.requestAsync()`.
+ * Controls which scopes you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
  * @note Note that it is possible that you will not be granted all of the scopes which you request.
- * You need to check which ones you are granted in the `SignInWithAppleCredential` you get back.
+ * You need to check which ones you are granted in the `Credential` you get back.
  *
  * @see [Apple documention](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope) for more details.
  */
-export enum SignInWithAppleScope {
+export enum Scope {
   /**
    * A scope that includes the user’s full name.
    */
-  FullName = Scope && Scope.FullName,
+  FullName = 0,
 
   /**
    * A scope that includes the user’s email address.
    */
-  Email = Scope && Scope.Email,
+  Email = 1,
 }
 
 /**
- * Controls what operation you are requesting when the call `SignInWithApple.requestAsync()`.
+ * Controls what operation you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidoperation) for more details.
  */
-export enum SignInWithAppleOperation {
+export enum Operation {
+  /**
+   * An operation that depends on the particular kind of credential provider.
+   */
+  Implicit = 0,
+
   /**
    * An operation used to authenticate a user.
    */
-  Login = Operation && Operation.Login,
-
-  /**
-   * An operation that ends an authenticated session.
-   */
-  Logout = Operation && Operation.Logout,
+  Login = 1,
 
   /**
    * An operation that refreshes the logged-in user’s credentials.
    */
-  Refresh = Operation && Operation.Refresh,
+  Refresh = 2,
 
   /**
-   * An operation that depends on the particular kind of credential provider.
+   * An operation that ends an authenticated session.
    */
-  Implicit = Operation && Operation.Implicit,
+  Logout = 3,
 }
 
 /**
- * Defines the state that the credential is in when responding to your call to `SignInWithApple.getCredentialStateAsync()`.
+ * Defines the state that the credential is in when responding to your call to `AppleAuthentication.getCredentialStateAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate) for more details.
  */
-export enum SignInWithAppleCredentialState {
-  /**
-   * The user is authorized.
-   */
-  Authorized = CredentialState && CredentialState.Authorized,
-
+export enum CredentialState {
   /**
    * Authorization for the given user has been revoked.
    */
-  Revoked = CredentialState && CredentialState.Revoked,
+  Revoked = 0,
+
+  /**
+   * The user is authorized.
+   */
+  Authorized = 1,
 
   /**
    * The user can’t be found.
    */
-  NotFound = CredentialState && CredentialState.NotFound,
+  NotFound = 2,
+
+  /**
+   * Undocumented by Apple yet.
+   */
+  Transferred = 3,
 }
 
 /**
  * A value that indicates whether the user appears to be a real person.
- * You get this in the realUserStatus property of a SignInWithAppleCredential object.
+ * You get this in the realUserStatus property of a `Credential` object.
  * It can be used as one metric to help prevent fraud.
  *
  * @see [Apple documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus) for more details.
  */
-export enum SignInWithAppleUserDetectionStatus {
+export enum UserDetectionStatus {
   /**
-   * The user appears to be a real person.
+   * User detection not supported on current platform.
    */
-  LikelyReal = UserDetectionStatus && UserDetectionStatus.LikelyReal,
+  Unsupported = 0,
 
   /**
-   * The system hasn’t determined whether the user might be a real person.
+   * We could not determine the value. New users in the ecosystem will get this value as well, so you should not blacklist but instead treat these users as any new user through standard email sign up flows.
    */
-  Unknown = UserDetectionStatus && UserDetectionStatus.Unknown,
+  Unknown = 1,
 
   /**
-   * The system can’t determine this user’s status as a real person.
+   * A hint that we have high confidence that the user is real.
    */
-  Unsupported = UserDetectionStatus && UserDetectionStatus.Unsupported,
+  LikelyReal = 2,
 }
 
 /**
- * Controls the text that is shown of the `SignInWithAppleButton`.
+ * Controls the text that is shown on the authenticating button.
  */
-export enum SignInWithAppleButtonType {
-  Default = ButtonType && ButtonType.Default,
-  SignIn = ButtonType && ButtonType.SignIn,
-  Continue = ButtonType && ButtonType.Continue,
+export enum ButtonType {
+  SignIn = 0,
+  Continue = 1,
+  Default = 2,
 }
 
 /**
- * Controls the style of the `SignInWithAppleButton`.
+ * Controls the style of the authenticating button.
  */
-export enum SignInWithAppleButtonStyle {
-  Black = ButtonStyle && ButtonStyle.Black,
-  White = ButtonStyle && ButtonStyle.White,
-  WhiteOutline = ButtonStyle && ButtonStyle.WhiteOutline,
+export enum ButtonStyle {
+  White = 0,
+  WhiteOutline = 1,
+  Black = 2,
 }
 
 /**
  * Indicates the status of the attempt to retrieve the requested credential.
  */
-export enum SignInWithAppleStatus {
+export enum Status {
   Success = 'success',
   Revoke = 'revoke',
   Cancel = 'cancel',
@@ -264,7 +260,7 @@ export enum SignInWithAppleStatus {
  * Event sent to the listener when the user's credentials have been revoked.
  */
 export type RevokeEvent = {
-  type: SignInWithAppleStatus;
+  type: Status;
 }
 
 /**

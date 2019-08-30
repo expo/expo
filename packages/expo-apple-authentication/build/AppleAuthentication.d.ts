@@ -1,23 +1,23 @@
 import { Subscription } from '@unimodules/core';
-import { SignInWithAppleOptions, SignInWithAppleCredential, SignInWithAppleCredentialState, RevokeListener } from './AppleAuthentication.types';
+import { RequestOptions, Credential, CredentialState, RevokeListener } from './AppleAuthentication.types';
 /**
  * A method which returns a Promise which resolves to a boolean if you are able to perform a Sign In with Apple.
  * Generally users need to be on iOS 13+.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 /**
- * Perform a Sign In with Apple request with the given SignInWithAppleOptions.
- * The method will return a Promise which will resolve to a SignInWithAppleCredential on success.
+ * Perform a Sign In with Apple request with the given `RequestOptions`.
+ * The method will return a Promise which will resolve to a `Credential` on success.
  * You should make sure you include error handling.
  *
  * @example
  * ```ts
- * import * as SignInWithApple from "expo-apple-authentication";
+ * import * as AppleAuthentication from "expo-apple-authentication";
  *
- * SignInWithApple.requestAsync({
+ * AppleAuthentication.requestAsync({
  *   requestedScopes: [
- *     SignInWithApple.Scope.FullName,
- *     SignInWithApple.Scope.Email,
+ *     AppleAuthentication.Scope.FullName,
+ *     AppleAuthentication.Scope.Email,
  *   ]
  * }).then(credentials => {
  *   // Handle successful authenticated
@@ -26,7 +26,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * })
  * ```
  */
-export declare function requestAsync(options: SignInWithAppleOptions): Promise<SignInWithAppleCredential>;
+export declare function requestAsync(options: RequestOptions): Promise<Credential>;
 /**
  * You can query the current state of a user ID.
  * It will tell you if the token is still valid or if it has been revoked by the user.
@@ -35,34 +35,34 @@ export declare function requestAsync(options: SignInWithAppleOptions): Promise<S
  *
  * @example
  * ```ts
- * import * as SignInWithApple from "expo-apple-authentication";
+ * import * as AppleAuthentication from "expo-apple-authentication";
  *
- * SignInWithApple.getCredentialStateAsync(userId).then(state => {
+ * AppleAuthentication.getCredentialStateAsync(userId).then(state => {
  *   switch (state) {
- *     case SignInWithAppleCredential.CredentialState.Authorized:
+ *     case Credential.CredentialState.Authorized:
  *       // Handle the authorised state
  *       break;
- *     case SignInWithAppleCredential.CredentialState.Revoked:
+ *     case Credential.CredentialState.Revoked:
  *       // The user has signed out
  *       break;
- *     case SignInWithAppleCredential.CredentialState.NotFound:
+ *     case Credential.CredentialState.NotFound:
  *       // The user id was not found
  *       break;
  *   }
  * })
  * ```
  */
-export declare function getCredentialStateAsync(userId: string): Promise<SignInWithAppleCredentialState>;
+export declare function getCredentialStateAsync(userId: string): Promise<CredentialState>;
 /**
  * Adds a listener for when a token has been revoked.
  * This means that the user has signed out and you should update your UI to reflect this
  *
  * @example
  * ```ts
- * import * as SignInWithApple from "expo-apple-authentication";
+ * import * as AppleAuthentication from "expo-apple-authentication";
  *
  * // Subscribe
- * const unsubscribe = SignInWithApple.addRevokeListener(() => {
+ * const unsubscribe = AppleAuthentication.addRevokeListener(() => {
  *   // Handle the token being revoked
  * })
  *
