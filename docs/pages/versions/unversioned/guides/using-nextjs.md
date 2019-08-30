@@ -86,9 +86,12 @@ yarn next export
 
 With `expo start`, [web push notifications](../../guides/push-notifications) are supported without any additional configuration.
 
-To use it with other services such as ZEIT Now, you would need appropriate configuration to let `/expo-service-worker.js` serve the file content of `/.expo/expo-service-worker.js`, and let `/service-worker.js` serve the file content of a service worker (for example, it would be `/_next/static/service-worker.js` if you uses [next-offline](https://github.com/hanford/next-offline), or `/.expo/service-worker.js` (which will be a blank file) if do not use any other service worker).
+To use it with other services such as ZEIT Now, you would need appropriate configuration to
+- let `/expo-service-worker.js` serve the file content of `/static/expo-service-worker.js`, and
+- let `/service-worker.js` serve the file content of a service worker.
+  - For example, it would be `/_next/static/service-worker.js` if you uses [next-offline](https://github.com/hanford/next-offline), or `/static/service-worker.js` (which will be a blank file) if do not use any other service worker).
 
-Here is an example `now.json` configuration file assuming that you are using next-offline.
+Here is an example `now.json` configuration file:
 
 ```json
 
@@ -97,25 +100,20 @@ Here is an example `now.json` configuration file assuming that you are using nex
   "routes": [
     {
       "src": "^/expo-service-worker.js$",
-      "dest": "/.expo/expo-service-worker.js",
+      "dest": "/static/expo-service-worker.js",
       "headers": {
         "cache-control": "public, max-age=43200, immutable",
         "Service-Worker-Allowed": "/"
       }
     },
+    // If you are using next-offline, change the object below according to their guide.
     {
       "src": "^/service-worker.js$",
-      "dest": "/_next/static/service-worker.js",
+      "dest": "/static/service-worker.js",
       "headers": {
         "cache-control": "public, max-age=43200, immutable",
         "Service-Worker-Allowed": "/"
       }
-    }
-  ],
-  "builds": [
-    {
-      "src": "next.config.js",
-      "use": "@now/next"
     }
   ]
 }
