@@ -104,7 +104,6 @@
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
     "babel-preset-expo": "^6.0.0",
-    "expo-cli": "^2.18.3",
     "expo-module-scripts": "^1.0.0",
     "expo-yarn-workspaces": "^1.2.0",
     "serve": "^10.1.2",
