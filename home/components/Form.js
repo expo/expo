@@ -44,7 +44,9 @@ export class FormInput extends React.Component {
           }}
           onFocus={this._handleFocus}
           onBlur={this._handleBlur}
-          underlineColorAndroid={this.state.isFocused ? Colors.light.tintColor : 'rgba(46, 59, 76, 0.10)'}
+          underlineColorAndroid={
+            this.state.isFocused ? Colors.light.tintColor : 'rgba(46, 59, 76, 0.10)'
+          }
           {...props}
           placeholder={this.props.label}
           placeholderTextColor="rgba(36, 44, 58, 0.4)"

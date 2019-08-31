@@ -126,7 +126,9 @@ export default class Profile extends React.Component {
     let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
-      <ScrollView style={{flex: 1}} contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
         <StyledText
           style={SharedStyles.noticeDescriptionText}
           lightColor="rgba(36, 44, 58, 0.7)"

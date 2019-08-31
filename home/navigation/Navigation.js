@@ -6,7 +6,6 @@ import {
   createAppContainer,
   createStackNavigator,
   createBottomTabNavigator,
-  useTheme,
 } from 'react-navigation';
 
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';

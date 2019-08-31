@@ -7,7 +7,7 @@ import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
 import { Ionicons } from './Icons';
-import { StyledButton, StyledView } from './Views';
+import { StyledButton } from './Views';
 import { StyledText } from './Text';
 
 const MAX_ICON_COUNT = 4;

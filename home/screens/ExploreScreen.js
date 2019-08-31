@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
@@ -109,13 +109,6 @@ export default class ExploreScreen extends React.Component {
 
   _handlePressUsername = (username: string) => {
     this.props.navigation.push('Profile', { username });
-  };
-}
-
-if (FeatureFlags.HIDE_EXPLORE_TABS) {
-  navBarBorder = {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.light.navBarBorderBottom,
   };
 }
 
