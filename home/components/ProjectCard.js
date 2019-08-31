@@ -12,13 +12,12 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
-import { GenericCardBody, GenericCardContainer, StyledView } from '../components/Views';
+import { GenericCardBody, GenericCardContainer, StyledButton, StyledView } from '../components/Views';
 import { StyledText } from '../components/Text';
 
 @withNavigation
@@ -28,12 +27,12 @@ export default class ProjectCard extends React.PureComponent {
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>
-        <TouchableNativeFeedbackSafe
+        <StyledButton
           onPress={this._handlePressProject}
+          style={[styles.container, styles.bottomBorder]}
           onLongPress={this._handleLongPressProject}
           fallback={TouchableHighlight}
           underlayColor="#b7b7b7">
-          <StyledView styles={[styles.container, styles.bottomBorder]}>
             <View style={styles.header}>
               <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
               <View style={styles.infoContainer}>
@@ -61,8 +60,7 @@ export default class ProjectCard extends React.PureComponent {
                 {description}
               </StyledText>
             </View>
-          </StyledView>
-        </TouchableNativeFeedbackSafe>
+        </StyledButton>
       </View>
     );
   }

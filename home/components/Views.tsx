@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useTheme } from 'react-navigation';
 import { StyleSheet, View, ScrollView } from 'react-native';
+import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import Colors from '../constants/Colors';
 
 type ViewProps = View['props'];
@@ -118,6 +119,43 @@ export const StyledView = (props: Props) => {
 
   return (
     <View
+      style={[
+        {
+          backgroundColor,
+          borderColor,
+        },
+        style,
+      ]}
+      {...otherProps}
+    />
+  );
+};
+
+type ButtonProps = Props & TouchableNativeFeedbackSafe['props'];
+
+// Extend this if you ever need to customize ripple color
+function useRippleColor(_props: any) {
+  let theme = useTheme();
+  return theme === 'light' ? '#ccc' : '#fff';
+}
+
+export const StyledButton = (props: ButtonProps) => {
+  let {
+    style,
+    lightBackgroundColor: _lightBackgroundColor,
+    darkBackgroundColor: _darkBackgroundColor,
+    lightBorderColor: _lightBorderColor,
+    darkBorderColor: _darkBorderColor,
+    ...otherProps
+  } = props;
+
+  let backgroundColor = useThemeBackgroundColor(props, 'cardBackground');
+  let borderColor = useThemeBorderColor(props, 'cardSeparator');
+  let rippleColor = useRippleColor(props);
+
+  return (
+    <TouchableNativeFeedbackSafe
+      background={TouchableNativeFeedbackSafe.Ripple(rippleColor, false)}
       style={[
         {
           backgroundColor,

@@ -140,7 +140,7 @@ export default class Profile extends React.Component {
 
         {this.state.isRefetching && (
           <View style={{ marginTop: 20 }}>
-            <ActivityIndicator />
+            <ActivityIndicator color={Colors.light.tintColor} />
           </View>
         )}
       </ScrollView>
@@ -150,7 +150,7 @@ export default class Profile extends React.Component {
   _renderLoading() {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-        <ActivityIndicator />
+        <ActivityIndicator color={Colors.light.tintColor} />
       </View>
     );
   }

@@ -2,12 +2,11 @@
 
 import React from 'react';
 import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import { Ionicons } from './Icons';
-import { StyledView } from './Views';
 import { StyledText } from './Text';
+import { StyledButton, StyledView } from './Views';
 
 export default class SeeAllProjectsButton extends React.Component {
   static defaultProps = {
@@ -23,24 +22,23 @@ export default class SeeAllProjectsButton extends React.Component {
     }
 
     return (
-      <TouchableNativeFeedback
+      <StyledButton
         onPress={this.props.onPress}
         underlayColor="#c3c3c3"
+        style={styles.container}
         fallback={TouchableHighlight}>
-        <StyledView style={styles.container}>
-          <StyledText style={styles.buttonText} lightColor={Colors.light.blackText}>
-            {this.props.label}
-          </StyledText>
-          <View style={styles.arrowIconContainer}>
-            <Ionicons
-              name="ios-arrow-forward"
-              size={22}
-              color={Colors.light.greyText}
-              style={{ marginTop: -1, marginLeft: 15 }}
-            />
-          </View>
-        </StyledView>
-      </TouchableNativeFeedback>
+        <StyledText style={styles.buttonText} lightColor={Colors.light.blackText}>
+          {this.props.label}
+        </StyledText>
+        <View style={styles.arrowIconContainer}>
+          <Ionicons
+            name="ios-arrow-forward"
+            size={22}
+            color={Colors.light.greyText}
+            style={{ marginTop: -1, marginLeft: 15 }}
+          />
+        </View>
+      </StyledButton>
     );
   }
 }

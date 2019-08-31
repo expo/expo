@@ -3,7 +3,6 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 
@@ -14,6 +13,8 @@ import FeatureFlags from '../FeatureFlags';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import isIPhoneX from '../utils/isIPhoneX';
 import { StyledView } from '../components/Views';
+import { StyledText } from '../components/Text';
+import { Ionicons } from '../components/Icons';
 
 let TabTitles: Object = {
   new: 'New projects',
@@ -30,6 +31,7 @@ class SearchButton extends React.Component {
     return (
       <TouchableNativeFeedback
         onPress={this._handlePress}
+        background={TouchableNativeFeedback.Ripple('#eee', true)}
         style={{
           flex: 1,
           paddingLeft: 20,
@@ -37,7 +39,7 @@ class SearchButton extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ionicons name="md-search" size={27} color="#000" />
+        <Ionicons name="md-search" size={27} lightColor={Colors.light.text} />
       </TouchableNativeFeedback>
     );
   }
@@ -84,11 +86,11 @@ export default class ExploreScreen extends React.Component {
   _renderSearchBar() {
     if (Platform.OS === 'android') {
       return (
-        <StyledView style={styles.titleBarAndroid}>
+        <StyledView style={styles.titleBarAndroid} darkBackgroundColor="#000">
           <View style={styles.titleAndroid}>
-            <Text numberOfLines={1} style={styles.titleTextAndroid}>
+            <StyledText numberOfLines={1} style={styles.titleTextAndroid}>
               {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Explore'}
-            </Text>
+            </StyledText>
           </View>
 
           <View style={styles.rightButtonAndroid}>
@@ -137,7 +139,6 @@ const styles = StyleSheet.create({
   },
   titleTextAndroid: {
     flex: 1,
-    color: 'rgba(0, 0, 0, .9)',
     fontSize: 20,
     textAlign: 'left',
   },
