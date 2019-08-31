@@ -50,7 +50,7 @@ export default class OpenFromClipboardButton extends React.Component {
         underlayColor="#b7b7b7"
         style={styles.container}>
           <View style={styles.iconContainer}>
-            <Ionicons name="md-arrow-dropright-circle" size={25} />
+            <Ionicons name="md-clipboard" size={26} lightColor={Colors.light.text} />
           </View>
 
           <View style={styles.infoContainer}>
