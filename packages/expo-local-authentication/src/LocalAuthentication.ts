@@ -3,8 +3,11 @@ import invariant from 'invariant';
 import { Platform } from 'react-native';
 
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-
-import { AuthenticationType, AuthOptions, LocalAuthenticationResult } from './LocalAuthentication.types';
+import {
+  AuthOptions,
+  AuthenticationType,
+  LocalAuthenticationResult,
+} from './LocalAuthentication.types';
 
 export { AuthenticationType, LocalAuthenticationResult };
 

@@ -4,5 +4,5 @@ export default {
   },
   get isSupported(): boolean {
     return false;
-  }
+  },
 };

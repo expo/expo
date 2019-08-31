@@ -15,10 +15,7 @@ describe('FileSystem', () => {
       options,
       resumeData,
     };
-    const callback = downloadProgress => {
-      const progress =
-        downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
-    };
+    const callback = jest.fn();
     let downloadResumable;
     beforeEach(() => {
       downloadResumable = FileSystem.createDownloadResumable(
@@ -57,7 +54,7 @@ describe('FileSystem', () => {
         downloadResumable._uuid
       );
 
-      unmockProperty(ExponentFileSystem, 'downloadResumablePauseAsync')
+      unmockProperty(ExponentFileSystem, 'downloadResumablePauseAsync');
     });
 
     it(`pauses with error`, async () => {

@@ -1,7 +1,7 @@
 import { NativeModulesProxy } from '@unimodules/core';
-import * as Facebook from '../Facebook';
-
 import { describeCrossPlatform, mockProperty, unmockAllProperties } from 'jest-expo';
+
+import * as Facebook from '../Facebook';
 
 const fakeReturnValue = { type: 'dismissed' };
 

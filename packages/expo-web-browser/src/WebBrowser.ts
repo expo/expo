@@ -9,7 +9,6 @@ import {
   CustomTabsBrowsersResults,
   BrowserResult,
   RedirectResult,
-  ServiceActionResult,
   MayInitWithUrlResult,
   WarmUpResult,
   CoolDownResult,

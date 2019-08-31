@@ -1,6 +1,5 @@
 import * as AppAuth from '../AppAuth';
 
-const refreshToken = '<DEBUG_VALUE>';
 const config: any = {
   issuer: 'https://accounts.google.com',
   scopes: ['profile'],

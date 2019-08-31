@@ -249,7 +249,7 @@ describe('within Expo client', () => {
     });
 
     afterEach(() => {
-      console = originalConsole;
+      console = originalConsole; // eslint-disable-line no-global-assign
     });
 
     it(`handles empty values`, () => {

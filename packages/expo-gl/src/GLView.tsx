@@ -1,35 +1,42 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
-import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
+import * as React from 'react';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import {
+  NativeModulesProxy,
+  UnavailabilityError,
+  requireNativeViewManager,
+} from '@unimodules/core';
+
+import {
+  SurfaceCreateEvent,
+  GLSnapshot,
+  ExpoWebGLRenderingContext,
+  SnapshotOptions,
+  BaseGLViewProps,
+} from './GLView.types';
 
 const packageJSON = require('../package.json');
-
-import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
-import { UnavailabilityError } from '@unimodules/core';
 
 declare let global: any;
 
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 
-
 type GLViewProps = {
+  /**
+   * Called when the OpenGL context is created, with the context object as a parameter. The context
+   * object has an API mirroring WebGL's WebGLRenderingContext.
+   */
+  onContextCreate(gl: ExpoWebGLRenderingContext): void;
 
   /**
-  * Called when the OpenGL context is created, with the context object as a parameter. The context
-  * object has an API mirroring WebGL's WebGLRenderingContext.
-  */
- onContextCreate(gl: ExpoWebGLRenderingContext): void;
+   * [iOS only] Number of samples for Apple's built-in multisampling.
+   */
+  msaaSamples: number;
 
- /**
-  * [iOS only] Number of samples for Apple's built-in multisampling.
-  */
- msaaSamples: number;
-
- /**
-  * A ref callback for the native GLView
-  */
- nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
+  /**
+   * A ref callback for the native GLView
+   */
+  nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
 } & BaseGLViewProps;
 
 type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
@@ -117,14 +124,14 @@ export class GLView extends React.Component<GLViewProps> {
 
   async startARSessionAsync(): Promise<any> {
     if (!ExponentGLViewManager.startARSessionAsync) {
-      throw new UnavailabilityError('expo-gl', 'startARSessionAsync')
+      throw new UnavailabilityError('expo-gl', 'startARSessionAsync');
     }
     return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
   }
 
   async createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture> {
     if (!ExponentGLObjectManager.createCameraTextureAsync) {
-      throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync')
+      throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync');
     }
 
     const { exglCtxId } = this;
@@ -143,14 +150,14 @@ export class GLView extends React.Component<GLViewProps> {
 
   async destroyObjectAsync(glObject: WebGLObject): Promise<boolean> {
     if (!ExponentGLObjectManager.destroyObjectAsync) {
-      throw new UnavailabilityError('expo-gl', 'destroyObjectAsync')
+      throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
     }
     return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
   }
 
   async takeSnapshotAsync(options: SnapshotOptions = {}): Promise<GLSnapshot> {
     if (!GLView.takeSnapshotAsync) {
-      throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync')
+      throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
     }
     const { exglCtxId } = this;
     return await GLView.takeSnapshotAsync(exglCtxId, options);

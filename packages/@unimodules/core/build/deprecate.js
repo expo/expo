@@ -41,7 +41,7 @@ function prependLibrary(library, message) {
  * expo-ar -> EXPO_AR
  */
 function codeFromLibrary(library) {
-    const code = library.replace(/[-\.]/g, '_').toUpperCase();
+    const code = library.replace(/[-.]/g, '_').toUpperCase();
     return code;
 }
 //# sourceMappingURL=deprecate.js.map
