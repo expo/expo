@@ -165,7 +165,7 @@ const TabNavigator =
         },
         tabBarOptions: {
           activeTintColor: {
-            light: Colors.light.tintColor, 
+            light: Colors.light.tintColor,
             dark: Colors.light.tintColor,
           },
           style: {
@@ -185,7 +185,9 @@ const TabNavigator =
           backgroundColor: '#fff',
         },
         barStyleDark: {
-          backgroundColor: '#000',
+          backgroundColor: Colors.dark.cardBackground,
+          borderTopWidth: StyleSheet.hairlineWidth * 2,
+          borderTopColor: Colors.dark.cardSeparator,
         },
       });
 

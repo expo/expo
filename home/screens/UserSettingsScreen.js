@@ -64,10 +64,6 @@ export default class UserSettingsScreen extends React.Component {
   };
 
   _setPreferredAppearance = (preferredAppearance: 'light' | 'dark' | 'automatic') => {
-    Analytics.track(Analytics.events.USER_UPDATED_SETTINGS, {
-      preferredAppearance,
-    });
-
     this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
   };
 

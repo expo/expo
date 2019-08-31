@@ -3,6 +3,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import isUserAuthenticated from './isUserAuthenticated';
+import hoistNonReactStatics from 'hoist-non-react-statics';
 
 @connect(data => Authenticated.getDataProps(data))
 class Authenticated extends React.Component {
@@ -31,6 +32,8 @@ export default function onlyIfAuthenticated(TargetComponent: any) {
       );
     }
   }
+
+  hoistNonReactStatics(OnlyIfAuthenticated, TargetComponent);
 
   return OnlyIfAuthenticated;
 }

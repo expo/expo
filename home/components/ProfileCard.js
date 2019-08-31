@@ -10,11 +10,10 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
-import { GenericCardBody, GenericCardContainer, StyledView } from '../components/Views';
+import { GenericCardBody, GenericCardContainer, StyledButton, StyledView } from '../components/Views';
 import { StyledText } from '../components/Text';
 import Colors from '../constants/Colors';
 
@@ -25,11 +24,11 @@ export default class ProfileCard extends React.Component {
 
     return (
       <View style={this.props.style}>
-        <TouchableNativeFeedbackSafe
+        <StyledButton
           onPress={this._handlePressProfile}
           fallback={TouchableHighlight}
+          style={styles.container}
           underlayColor="#b7b7b7">
-          <StyledView styles={styles.container}>
             <View style={styles.header}>
               <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
               <View style={styles.infoContainer}>
@@ -64,8 +63,7 @@ export default class ProfileCard extends React.Component {
                 </View>
               </View>
             </View>
-          </StyledView>
-        </TouchableNativeFeedbackSafe>
+        </StyledButton>
       </View>
     );
   }

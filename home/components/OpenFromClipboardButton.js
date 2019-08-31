@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import Constants from 'expo-constants';
 import { withNavigation } from 'react-navigation';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import { StyledText } from './Text';
-import { StyledView } from './Views';
+import { StyledView, StyledButton } from './Views';
 import { Ionicons } from './Icons';
 
 import Colors from '../constants/Colors';
@@ -45,12 +44,11 @@ export default class OpenFromClipboardButton extends React.Component {
     }
 
     return (
-      <TouchableNativeFeedbackSafe
+      <StyledButton
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
         style={styles.container}>
-        <StyledView style={{ flex: 1, flexDirection: 'row', paddingLeft: 5 }}>
           <View style={styles.iconContainer}>
             <Ionicons name="md-arrow-dropright-circle" size={25} />
           </View>
@@ -67,8 +65,7 @@ export default class OpenFromClipboardButton extends React.Component {
               {clipboardContents}
             </Text>
           </View>
-        </StyledView>
-      </TouchableNativeFeedbackSafe>
+      </StyledButton>
     );
   }
 
@@ -88,6 +85,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    flexDirection: 'row',
+    paddingLeft: 5 ,
   },
   iconContainer: {
     width: 45,

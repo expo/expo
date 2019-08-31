@@ -3,13 +3,12 @@
 import React from 'react';
 import { Linking, Platform, Share, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
-import { StyledText } from './Text';
-import { Separator, StyledView } from './Views';
 import { Ionicons } from './Icons';
+import { StyledText } from './Text';
+import { Separator, StyledButton, StyledView } from './Views';
 
 function isDescriptionEmpty(description) {
   if (!description || description === 'No description') {
@@ -25,27 +24,30 @@ export default class SnackCard extends React.PureComponent {
     let { description, projectName } = this.props;
 
     return (
-      <TouchableNativeFeedbackSafe
+      <StyledButton
         onLongPress={this._handleLongPressProject}
         onPress={this._handlePressProject}
+        style={styles.container}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7">
-        <StyledView style={styles.container}>
-          <StyledView style={styles.infoContainer}>
-            <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-              {projectName}
-            </StyledText>
+        <StyledView style={styles.infoContainer}>
+          <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+            {projectName}
+          </StyledText>
 
-            {isDescriptionEmpty(description) ? null : (
-              <View style={[styles.projectExtraInfoContainer, { marginTop: 5 }]}>
-                <StyledText style={styles.projectExtraInfoText} ellipsizeMode="tail" numberOfLines={1} darkColor="#ccc">
-                  {description}
-                </StyledText>
-              </View>
-            )}
-          </StyledView>
+          {isDescriptionEmpty(description) ? null : (
+            <View style={[styles.projectExtraInfoContainer, { marginTop: 5 }]}>
+              <StyledText
+                style={styles.projectExtraInfoText}
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                darkColor="#ccc">
+                {description}
+              </StyledText>
+            </View>
+          )}
         </StyledView>
-      </TouchableNativeFeedbackSafe>
+      </StyledButton>
     );
   }
 
@@ -76,6 +78,7 @@ const styles = StyleSheet.create({
     paddingBottom: 3,
   },
   infoContainer: {
+    backgroundColor: 'transparent',
     paddingTop: 13,
     paddingHorizontal: 16,
     flexDirection: 'column',

@@ -1,5 +1,3 @@
-/* @flow */
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -24,6 +22,7 @@ import {
   StyledScrollView,
   SectionLabelContainer,
   StyledView,
+  StyledButton,
 } from './Views';
 import { StyledText, GenericCardTitle, SectionLabelText } from './Text';
 
@@ -91,7 +90,7 @@ export default class SearchResults extends React.Component {
             },
           ]}
           pointerEvents="none">
-          <ActivityIndicator />
+          <ActivityIndicator color={Colors.light.tintColor} />
         </StyledView>
       );
     }
@@ -109,11 +108,13 @@ export default class SearchResults extends React.Component {
             <SectionLabelText>NO RESULTS FOUND</SectionLabelText>
           </SectionLabelContainer>
 
-          <TouchableNativeFeedbackSafe
-            onPress={this._handleOpenUrl}
-            fallback={TouchableHighlight}
-            underlayColor="#b7b7b7">
-            <GenericCardContainer style={styles.cardContainer}>
+          <GenericCardContainer style={styles.cardContainer}>
+            <StyledButton
+              onPress={this._handleOpenUrl}
+              fallback={TouchableHighlight}
+              foreground
+              style={styles.button}
+              underlayColor="#b7b7b7">
               <StyledText style={styles.cardTitleText}>
                 Tap to attempt to open project at
               </StyledText>
@@ -123,8 +124,8 @@ export default class SearchResults extends React.Component {
                 darkColor="#888">
                 {this.props.query}
               </StyledText>
-            </GenericCardContainer>
-          </TouchableNativeFeedbackSafe>
+            </StyledButton>
+          </GenericCardContainer>
         </StyledScrollView>
       );
     } else {
@@ -209,6 +210,9 @@ const styles = StyleSheet.create({
   cardContainer: {
     flexGrow: 1,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
+  },
+  button: {
+    backgroundColor: 'transparent',
     padding: 13,
   },
   cardTitleText: {

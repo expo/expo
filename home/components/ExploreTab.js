@@ -82,7 +82,7 @@ class ExploreTab extends React.Component {
   _renderLoading() {
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <ActivityIndicator />
+        <ActivityIndicator color={Colors.light.tintColor} />
       </View>
     );
   }
