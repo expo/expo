@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import isUserAuthenticated from './isUserAuthenticated';
 import hoistNonReactStatics from 'hoist-non-react-statics';
+import isUserAuthenticated from './isUserAuthenticated';
 
 @connect(data => Authenticated.getDataProps(data))
 class Authenticated extends React.Component {

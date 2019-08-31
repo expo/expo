@@ -1,21 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Image,
-  Keyboard,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { Image, Keyboard, Platform, StyleSheet, TouchableHighlight, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
-import { GenericCardBody, GenericCardContainer, StyledButton, StyledView } from '../components/Views';
+import { StyledButton, StyledView } from '../components/Views';
 import { StyledText } from '../components/Text';
-import Colors from '../constants/Colors';
 
 @withNavigation
 export default class ProfileCard extends React.Component {
@@ -29,40 +20,40 @@ export default class ProfileCard extends React.Component {
           fallback={TouchableHighlight}
           style={styles.container}
           underlayColor="#b7b7b7">
-            <View style={styles.header}>
-              <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
-              <View style={styles.infoContainer}>
-                <StyledText style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
-                  {isLegacy ? username : fullName}
-                </StyledText>
-                <View style={styles.profileExtraInfoContainer}>
-                  {!isLegacy && (
-                    <StyledText
-                      lightColor="rgba(36, 44, 58, 0.4)"
-                      darkColor="#ccc"
-                      style={styles.profileExtraInfoText}
-                      ellipsizeMode="tail"
-                      numberOfLines={1}>
-                      @{username}
-                    </StyledText>
-                  )}
-                  {!isLegacy && (
-                    <StyledView
-                      style={styles.bullet}
-                      lightBackgroundColor="rgba(36, 44, 58, 0.2)"
-                      darkBackgroundColor="#ccc"
-                    />
-                  )}
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
+            <View style={styles.infoContainer}>
+              <StyledText style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {isLegacy ? username : fullName}
+              </StyledText>
+              <View style={styles.profileExtraInfoContainer}>
+                {!isLegacy && (
                   <StyledText
-                    lightColor="rgba(36, 44, 58, 0.7)"
-                    darkColor="#eee"
-                    onPress={appCount > 0 ? this._handlePressProjects : null}
-                    style={styles.profileExtraInfoText}>
-                    {appCount} {appCount === 1 ? 'project' : 'projects'}
+                    lightColor="rgba(36, 44, 58, 0.4)"
+                    darkColor="#ccc"
+                    style={styles.profileExtraInfoText}
+                    ellipsizeMode="tail"
+                    numberOfLines={1}>
+                    @{username}
                   </StyledText>
-                </View>
+                )}
+                {!isLegacy && (
+                  <StyledView
+                    style={styles.bullet}
+                    lightBackgroundColor="rgba(36, 44, 58, 0.2)"
+                    darkBackgroundColor="#ccc"
+                  />
+                )}
+                <StyledText
+                  lightColor="rgba(36, 44, 58, 0.7)"
+                  darkColor="#eee"
+                  onPress={appCount > 0 ? this._handlePressProjects : null}
+                  style={styles.profileExtraInfoText}>
+                  {appCount} {appCount === 1 ? 'project' : 'projects'}
+                </StyledText>
               </View>
             </View>
+          </View>
         </StyledButton>
       </View>
     );

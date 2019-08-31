@@ -5,7 +5,6 @@ import {
   SectionList,
   Platform,
   StyleSheet,
-  Text,
   TouchableHighlight,
   View,
 } from 'react-native';
@@ -13,18 +12,16 @@ import {
 import ProfileCard from '../components/ProfileCard';
 import ProjectCard from '../components/ProjectCard';
 import Colors from '../constants/Colors';
-import SharedStyles from '../constants/SharedStyles';
 import * as Kernel from '../kernel/Kernel';
 import UrlUtils from '../utils/UrlUtils';
+import { StyledText, SectionLabelText } from './Text';
 import {
-  GenericCardBody,
   GenericCardContainer,
   StyledScrollView,
   SectionLabelContainer,
   StyledView,
   StyledButton,
 } from './Views';
-import { StyledText, GenericCardTitle, SectionLabelText } from './Text';
 
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
@@ -37,7 +34,7 @@ export default class SearchResults extends React.Component {
     this._maybeUpdateSections(this.props);
   }
 
-  componentWillReceiveProps(nextProps: Object) {
+  componentWillReceiveProps(nextProps) {
     this._maybeUpdateSections(nextProps);
   }
 
@@ -50,13 +47,12 @@ export default class SearchResults extends React.Component {
     );
   }
 
-  _maybeUpdateSections = (newProps: Object) => {
+  _maybeUpdateSections = newProps => {
     if (!newProps.data) {
       return;
     }
 
     if (newProps.data.results !== this.props.data.results) {
-      let { dataSource } = this.state;
       let results = newProps.data?.results || {};
 
       let sections = [];

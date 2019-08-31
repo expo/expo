@@ -49,22 +49,22 @@ export default class OpenFromClipboardButton extends React.Component {
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
         style={styles.container}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="md-clipboard" size={26} lightColor={Colors.light.text} />
-          </View>
+        <View style={styles.iconContainer}>
+          <Ionicons name="md-clipboard" size={26} lightColor={Colors.light.text} />
+        </View>
 
-          <View style={styles.infoContainer}>
-            <StyledText
-              style={[styles.titleText, !isValid && styles.invalidContents]}
-              ellipsizeMode="tail"
-              numberOfLines={1}>
-              Open from Clipboard
-            </StyledText>
+        <View style={styles.infoContainer}>
+          <StyledText
+            style={[styles.titleText, !isValid && styles.invalidContents]}
+            ellipsizeMode="tail"
+            numberOfLines={1}>
+            Open from Clipboard
+          </StyledText>
 
-            <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-              {clipboardContents}
-            </Text>
-          </View>
+          <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
+            {clipboardContents}
+          </Text>
+        </View>
       </StyledButton>
     );
   }
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    paddingLeft: 5 ,
+    paddingLeft: 5,
   },
   iconContainer: {
     width: 45,

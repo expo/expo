@@ -5,7 +5,7 @@ import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
-import { Appearance, AppearanceProvider } from 'react-native-appearance';
+import { Appearance } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -116,7 +116,7 @@ export default class App extends React.Component {
           <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
         )}
         {Platform.OS === 'android' ||
-          (Platform.OS == 'ios' &&
+          (Platform.OS === 'ios' &&
             parseInt(Platform.Version, 10) >= 13 &&
             theme === 'light' &&
             this.props.colorScheme === 'dark' && <View style={styles.statusBarUnderlay} />)}

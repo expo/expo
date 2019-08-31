@@ -1,14 +1,13 @@
 /* @flow */
 
 import React from 'react';
-import { Linking, Platform, Share, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Linking, Platform, Share, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
-import { Ionicons } from './Icons';
 import { StyledText } from './Text';
-import { Separator, StyledButton, StyledView } from './Views';
+import { StyledButton, StyledView } from './Views';
 
 function isDescriptionEmpty(description) {
   if (!description || description === 'No description') {

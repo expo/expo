@@ -40,7 +40,6 @@ export default class ProfileScreen extends React.Component {
 
   static getDataProps(data, props) {
     let isAuthenticated = isUserAuthenticated(data.session);
-    let { settings } = data;
 
     return {
       isAuthenticated,

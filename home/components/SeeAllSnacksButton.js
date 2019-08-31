@@ -1,12 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Platform, StyleSheet, TouchableHighlight, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 import { Ionicons } from './Icons';
 import { StyledText } from './Text';
-import { StyledButton, StyledView } from './Views';
+import { StyledButton } from './Views';
 
 export default class SeeAllProjectsButton extends React.Component {
   static defaultProps = {

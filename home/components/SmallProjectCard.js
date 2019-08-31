@@ -18,7 +18,7 @@ import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
 import { StyledText } from './Text';
-import { Separator, StyledButton, StyledView } from './Views';
+import { StyledButton, StyledView } from './Views';
 import { Ionicons } from './Icons';
 
 @withNavigation
