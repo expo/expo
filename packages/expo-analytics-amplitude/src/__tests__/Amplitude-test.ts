@@ -33,19 +33,16 @@ describeCrossPlatform('all Amplitude methods available', () => {
   });
 
   it('can logEventWithProperties', () => {
-    expect(Amplitude.logEventWithProperties('event-name', { some: 'property' })).not.toBeUndefined();
-    expect(ExpoAmplitude.logEventWithProperties).toHaveBeenCalledWith(
-      'event-name',
-      { some: 'property' }
-    );
+    expect(
+      Amplitude.logEventWithProperties('event-name', { some: 'property' })
+    ).not.toBeUndefined();
+    expect(ExpoAmplitude.logEventWithProperties).toHaveBeenCalledWith('event-name', {
+      some: 'property',
+    });
   });
 
   it('can setGroup', () => {
     expect(Amplitude.setGroup('group', ['group', 'names', 'array'])).not.toBeUndefined();
-    expect(ExpoAmplitude.setGroup).toHaveBeenCalledWith('group', [
-      'group',
-      'names',
-      'array',
-    ]);
+    expect(ExpoAmplitude.setGroup).toHaveBeenCalledWith('group', ['group', 'names', 'array']);
   });
 });

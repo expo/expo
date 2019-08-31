@@ -74,7 +74,6 @@ describe(`Localization methods`, () => {
 });
 
 describe(`Localization defines constants`, () => {
-
   it(`Gets the current device region`, async () => {
     const result = Localization.region;
 

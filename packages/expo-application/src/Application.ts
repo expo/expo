@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoApplication from './ExpoApplication';
 

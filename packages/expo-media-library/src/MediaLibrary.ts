@@ -1,5 +1,5 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExponentMediaLibrary';
@@ -99,7 +99,7 @@ export enum PermissionStatus {
   UNDETERMINED = 'undetermined',
   GRANTED = 'granted',
   DENIED = 'denied',
-};
+}
 
 export type PermissionInfo = {
   status: 'granted' | 'denied' | 'undetermined';
