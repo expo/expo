@@ -1,6 +1,3 @@
-
-export * from './Bluetooth';
-
 let hasWarned = false;
 if (!hasWarned) {
   hasWarned = true;

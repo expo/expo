@@ -1,21 +1,16 @@
 import { Platform } from 'react-native';
-import ExponentPrint from './ExponentPrint';
 import { UnavailabilityError } from '@unimodules/core';
+
+import ExponentPrint from './ExponentPrint';
 import {
-  PrintOptions,
-  Printer,
-  OrientationType,
   FilePrintOptions,
   FilePrintResult,
+  OrientationType,
+  PrintOptions,
+  Printer,
 } from './Print.types';
 
-export {
-  Printer,
-  FilePrintOptions,
-  FilePrintResult,
-  PrintOptions,
-  OrientationType,
-};
+export { FilePrintOptions, FilePrintResult, OrientationType, PrintOptions, Printer };
 
 export const Orientation: OrientationType = ExponentPrint.Orientation;
 

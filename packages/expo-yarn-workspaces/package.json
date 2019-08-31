@@ -8,6 +8,9 @@
   "bin": {
     "expo-yarn-workspaces": "./bin/expo-yarn-workspaces.js"
   },
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "debug": "^4.1.1",
     "find-yarn-workspace-root": "^1.2.0",

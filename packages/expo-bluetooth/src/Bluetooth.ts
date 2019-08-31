@@ -1,1 +1,1 @@
-import ExpoBluetooth from './ExpoBluetooth';
+import ExpoBluetooth from './ExpoBluetooth'; // eslint-disable-line

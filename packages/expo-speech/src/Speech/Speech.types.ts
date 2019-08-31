@@ -31,8 +31,8 @@ export type Voice = {
 };
 
 export type WebVoice = Voice & {
-  isDefault: boolean; 
-  localService: boolean; 
-  name: string; 
+  isDefault: boolean;
+  localService: boolean;
+  name: string;
   voiceURI: string;
 };

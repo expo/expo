@@ -22,6 +22,7 @@
     "jest": "bin/jest.js"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "jest"
   },
   "jest": {

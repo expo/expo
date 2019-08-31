@@ -113,6 +113,7 @@ class CameraModule {
 
     const [width, height] = value.split('x');
     //TODO: Bacon: IMP
+    // eslint-disable-next-line
     const aspectRatio = parseFloat(width) / parseFloat(height);
 
     this._pictureSize = value;

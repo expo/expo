@@ -1,9 +1,8 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
-import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
+import * as React from 'react';
 import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, } from '@unimodules/core';
 const packageJSON = require('../package.json');
-import { UnavailabilityError } from '@unimodules/core';
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 /**

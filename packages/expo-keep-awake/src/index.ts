@@ -1,24 +1,30 @@
 import React, { useEffect } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
 
-// NOTE(brentvatne): in tests this value won't be reset because we
-// can render a component and never unmount it.
+// NOTE(brentvatne): in tests this value won't be reset because we can render a component and never
+// unmount it.
 let __keepAwakeMountedCount = 0;
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
 export default class KeepAwake extends React.PureComponent {
   static activate = (tag?: string): void => {
-    console.warn(`The "KeepAwake.activate" static method has been deprecated in favor of the "activateKeepAwake" function exported from expo-keep-awake and will be removed in SDK 35`);
+    console.warn(
+      `The "KeepAwake.activate" static method has been deprecated in favor of the "activateKeepAwake" function exported from expo-keep-awake and will be removed in SDK 35`
+    );
     activateKeepAwake(tag);
   };
 
   static deactivate = (tag?: string): void => {
-    console.warn(`The "KeepAwake.deactivate" static method has been deprecated in favor of the "deactivateKeepAwake" function exported from expo-keep-awake and will be removed in SDK 35`);
+    console.warn(
+      `The "KeepAwake.deactivate" static method has been deprecated in favor of the "deactivateKeepAwake" function exported from expo-keep-awake and will be removed in SDK 35`
+    );
     deactivateKeepAwake(tag);
   };
 
   componentDidMount() {
-    console.warn(`The KeepAwake component has been deprecated in favor of the useKeepAwake hook and will be removed in SDK 35`);
+    console.warn(
+      `The KeepAwake component has been deprecated in favor of the useKeepAwake hook and will be removed in SDK 35`
+    );
     __keepAwakeMountedCount++;
     if (__keepAwakeMountedCount === 1) {
       activateKeepAwake();

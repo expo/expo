@@ -7,5 +7,7 @@ import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 import { RCTDeviceEventEmitter } from './nativeEmitters';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
-export { RCTDeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, SyntheticPlatformEmitter, requireNativeViewManager, CodedError, UnavailabilityError, };
+export { RCTDeviceEventEmitter, EventEmitter, NativeModulesProxy, Platform, SyntheticPlatformEmitter, requireNativeViewManager, 
+// Errors
+CodedError, UnavailabilityError, };
 //# sourceMappingURL=index.js.map
