@@ -118,6 +118,15 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
     return;
   }
+
+  // we don't ever want to show any Expo UI in a production standalone app, so hard crash
+  if ([EXEnvironment sharedEnvironment].isDetached && ![_appRecord.appManager enablesDeveloperTools]) {
+    NSException *e = [NSException exceptionWithName:@"ExpoFatalError"
+                                             reason:[NSString stringWithFormat:@"Expo encountered a fatal error: %@", [error localizedDescription]]
+                                           userInfo:@{NSUnderlyingErrorKey: error}];
+    @throw e;
+  }
+
   NSString *domain = (error && error.domain) ? error.domain : @"";
   BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
 
