@@ -45,8 +45,14 @@ public class BaseModel implements CommonProvider {
     }
 
     protected void mapValue(Map<String, Object> readableMap, String key, String alias) {
-        if (readableMap.containsKey(key))
-            map.putString(alias == null ? key : alias, (String) readableMap.get(key));
+        if (readableMap.containsKey(key)) {
+            Object value = readableMap.get(key);
+            if (value instanceof Boolean) {
+                map.putBoolean(alias == null ? key : alias, (Boolean) readableMap.get(key));
+            } else {
+                map.putString(alias == null ? key : alias, (String) readableMap.get(key));
+            }
+        }
     }
 
     public void fromCursor(Cursor cursor) {

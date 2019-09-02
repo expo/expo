@@ -246,7 +246,11 @@ public class ContactsModule extends ExportedModule {
 
   private void presentForm(Contact contact) {
     Intent intent = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
-    intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.displayName);
+    if (contact.displayName != null) {
+      intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.displayName);
+    } else {
+      intent.putExtra(ContactsContract.Intents.Insert.NAME, contact.getFirstName());
+    }
     intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.getContentValues());
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
