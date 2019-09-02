@@ -6,65 +6,65 @@
  *
  * @see [Apple documention](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope) for more details.
  */
-export var Scope;
-(function (Scope) {
+export var AppleAuthenticationScope;
+(function (AppleAuthenticationScope) {
     /**
      * A scope that includes the user’s full name.
      */
-    Scope[Scope["FullName"] = 0] = "FullName";
+    AppleAuthenticationScope[AppleAuthenticationScope["FULL_NAME"] = 0] = "FULL_NAME";
     /**
      * A scope that includes the user’s email address.
      */
-    Scope[Scope["Email"] = 1] = "Email";
-})(Scope || (Scope = {}));
+    AppleAuthenticationScope[AppleAuthenticationScope["EMAIL"] = 1] = "EMAIL";
+})(AppleAuthenticationScope || (AppleAuthenticationScope = {}));
 /**
  * Controls what operation you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidoperation) for more details.
  */
-export var Operation;
-(function (Operation) {
+export var AppleAuthenticationOperation;
+(function (AppleAuthenticationOperation) {
     /**
      * An operation that depends on the particular kind of credential provider.
      */
-    Operation[Operation["Implicit"] = 0] = "Implicit";
+    AppleAuthenticationOperation[AppleAuthenticationOperation["IMPLICIT"] = 0] = "IMPLICIT";
     /**
      * An operation used to authenticate a user.
      */
-    Operation[Operation["Login"] = 1] = "Login";
+    AppleAuthenticationOperation[AppleAuthenticationOperation["LOGIN"] = 1] = "LOGIN";
     /**
      * An operation that refreshes the logged-in user’s credentials.
      */
-    Operation[Operation["Refresh"] = 2] = "Refresh";
+    AppleAuthenticationOperation[AppleAuthenticationOperation["REFRESH"] = 2] = "REFRESH";
     /**
      * An operation that ends an authenticated session.
      */
-    Operation[Operation["Logout"] = 3] = "Logout";
-})(Operation || (Operation = {}));
+    AppleAuthenticationOperation[AppleAuthenticationOperation["LOGOUT"] = 3] = "LOGOUT";
+})(AppleAuthenticationOperation || (AppleAuthenticationOperation = {}));
 /**
  * Defines the state that the credential is in when responding to your call to `AppleAuthentication.getCredentialStateAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate) for more details.
  */
-export var CredentialState;
-(function (CredentialState) {
+export var AppleAuthenticationCredentialState;
+(function (AppleAuthenticationCredentialState) {
     /**
      * Authorization for the given user has been revoked.
      */
-    CredentialState[CredentialState["Revoked"] = 0] = "Revoked";
+    AppleAuthenticationCredentialState[AppleAuthenticationCredentialState["REVOKED"] = 0] = "REVOKED";
     /**
      * The user is authorized.
      */
-    CredentialState[CredentialState["Authorized"] = 1] = "Authorized";
+    AppleAuthenticationCredentialState[AppleAuthenticationCredentialState["AUTHORIZED"] = 1] = "AUTHORIZED";
     /**
      * The user can’t be found.
      */
-    CredentialState[CredentialState["NotFound"] = 2] = "NotFound";
+    AppleAuthenticationCredentialState[AppleAuthenticationCredentialState["NOT_FOUND"] = 2] = "NOT_FOUND";
     /**
      * Undocumented by Apple yet.
      */
-    CredentialState[CredentialState["Transferred"] = 3] = "Transferred";
-})(CredentialState || (CredentialState = {}));
+    AppleAuthenticationCredentialState[AppleAuthenticationCredentialState["TRANSFERRED"] = 3] = "TRANSFERRED";
+})(AppleAuthenticationCredentialState || (AppleAuthenticationCredentialState = {}));
 /**
  * A value that indicates whether the user appears to be a real person.
  * You get this in the realUserStatus property of a `Credential` object.
@@ -72,46 +72,46 @@ export var CredentialState;
  *
  * @see [Apple documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus) for more details.
  */
-export var UserDetectionStatus;
-(function (UserDetectionStatus) {
+export var AppleAuthenticationUserDetectionStatus;
+(function (AppleAuthenticationUserDetectionStatus) {
     /**
      * User detection not supported on current platform.
      */
-    UserDetectionStatus[UserDetectionStatus["Unsupported"] = 0] = "Unsupported";
+    AppleAuthenticationUserDetectionStatus[AppleAuthenticationUserDetectionStatus["UNSUPPORTED"] = 0] = "UNSUPPORTED";
     /**
      * We could not determine the value. New users in the ecosystem will get this value as well, so you should not blacklist but instead treat these users as any new user through standard email sign up flows.
      */
-    UserDetectionStatus[UserDetectionStatus["Unknown"] = 1] = "Unknown";
+    AppleAuthenticationUserDetectionStatus[AppleAuthenticationUserDetectionStatus["UNKNOWN"] = 1] = "UNKNOWN";
     /**
      * A hint that we have high confidence that the user is real.
      */
-    UserDetectionStatus[UserDetectionStatus["LikelyReal"] = 2] = "LikelyReal";
-})(UserDetectionStatus || (UserDetectionStatus = {}));
+    AppleAuthenticationUserDetectionStatus[AppleAuthenticationUserDetectionStatus["LIKELY_REAL"] = 2] = "LIKELY_REAL";
+})(AppleAuthenticationUserDetectionStatus || (AppleAuthenticationUserDetectionStatus = {}));
 /**
  * Controls the text that is shown on the authenticating button.
  */
-export var ButtonType;
-(function (ButtonType) {
-    ButtonType[ButtonType["SignIn"] = 0] = "SignIn";
-    ButtonType[ButtonType["Continue"] = 1] = "Continue";
-    ButtonType[ButtonType["Default"] = 2] = "Default";
-})(ButtonType || (ButtonType = {}));
+export var AppleAuthenticationButtonType;
+(function (AppleAuthenticationButtonType) {
+    AppleAuthenticationButtonType[AppleAuthenticationButtonType["SIGN_IN"] = 0] = "SIGN_IN";
+    AppleAuthenticationButtonType[AppleAuthenticationButtonType["CONTINUE"] = 1] = "CONTINUE";
+    AppleAuthenticationButtonType[AppleAuthenticationButtonType["DEFAULT"] = 2] = "DEFAULT";
+})(AppleAuthenticationButtonType || (AppleAuthenticationButtonType = {}));
 /**
  * Controls the style of the authenticating button.
  */
-export var ButtonStyle;
-(function (ButtonStyle) {
-    ButtonStyle[ButtonStyle["White"] = 0] = "White";
-    ButtonStyle[ButtonStyle["WhiteOutline"] = 1] = "WhiteOutline";
-    ButtonStyle[ButtonStyle["Black"] = 2] = "Black";
-})(ButtonStyle || (ButtonStyle = {}));
+export var AppleAuthenticationButtonStyle;
+(function (AppleAuthenticationButtonStyle) {
+    AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE"] = 0] = "WHITE";
+    AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE_OUTLINE"] = 1] = "WHITE_OUTLINE";
+    AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["BLACK"] = 2] = "BLACK";
+})(AppleAuthenticationButtonStyle || (AppleAuthenticationButtonStyle = {}));
 /**
  * Indicates the status of the attempt to retrieve the requested credential.
  */
-export var Status;
-(function (Status) {
-    Status["Success"] = "success";
-    Status["Revoke"] = "revoke";
-    Status["Cancel"] = "cancel";
-})(Status || (Status = {}));
+export var AppleAuthenticationStatus;
+(function (AppleAuthenticationStatus) {
+    AppleAuthenticationStatus["SUCCESS"] = "success";
+    AppleAuthenticationStatus["REVOKE"] = "revoke";
+    AppleAuthenticationStatus["CANCEL"] = "cancel";
+})(AppleAuthenticationStatus || (AppleAuthenticationStatus = {}));
 //# sourceMappingURL=AppleAuthentication.types.js.map

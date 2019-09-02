@@ -2,11 +2,13 @@ import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/cor
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 import {
-  RequestOptions,
-  Credential,
-  CredentialState,
-  Operation,
-  RevokeListener,
+  AppleAuthenticationLoginOptions,
+  AppleAuthenticationRefreshOptions,
+  AppleAuthenticationLogoutOptions,
+  AppleAuthenticationCredential,
+  AppleAuthenticationCredentialState,
+  AppleAuthenticationOperation,
+  AppleAuthenticationRevokeListener,
 } from './AppleAuthentication.types';
 
 /**
@@ -21,34 +23,41 @@ export async function isAvailableAsync(): Promise<boolean> {
 }
 
 /**
- * Perform a Sign In with Apple request with the given `RequestOptions`.
- * The method will return a Promise which will resolve to a `Credential` on success.
+ * Perform a Sign In with Apple request with the given `AppleAuthenticationLoginOptions`.
+ * The method will return a Promise which will resolve to a `AppleAuthenticationCredential` on success.
  * You should make sure you include error handling.
- *
- * @example
- * ```ts
- * import * as AppleAuthentication from "expo-apple-authentication";
- *
- * AppleAuthentication.requestAsync({
- *   requestedScopes: [
- *     AppleAuthentication.Scope.FullName,
- *     AppleAuthentication.Scope.Email,
- *   ]
- * }).then(credentials => {
- *   // Handle successful authenticated
- * }).catch(error => {
- *   // Handle authentication errors
- * })
- * ```
  */
-export async function requestAsync(options: RequestOptions): Promise<Credential> {
-  if (!ExpoAppleAuthentication.requestAsync) {
-    throw new UnavailabilityError('expo-apple-authentication', 'requestAsync');
+export async function loginAsync(options: AppleAuthenticationLoginOptions): Promise<AppleAuthenticationCredential> {
+  if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
+    throw new UnavailabilityError('expo-apple-authentication', 'loginAsync');
   }
-  if (!options.requestedOperation) {
-    options.requestedOperation = Operation.Login;
+  const requestOptions = {
+    ...options,
+    requestedOperation: AppleAuthenticationOperation.LOGIN,
+  };
+  return ExpoAppleAuthentication.requestAsync(requestOptions);
+}
+
+export async function refreshAsync(options: AppleAuthenticationRefreshOptions): Promise<AppleAuthenticationCredential> {
+  if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
+    throw new UnavailabilityError('expo-apple-authentication', 'refreshAsync');
   }
-  return ExpoAppleAuthentication.requestAsync(options);
+  const requestOptions = {
+    ...options,
+    requestedOperation: AppleAuthenticationOperation.REFRESH,
+  };
+  return ExpoAppleAuthentication.requestAsync(requestOptions);
+}
+
+export async function logoutAsync(options: AppleAuthenticationLogoutOptions): Promise<AppleAuthenticationCredential> {
+  if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
+    throw new UnavailabilityError('expo-apple-authentication', 'logoutAsync');
+  }
+  const requestOptions = {
+    ...options,
+    requestedOperation: AppleAuthenticationOperation.LOGOUT,
+  };
+  return ExpoAppleAuthentication.requestAsync(requestOptions);
 }
 
 /**
@@ -56,28 +65,9 @@ export async function requestAsync(options: RequestOptions): Promise<Credential>
  * It will tell you if the token is still valid or if it has been revoked by the user.
  *
  * @see [Apple Documention](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovider/3175423-getcredentialstateforuserid) for more details.
- *
- * @example
- * ```ts
- * import * as AppleAuthentication from "expo-apple-authentication";
- *
- * AppleAuthentication.getCredentialStateAsync(userId).then(state => {
- *   switch (state) {
- *     case Credential.CredentialState.Authorized:
- *       // Handle the authorised state
- *       break;
- *     case Credential.CredentialState.Revoked:
- *       // The user has signed out
- *       break;
- *     case Credential.CredentialState.NotFound:
- *       // The user id was not found
- *       break;
- *   }
- * })
- * ```
  */
-export async function getCredentialStateAsync(userId: string): Promise<CredentialState> {
-  if (!ExpoAppleAuthentication.getCredentialStateAsync) {
+export async function getCredentialStateAsync(userId: string): Promise<AppleAuthenticationCredentialState> {
+  if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.getCredentialStateAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'getCredentialStateAsync');
   }
   return ExpoAppleAuthentication.getCredentialStateAsync(userId);
@@ -88,20 +78,7 @@ const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentica
 /**
  * Adds a listener for when a token has been revoked.
  * This means that the user has signed out and you should update your UI to reflect this
- *
- * @example
- * ```ts
- * import * as AppleAuthentication from "expo-apple-authentication";
- *
- * // Subscribe
- * const unsubscribe = AppleAuthentication.addRevokeListener(() => {
- *   // Handle the token being revoked
- * })
- *
- * // Unsubscribe
- * unsubscribe();
- * ```
  */
-export function addRevokeListener(listener: RevokeListener): Subscription {
+export function addRevokeListener(listener: AppleAuthenticationRevokeListener): Subscription {
   return ExpoAppleAuthenticationEventEmitter.addListener('Expo.appleIdCredentialRevoked', listener);
 }

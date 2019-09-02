@@ -19,6 +19,19 @@
   }
 }
 
++ (NSNumber *)exportRealUserStatus:(ASUserDetectionStatus)detectionStatus API_AVAILABLE(ios(13.0))
+{
+  switch (detectionStatus) {
+    case ASUserDetectionStatusUnknown:
+      return @1;
+    case ASUserDetectionStatusLikelyReal:
+      return @2;
+    case ASUserDetectionStatusUnsupported:
+    default:
+      return @0;
+  }
+}
+
 + (ASAuthorizationScope)importScope:(NSNumber *)scope API_AVAILABLE(ios(13.0))
 {
   switch ([scope intValue]) {
@@ -27,8 +40,8 @@
     case 1:
       return ASAuthorizationScopeEmail;
     default:
-      @throw [[NSException alloc] initWithName:@"ERR_INVALID_SCOPE"
-                                        reason:[NSString stringWithFormat:@"Invalid scope: %@", scope]
+      @throw [[NSException alloc] initWithName:@"ERR_APPLE_AUTHENTICATION_INVALID_SCOPE"
+                                        reason:[NSString stringWithFormat:@"Invalid Apple authentication scope: %@", scope]
                                       userInfo:nil];
   }
 }
@@ -55,8 +68,8 @@
     case 3:
       return ASAuthorizationOperationLogout;
     default:
-      @throw [[NSException alloc] initWithName:@"ERR_INVALID_OPERATION"
-                                        reason:[NSString stringWithFormat:@"Invalid operation: %@", operation]
+      @throw [[NSException alloc] initWithName:@"ERR_APPLE_AUTHENTICATION_INVALID_OPERATION"
+                                        reason:[NSString stringWithFormat:@"Invalid type of Apple authentication operation: %@", operation]
                                       userInfo:nil];
   }
 }

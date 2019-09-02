@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from 'react-native';
-export interface ButtonProps {
+export declare type AppleAuthenticationButtonProps = {
     /**
      * The callback which is called when the user pressed the button.
      */
@@ -7,61 +7,43 @@ export interface ButtonProps {
     /**
      * Controls the text that is shown on the button.
      */
-    buttonType: ButtonType;
+    buttonType: AppleAuthenticationButtonType;
     /**
      * Controls the style of the button.
      */
-    buttonStyle: ButtonStyle;
+    buttonStyle: AppleAuthenticationButtonStyle;
     /**
      * The radius of the corners of the button.
      */
     cornerRadius?: number;
     style?: StyleProp<ViewStyle>;
-}
-/**
-* The options you can supply when making a call to `AppleAuthentication.requestAsync()`.
-*
-* @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest) for more details.
-*/
-export interface RequestOptions {
-    /**
-      * The scopes that you are requesting.
-      * @defaults `[]` (no scopes).
-      */
-    requestedScopes?: Scope[];
-    /**
-      * The operation that you would like to perform.
-      * @defaults `AppleAuthentication.Operation.Implicit`
-      */
-    requestedOperation?: Operation;
-    /**
-      * Must be set for `Refresh` and `Logout` operations
-      *
-      * Typically you leave this property set to nil the first time you authenticate a user.
-      * Otherwise, if you previously received an `Credential` set this property to the value from the user property.
-      * Must be set for Refresh and Logout operations.
-    */
-    user?: string;
-    /**
-      * Data that’s returned to you unmodified in the corresponding credential after a successful authentication.
-      * Used to verify that the response was from the request you made.
-      * Can be used to avoid replay attacks.
-      */
+};
+export declare type AppleAuthenticationLoginOptions = {
+    requestedScopes?: AppleAuthenticationScope[];
     state?: string;
-}
+};
+export declare type AppleAuthenticationRefreshOptions = {
+    user: string;
+    requestedScopes?: AppleAuthenticationScope[];
+    state?: string;
+};
+export declare type AppleAuthenticationLogoutOptions = {
+    user: string;
+    state?: string;
+};
 /**
 * The user credentials returned to a successful call to `AppleAuthentication.requestAsync()`.
 *
 * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential) for more details.
 */
-export interface Credential {
+export declare type AppleAuthenticationCredential = {
     /**
      * A value indicating the status type of the requested credential.
      * Success if the credential was retrieved successfully,
      * Revoke if the credential was revoked,
      * or Cancel if the user canceled the Sign In operation.
      */
-    type: Status;
+    type: AppleAuthenticationStatus;
     /**
       * A JSON Web Token (JWT) that securely communicates information about the user to your app.
       */
@@ -85,11 +67,11 @@ export interface Credential {
     /**
       * The contact information the user authorized your app to access.
       */
-    authorizedScopes?: Scope[];
+    authorizedScopes?: AppleAuthenticationScope[];
     /**
       * The user’s name. Might not present if you didn't request access or if the user denied access.
       */
-    fullName?: string;
+    fullName?: AppleAuthenticationFullName;
     /**
       * The user’s email address. Might not present if you didn't request access or if the user denied access.
       */
@@ -97,19 +79,29 @@ export interface Credential {
     /**
       * A value that indicates whether the user appears to be a real person.
       */
-    realUserStatus?: UserDetectionStatus;
-}
+    realUserStatus?: AppleAuthenticationUserDetectionStatus;
+};
 /**
  * Tokenized object representing the different portions of the user's full name.
  */
-export interface FullName {
+export declare type AppleAuthenticationFullName = {
     namePrefix?: string;
     givenName?: string;
     middleName?: string;
     familyName?: string;
     nameSuffix?: string;
     nickname?: string;
-}
+};
+/**
+ * Event sent to the listener when the user's credentials have been revoked.
+ */
+export declare type AppleAuthenticationRevokeEvent = {
+    type: AppleAuthenticationStatus;
+};
+/**
+ * Listener that is called when the user's credentials have been revoked.
+ */
+export declare type AppleAuthenticationRevokeListener = (event: AppleAuthenticationRevokeEvent) => void;
 /**
  * Controls which scopes you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
@@ -118,61 +110,61 @@ export interface FullName {
  *
  * @see [Apple documention](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope) for more details.
  */
-export declare enum Scope {
+export declare enum AppleAuthenticationScope {
     /**
      * A scope that includes the user’s full name.
      */
-    FullName = 0,
+    FULL_NAME = 0,
     /**
      * A scope that includes the user’s email address.
      */
-    Email = 1
+    EMAIL = 1
 }
 /**
  * Controls what operation you are requesting when the call `AppleAuthentication.requestAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidoperation) for more details.
  */
-export declare enum Operation {
+export declare enum AppleAuthenticationOperation {
     /**
      * An operation that depends on the particular kind of credential provider.
      */
-    Implicit = 0,
+    IMPLICIT = 0,
     /**
      * An operation used to authenticate a user.
      */
-    Login = 1,
+    LOGIN = 1,
     /**
      * An operation that refreshes the logged-in user’s credentials.
      */
-    Refresh = 2,
+    REFRESH = 2,
     /**
      * An operation that ends an authenticated session.
      */
-    Logout = 3
+    LOGOUT = 3
 }
 /**
  * Defines the state that the credential is in when responding to your call to `AppleAuthentication.getCredentialStateAsync()`.
  *
  * @see [Apple Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate) for more details.
  */
-export declare enum CredentialState {
+export declare enum AppleAuthenticationCredentialState {
     /**
      * Authorization for the given user has been revoked.
      */
-    Revoked = 0,
+    REVOKED = 0,
     /**
      * The user is authorized.
      */
-    Authorized = 1,
+    AUTHORIZED = 1,
     /**
      * The user can’t be found.
      */
-    NotFound = 2,
+    NOT_FOUND = 2,
     /**
      * Undocumented by Apple yet.
      */
-    Transferred = 3
+    TRANSFERRED = 3
 }
 /**
  * A value that indicates whether the user appears to be a real person.
@@ -181,51 +173,41 @@ export declare enum CredentialState {
  *
  * @see [Apple documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus) for more details.
  */
-export declare enum UserDetectionStatus {
+export declare enum AppleAuthenticationUserDetectionStatus {
     /**
      * User detection not supported on current platform.
      */
-    Unsupported = 0,
+    UNSUPPORTED = 0,
     /**
      * We could not determine the value. New users in the ecosystem will get this value as well, so you should not blacklist but instead treat these users as any new user through standard email sign up flows.
      */
-    Unknown = 1,
+    UNKNOWN = 1,
     /**
      * A hint that we have high confidence that the user is real.
      */
-    LikelyReal = 2
+    LIKELY_REAL = 2
 }
 /**
  * Controls the text that is shown on the authenticating button.
  */
-export declare enum ButtonType {
-    SignIn = 0,
-    Continue = 1,
-    Default = 2
+export declare enum AppleAuthenticationButtonType {
+    SIGN_IN = 0,
+    CONTINUE = 1,
+    DEFAULT = 2
 }
 /**
  * Controls the style of the authenticating button.
  */
-export declare enum ButtonStyle {
-    White = 0,
-    WhiteOutline = 1,
-    Black = 2
+export declare enum AppleAuthenticationButtonStyle {
+    WHITE = 0,
+    WHITE_OUTLINE = 1,
+    BLACK = 2
 }
 /**
  * Indicates the status of the attempt to retrieve the requested credential.
  */
-export declare enum Status {
-    Success = "success",
-    Revoke = "revoke",
-    Cancel = "cancel"
+export declare enum AppleAuthenticationStatus {
+    SUCCESS = "success",
+    REVOKE = "revoke",
+    CANCEL = "cancel"
 }
-/**
- * Event sent to the listener when the user's credentials have been revoked.
- */
-export declare type RevokeEvent = {
-    type: Status;
-};
-/**
- * Listener that is called when the user's credentials have been revoked.
- */
-export declare type RevokeListener = (event: RevokeEvent) => void;
