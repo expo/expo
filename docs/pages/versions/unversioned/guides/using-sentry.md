@@ -63,6 +63,7 @@ Sentry.init({
       ]
     }
   }
+}
 ```
 
 The correct `authToken` value can be generated from the [Sentry API page ](https://sentry.io/settings/account/api/).
