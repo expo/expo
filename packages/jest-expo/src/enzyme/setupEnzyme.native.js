@@ -1,3 +1,6 @@
+// Taken from:
+// https://airbnb.io/enzyme/docs/guides/react-native.html
+
 import 'react-native';
 import 'jest-enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -12,19 +15,18 @@ const { JSDOM } = require('jsdom');
 const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
 const { window } = jsdom;
 
-function copyProps(src, target) {
-  Object.defineProperties(target, {
-    ...Object.getOwnPropertyDescriptors(src),
-    ...Object.getOwnPropertyDescriptors(target),
-  });
-}
-
+// @SimenB: This is discouraged by jsdom itself:
+// https://github.com/jsdom/jsdom/wiki/Don't-stuff-jsdom-globals-onto-the-Node-global
 global.window = window;
 global.document = window.document;
 global.navigator = {
   userAgent: 'node.js',
 };
-copyProps(window, global);
+
+Object.defineProperties(global, {
+  ...Object.getOwnPropertyDescriptors(window),
+  ...Object.getOwnPropertyDescriptors(global),
+});
 
 /**
  * Set up Enzyme to mount to DOM, simulate events,
@@ -34,6 +36,7 @@ Enzyme.configure({ adapter: new Adapter() });
 
 expect.addSnapshotSerializer(serializer);
 
+// Mute DOM formatting errors
 const originalConsoleError = console.error;
 
 console.error = message => {
