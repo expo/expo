@@ -272,6 +272,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'react-native-shared-element': {
+    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
+    packageName: 'react-native-shared-element',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SharedElement',
+        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
+        targetAndroidPath: 'modules/api/components/sharedelement',
+        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {

@@ -46,6 +46,8 @@ import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
+import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
+import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
@@ -177,6 +179,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new SplashScreenModule(reactContext, experienceId));
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
+        nativeModules.add(new RNSharedElementModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
@@ -206,7 +209,8 @@ public class ExponentPackage implements ReactPackage {
         new RNGestureHandlerPackage(),
         new RNScreensPackage(),
         new RNCWebViewPackage(),
-        new SafeAreaContextPackage()
+        new SafeAreaContextPackage(),
+        new RNSharedElementPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

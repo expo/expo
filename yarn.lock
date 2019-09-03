@@ -12199,6 +12199,11 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
+react-native-shared-element@~0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-shared-element/-/react-native-shared-element-0.5.1.tgz#d6210c3c9e116b8f03692c4144b2d11e660bc49c"
+  integrity sha512-s4KiuNBHaVwjpezvtU2QaQ6c++XOWIcDrJHKSrVkEj9b0e5tQbJuDkqnrVH80o+y2vODV15jzu1yOZCo7ItIBA==
+
 react-native-svg@~9.7.1:
   version "9.7.1"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.7.1.tgz#a6d270cd51f8f238de7623338211debf4ff9cf5c"
@@ -12210,30 +12215,6 @@ react-native-tab-view@^1.0.0, react-native-tab-view@^1.2.0, react-native-tab-vie
   integrity sha512-Bke8KkDcDhvB/z0AS7MnQKMD2p6Kwfc1rSKlMOvg9CC5CnClQ2QEnhPSbwegKDYhUkBI92iH/BYy7hNSm5kbUQ==
   dependencies:
     prop-types "^15.6.1"
-
-react-native-unimodules@^0.5.3, react-native-unimodules@~0.5.0, react-native-unimodules@~0.5.2:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.5.4.tgz#d4d779576a027f0455b14d396b0e002cb57963fe"
-  integrity sha512-47ZJzZriaVtvDJp24HLu6xcKBaDScDcx71yIDmahsKKJtbEHmXl7jPz1y/2FhAKSb174m9niu3F97Di5Bo+91g==
-  dependencies:
-    "@unimodules/core" "~3.0.2"
-    "@unimodules/react-native-adapter" "~3.0.0"
-    chalk "^2.4.2"
-    expo-app-loader-provider "~6.0.0"
-    expo-asset "~6.0.0"
-    expo-constants "~6.0.0"
-    expo-file-system "~6.0.1"
-    expo-permissions "~6.0.0"
-    unimodules-barcode-scanner-interface "~3.0.0"
-    unimodules-camera-interface "~3.0.0"
-    unimodules-constants-interface "~3.0.0"
-    unimodules-face-detector-interface "~3.0.0"
-    unimodules-file-system-interface "~3.0.0"
-    unimodules-font-interface "~3.0.0"
-    unimodules-image-loader-interface "~3.0.0"
-    unimodules-permissions-interface "~3.0.0"
-    unimodules-sensors-interface "~3.0.0"
-    unimodules-task-manager-interface "~3.0.0"
 
 react-native-view-shot@2.6.0:
   version "2.6.0"
@@ -12295,6 +12276,13 @@ react-navigation-material-bottom-tabs@1.1.1:
     hoist-non-react-statics "^2.5.0"
     prop-types "^15.6.0"
     react-navigation-tabs "~1.2.0"
+
+react-navigation-shared-element@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-shared-element/-/react-navigation-shared-element-0.5.0.tgz#b384dbf323dc2491c3e58b3aae1bb82054096ae0"
+  integrity sha512-RNIxqEGFYTKTR65FGHz+wP6DrdynbQHooy48irQBjygzPYgr1qBw48zJu6UV/STmFy1Iu/279JPZ+dm+hH36lg==
+  dependencies:
+    hoist-non-react-statics "^3.3.0"
 
 react-navigation-stack@~1.5.0:
   version "1.5.0"
