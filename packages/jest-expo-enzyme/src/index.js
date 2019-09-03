@@ -5,33 +5,28 @@ module.exports = function withEnzyme(preset = {}) {
 
   const isNative = ['ios', 'android'].includes(haste.defaultPlatform);
 
-  const setupFilePlatform = isNative ? 'native' : 'web';
+  const commonConfig = {
+    ...preset,
+    snapshotSerializers: [...snapshotSerializers, 'enzyme-to-json/serializer'],
+    timers: 'fake',
+  };
 
   if (isNative) {
     return {
-      ...preset,
-      setupFilesAfterEnv: [
-        ...setupFilesAfterEnv,
-        require.resolve(`./setupEnzyme.${setupFilePlatform}.js`),
-      ],
-      snapshotSerializers: [...snapshotSerializers, 'enzyme-to-json/serializer'],
-      testEnvironment: 'enzyme',
+      ...commonConfig,
+      setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.native.js`)],
       testEnvironmentOptions: {
         enzymeAdapter: 'react16',
       },
-      timers: 'fake',
+      testEnvironment: 'enzyme',
     };
   }
 
   return {
-    ...preset,
+    ...commonConfig,
     setupFiles: [...setupFiles, 'jest-canvas-mock'],
-    setupFilesAfterEnv: [
-      ...setupFilesAfterEnv,
-      require.resolve(`./setupEnzyme.${setupFilePlatform}.js`),
-    ],
+    setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.web.js`)],
     snapshotSerializers: [...snapshotSerializers, 'enzyme-to-json/serializer'],
     testEnvironment: 'jsdom',
-    timers: 'fake',
   };
 };
