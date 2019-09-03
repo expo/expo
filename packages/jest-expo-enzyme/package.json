@@ -33,6 +33,7 @@
     "react-native-web": "*"
   },
   "dependencies": {
+    "chalk": "^2.4.2",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "enzyme-to-json": "^3.4.0",

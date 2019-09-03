@@ -29,7 +29,7 @@ Object.defineProperties(global, {
 });
 
 /**
- * Set up Enzyme to mount to DOM, simulate events,
+ * Set up a mock DOM in Node for Enzyme to which to mount
  * and inspect the DOM in tests.
  */
 Enzyme.configure({ adapter: new Adapter() });
