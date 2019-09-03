@@ -1,2 +1,5 @@
-export { default as SQLite } from './SQLite';
+import { default as objects } from './SQLite';
+import * as types from './SQLite.types';
+const SQLite = { ...objects, ...types };
+export { SQLite };
 //# sourceMappingURL=index.js.map

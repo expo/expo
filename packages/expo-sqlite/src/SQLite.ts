@@ -4,6 +4,7 @@ import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
+import { Database } from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
 
@@ -109,7 +110,7 @@ export function openDatabase(
   return dbWithExec;
 }
 
-export interface WebSQLDatabase {
+export interface WebSQLDatabase extends Database {
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
 }
 
