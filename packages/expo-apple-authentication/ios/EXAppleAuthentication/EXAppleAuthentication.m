@@ -76,7 +76,7 @@ UM_EXPORT_MODULE(ExpoAppleAuthentication);
   if (!_hasListeners) {
     return;
   }
-  [_eventEmitter sendEventWithName:@"Expo.appleIdCredentialRevoked" body:@{@"type": @"revoke"}];
+  [_eventEmitter sendEventWithName:@"Expo.appleIdCredentialRevoked" body:@{}];
 }
 
 UM_EXPORT_METHOD_AS(isAvailableAsync,
