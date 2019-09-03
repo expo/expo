@@ -3,6 +3,7 @@
 module.exports = function withEnzyme(preset = {}) {
   const { snapshotSerializers = [], haste = {}, setupFilesAfterEnv = [], setupFiles = [] } = preset;
 
+  // TODO: throw error
   const isNative = ['ios', 'android'].includes(haste.defaultPlatform);
 
   const commonConfig = {
@@ -26,7 +27,6 @@ module.exports = function withEnzyme(preset = {}) {
     ...commonConfig,
     setupFiles: [...setupFiles, 'jest-canvas-mock'],
     setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.web.js`)],
-    snapshotSerializers: [...snapshotSerializers, 'enzyme-to-json/serializer'],
     testEnvironment: 'jsdom',
   };
 };

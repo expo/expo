@@ -1,7 +1,6 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-
 it(`renders a view with a custom background`, () => {
   const component = shallow(<View style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} />);
   // To debug your component use this:
