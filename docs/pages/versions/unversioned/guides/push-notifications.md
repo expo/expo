@@ -20,7 +20,7 @@ import * as Permissions from 'expo-permissions';
 
 const PUSH_ENDPOINT = 'https://your-server.com/users/push-token';
 
-async function registerForPushNotificationsAsync() {
+export default async function registerForPushNotificationsAsync() {
   const { status: existingStatus } = await Permissions.getAsync(
     Permissions.NOTIFICATIONS
   );
@@ -60,8 +60,6 @@ async function registerForPushNotificationsAsync() {
     }),
   });
 }
-
-export default registerForPushNotificationsAsync
 ```
 
 ## 2. Call Expo's Push API with the user's token
