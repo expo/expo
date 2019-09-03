@@ -4,26 +4,27 @@
   "private": true,
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "android": "react-native run-android",
-    "android-clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
-    "android:setup": "cd ../../react-native-lab/react-native && ./gradlew :ReactAndroid:installArchives && cd ../../apps/bare-expo && npm run android-clean",
-    "ios": "react-native run-ios",
+    "android": "export NODE_ENV=\"development\" && ./scripts/start-emulator.sh",
+    "android:clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
+    "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
+    "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
+    "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
     "web": "expo start --web",
-    "start": "react-native start",
-    "start-clean": "npm run clear-metro && react-native start --reset-cache",
+    "start": "react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
-    "ios:setup": "cd ios/ && pod install",
-    "_ios:setup": "cd ios/ && (bundle check || bundle install) && bundle exec pod install",
     "test": "jest",
-    "e2e:ios:setup": "detox build --configuration ios.sim.debug",
-    "e2e:ios": "detox test --configuration ios.sim.debug --loglevel warn",
-    "ci:detox": "yarn ci:detox-build-release && yarn ci:detox-test-release",
-    "ci:detox-clean": "detox clean-framework-cache && detox build-framework-cache",
-    "ci:detox-build-release": "detox build --configuration ios.sim.release",
-    "ci:detox-test-release": "watchman watch-del-all; detox test --configuration ios.sim.release -l verbose --cleanup",
-    "open:ts": "xcrun simctl openurl booted bareexpo://test-suite",
-    "open:ncl": "xcrun simctl openurl booted bareexpo://native-component-list"
+    "detox:clean": "detox clean-framework-cache && detox build-framework-cache",
+    "android:detox:build:debug": "detox build -c android.emu.debug",
+    "android:detox:build:release": "detox build -c android.emu.release",
+    "android:detox:test:debug": "detox test -c android.emu.debug --loglevel warn",
+    "android:detox:test:release": "watchman watch-del-all; detox test -c android.emu.release -l verbose --cleanup",
+    "ios:detox:build:debug": "detox build -c ios.sim.debug",
+    "ios:detox:build:release": "detox build -c ios.sim.release",
+    "ios:detox:test:debug": "detox test -c ios.sim.debug --loglevel warn",
+    "ios:detox:test:release": "watchman watch-del-all; detox test -c ios.sim.release -l verbose --cleanup",
+    "open": "./scripts/deep-link.sh test-suite",
+    "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
@@ -67,8 +68,21 @@
         "build": "xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "name": "iPhone X"
+      },
+      "android.emu.debug": {
+        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
+        "type": "android.emulator",
+        "name": "bare-expo"
+      },
+      "android.emu.release": {
+        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
+        "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
+        "type": "android.emulator",
+        "name": "bare-expo"
       }
     },
+    "runner-config": "./e2e/jest.config.json",
     "test-runner": "jest"
   },
   "devDependencies": {
