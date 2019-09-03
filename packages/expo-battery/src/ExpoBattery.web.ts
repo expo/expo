@@ -33,25 +33,12 @@ interface BatteryManagerEventTarget extends EventTarget {
   ): void;
 }
 
-async function getBatteryManagerAsync(): Promise<BatteryManager | null> {
-  if (!canUseDOM) return null;
-  if ('getBattery' in navigator) {
-    // @ts-ignore
-    return await navigator.getBattery();
-  } else {
-    // @ts-ignore
-    return await navigator.battery;
-  }
-}
-
-function onChargingChange() {
-  // @ts-ignore
+function onChargingChange(this: BatteryManager): void {
   const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
   emitter.emit('Expo.batteryStateDidChange', { batteryState });
 }
 
-function onLevelChange() {
-  // @ts-ignore
+function onLevelChange(this: BatteryManager): void {
   const batteryLevel = this.level;
   emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
 }
@@ -95,3 +82,14 @@ export default {
     batteryManager.removeEventListener('levelchange', onLevelChange);
   },
 };
+
+async function getBatteryManagerAsync(): Promise<BatteryManager | null> {
+  if (!canUseDOM) return null;
+  if ('getBattery' in navigator) {
+    // @ts-ignore
+    return await navigator.getBattery();
+  } else {
+    // @ts-ignore
+    return await navigator.battery;
+  }
+}
