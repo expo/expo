@@ -55,12 +55,8 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
 
     @ExpoMethod
     fun clearUpdateCacheAsync(promise: Promise) {
-        val bundles = updater.removeAllCachedBundles()
-        if(bundles.isNotEmpty()) {
-            promise.resolve(bundles.toString())
-        } else {
-            promise.resolve(true)
-        }
+        updater.removeDownloadedBundle()
+        promise.resolve(true)
     }
 
     @ExpoMethod

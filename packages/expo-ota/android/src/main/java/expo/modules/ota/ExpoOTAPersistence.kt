@@ -7,7 +7,6 @@ import kotlin.collections.HashMap
 
 const val KEY_BUNDLE_PATH = "bundlePath"
 const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"
-const val KEY_EXPIRED_BUNDLES_PATH = "expiredBundlesPath"
 const val KEY_MANIFEST = "manifest"
 const val KEY_DOWNLOADED_MANIFEST = "downloadedManifest"
 
@@ -24,9 +23,6 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             if (value != recentPath) {
                 if(value != null) {
                     storage.writeString(KEY_BUNDLE_PATH, value)
-                    if (recentPath != null) {
-                        addExpiredBundlesPath(recentPath)
-                    }
                 }
             }
         }
@@ -40,9 +36,6 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             if (value != recentPath) {
                 if(value != null) {
                     storage.writeString(KEY_DOWNLOADED_BUNDLE_PATH, value)
-                    if (recentPath != null) {
-                        addExpiredBundlesPath(recentPath)
-                    }
                 }
             }
         }
@@ -69,11 +62,6 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             storage.writeString(KEY_DOWNLOADED_MANIFEST, value.toString())
         }
 
-    val expiredBundlesPaths: Set<String>
-        @Synchronized get() {
-            return storage.readStringSet(KEY_EXPIRED_BUNDLES_PATH, Collections.emptySet())!!
-        }
-
     fun makeDownloadedCurrent() {
         val downloaded = downloadedBundlePath
         bundlePath = downloaded
@@ -84,16 +72,6 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             manifest = downloadedManifest
         }
         storage.removeKey(KEY_DOWNLOADED_MANIFEST)
-    }
-
-    @Synchronized
-    fun addExpiredBundlesPath(path: String) {
-        storage.writeStringSet(KEY_EXPIRED_BUNDLES_PATH, expiredBundlesPaths.plus(path))
-    }
-
-    @Synchronized
-    fun replaceExpiredBundles(set: Set<String>) {
-        storage.writeStringSet(KEY_EXPIRED_BUNDLES_PATH, set)
     }
 
 }

@@ -57,28 +57,11 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
         }
     }
 
-    fun removeAllCachedBundles(): Set<String> {
-        var toRemove = persistence.expiredBundlesPaths
-        if(persistence.bundlePath != null) {
-            toRemove = toRemove.minus(persistence.bundlePath!!)
-        }
-        val result = removeBundles(toRemove)
-        persistence.replaceExpiredBundles(result)
-        return result
-    }
-
-    fun removeBundles(bundles: Set<String>): Set<String> {
-        var nonRemovedFiles = Collections.emptySet<String>()
-        bundles.forEach {
-            if (!removeFile(it)) {
-                nonRemovedFiles = nonRemovedFiles.plus(it)
-            }
-        }
-        return nonRemovedFiles
-    }
-
     fun saveDownloadedManifestAndBundlePath(manifest: JSONObject, path: String) {
         persistence.downloadedManifest = manifest
+        if (persistence.downloadedBundlePath != null) {
+            removeFile(persistence.downloadedBundlePath!!)
+        }
         persistence.downloadedBundlePath = path
     }
 
@@ -86,18 +69,24 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
         persistence.makeDownloadedCurrent()
     }
 
+    fun removeDownloadedBundle() {
+        if(persistence.downloadedBundlePath != null) {
+            removeFile(persistence.downloadedBundlePath!!)
+        }
+        persistence.downloadedBundlePath = null
+    }
+
     private fun removeFile(path: String): Boolean {
         val file = File(path)
-        try {
+        return try {
             if (file.exists()) {
-                return file.delete()
+                file.delete()
             } else {
-                return true
+                true
             }
         } catch (ignore: IOException) {
-            return false
+            false
         }
-        return true
     }
 
     private fun httpClient(params: ManifestDownloadParams) = params.okHttpClient ?: OkHttpClient()

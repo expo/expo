@@ -26,14 +26,12 @@ class ExpoOTA @JvmOverloads constructor(context: Context, config: ExpoOTAConfig,
         if (!loadFromBundler) {
             updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
         }
-        if (persistence.expiredBundlesPaths.isNotEmpty()) {
-            val bundles = updater.removeBundles(persistence.expiredBundlesPaths)
-            persistence.replaceExpiredBundles(bundles)
-        }
+        updater.removeDownloadedBundle()
     }
 
     private fun saveManifestAndBundle(manifest: JSONObject, path: String) {
         updater.saveDownloadedManifestAndBundlePath(manifest, path)
+        updater.markDownloadedAsCurrent()
     }
 
 }
