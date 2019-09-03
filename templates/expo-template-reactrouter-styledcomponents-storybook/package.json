@@ -1,0 +1,43 @@
+{
+  "main": "./src/App.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest",
+    "test:cypress": "wait-on http://localhost:19006/ && cypress run --browser chrome",
+    "prestorybook": "rnstl --searchDir ./src/components --pattern \"**/stories.js\"",
+    "storybook": "expo start --web --config ./app-storybook.json"
+  },
+  "dependencies": {
+    "expo": "^34.0.4",
+    "expo-constants": "^6.0.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-native": "expo/react-native#sdk-34",
+    "react-native-web": "^0.11.7",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
+    "react-router-native": "^5.0.0",
+    "styled-components": "^5.0.0"
+  },
+  "devDependencies": {
+    "@storybook/addons": "^5.2.0",
+    "@storybook/react-native": "^5.2.0",
+    "babel-preset-expo": "^6.0.0",
+    "cypress": "^3.4.1",
+    "cypress-image-snapshot": "^3.1.1",
+    "expo-cli": "^3.0.10",
+    "jest-expo": "^34.0.1",
+    "react-native-storybook-loader": "^1.8.0",
+    "react-test-renderer": "^16.9.0",
+    "wait-on": "^3.3.0"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-router|@unimodules/.*|sentry-expo|native-base|apollo-boost)"
+    ]
+  }
+}

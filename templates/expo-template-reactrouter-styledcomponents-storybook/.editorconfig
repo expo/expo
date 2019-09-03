@@ -1,0 +1,18 @@
+# This file allows IDEs to automatically adjust spacing
+# In order to take advantage of this file, please use an .editorconfig plugin for your IDE
+# editorconfig.org
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile*]
+indent_size = 4
+indent_style = tab

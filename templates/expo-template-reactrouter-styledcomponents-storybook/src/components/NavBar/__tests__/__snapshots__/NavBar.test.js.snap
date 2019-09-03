@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NavBar renders 1`] = `
+<View
+  className="sc-AykKC fQNdfl"
+>
+  <View
+    className="sc-AykKD jHLvSh"
+  >
+    <View
+      accessible={true}
+      isTVSelectable={true}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+    >
+      <Text
+        style={null}
+      >
+        Home
+      </Text>
+    </View>
+  </View>
+  <View
+    className="sc-AykKD jHLvSh"
+  >
+    <View
+      accessible={true}
+      isTVSelectable={true}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+    >
+      <Text
+        style={null}
+      >
+        Settings
+      </Text>
+    </View>
+  </View>
+</View>
+`;
