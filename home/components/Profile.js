@@ -126,7 +126,9 @@ export default class Profile extends React.Component {
     let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
-      <ScrollView style={{flex: 1}} contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
         <StyledText
           style={SharedStyles.noticeDescriptionText}
           lightColor="rgba(36, 44, 58, 0.7)"
@@ -140,7 +142,7 @@ export default class Profile extends React.Component {
 
         {this.state.isRefetching && (
           <View style={{ marginTop: 20 }}>
-            <ActivityIndicator />
+            <ActivityIndicator color={Colors.light.tintColor} />
           </View>
         )}
       </ScrollView>
@@ -150,7 +152,7 @@ export default class Profile extends React.Component {
   _renderLoading() {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-        <ActivityIndicator />
+        <ActivityIndicator color={Colors.light.tintColor} />
       </View>
     );
   }

@@ -3,7 +3,7 @@
 
 @interface AMPDeviceInfo : NSObject
 
--(id) init;
+-(id) init: (BOOL) disableIdfaTracking;
 @property (readonly) NSString *appVersion;
 @property (readonly) NSString *osName;
 @property (readonly) NSString *osVersion;

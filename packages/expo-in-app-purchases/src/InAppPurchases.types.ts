@@ -1,7 +1,7 @@
 export interface IAPQueryResponse {
-  responseCode: IAPResponseCode,
-  results?: Array<InAppPurchase | IAPItemDetails>,
-  errorCode?: IAPErrorCode,
+  responseCode: IAPResponseCode;
+  results?: Array<InAppPurchase | IAPItemDetails>;
+  errorCode?: IAPErrorCode;
 }
 
 export enum IAPResponseCode {
@@ -43,24 +43,24 @@ export enum IAPItemType {
 }
 
 export interface InAppPurchase {
-  acknowledged: boolean,
-  productId: string,
-  purchaseState: number,
-  purchaseTime: number,
-  orderId: string,
-  packageName?: string, // Android only
-  purchaseToken?: string // Android only
-  originalOrderId?: string // iOS only
-  originalPurchaseTime?: string // iOS only
-  transactionReceipt?: string // iOS only
+  acknowledged: boolean;
+  productId: string;
+  purchaseState: number;
+  purchaseTime: number;
+  orderId: string;
+  packageName?: string; // Android only
+  purchaseToken?: string; // Android only
+  originalOrderId?: string; // iOS only
+  originalPurchaseTime?: string; // iOS only
+  transactionReceipt?: string; // iOS only
 }
 export interface IAPItemDetails {
-  description: string,
-  price: string,
-  priceAmountMicros: number,
-  priceCurrencyCode: string,
-  productId: string,
-  title: string,
-  type: IAPItemType,
-  subscriptionPeriod?: string
+  description: string;
+  price: string;
+  priceAmountMicros: number;
+  priceCurrencyCode: string;
+  productId: string;
+  title: string;
+  type: IAPItemType;
+  subscriptionPeriod?: string;
 }

@@ -38,21 +38,8 @@ extern NSString *const OIDOAuthorizationRequestCodeChallengeMethodS256;
     @see https://tools.ietf.org/html/rfc6749#section-4
     @see https://tools.ietf.org/html/rfc6749#section-4.1.1
  */
-@interface OIDAuthorizationRequest : NSObject <NSCopying, NSSecureCoding, OIDExternalUserAgentRequest> {
-  // property variables
-  OIDServiceConfiguration *_configuration;
-  NSString *_responseType;
-  NSString *_clientID;
-  NSString *_clientSecret;
-  NSString *_scope;
-  NSURL *_redirectURL;
-  NSString *_state;
-  NSString *_nonce;
-  NSString *_codeVerifier;
-  NSString *_codeChallenge;
-  NSString *_codeChallengeMethod;
-  NSDictionary<NSString *, NSString *> *_additionalParameters;
-}
+@interface OIDAuthorizationRequest :
+    NSObject<NSCopying, NSSecureCoding, OIDExternalUserAgentRequest>
 
 /*! @brief The service's configuration.
     @remarks This configuration specifies how to connect to a particular OAuth provider.
@@ -149,7 +136,7 @@ extern NSString *const OIDOAuthorizationRequestCodeChallengeMethodS256;
 
 /*! @internal
     @brief Unavailable. Please use
-        @c initWithConfiguration:clientId:scopes:redirectURL:additionalParameters:.
+        @c initWithConfiguration:clientId:scopes:redirectURL:responseType:additionalParameters:.
  */
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -193,37 +180,6 @@ extern NSString *const OIDOAuthorizationRequestCodeChallengeMethodS256;
              responseType:(NSString *)responseType
      additionalParameters:(nullable NSDictionary<NSString *, NSString *> *)additionalParameters;
 
-/*! @brief Deprecated, replaced with @c OIDAuthState.initWithConfiguration:clientId:clientSecret:scope:redirectURL:responseType:state:nonce:codeVerifier:codeChallenge:codeChallengeMethod:additionalParameters:.
-    @param configuration The service's configuration.
-    @param clientID The client identifier.
-    @param scope A scope string per the OAuth2 spec (a space-delimited set of scopes).
-    @param redirectURL The client's redirect URI.
-    @param responseType The expected response type.
-    @param state An opaque value used by the client to maintain state between the request and
-        callback.
-    @param codeVerifier The PKCE code verifier. See @c OIDAuthorizationRequest.generateCodeVerifier.
-    @param codeChallenge The PKCE code challenge, calculated from the code verifier such as with
-        @c OIDAuthorizationRequest.codeChallengeS256ForVerifier:.
-    @param codeChallengeMethod The PKCE code challenge method.
-        ::OIDOAuthorizationRequestCodeChallengeMethodS256 when
-        @c OIDAuthorizationRequest.codeChallengeS256ForVerifier: is used to create the code
-        challenge.
-    @param additionalParameters The client's additional authorization parameters.
- */
-- (instancetype)
-    initWithConfiguration:(OIDServiceConfiguration *)configuration
-                 clientId:(NSString *)clientID
-             clientSecret:(nullable NSString *)clientSecret
-                    scope:(nullable NSString *)scope
-              redirectURL:(nullable NSURL *)redirectURL
-             responseType:(NSString *)responseType
-                    state:(nullable NSString *)state
-             codeVerifier:(nullable NSString *)codeVerifier
-            codeChallenge:(nullable NSString *)codeChallenge
-      codeChallengeMethod:(nullable NSString *)codeChallengeMethod
-     additionalParameters:(nullable NSDictionary<NSString *, NSString *> *)additionalParameters
-__deprecated_msg("Replaced with OIDAuthState.initWithConfiguration:clientId:clientSecret:scope:redirectURL:responseType:state:nonce:codeVerifier:codeChallenge:codeChallengeMethod:additionalParameters:");
-
 /*! @brief Designated initializer.
     @param configuration The service's configuration.
     @param clientID The client identifier.
@@ -232,7 +188,9 @@ __deprecated_msg("Replaced with OIDAuthState.initWithConfiguration:clientId:clie
     @param responseType The expected response type.
     @param state An opaque value used by the client to maintain state between the request and
         callback.
-    @param nonce String value used to associate a Client session with an ID Token.
+    @param nonce String value used to associate a Client session with an ID Token. Can be set to nil
+        if not using OpenID Connect, although pure OAuth servers should ignore params they don't
+        understand anyway.
     @param codeVerifier The PKCE code verifier. See @c OIDAuthorizationRequest.generateCodeVerifier.
     @param codeChallenge The PKCE code challenge, calculated from the code verifier such as with
         @c OIDAuthorizationRequest.codeChallengeS256ForVerifier:.

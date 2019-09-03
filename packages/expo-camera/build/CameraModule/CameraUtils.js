@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';

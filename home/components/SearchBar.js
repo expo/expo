@@ -2,14 +2,27 @@
 
 import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { HeaderBackButton, withNavigation, withNavigationFocus } from 'react-navigation';
+import {
+  useTheme,
+  ThemeContext,
+  HeaderBackButton,
+  withNavigation,
+  withNavigationFocus,
+} from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import * as Kernel from '../kernel/Kernel';
 
+function StyledBackButton(props) {
+  let theme = useTheme();
+
+  return <HeaderBackButton tintColor={Colors[theme].text} {...props} />;
+}
+
 @withNavigation
 @withNavigationFocus
 export default class SearchBar extends React.Component {
+  static contextType = ThemeContext;
   componentDidMount() {
     requestAnimationFrame(() => {
       this._textInput.focus();
@@ -29,20 +42,21 @@ export default class SearchBar extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <HeaderBackButton onPress={() => this.props.navigation.goBack()} />
+        <StyledBackButton onPress={() => this.props.navigation.goBack()} />
+        {/* TODO: dark mode */}
         <TextInput
           ref={view => {
             this._textInput = view;
           }}
           placeholder="Find a project or enter a URL..."
-          placeholderStyle={styles.sear}
           value={this.state.text}
           autoCapitalize="none"
           autoCorrect={false}
-          underlineColorAndroid={Colors.light.tintColor}
+          underlineColorAndroid={Colors[this.context].tintColor}
           onSubmitEditing={this._handleSubmit}
           onChangeText={this._handleChangeText}
-          style={styles.searchInput}
+          placeholderTextColor={this.context === 'light' ? '#ccc' : '#eee'}
+          style={[styles.searchInput, { color: this.context === 'light' ? '#000' : '#fff' }]}
         />
       </View>
     );

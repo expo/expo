@@ -18,11 +18,11 @@ import {
 } from 'react-native';
 import { ThemeContext } from 'react-navigation';
 
+import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import DevIndicator from '../components/DevIndicator';
 import * as Kernel from '../kernel/Kernel';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { StyledView, StyledScrollView } from '../components/Views';
 import { StyledText } from '../components/Text';
 import LocalStorage from '../storage/LocalStorage';
@@ -87,6 +87,7 @@ class MenuView extends React.Component {
       StatusBar._currentValues = null;
     }
   };
+
   restoreStatusBar = () => {
     if (
       NativeModules.StatusBarManager._applyPropertiesAndForget &&

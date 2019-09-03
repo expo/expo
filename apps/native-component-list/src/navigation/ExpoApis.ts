@@ -63,6 +63,7 @@ const MediaLibraryScreens = optionalRequire(() =>
 );
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
+const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 
 const optionalScreens: {
   [key: string]: React.ComponentType | undefined;
@@ -70,6 +71,7 @@ const optionalScreens: {
   Accelerometer,
   ActionSheet,
   AppAuth,
+  Appearance,
   Audio,
   AuthSession,
   BackgroundFetch,

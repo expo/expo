@@ -1,7 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
-;
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -108,7 +107,7 @@ export async function createEventAsync(calendarId, { id, ...details } = {}) {
     }
     const newDetails = {
         ...details,
-        calendarId
+        calendarId,
     };
     return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
@@ -223,7 +222,7 @@ export async function createReminderAsync(calendarId, { id, ...details } = {}) {
     }
     const newDetails = {
         ...details,
-        calendarId: calendarId === null ? undefined : calendarId
+        calendarId: calendarId === null ? undefined : calendarId,
     };
     return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS

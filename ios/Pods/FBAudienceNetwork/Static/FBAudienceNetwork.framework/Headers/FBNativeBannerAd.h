@@ -73,6 +73,38 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
                     clickableViews:(nullable NSArray<UIView *> *)clickableViews;
 
 /**
+ This is a method to associate a FBNativeBannerAd with the UIView you will use to display the native ads.
+
+ @param view The UIView you created to render all the native ads data elements.
+ @param iconImageView The UIImageView you created to render the icon
+ @param viewController The UIViewController that will be used to present SKStoreProductViewController
+ (iTunes Store product information) or the in-app browser. If nil is passed, the top view controller currently shown
+ will be used.
+
+
+ The whole area of the UIView will be clickable.
+ */
+- (void)registerViewForInteraction:(UIView *)view
+                     iconImageView:(UIImageView *)iconImageView
+                    viewController:(nullable UIViewController *)viewController;
+
+/**
+ This is a method to associate FBNativeBannerAd with the UIView you will use to display the native ads
+ and set clickable areas.
+
+ @param view The UIView you created to render all the native ads data elements.
+ @param iconImageView The UIImageView you created to render the icon
+ @param viewController The UIViewController that will be used to present SKStoreProductViewController
+ (iTunes Store product information). If nil is passed, the top view controller currently shown will be used.
+ @param clickableViews An array of UIView you created to render the native ads data element, e.g.
+ CallToAction button, Icon image, which you want to specify as clickable.
+ */
+- (void)registerViewForInteraction:(UIView *)view
+                     iconImageView:(UIImageView *)iconImageView
+                    viewController:(nullable UIViewController *)viewController
+                    clickableViews:(nullable NSArray<UIView *> *)clickableViews;
+
+/**
  This is a method to use to download all media for the ad (adChoicesIcon, icon).
  This is only needed to be called if the mediaCachePolicy is set to FBNativeAdsCachePolicyNone.
  */

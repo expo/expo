@@ -11,14 +11,17 @@ export type Query = { sql: string; args: unknown[] };
 
 export interface ResultSetError {
   error: Error;
-};
+}
 export interface ResultSet {
   insertId?: number;
   rowsAffected: number;
   rows: Array<{ [column: string]: any }>;
-};
+}
 
-export type SQLiteCallback = (error?: Error | null, resultSet?: Array<ResultSetError | ResultSet>) => void;
+export type SQLiteCallback = (
+  error?: Error | null,
+  resultSet?: Array<ResultSetError | ResultSet>
+) => void;
 
 class SQLiteDatabase {
   _name: string;
@@ -87,7 +90,7 @@ const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 function addExecMethod(db: any): WebSQLDatabase {
   db.exec = (queries: Query[], readOnly: boolean, callback: SQLiteCallback): void => {
     db._db.exec(queries, readOnly, callback);
-  }
+  };
   return db;
 }
 

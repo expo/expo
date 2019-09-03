@@ -89,6 +89,7 @@ class CameraModule {
         invariant(PictureSizes.includes(value), `expo-camera: CameraModule.setPictureSize(): invalid size supplied ${value}, expected one of: ${PictureSizes.join(', ')}`);
         const [width, height] = value.split('x');
         //TODO: Bacon: IMP
+        // eslint-disable-next-line
         const aspectRatio = parseFloat(width) / parseFloat(height);
         this._pictureSize = value;
     }

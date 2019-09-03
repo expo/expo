@@ -18,9 +18,14 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
   A base class for common SDK buttons.
  */
+NS_SWIFT_NAME(FBButton)
 @interface FBSDKButton : UIButton
 
 @end
+
+NS_ASSUME_NONNULL_END

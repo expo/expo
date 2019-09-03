@@ -473,7 +473,6 @@ jobs:
       - guard_sdk_tests
       - update_submodules
       - git_lfs_pull
-      - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros

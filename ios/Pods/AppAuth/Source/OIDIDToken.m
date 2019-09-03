@@ -30,15 +30,6 @@ static NSString *const kNonceKey = @"nonce";
 
 @implementation OIDIDToken
 
-@synthesize header = _header;
-@synthesize claims = _claims;
-@synthesize issuer = _issuer;
-@synthesize subject = _subject;
-@synthesize audience = _audience;
-@synthesize expiresAt = _expiresAt;
-@synthesize issuedAt = _issuedAt;
-@synthesize nonce = _nonce;
-
 - (instancetype)initWithIDTokenString:(NSString *)idToken {
   self = [super init];
   NSArray *sections = [idToken componentsSeparatedByString:@"."];

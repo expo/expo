@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import hoistNonReactStatics from 'hoist-non-react-statics';
 import isUserAuthenticated from './isUserAuthenticated';
 
 @connect(data => Authenticated.getDataProps(data))
@@ -31,6 +32,8 @@ export default function onlyIfAuthenticated(TargetComponent: any) {
       );
     }
   }
+
+  hoistNonReactStatics(OnlyIfAuthenticated, TargetComponent);
 
   return OnlyIfAuthenticated;
 }

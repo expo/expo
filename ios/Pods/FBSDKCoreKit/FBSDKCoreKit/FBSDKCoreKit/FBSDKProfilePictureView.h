@@ -18,6 +18,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  FBSDKProfilePictureMode enum
   Defines the aspect ratio mode for the source image of the profile picture.
@@ -32,11 +34,12 @@ typedef NS_ENUM(NSUInteger, FBSDKProfilePictureMode)
     The original picture's aspect ratio will be used for the source image in the view.
    */
   FBSDKProfilePictureModeNormal,
-};
+} NS_SWIFT_NAME(Profile.PictureMode);
 
 /**
   A view to display a profile picture.
  */
+NS_SWIFT_NAME(FBProfilePictureView)
 @interface FBSDKProfilePictureView : UIView
 
 /**
@@ -58,3 +61,5 @@ typedef NS_ENUM(NSUInteger, FBSDKProfilePictureMode)
 - (void)setNeedsImageUpdate;
 
 @end
+
+NS_ASSUME_NONNULL_END

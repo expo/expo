@@ -190,6 +190,12 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
           return;
         }
 
+        // we don't ever want to show any Expo UI in a production standalone app
+        // so hard crash in this case
+        if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
+          throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
+        }
+
         if (!isDebugModeEnabled()) {
           removeViews();
           mReactInstanceManager.assign(null);

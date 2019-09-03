@@ -21,8 +21,10 @@
 #import "FBSDKServerConfiguration.h"
 
 #define FBSDK_SERVER_CONFIGURATION_MANAGER_CACHE_TIMEOUT (60 * 60)
-typedef void(^FBSDKServerConfigurationManagerLoadBlock)(FBSDKServerConfiguration *serverConfiguration, NSError *error);
+typedef void (^FBSDKServerConfigurationBlock)(FBSDKServerConfiguration *serverConfiguration, NSError *error)
+NS_SWIFT_NAME(ServerConfigurationBlock);
 
+NS_SWIFT_NAME(ServerConfigurationManager)
 @interface FBSDKServerConfigurationManager : NSObject
 
 /**
@@ -38,6 +40,6 @@ typedef void(^FBSDKServerConfigurationManagerLoadBlock)(FBSDKServerConfiguration
 
  This method will use a cached configuration if it is valid and not expired.
  */
-+ (void)loadServerConfigurationWithCompletionBlock:(FBSDKServerConfigurationManagerLoadBlock)completionBlock;
++ (void)loadServerConfigurationWithCompletionBlock:(FBSDKServerConfigurationBlock)completionBlock;
 
 @end

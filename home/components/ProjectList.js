@@ -46,7 +46,7 @@ export default class ProjectList extends React.PureComponent {
     if (!this.state.isReady) {
       return (
         <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-          <ActivityIndicator />
+          <ActivityIndicator color={Colors.light.tintColor} />
         </View>
       );
     }

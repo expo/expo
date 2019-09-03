@@ -1,4 +1,4 @@
-import { AuthenticationType, AuthOptions, LocalAuthenticationResult } from './LocalAuthentication.types';
+import { AuthOptions, AuthenticationType, LocalAuthenticationResult } from './LocalAuthentication.types';
 export { AuthenticationType, LocalAuthenticationResult };
 export declare function hasHardwareAsync(): Promise<boolean>;
 export declare function supportedAuthenticationTypesAsync(): Promise<AuthenticationType[]>;

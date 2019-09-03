@@ -34,7 +34,7 @@ export default {
             }
         }
         else {
-            return Promise.reject(null);
+            return Promise.resolve(CellularGeneration.UNKNOWN);
         }
     },
 };

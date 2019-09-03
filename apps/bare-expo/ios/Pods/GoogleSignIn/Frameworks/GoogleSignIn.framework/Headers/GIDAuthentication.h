@@ -26,7 +26,7 @@ typedef void (^GIDAuthenticationHandler)(GIDAuthentication *authentication, NSEr
 typedef void (^GIDAccessTokenHandler)(NSString *accessToken, NSError *error);
 
 // This class represents the OAuth 2.0 entities needed for sign-in.
-@interface GIDAuthentication : NSObject <NSCoding>
+@interface GIDAuthentication : NSObject <NSSecureCoding>
 
 // The client ID associated with the authentication.
 @property(nonatomic, readonly) NSString *clientID;
@@ -57,16 +57,5 @@ typedef void (^GIDAccessTokenHandler)(NSString *accessToken, NSError *error);
 
 // Refreshes the access token and the ID token using the refresh token.
 - (void)refreshTokensWithHandler:(GIDAuthenticationHandler)handler;
-
-// Gets the access token, which may be a new one from the refresh token if the original has already
-// expired or is about to expire. Deprecated: use |getTokensWithHandler:| to get access tokens
-// instead.
-- (void)getAccessTokenWithHandler:(GIDAccessTokenHandler)handler
-    DEPRECATED_MSG_ATTRIBUTE("Use |getTokensWithHandler:| instead.");
-
-// Refreshes the access token with the refresh token. Deprecated: Use |refreshTokensWithHandler:|
-// to refresh access tokens instead.
-- (void)refreshAccessTokenWithHandler:(GIDAccessTokenHandler)handler
-    DEPRECATED_MSG_ATTRIBUTE("Use |refreshTokensWithHandler:| instead.");
 
 @end

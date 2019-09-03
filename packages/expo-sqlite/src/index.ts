@@ -1,1 +1,1 @@
- export { default as SQLite } from './SQLite';
+export { default as SQLite } from './SQLite';
