@@ -41,6 +41,10 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:uri];
+  // no scheme provided in uri, handle as a local path by adding 'file://' scheme
+  if (!url.scheme) {
+      url = [NSURL fileURLWithPath:uri isDirectory:false];
+  }
   NSString *path = [url.path stringByStandardizingPath];
 
   if (!_fileSystem) {
