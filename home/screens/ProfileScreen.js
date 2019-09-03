@@ -20,8 +20,8 @@ import OtherProfileContainer from '../containers/OtherProfileContainer';
 import SessionActions from '../redux/SessionActions';
 import SettingsActions from '../redux/SettingsActions';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
-import isUserAuthenticated from '../utils/isUserAuthenticated';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
+import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 import { MaterialIcons } from '../components/Icons';
 
@@ -33,7 +33,7 @@ export default class ProfileScreen extends React.Component {
       headerRight: navigation.getParam('username') ? (
         <OptionsButton />
       ) : (
-        Platform.select({ ios: <UserSettingsButtonIOS />, default: <SignOutButtonAndroid /> })
+        Platform.select({ ios: <UserSettingsButtonIOS />, default: <OptionsButtonAndroid /> })
       ),
     };
   };
@@ -90,15 +90,15 @@ export default class ProfileScreen extends React.Component {
   }
 }
 
-@onlyIfAuthenticated
-@connect((data, props) => SignOutButtonAndroid.getDataProps(data, props))
-class SignOutButtonAndroid extends React.Component {
+@connect((data, props) => OptionsButtonAndroid.getDataProps(data, props))
+class OptionsButtonAndroid extends React.Component {
   _anchor: View;
 
   static getDataProps(data, props) {
     let { settings } = data;
 
     return {
+      isAuthenticated: isUserAuthenticated(data.session),
       preferredAppearance: settings.preferredAppearance,
     };
   }
@@ -122,9 +122,14 @@ class SignOutButtonAndroid extends React.Component {
 
   _handlePress = () => {
     let handle = findNodeHandle(this._anchor);
+    let options = ['Toggle dark mode'];
+    if (this.props.isAuthenticated) {
+      options.push('Sign out');
+    }
+
     NativeModules.UIManager.showPopupMenu(
       handle,
-      ['Toggle dark mode', 'Sign out'],
+      options,
       () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
