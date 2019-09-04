@@ -120,7 +120,7 @@ export type AppleAuthenticationCredential = {
    * if the user denied access. May also be null if this is not the first time
    * the user has signed into your app.
    */
-  fullName?: AppleAuthenticationFullName;
+  fullName: AppleAuthenticationFullName | null;
 
   /**
    * The user’s email address. Might not be present if you didn't request the
