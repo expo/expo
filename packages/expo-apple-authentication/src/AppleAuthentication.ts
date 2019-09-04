@@ -18,12 +18,12 @@ export async function isAvailableAsync(): Promise<boolean> {
   return ExpoAppleAuthentication.isAvailableAsync();
 }
 
-export async function signInAsync(options: AppleAuthenticationSignInOptions): Promise<AppleAuthenticationCredential> {
+export async function signInAsync(options?: AppleAuthenticationSignInOptions): Promise<AppleAuthenticationCredential> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'signInAsync');
   }
   const requestOptions = {
-    ...options,
+    ...(options || {}),
     requestedOperation: AppleAuthenticationOperation.LOGIN,
   };
   return ExpoAppleAuthentication.requestAsync(requestOptions);
@@ -51,11 +51,11 @@ export async function signOutAsync(options: AppleAuthenticationSignOutOptions): 
   return ExpoAppleAuthentication.requestAsync(requestOptions);
 }
 
-export async function getCredentialStateAsync(userId: string): Promise<AppleAuthenticationCredentialState> {
+export async function getCredentialStateAsync(user: string): Promise<AppleAuthenticationCredentialState> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.getCredentialStateAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'getCredentialStateAsync');
   }
-  return ExpoAppleAuthentication.getCredentialStateAsync(userId);
+  return ExpoAppleAuthentication.getCredentialStateAsync(user);
 }
 
 const ExpoAppleAuthenticationEventEmitter = new EventEmitter(ExpoAppleAuthentication);
