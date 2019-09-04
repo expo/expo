@@ -1,8 +1,8 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { EventEmitter, Subscription } from '@unimodules/core';
 import UUID from 'uuid-js';
-import ExponentFileSystem from './ExponentFileSystem';
 import { Platform } from 'react-native';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+
+import ExponentFileSystem from './ExponentFileSystem';
 
 import {
   DownloadOptions,
@@ -23,7 +23,7 @@ if (!ExponentFileSystem) {
   );
 }
 // Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem);
+const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 
 export {
   DownloadOptions,

@@ -8,6 +8,6 @@ export default {
     sourceFilename: string,
     options: ThumbnailOptions = {}
   ): Promise<VideoThumbnailsResult> {
-    throw new Error("ExpoVideoThumbnails not supported on Expo Web")
-  }
+    throw new Error('ExpoVideoThumbnails not supported on Expo Web');
+  },
 };

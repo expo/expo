@@ -26,6 +26,10 @@
  */
 static NSString *const kConfigurationKey = @"configuration";
 
+/*! @brief The key for the @c initialAccessToken property for @c NSSecureCoding
+ */
+static NSString *const kInitialAccessToken  = @"initial_access_token";
+
 /*! @brief Key used to encode the @c redirectURIs property for @c NSSecureCoding
  */
 static NSString *const kRedirectURIsKey = @"redirect_uris";
@@ -49,15 +53,6 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 
 @implementation OIDRegistrationRequest
 
-@synthesize configuration = _configuration;
-@synthesize applicationType = _applicationType;
-@synthesize redirectURIs = _redirectURIs;
-@synthesize responseTypes = _responseTypes;
-@synthesize grantTypes = _grantTypes;
-@synthesize subjectType = _subjectType;
-@synthesize tokenEndpointAuthenticationMethod = _tokenEndpointAuthenticationMethod;
-@synthesize additionalParameters = _additionalParameters;
-
 #pragma mark - Initializers
 
 - (instancetype)init
@@ -78,9 +73,28 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
              subjectType:(nullable NSString *)subjectType
  tokenEndpointAuthMethod:(nullable NSString *)tokenEndpointAuthenticationMethod
     additionalParameters:(nullable NSDictionary<NSString *, NSString *> *)additionalParameters {
+  return [self initWithConfiguration:configuration
+                        redirectURIs:redirectURIs
+                       responseTypes:responseTypes
+                          grantTypes:grantTypes
+                         subjectType:subjectType
+             tokenEndpointAuthMethod:tokenEndpointAuthenticationMethod
+                  initialAccessToken:nil
+                additionalParameters:additionalParameters];
+}
+
+- (instancetype)initWithConfiguration:(OIDServiceConfiguration *)configuration
+               redirectURIs:(NSArray<NSURL *> *)redirectURIs
+              responseTypes:(nullable NSArray<NSString *> *)responseTypes
+                 grantTypes:(nullable NSArray<NSString *> *)grantTypes
+                subjectType:(nullable NSString *)subjectType
+    tokenEndpointAuthMethod:(nullable NSString *)tokenEndpointAuthenticationMethod
+         initialAccessToken:(nullable NSString *)initialAccessToken
+       additionalParameters:(nullable NSDictionary<NSString *, NSString *> *)additionalParameters {
   self = [super init];
   if (self) {
     _configuration = [configuration copy];
+    _initialAccessToken = [initialAccessToken copy];
     _redirectURIs = [redirectURIs copy];
     _responseTypes = [responseTypes copy];
     _grantTypes = [grantTypes copy];
@@ -114,6 +128,8 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
   OIDServiceConfiguration *configuration =
   [aDecoder decodeObjectOfClass:[OIDServiceConfiguration class]
                          forKey:kConfigurationKey];
+  NSString *initialAccessToken = [aDecoder decodeObjectOfClass:[NSString class]
+                                                        forKey:kInitialAccessToken];
   NSArray<NSURL *> *redirectURIs = [aDecoder decodeObjectOfClass:[NSArray<NSURL *> class]
                                                           forKey:kRedirectURIsKey];
   NSArray<NSString *> *responseTypes = [aDecoder decodeObjectOfClass:[NSArray<NSString *> class]
@@ -136,12 +152,14 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
                           grantTypes:grantTypes
                          subjectType:subjectType
              tokenEndpointAuthMethod:tokenEndpointAuthenticationMethod
+                  initialAccessToken:initialAccessToken
                 additionalParameters:additionalParameters];
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder {
   [aCoder encodeObject:_configuration forKey:kConfigurationKey];
+  [aCoder encodeObject:_initialAccessToken forKey:kInitialAccessToken];
   [aCoder encodeObject:_redirectURIs forKey:kRedirectURIsKey];
   [aCoder encodeObject:_responseTypes forKey:kResponseTypesKey];
   [aCoder encodeObject:_grantTypes forKey:kGrantTypesKey];
@@ -166,8 +184,10 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 
 - (NSURLRequest *)URLRequest {
   static NSString *const kHTTPPost = @"POST";
+  static NSString *const kBearer = @"Bearer";
   static NSString *const kHTTPContentTypeHeaderKey = @"Content-Type";
   static NSString *const kHTTPContentTypeHeaderValue = @"application/json";
+  static NSString *const kHTTPAuthorizationHeaderKey = @"Authorization";
 
   NSData *postBody = [self JSONString];
   if (!postBody) {
@@ -179,6 +199,10 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
       [[NSURLRequest requestWithURL:registrationRequestURL] mutableCopy];
   URLRequest.HTTPMethod = kHTTPPost;
   [URLRequest setValue:kHTTPContentTypeHeaderValue forHTTPHeaderField:kHTTPContentTypeHeaderKey];
+  if (_initialAccessToken) {
+    NSString *value = [NSString stringWithFormat:@"%@ %@", kBearer, _initialAccessToken];
+    [URLRequest setValue:value forHTTPHeaderField:kHTTPAuthorizationHeaderKey];
+  }
   URLRequest.HTTPBody = postBody;
   return URLRequest;
 }

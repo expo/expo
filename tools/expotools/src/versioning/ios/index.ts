@@ -457,11 +457,11 @@ async function generatePodfileDepsAsync(
   }
   let yogaPodDependency = '';
   if (versionedPodNames.yoga) {
-    yogaPodDependency = `pod '${versionedPodNames.yoga}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga'`;
+    yogaPodDependency = `pod '${versionedPodNames.yoga}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/ReactCommon/${versionName}yoga', :project_name => '${versionName}'`;
   }
   const versionableUniversalModulesPods = (await getListOfPackagesAsync())
     .filter(pkg => pkg.isVersionableOnPlatform('ios') && pkg.isIncludedInExpoClientOnPlatform('ios'))
-    .map(pkg => `pod '${versionedPodNames[pkg.podspecName!]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${pkg.podspecName}'`)
+    .map(pkg => `pod '${versionedPodNames[pkg.podspecName!]}', :inhibit_warnings => true, :path => '${versionedReactPodPath}/${pkg.podspecName}', :project_name => '${versionName}'`)
     .join('\n    ');
 
   // Add a dependency on newPodName
@@ -482,10 +482,10 @@ async function generatePodfileDepsAsync(
       'RCTVibration',
       'RCTWebSocket',
       'CxxBridge'
-    ]
+    ], :project_name => '${versionName}'
     pod '${versionedPodNames.ExpoKit}', :inhibit_warnings => true, :path => '${versionedReactPodPath}', :subspecs => [
       ${expoDepsTemplateParam}
-    ]
+    ], :project_name => '${versionName}'
     ${yogaPodDependency}
     ${versionableUniversalModulesPods}
     # End generated dependency`;

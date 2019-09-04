@@ -18,7 +18,7 @@ export {
   Subscription,
   SyntheticPlatformEmitter,
   requireNativeViewManager,
-
+  // Errors
   CodedError,
   UnavailabilityError,
 };

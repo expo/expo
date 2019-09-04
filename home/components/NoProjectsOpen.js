@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { StyledView } from './Views';
 
 import Colors from '../constants/Colors';

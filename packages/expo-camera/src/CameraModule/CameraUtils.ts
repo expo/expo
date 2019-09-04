@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 
 import { PictureOptions } from './../Camera.types';

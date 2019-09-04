@@ -31,7 +31,7 @@ NSString *const OIDResourceServerAuthorizationErrorDomain = @"org.openid.appauth
 NSString *const OIDHTTPErrorDomain = @"org.openid.appauth.remote-http";
 
 NSString *const OIDOAuthExceptionInvalidAuthorizationFlow = @"An OAuth redirect was sent to a "
-    "OIDAuthorizationFlowSession after it already completed.";
+    "OIDExternalUserAgentSession after it already completed.";
 
 NSString *const OIDOAuthExceptionInvalidTokenRequestNullRedirectURL = @"A OIDTokenRequest was "
     "created with a grant_type that requires a redirectURL, but a null redirectURL was given";

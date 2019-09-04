@@ -1,10 +1,9 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
 
-import Colors from '../constants/Colors';
 import PrimaryButton from './PrimaryButton';
 import ScrollView from './NavigationScrollView';
 import { StyledText } from './Text';

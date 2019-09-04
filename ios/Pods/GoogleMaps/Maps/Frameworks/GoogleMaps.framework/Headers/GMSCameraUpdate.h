@@ -14,7 +14,7 @@
 @class GMSCameraPosition;
 @class GMSCoordinateBounds;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSCameraUpdate represents an update that may be applied to a GMSMapView.
@@ -106,4 +106,4 @@ NS_ASSUME_NONNULL_BEGIN;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

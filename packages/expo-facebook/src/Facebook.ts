@@ -10,7 +10,6 @@ export type FacebookLoginResult = {
 
 export type FacebookOptions = {
   permissions?: string[];
-  behavior?: 'web' | 'native' | 'browser' | 'system';
 };
 
 export async function logInWithReadPermissionsAsync(

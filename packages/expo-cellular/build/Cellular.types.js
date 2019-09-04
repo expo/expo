@@ -5,5 +5,4 @@ export var CellularGeneration;
     CellularGeneration[CellularGeneration["3G"] = 2] = "3G";
     CellularGeneration[CellularGeneration["4G"] = 3] = "4G";
 })(CellularGeneration || (CellularGeneration = {}));
-;
 //# sourceMappingURL=Cellular.types.js.map

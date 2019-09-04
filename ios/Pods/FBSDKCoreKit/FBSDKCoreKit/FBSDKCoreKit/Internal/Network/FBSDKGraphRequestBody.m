@@ -18,8 +18,12 @@
 
 #import "FBSDKGraphRequestBody.h"
 
+#import "../../Basics/Internal/FBSDKBasicUtility+Internal.h"
+
+#import "FBSDKConstants.h"
 #import "FBSDKCrypto.h"
 #import "FBSDKGraphRequestDataAttachment.h"
+#import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
 #import "FBSDKSettings.h"
 
@@ -131,7 +135,7 @@
 - (void)_appendWithKey:(NSString *)key
               filename:(NSString *)filename
            contentType:(NSString *)contentType
-          contentBlock:(void(^)(void))contentBlock
+          contentBlock:(FBSDKCodeBlock)contentBlock
 {
   NSMutableArray *disposition = [[NSMutableArray alloc] init];
   [disposition addObject:@"Content-Disposition: form-data"];
@@ -150,6 +154,15 @@
     contentBlock();
   }
   [self appendUTF8:[[NSString alloc] initWithFormat:@"%@--%@%@", kNewline, _stringBoundary, kNewline]];
+}
+
+- (NSData *)compressedData
+{
+  if (!self.data.length || ![[self mimeContentType] isEqualToString:@"application/json"]) {
+    return nil;
+  }
+
+  return [FBSDKBasicUtility gzip:self.data];
 }
 
 @end

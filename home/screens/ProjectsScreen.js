@@ -10,7 +10,6 @@ import {
   Clipboard,
   Platform,
   RefreshControl,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
