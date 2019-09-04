@@ -20,7 +20,7 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * button.
  *
  * @see [Apple
- * Documention](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
+ * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
 declare const AppleAuthenticationButton: React.FunctionComponent<AppleAuthenticationButtonProps>;

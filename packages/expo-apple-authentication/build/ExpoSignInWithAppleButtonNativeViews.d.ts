@@ -1,7 +1,0 @@
-declare let ExpoSignInWithAppleButtonSignInWhite: any;
-declare let ExpoSignInWithAppleButtonSignInWhiteOutline: any;
-declare let ExpoSignInWithAppleButtonSignInBlack: any;
-declare let ExpoSignInWithAppleButtonContinueWhite: any;
-declare let ExpoSignInWithAppleButtonContinueWhiteOutline: any;
-declare let ExpoSignInWithAppleButtonContinueBlack: any;
-export { ExpoSignInWithAppleButtonSignInWhite, ExpoSignInWithAppleButtonSignInWhiteOutline, ExpoSignInWithAppleButtonSignInBlack, ExpoSignInWithAppleButtonContinueWhite, ExpoSignInWithAppleButtonContinueWhiteOutline, ExpoSignInWithAppleButtonContinueBlack, };
