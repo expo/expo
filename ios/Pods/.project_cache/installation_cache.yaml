@@ -2629,15 +2629,13 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.h"
       - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication.m"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication/EXAppleAuthentication.h"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication/EXAppleAuthentication.m"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication/ExpoSignInWithAppleButton.h"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication/ExpoSignInWithAppleButton.m"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthentication/ExpoSignInWithAppleButtonManager.m"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXSignInWithAppleButton.h"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXSignInWithAppleButton.m"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXSignInWithAppleButtonViewManager.h"
-      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXSignInWithAppleButtonViewManagers.m"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationButton.h"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationButton.m"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationButtonViewManagers.m"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationMappings.h"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationMappings.m"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationRequest.h"
+      - "../../packages/expo-apple-authentication/ios/EXAppleAuthentication/EXAppleAuthenticationRequest.m"
     PROJECT_NAME: EXAppleAuthentication
     SPECS:
       - EXAppleAuthentication (1.0.0)
@@ -5317,6 +5315,8 @@ CACHE_KEYS:
       - "../../packages/@unimodules/core/ios/UMCore/UMAppDelegateWrapper.h"
       - "../../packages/@unimodules/core/ios/UMCore/UMAppDelegateWrapper.m"
       - "../../packages/@unimodules/core/ios/UMCore/UMDefines.h"
+      - "../../packages/@unimodules/core/ios/UMCore/UMErrorCodes.h"
+      - "../../packages/@unimodules/core/ios/UMCore/UMErrorCodes.m"
       - "../../packages/@unimodules/core/ios/UMCore/UMExportedModule.h"
       - "../../packages/@unimodules/core/ios/UMCore/UMExportedModule.m"
       - "../../packages/@unimodules/core/ios/UMCore/UMModuleRegistry/UMModuleRegistry.h"
