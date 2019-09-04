@@ -17,8 +17,8 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "test": "yarn test:dev && yarn test:prod",
-    "test:dev": "E2E_ENV=development jest --runInBand",
-    "test:prod": "E2E_ENV=production jest --runInBand",
+    "test:dev": "EXPO_WEB_E2E_ENV=development jest --runInBand",
+    "test:prod": "EXPO_WEB_E2E_ENV=production jest --runInBand",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -40,6 +40,7 @@
     "@expo/babel-preset-cli": "^0.2.0",
     "@expo/config": "^2.1.4",
     "@expo/xdl": "^56.2.1",
+    "@types/getenv": "^0.7.0",
     "babel-jest": "^24.7.1",
     "getenv": "^0.7.0",
     "jest": "^24.7.1",

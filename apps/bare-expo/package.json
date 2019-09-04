@@ -9,6 +9,8 @@
     "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
     "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
     "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
+    "test:web": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
+    "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.json",
     "web": "expo start --web",
     "start": "react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
@@ -93,9 +95,7 @@
     "detox": "^14.0.2",
     "expo-yarn-workspaces": "^1.2.0",
     "jest-expo": "^34.0.0",
+    "jest-expo-puppeteer": "^0.0.0",
     "typescript": "^3.4.5"
-  },
-  "jest": {
-    "preset": "react-native"
   }
 }
