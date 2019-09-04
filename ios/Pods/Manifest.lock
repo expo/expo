@@ -1223,15 +1223,21 @@ DEPENDENCIES:
   - yogaABI34_0_0 (from `./versioned-react-native/ABI34_0_0/ReactCommon/ABI34_0_0yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
+    - Amplitude-iOS
+    - Analytics
     - AppAuth
+    - boost-for-react-native
     - Branch
     - CocoaLumberjack
     - Crashlytics
     - Fabric
+    - FBAudienceNetwork
     - FBSDKCoreKit
+    - FBSDKLoginKit
     - Firebase
     - FirebaseAnalytics
+    - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
@@ -1239,39 +1245,22 @@ SPEC REPOS:
     - FirebaseMLVision
     - FirebaseMLVisionFaceModel
     - Google-Maps-iOS-Utils
+    - Google-Mobile-Ads-SDK
     - GoogleAPIClientForREST
+    - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleMaps
     - GoogleMobileVision
+    - GoogleSignIn
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - JKBigInteger2
-    - nanopb
-    - Protobuf
-  trunk:
-    - Amplitude-iOS
-    - Analytics
-    - AppAuth
-    - boost-for-react-native
-    - Branch
-    - FBAudienceNetwork
-    - FBSDKCoreKit
-    - FBSDKLoginKit
-    - FirebaseCore
-    - Google-Maps-iOS-Utils
-    - Google-Mobile-Ads-SDK
-    - GoogleAPIClientForREST
-    - GoogleAppMeasurement
-    - GoogleMaps
-    - GoogleMobileVision
-    - GoogleSignIn
-    - GoogleUtilities
-    - GTMSessionFetcher
     - lottie-ios
     - nanopb
+    - Protobuf
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
