@@ -23,7 +23,7 @@ export type BarCodeEventCallbackArguments = {
 
 export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 
-export type PermissionsRespone = {
+export type PermissionsResponse = {
   status: "undetermined" | "granted" | "denied";
   expires: "never" | number;
   granted: boolean;
@@ -60,11 +60,11 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     barCodeTypes: Object.values(BarCodeType),
   };
 
-  static async getPermissionsAsync(): Promise<PermissionsRespone> {
+  static async getPermissionsAsync(): Promise<PermissionsResponse> {
     return ExpoBarCodeScannerModule.getPermissionsAsync();
   };
 
-  static async requestPermissionsAsync(): Promise<PermissionsRespone> {
+  static async requestPermissionsAsync(): Promise<PermissionsResponse> {
     return ExpoBarCodeScannerModule.requestPermissionsAsync();
   };
 

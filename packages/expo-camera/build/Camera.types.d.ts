@@ -77,7 +77,7 @@ export declare type NativeProps = {
     ratio?: string;
     useCamera2Api?: boolean;
 };
-export declare type PermissionsRespone = {
+export declare type PermissionsResponse = {
     status: "undetermined" | "granted" | "denied";
     expires: "never" | number;
     granted: boolean;

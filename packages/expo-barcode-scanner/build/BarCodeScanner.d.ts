@@ -10,7 +10,7 @@ export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
 export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
-export declare type PermissionsRespone = {
+export declare type PermissionsResponse = {
     status: "undetermined" | "granted" | "denied";
     expires: "never" | number;
     granted: boolean;
@@ -94,8 +94,8 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: unknown[];
     };
-    static getPermissionsAsync(): Promise<PermissionsRespone>;
-    static requestPermissionsAsync(): Promise<PermissionsRespone>;
+    static getPermissionsAsync(): Promise<PermissionsResponse>;
+    static requestPermissionsAsync(): Promise<PermissionsResponse>;
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<{
         type: string;
         data: string;

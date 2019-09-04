@@ -154,7 +154,7 @@ export type RecordingStatus = {
   durationMillis: number;
 };
 
-export type PermissionsRespone = {
+export type PermissionsResponse = {
   status: "undetermined" | "granted" | "denied";
   expires: "never" | number;
   granted: boolean;
@@ -163,11 +163,11 @@ export type PermissionsRespone = {
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
 
-export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
   return ExponentAV.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
   return ExponentAV.requestPermissionsAsync();
 }
 

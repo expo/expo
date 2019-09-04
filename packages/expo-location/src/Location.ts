@@ -56,7 +56,7 @@ export interface Address {
   name: string;
 }
 
-export type PermissionsRespone = {
+export type PermissionsResponse = {
   status: "undetermined" | "granted" | "denied";
   expires: "never" | number;
   granted: boolean;
@@ -478,11 +478,11 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
   return await ExpoLocation.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
   return await ExpoLocation.requestPermissionsAsync();
 }
 

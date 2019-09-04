@@ -232,7 +232,7 @@ export type Container = {
   type: ContainerType;
 };
 
-export type PermissionsRespone = {
+export type PermissionsResponse = {
   status: "undetermined" | "granted" | "denied";
   expires: "never" | number;
   granted: boolean;
@@ -455,7 +455,7 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
   return await ExpoContacts.getContainersAsync(containerQuery);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
   if (!ExpoContacts.getPermissionsAsync) {
     throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
   }
@@ -463,7 +463,7 @@ export async function getPermissionsAsync(): Promise<PermissionsRespone> {
   return ExpoContacts.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
   if (!ExpoContacts.requestPermissionsAsync) {
     throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
   }

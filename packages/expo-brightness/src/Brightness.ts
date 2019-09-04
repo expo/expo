@@ -7,7 +7,7 @@ export enum BrightnessMode {
   MANUAL = 2,
 };
 
-export type PermissionsRespone = {
+export type PermissionsResponse = {
   status: "undetermined" | "granted" | "denied";
   expires: "never" | number;
   granted: boolean;
@@ -71,10 +71,10 @@ export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMod
   return await NativeModulesProxy.ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionsRespone> {
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
   return NativeModulesProxy.ExpoBrightness.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsRespone> {
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
   return NativeModulesProxy.ExpoBrightness.requestPermissionsAsync();
 }

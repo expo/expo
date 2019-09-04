@@ -29,7 +29,7 @@ export type OpenFileBrowserOptions = {
   allowsMultipleSelection: boolean;
 };
 
-export type PermissionsRespone = {
+export type PermissionsResponse = {
   status: "undetermined" | "granted" | "denied";
   expires: "never" | number;
   granted: boolean;

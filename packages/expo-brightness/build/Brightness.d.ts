@@ -3,7 +3,7 @@ export declare enum BrightnessMode {
     AUTOMATIC = 1,
     MANUAL = 2
 }
-export declare type PermissionsRespone = {
+export declare type PermissionsResponse = {
     status: "undetermined" | "granted" | "denied";
     expires: "never" | number;
     granted: boolean;
@@ -16,5 +16,5 @@ export declare function useSystemBrightnessAsync(): Promise<void>;
 export declare function isUsingSystemBrightnessAsync(): Promise<boolean>;
 export declare function getSystemBrightnessModeAsync(): Promise<BrightnessMode>;
 export declare function setSystemBrightnessModeAsync(brightnessMode: BrightnessMode): Promise<void>;
-export declare function getPermissionsAsync(): Promise<PermissionsRespone>;
-export declare function requestPermissionsAsync(): Promise<PermissionsRespone>;
+export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
