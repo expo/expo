@@ -65,8 +65,8 @@ public class AppAuthModule extends ExportedModule {
 
   private AuthorizationServiceConfiguration createOAuthServiceConfiguration(Map<String, String> config) {
     return new AuthorizationServiceConfiguration(
-        Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
         Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
+        Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
         config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT)
           ? Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
           : null
