@@ -1,10 +1,9 @@
 /**
- * Scopes you can request when calling `AppleAuthentication.loginAsync()` or
+ * Scopes you can request when calling `AppleAuthentication.signInAsync()` or
  * `AppleAuthentication.refreshAsync()`.
  *
- * @note Note that it is possible that you will not be granted all of the scopes
- * which you request. You will still need to handle null values for any fields
- * you request.
+ * @note Note that it is possible that you will not be granted all of the scopes which you request.
+ * You will still need to handle null values for any fields you request.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope)
@@ -26,8 +25,7 @@ export var AppleAuthenticationOperation;
     AppleAuthenticationOperation[AppleAuthenticationOperation["LOGOUT"] = 3] = "LOGOUT";
 })(AppleAuthenticationOperation || (AppleAuthenticationOperation = {}));
 /**
- * The state of the credential when checked with
- * `AppleAuthentication.getCredentialStateAsync()`.
+ * The state of the credential when checked with `AppleAuthentication.getCredentialStateAsync()`.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate)
@@ -41,9 +39,9 @@ export var AppleAuthenticationCredentialState;
     AppleAuthenticationCredentialState[AppleAuthenticationCredentialState["TRANSFERRED"] = 3] = "TRANSFERRED";
 })(AppleAuthenticationCredentialState || (AppleAuthenticationCredentialState = {}));
 /**
- * A value that indicates whether the user appears to be a real person. You get
- * this in the realUserStatus property of a `Credential` object. It can be used
- * as one metric to help prevent fraud.
+ * A value that indicates whether the user appears to be a real person. You get this in the
+ * realUserStatus property of a `Credential` object. It can be used as one metric to help prevent
+ * fraud.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus)
@@ -73,12 +71,4 @@ export var AppleAuthenticationButtonStyle;
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE_OUTLINE"] = 1] = "WHITE_OUTLINE";
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["BLACK"] = 2] = "BLACK";
 })(AppleAuthenticationButtonStyle || (AppleAuthenticationButtonStyle = {}));
-/**
- * Indicates the status of the attempt to retrieve the requested credential.
- */
-export var AppleAuthenticationStatus;
-(function (AppleAuthenticationStatus) {
-    AppleAuthenticationStatus["SUCCESS"] = "success";
-    AppleAuthenticationStatus["CANCEL"] = "cancel";
-})(AppleAuthenticationStatus || (AppleAuthenticationStatus = {}));
 //# sourceMappingURL=AppleAuthentication.types.js.map

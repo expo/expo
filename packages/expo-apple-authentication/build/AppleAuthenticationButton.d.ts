@@ -1,22 +1,19 @@
 import React from 'react';
 import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 /**
- * This component displays the proprietary "Sign In with Apple" / "Continue with
- * Apple" button on your screen. The App Store Guidelines require you to use
- * this component to start the sign in process instead of a custom button. You
- * can customize the design of the button using the properties. You should start
- * the sign in process when the `onPress` property is called.
+ * This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
+ * your screen. The App Store Guidelines require you to use this component to start the sign in
+ * process instead of a custom button. You can customize the design of the button using the
+ * properties. You should start the sign in process when the `onPress` property is called.
  *
- * You should only attempt to render this if
- * `AppleAuthentication.isAvailableAsync()` resolves to true. This component
- * will render nothing if it is not available and you will get a warning if
+ * You should only attempt to render this if `AppleAuthentication.isAvailableAsync()` resolves to
+ * true. This component will render nothing if it is not available and you will get a warning if
  * `__DEV__ === true`.
  *
- * The properties of this component extend from `View`; however, you should not
- * attempt to set `backgroundColor` or `borderRadius` with the `style` property.
- * This will not work and is against the App Store Guidelines. Instead, you
- * should use the `buttonStyle` property to choose one of the predefined color
- * styles and the `cornerRadius` property to change the border radius of the
+ * The properties of this component extend from `View`; however, you should not attempt to set
+ * `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against
+ * the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the
+ * predefined color styles and the `cornerRadius` property to change the border radius of the
  * button.
  *
  * @see [Apple

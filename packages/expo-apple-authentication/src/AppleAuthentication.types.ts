@@ -9,8 +9,8 @@ export type AppleAuthenticationButtonProps = {
 };
 
 /**
- * The options you can supply when making a call to
- * `AppleAuthentication.signInAsync()`. None of these options are required.
+ * The options you can supply when making a call to `AppleAuthentication.signInAsync()`. None of
+ * these options are required.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
@@ -18,25 +18,23 @@ export type AppleAuthenticationButtonProps = {
  */
 export type AppleAuthenticationSignInOptions = {
   /**
-   * The scope of personal information to which your app is requesting access.
-   * The user can choose to deny your app access to any scope at the time of
-   * logging in.
+   * The scope of personal information to which your app is requesting access. The user can choose
+   * to deny your app access to any scope at the time of logging in.
    * @defaults `[]` (no scopes).
    */
   requestedScopes?: AppleAuthenticationScope[];
 
   /**
-   * Data that’s returned to you unmodified in the corresponding credential
-   * after a successful authentication. Used to verify that the response was
-   * from the request you made. Can be used to avoid replay attacks.
+   * Data that’s returned to you unmodified in the corresponding credential after a successful
+   * authentication. Used to verify that the response was from the request you made. Can be used to
+   * avoid replay attacks.
    */
   state?: string;
 };
 
 /**
- * The options you can supply when making a call to
- * `AppleAuthentication.refreshAsync()`. You must include the ID string of the
- * user whose credentials you'd like to refresh.
+ * The options you can supply when making a call to `AppleAuthentication.refreshAsync()`. You must
+ * include the ID string of the user whose credentials you'd like to refresh.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
@@ -46,25 +44,23 @@ export type AppleAuthenticationRefreshOptions = {
   user: string;
 
   /**
-   * The scope of personal information to which your app is requesting access.
-   * The user can choose to deny your app access to any scope at the time of
-   * refreshing.
+   * The scope of personal information to which your app is requesting access. The user can choose
+   * to deny your app access to any scope at the time of refreshing.
    * @defaults `[]` (no scopes).
    */
   requestedScopes?: AppleAuthenticationScope[];
 
   /**
-   * Data that’s returned to you unmodified in the corresponding credential
-   * after a successful authentication. Used to verify that the response was
-   * from the request you made. Can be used to avoid replay attacks.
+   * Data that’s returned to you unmodified in the corresponding credential after a successful
+   * authentication. Used to verify that the response was from the request you made. Can be used to
+   * avoid replay attacks.
    */
   state?: string;
 };
 
 /**
- * The options you can supply when making a call to
- * `AppleAuthentication.signOutAsync()`. You must include the ID string of the user to
- * sign out.
+ * The options you can supply when making a call to `AppleAuthentication.signOutAsync()`. You must
+ * include the ID string of the user to sign out.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
@@ -74,17 +70,16 @@ export type AppleAuthenticationSignOutOptions = {
   user: string;
 
   /**
-   * Data that’s returned to you unmodified in the corresponding credential
-   * after a successful authentication. Used to verify that the response was
-   * from the request you made. Can be used to avoid replay attacks.
+   * Data that’s returned to you unmodified in the corresponding credential after a successful
+   * authentication. Used to verify that the response was from the request you made. Can be used to
+   * avoid replay attacks.
    */
   state?: string;
 };
 
 /**
- * The user credentials returned from a successful call to
- * `AppleAuthentication.signInAsync()`, `AppleAuthentication.refreshAsync()`, or
- * `AppleAuthentication.signOutAsync()`.
+ * The user credentials returned from a successful call to `AppleAuthentication.signInAsync()`,
+ * `AppleAuthentication.refreshAsync()`, or `AppleAuthentication.signOutAsync()`.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential)
@@ -92,53 +87,48 @@ export type AppleAuthenticationSignOutOptions = {
  */
 export type AppleAuthenticationCredential = {
   /**
-   * An identifier associated with the authenticated user. You can use this to
-   * check if the user is still authenticated later. This is stable and can be
-   * shared across apps released under the same development team. The same user
-   * will have a different identifier for apps released by other developers.
+   * An identifier associated with the authenticated user. You can use this to check if the user is
+   * still authenticated later. This is stable and can be shared across apps released under the same
+   * development team. The same user will have a different identifier for apps released by other
+   * developers.
    */
   user: string;
 
   /**
-   * An arbitrary string that your app provided as `state` in the request that
-   * generated the credential. Used to verify that the response was from the
-   * request you made. Can be used to avoid replay attacks.
+   * An arbitrary string that your app provided as `state` in the request that generated the
+   * credential. Used to verify that the response was from the request you made. Can be used to
+   * avoid replay attacks.
    */
   state?: string;
 
   /**
-   * The user’s name. May be empty if you didn't request the `FULL_NAME` scope
-   * or if the user denied access. May also be empty if this is not the first
-   * time the user has signed into your app.
+   * The user’s name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied
+   * access. May also be empty if this is not the first time the user has signed into your app.
    */
   fullName: AppleAuthenticationFullName | null;
 
   /**
-   * The user’s email address. Might not be present if you didn't request the
-   * `EMAIL` scope. May also be null if this is not the first time the user has
-   * signed into your app. If the user chose to withhold their email address,
-   * this field will instead contain an obscured email address with an Apple
-   * domain.
+   * The user’s email address. Might not be present if you didn't request the `EMAIL` scope. May
+   * also be null if this is not the first time the user has signed into your app. If the user chose
+   * to withhold their email address, this field will instead contain an obscured email address with
+   * an Apple domain.
    */
   email?: string;
 
   /**
-   * A value that indicates whether the user appears to the system to be a real
-   * person.
+   * A value that indicates whether the user appears to the system to be a real person.
    */
   realUserStatus?: AppleAuthenticationUserDetectionStatus;
 
   /**
-   * A JSON Web Token (JWT) that securely communicates information about the
-   * user to your app. Returns null except when a user logs in for the first
-   * time on web.
+   * A JSON Web Token (JWT) that securely communicates information about the user to your app.
+   * Returns null except when a user logs in for the first time on web.
    */
   identityToken?: string;
 
   /**
-   * A short-lived token used by your app for proof of authorization when
-   * interacting with the app’s server counterpart. Returns null except when a
-   * user logs in for the first time on web.
+   * A short-lived token used by your app for proof of authorization when interacting with the app’s
+   * server counterpart. Returns null except when a user logs in for the first time on web.
    */
   authorizationCode?: string;
 };
@@ -161,9 +151,8 @@ export type AppleAuthenticationRevokeListener = () => void;
  * Scopes you can request when calling `AppleAuthentication.signInAsync()` or
  * `AppleAuthentication.refreshAsync()`.
  *
- * @note Note that it is possible that you will not be granted all of the scopes
- * which you request. You will still need to handle null values for any fields
- * you request.
+ * @note Note that it is possible that you will not be granted all of the scopes which you request.
+ * You will still need to handle null values for any fields you request.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope)
@@ -185,8 +174,7 @@ export enum AppleAuthenticationOperation {
 }
 
 /**
- * The state of the credential when checked with
- * `AppleAuthentication.getCredentialStateAsync()`.
+ * The state of the credential when checked with `AppleAuthentication.getCredentialStateAsync()`.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate)
@@ -200,9 +188,9 @@ export enum AppleAuthenticationCredentialState {
 }
 
 /**
- * A value that indicates whether the user appears to be a real person. You get
- * this in the realUserStatus property of a `Credential` object. It can be used
- * as one metric to help prevent fraud.
+ * A value that indicates whether the user appears to be a real person. You get this in the
+ * realUserStatus property of a `Credential` object. It can be used as one metric to help prevent
+ * fraud.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus)

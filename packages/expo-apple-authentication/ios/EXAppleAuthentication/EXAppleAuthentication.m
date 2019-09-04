@@ -75,7 +75,7 @@ UM_EXPORT_METHOD_AS(requestAsync,
                     resolver:resolve
                     rejecter:reject];
   } else {
-    reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"This feature is not available on your iPhone.", nil);
+    reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"Apple authentication is not supported on this device.", nil);
   }
 }
 
