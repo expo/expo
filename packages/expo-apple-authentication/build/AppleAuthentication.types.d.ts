@@ -94,39 +94,38 @@ export declare type AppleAuthenticationCredential = {
      * The user’s name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied
      * access. May also be empty if this is not the first time the user has signed into your app.
      */
-    fullName: AppleAuthenticationFullName | null;
+    fullName: AppleAuthenticationFullName;
     /**
      * The user’s email address. Might not be present if you didn't request the `EMAIL` scope. May
      * also be null if this is not the first time the user has signed into your app. If the user chose
      * to withhold their email address, this field will instead contain an obscured email address with
      * an Apple domain.
      */
-    email?: string;
+    email: string | null;
     /**
      * A value that indicates whether the user appears to the system to be a real person.
      */
-    realUserStatus?: AppleAuthenticationUserDetectionStatus;
+    realUserStatus: AppleAuthenticationUserDetectionStatus;
     /**
      * A JSON Web Token (JWT) that securely communicates information about the user to your app.
-     * Returns null except when a user logs in for the first time on web.
      */
-    identityToken?: string;
+    identityToken: string;
     /**
      * A short-lived token used by your app for proof of authorization when interacting with the app’s
-     * server counterpart. Returns null except when a user logs in for the first time on web.
+     * server counterpart.
      */
-    authorizationCode?: string;
+    authorizationCode: string;
 };
 /**
  * An object representing the tokenized portions of the user's full name.
  */
 export declare type AppleAuthenticationFullName = {
-    namePrefix?: string;
-    givenName?: string;
-    middleName?: string;
-    familyName?: string;
-    nameSuffix?: string;
-    nickname?: string;
+    namePrefix: string | null;
+    givenName: string | null;
+    middleName: string | null;
+    familyName: string | null;
+    nameSuffix: string | null;
+    nickname: string | null;
 };
 export declare type AppleAuthenticationRevokeListener = () => void;
 /**
