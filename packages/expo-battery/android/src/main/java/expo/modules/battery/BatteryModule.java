@@ -2,6 +2,9 @@ package expo.modules.battery;
 
 import android.content.Context;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -14,7 +17,6 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.util.Log;
 
 public class BatteryModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoBattery";
@@ -49,6 +51,13 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("isSupported", true);
+    return constants;
   }
 
   @Override
@@ -127,33 +136,11 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
     promise.resolve(isLowPowerModeEnabled());
   }
 
-  @ExpoMethod
-  public void getPowerStateAsync(Promise promise) {
-    Bundle result = new Bundle();
-    IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-    Intent batteryIntent = mContext.getApplicationContext().registerReceiver(null, ifilter);
-
-    if (batteryIntent == null) {
-      result.putFloat("batteryLevel", -1);
-      result.putInt("batteryState", BatteryState.UNKNOWN.getValue());
-    } else {
-      int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-      int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-      float batteryLevel = (level != -1 && scale != -1) ? level / (float) scale : -1;
-      result.putFloat("batteryLevel", batteryLevel);
-
-      int status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-      result.putInt("batteryState", batteryStatusNativeToJS(status).getValue());
-    }
-    result.putBoolean("lowPowerMode", isLowPowerModeEnabled());
-
-    promise.resolve(result);
-  }
-
   private boolean isLowPowerModeEnabled() {
     PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
     if (powerManager == null) {
-      // We default to false on web and any future platforms that haven't been implemented yet
+      // We default to false on web and any future platforms that haven't been
+      // implemented yet
       return false;
     }
 
