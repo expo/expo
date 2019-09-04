@@ -6,7 +6,7 @@ export type AppleAuthenticationButtonProps = {
   buttonStyle: AppleAuthenticationButtonStyle;
   cornerRadius?: number;
   style?: StyleProp<ViewStyle>;
-}
+};
 
 /**
  * The options you can supply when making a call to
@@ -33,7 +33,7 @@ export type AppleAuthenticationSignInOptions = {
    * from the request you made. Can be used to avoid replay attacks.
    */
   state?: string;
-}
+};
 
 /**
  * The options you can supply when making a call to
@@ -61,7 +61,7 @@ export type AppleAuthenticationRefreshOptions = {
    * from the request you made. Can be used to avoid replay attacks.
    */
   state?: string;
-}
+};
 
 /**
  * The options you can supply when making a call to
@@ -81,7 +81,7 @@ export type AppleAuthenticationSignOutOptions = {
    * from the request you made. Can be used to avoid replay attacks.
    */
   state?: string;
-}
+};
 
 /**
  * The user credentials returned from a successful call to
@@ -150,7 +150,7 @@ export type AppleAuthenticationCredential = {
    * user logs in for the first time on web.
    */
   authorizationCode?: string;
-}
+};
 
 /**
  * An object representing the tokenized portions of the user's full name.
@@ -162,7 +162,7 @@ export type AppleAuthenticationFullName = {
   familyName?: string;
   nameSuffix?: string;
   nickname?: string;
-}
+};
 
 export type AppleAuthenticationRevokeListener = () => void;
 

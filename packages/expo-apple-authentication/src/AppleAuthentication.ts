@@ -18,7 +18,9 @@ export async function isAvailableAsync(): Promise<boolean> {
   return ExpoAppleAuthentication.isAvailableAsync();
 }
 
-export async function signInAsync(options?: AppleAuthenticationSignInOptions): Promise<AppleAuthenticationCredential> {
+export async function signInAsync(
+  options?: AppleAuthenticationSignInOptions
+): Promise<AppleAuthenticationCredential> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'signInAsync');
   }
@@ -29,7 +31,9 @@ export async function signInAsync(options?: AppleAuthenticationSignInOptions): P
   return ExpoAppleAuthentication.requestAsync(requestOptions);
 }
 
-export async function refreshAsync(options: AppleAuthenticationRefreshOptions): Promise<AppleAuthenticationCredential> {
+export async function refreshAsync(
+  options: AppleAuthenticationRefreshOptions
+): Promise<AppleAuthenticationCredential> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'refreshAsync');
   }
@@ -40,7 +44,9 @@ export async function refreshAsync(options: AppleAuthenticationRefreshOptions): 
   return ExpoAppleAuthentication.requestAsync(requestOptions);
 }
 
-export async function signOutAsync(options: AppleAuthenticationSignOutOptions): Promise<AppleAuthenticationCredential> {
+export async function signOutAsync(
+  options: AppleAuthenticationSignOutOptions
+): Promise<AppleAuthenticationCredential> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'signOutAsync');
   }
@@ -51,7 +57,9 @@ export async function signOutAsync(options: AppleAuthenticationSignOutOptions): 
   return ExpoAppleAuthentication.requestAsync(requestOptions);
 }
 
-export async function getCredentialStateAsync(user: string): Promise<AppleAuthenticationCredentialState> {
+export async function getCredentialStateAsync(
+  user: string
+): Promise<AppleAuthenticationCredentialState> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.getCredentialStateAsync) {
     throw new UnavailabilityError('expo-apple-authentication', 'getCredentialStateAsync');
   }
