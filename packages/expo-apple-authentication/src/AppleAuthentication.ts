@@ -2,9 +2,9 @@ import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/cor
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 import {
-  AppleAuthenticationLoginOptions,
+  AppleAuthenticationSignInOptions,
   AppleAuthenticationRefreshOptions,
-  AppleAuthenticationLogoutOptions,
+  AppleAuthenticationSignOutOptions,
   AppleAuthenticationCredential,
   AppleAuthenticationCredentialState,
   AppleAuthenticationOperation,
@@ -18,9 +18,9 @@ export async function isAvailableAsync(): Promise<boolean> {
   return ExpoAppleAuthentication.isAvailableAsync();
 }
 
-export async function loginAsync(options: AppleAuthenticationLoginOptions): Promise<AppleAuthenticationCredential> {
+export async function signInAsync(options: AppleAuthenticationSignInOptions): Promise<AppleAuthenticationCredential> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
-    throw new UnavailabilityError('expo-apple-authentication', 'loginAsync');
+    throw new UnavailabilityError('expo-apple-authentication', 'signInAsync');
   }
   const requestOptions = {
     ...options,
@@ -40,9 +40,9 @@ export async function refreshAsync(options: AppleAuthenticationRefreshOptions): 
   return ExpoAppleAuthentication.requestAsync(requestOptions);
 }
 
-export async function logoutAsync(options: AppleAuthenticationLogoutOptions): Promise<AppleAuthenticationCredential> {
+export async function signOutAsync(options: AppleAuthenticationSignOutOptions): Promise<AppleAuthenticationCredential> {
   if (!ExpoAppleAuthentication || !ExpoAppleAuthentication.requestAsync) {
-    throw new UnavailabilityError('expo-apple-authentication', 'logoutAsync');
+    throw new UnavailabilityError('expo-apple-authentication', 'signOutAsync');
   }
   const requestOptions = {
     ...options,

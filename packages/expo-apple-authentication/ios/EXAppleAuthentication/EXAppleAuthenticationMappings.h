@@ -2,6 +2,8 @@
 
 @import AuthenticationServices;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface EXAppleAuthenticationMappings : NSObject
 
 + (NSNumber *)exportCredentialState:(ASAuthorizationAppleIDProviderCredentialState)credentialState API_AVAILABLE(ios(13.0));
@@ -12,4 +14,10 @@
 
 + (ASAuthorizationOpenIDOperation)importOperation:(NSNumber *)operation API_AVAILABLE(ios(13.0));
 
++ (NSDictionary *)exportFullName:(NSPersonNameComponents *)nameComponents;
+
++ (NSString *)exportData:(NSData *)data;
+
 @end
+
+NS_ASSUME_NONNULL_END

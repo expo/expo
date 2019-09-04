@@ -7,6 +7,6 @@
 
 @import AuthenticationServices;
 
-@interface EXAppleAuthentication : UMExportedModule <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding, UMModuleRegistryConsumer, UMEventEmitter>
+@interface EXAppleAuthentication : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter>
 
 @end

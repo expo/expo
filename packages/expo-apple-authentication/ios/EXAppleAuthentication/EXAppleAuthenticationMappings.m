@@ -74,4 +74,21 @@
   }
 }
 
++ (NSDictionary *)exportFullName:(NSPersonNameComponents *)nameComponents
+{
+  return @{
+           @"namePrefix": UMNullIfNil(nameComponents.namePrefix),
+           @"givenName": UMNullIfNil(nameComponents.givenName),
+           @"middleName": UMNullIfNil(nameComponents.middleName),
+           @"familyName": UMNullIfNil(nameComponents.familyName),
+           @"nameSuffix": UMNullIfNil(nameComponents.nameSuffix),
+           @"nickname": UMNullIfNil(nameComponents.nickname)
+           };
+}
+
++ (NSString *)exportData:(NSData *)data
+{
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
 @end

@@ -14,7 +14,8 @@ export declare type AppleAuthenticationButtonProps = {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
  * for more details.
  */
-export declare type AppleAuthenticationLoginOptions = {
+export declare type AppleAuthenticationSignInOptions = {
+    user: string;
     /**
      * The scope of personal information to which your app is requesting access.
      * The user can choose to deny your app access to any scope at the time of
@@ -63,7 +64,7 @@ export declare type AppleAuthenticationRefreshOptions = {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
  * for more details.
  */
-export declare type AppleAuthenticationLogoutOptions = {
+export declare type AppleAuthenticationSignOutOptions = {
     user: string;
     /**
      * Data that’s returned to you unmodified in the corresponding credential

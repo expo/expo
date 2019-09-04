@@ -1,19 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppleAuthentication/EXAppleAuthentication.h>
+#import <EXAppleAuthentication/EXAppleAuthenticationRequest.h>
 #import <EXAppleAuthentication/EXAppleAuthenticationMappings.h>
 
-#import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
+#import <UMCore/UMErrorCodes.h>
+
+static NSString *const EXAppleIDCredentialRevokedEvent = @"Expo.appleIdCredentialRevoked";
 
 @interface EXAppleAuthentication ()
 
-@property (nonatomic, strong) UMPromiseResolveBlock promiseResolve;
-@property (nonatomic, strong) UMPromiseRejectBlock promiseReject;
-
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
-@property (nonatomic, assign) BOOL hasListeners;
 
 @end
 
@@ -21,39 +19,19 @@
 
 UM_EXPORT_MODULE(ExpoAppleAuthentication);
 
-- (dispatch_queue_t)methodQueue
-{
-  return dispatch_get_main_queue();
-}
-
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  if (_moduleRegistry) {
-    [self invalidate];
-  }
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
 }
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"Expo.appleIdCredentialRevoked"];
-}
-
-- (void)invalidate
-{
-  _eventEmitter = nil;
-}
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
+  return @[EXAppleIDCredentialRevokedEvent];
 }
 
 - (void)startObserving
 {
   if (@available(iOS 13.0, *)) {
-    _hasListeners = YES;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didRevokeCredential:)
                                                  name:ASAuthorizationAppleIDProviderCredentialRevokedNotification
@@ -64,7 +42,6 @@ UM_EXPORT_MODULE(ExpoAppleAuthentication);
 - (void)stopObserving
 {
   if (@available(iOS 13.0, *)) {
-    _hasListeners = NO;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:ASAuthorizationAppleIDProviderCredentialRevokedNotification
                                                   object:nil];
@@ -73,10 +50,8 @@ UM_EXPORT_MODULE(ExpoAppleAuthentication);
 
 - (void)didRevokeCredential:(NSNotification *)notification
 {
-  if (!_hasListeners) {
-    return;
-  }
-  [_eventEmitter sendEventWithName:@"Expo.appleIdCredentialRevoked" body:@{}];
+  id<UMEventEmitterService> eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  [eventEmitter sendEventWithName:EXAppleIDCredentialRevokedEvent body:@{}];
 }
 
 UM_EXPORT_METHOD_AS(isAvailableAsync,
@@ -84,42 +59,23 @@ UM_EXPORT_METHOD_AS(isAvailableAsync,
                             rejecter:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 13.0, *)) {
-    return resolve(@(YES));
+    resolve(@(YES));
+  } else {
+    resolve(@(NO));
   }
-  resolve(@(NO));
 }
 
 UM_EXPORT_METHOD_AS(requestAsync,
                     requestAsync:(NSDictionary *)options
-                        resolver:(UMPromiseResolveBlock)resolve
-                        rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   if (@available(iOS 13.0, *)) {
-    _promiseResolve = resolve;
-    _promiseReject = reject;
-    
-    ASAuthorizationAppleIDProvider *appleIDProvider = [[ASAuthorizationAppleIDProvider alloc] init];
-    ASAuthorizationAppleIDRequest *request = [appleIDProvider createRequest];
-
-    NSArray<NSNumber *> *requestedScopes = options[@"requestedScopes"];
-    NSNumber *requestedOperation = options[@"requestedOperation"];
-
-    request.requestedScopes = [EXAppleAuthenticationMappings importScopes:requestedScopes];
-    request.requestedOperation = [EXAppleAuthenticationMappings importOperation:requestedOperation];
-
-    if (options[@"user"]) {
-      request.user = options[@"user"];
-    }
-    if (options[@"state"]) {
-      request.state = options[@"state"];
-    }
-    
-    ASAuthorizationController *controller = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
-    controller.presentationContextProvider = self;
-    controller.delegate = self;
-    [controller performRequests];
+    [self requestWithOptions:options
+                    resolver:resolve
+                    rejecter:reject];
   } else {
-    reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"Apple authentication is not supported on this device.", nil);
+    reject(@"ERR_APPLE_AUTHENTICATION_UNAVAILABLE", @"This feature is not available on your iPhone.", nil);
   }
 }
 
@@ -143,57 +99,28 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
   }
 }
 
-- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller API_AVAILABLE(ios(13.0))
-{
-  return [[[UIApplication sharedApplication] delegate] window];
-}
+#pragma mark - helpers
 
-- (void)authorizationController:(ASAuthorizationController *)controller
-   didCompleteWithAuthorization:(ASAuthorization *)authorization API_AVAILABLE(ios(13.0))
+- (void)requestWithOptions:(NSDictionary *)options
+                  resolver:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject API_AVAILABLE(ios(13.0))
 {
-  ASAuthorizationAppleIDCredential *credential = authorization.credential;
-  NSDictionary *user = @{
-                         @"fullName": [self _serializeFullName:credential.fullName],
-                         @"email": UMNullIfNil(credential.email),
-                         @"user": credential.user,
-                         @"realUserStatus": [EXAppleAuthenticationMappings exportRealUserStatus:credential.realUserStatus],
-                         @"state": UMNullIfNil(credential.state),
-                         @"authorizationCode": UMNullIfNil(credential.authorizationCode),
-                         @"identityToken": UMNullIfNil(credential.identityToken),
-                         @"type": @"success"
-                         };
-  if (_promiseResolve) {
-    _promiseResolve(user);
-  }
-  _promiseResolve = nil;
-  _promiseReject = nil;
-}
-
-- (void)authorizationController:(ASAuthorizationController *)controller
-           didCompleteWithError:(NSError *)error API_AVAILABLE(ios(13.0))
-{
-  if (error.code == 1001) {
-    // user canceled authentication attempt
-    if (_promiseResolve) {
-      _promiseResolve(@{@"type": @"cancel"});
+  ASAuthorizationProviderAuthorizationOperation operation = [EXAppleAuthenticationMappings importOperation:options[@"requestedOperation"]];
+  __block EXAppleAuthenticationRequest *request = [EXAppleAuthenticationRequest performOperation:operation
+                                                                                     withOptions:options
+                                                                                    withCallback:^(NSDictionary *response, NSError *error) {
+    if (error) {
+      if (error.code == 1001) {
+        // User canceled authentication attempt.
+        reject(UMErrorCodeCanceled, @"The request has been canceled by the user.", nil);
+      } else {
+        reject(@"ERR_AUTH_REQUEST_FAILED", error.description, nil);
+      }
+    } else {
+      resolve(response);
     }
-  } else if (_promiseReject) {
-    _promiseReject(@"ERR_APPLE_AUTHENTICATION", error.localizedDescription, error);
-  }
-  _promiseResolve = nil;
-  _promiseReject = nil;
-}
-
-- (NSDictionary *)_serializeFullName:(NSPersonNameComponents *)nameComponents
-{
-  return @{
-           @"namePrefix": UMNullIfNil(nameComponents.namePrefix),
-           @"givenName": UMNullIfNil(nameComponents.givenName),
-           @"middleName": UMNullIfNil(nameComponents.middleName),
-           @"familyName": UMNullIfNil(nameComponents.familyName),
-           @"nameSuffix": UMNullIfNil(nameComponents.nameSuffix),
-           @"nickname": UMNullIfNil(nameComponents.nickname)
-           };
+    request = nil;
+  }];
 }
 
 @end
