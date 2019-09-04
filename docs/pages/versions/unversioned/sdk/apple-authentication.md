@@ -2,7 +2,7 @@
 title: AppleAuthentication
 ---
 
-This library provides Apple authentication for iOS standalone apps in the managed and bare workflows. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines.
+This library provides Apple authentication for iOS standalone apps in the managed and bare workflows. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
 
 ## Installation
 
@@ -67,7 +67,7 @@ Determine if the current device's operating system supports Apple authentication
 
 #### Returns
 
-A Promise that resolves to `true` if the system supports Apple authentication, and `false` otherwise.
+A promise that resolves to `true` if the system supports Apple authentication, and `false` otherwise.
 
 ### `AppleAuthentication.signInAsync(options)`
 
@@ -82,11 +82,11 @@ An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationappleauthen
 
 #### Returns
 
-A Promise that resolves to an [`AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential) object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the sign-in operation.
+A promise that resolves to an [`AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential) object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the sign-in operation.
 
 ### `AppleAuthentication.getCredentialStateAsync(user)`
 
-Query the current state of a user credential, to determine if it is still valid or if it has been revoked.
+Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
 
 #### Arguments
 
@@ -94,7 +94,7 @@ Query the current state of a user credential, to determine if it is still valid 
 
 #### Returns
 
-A Promise that resolves to an [`AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate) value depending on the state of the credential.
+A promise that resolves to an [`AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate) value depending on the state of the credential.
 
 ## Components
 
