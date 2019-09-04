@@ -5,7 +5,7 @@
   "main": "src",
   "repository": {
     "type": "git",
-    "url": "git://github.com/expo/jest-expo.git",
+    "url": "git://github.com/expo/expo.git",
     "directory": "packages/jest-expo"
   },
   "files": [
