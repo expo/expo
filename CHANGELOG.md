@@ -32,6 +32,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed occasional `"ViewManagerAdapter_*" was not found in the UIManager` bugs by [@sjchmiela](https://github.com/sjchmiela) ([#5066](https://github.com/expo/expo/pull/5066))
 - fixed crashes when adding attachments with `MailComposer` by [@sjchmiela](https://github.com/sjchmiela) ([#5449](https://github.com/expo/expo/pull/5449))
 - fixed `ImagePicker.launchImageLibraryAsync` not working on iOS 13. ([#5434](https://github.com/expo/expo/pull/5434) by [@tsapeta](https://github.com/tsapeta))
+- fixed `ImaheManipulator.manipulateAsync` not working with local paths by [@bbarthec](https://github.com/bbarthec) ([#5531](https://github.com/expo/expo/pull/5531))
 
 ## 34.0.0
 
