@@ -33,16 +33,6 @@ interface BatteryManagerEventTarget extends EventTarget {
   ): void;
 }
 
-function onChargingChange(this: BatteryManager): void {
-  const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
-  emitter.emit('Expo.batteryStateDidChange', { batteryState });
-}
-
-function onLevelChange(this: BatteryManager): void {
-  const batteryLevel = this.level;
-  emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
-}
-
 export default {
   get name(): string {
     return 'ExpoBattery';
@@ -50,9 +40,7 @@ export default {
 
   get isSupported(): boolean {
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
-    return (
-      canUseDOM && ('getBattery' in navigator || 'battery' in navigator)
-    );
+    return canUseDOM && ('getBattery' in navigator || 'battery' in navigator);
   },
 
   async getBatteryLevelAsync(): Promise<number> {
@@ -82,6 +70,16 @@ export default {
     batteryManager.removeEventListener('levelchange', onLevelChange);
   },
 };
+
+function onChargingChange(this: BatteryManager): void {
+  const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
+  emitter.emit('Expo.batteryStateDidChange', { batteryState });
+}
+
+function onLevelChange(this: BatteryManager): void {
+  const batteryLevel = this.level;
+  emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
+}
 
 async function getBatteryManagerAsync(): Promise<BatteryManager | null> {
   if (!canUseDOM) return null;

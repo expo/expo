@@ -2,21 +2,13 @@ import { EventEmitter } from '@unimodules/core';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { BatteryState } from './Battery.types';
 const emitter = new EventEmitter({});
-function onChargingChange() {
-    const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
-    emitter.emit('Expo.batteryStateDidChange', { batteryState });
-}
-function onLevelChange() {
-    const batteryLevel = this.level;
-    emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
-}
 export default {
     get name() {
         return 'ExpoBattery';
     },
     get isSupported() {
         // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery#Browser_compatibility
-        return (canUseDOM && ('getBattery' in navigator || 'battery' in navigator));
+        return canUseDOM && ('getBattery' in navigator || 'battery' in navigator);
     },
     async getBatteryLevelAsync() {
         const batteryManager = await getBatteryManagerAsync();
@@ -45,6 +37,14 @@ export default {
         batteryManager.removeEventListener('levelchange', onLevelChange);
     },
 };
+function onChargingChange() {
+    const batteryState = this.charging ? BatteryState.CHARGING : BatteryState.UNPLUGGED;
+    emitter.emit('Expo.batteryStateDidChange', { batteryState });
+}
+function onLevelChange() {
+    const batteryLevel = this.level;
+    emitter.emit('Expo.batteryLevelDidChange', { batteryLevel });
+}
 async function getBatteryManagerAsync() {
     if (!canUseDOM)
         return null;
