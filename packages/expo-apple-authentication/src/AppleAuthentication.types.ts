@@ -10,15 +10,13 @@ export type AppleAuthenticationButtonProps = {
 
 /**
  * The options you can supply when making a call to
- * `AppleAuthentication.loginAsync()`. None of these options are required.
+ * `AppleAuthentication.signInAsync()`. None of these options are required.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
  * for more details.
  */
 export type AppleAuthenticationSignInOptions = {
-  user: string;
-
   /**
    * The scope of personal information to which your app is requesting access.
    * The user can choose to deny your app access to any scope at the time of
@@ -65,7 +63,7 @@ export type AppleAuthenticationRefreshOptions = {
 
 /**
  * The options you can supply when making a call to
- * `AppleAuthentication.logout()`. You must include the ID string of the user to
+ * `AppleAuthentication.signOutAsync()`. You must include the ID string of the user to
  * sign out.
  *
  * @see [Apple
@@ -85,8 +83,8 @@ export type AppleAuthenticationSignOutOptions = {
 
 /**
  * The user credentials returned from a successful call to
- * `AppleAuthentication.loginAsync()`, `AppleAuthentication.refreshAsync()`, or
- * `AppleAuthentication.logoutAsync()`.
+ * `AppleAuthentication.signInAsync()`, `AppleAuthentication.refreshAsync()`, or
+ * `AppleAuthentication.signOutAsync()`.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential)
@@ -94,19 +92,12 @@ export type AppleAuthenticationSignOutOptions = {
  */
 export type AppleAuthenticationCredential = {
   /**
-   * A value indicating the status type of the requested credential. `SUCCESS`
-   * if the credential was retrieved successfully, or `CANCEL` if the user
-   * canceled the operation before signing in.
-   */
-  type: AppleAuthenticationStatus;
-
-  /**
    * An identifier associated with the authenticated user. You can use this to
    * check if the user is still authenticated later. This is stable and can be
    * shared across apps released under the same development team. The same user
    * will have a different identifier for apps released by other developers.
    */
-  user?: string;
+  user: string;
 
   /**
    * An arbitrary string that your app provided as `state` in the request that
@@ -116,9 +107,9 @@ export type AppleAuthenticationCredential = {
   state?: string;
 
   /**
-   * The user’s name. May be null if you didn't request the `FULL_NAME` scope or
-   * if the user denied access. May also be null if this is not the first time
-   * the user has signed into your app.
+   * The user’s name. May be empty if you didn't request the `FULL_NAME` scope
+   * or if the user denied access. May also be empty if this is not the first
+   * time the user has signed into your app.
    */
   fullName: AppleAuthenticationFullName | null;
 
@@ -167,7 +158,7 @@ export type AppleAuthenticationFullName = {
 export type AppleAuthenticationRevokeListener = () => void;
 
 /**
- * Scopes you can request when calling `AppleAuthentication.loginAsync()` or
+ * Scopes you can request when calling `AppleAuthentication.signInAsync()` or
  * `AppleAuthentication.refreshAsync()`.
  *
  * @note Note that it is possible that you will not be granted all of the scopes
@@ -239,12 +230,4 @@ export enum AppleAuthenticationButtonStyle {
   WHITE = 0,
   WHITE_OUTLINE = 1,
   BLACK = 2,
-}
-
-/**
- * Indicates the status of the attempt to retrieve the requested credential.
- */
-export enum AppleAuthenticationStatus {
-  SUCCESS = 'success',
-  CANCEL = 'cancel',
 }

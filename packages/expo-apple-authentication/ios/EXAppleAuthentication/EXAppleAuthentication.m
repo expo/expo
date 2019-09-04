@@ -90,7 +90,7 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
                                       completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState,
                                                    NSError  *_Nullable error) {
       if (error) {
-        return reject(@"ERR_APPLE_AUTHENTICATION", [error localizedDescription], nil);
+        return reject(@"ERR_APPLE_AUTHENTICATION_CREDENTIAL", error.localizedDescription, nil);
       }
       resolve([EXAppleAuthenticationMappings exportCredentialState:credentialState]);
     }];
@@ -114,7 +114,7 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
         // User canceled authentication attempt.
         reject(UMErrorCodeCanceled, @"The request has been canceled by the user.", nil);
       } else {
-        reject(@"ERR_AUTH_REQUEST_FAILED", error.description, nil);
+        reject(@"ERR_APPLE_AUTHENTICATION_REQUEST_FAILED", error.localizedDescription, nil);
       }
     } else {
       resolve(response);

@@ -116,7 +116,32 @@ The properties of this component extend from `View`; however, you should not att
 
 #### Example
 
-// TODO(eric): add a somewhat fully-fledged example here
+```js
+import * as AppleAuthentication from 'expo-apple-authentication';
+
+function YourComponent() {
+  return (
+    <AppleAuthentication.AppleAuthenticationButton
+      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+      cornerRadius={5}
+      onPress={() => {
+        try {
+          const credential = await AppleAuthentication.signInAsync({
+            requestedScopes: [
+              AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+              AppleAuthentication.AppleAuthenticationScope.EMAIL,
+            ],
+          });
+          // signed in
+        } catch (e) {
+          // handle error
+        }
+      }}
+    />
+  );
+}
+```
 
 ## Enum Types
 
@@ -162,8 +187,40 @@ An enum whose values specify the system's best guess for how likely the current 
 
 ## Object Types
 
-TODO(eric)
+### `AppleAuthentication.AppleAuthenticationCredential`
+
+The object type returned from a successful call to `signInAsync` which contains all of the pertinent user and credential information.
+
+- **user (_string_)** - An identifier associated with the authenticated user. You can use this to check if the user is still authenticated later. This is stable and can be shared across apps released under the same development team. The same user will have a different identifier for apps released by other developers.
+- **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
+- **fullName (_AppleAuthenticationFullName_)** - The user’s name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied access. May also be empty if this is not the first time the user has signed into your app.
+- **email (_string_)** - The user’s email address. Might not be present if you didn't request the `EMAIL` scope. May also be null if this is not the first time the user has signed into your app. If the user chose to withhold their email address, this field will instead contain an obscured email address with an Apple domain.
+- **realUserStatus (_AppleAuthenticationUserDetectionStatus_)** - A value that indicates whether the user appears to the system to be a real person.
+
+### `AppleAuthentication.AppleAuthenticationFullName`
+
+An object representing the tokenized portions of the user's full name. Any of all of the fields may be null; only applicable fields that the user has allowed your app to access will be nonnull.
+
+- **namePrefix (_string_)**
+- **givenName (_string_)**
+- **middleName (_string_)**
+- **familyName (_string_)**
+- **nameSuffix (_string_)**
+- **nickname (_string_)**
+
+### `AppleAuthentication.AppleAuthenticationSignInOptions`
+
+The options you can supply when making a call to `AppleAuthentication.signInAsync()`. None of these options are required.
+
+- **requestedScopes (_AppleAuthenticationScope[]_)** - The scope of personal information to which your app is requesting access. The user can choose to deny your app access to any scope at the time of logging in. Defaults to `[]` (no scopes).
+- **state (_string_)** - Data that’s returned to you unmodified in the corresponding credential after a successful authentication. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
 
 ## Error Codes
 
-TODO(eric)
+| Code  | Description |
+| --- | --- |
+| ERR_APPLE_AUTHENTICATION_CREDENTIAL | The request to get credential state failed. See the error message for additional specific information. |
+| ERR_APPLE_AUTHENTICATION_INVALID_SCOPE | An invalid `AppleAuthenticationScope` was passed in. |
+| ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information. |
+| ERR_APPLE_AUTHENTICATION_UNAVAILABLE | Apple authentication is unavailable on the device. |
+| ERR_CANCELED | The user canceled the sign-in request from the system modal. |
