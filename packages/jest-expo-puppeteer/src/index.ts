@@ -1,8 +1,7 @@
 import { readConfigJson } from '@expo/config';
-
+import fs from 'fs';
 import { boolish } from 'getenv';
 import path from 'path';
-import fs from 'fs';
 
 function getPuppeteerOptions() {
   if (boolish('CI', false)) {
@@ -19,16 +18,16 @@ function getPuppeteerOptions() {
   };
 }
 
-function isUndefined(value) {
+function isUndefined(value: any): boolean {
   return typeof value === 'undefined';
 }
 
-function ofCommands(commands) {
+function ofCommands(commands: string[]): string {
   return commands.filter(Boolean).join(' && ');
 }
 
-module.exports = {
-  withExpoPuppeteer(config: any = {}): { [key: string]: any } {
+
+export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
     const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot, ...partConfig } = config;
     const projectPath = path.resolve(projectRoot || process.cwd());
 
@@ -90,5 +89,4 @@ module.exports = {
         port: serverPort,
       },
     };
-  },
-};
+  }

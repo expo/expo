@@ -7,16 +7,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const process = require('process');
-const path = require('path');
-const { Webpack } = require('@expo/xdl');
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const xdl_1 = require("@expo/xdl");
+const path_1 = __importDefault(require("path"));
 function main(args) {
     return __awaiter(this, void 0, void 0, function* () {
-        const projectRoot = path.resolve(args[0]);
+        const projectRoot = path_1.default.resolve(args[0]);
         console.log('Building', projectRoot);
         try {
-            yield Webpack.bundleAsync(projectRoot, {
+            yield xdl_1.Webpack.bundleAsync(projectRoot, {
                 nonInteractive: true,
+                // @ts-ignore
                 verbose: true,
                 mode: 'production',
                 webpackEnv: {

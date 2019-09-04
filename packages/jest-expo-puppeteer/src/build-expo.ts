@@ -1,14 +1,13 @@
-const process = require('process');
-const path = require('path');
+import { Webpack } from '@expo/xdl';
+import path from 'path';
 
-const { Webpack } = require('@expo/xdl');
-
-async function main(args) {
+async function main(args: any[]) {
   const projectRoot = path.resolve(args[0]);
   console.log('Building', projectRoot);
   try {
     await Webpack.bundleAsync(projectRoot, {
       nonInteractive: true,
+      // @ts-ignore
       verbose: true,
       mode: 'production',
       webpackEnv: {

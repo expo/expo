@@ -15,9 +15,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("@expo/config");
+const fs_1 = __importDefault(require("fs"));
 const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
 function getPuppeteerOptions() {
     if (getenv_1.boolish('CI', false)) {
         return {
@@ -38,43 +38,42 @@ function isUndefined(value) {
 function ofCommands(commands) {
     return commands.filter(Boolean).join(' && ');
 }
-module.exports = {
-    withExpoPuppeteer(config = {}) {
-        const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot } = config, partConfig = __rest(config, ["mode", "preventRebuild", "server", "launch", "projectRoot"]);
-        const projectPath = path_1.default.resolve(projectRoot || process.cwd());
-        const { web = {} } = config_1.readConfigJson(projectPath);
-        const hasServerSideRendering = web.use === 'nextjs';
-        const defaultPort = hasServerSideRendering ? 8000 : 5000;
-        const serverPort = !server.port ? defaultPort : server.port;
-        let defaultURL;
-        let command;
-        // Tell Expo CLI to use the same port on which the test runner expects there to be a server
-        process.env.WEB_PORT = serverPort;
-        if (mode === 'production') {
-            defaultURL = `http://localhost:${serverPort}`;
-            const outputBuildPath = (web.build || {}).output || 'web-build';
-            const buildFolder = path_1.default.resolve(projectPath, outputBuildPath);
-            const serveCommand = `serve ${buildFolder}`;
-            const commands = [serveCommand];
-            const hasBuild = fs_1.default.existsSync(buildFolder);
-            if (!preventRebuild || !hasBuild) {
-                const buildCommand = `node ${require.resolve('./build-expo.js')} ${projectPath}`;
-                commands.unshift(buildCommand);
-            }
-            command = ofCommands(commands);
+function withExpoPuppeteer(config = {}) {
+    const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot } = config, partConfig = __rest(config, ["mode", "preventRebuild", "server", "launch", "projectRoot"]);
+    const projectPath = path_1.default.resolve(projectRoot || process.cwd());
+    const { web = {} } = config_1.readConfigJson(projectPath);
+    const hasServerSideRendering = web.use === 'nextjs';
+    const defaultPort = hasServerSideRendering ? 8000 : 5000;
+    const serverPort = !server.port ? defaultPort : server.port;
+    let defaultURL;
+    let command;
+    // Tell Expo CLI to use the same port on which the test runner expects there to be a server
+    process.env.WEB_PORT = serverPort;
+    if (mode === 'production') {
+        defaultURL = `http://localhost:${serverPort}`;
+        const outputBuildPath = (web.build || {}).output || 'web-build';
+        const buildFolder = path_1.default.resolve(projectPath, outputBuildPath);
+        const serveCommand = `serve ${buildFolder}`;
+        const commands = [serveCommand];
+        const hasBuild = fs_1.default.existsSync(buildFolder);
+        if (!preventRebuild || !hasBuild) {
+            const buildCommand = `node ${require.resolve('./build-expo.js')} ${projectPath}`;
+            commands.unshift(buildCommand);
         }
-        else {
-            command = `expo start ${projectPath} --web-only --non-interactive --https`;
-            defaultURL = `https://localhost:${serverPort}`;
-        }
-        const hasModules = fs_1.default.existsSync(path_1.default.resolve(projectPath, 'node_modules'));
-        let launchTimeout = isNaN(server.launchTimeout) ? 30000 : server.launchTimeout;
-        if (!hasModules) {
-            launchTimeout += 30000;
-            command = ofCommands([`cd ${projectPath} && yarn && cd ${process.cwd()}`, command]);
-        }
-        const url = isUndefined(config.url) ? defaultURL : config.url;
-        return Object.assign({ hasServerSideRendering }, partConfig, { url, launch: Object.assign({}, getPuppeteerOptions(), launch), server: Object.assign({ launchTimeout, debug: true }, server, { command, port: serverPort }) });
-    },
-};
+        command = ofCommands(commands);
+    }
+    else {
+        command = `expo start ${projectPath} --web-only --non-interactive --https`;
+        defaultURL = `https://localhost:${serverPort}`;
+    }
+    const hasModules = fs_1.default.existsSync(path_1.default.resolve(projectPath, 'node_modules'));
+    let launchTimeout = isNaN(server.launchTimeout) ? 30000 : server.launchTimeout;
+    if (!hasModules) {
+        launchTimeout += 30000;
+        command = ofCommands([`cd ${projectPath} && yarn && cd ${process.cwd()}`, command]);
+    }
+    const url = isUndefined(config.url) ? defaultURL : config.url;
+    return Object.assign({ hasServerSideRendering }, partConfig, { url, launch: Object.assign({}, getPuppeteerOptions(), launch), server: Object.assign({ launchTimeout, debug: true }, server, { command, port: serverPort }) });
+}
+exports.withExpoPuppeteer = withExpoPuppeteer;
 //# sourceMappingURL=index.js.map

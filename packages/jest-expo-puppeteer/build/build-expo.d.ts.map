@@ -1,1 +1,1 @@
-{"version":3,"file":"build-expo.d.ts","sourceRoot":"","sources":["../src/build-expo.ts"],"names":[],"mappings":"AAAA,QAAA,MAAM,OAAO,KAAqB,CAAC;AACnC,QAAA,MAAM,IAAI,KAAkB,CAAC;AAE7B,QAAA,MAAQ,OAAO,KAAyB,CAAC;AAEzC,iBAAe,IAAI,CAAC,IAAI,KAAA,iBAiBvB"}
+{"version":3,"file":"build-expo.d.ts","sourceRoot":"","sources":["../src/build-expo.ts"],"names":[],"mappings":""}
