@@ -191,10 +191,12 @@ An enum whose values specify the system's best guess for how likely the current 
 The object type returned from a successful call to [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) which contains all of the pertinent user and credential information.
 
 - **user (_string_)** - An identifier associated with the authenticated user. You can use this to check if the user is still authenticated later. This is stable and can be shared across apps released under the same development team. The same user will have a different identifier for apps released by other developers.
-- **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
-- **fullName (_[AppleAuthenticationFullName](#appleauthenticationappleauthenticationfullname)_)** - The user’s name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied access. May contain `null` values if this is not the first time the user has signed into your app.
-- **email (_string_)** - The user’s email address. Might not be present if you didn't request the `EMAIL` scope. May also be null if this is not the first time the user has signed into your app. If the user chose to withhold their email address, this field will instead contain an obscured email address with an Apple domain.
+- **fullName (_[AppleAuthenticationFullName](#appleauthenticationappleauthenticationfullname)_)** - The user's name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied access. May contain `null` values if this is not the first time the user has signed into your app.
+- **email (_string_)** - The user's email address. Might not be present if you didn't request the `EMAIL` scope. May also be null if this is not the first time the user has signed into your app. If the user chose to withhold their email address, this field will instead contain an obscured email address with an Apple domain.
 - **realUserStatus (_[AppleAuthenticationUserDetectionStatus](#appleauthenticationappleauthenticationuserdetectionstatus)_)** - A value that indicates whether the user appears to the system to be a real person.
+- **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
+- **identityToken (_string_)** - A JSON Web Token (JWT) that securely communicates information about the user to your app.
+- **authorizationCode (_string_)** - A short-lived token used by your app for proof of authorization when interacting with the app's server counterpart.
 
 ### `AppleAuthentication.AppleAuthenticationFullName`
 
@@ -212,7 +214,7 @@ An object representing the tokenized portions of the user's full name. Any of al
 The options you can supply when making a call to [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions). None of these options are required.
 
 - **requestedScopes (_[AppleAuthenticationScope](#appleauthenticationappleauthenticationscope)[]_)** - The scope of personal information to which your app is requesting access. The user can choose to deny your app access to any scope at the time of logging in. Defaults to `[]` (no scopes).
-- **state (_string_)** - Data that’s returned to you unmodified in the corresponding credential after a successful authentication. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
+- **state (_string_)** - Data that's returned to you unmodified in the corresponding credential after a successful authentication. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
 
 ## Error Codes
 
