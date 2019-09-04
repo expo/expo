@@ -192,3 +192,23 @@ export declare class SQLException {
     code: number;
     message: string;
 }
+
+export interface WebSQLDatabase extends Database {
+    exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+}
+
+export type Query = { sql: string; args: unknown[] };
+
+export interface ResultSetError {
+  error: Error;
+}
+export interface ResultSet {
+  insertId?: number;
+  rowsAffected: number;
+  rows: Array<{ [column: string]: any }>;
+}
+
+export type SQLiteCallback = (
+  error?: Error | null,
+  resultSet?: Array<ResultSetError | ResultSet>
+) => void;

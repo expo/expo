@@ -4,25 +4,10 @@ import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
-import { Database } from './SQLite.types';
+import { Query, SQLiteCallback, Database, ResultSet, ResultSetError, WebSQLDatabase } from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
 
-export type Query = { sql: string; args: unknown[] };
-
-export interface ResultSetError {
-  error: Error;
-}
-export interface ResultSet {
-  insertId?: number;
-  rowsAffected: number;
-  rows: Array<{ [column: string]: any }>;
-}
-
-export type SQLiteCallback = (
-  error?: Error | null,
-  resultSet?: Array<ResultSetError | ResultSet>
-) => void;
 
 class SQLiteDatabase {
   _name: string;
@@ -109,11 +94,3 @@ export function openDatabase(
   const dbWithExec = addExecMethod(db);
   return dbWithExec;
 }
-
-export interface WebSQLDatabase extends Database {
-  exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
-}
-
-export default {
-  openDatabase,
-};
