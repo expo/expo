@@ -102,10 +102,6 @@ jobs:
       - run: yarn test
 ```
 
-## Example
-
-Look through the `tests/` directory, and the `jest-puppeteer.config.js` file for a clear example of usage.
-
 ## Resources
 
 [Jest documentation][jest]

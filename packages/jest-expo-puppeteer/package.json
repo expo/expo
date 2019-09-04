@@ -16,9 +16,6 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "test": "yarn test:dev && yarn test:prod",
-    "test:dev": "EXPO_WEB_E2E_ENV=development jest --runInBand",
-    "test:prod": "EXPO_WEB_E2E_ENV=production jest --runInBand",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
