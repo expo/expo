@@ -134,7 +134,11 @@ function YourComponent() {
           });
           // signed in
         } catch (e) {
-          // handle error
+          if (e.code === 'ERR_CANCELED') {
+            // handle user cancel
+          } else {
+            // handle error
+          }
         }
       }}
     />
@@ -158,7 +162,6 @@ An enum whose values control which pre-defined text to use when rendering an [`A
 
 - **`AppleAuthenticationButtonType.SIGN_IN`** - "Sign in with Apple"
 - **`AppleAuthenticationButtonType.CONTINUE`** - "Continue with Apple"
-- **`AppleAuthenticationButtonType.DEFAULT`** - Uses the system-determined default for button type
 
 ### `AppleAuthentication.AppleAuthenticationCredentialState`
 
@@ -191,7 +194,7 @@ An enum whose values specify the system's best guess for how likely the current 
 The object type returned from a successful call to [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) which contains all of the pertinent user and credential information.
 
 - **user (_string_)** - An identifier associated with the authenticated user. You can use this to check if the user is still authenticated later. This is stable and can be shared across apps released under the same development team. The same user will have a different identifier for apps released by other developers.
-- **fullName (_[AppleAuthenticationFullName](#appleauthenticationappleauthenticationfullname)_)** - The user's name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied access. May contain `null` values if this is not the first time the user has signed into your app.
+- **fullName (_[AppleAuthenticationFullName](#appleauthenticationappleauthenticationfullname)_)** - The user's name. May contain `null` values if you didn't request the `FULL_NAME` scope, if the user denied access, or if this is not the first time the user has signed into your app.
 - **email (_string_)** - The user's email address. Might not be present if you didn't request the `EMAIL` scope. May also be null if this is not the first time the user has signed into your app. If the user chose to withhold their email address, this field will instead contain an obscured email address with an Apple domain.
 - **realUserStatus (_[AppleAuthenticationUserDetectionStatus](#appleauthenticationappleauthenticationuserdetectionstatus)_)** - A value that indicates whether the user appears to the system to be a real person.
 - **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.

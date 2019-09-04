@@ -60,7 +60,6 @@ export var AppleAuthenticationButtonType;
 (function (AppleAuthenticationButtonType) {
     AppleAuthenticationButtonType[AppleAuthenticationButtonType["SIGN_IN"] = 0] = "SIGN_IN";
     AppleAuthenticationButtonType[AppleAuthenticationButtonType["CONTINUE"] = 1] = "CONTINUE";
-    AppleAuthenticationButtonType[AppleAuthenticationButtonType["DEFAULT"] = 2] = "DEFAULT";
 })(AppleAuthenticationButtonType || (AppleAuthenticationButtonType = {}));
 /**
  * Controls the predefined style of the authenticating button.

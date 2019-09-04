@@ -22,7 +22,7 @@ export declare type AppleAuthenticationSignInOptions = {
      */
     requestedScopes?: AppleAuthenticationScope[];
     /**
-     * Data that’s returned to you unmodified in the corresponding credential after a successful
+     * Data that's returned to you unmodified in the corresponding credential after a successful
      * authentication. Used to verify that the response was from the request you made. Can be used to
      * avoid replay attacks.
      */
@@ -45,7 +45,7 @@ export declare type AppleAuthenticationRefreshOptions = {
      */
     requestedScopes?: AppleAuthenticationScope[];
     /**
-     * Data that’s returned to you unmodified in the corresponding credential after a successful
+     * Data that's returned to you unmodified in the corresponding credential after a successful
      * authentication. Used to verify that the response was from the request you made. Can be used to
      * avoid replay attacks.
      */
@@ -62,7 +62,7 @@ export declare type AppleAuthenticationRefreshOptions = {
 export declare type AppleAuthenticationSignOutOptions = {
     user: string;
     /**
-     * Data that’s returned to you unmodified in the corresponding credential after a successful
+     * Data that's returned to you unmodified in the corresponding credential after a successful
      * authentication. Used to verify that the response was from the request you made. Can be used to
      * avoid replay attacks.
      */
@@ -89,14 +89,14 @@ export declare type AppleAuthenticationCredential = {
      * credential. Used to verify that the response was from the request you made. Can be used to
      * avoid replay attacks.
      */
-    state?: string;
+    state: string | null;
     /**
-     * The user’s name. May be empty if you didn't request the `FULL_NAME` scope or if the user denied
-     * access. May also be empty if this is not the first time the user has signed into your app.
+     * The user's name. May contain `null` values if you didn't request the `FULL_NAME` scope, if the
+     * user denied access, or if this is not the first time the user has signed into your app.
      */
     fullName: AppleAuthenticationFullName;
     /**
-     * The user’s email address. Might not be present if you didn't request the `EMAIL` scope. May
+     * The user's email address. Might not be present if you didn't request the `EMAIL` scope. May
      * also be null if this is not the first time the user has signed into your app. If the user chose
      * to withhold their email address, this field will instead contain an obscured email address with
      * an Apple domain.
@@ -111,7 +111,7 @@ export declare type AppleAuthenticationCredential = {
      */
     identityToken: string;
     /**
-     * A short-lived token used by your app for proof of authorization when interacting with the app’s
+     * A short-lived token used by your app for proof of authorization when interacting with the app's
      * server counterpart.
      */
     authorizationCode: string;
@@ -184,8 +184,7 @@ export declare enum AppleAuthenticationUserDetectionStatus {
  */
 export declare enum AppleAuthenticationButtonType {
     SIGN_IN = 0,
-    CONTINUE = 1,
-    DEFAULT = 2
+    CONTINUE = 1
 }
 /**
  * Controls the predefined style of the authenticating button.
