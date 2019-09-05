@@ -102,9 +102,11 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
-    let { preferredAppearance } = this.props;
-    let theme =
-      preferredAppearance === 'no-preference' ? this.props.colorScheme : preferredAppearance;
+    let { preferredAppearance, colorScheme } = this.props;
+    let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+    if (theme === 'no-preference') {
+      theme = 'light';
+    }
 
     return (
       <View style={styles.container}>
