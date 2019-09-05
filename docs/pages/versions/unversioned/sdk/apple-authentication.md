@@ -135,9 +135,9 @@ function YourComponent() {
           // signed in
         } catch (e) {
           if (e.code === 'ERR_CANCELED') {
-            // handle user cancel
+            // handle that the user canceled the sign-in flow
           } else {
-            // handle error
+            // handle other errors
           }
         }
       }}
