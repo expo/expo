@@ -19,6 +19,7 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import Store from './redux/Store';
 import LocalStorage from './storage/LocalStorage';
+import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -40,7 +41,18 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this._initializeStateAsync();
+    this._addProjectHistoryListener();
   }
+
+  _addProjectHistoryListener = () => {
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+      let { manifestUrl, manifest, manifestString } = event;
+      if (!manifest && manifestString) {
+        manifest = JSON.parse(manifestString);
+      }
+      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
+    });
+  };
 
   _isExpoHost = host => {
     return (
