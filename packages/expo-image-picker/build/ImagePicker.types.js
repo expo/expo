@@ -4,4 +4,9 @@ export var MediaTypeOptions;
     MediaTypeOptions["Videos"] = "Videos";
     MediaTypeOptions["Images"] = "Images";
 })(MediaTypeOptions || (MediaTypeOptions = {}));
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 //# sourceMappingURL=ImagePicker.types.js.map

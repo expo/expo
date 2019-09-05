@@ -7,6 +7,11 @@ export var BrightnessMode;
     BrightnessMode[BrightnessMode["MANUAL"] = 2] = "MANUAL";
 })(BrightnessMode || (BrightnessMode = {}));
 ;
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 export async function getBrightnessAsync() {
     return await NativeModulesProxy.ExpoBrightness.getBrightnessAsync();
 }

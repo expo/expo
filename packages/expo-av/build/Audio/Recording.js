@@ -104,6 +104,11 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
         linearPCMIsFloat: false,
     },
 };
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 let _recorderExists = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
 export async function getPermissionsAsync() {

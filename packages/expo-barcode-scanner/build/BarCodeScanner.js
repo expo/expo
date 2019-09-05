@@ -7,6 +7,11 @@ import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 export class BarCodeScanner extends React.Component {
     constructor() {
         super(...arguments);

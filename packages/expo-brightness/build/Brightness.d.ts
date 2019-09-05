@@ -3,8 +3,13 @@ export declare enum BrightnessMode {
     AUTOMATIC = 1,
     MANUAL = 2
 }
+export declare const PermissionsStatus: {
+    readonly GRANTED: "granted";
+    readonly UNDETERMINED: "undetermined";
+    readonly DENIED: "denied";
+};
 export declare type PermissionsResponse = {
-    status: "undetermined" | "granted" | "denied";
+    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: "never" | number;
     granted: boolean;
 };

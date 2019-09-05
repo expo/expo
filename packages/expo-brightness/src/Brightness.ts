@@ -7,8 +7,14 @@ export enum BrightnessMode {
   MANUAL = 2,
 };
 
+export const PermissionsStatus = {
+  GRANTED: 'granted',
+  UNDETERMINED: 'undetermined',
+  DENIED: 'denied',
+} as const;
+
 export type PermissionsResponse = {
-  status: "undetermined" | "granted" | "denied";
+  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
   expires: "never" | number;
   granted: boolean;
 };

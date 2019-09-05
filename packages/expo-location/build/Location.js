@@ -2,6 +2,11 @@ import { EventEmitter, Platform, CodedError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 var LocationAccuracy;
 (function (LocationAccuracy) {
     LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
