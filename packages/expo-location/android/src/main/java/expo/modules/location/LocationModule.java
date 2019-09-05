@@ -150,30 +150,12 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissions == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    mPermissions.askForPermissions(new PermissionsResponse() {
-      @Override
-      public void onResult(Map<String, PermissionsStatus> permissionsResponse) {
-        promise.resolve(parseLocationPermissions(permissionsResponse));
-      }
-    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
-    if (mPermissions == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    mPermissions.getPermissions(new PermissionsResponse() {
-      @Override
-      public void onResult(Map<String, PermissionsStatus> permissionsResponse) {
-        promise.resolve(parseLocationPermissions(permissionsResponse));
-      }
-    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   @ExpoMethod

@@ -6,7 +6,10 @@
 #import <EXContacts/EXContactsRequester.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
+
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMCore/UMUtilities.h>
 
@@ -87,7 +90,7 @@ UM_EXPORT_MODULE(ExpoContacts);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [_permissionsManager registerRequesters:@[[EXContactsRequester new]]];
+  [UMPermissionsMethodsWrapper registerRequesters:@[[EXContactsRequester new]] withPermissionsManager:_permissionsManager];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
@@ -508,26 +511,21 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager getPermissionUsingRequesterClass:[EXContactsRequester class]
-                                             withResult:resolve
-                                           withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXContactsRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermissionUsingRequesterClass:[EXContactsRequester class]
-                                                withResult:resolve
-                                              withRejecter:reject];
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXContactsRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
-
 
 - (void)_serializeContactPayload:(NSDictionary *)payload
                      keysToFetch:(NSArray<NSString *> *)keysToFetch

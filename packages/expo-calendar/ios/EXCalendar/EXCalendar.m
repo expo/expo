@@ -11,6 +11,7 @@
 #import <EXCalendar/EXRemindersRequester.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
 
 @interface EXCalendar ()
 
@@ -27,11 +28,11 @@ UM_EXPORT_MODULE(ExpoCalendar);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [_permissionsManager registerRequesters:@[
-                                            [EXCalendarRequester new],
-                                            [EXRemindersRequester new]
-                                            ]
-   ];
+  [UMPermissionsMethodsWrapper registerRequesters:@[
+                                                    [EXCalendarRequester new],
+                                                    [EXRemindersRequester new]
+                                                    ]
+                           withPermissionsManager:_permissionsManager];
 }
 
 #pragma mark -
@@ -727,48 +728,44 @@ UM_EXPORT_METHOD_AS(getSourceByIdAsync,
   resolve([EXCalendarConverter serializeSource:source]);
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
-{
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermissionUsingRequesterClass:[EXCalendarRequester class] withResult:resolve withRejecter:reject];
-}
-
-UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
-                    requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
-{
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermissionUsingRequesterClass:[EXRemindersRequester class] withResult:resolve withRejecter:reject];
-}
-
 UM_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
                     getCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager getPermissionUsingRequesterClass:[EXCalendarRequester class]
-                                             withResult:resolve
-                                           withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXCalendarRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
+                    requestCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXCalendarRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
                     getRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager getPermissionUsingRequesterClass:[EXRemindersRequester class]
-                                             withResult:resolve
-                                           withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXRemindersRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
+                    requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXRemindersRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 #pragma mark - helpers

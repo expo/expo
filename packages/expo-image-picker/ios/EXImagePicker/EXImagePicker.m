@@ -7,6 +7,7 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
 
 @import MobileCoreServices;
 @import Photos;
@@ -25,7 +26,7 @@ const CGFloat EXDefaultImageQuality = 0.2;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, assign) BOOL shouldRestoreStatusBarVisibility;
 
 @end
@@ -58,71 +59,63 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [_permissionsModule registerRequesters:@[
-                                           [EXImagePickerCameraRequester new],
-                                           [EXImagePickerCameraRollRequester new]
-                                          ]
-  ];
+  _permissionsManager = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsWrapper registerRequesters:@[
+                                                    [EXImagePickerCameraRequester new],
+                                                    [EXImagePickerCameraRollRequester new]
+                                                    ]
+                           withPermissionsManager:_permissionsManager];
 }
 
 UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
                     getCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsModule getPermissionUsingRequesterClass:[EXImagePickerCameraRequester class]
-                                            withResult:resolve
-                                          withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXImagePickerCameraRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(getCameraRollPermissionsAsync,
-                    getCameraRollPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsModule getPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]
-                                            withResult:resolve
-                                          withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXImagePickerCameraRollRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
                     requestCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsModule askForPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]
-                                               withResult:resolve
-                                             withRejecter:reject];
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXImagePickerCameraRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestCameraRollPermissionsAsync,
                     requestCameraRollPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsModule askForPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]
-                                               withResult:resolve
-                                             withRejecter:reject];
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXImagePickerCameraRollRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
+  if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  BOOL permissionsAreGranted = [self.permissionsModule hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]] &&
-                               [self.permissionsModule hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRequester class]];
+  BOOL permissionsAreGranted = [self.permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]] &&
+                               [self.permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRequester class]];
 
   if (!permissionsAreGranted) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
@@ -137,10 +130,10 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
+  if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
-  if (![self.permissionsModule hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]]) {
+  if (![self.permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
     return;
   }

@@ -287,10 +287,10 @@ export async function getRemindersPermissionsAync() {
     return ExpoCalendar.getRemindersPermissionsAync();
 }
 export async function requestPermissionsAsync() {
-    if (!ExpoCalendar.requestPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
+    if (!ExpoCalendar.requestCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
     }
-    return await ExpoCalendar.requestPermissionsAsync();
+    return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
 export async function requestRemindersPermissionsAsync() {
     if (!ExpoCalendar.requestRemindersPermissionsAsync) {

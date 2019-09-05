@@ -5,12 +5,13 @@
 #import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
 #import <UMImageLoaderInterface/UMImageLoaderInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
 
 @interface EXBarCodeScannerModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMImageLoaderInterface> imageLoader;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 
 @end
 
@@ -22,8 +23,8 @@ UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
 {
   _moduleRegistry = moduleRegistry;
   _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(UMImageLoaderInterface)];
-  _permissionsModule = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [_permissionsModule registerRequesters:@[[EXBareCodeCameraRequester new]]];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsWrapper registerRequesters:@[[EXBareCodeCameraRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (NSDictionary *)constantsToExport
@@ -41,24 +42,20 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsModule getPermissionUsingRequesterClass:[EXBareCodeCameraRequester class]
-                                            withResult:resolve
-                                          withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXBareCodeCameraRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsModule) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsModule askForPermissionUsingRequesterClass:[EXBareCodeCameraRequester class]
-                                               withResult:resolve
-                                             withRejecter:reject];
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXBareCodeCameraRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(scanFromURLAsync,

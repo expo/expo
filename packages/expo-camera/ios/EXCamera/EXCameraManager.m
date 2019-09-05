@@ -6,6 +6,7 @@
 #import <UMCore/UMUIManager.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
 
 @interface EXCameraManager ()
 
@@ -30,7 +31,7 @@ UM_EXPORT_MODULE(ExponentCameraManager);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [_permissionsManager registerRequesters:@[[EXCameraRequester new]]];
+  [UMPermissionsMethodsWrapper registerRequesters:@[[EXCameraRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (UIView *)view
@@ -333,25 +334,20 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager getPermissionUsingRequesterClass:[EXCameraRequester class]
-                                             withResult:resolve
-                                           withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXCameraRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
 }
-
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermissionUsingRequesterClass:[EXCameraRequester class]
-                                                withResult:resolve
-                                              withRejecter:reject];
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXCameraRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 @end

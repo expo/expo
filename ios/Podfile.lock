@@ -794,6 +794,7 @@ PODS:
   - EXBarCodeScanner (6.0.0):
     - UMCore
     - UMImageLoaderInterface
+    - UMPermissionsInterface
   - EXBattery (0.0.1):
     - UMCore
   - EXBlur (6.0.0):
@@ -804,6 +805,7 @@ PODS:
     - UMCore
   - EXBrightness (6.0.0):
     - UMCore
+    - UMPermissionsInterface
   - EXCalendar (6.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -2515,11 +2517,11 @@ SPEC CHECKSUMS:
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
   EXBackgroundFetch: e9165d2a80aca13b06735885457d96f081afcf33
-  EXBarCodeScanner: 3b36378bfc891b6fd3518e244784eb8d3ab00653
+  EXBarCodeScanner: a405f44b48703c525cb7c77c6818ba3fb507ed21
   EXBattery: bcbc50cec59b94ac92bbc6068818173c359ef3f3
   EXBlur: 628f8d08e6e4891aac0a8dea4e48d43ffd3c570d
   EXBranch: bcc7743589564f70cb20045e88a84df461be8747
-  EXBrightness: 5937628feed854e35525a50b105167b33c851f44
+  EXBrightness: c4bc7d860471a7c198ca08409177d50618ebca99
   EXCalendar: 910966393455a6d7d1ea246b01009124fecc7d60
   EXCamera: 54623e310d33bccbb8d8fbc84a0081523d0436be
   EXCellular: 8de1b3ac151eb13d70c2869d31901bc8a6a38620
@@ -2546,7 +2548,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
   EXMediaLibrary: 0b9e6c90cd40f5d5df8b58c9f68665039a485146
   EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
-  EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
+  EXPermissions: b6fa257d934d233a6cc739ad898ae72c30574033
   EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
   EXRandom: 805938db37fa1d66833cb9c0cf44fb54cd208b5a
   EXSecureStore: e929213a8a5e8c55cdd4615e52e283c11cba975e

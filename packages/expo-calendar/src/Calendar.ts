@@ -514,10 +514,10 @@ export async function getRemindersPermissionsAync(): Promise<PermissionsResponse
 }
 
 export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
-  if (!ExpoCalendar.requestPermissionsAsync) {
-    throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
+  if (!ExpoCalendar.requestCalendarPermissionsAsync) {
+    throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
   }
-  return await ExpoCalendar.requestPermissionsAsync();
+  return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
 
 export async function requestRemindersPermissionsAsync(): Promise<PermissionsResponse> {

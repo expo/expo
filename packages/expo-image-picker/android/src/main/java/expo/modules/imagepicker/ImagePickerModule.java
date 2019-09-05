@@ -249,42 +249,22 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
 
   @ExpoMethod
   public void requestCameraRollPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    permissionsModule.askForPermissionsWithPromise(promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
   }
 
   @ExpoMethod
   public void getCameraRollPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    permissionsModule.getPermissionsWithPromise(promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
   }
 
   @ExpoMethod
   public void requestCameraPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    permissionsModule.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
   }
 
   @ExpoMethod
   public void getCameraPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    permissionsModule.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
   }
 
   // NOTE: Currently not reentrant / doesn't support concurrent requests

@@ -9,8 +9,11 @@
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMEventEmitterService.h>
+
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
+
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -38,7 +41,7 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [_permissionsManager registerRequesters:@[[EXMediaLibraryCameraRollRequester new]]];
+  [UMPermissionsMethodsWrapper registerRequesters:@[[EXMediaLibraryCameraRollRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -79,28 +82,24 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   return @[EXMediaLibraryDidChangeEvent];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissions:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS_MODULE", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]
-                                                withResult:resolve
-                                              withRejecter:reject];
+  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXMediaLibraryCameraRollRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissions:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS_MODULE", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager getPermissionUsingRequesterClass:[EXMediaLibraryCameraRollRequester class]
-                                             withResult:resolve
-                                           withRejecter:reject];
+  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXMediaLibraryCameraRollRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(createAssetAsync,

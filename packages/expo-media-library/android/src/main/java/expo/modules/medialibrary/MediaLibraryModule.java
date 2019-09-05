@@ -99,24 +99,12 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void requestPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsModule == null) {
-      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
-      return;
-    }
-
-    permissionsModule.askForPermissionsWithPromise(promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
   }
 
   @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
-    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsModule == null) {
-      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
-      return;
-    }
-
-    permissionsModule.getPermissionsWithPromise(promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
   }
 
   @ExpoMethod

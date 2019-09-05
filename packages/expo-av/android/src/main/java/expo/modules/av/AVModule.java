@@ -123,21 +123,11 @@ public class AVModule extends ExportedModule {
 
   @ExpoMethod
   public void requestPermissionsAsync(final Promise promise) {
-    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.RECORD_AUDIO);
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.RECORD_AUDIO);
   }
 
   @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
-    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
-    if (permissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.RECORD_AUDIO);
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.RECORD_AUDIO);
   }
 }
