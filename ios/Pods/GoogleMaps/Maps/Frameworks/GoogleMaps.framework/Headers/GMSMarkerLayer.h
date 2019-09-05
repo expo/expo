@@ -11,17 +11,19 @@
 #import <CoreLocation/CoreLocation.h>
 #import <QuartzCore/QuartzCore.h>
 
-NS_ASSUME_NONNULL_BEGIN;
+#import "GMSOverlayLayer.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSMarkerLayer is a custom subclass of CALayer, available on a per-marker basis, that allows
+ * GMSMarkerLayer is a subclass of GMSOverlayLayer, available on a per-marker basis, that allows
  * animation of several properties of its associated GMSMarker.
  *
  * Note that this CALayer is never actually rendered directly, as GMSMapView is provided entirely
  * via an OpenGL layer. As such, adjustments or animations to 'default' properties of CALayer will
  * not have any effect.
  */
-@interface GMSMarkerLayer : CALayer
+@interface GMSMarkerLayer : GMSOverlayLayer
 
 /** Latitude, part of |position| on GMSMarker. */
 @property(nonatomic, assign) CLLocationDegrees latitude;
@@ -42,4 +44,4 @@ extern NSString *const kGMSMarkerLayerLongitude;
 extern NSString *const kGMSMarkerLayerRotation;
 extern NSString *const kGMSMarkerLayerOpacity;
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

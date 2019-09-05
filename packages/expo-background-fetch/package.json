@@ -23,7 +23,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-background-fetch"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"

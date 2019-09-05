@@ -18,11 +18,11 @@ import {
 } from 'react-native';
 import { ThemeContext } from 'react-navigation';
 
+import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import DevIndicator from '../components/DevIndicator';
 import * as Kernel from '../kernel/Kernel';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { StyledView, StyledScrollView } from '../components/Views';
 import { StyledText } from '../components/Text';
 import LocalStorage from '../storage/LocalStorage';
@@ -87,6 +87,7 @@ class MenuView extends React.Component {
       StatusBar._currentValues = null;
     }
   };
+
   restoreStatusBar = () => {
     if (
       NativeModules.StatusBarManager._applyPropertiesAndForget &&
@@ -188,9 +189,9 @@ class MenuView extends React.Component {
     return (
       <View style={styles.nuxRow}>
         <View style={styles.nuxHeadingRow}>
-          <Text style={headingStyles}>Hello there, friend! 👋</Text>
+          <StyledText style={headingStyles} lightColor="#595c68">Hello there, friend! 👋</StyledText>
         </View>
-        <Text style={styles.nuxTooltip}>{tooltipMessage}</Text>
+        <StyledText style={styles.nuxTooltip} lightColor="#595c68">{tooltipMessage}</StyledText>
         <TouchableOpacity style={styles.nuxButton} onPress={this._onPressFinishNux}>
           <Text style={styles.nuxButtonLabel}>Got it</Text>
         </TouchableOpacity>
@@ -463,7 +464,6 @@ let styles = StyleSheet.create({
   },
   nuxHeading: {
     flex: 1,
-    color: '#595c68',
     fontWeight: '700',
     fontSize: 22,
   },
@@ -472,7 +472,6 @@ let styles = StyleSheet.create({
     marginTop: 2,
   },
   nuxTooltip: {
-    color: '#595c68',
     marginRight: 16,
     marginVertical: 4,
     fontSize: 16,
@@ -485,6 +484,7 @@ let styles = StyleSheet.create({
     borderRadius: 3,
   },
   nuxButtonLabel: {
+    color: '#fff',
     fontSize: 16,
   },
 });
@@ -506,10 +506,12 @@ function useUserSettings(renderId) {
 
 const HomeMenu = props => {
   let colorScheme = useColorScheme();
-  let { preferredAppearance } = useUserSettings(props.uuid);
+  let { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
 
-  // force either dark or light
   let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+  if (theme === 'no-preference') {
+    theme = 'light';
+  }
 
   return (
     <AppearanceProvider>

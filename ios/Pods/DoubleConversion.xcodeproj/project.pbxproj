@@ -1,0 +1,410 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		13DBB4555F0AA574691798691E185733 /* double-conversion.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9C4BF1D3AA81E7574FB3603D4E1ED782 /* double-conversion.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		16161E7D0BC525F166B2C197657603AE /* fixed-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 3812B3D9F24D8E7C0C349AEA5469093D /* fixed-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		293B6D1DFEAA6FC2576894B9472E121C /* DoubleConversion-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 340E7598660A4D8B65FD7C32EA0ECFCC /* DoubleConversion-dummy.m */; };
+		5046DEFC641216205A92A1F2DABBE010 /* utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BECC54751D78319908CB5534492B16C /* utils.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		56396F781EB20CE0752F5A0B85BD1AC1 /* double-conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = AA37A45EBEB9FA0D3884E8354292B09D /* double-conversion.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		568A4AF54749901755286272F702441F /* bignum.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C13A67B792093A87B064253405F04CE /* bignum.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6081FF1696039DB4D7676CDB3FBFBE55 /* bignum-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 557D50DCAC2C737C948FC590CA7861C8 /* bignum-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		634C571997124397E405E51F6BD11085 /* fast-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = D8ABA8122AF5B3E128CBEC95BCFF247D /* fast-dtoa.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6A511A0A8434E489A22B6EE1B08A758A /* ieee.h in Headers */ = {isa = PBXBuildFile; fileRef = 01A93DFEA1A2E27EFED37E092A227462 /* ieee.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		76EE725313C493CEE9ECDAFD7E080859 /* fixed-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = 09E303DC075886D0DF653D0C7174F070 /* fixed-dtoa.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		802A0E7E363A6407709AECD6F8E6C211 /* diy-fp.h in Headers */ = {isa = PBXBuildFile; fileRef = 2466F214C82D37FE45394B0685379DD3 /* diy-fp.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		82B85855AD498DBAD5719ECC0759398F /* bignum-dtoa.cc in Sources */ = {isa = PBXBuildFile; fileRef = E91DB3180FF22469772B3F86C294B3C2 /* bignum-dtoa.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9D9A5BFCB379C78EFF64E2977F4F90F5 /* cached-powers.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2649B17692776258B349E238218DACA0 /* cached-powers.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ACFF6222EB4F282917E99189255B8EA3 /* bignum.cc in Sources */ = {isa = PBXBuildFile; fileRef = 9EA11A0D57C1764283C504D5C01AA109 /* bignum.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ADB8E4CEB292EEDEDECCAEC8690647F1 /* diy-fp.cc in Sources */ = {isa = PBXBuildFile; fileRef = F512B12BFEE77DC051AE36178C77CD07 /* diy-fp.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DA436D76DCFE4244A751C36C18A972EF /* cached-powers.h in Headers */ = {isa = PBXBuildFile; fileRef = 91176FD6E9D426D55C2DFBCDBB738945 /* cached-powers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DE0DDC7187C98D569D99074BC977E86B /* strtod.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D2901E6B07626177720A62BD7F7A5AE /* strtod.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E64B88A03AAEC8205DF6D8772EA1F7D4 /* fast-dtoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 452F77A5F06673FCE1F9C0AFCBEAF857 /* fast-dtoa.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F62545749AB2808F56CBB4DB9E00C063 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = A21D31CC9831CAFEC4FC068B32F7D623 /* strtod.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		01A93DFEA1A2E27EFED37E092A227462 /* ieee.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ieee.h; path = "double-conversion/ieee.h"; sourceTree = "<group>"; };
+		09E303DC075886D0DF653D0C7174F070 /* fixed-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "fixed-dtoa.cc"; path = "double-conversion/fixed-dtoa.cc"; sourceTree = "<group>"; };
+		2466F214C82D37FE45394B0685379DD3 /* diy-fp.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "diy-fp.h"; path = "double-conversion/diy-fp.h"; sourceTree = "<group>"; };
+		2649B17692776258B349E238218DACA0 /* cached-powers.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "cached-powers.cc"; path = "double-conversion/cached-powers.cc"; sourceTree = "<group>"; };
+		340E7598660A4D8B65FD7C32EA0ECFCC /* DoubleConversion-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DoubleConversion-dummy.m"; sourceTree = "<group>"; };
+		3812B3D9F24D8E7C0C349AEA5469093D /* fixed-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "fixed-dtoa.h"; path = "double-conversion/fixed-dtoa.h"; sourceTree = "<group>"; };
+		3BECC54751D78319908CB5534492B16C /* utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "double-conversion/utils.h"; sourceTree = "<group>"; };
+		452F77A5F06673FCE1F9C0AFCBEAF857 /* fast-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "fast-dtoa.h"; path = "double-conversion/fast-dtoa.h"; sourceTree = "<group>"; };
+		557D50DCAC2C737C948FC590CA7861C8 /* bignum-dtoa.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "bignum-dtoa.h"; path = "double-conversion/bignum-dtoa.h"; sourceTree = "<group>"; };
+		5D2901E6B07626177720A62BD7F7A5AE /* strtod.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = strtod.h; path = "double-conversion/strtod.h"; sourceTree = "<group>"; };
+		7C13A67B792093A87B064253405F04CE /* bignum.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = bignum.h; path = "double-conversion/bignum.h"; sourceTree = "<group>"; };
+		91176FD6E9D426D55C2DFBCDBB738945 /* cached-powers.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "cached-powers.h"; path = "double-conversion/cached-powers.h"; sourceTree = "<group>"; };
+		9BBC564C7D31A3046C48519917BED1C7 /* libDoubleConversion.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libDoubleConversion.a; path = libDoubleConversion.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C4BF1D3AA81E7574FB3603D4E1ED782 /* double-conversion.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "double-conversion.cc"; path = "double-conversion/double-conversion.cc"; sourceTree = "<group>"; };
+		9EA11A0D57C1764283C504D5C01AA109 /* bignum.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = bignum.cc; path = "double-conversion/bignum.cc"; sourceTree = "<group>"; };
+		A21D31CC9831CAFEC4FC068B32F7D623 /* strtod.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = strtod.cc; path = "double-conversion/strtod.cc"; sourceTree = "<group>"; };
+		AA37A45EBEB9FA0D3884E8354292B09D /* double-conversion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "double-conversion.h"; path = "double-conversion/double-conversion.h"; sourceTree = "<group>"; };
+		D8ABA8122AF5B3E128CBEC95BCFF247D /* fast-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "fast-dtoa.cc"; path = "double-conversion/fast-dtoa.cc"; sourceTree = "<group>"; };
+		E57FD55DBA182ED43A94CDD78A41C2CB /* DoubleConversion-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DoubleConversion-prefix.pch"; sourceTree = "<group>"; };
+		E91DB3180FF22469772B3F86C294B3C2 /* bignum-dtoa.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "bignum-dtoa.cc"; path = "double-conversion/bignum-dtoa.cc"; sourceTree = "<group>"; };
+		F512B12BFEE77DC051AE36178C77CD07 /* diy-fp.cc */ = {isa = PBXFileReference; includeInIndex = 1; name = "diy-fp.cc"; path = "double-conversion/diy-fp.cc"; sourceTree = "<group>"; };
+		F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DoubleConversion.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6E734AE6A4B02CE5C34704921E4E69D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		279C99480BA6E0B149D2ECE0F77EC58C /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */,
+				340E7598660A4D8B65FD7C32EA0ECFCC /* DoubleConversion-dummy.m */,
+				E57FD55DBA182ED43A94CDD78A41C2CB /* DoubleConversion-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/DoubleConversion";
+			sourceTree = "<group>";
+		};
+		3D0D0404969D97C517E884AA3DDC924C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		465671790FFBCF02F8789418F0066012 /* DoubleConversion */ = {
+			isa = PBXGroup;
+			children = (
+				9EA11A0D57C1764283C504D5C01AA109 /* bignum.cc */,
+				7C13A67B792093A87B064253405F04CE /* bignum.h */,
+				E91DB3180FF22469772B3F86C294B3C2 /* bignum-dtoa.cc */,
+				557D50DCAC2C737C948FC590CA7861C8 /* bignum-dtoa.h */,
+				2649B17692776258B349E238218DACA0 /* cached-powers.cc */,
+				91176FD6E9D426D55C2DFBCDBB738945 /* cached-powers.h */,
+				F512B12BFEE77DC051AE36178C77CD07 /* diy-fp.cc */,
+				2466F214C82D37FE45394B0685379DD3 /* diy-fp.h */,
+				9C4BF1D3AA81E7574FB3603D4E1ED782 /* double-conversion.cc */,
+				AA37A45EBEB9FA0D3884E8354292B09D /* double-conversion.h */,
+				D8ABA8122AF5B3E128CBEC95BCFF247D /* fast-dtoa.cc */,
+				452F77A5F06673FCE1F9C0AFCBEAF857 /* fast-dtoa.h */,
+				09E303DC075886D0DF653D0C7174F070 /* fixed-dtoa.cc */,
+				3812B3D9F24D8E7C0C349AEA5469093D /* fixed-dtoa.h */,
+				01A93DFEA1A2E27EFED37E092A227462 /* ieee.h */,
+				A21D31CC9831CAFEC4FC068B32F7D623 /* strtod.cc */,
+				5D2901E6B07626177720A62BD7F7A5AE /* strtod.h */,
+				3BECC54751D78319908CB5534492B16C /* utils.h */,
+				279C99480BA6E0B149D2ECE0F77EC58C /* Support Files */,
+			);
+			name = DoubleConversion;
+			path = DoubleConversion;
+			sourceTree = "<group>";
+		};
+		49D91EBF7E05F0687AC24EA603241FD5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9BBC564C7D31A3046C48519917BED1C7 /* libDoubleConversion.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BF1E9D08244A5ED51217EBFA74F51D57 = {
+			isa = PBXGroup;
+			children = (
+				465671790FFBCF02F8789418F0066012 /* DoubleConversion */,
+				3D0D0404969D97C517E884AA3DDC924C /* Frameworks */,
+				49D91EBF7E05F0687AC24EA603241FD5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D6992ADAF683494D993D37F9AC189E71 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6081FF1696039DB4D7676CDB3FBFBE55 /* bignum-dtoa.h in Headers */,
+				568A4AF54749901755286272F702441F /* bignum.h in Headers */,
+				DA436D76DCFE4244A751C36C18A972EF /* cached-powers.h in Headers */,
+				802A0E7E363A6407709AECD6F8E6C211 /* diy-fp.h in Headers */,
+				56396F781EB20CE0752F5A0B85BD1AC1 /* double-conversion.h in Headers */,
+				E64B88A03AAEC8205DF6D8772EA1F7D4 /* fast-dtoa.h in Headers */,
+				16161E7D0BC525F166B2C197657603AE /* fixed-dtoa.h in Headers */,
+				6A511A0A8434E489A22B6EE1B08A758A /* ieee.h in Headers */,
+				DE0DDC7187C98D569D99074BC977E86B /* strtod.h in Headers */,
+				5046DEFC641216205A92A1F2DABBE010 /* utils.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		725D0E8C1060F8939288E8C91236BA4F /* DoubleConversion */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 954BE09564C6C513E507625CBC406E59 /* Build configuration list for PBXNativeTarget "DoubleConversion" */;
+			buildPhases = (
+				D6992ADAF683494D993D37F9AC189E71 /* Headers */,
+				E3182BDB9D9B243A0D60F7A5451C365D /* Sources */,
+				6E734AE6A4B02CE5C34704921E4E69D2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DoubleConversion;
+			productName = DoubleConversion;
+			productReference = 9BBC564C7D31A3046C48519917BED1C7 /* libDoubleConversion.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		04834FD06A08BE5F291F218B70F5E1F7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = E7DBAFE6B65C0DF542E0966A9D8641C2 /* Build configuration list for PBXProject "DoubleConversion" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = BF1E9D08244A5ED51217EBFA74F51D57;
+			productRefGroup = 49D91EBF7E05F0687AC24EA603241FD5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				725D0E8C1060F8939288E8C91236BA4F /* DoubleConversion */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E3182BDB9D9B243A0D60F7A5451C365D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82B85855AD498DBAD5719ECC0759398F /* bignum-dtoa.cc in Sources */,
+				ACFF6222EB4F282917E99189255B8EA3 /* bignum.cc in Sources */,
+				9D9A5BFCB379C78EFF64E2977F4F90F5 /* cached-powers.cc in Sources */,
+				ADB8E4CEB292EEDEDECCAEC8690647F1 /* diy-fp.cc in Sources */,
+				13DBB4555F0AA574691798691E185733 /* double-conversion.cc in Sources */,
+				293B6D1DFEAA6FC2576894B9472E121C /* DoubleConversion-dummy.m in Sources */,
+				634C571997124397E405E51F6BD11085 /* fast-dtoa.cc in Sources */,
+				76EE725313C493CEE9ECDAFD7E080859 /* fixed-dtoa.cc in Sources */,
+				F62545749AB2808F56CBB4DB9E00C063 /* strtod.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1A505DA1F838E2D94E4FA10990020421 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/DoubleConversion/DoubleConversion-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = DoubleConversion;
+				PRODUCT_NAME = DoubleConversion;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4C2B3E89D338F5DAB8999833179B6CE5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		A5AD47F2B75B97917A31F70F6C55726D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5A6C54CB1FA3A17654E12D02728F59B /* DoubleConversion.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/DoubleConversion/DoubleConversion-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = DoubleConversion;
+				PRODUCT_NAME = DoubleConversion;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C46D53ED63A930DD9E30FF761FFEB222 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		954BE09564C6C513E507625CBC406E59 /* Build configuration list for PBXNativeTarget "DoubleConversion" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A505DA1F838E2D94E4FA10990020421 /* Debug */,
+				A5AD47F2B75B97917A31F70F6C55726D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E7DBAFE6B65C0DF542E0966A9D8641C2 /* Build configuration list for PBXProject "DoubleConversion" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C46D53ED63A930DD9E30FF761FFEB222 /* Debug */,
+				4C2B3E89D338F5DAB8999833179B6CE5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 04834FD06A08BE5F291F218B70F5E1F7 /* Project object */;
+}

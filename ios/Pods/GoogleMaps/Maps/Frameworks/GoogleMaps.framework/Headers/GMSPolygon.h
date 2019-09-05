@@ -12,9 +12,10 @@
 
 #import "GMSOverlay.h"
 
-NS_ASSUME_NONNULL_BEGIN;
-
 @class GMSPath;
+@class GMSPolygonLayer;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSPolygon defines a polygon that appears on the map. A polygon (like a polyline) defines a
@@ -52,4 +53,4 @@ NS_ASSUME_NONNULL_BEGIN;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

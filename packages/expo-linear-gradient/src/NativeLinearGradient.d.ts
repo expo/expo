@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react';
+import React, { ComponentProps } from 'react';
 
 import NativeLinearGradientAndroid from './NativeLinearGradient.android';
 import NativeLinearGradientIOS from './NativeLinearGradient.ios';
@@ -10,5 +10,5 @@ type CommonNativeLinearGradient = Narrow<
   NativeLinearGradientWeb
 >;
 export default class NativeLinearGradient extends React.Component<
-ComponentProps<typeof CommonNativeLinearGradient>
+  ComponentProps<typeof CommonNativeLinearGradient> // eslint-disable-line no-undef
 > {}

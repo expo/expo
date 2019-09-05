@@ -1,4 +1,3 @@
-import { NativeModulesProxy } from '@unimodules/core';
 import * as EmbeddedAssets from '../EmbeddedAssets';
 
 jest.mock('expo-constants', () => {

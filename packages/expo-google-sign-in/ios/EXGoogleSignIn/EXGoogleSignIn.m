@@ -23,7 +23,6 @@ UM_EXPORT_MODULE(ExpoGoogleSignIn);
   if (self = [super init]) {
     _authTask = [[EXAuthTask alloc] init];
     [GIDSignIn sharedInstance].delegate = self;
-    [GIDSignIn sharedInstance].uiDelegate = self;
     [GIDSignIn sharedInstance].shouldFetchBasicProfile = YES;
   }
   return self;
@@ -127,6 +126,7 @@ UM_EXPORT_METHOD_AS(initAsync,
   if (_clientId == nil) return;
   
   [GIDSignIn sharedInstance].clientID = _clientId;
+  [GIDSignIn sharedInstance].presentingViewController = _utilities.currentViewController;
   
   [self _configureWithScopes:options[@"scopes"]
                 hostedDomain:options[@"hostedDomain"]
@@ -142,7 +142,7 @@ UM_EXPORT_METHOD_AS(signInSilentlyAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([self.authTask update:@"signInSilentlyAsync" resolver:resolve rejecter:reject])
-    [[GIDSignIn sharedInstance] signInSilently];
+    [[GIDSignIn sharedInstance] restorePreviousSignIn];
 }
 
 UM_EXPORT_METHOD_AS(signInAsync,
@@ -173,7 +173,7 @@ UM_EXPORT_METHOD_AS(isConnectedAsync,
                     isConnectedAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(@([[GIDSignIn sharedInstance] hasAuthInKeychain]));
+  resolve(@([[GIDSignIn sharedInstance] hasPreviousSignIn]));
 }
 
 UM_EXPORT_METHOD_AS(getCurrentUserAsync,
@@ -237,26 +237,6 @@ UM_EXPORT_METHOD_AS(getTokensAsync,
 
 - (void)signIn:(GIDSignIn *)signIn didDisconnectWithUser:(GIDGoogleUser *)user withError:(NSError *)error {
   [self.authTask parse:[EXGoogleSignIn jsonFromGIDGoogleUser:user] error:error];
-}
-
-- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController {
-  __weak EXGoogleSignIn *weakSelf = self;
-  
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    __strong EXGoogleSignIn *strongSelf = weakSelf;
-    if (strongSelf == nil) {
-      return;
-    }
-    
-    UIViewController *parent = strongSelf.utilities.currentViewController;
-    [parent presentViewController:viewController animated:true completion:nil];
-  }];
-}
-
-- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    [viewController dismissViewControllerAnimated:true completion:nil];
-  }];
 }
 
 @end

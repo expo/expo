@@ -18,9 +18,12 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
   A container class for data attachments so that additional metadata can be provided about the attachment.
  */
+NS_SWIFT_NAME(GraphRequestDataAttachment)
 @interface FBSDKGraphRequestDataAttachment : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -53,3 +56,5 @@ NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, copy, readonly) NSString *filename;
 
 @end
+
+NS_ASSUME_NONNULL_END

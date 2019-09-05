@@ -19,6 +19,6 @@ Pod::Spec.new do |s|
   s.dependency 'ABI34_0_0UMCore'
   s.dependency 'ABI34_0_0UMConstantsInterface'
 
-  s.dependency 'FBSDKCoreKit', '~> 4.0'
-  s.dependency 'FBSDKLoginKit', '~> 4.0'
+  s.dependency 'FBSDKCoreKit'
+  s.dependency 'FBSDKLoginKit'
 end

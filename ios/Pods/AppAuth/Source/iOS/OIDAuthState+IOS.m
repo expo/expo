@@ -22,13 +22,22 @@
 
 @implementation OIDAuthState (IOS)
 
-+ (id<OIDExternalUserAgentSession, OIDAuthorizationFlowSession>)
++ (id<OIDExternalUserAgentSession>)
     authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
                      presentingViewController:(UIViewController *)presentingViewController
                                      callback:(OIDAuthStateAuthorizationCallback)callback {
     OIDExternalUserAgentIOS *externalUserAgent =
         [[OIDExternalUserAgentIOS alloc]
             initWithPresentingViewController:presentingViewController];
+  return [self authStateByPresentingAuthorizationRequest:authorizationRequest
+                                       externalUserAgent:externalUserAgent
+                                                callback:callback];
+}
+
++ (id<OIDExternalUserAgentSession>)
+    authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
+                                  callback:(OIDAuthStateAuthorizationCallback)callback {
+  OIDExternalUserAgentIOS *externalUserAgent = [[OIDExternalUserAgentIOS alloc] init];
   return [self authStateByPresentingAuthorizationRequest:authorizationRequest
                                        externalUserAgent:externalUserAgent
                                                 callback:callback];

@@ -18,6 +18,8 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  Describes the look and feel of a native ad view.
  */
@@ -36,6 +38,14 @@
  Color of the title label.
  */
 @property (nonatomic, copy, nullable) UIColor *titleColor;
+/**
+ Color of the advertiser name label.
+ */
+@property (nonatomic, copy, nullable) UIColor *advertiserNameColor;
+/**
+ Color of the ad choices icon.
+ */
+@property (nonatomic, copy, nullable) UIColor *adChoicesForegroundColor;
 /**
  Font of the title label.
  */
@@ -67,6 +77,8 @@
 /**
  Enables or disables autoplay for some types of media. Defaults to YES.
  */
-@property (nonatomic, assign, getter=isAutoplayEnabled) BOOL autoplayEnabled;
+@property (nonatomic, assign, getter=isAutoplayEnabled) BOOL autoplayEnabled __attribute((deprecated("This attribute is no longer used.")));
 
 @end
+
+NS_ASSUME_NONNULL_END

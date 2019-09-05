@@ -12,6 +12,6 @@
 @property (nonatomic, strong) FBNativeAd *nativeAd;
 
 - (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
-- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:(NSArray<UIView *> *)clickable;
+- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBMediaView *)adIconView clickableViews:(NSArray<UIView *> *)clickable;
 
 @end

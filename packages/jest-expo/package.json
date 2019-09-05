@@ -5,7 +5,8 @@
   "main": "src",
   "repository": {
     "type": "git",
-    "url": "git://github.com/expo/jest-expo.git"
+    "url": "git://github.com/expo/jest-expo.git",
+    "directory": "packages/jest-expo"
   },
   "files": [
     "android",
@@ -21,13 +22,14 @@
     "jest": "bin/jest.js"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "jest"
   },
   "jest": {
     "preset": "jest-expo/universal"
   },
   "peerDependencies": {
-    "react": "*",
+    "react": "~16.8.3",
     "react-native": "*",
     "react-native-web": "*"
   },
