@@ -1,6 +1,5 @@
 'use strict';
 
-const reactNativePreset = require('react-native-web/jest-preset');
 const expoPreset = require('../jest-preset');
 
 function getModuleFileExtensions(...platforms) {
@@ -46,6 +45,13 @@ function getPlatformPreset(displayOptions, extensions) {
 // Combine React Native for web with React Native
 // Use RNWeb for the testEnvironment
 function getBaseWebPreset() {
+  let reactNativePreset;
+  try {
+    reactNativePreset = require('react-native-web/jest-preset');
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
   return {
     ...expoPreset,
     ...reactNativePreset,
