@@ -64,15 +64,28 @@
    didCompleteWithAuthorization:(ASAuthorization *)authorization
 {
   ASAuthorizationAppleIDCredential *credential = authorization.credential;
+
+  NSDictionary *fullName;
+  if (credential.fullName) {
+    fullName = [EXAppleAuthenticationMappings exportFullName:credential.fullName];
+  }
+  NSString *authorizationCode;
+  if (credential.authorizationCode) {
+    authorizationCode = [EXAppleAuthenticationMappings exportData:credential.authorizationCode];
+  }
+  NSString *identityToken;
+  if (credential.identityToken) {
+    identityToken = [EXAppleAuthenticationMappings exportData:credential.identityToken];
+  }
+
   NSDictionary *response = @{
-                         @"fullName": [EXAppleAuthenticationMappings exportFullName:credential.fullName],
+                         @"fullName": UMNullIfNil(fullName),
                          @"email": UMNullIfNil(credential.email),
                          @"user": credential.user,
-                         @"authorizedScopes": credential.authorizedScopes,
-                         @"realUserStatus": @(credential.realUserStatus),
+                         @"realUserStatus": [EXAppleAuthenticationMappings exportRealUserStatus:credential.realUserStatus],
                          @"state": UMNullIfNil(credential.state),
-                         @"authorizationCode": [EXAppleAuthenticationMappings exportData:credential.authorizationCode],
-                         @"identityToken": [EXAppleAuthenticationMappings exportData:credential.identityToken],
+                         @"authorizationCode": UMNullIfNil(authorizationCode),
+                         @"identityToken": UMNullIfNil(identityToken),
                          };
 
   if (_callback) {
