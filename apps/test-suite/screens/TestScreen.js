@@ -56,11 +56,9 @@ export default class TestScreen extends React.Component {
 
     await Promise.all(
       modules.map(m =>
-        jasmine.describe(m.name, () => {
-          m.test(jasmine, {
-            setPortalChild: this.setPortalChild,
-            cleanupPortal: this.cleanupPortal,
-          });
+        m.test(jasmine, {
+          setPortalChild: this.setPortalChild,
+          cleanupPortal: this.cleanupPortal,
         })
       )
     );
