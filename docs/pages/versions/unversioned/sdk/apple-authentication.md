@@ -12,14 +12,18 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Setup
 
-> **Note**: You can test this library in development in the iOS Expo client without following any of the instructions below; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you test in the Expo client, you will be signing into Expo rather than your own app, and so the identifiers and values you receive will likely be different than what you'll receive in production.
-
 1. Enable the "Sign In with Apple" capability in your app. For bare projects, enable the capability in Xcode under "Signing & Capabilities" -- you'll need to be on Xcode 11 or later. For managed projects, set `ios.usesAppleSignIn` to `true` in app.json.
 2. Log into the Apple Developer Console, go to "Certificates, Identifiers, & Profiles" and then "Identifiers".
 3. You need to choose a primary app for the Apple Sign In configuration. This is the app whose icon will show up in the Apple Sign In system UI. If you have a set of related apps you might choose the "main" app as the primary, but most likely you'll want to just use the app you're working on now as the primary.
 4. In the list of identifiers, click on the one corresponding to your primary app. Enable the "Sign In with Apple" capability, click "Edit", and choose the "Enable as a primary App ID" option. Save the new configuration.
 5. If you chose a different app to be the primary, you'll also need to open up the configuration page for your current app, enable the "Sign In with Apple" capability, click "Edit" and choose the "Group with an existing primary App ID" option. Save this configuration as well.
 6. Finally, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
+
+## Development and Testing
+
+You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you test in the Expo client, you will be signing into Expo rather than your own app, and so the identifiers and values you receive will likely be different than what you'll receive in production.
+
+You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
 
 ## API
 
@@ -73,11 +77,13 @@ A promise that resolves to `true` if the system supports Apple authentication, a
 
 Sends a request to the operating system to initiate the Apple authentication flow, which will present a modal to the user over your app and allow them to sign in.
 
+You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime. Additionally, you will only receive this information the first time users sign into your app, so **you must store it for later use**. Even if you request scopes every time a user signs into your app, and the user grants your app access, iOS will only provide you with this information upon the user's first successful sign-in.
+
 #### Arguments
 
 An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions) object with any of the following keys:
 
-- **requestedScopes (_[AppleAuthenticationScope](#appleauthenticationappleauthenticationscope)[]_)** - Array of user information scopes to which your app is requesting access. Note that the user can choose to deny your app access to any scope at the time of logging in. You will still need to handle null values for any scopes you request.
+- **requestedScopes (_[AppleAuthenticationScope](#appleauthenticationappleauthenticationscope)[]_)** - Array of user information scopes to which your app is requesting access. Note that the user can choose to deny your app access to any scope at the time of logging in. You will still need to handle `null` values for any scopes you request. Additionally, note that the requested scopes will only be provided to you **the first time each user signs into your app**; in subsequent requests they will be `null`.
 - **state (_string_)** - An arbitrary string that is returned unmodified in the corresponding credential after a successful authentication. This can be used to verify that the response was from the request you made and avoid replay attacks.
 
 #### Returns
@@ -87,6 +93,8 @@ A promise that resolves to an [`AppleAuthenticationCredential`](#appleauthentica
 ### `AppleAuthentication.getCredentialStateAsync(user)`
 
 Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
+
+> **Note**: This method must be tested on a real device. On the iOS simulator it always throws an error.
 
 #### Arguments
 
@@ -194,12 +202,12 @@ An enum whose values specify the system's best guess for how likely the current 
 The object type returned from a successful call to [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) which contains all of the pertinent user and credential information.
 
 - **user (_string_)** - An identifier associated with the authenticated user. You can use this to check if the user is still authenticated later. This is stable and can be shared across apps released under the same development team. The same user will have a different identifier for apps released by other developers.
-- **fullName (_[AppleAuthenticationFullName](#appleauthenticationappleauthenticationfullname)_)** - The user's name. May contain `null` values if you didn't request the `FULL_NAME` scope, if the user denied access, or if this is not the first time the user has signed into your app.
+- **fullName (_[AppleAuthenticationFullName](#appleauthenticationappleauthenticationfullname)_)** - The user's name. May be `null` or contain `null` values if you didn't request the `FULL_NAME` scope, if the user denied access, or if this is not the first time the user has signed into your app.
 - **email (_string_)** - The user's email address. Might not be present if you didn't request the `EMAIL` scope. May also be null if this is not the first time the user has signed into your app. If the user chose to withhold their email address, this field will instead contain an obscured email address with an Apple domain.
 - **realUserStatus (_[AppleAuthenticationUserDetectionStatus](#appleauthenticationappleauthenticationuserdetectionstatus)_)** - A value that indicates whether the user appears to the system to be a real person.
-- **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks.
+- **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks. If you did not provide `state` when making the sign-in request, this field will be `null`.
 - **identityToken (_string_)** - A JSON Web Token (JWT) that securely communicates information about the user to your app.
-- **authorizationCode (_string_)** - A short-lived token used by your app for proof of authorization when interacting with the app's server counterpart.
+- **authorizationCode (_string_)** - A short-lived session token used by your app for proof of authorization when interacting with the app's server counterpart. Unlike `user` and `identifyToken`, this is ephemeral and will change each session.
 
 ### `AppleAuthentication.AppleAuthenticationFullName`
 

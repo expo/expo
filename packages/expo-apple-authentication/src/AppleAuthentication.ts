@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+import { CodedError, EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 
 import {
@@ -28,7 +28,14 @@ export async function signInAsync(
     ...(options || {}),
     requestedOperation: AppleAuthenticationOperation.LOGIN,
   };
-  return ExpoAppleAuthentication.requestAsync(requestOptions);
+  const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
+  if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
+    throw new CodedError(
+      'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
+      'The credential returned by `signInAsync` is missing one or more required fields.'
+    );
+  }
+  return credential;
 }
 
 export async function refreshAsync(
@@ -41,7 +48,14 @@ export async function refreshAsync(
     ...options,
     requestedOperation: AppleAuthenticationOperation.REFRESH,
   };
-  return ExpoAppleAuthentication.requestAsync(requestOptions);
+  const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
+  if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
+    throw new CodedError(
+      'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
+      'The credential returned by `refreshAsync` is missing one or more required fields.'
+    );
+  }
+  return credential;
 }
 
 export async function signOutAsync(

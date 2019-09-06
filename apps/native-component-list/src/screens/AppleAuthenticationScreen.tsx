@@ -74,7 +74,6 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
           AppleAuthenticationScope.FULL_NAME,
           AppleAuthenticationScope.EMAIL,
         ],
-        user: await this.getUserIdentifier(),
         state: 'this-is-a-test',
       });
       this.setState({ credentials });

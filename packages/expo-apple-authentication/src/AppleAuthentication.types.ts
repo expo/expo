@@ -102,10 +102,11 @@ export type AppleAuthenticationCredential = {
   state: string | null;
 
   /**
-   * The user's name. May contain `null` values if you didn't request the `FULL_NAME` scope, if the
-   * user denied access, or if this is not the first time the user has signed into your app.
+   * The user's name. May be `null` or contain `null` values if you didn't request the `FULL_NAME`
+   * scope, if the user denied access, or if this is not the first time the user has signed into
+   * your app.
    */
-  fullName: AppleAuthenticationFullName;
+  fullName: AppleAuthenticationFullName | null;
 
   /**
    * The user's email address. Might not be present if you didn't request the `EMAIL` scope. May
@@ -123,13 +124,14 @@ export type AppleAuthenticationCredential = {
   /**
    * A JSON Web Token (JWT) that securely communicates information about the user to your app.
    */
-  identityToken: string;
+  identityToken: string | null;
 
   /**
-   * A short-lived token used by your app for proof of authorization when interacting with the app's
-   * server counterpart.
+   * A short-lived session token used by your app for proof of authorization when interacting with
+   * the app's server counterpart. Unlike `user` and `identifyToken`, this is ephemeral and will
+   * change each session.
    */
-  authorizationCode: string;
+  authorizationCode: string | null;
 };
 
 /**
