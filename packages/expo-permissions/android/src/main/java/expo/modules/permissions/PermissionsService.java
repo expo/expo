@@ -27,7 +27,7 @@ public class PermissionsService implements InternalModule, Permissions {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mPermissionsRequester = new PermissionsRequester(moduleRegistry);
   }
 

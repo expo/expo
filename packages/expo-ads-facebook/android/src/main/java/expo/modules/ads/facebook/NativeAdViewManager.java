@@ -42,7 +42,7 @@ public class NativeAdViewManager extends ViewManager<NativeAdView> {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
   }
 }

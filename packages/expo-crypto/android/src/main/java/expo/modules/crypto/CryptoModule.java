@@ -19,7 +19,7 @@ public class CryptoModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
   }
 
   @Override

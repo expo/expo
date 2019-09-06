@@ -67,7 +67,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();

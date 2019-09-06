@@ -73,11 +73,13 @@ public class ExponentPackage implements ReactPackage {
   private final JSONObject mManifest;
 
   private final ScopedModuleRegistryAdapter mModuleRegistryAdapter;
+  private String mExperienceId;
 
   private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, List<SingletonModule> singletonModules) {
     mIsKernel = isKernel;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
+    mExperienceId = getExperienceIdFormManifest(manifest);
     mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules);
   }
 
@@ -85,6 +87,7 @@ public class ExponentPackage implements ReactPackage {
     mIsKernel = false;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
+    mExperienceId = getExperienceIdFormManifest(manifest);
 
     List<Package> packages = expoPackages;
     if (packages == null) {
@@ -92,7 +95,7 @@ public class ExponentPackage implements ReactPackage {
     }
     // Delegate may not be null only when the app is detached
     if (delegate != null) {
-      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules);
+      mModuleRegistryAdapter = delegate.getScopedModuleRegistryAdapterForPackages(packages, singletonModules, mExperienceId);
     } else {
       mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(packages, singletonModules);
     }
@@ -223,6 +226,16 @@ public class ExponentPackage implements ReactPackage {
   }
 
   private ExpoModuleRegistryAdapter createDefaultModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
-    return new ExpoModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
+    return new ExpoModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules, mExperienceId));
+  }
+
+  private String getExperienceIdFormManifest(JSONObject manifest) {
+    try {
+      ExperienceId experienceId = ExperienceId.create(manifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      return experienceId.get();
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }

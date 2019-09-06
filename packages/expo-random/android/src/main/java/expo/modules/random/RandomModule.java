@@ -19,7 +19,7 @@ public class RandomModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     if (moduleRegistry != null) {
       mRandom = new SecureRandom();
     }

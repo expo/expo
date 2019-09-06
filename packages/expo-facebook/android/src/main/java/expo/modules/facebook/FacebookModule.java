@@ -109,7 +109,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);

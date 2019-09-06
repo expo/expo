@@ -56,7 +56,7 @@ public class AdMobInterstitialAdModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
   }

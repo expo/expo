@@ -39,7 +39,7 @@ public class NativeAdManager implements InternalModule, NativeAdsManager.Listene
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
   }
 

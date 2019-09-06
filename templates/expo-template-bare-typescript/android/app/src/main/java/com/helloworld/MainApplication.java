@@ -27,7 +27,8 @@ import java.util.List;
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList(),
-    Arrays.<SingletonModule>asList()
+    Arrays.<SingletonModule>asList(),
+    "INJECT_APP_ID_HERE"
   );
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {

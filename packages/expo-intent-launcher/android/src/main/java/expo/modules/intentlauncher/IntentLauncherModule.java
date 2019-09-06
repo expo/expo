@@ -45,7 +45,7 @@ public class IntentLauncherModule extends ExportedModule implements ActivityEven
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mUIManager = moduleRegistry.getModule(UIManager.class);
   }

@@ -49,7 +49,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mPermissionsModule = moduleRegistry.getModule(Permissions.class);
   }
 

@@ -40,7 +40,7 @@ public class MailComposerModule extends ExportedModule implements LifecycleEvent
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }

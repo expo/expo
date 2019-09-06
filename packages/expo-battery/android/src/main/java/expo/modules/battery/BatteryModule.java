@@ -61,7 +61,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mContext.registerReceiver(new BatteryStateReceiver(), new IntentFilter(Intent.ACTION_BATTERY_CHANGED));

@@ -47,7 +47,7 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
   }
 

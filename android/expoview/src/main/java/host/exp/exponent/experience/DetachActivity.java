@@ -60,7 +60,7 @@ public abstract class DetachActivity extends ExperienceActivity implements Expon
   }
 
   @Override
-  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
-    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
+  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules, String experienceId) {
+    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules, experienceId));
   }
 }

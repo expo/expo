@@ -43,7 +43,7 @@ public class SharingModule extends ExportedModule implements ActivityEventListen
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
     uiManager.registerActivityEventListener(this);

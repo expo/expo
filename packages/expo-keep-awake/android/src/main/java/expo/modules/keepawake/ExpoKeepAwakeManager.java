@@ -20,7 +20,7 @@ public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule {
   private Set<String> mTags = new HashSet<>();
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
   }
 

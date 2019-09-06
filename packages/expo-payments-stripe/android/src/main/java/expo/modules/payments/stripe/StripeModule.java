@@ -457,7 +457,7 @@ public class StripeModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     this.mModuleRegistry = moduleRegistry;
 
     // Add the listener for `onActivityResult`

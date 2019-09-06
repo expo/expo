@@ -55,7 +55,7 @@ public class PermissionsModule extends ExportedModule implements LifecycleEventL
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mPermissionsRequester = new PermissionsRequester(moduleRegistry);
     mPermissions = moduleRegistry.getModule(Permissions.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);

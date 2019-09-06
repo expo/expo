@@ -56,7 +56,7 @@ public class ViewGroupManagerAdapter<M extends ViewManager<V>, V extends ViewGro
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mViewManager.onCreate(moduleRegistry);
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
+    mViewManager.onCreate(moduleRegistry, appId);
   }
 }

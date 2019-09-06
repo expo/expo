@@ -30,7 +30,7 @@ public class BarCodeScannerViewManager extends ViewManager<BarCodeScannerView> {
   private ModuleRegistry mModuleRegistry;
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
   }
 

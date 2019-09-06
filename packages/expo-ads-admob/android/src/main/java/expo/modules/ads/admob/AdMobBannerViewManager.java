@@ -46,7 +46,7 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView> {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
   }
 

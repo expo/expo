@@ -33,7 +33,7 @@ public abstract class BaseSensorModule extends ExportedModule implements SensorE
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     // Unregister from old UIManager
     if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);

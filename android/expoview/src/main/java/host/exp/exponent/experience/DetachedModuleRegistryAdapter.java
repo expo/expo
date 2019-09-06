@@ -22,6 +22,7 @@ import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrappe
 import versioned.host.exp.exponent.modules.universal.SecureStoreModuleBinding;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
+
   public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     super(moduleRegistryProvider);
   }

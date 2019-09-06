@@ -23,7 +23,7 @@ import org.unimodules.core.interfaces.services.UIManager;
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
 
     // Register to new UIManager

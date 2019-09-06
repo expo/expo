@@ -75,7 +75,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();

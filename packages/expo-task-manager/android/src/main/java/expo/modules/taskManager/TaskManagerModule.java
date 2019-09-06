@@ -37,7 +37,7 @@ public class TaskManagerModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
     mTaskManagerInternal = moduleRegistry.getModule(TaskManagerInterface.class);
   }

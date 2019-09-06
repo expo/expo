@@ -4,7 +4,7 @@ import org.unimodules.core.ModuleRegistry;
 
 public interface RegistryLifecycleListener {
 
-  default void onCreate(ModuleRegistry moduleRegistry) {
+  default void onCreate(ModuleRegistry moduleRegistry, String appId) {
     // do nothing
   }
 

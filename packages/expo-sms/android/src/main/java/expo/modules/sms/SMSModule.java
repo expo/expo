@@ -35,7 +35,7 @@ public class SMSModule extends ExportedModule implements LifecycleEventListener 
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     if (mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);

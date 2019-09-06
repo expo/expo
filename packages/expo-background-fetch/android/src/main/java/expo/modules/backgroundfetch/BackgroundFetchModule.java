@@ -23,7 +23,7 @@ class BackgroundFetchModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
   }
 

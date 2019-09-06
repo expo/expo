@@ -16,9 +16,11 @@ import org.unimodules.core.interfaces.SingletonModule;
  */
 public class ModuleRegistryProvider {
   private List<Package> mPackages;
+  protected String mAppId;
 
-  public ModuleRegistryProvider(List<Package> initialPackages) {
+  public ModuleRegistryProvider(List<Package> initialPackages, String appId) {
     mPackages = initialPackages;
+    mAppId = appId;
   }
 
   protected List<Package> getPackages() {
@@ -26,7 +28,7 @@ public class ModuleRegistryProvider {
   }
 
   public ModuleRegistry get(Context context) {
-    return new ModuleRegistry(
+    return new ModuleRegistry(mAppId,
             createInternalModules(context),
             createExportedModules(context),
             createViewManagers(context),
@@ -34,7 +36,7 @@ public class ModuleRegistryProvider {
     );
   }
 
-  public Collection<InternalModule> createInternalModules(Context context) {
+  protected Collection<InternalModule> createInternalModules(Context context) {
     Collection<InternalModule> internalModules = new ArrayList<>();
     for (Package pkg : getPackages()) {
       internalModules.addAll(pkg.createInternalModules(context));
@@ -42,7 +44,7 @@ public class ModuleRegistryProvider {
     return internalModules;
   }
 
-  public Collection<ExportedModule> createExportedModules(Context context) {
+  protected Collection<ExportedModule> createExportedModules(Context context) {
     Collection<ExportedModule> exportedModules = new ArrayList<>();
     for (Package pkg : getPackages()) {
       exportedModules.addAll(pkg.createExportedModules(context));
@@ -50,7 +52,7 @@ public class ModuleRegistryProvider {
     return exportedModules;
   }
 
-  public Collection<ViewManager> createViewManagers(Context context) {
+  protected Collection<ViewManager> createViewManagers(Context context) {
     Collection<ViewManager> viewManagers = new ArrayList<>();
     for (Package pkg : getPackages()) {
       viewManagers.addAll(pkg.createViewManagers(context));

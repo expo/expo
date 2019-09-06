@@ -7,5 +7,5 @@ import org.unimodules.core.interfaces.SingletonModule;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
 public interface ExponentPackageDelegate {
-  ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules);
+  ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules, String experienceId);
 }

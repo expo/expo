@@ -43,7 +43,7 @@ public class ImageManipulatorModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mImageLoader = moduleRegistry.getModule(ImageLoader.class);
   }
 

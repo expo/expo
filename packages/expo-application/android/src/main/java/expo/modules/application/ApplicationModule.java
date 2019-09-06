@@ -43,7 +43,7 @@ public class ApplicationModule extends ExportedModule implements RegistryLifecyc
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();

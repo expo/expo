@@ -20,11 +20,17 @@ public class ModuleRegistry {
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
   private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
 
+  private String mAppId = "";
+
   public ModuleRegistry(
+      String appId,
       Collection<InternalModule> internalModules,
       Collection<ExportedModule> exportedModules,
       Collection<ViewManager> viewManagers,
       Collection<SingletonModule> singletonModules) {
+
+    mAppId = appId;
+
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
     }
@@ -146,7 +152,7 @@ public class ModuleRegistry {
     }
 
     for (RegistryLifecycleListener lifecycleListener : lifecycleListeners) {
-      lifecycleListener.onCreate(this);
+      lifecycleListener.onCreate(this, mAppId);
     }
   }
 

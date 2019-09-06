@@ -27,7 +27,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     if (mUIManager != null) {
       mUIManager.unregisterLifecycleEventListener(this);
     }

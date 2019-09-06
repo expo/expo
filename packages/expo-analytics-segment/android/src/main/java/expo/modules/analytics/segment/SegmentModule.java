@@ -237,7 +237,7 @@ public class SegmentModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mConstants = null;
     if (moduleRegistry != null) {
       mConstants = moduleRegistry.getModule(ConstantsInterface.class);

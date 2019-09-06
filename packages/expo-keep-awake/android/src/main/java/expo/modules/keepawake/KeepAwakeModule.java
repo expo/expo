@@ -27,7 +27,7 @@ public class KeepAwakeModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mKeepAwakeManager = moduleRegistry.getModule(KeepAwakeManager.class);
   }
 

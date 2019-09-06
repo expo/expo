@@ -720,7 +720,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     mImageLoader = moduleRegistry.getModule(ImageLoader.class);
   }

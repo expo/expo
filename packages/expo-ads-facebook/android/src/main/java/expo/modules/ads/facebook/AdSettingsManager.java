@@ -33,7 +33,7 @@ public class AdSettingsManager extends ExportedModule implements LifecycleEventL
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mModuleRegistry = moduleRegistry;
     UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
     if (uiManager != null) {

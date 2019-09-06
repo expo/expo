@@ -116,7 +116,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }

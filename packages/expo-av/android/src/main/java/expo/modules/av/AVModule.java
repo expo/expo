@@ -21,7 +21,7 @@ public class AVModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mAVManager = moduleRegistry.getModule(AVManagerInterface.class);
   }
 

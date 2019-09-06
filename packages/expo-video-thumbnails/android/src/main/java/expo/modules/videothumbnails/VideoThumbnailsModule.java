@@ -44,7 +44,7 @@ public class VideoThumbnailsModule extends ExportedModule {
     }
 
     @Override
-    public void onCreate(ModuleRegistry moduleRegistry) {
+    public void onCreate(ModuleRegistry moduleRegistry, String appId) {
         mModuleRegistry = moduleRegistry;
     }
 

@@ -31,8 +31,8 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<com.facebook.react.uimanager.ViewManager> mReactViewManagers;
   private Collection<SingletonModule> mSingletonModules;
 
-  public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules) {
-    super(initialPackages);
+  public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules, String appId) {
+    super(initialPackages, appId);
     mSingletonModules = singletonModules;
   }
 
@@ -52,7 +52,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
     }
     internalModules.add(reactPackagesProvider);
 
-    return new ModuleRegistry(internalModules, exportedModules, getViewManagers(context), getSingletonModules(context));
+    return new ModuleRegistry(mAppId, internalModules, exportedModules, getViewManagers(context), getSingletonModules(context));
   }
 
   private Collection<SingletonModule> getSingletonModules(Context context) {

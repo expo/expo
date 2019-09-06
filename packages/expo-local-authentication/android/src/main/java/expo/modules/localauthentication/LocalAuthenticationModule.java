@@ -84,7 +84,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mUIManager = moduleRegistry.getModule(UIManager.class);
   }
 

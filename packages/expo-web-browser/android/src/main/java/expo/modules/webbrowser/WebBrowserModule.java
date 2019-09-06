@@ -55,7 +55,7 @@ public class WebBrowserModule extends ExportedModule {
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mCustomTabsResolver = new CustomTabsActivitiesHelper(moduleRegistry);
     mConnectionHelper = new CustomTabsConnectionHelper(getContext());
   }

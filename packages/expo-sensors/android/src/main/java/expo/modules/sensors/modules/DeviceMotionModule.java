@@ -122,7 +122,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   }
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mUiManager = moduleRegistry.getModule(UIManager.class);
     mModuleRegistry = moduleRegistry;

@@ -42,7 +42,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   //region ModuleRegistryConsumer
 
   @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry, String appId) {
     mUIManager = moduleRegistry.getModule(UIManager.class);
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mConstants = moduleRegistry.getModule(ConstantsInterface.class);
