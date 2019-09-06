@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`authAsync unavailable on web 1`] = `"\`clientId\` must be a string with more than 0 characters"`;
