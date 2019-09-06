@@ -18,14 +18,6 @@ export interface Database {
     errorCallback?: SQLTransactionErrorCallback,
     successCallback?: SQLVoidCallback
   ): void;
-
-  changeVersion(
-    oldVersion: string,
-    newVersion: string,
-    callback?: SQLTransactionCallback,
-    errorCallback?: SQLTransactionErrorCallback,
-    successCallback?: SQLVoidCallback
-  ): void;
 }
 
 export interface SQLVoidCallback {
