@@ -4,9 +4,7 @@ import { setDefaultOptions } from 'expect-puppeteer';
 import config from '../jest-puppeteer.config';
 import { expectResults } from './utils/report';
 
-const sleepAsync = t => new Promise(res => setTimeout(res, t));
-
-let TESTS = [
+const TESTS = [
   'Basic',
   'Constants',
   'Crypto',
@@ -17,7 +15,9 @@ let TESTS = [
   //   'Permissions',
 ];
 
+// This is how long we allocate for the actual tests to be run after the test screen has mounted.
 const MIN_TIME = 50000;
+const RENDER_MOUNTING_TIMEOUT = 100;
 
 setDefaultOptions({
   timeout: MIN_TIME * 1.5,
@@ -36,20 +36,25 @@ describe('test-suite', () => {
         // await jestPuppeteer.debug();
 
         await page.goto(`${config.url}/test-suite/select/${testName}`);
-        await sleepAsync(100);
-        await matchID('test_suite_container', { visible: true });
-        await matchID('test_suite_text_results', { visible: true, timeout: MIN_TIME });
-        await matchID('test_suite_text_results', { visible: true, timeout: MIN_TIME });
-        await matchID('test_suite_final_results', { visible: true });
+
+        // Ensure the app linked to the testing screen (give it 100ms for navigation mounting)
+        await matchID('test_suite_container', { visible: true, timeout: RENDER_MOUNTING_TIMEOUT });
+        // Wait for the final result to be rendered. This means all the tests have finished.
+        await matchID('test_suite_final_results', { visible: true, timeout: MIN_TIME });
+        // Get the DOM element matching the testID prop.
+        // This text will contain the final results (parity with native)
         const element = await page.$(`div[data-testid="test_suite_final_results"]`);
+        // Read the text contents and parse them as JSON
         const input = await (await element.getProperty('textContent')).jsonValue();
 
+        // Parse, expect, and print the results of our tests
         expectResults({
           testName,
           input,
         });
       },
-      MIN_TIME * 1.5
+      // Add some extra time for page content loading (page.goto) and parsing the DOM
+      (MIN_TIME + RENDER_MOUNTING_TIMEOUT) * 1.2
     );
   });
 });
