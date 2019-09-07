@@ -1,2 +1,2 @@
-const { getNodePreset } = require('../src/getPlatformPreset');
+const { getNodePreset } = require('../utils/getPlatformPreset');
 module.exports = getNodePreset();

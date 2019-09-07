@@ -1,2 +1,2 @@
-const { getIOSPreset } = require('../src/getPlatformPreset');
+const { getIOSPreset } = require('../utils/getPlatformPreset');
 module.exports = getIOSPreset();
