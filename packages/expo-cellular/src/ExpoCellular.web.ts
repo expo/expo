@@ -16,26 +16,26 @@ export default {
   get mobileNetworkCode(): null {
     return null;
   },
-  async getCellularGenerationAsync(): Promise<CellularGeneration | null> {
+  async getCellularGenerationAsync(): Promise<CellularGeneration> {
     let connection =
       navigator['connection'] ||
       navigator['mozConnection'] ||
       navigator['webkitConnection'] ||
       null;
-    if (connection != null) {
+    if (connection !== null) {
       switch (connection.effectiveType) {
         case 'slow-2g':
         case '2g':
-          return Promise.resolve(CellularGeneration['2G']);
+          return CellularGeneration.CELLULAR_2G;
         case '3g':
-          return Promise.resolve(CellularGeneration['3G']);
+          return CellularGeneration.CELLULAR_3G;
         case '4g':
-          return Promise.resolve(CellularGeneration['4G']);
+          return CellularGeneration.CELLULAR_4G;
         default:
-          return Promise.resolve(CellularGeneration.UNKNOWN);
+          return CellularGeneration.UNKNOWN;
       }
     } else {
-      return Promise.resolve(CellularGeneration.UNKNOWN);
+      return CellularGeneration.UNKNOWN;
     }
   },
 };
