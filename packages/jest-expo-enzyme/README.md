@@ -74,7 +74,7 @@ You can use `withEnzyme` to add Enzyme support to an existing Jest config (**imp
 2. Import the platforms you want to test and add Enzyme support:
 
 ```js
-// Skipping Node because components shouldn't be rendering in SSR
+// Skipping Node because we want to test DOM presets only
 const { getWebPreset, getIOSPreset, getAndroidPreset } = require('jest-expo/src/getPlatformPreset');
 
 const withEnzyme = require('jest-expo-enzyme');
