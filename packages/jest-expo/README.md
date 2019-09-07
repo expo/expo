@@ -39,7 +39,7 @@ For quick debugging you can run a single platform with `jest-expo/ios`, `jest-ex
 
 ### Snapshots
 
-Because a test is run with multiple different platforms, `jest-expo` saves snapshots using the name of the platform as the extension. This is very useful for testing something like view styles which are computed differently across web and native.
+Because a test is run with multiple different platforms, `jest-expo` saves snapshots using the name of the platform as the extension. This is very useful for testing something like view styles, which are computed differently across web and native.
 
 Here is an example output:
 
@@ -65,7 +65,7 @@ If you don't want to use every runner you can always mix runners by using the `p
 ```diff
 "jest": {
 -  "preset": "jest-expo/universal"
-// Skip web and node tests
+// Skip web and Node tests
 + "projects": [
 +    { "preset": "jest-expo/ios" },
 +    { "preset": "jest-expo/android"}
