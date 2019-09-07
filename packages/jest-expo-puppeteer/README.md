@@ -1,6 +1,6 @@
 # jest-expo-puppeteer
 
-Run E2E tests on your Expo web projects with [Jest][jest], [Puppeteer][puppeteer], and the [Expo CLI][expo-cli].
+Run end-to-end tests on your Expo web projects with [Jest][jest], [Puppeteer][puppeteer], and the [Expo CLI][expo-cli].
 This library wraps [`jest-puppeteer`][jest-puppeteer] and reads info from your project's `app.json` to configure it correctly for development and production builds. This library will automatically configure your project to run Puppeteer correctly in CI.
 
 ## Installation
