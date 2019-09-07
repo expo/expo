@@ -6,12 +6,12 @@ export function reportMagic({ testName, failed, results, failures }) {
     results
       // Remove random "undefined" from beginning
       .substring(9)
-      .replace(new RegExp('---', 'g'), chalk.cyan('---'))
+      .replace(/---/g, chalk.cyan('---'))
       .split('+++')
       .join(chalk.red('+++'))
       .split(` ${testName} `)
       .join(chalk.magenta.bold(` ${testName} `))
-      .replace(new RegExp('toBe: ', 'g'), chalk.bold.green('toBe: '));
+      .replace(/toBe:\s/g, chalk.bold.green('toBe: '));
   console.log(chalk.bgMagenta.bold.black(`\n RESULTS \n\n`), formatResults(results));
 
   if (failed > 0) {
