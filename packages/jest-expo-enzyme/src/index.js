@@ -2,7 +2,13 @@
 const chalk = require('chalk');
 
 module.exports = function withEnzyme(preset = {}) {
-  const { snapshotSerializers = [], haste = {}, setupFilesAfterEnv = [], setupFiles = [] } = preset;
+  const {
+    snapshotSerializers = [],
+    testEnvironmentOptions = {},
+    haste = {},
+    setupFilesAfterEnv = [],
+    setupFiles = [],
+  } = preset;
 
   if (!haste || typeof haste.defaultPlatform !== 'string') {
     const message = chalk.red(
@@ -11,33 +17,32 @@ module.exports = function withEnzyme(preset = {}) {
           '`haste.defaultPlatform: string`'
         )} value defined\n`
     );
-    console.log(message);
-    throw new Error(message);
+    console.error(message);
+    process.exit(1);
   }
 
   const isNative = ['ios', 'android'].includes(haste.defaultPlatform);
 
   const commonConfig = {
     ...preset,
-    snapshotSerializers: [...snapshotSerializers, 'enzyme-to-json/serializer'],
-    timers: 'fake',
+    snapshotSerializers: [...snapshotSerializers, require.resolve('enzyme-to-json/serializer')],
+    testEnvironmentOptions: {
+      ...testEnvironmentOptions,
+      enzymeAdapter: 'react16',
+    },
+    testEnvironment: 'enzyme',
   };
 
   if (isNative) {
     return {
       ...commonConfig,
       setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.native.js`)],
-      testEnvironmentOptions: {
-        enzymeAdapter: 'react16',
-      },
-      testEnvironment: 'enzyme',
     };
   }
 
   return {
     ...commonConfig,
-    setupFiles: [...setupFiles, 'jest-canvas-mock'],
+    setupFiles: [...setupFiles, require.resolve('jest-canvas-mock')],
     setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.web.js`)],
-    testEnvironment: 'jsdom',
   };
 };
