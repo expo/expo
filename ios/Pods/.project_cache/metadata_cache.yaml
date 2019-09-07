@@ -514,6 +514,10 @@ EXAppAuth:
   LABEL: EXAppAuth
   PROJECT_PATH: EXAppAuth.xcodeproj
   UUID: 5FB7695B45E2F2A9171D3B6C97B3A1A2
+EXAppleAuthentication:
+  LABEL: EXAppleAuthentication
+  PROJECT_PATH: EXAppleAuthentication.xcodeproj
+  UUID: 75D95B1FB34689F855D1F4728683DC28
 EXApplication:
   LABEL: EXApplication
   PROJECT_PATH: EXApplication.xcodeproj

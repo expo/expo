@@ -9,6 +9,7 @@
   "expo-analytics-segment": "~6.0.0",
   "expo-app-auth": "~6.0.0",
   "expo-app-loader-provider": "~6.0.0",
+  "expo-apple-authentication": "~1.0.0",
   "expo-asset": "~6.0.0",
   "expo-av": "~6.0.0",
   "expo-background-fetch": "~6.0.0",
