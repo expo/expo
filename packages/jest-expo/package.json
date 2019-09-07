@@ -37,7 +37,7 @@
   "dependencies": {
     "babel-jest": "^24.7.1",
     "jest": "^24.7.1",
-    "jest-watch-select-projects": "^0.1.2",
+    "jest-watch-select-projects": "^1.0.0",
     "jest-watch-typeahead": "^0.4.0",
     "json5": "^2.1.0",
     "lodash": "^4.5.0",

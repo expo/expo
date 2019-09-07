@@ -1,10 +1,20 @@
+const chalk = require('chalk');
+
 function getWatchPlugins({ projects = [] } = {}) {
   const watchPlugins = [
     require.resolve('jest-watch-typeahead/filename'),
     require.resolve('jest-watch-typeahead/testname'),
   ];
   if (projects.length) {
-    watchPlugins.push(require.resolve('jest-watch-select-projects'));
+    watchPlugins.push([
+      require.resolve('jest-watch-select-projects'),
+      {
+        key: 'X',
+        prompt() {
+          return `select which PLATFORMS to run ${chalk.italic(this._getActiveProjectsText())}`;
+        },
+      },
+    ]);
   }
   return watchPlugins;
 }
