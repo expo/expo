@@ -6,7 +6,7 @@ it(`renders a view with a custom background`, () => {
   // To debug your component use this:
   console.log('Component:', component.debug({ verbose: true }));
 
-  // When snapshot testing, you should always try and be as concise as possible
+  // When snapshot testing, you should try to include just the output you want to test in your snapshot
   // here we are extracting the style prop from `View` on native and `div` on web
   const prop = component.find(Platform.select({ default: 'View', web: 'div' })).prop('style');
 
