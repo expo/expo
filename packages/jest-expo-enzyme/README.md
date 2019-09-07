@@ -1,6 +1,6 @@
 # jest-expo-enzyme
 
-A [Jest](https://facebook.github.io/jest/) preset which enables you to test your universal Expo & React elements with the [**Enzyme**](https://airbnb.io/enzyme/) testing library.
+A [Jest](https://facebook.github.io/jest/) preset that enables you to test your universal Expo & React elements with the [**Enzyme**](https://airbnb.io/enzyme/) testing library.
 
 The default preset extends `jest-expo` which means it will run **iOS, Android, and web** platforms with the recommended Enzyme configs for web and native. Notice that we omit the `node` runner because SSR environments don't need to test how virtual DOM is rendered.
 
@@ -60,16 +60,18 @@ it(`renders a view with a custom background`, () => {
 
 ## Customization
 
-When constructing your tests you will more than likely want to build them one platform at a time. To do this you'll want to create a `jest.config.js` and mix platforms.
+When constructing your tests you will more than likely want to build them one platform at a time. To do this you'll want to create a `jest.config.js` with multiple platforms.
 
-This is done by adding single jest configs to the `projects` field of your custom Jest config, this is why method `withEnzyme` exists.
+This is done by specifying a separate Jest config in the `projects` field of your custom Jest config. The `withEnzyme` method's purpose is to let you augment each single-platform Jest config with the configuration fields needed to support Enzyme.
 
-You can use `withEnzyme` to add Enzyme support to an existing Jest config (**important** this is only officially supported with Jest configs provided by `jest-expo`, mixing with other configs may not work as expected). This implementation of Enzyme will also use a custom serializer for the React Native **StyleSheet** API which will make snapshot tests cleaner and easier to read.
+This is why method `withEnzyme` exists.
+
+You can use `withEnzyme` to add Enzyme support to an existing Jest config (**important:** this is only officially supported with Jest configs provided by `jest-expo`; mixing with other configs may not work as expected). Also use a custom serializer for the React Native **StyleSheet** API, which will make snapshot tests cleaner and easier to read.
 
 ### Usage
 
-1. Create a `jest.config.js` in your root directory and delete the `jest` field in your `package.json`. You can also create any `js` file and pass it to the Jest CLI with the `-c` flag, ex: `yarn jest -c custom.config.js`
-2. Import the platforms you want to test and add enzyme support:
+1. Create a `jest.config.js` in your root directory and delete the `jest` field in your `package.json`. You can also create any `js` file and pass it to the Jest CLI with the `-c` flag, ex: `yarn jest -c custom.config.js`.
+2. Import the platforms you want to test and add Enzyme support:
 
 ```js
 // Skipping Node because components shouldn't be rendering in SSR
