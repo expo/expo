@@ -11,7 +11,7 @@
   "files": [
     "android",
     "bin",
-    "utils",
+    "config",
     "ios",
     "node",
     "src",

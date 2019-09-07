@@ -3,8 +3,8 @@ const {
   getNodePreset,
   getIOSPreset,
   getAndroidPreset,
-} = require('../utils/getPlatformPreset');
-const { withWatchPlugins } = require('../utils/withWatchPlugins');
+} = require('../config/getPlatformPreset');
+const { withWatchPlugins } = require('../config/withWatchPlugins');
 
 module.exports = withWatchPlugins({
   projects: [

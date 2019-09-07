@@ -1,3 +1,3 @@
-const { getWebPreset } = require('../utils/getPlatformPreset');
+const { getWebPreset } = require('../config/getPlatformPreset');
 
 module.exports = getWebPreset();
