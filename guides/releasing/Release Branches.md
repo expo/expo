@@ -37,3 +37,23 @@ Sometimes code on master will be significantly different than code on a release 
 It’s OK to write the fix on your local copy of the release branch if it’s easier to develop that way. If a tree falls in a forest and no one is around to hear it, does it make a sound? But when it comes time to send the commit for code review and push it to GitHub, commit it to the master branch first.
 
 Note that even with these edge cases, we always preserve the unidirectional commit invariant.
+
+# Incrementing Version Numbers
+
+(This section is under development as we figure out what works well for us.)
+
+This section is intended for people responsible for the release in particular. Due to the number of projects we have and our release scripts, incrementing version numbers requires careful thought. There is one invariant we want to maintain: **when we create the next release branch, all of the versions on the newest release branch must be equal to or greater than the greatest versions we've published.** This is so the libraries published from the next release branch will have greater version numbers than the libraries on older release branches.
+
+These are some general guidelines to achieve this:
+
+When the new version of a library is compatible with a client we have already released (or plan to release), increment the version on the release branch and publish from there. For our JS packages, these will typically be patch versions because we use the minor version number to communicate that the JS API doesn't have breaking changes but the native-to-JS API does.
+
+Otherwise, when the new version is not compatible with an already released client, we sometimes want to increment the version on master and other times on the next, future release branch. Commit major-version changes to master so the versions on master stay up to date over time; create the next release branch after incrementing the major versions. For minor-version changes, we can commit them either to master or, if we haven't released a client yet, to the release branch since the native-to-JS API for the next SDK version has not yet been frozen. The branch to choose depends on the code we want to publish; if we want to publish the code on the release branch, we should increment the version on the release branch, and if we want to publish the code on master, we should increment the version on master.
+
+## Prelease Versions
+
+Prerelease versions are treated similarly. Increment the version to the prerelease version on the branch whose code you are publishing. Compared to non-prerelease versions, we will likely publish more prerelease versions from master (especially major and minor prereleases), so prerelease commits will likely be more common on master.
+
+## Shortcomings
+
+Versioning dozens of packages that have different types of breaking changes is complicated. The versioning guidelines above are not water-tight and issues could slip through. For example, if we increment a patch version on an older release branch and don't eventually update past it on master, the version on the next release branch will be heind the latest version we've actually published. Overall, we need to be thoughtful and aware of the state of our release branches and published versions when we increment versions and make good decisions as we go. If we maintain the invariant of keeping versions on each new release branch up to date, we'll keep our versioning process mostly working well.
