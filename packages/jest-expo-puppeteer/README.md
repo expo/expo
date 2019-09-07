@@ -10,8 +10,8 @@ This library wraps [`jest-puppeteer`][jest-puppeteer] and reads info from your p
 
   ```js
   "scripts": {
-    "test": "jest --runInBand",
-    "test:prod": "EXPO_WEB_E2E_ENV=production jest --runInBand"
+    "test": "jest",
+    "test:prod": "EXPO_WEB_E2E_ENV=production jest"
   },
   "jest": {
     // You should use jest-expo-puppeteer as your preset which wraps jest-puppeteer and adds minor changes (subject to change in the future)
