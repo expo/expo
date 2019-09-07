@@ -34,7 +34,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
 
   const hasServerSideRendering = web.use === 'nextjs';
   const defaultPort = hasServerSideRendering ? 8000 : 5000;
-  const serverPort = !server.port ? defaultPort : server.port;
+  const { port: serverPort = defaultPort } = server;
   let defaultURL;
   let command;
 
