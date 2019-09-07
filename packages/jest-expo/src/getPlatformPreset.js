@@ -1,5 +1,4 @@
 'use strict';
-
 const expoPreset = require('../jest-preset');
 
 function getModuleFileExtensions(...platforms) {
@@ -29,6 +28,8 @@ function getPlatformPreset(displayOptions, extensions) {
       `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
     ];
   }, []);
+
+  const { watchPlugins = [] } = expoPreset;
   return {
     displayName: displayOptions,
     testMatch,
@@ -39,6 +40,12 @@ function getPlatformPreset(displayOptions, extensions) {
       defaultPlatform: extensions[0],
       platforms: extensions,
     },
+    watchPlugins: [
+      ...watchPlugins,
+      require.resolve('jest-watch-typeahead/filename'),
+      require.resolve('jest-watch-typeahead/testname'),
+      require.resolve('jest-watch-select-projects'),
+    ],
   };
 }
 
