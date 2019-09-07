@@ -286,8 +286,8 @@ workflows:
     jobs:
       - expo_sdk
       # E2E SDK testing
-      - web-Test-Suite
-      - iOS-Test-Suite
+      - web_test_suite
+      - ios_test_suite
 
   # Android and iOS clients
   client:
@@ -368,7 +368,7 @@ jobs:
           name: Check packages
           command: expotools check-packages
 
-  web-Test-Suite:
+  web_test_suite:
     executor: web
     steps:
       - install_nix
@@ -415,7 +415,7 @@ jobs:
           command: tsc
           working_directory: ~/expo/tools/expotools
 
-  iOS-Test-Suite:
+  ios_test_suite:
     executor: mac
     macos: # Detox simulators require 10.1.0
       xcode: '10.1.0'
