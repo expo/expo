@@ -21,7 +21,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ## Development and Testing
 
-You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you test in the Expo client, you will be signing into Expo rather than your own app, and so the identifiers and values you receive will likely be different than what you'll receive in production.
+You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in production.
 
 You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
 
@@ -77,7 +77,7 @@ A promise that resolves to `true` if the system supports Apple authentication, a
 
 Sends a request to the operating system to initiate the Apple authentication flow, which will present a modal to the user over your app and allow them to sign in.
 
-You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime. Additionally, you will only receive this information the first time users sign into your app, so **you must store it for later use**. Even if you request scopes every time a user signs into your app, and the user grants your app access, iOS will only provide you with this information upon the user's first successful sign-in.
+You can request access to the user's full name and email address in this method, which allows you to personalize your UI for signed in users. However, users can deny access to either or both of these options at runtime. Additionally, you will only receive this information the first time users sign into your app, so **you must store it for later use**. Even if you request scopes every time a user signs into your app, and the user grants your app access, iOS will provide you with this information only upon the user's first successful sign-in.
 
 #### Arguments
 
@@ -207,7 +207,7 @@ The object type returned from a successful call to [`AppleAuthentication.signInA
 - **realUserStatus (_[AppleAuthenticationUserDetectionStatus](#appleauthenticationappleauthenticationuserdetectionstatus)_)** - A value that indicates whether the user appears to the system to be a real person.
 - **state (_string_)** - An arbitrary string that your app provided as `state` in the request that generated the credential. Used to verify that the response was from the request you made. Can be used to avoid replay attacks. If you did not provide `state` when making the sign-in request, this field will be `null`.
 - **identityToken (_string_)** - A JSON Web Token (JWT) that securely communicates information about the user to your app.
-- **authorizationCode (_string_)** - A short-lived session token used by your app for proof of authorization when interacting with the app's server counterpart. Unlike `user` and `identifyToken`, this is ephemeral and will change each session.
+- **authorizationCode (_string_)** - A short-lived session token used by your app for proof of authorization when interacting with the app's server counterpart. Unlike `user`, this is ephemeral and will change each session.
 
 ### `AppleAuthentication.AppleAuthenticationFullName`
 

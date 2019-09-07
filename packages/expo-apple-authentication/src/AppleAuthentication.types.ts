@@ -128,8 +128,7 @@ export type AppleAuthenticationCredential = {
 
   /**
    * A short-lived session token used by your app for proof of authorization when interacting with
-   * the app's server counterpart. Unlike `user` and `identifyToken`, this is ephemeral and will
-   * change each session.
+   * the app's server counterpart. Unlike `user`, this is ephemeral and will change each session.
    */
   authorizationCode: string | null;
 };

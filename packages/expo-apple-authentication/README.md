@@ -2,4 +2,4 @@
 
 `expo-apple-authentication` provides SignIn With Apple feature.
 
-See [AppleAuthentication docs](https://github.com/react-native-community/apple-authentication#api) for more information on this module.
+See [AppleAuthentication docs](https://docs.expo.io/versions/latest/sdk/apple-authentication/) for more information on this module.

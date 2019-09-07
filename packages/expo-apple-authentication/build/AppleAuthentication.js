@@ -12,7 +12,7 @@ export async function signInAsync(options) {
         throw new UnavailabilityError('expo-apple-authentication', 'signInAsync');
     }
     const requestOptions = {
-        ...(options || {}),
+        ...options,
         requestedOperation: AppleAuthenticationOperation.LOGIN,
     };
     const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);

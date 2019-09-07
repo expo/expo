@@ -112,7 +112,7 @@ UM_EXPORT_METHOD_AS(getCredentialStateAsync,
     if (error) {
       if (error.code == 1001) {
         // User canceled authentication attempt.
-        reject(UMErrorCodeCanceled, @"The request has been canceled by the user.", nil);
+        reject(UMErrorCodeCanceled, @"The Apple authentication request has been canceled by the user.", nil);
       } else {
         reject(@"ERR_APPLE_AUTHENTICATION_REQUEST_FAILED", error.localizedDescription, nil);
       }
