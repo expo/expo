@@ -38,6 +38,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      # - name: Update submodules
+      #   command: git submodule update --init
       # - run: yarn
       #   env:
       #     CI: true
