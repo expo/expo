@@ -98,7 +98,7 @@ class GroupView extends RenderableView {
                     ((RenderableView)node).mergeProperties(self);
                 }
 
-                int count = node.saveAndSetupCanvas(canvas);
+                int count = node.saveAndSetupCanvas(canvas, mCTM);
                 node.render(canvas, paint, opacity * mOpacity);
                 RectF r = node.getClientRect();
                 if (r != null) {

@@ -506,10 +506,12 @@ function useUserSettings(renderId) {
 
 const HomeMenu = props => {
   let colorScheme = useColorScheme();
-  let { preferredAppearance } = useUserSettings(props.uuid);
+  let { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
 
-  // force either dark or light
   let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+  if (theme === 'no-preference') {
+    theme = 'light';
+  }
 
   return (
     <AppearanceProvider>

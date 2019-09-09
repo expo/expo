@@ -88,17 +88,13 @@ export default class ProjectsScreen extends React.Component {
     Connectivity.addListener(this._updateConnectivity);
     this._startPollingForProjects();
 
+    // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
+    // find a way to move this listener up to the root of the app in order to ensure
+    // that it has been registered regardless of whether we have been on the project
+    // screen in the home app
     addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
       this.props.navigation.showModal('QRCode');
       return { success: true };
-    });
-
-    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
-      let { manifestUrl, manifest, manifestString } = event;
-      if (!manifest && manifestString) {
-        manifest = JSON.parse(manifestString);
-      }
-      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
     });
   }
 

@@ -334,11 +334,11 @@ UInt32 saturate(CGFloat value) {
     }
     self.frame = clientRect;
 
-    if (!self.fill && !self.stroke) {
+    if (self.skip || self.opacity == 0) {
         return;
     }
 
-    if (self.opacity == 0) {
+    if (!self.fill && !self.stroke) {
         return;
     }
 
@@ -361,7 +361,7 @@ UInt32 saturate(CGFloat value) {
         } else {
             CGContextSaveGState(context);
             CGContextAddPath(context, path);
-            CGContextClip(context);
+            evenodd ? CGContextEOClip(context) : CGContextClip(context);
             [self.fill paint:context
                      opacity:self.fillOpacity
                      painter:[self.svgView getDefinedPainter:self.fill.brushRef]
@@ -417,7 +417,7 @@ UInt32 saturate(CGFloat value) {
             // draw stroke
             CGContextAddPath(context, path);
             CGContextReplacePathWithStrokedPath(context);
-            CGContextClip(context);
+            evenodd ? CGContextEOClip(context) : CGContextClip(context);
 
             [self.stroke paint:context
                        opacity:self.strokeOpacity

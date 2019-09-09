@@ -366,6 +366,22 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
             }
             node.setFont(map);
         }
+
+        @ReactProp(name = "fontWeight")
+        public void setFontWeight(GroupView node, Dynamic fontWeight) {
+            JavaOnlyMap map = new JavaOnlyMap();
+            switch (fontWeight.getType()) {
+                case Number:
+                    map.putDouble("fontWeight", fontWeight.asDouble());
+                    break;
+                case String:
+                    map.putString("fontWeight", fontWeight.asString());
+                    break;
+                default:
+                    return;
+            }
+            node.setFont(map);
+        }
     }
 
 
@@ -387,6 +403,11 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
 
         TextViewManager(SVGClass svgClass) {
             super(svgClass);
+        }
+
+        @ReactProp(name = "inlineSize")
+        public void setInlineSize(TextView node, Dynamic inlineSize) {
+            node.setInlineSize(inlineSize);
         }
 
         @ReactProp(name = "textLength")
@@ -1047,6 +1068,11 @@ class RenderableViewManager extends ViewGroupManager<VirtualView> {
     @ReactProp(name = "responsible")
     public void setResponsible(VirtualView node, boolean responsible) {
         node.setResponsible(responsible);
+    }
+
+    @ReactProp(name = "onLayout")
+    public void setOnLayout(VirtualView node, boolean onLayout) {
+        node.setOnLayout(onLayout);
     }
 
     @ReactProp(name = "name")
