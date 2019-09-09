@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import Constants from 'expo-constants';
 import { withNavigation } from 'react-navigation';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import { StyledText } from './Text';
-import { StyledView } from './Views';
+import { StyledView, StyledButton } from './Views';
 import { Ionicons } from './Icons';
 
 import Colors from '../constants/Colors';
@@ -45,30 +44,28 @@ export default class OpenFromClipboardButton extends React.Component {
     }
 
     return (
-      <TouchableNativeFeedbackSafe
+      <StyledButton
         onPress={this._handlePressAsync}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
         style={styles.container}>
-        <StyledView style={{ flex: 1, flexDirection: 'row', paddingLeft: 5 }}>
-          <View style={styles.iconContainer}>
-            <Ionicons name="md-arrow-dropright-circle" size={25} />
-          </View>
+        <View style={styles.iconContainer}>
+          <Ionicons name="md-clipboard" size={26} lightColor={Colors.light.text} />
+        </View>
 
-          <View style={styles.infoContainer}>
-            <StyledText
-              style={[styles.titleText, !isValid && styles.invalidContents]}
-              ellipsizeMode="tail"
-              numberOfLines={1}>
-              Open from Clipboard
-            </StyledText>
+        <View style={styles.infoContainer}>
+          <StyledText
+            style={[styles.titleText, !isValid && styles.invalidContents]}
+            ellipsizeMode="tail"
+            numberOfLines={1}>
+            Open from Clipboard
+          </StyledText>
 
-            <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-              {clipboardContents}
-            </Text>
-          </View>
-        </StyledView>
-      </TouchableNativeFeedbackSafe>
+          <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
+            {clipboardContents}
+          </Text>
+        </View>
+      </StyledButton>
     );
   }
 
@@ -88,6 +85,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    flexDirection: 'row',
+    paddingLeft: 5,
   },
   iconContainer: {
     width: 45,

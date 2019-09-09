@@ -8,17 +8,14 @@ import {
   Platform,
   Share,
   StyleSheet,
-  Text,
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
-import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
-import { GenericCardBody, GenericCardContainer, StyledView } from '../components/Views';
+import { StyledButton } from '../components/Views';
 import { StyledText } from '../components/Text';
 
 @withNavigation
@@ -28,41 +25,40 @@ export default class ProjectCard extends React.PureComponent {
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>
-        <TouchableNativeFeedbackSafe
+        <StyledButton
           onPress={this._handlePressProject}
+          style={[styles.container, styles.bottomBorder]}
           onLongPress={this._handleLongPressProject}
           fallback={TouchableHighlight}
           underlayColor="#b7b7b7">
-          <StyledView styles={[styles.container, styles.bottomBorder]}>
-            <View style={styles.header}>
-              <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
-              <View style={styles.infoContainer}>
-                <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                  {projectName}
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
+            <View style={styles.infoContainer}>
+              <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {projectName}
+              </StyledText>
+              <View style={styles.projectExtraInfoContainer}>
+                <StyledText
+                  lightColor="rgba(36, 44, 58, 0.4)"
+                  darkColor="#ccc"
+                  onPress={this._handlePressUsername}
+                  style={styles.projectExtraInfoText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
+                  {username}
                 </StyledText>
-                <View style={styles.projectExtraInfoContainer}>
-                  <StyledText
-                    lightColor="rgba(36, 44, 58, 0.4)"
-                    darkColor="#ccc"
-                    onPress={this._handlePressUsername}
-                    style={styles.projectExtraInfoText}
-                    ellipsizeMode="tail"
-                    numberOfLines={1}>
-                    {username}
-                  </StyledText>
-                </View>
               </View>
             </View>
-            <View style={styles.body}>
-              <StyledText
-                lightColor="rgba(36, 44, 58, 0.7)"
-                darkColor="#eee"
-                style={styles.descriptionText}>
-                {description}
-              </StyledText>
-            </View>
-          </StyledView>
-        </TouchableNativeFeedbackSafe>
+          </View>
+          <View style={styles.body}>
+            <StyledText
+              lightColor="rgba(36, 44, 58, 0.7)"
+              darkColor="#eee"
+              style={styles.descriptionText}>
+              {description}
+            </StyledText>
+          </View>
+        </StyledButton>
       </View>
     );
   }

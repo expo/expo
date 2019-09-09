@@ -2,7 +2,7 @@
 
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 import { ThemeContext } from 'react-navigation';
 import { StyledView } from './Views';
 import { StyledText } from './Text';

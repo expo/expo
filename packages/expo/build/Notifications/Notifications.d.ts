@@ -1,5 +1,6 @@
 import { EventSubscription } from 'fbemitter';
 import { Notification, LocalNotification, Channel, ActionType } from './Notifications.types';
+export declare function emitNotification(notification: any): void;
 declare const _default: {
     _setInitialNotification(notification: Notification): void;
     createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void>;

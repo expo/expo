@@ -12,27 +12,31 @@ import {
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 
+import Colors from '../constants/Colors';
 import OptionsButton from '../components/OptionsButton';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import MyProfileContainer from '../containers/MyProfileContainer';
 import OtherProfileContainer from '../containers/OtherProfileContainer';
 import SessionActions from '../redux/SessionActions';
+import SettingsActions from '../redux/SettingsActions';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
-import isUserAuthenticated from '../utils/isUserAuthenticated';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
+import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 import { MaterialIcons } from '../components/Icons';
 
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam('username', 'Profile'),
-    headerRight: navigation.getParam('username') ? (
-      <OptionsButton />
-    ) : (
-      Platform.select({ ios: <UserSettingsButtonIOS />, default: <SignOutButtonAndroid /> })
-    ),
-  });
+  static navigationOptions = ({ navigation, theme }) => {
+    return {
+      title: navigation.getParam('username', 'Profile'),
+      headerRight: navigation.getParam('username') ? (
+        <OptionsButton />
+      ) : (
+        Platform.select({ ios: <UserSettingsButtonIOS />, default: <OptionsButtonAndroid /> })
+      ),
+    };
+  };
 
   static getDataProps(data, props) {
     let isAuthenticated = isUserAuthenticated(data.session);
@@ -86,10 +90,18 @@ export default class ProfileScreen extends React.Component {
   }
 }
 
-@onlyIfAuthenticated
-@connect()
-class SignOutButtonAndroid extends React.Component {
+@connect((data, props) => OptionsButtonAndroid.getDataProps(data, props))
+class OptionsButtonAndroid extends React.Component {
   _anchor: View;
+
+  static getDataProps(data, props) {
+    let { settings } = data;
+
+    return {
+      isAuthenticated: isUserAuthenticated(data.session),
+      preferredAppearance: settings.preferredAppearance,
+    };
+  }
 
   render() {
     return (
@@ -110,12 +122,20 @@ class SignOutButtonAndroid extends React.Component {
 
   _handlePress = () => {
     let handle = findNodeHandle(this._anchor);
+    let options = ['Toggle dark mode'];
+    if (this.props.isAuthenticated) {
+      options.push('Sign out');
+    }
+
     NativeModules.UIManager.showPopupMenu(
       handle,
-      ['Sign out'],
+      options,
       () => {},
       (action, selectedIndex) => {
         if (selectedIndex === 0) {
+          let preferredAppearance = this.props.preferredAppearance === 'dark' ? 'light' : 'dark';
+          this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
+        } else if (selectedIndex === 1) {
           this.props.dispatch(SessionActions.signOut());
         }
       }
@@ -129,7 +149,7 @@ class UserSettingsButtonIOS extends React.Component {
   render() {
     return (
       <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-        <Text style={{ fontSize: 17, color: '#037aff' }}>Options</Text>
+        <Text style={{ fontSize: 17, color: Colors.light.tintColor }}>Options</Text>
       </TouchableOpacity>
     );
   }

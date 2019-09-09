@@ -2,7 +2,7 @@
   expo: {
     name: 'expo-home',
     description: '',
-    slug: 'expo-home-dev-90c9a7dad646f6d64973c00cfcb1d3ac648dc103',
+    slug: 'expo-home-dev-7a8e302a9f5cfec0199232faed98ba32b33242cf',
     privacy: 'unlisted',
     sdkVersion: '34.0.0',
     version: '34.0.0',
@@ -23,6 +23,7 @@
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'host.exp.exponent',
+      userInterfaceStyle: 'automatic',
     },
     android: {
       package: 'host.exp.exponent',

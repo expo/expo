@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-const PI_2 = Math.PI / 2;
 export default class NativeLinearGradient extends React.PureComponent {
     constructor() {
         super(...arguments);
@@ -71,7 +70,8 @@ export default class NativeLinearGradient extends React.PureComponent {
     render() {
         const { colors, locations, startPoint, endPoint, onLayout, style, ...props } = this.props;
         const backgroundImage = this.getBackgroundImage();
-        // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
+        // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
+        // browser support.
         return (<View style={[
             style,
             // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.

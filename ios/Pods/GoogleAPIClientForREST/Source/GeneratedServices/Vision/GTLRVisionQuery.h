@@ -29,6 +29,7 @@
 @class GTLRVision_ImportProductSetsRequest;
 @class GTLRVision_Product;
 @class GTLRVision_ProductSet;
+@class GTLRVision_PurgeProductsRequest;
 @class GTLRVision_ReferenceImage;
 @class GTLRVision_RemoveProductFromProductSetRequest;
 
@@ -395,6 +396,454 @@ NS_ASSUME_NONNULL_BEGIN
  *        information.
  */
 + (instancetype)queryWithName:(NSString *)name;
+
+@end
+
+/**
+ *  Service that performs image detection and annotation for a batch of files.
+ *  Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+ *  This service will extract at most 5 (customers can specify which 5 in
+ *  AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+ *  file provided and perform detection and annotation for each image
+ *  extracted.
+ *
+ *  Method: vision.projects.files.annotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsFilesAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsFilesAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_BatchAnnotateFilesResponse.
+ *
+ *  Service that performs image detection and annotation for a batch of files.
+ *  Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+ *  This service will extract at most 5 (customers can specify which 5 in
+ *  AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+ *  file provided and perform detection and annotation for each image
+ *  extracted.
+ *
+ *  @param object The @c GTLRVision_BatchAnnotateFilesRequest to include in the
+ *    query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsFilesAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Run asynchronous image detection and annotation for a list of generic
+ *  files, such as PDF files, which may contain multiple pages and multiple
+ *  images per page. Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
+ *
+ *  Method: vision.projects.files.asyncBatchAnnotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsFilesAsyncBatchAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsFilesAsyncBatchAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Run asynchronous image detection and annotation for a list of generic
+ *  files, such as PDF files, which may contain multiple pages and multiple
+ *  images per page. Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
+ *
+ *  @param object The @c GTLRVision_AsyncBatchAnnotateFilesRequest to include in
+ *    the query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsFilesAsyncBatchAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Run image detection and annotation for a batch of images.
+ *
+ *  Method: vision.projects.images.annotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsImagesAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsImagesAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_BatchAnnotateImagesResponse.
+ *
+ *  Run image detection and annotation for a batch of images.
+ *
+ *  @param object The @c GTLRVision_BatchAnnotateImagesRequest to include in the
+ *    query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsImagesAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Run asynchronous image detection and annotation for a list of images.
+ *  Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+ *  This service will write image annotation outputs to json files in customer
+ *  GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+ *
+ *  Method: vision.projects.images.asyncBatchAnnotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsImagesAsyncBatchAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsImagesAsyncBatchAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Run asynchronous image detection and annotation for a list of images.
+ *  Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+ *  This service will write image annotation outputs to json files in customer
+ *  GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+ *
+ *  @param object The @c GTLRVision_AsyncBatchAnnotateImagesRequest to include
+ *    in the query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsImagesAsyncBatchAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Service that performs image detection and annotation for a batch of files.
+ *  Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+ *  This service will extract at most 5 (customers can specify which 5 in
+ *  AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+ *  file provided and perform detection and annotation for each image
+ *  extracted.
+ *
+ *  Method: vision.projects.locations.files.annotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsLocationsFilesAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsLocationsFilesAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_BatchAnnotateFilesResponse.
+ *
+ *  Service that performs image detection and annotation for a batch of files.
+ *  Now only "application/pdf", "image/tiff" and "image/gif" are supported.
+ *  This service will extract at most 5 (customers can specify which 5 in
+ *  AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+ *  file provided and perform detection and annotation for each image
+ *  extracted.
+ *
+ *  @param object The @c GTLRVision_BatchAnnotateFilesRequest to include in the
+ *    query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsLocationsFilesAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Run asynchronous image detection and annotation for a list of generic
+ *  files, such as PDF files, which may contain multiple pages and multiple
+ *  images per page. Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
+ *
+ *  Method: vision.projects.locations.files.asyncBatchAnnotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsLocationsFilesAsyncBatchAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsLocationsFilesAsyncBatchAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Run asynchronous image detection and annotation for a list of generic
+ *  files, such as PDF files, which may contain multiple pages and multiple
+ *  images per page. Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
+ *
+ *  @param object The @c GTLRVision_AsyncBatchAnnotateFilesRequest to include in
+ *    the query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsLocationsFilesAsyncBatchAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Run image detection and annotation for a batch of images.
+ *
+ *  Method: vision.projects.locations.images.annotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsLocationsImagesAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsLocationsImagesAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_BatchAnnotateImagesResponse.
+ *
+ *  Run image detection and annotation for a batch of images.
+ *
+ *  @param object The @c GTLRVision_BatchAnnotateImagesRequest to include in the
+ *    query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsLocationsImagesAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent;
+
+@end
+
+/**
+ *  Run asynchronous image detection and annotation for a list of images.
+ *  Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+ *  This service will write image annotation outputs to json files in customer
+ *  GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+ *
+ *  Method: vision.projects.locations.images.asyncBatchAnnotate
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsLocationsImagesAsyncBatchAnnotate : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsLocationsImagesAsyncBatchAnnotateWithObject:parent:]
+
+/**
+ *  Optional. Target project and location to make a call.
+ *  Format: `projects/{project-id}/locations/{location-id}`.
+ *  If no parent is specified, a region will be chosen automatically.
+ *  Supported location-ids:
+ *  `us`: USA country only,
+ *  `asia`: East asia areas, like Japan, Taiwan,
+ *  `eu`: The European Union.
+ *  Example: `projects/project-A/locations/eu`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Run asynchronous image detection and annotation for a list of images.
+ *  Progress and results can be retrieved through the
+ *  `google.longrunning.Operations` interface.
+ *  `Operation.metadata` contains `OperationMetadata` (metadata).
+ *  `Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).
+ *  This service will write image annotation outputs to json files in customer
+ *  GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+ *
+ *  @param object The @c GTLRVision_AsyncBatchAnnotateImagesRequest to include
+ *    in the query.
+ *  @param parent Optional. Target project and location to make a call.
+ *    Format: `projects/{project-id}/locations/{location-id}`.
+ *    If no parent is specified, a region will be chosen automatically.
+ *    Supported location-ids:
+ *    `us`: USA country only,
+ *    `asia`: East asia areas, like Japan, Taiwan,
+ *    `eu`: The European Union.
+ *    Example: `projects/project-A/locations/eu`.
+ *
+ *  @return GTLRVisionQuery_ProjectsLocationsImagesAsyncBatchAnnotate
+ */
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent;
 
 @end
 
@@ -1109,6 +1558,79 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (instancetype)queryWithObject:(GTLRVision_Product *)object
                            name:(NSString *)name;
+
+@end
+
+/**
+ *  Asynchronous API to delete all Products in a ProductSet or all Products
+ *  that are in no ProductSet.
+ *  If a Product is a member of the specified ProductSet in addition to other
+ *  ProductSets, the Product will still be deleted.
+ *  It is recommended to not delete the specified ProductSet until after this
+ *  operation has completed. It is also recommended to not add any of the
+ *  Products involved in the batch delete to a new ProductSet while this
+ *  operation is running because those Products may still end up deleted.
+ *  It's not possible to undo the PurgeProducts operation. Therefore, it is
+ *  recommended to keep the csv files used in ImportProductSets (if that was
+ *  how you originally built the Product Set) before starting PurgeProducts, in
+ *  case you need to re-import the data after deletion.
+ *  If the plan is to purge all of the Products from a ProductSet and then
+ *  re-use the empty ProductSet to re-import new Products into the empty
+ *  ProductSet, you must wait until the PurgeProducts operation has finished
+ *  for that ProductSet.
+ *  The google.longrunning.Operation API can be used to keep track of the
+ *  progress and results of the request.
+ *  `Operation.metadata` contains `BatchOperationMetadata`. (progress)
+ *
+ *  Method: vision.projects.locations.products.purge
+ *
+ *  Authorization scope(s):
+ *    @c kGTLRAuthScopeVisionCloudPlatform
+ *    @c kGTLRAuthScopeVisionCloudVision
+ */
+@interface GTLRVisionQuery_ProjectsLocationsProductsPurge : GTLRVisionQuery
+// Previous library name was
+//   +[GTLQueryVision queryForProjectsLocationsProductsPurgeWithObject:parent:]
+
+/**
+ *  The project and location in which the Products should be deleted.
+ *  Format is `projects/PROJECT_ID/locations/LOC_ID`.
+ */
+@property(nonatomic, copy, nullable) NSString *parent;
+
+/**
+ *  Fetches a @c GTLRVision_Operation.
+ *
+ *  Asynchronous API to delete all Products in a ProductSet or all Products
+ *  that are in no ProductSet.
+ *  If a Product is a member of the specified ProductSet in addition to other
+ *  ProductSets, the Product will still be deleted.
+ *  It is recommended to not delete the specified ProductSet until after this
+ *  operation has completed. It is also recommended to not add any of the
+ *  Products involved in the batch delete to a new ProductSet while this
+ *  operation is running because those Products may still end up deleted.
+ *  It's not possible to undo the PurgeProducts operation. Therefore, it is
+ *  recommended to keep the csv files used in ImportProductSets (if that was
+ *  how you originally built the Product Set) before starting PurgeProducts, in
+ *  case you need to re-import the data after deletion.
+ *  If the plan is to purge all of the Products from a ProductSet and then
+ *  re-use the empty ProductSet to re-import new Products into the empty
+ *  ProductSet, you must wait until the PurgeProducts operation has finished
+ *  for that ProductSet.
+ *  The google.longrunning.Operation API can be used to keep track of the
+ *  progress and results of the request.
+ *  `Operation.metadata` contains `BatchOperationMetadata`. (progress)
+ *
+ *  @param object The @c GTLRVision_PurgeProductsRequest to include in the
+ *    query.
+ *  @param parent The project and location in which the Products should be
+ *    deleted.
+ *    Format is `projects/PROJECT_ID/locations/LOC_ID`.
+ *
+ *  @return GTLRVisionQuery_ProjectsLocationsProductsPurge
+ */
++ (instancetype)queryWithObject:(GTLRVision_PurgeProductsRequest *)object
+                         parent:(NSString *)parent;
 
 @end
 

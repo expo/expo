@@ -11,7 +11,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expo/expo.git"
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/expo-module-scripts"
   },
   "keywords": [
     "babel-preset",

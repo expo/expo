@@ -5,7 +5,7 @@ import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
-import { Appearance, AppearanceProvider } from 'react-native-appearance';
+import { Appearance } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -19,6 +19,7 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import Store from './redux/Store';
 import LocalStorage from './storage/LocalStorage';
+import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -40,7 +41,18 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this._initializeStateAsync();
+    this._addProjectHistoryListener();
   }
+
+  _addProjectHistoryListener = () => {
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+      let { manifestUrl, manifest, manifestString } = event;
+      if (!manifest && manifestString) {
+        manifest = JSON.parse(manifestString);
+      }
+      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
+    });
+  };
 
   _isExpoHost = host => {
     return (
@@ -102,9 +114,11 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
-    let { preferredAppearance } = this.props;
-    let theme =
-      preferredAppearance === 'no-preference' ? this.props.colorScheme : preferredAppearance;
+    let { preferredAppearance, colorScheme } = this.props;
+    let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+    if (theme === 'no-preference') {
+      theme = 'light';
+    }
 
     return (
       <View style={styles.container}>
@@ -116,7 +130,7 @@ export default class App extends React.Component {
           <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
         )}
         {Platform.OS === 'android' ||
-          (Platform.OS == 'ios' &&
+          (Platform.OS === 'ios' &&
             parseInt(Platform.Version, 10) >= 13 &&
             theme === 'light' &&
             this.props.colorScheme === 'dark' && <View style={styles.statusBarUnderlay} />)}

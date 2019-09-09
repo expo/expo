@@ -1,14 +1,18 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+
+import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
 function getExpoPackage() {
   try {
     return require('expo/package.json');
   } catch (error) {
-    throw new CodedError('ERR_CONSTANTS', 'expoVersion & expoRuntimeVersion require the expo package to be installed.')
+    throw new CodedError(
+      'ERR_CONSTANTS',
+      'expoVersion & expoRuntimeVersion require the expo package to be installed.'
+    );
   }
 }
 

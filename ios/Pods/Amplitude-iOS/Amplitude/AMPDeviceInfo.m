@@ -16,6 +16,7 @@
 
 @implementation AMPDeviceInfo {
     NSObject* networkInfo;
+    BOOL _disableIdfaTracking;
 }
 
 @synthesize appVersion = _appVersion;
@@ -27,11 +28,9 @@
 @synthesize advertiserID = _advertiserID;
 @synthesize vendorID = _vendorID;
 
-
-
-
--(id) init {
+-(id) init: (BOOL) disableIdfaTracking {
     self = [super init];
+    _disableIdfaTracking = disableIdfaTracking;
     return self;
 }
 
@@ -78,27 +77,23 @@
 
 -(NSString*) carrier {
     if (!_carrier) {
-        @try {
-            Class CTTelephonyNetworkInfo = NSClassFromString(@"CTTelephonyNetworkInfo");
-            SEL subscriberCellularProvider = NSSelectorFromString(@"subscriberCellularProvider");
-            SEL carrierName = NSSelectorFromString(@"carrierName");
-            if (CTTelephonyNetworkInfo && subscriberCellularProvider && carrierName) {
-                networkInfo = SAFE_ARC_RETAIN([[NSClassFromString(@"CTTelephonyNetworkInfo") alloc] init]);
-                id carrier = nil;
-                id (*imp1)(id, SEL) = (id (*)(id, SEL))[networkInfo methodForSelector:subscriberCellularProvider];
-                if (imp1) {
-                    carrier = imp1(networkInfo, subscriberCellularProvider);
-                }
-                NSString* (*imp2)(id, SEL) = (NSString* (*)(id, SEL))[carrier methodForSelector:carrierName];
-                if (imp2) {
-                    _carrier = SAFE_ARC_RETAIN(imp2(carrier, carrierName));
-                }
+        Class CTTelephonyNetworkInfo = NSClassFromString(@"CTTelephonyNetworkInfo");
+        SEL subscriberCellularProvider = NSSelectorFromString(@"subscriberCellularProvider");
+        SEL carrierName = NSSelectorFromString(@"carrierName");
+        if (CTTelephonyNetworkInfo && subscriberCellularProvider && carrierName) {
+            networkInfo = SAFE_ARC_RETAIN([[NSClassFromString(@"CTTelephonyNetworkInfo") alloc] init]);
+            id carrier = nil;
+            id (*imp1)(id, SEL) = (id (*)(id, SEL))[networkInfo methodForSelector:subscriberCellularProvider];
+            if (imp1) {
+                carrier = imp1(networkInfo, subscriberCellularProvider);
             }
-            else {
-                _carrier = SAFE_ARC_RETAIN(@"Unknown");
+            NSString* (*imp2)(id, SEL) = (NSString* (*)(id, SEL))[carrier methodForSelector:carrierName];
+            if (imp2) {
+                _carrier = SAFE_ARC_RETAIN(imp2(carrier, carrierName));
             }
         }
-        @catch (NSException *exception) {
+        // unable to fetch carrier information
+        if (!_carrier) {
             _carrier = SAFE_ARC_RETAIN(@"Unknown");
         }
     }
@@ -123,7 +118,7 @@
 }
 
 -(NSString*) advertiserID {
-    if (!_advertiserID) {
+    if (!_disableIdfaTracking && !_advertiserID) {
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= (float) 6.0) {
             NSString *advertiserId = [AMPDeviceInfo getAdvertiserID:5];
             if (advertiserId != nil &&

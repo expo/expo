@@ -6,7 +6,6 @@ export var BrightnessMode;
     BrightnessMode[BrightnessMode["AUTOMATIC"] = 1] = "AUTOMATIC";
     BrightnessMode[BrightnessMode["MANUAL"] = 2] = "MANUAL";
 })(BrightnessMode || (BrightnessMode = {}));
-;
 export async function getBrightnessAsync() {
     return await NativeModulesProxy.ExpoBrightness.getBrightnessAsync();
 }

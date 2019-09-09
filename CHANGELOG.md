@@ -10,6 +10,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 - Google Mobile Ads now require `expo.[platform].config.googleMobileAdsAppId` configuration value present in `app.json`. The value can be found by following the guide in [this Google Support answer](https://support.google.com/admob/answer/7356431). ([#5447](https://github.com/expo/expo/pull/5447)) by [@sjchmiela](https://github.com/sjchmiela)
 - Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
+- Upgraded `FBSDK*Kit` to `v5.4.1`. This upgrade removed support for all login behaviors other than `browser`. Possible motivations behind this change may be found [here](https://stackoverflow.com/a/32659545/1123156), [here](https://github.com/facebook/facebook-objc-sdk/commit/95e67c98f0b53adc8a8ea610fdfd0457be3d4d2b) and [here](https://github.com/facebook/facebook-objc-sdk/pull/964). `behavior` parameter has been removed from TS type declaration and will not have any effect anymore. ([#5499](https://github.com/expo/expo/pull/5499) [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🎉 New features
 
@@ -20,6 +21,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added Next.js supports with Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#5275](https://github.com/expo/expo/pull/5275))
 - added support for serving non-personalized Google AdMob Ads by [@sjchmiela](https://github.com/sjchmiela) ([#5323](https://github.com/expo/expo/pull/5323))
 - added [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) to Expo client and standalone apps by [@sjchmiela](https://github.com/sjchmiela) ([#5446](https://github.com/expo/expo/pull/5446))
+- added supports for push notification in Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#4963](https://github.com/expo/expo/pull/4963))
+- added `expo-apple-authentication` unimodule ([#5421](https://github.com/expo/expo/pull/5421))
 
 ### 🐛 Bug fixes
 
@@ -30,6 +33,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed occasional `"ViewManagerAdapter_*" was not found in the UIManager` bugs by [@sjchmiela](https://github.com/sjchmiela) ([#5066](https://github.com/expo/expo/pull/5066))
 - fixed crashes when adding attachments with `MailComposer` by [@sjchmiela](https://github.com/sjchmiela) ([#5449](https://github.com/expo/expo/pull/5449))
 - fixed `ImagePicker.launchImageLibraryAsync` not working on iOS 13. ([#5434](https://github.com/expo/expo/pull/5434) by [@tsapeta](https://github.com/tsapeta))
+- fixed `ImaheManipulator.manipulateAsync` not working with local paths by [@bbarthec](https://github.com/bbarthec) ([#5531](https://github.com/expo/expo/pull/5531))
 
 ## 34.0.0
 

@@ -25,7 +25,7 @@ static NSString *const kCachedResponseUserInfoKeyTimestamp = @"timestamp";
   NSURLCache *_urlCache;
 }
 
-+ (instancetype)sharedInstance
++ (FBSDKImageDownloader *)sharedInstance
 {
   static FBSDKImageDownloader *instance;
   static dispatch_once_t onceToken;
@@ -50,7 +50,9 @@ static NSString *const kCachedResponseUserInfoKeyTimestamp = @"timestamp";
   [_urlCache removeAllCachedResponses];
 }
 
-- (void)downloadImageWithURL:(NSURL *)url ttl:(NSTimeInterval)ttl completion:(void(^)(UIImage* image))completion
+- (void)downloadImageWithURL:(NSURL *)url
+                         ttl:(NSTimeInterval)ttl
+                  completion:(FBSDKImageDownloadBlock)completion
 {
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   NSCachedURLResponse *cachedResponse = [_urlCache cachedResponseForRequest:request];

@@ -1,5 +1,16 @@
 # Bare Workflow
 
+## Usage
+
+- Run on Android Emulator: `yarn android` (runs npm install if needed, builds the React Android binaries, generate an emulator, start Metro, and open the app in the emulator)
+- Run on iOS Simulator: `yarn ios` (this will automatically pod install, npm install, open a simulator, clear and start Metro, then open the app in the simulator)
+- E2E test on iOS Simulator: `yarn test:ios` (same as `yarn ios` but it installs Detox simulators, builds a Detox binary, and starts the jest Detox runner)
+- Open a test `yarn open <ios | android> <...Modules>` this requires the platform to be running already (deep links you into the test-suite app and runs the provided tests)
+  - ex: `yarn open ios Constants Crypto`
+  - ex: `yarn open android Random`
+- Nuke `yarn nuke` (deletes all generated files for testing the setup scripts)
+- `yarn ci:detox` This should very closely emulate what happens when you run in CI. Use this to ensure native code is linking, pods are installed, and your tests are passing.
+
 ## Edits
 
 - [iOS] Needed to do this to get Release builds working
@@ -9,36 +20,3 @@
 ## TODO
 
 - [iOS] Detox builds fail but they exit with 0, meaning you can get false positives in CI
-
-## Setup
-
-```sh
-# Installs cocoapods
-yarn ios:setup
-
-# Compiles react-native-lab/react-native and syncs
-yarn android:setup
-```
-
-## Detox
-
-To run Detox, ensure you have their custom simulators installed with:
-
-```sh
-brew tap wix/brew
-brew install wix/brew/applesimutils
-```
-
-If `wix/brew` throws git errors, run `brew untap wix/brew` and reinstall.
-
-Start the Metro bundler with `yarn start` then run Detox with `yarn test:e2e:ios`
-
-### Testing locally
-
-- `yarn e2e:ios:setup` Build the detox project (required when native code changes)
-- `yarn start-clean` Start Metro without caches
-- `yarn e2e:ios` Run the project on the iOS Detox simulator (optionally you can pass the `--watch` flag)
-
-**Testing CI**
-
-- `yarn ci:detox` This should very closely emulate what happens when you run in CI. Use this to ensure native code is linking, pods are installed, and your tests are passing.

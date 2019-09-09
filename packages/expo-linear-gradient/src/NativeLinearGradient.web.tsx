@@ -16,8 +16,6 @@ type State = {
 
 type Point = [number, number];
 
-const PI_2 = Math.PI / 2;
-
 export default class NativeLinearGradient extends React.PureComponent<Props, State> {
   state = {
     width: undefined,
@@ -94,7 +92,8 @@ export default class NativeLinearGradient extends React.PureComponent<Props, Sta
   render() {
     const { colors, locations, startPoint, endPoint, onLayout, style, ...props } = this.props;
     const backgroundImage = this.getBackgroundImage();
-    // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
+    // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
+    // browser support.
     return (
       <View
         style={[

@@ -86,6 +86,8 @@ export default class ExpoApisScreen extends React.Component {
       'Accelerometer',
       'ActionSheet',
       'AppAuth',
+      'Appearance',
+      'AppleAuthentication',
       'Audio',
       'AuthSession',
       'Battery',

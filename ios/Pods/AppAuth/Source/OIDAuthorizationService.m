@@ -21,8 +21,9 @@
 #import "OIDAuthorizationRequest.h"
 #import "OIDAuthorizationResponse.h"
 #import "OIDDefines.h"
+#import "OIDEndSessionRequest.h"
+#import "OIDEndSessionResponse.h"
 #import "OIDErrorUtilities.h"
-#import "OIDAuthorizationFlowSession.h"
 #import "OIDExternalUserAgent.h"
 #import "OIDExternalUserAgentSession.h"
 #import "OIDIDToken.h"
@@ -40,20 +41,14 @@
  */
 static NSString *const kOpenIDConfigurationWellKnownPath = @".well-known/openid-configuration";
 
+/*! @brief Max allowable iat (Issued At) time skew
+    @see https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation
+ */
+static int const kOIDAuthorizationSessionIATMaxSkew = 600;
 
 NS_ASSUME_NONNULL_BEGIN
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-@interface OIDAuthorizationFlowSessionImplementation : NSObject<OIDExternalUserAgentSession, OIDAuthorizationFlowSession> {
-  // private variables
-  OIDAuthorizationRequest *_request;
-  id<OIDExternalUserAgent> _externalUserAgent;
-  OIDAuthorizationCallback _pendingauthorizationFlowCallback;
-}
-
-#pragma GCC diagnostic pop
+@interface OIDAuthorizationSession : NSObject<OIDExternalUserAgentSession>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -62,7 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation OIDAuthorizationFlowSessionImplementation
+@implementation OIDAuthorizationSession {
+  OIDAuthorizationRequest *_request;
+  id<OIDExternalUserAgent> _externalUserAgent;
+  OIDAuthorizationCallback _pendingauthorizationFlowCallback;
+}
 
 - (instancetype)initWithRequest:(OIDAuthorizationRequest *)request {
   self = [super init];
@@ -87,24 +86,38 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)cancel {
+  [self cancelWithCompletion:nil];
+}
+
+- (void)cancelWithCompletion:(nullable void (^)(void))completion {
   [_externalUserAgent dismissExternalUserAgentAnimated:YES completion:^{
       NSError *error = [OIDErrorUtilities errorWithCode:OIDErrorCodeUserCanceledAuthorizationFlow
                                         underlyingError:nil
                                             description:@"Authorization flow was cancelled."];
       [self didFinishWithResponse:nil error:error];
+      if (completion) completion();
   }];
 }
 
-- (BOOL)shouldHandleURL:(NSURL *)URL {
+/*! @brief Does the redirection URL equal another URL down to the path component?
+    @param URL The first redirect URI to compare.
+    @param redirectionURL The second redirect URI to compare.
+    @return YES if the URLs match down to the path level (query params are ignored).
+ */
++ (BOOL)URL:(NSURL *)URL matchesRedirectionURL:(NSURL *)redirectionURL {
   NSURL *standardizedURL = [URL standardizedURL];
-  NSURL *standardizedRedirectURL = [_request.redirectURL standardizedURL];
+  NSURL *standardizedRedirectURL = [redirectionURL standardizedURL];
 
-  return OIDIsEqualIncludingNil(standardizedURL.scheme, standardizedRedirectURL.scheme) &&
-      OIDIsEqualIncludingNil(standardizedURL.user, standardizedRedirectURL.user) &&
-      OIDIsEqualIncludingNil(standardizedURL.password, standardizedRedirectURL.password) &&
-      OIDIsEqualIncludingNil(standardizedURL.host, standardizedRedirectURL.host) &&
-      OIDIsEqualIncludingNil(standardizedURL.port, standardizedRedirectURL.port) &&
-      OIDIsEqualIncludingNil(standardizedURL.path, standardizedRedirectURL.path);
+  return [standardizedURL.scheme caseInsensitiveCompare:standardizedRedirectURL.scheme] == NSOrderedSame
+      && OIDIsEqualIncludingNil(standardizedURL.user, standardizedRedirectURL.user)
+      && OIDIsEqualIncludingNil(standardizedURL.password, standardizedRedirectURL.password)
+      && OIDIsEqualIncludingNil(standardizedURL.host, standardizedRedirectURL.host)
+      && OIDIsEqualIncludingNil(standardizedURL.port, standardizedRedirectURL.port)
+      && OIDIsEqualIncludingNil(standardizedURL.path, standardizedRedirectURL.path);
+}
+
+- (BOOL)shouldHandleURL:(NSURL *)URL {
+  return [[self class] URL:URL matchesRedirectionURL:_request.redirectURL];
 }
 
 - (BOOL)resumeExternalUserAgentFlowWithURL:(NSURL *)URL {
@@ -179,19 +192,129 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)failAuthorizationFlowWithError:(NSError *)error {
-  [self failExternalUserAgentFlowWithError:error];
+@end
+
+@interface OIDEndSessionImplementation : NSObject<OIDExternalUserAgentSession> {
+  // private variables
+  OIDEndSessionRequest *_request;
+  id<OIDExternalUserAgent> _externalUserAgent;
+  OIDEndSessionCallback _pendingEndSessionCallback;
+}
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithRequest:(OIDEndSessionRequest *)request
+    NS_DESIGNATED_INITIALIZER;
+@end
+
+
+@implementation OIDEndSessionImplementation
+
+- (instancetype)initWithRequest:(OIDEndSessionRequest *)request {
+  self = [super init];
+  if (self) {
+    _request = [request copy];
+  }
+  return self;
 }
 
-- (BOOL)resumeAuthorizationFlowWithURL:(NSURL *)URL {
-  return [self resumeExternalUserAgentFlowWithURL:URL];
+- (void)presentAuthorizationWithExternalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
+                                         callback:(OIDEndSessionCallback)authorizationFlowCallback {
+  _externalUserAgent = externalUserAgent;
+  _pendingEndSessionCallback = authorizationFlowCallback;
+  BOOL authorizationFlowStarted =
+      [_externalUserAgent presentExternalUserAgentRequest:_request session:self];
+  if (!authorizationFlowStarted) {
+    NSError *safariError = [OIDErrorUtilities errorWithCode:OIDErrorCodeSafariOpenError
+                                            underlyingError:nil
+                                                description:@"Unable to open Safari."];
+    [self didFinishWithResponse:nil error:safariError];
+  }
+}
+
+- (void)cancel {
+  [self cancelWithCompletion:nil];
+}
+
+- (void)cancelWithCompletion:(nullable void (^)(void))completion {
+  [_externalUserAgent dismissExternalUserAgentAnimated:YES completion:^{
+    NSError *error = [OIDErrorUtilities
+                      errorWithCode:OIDErrorCodeUserCanceledAuthorizationFlow
+                      underlyingError:nil
+                      description:nil];
+    [self didFinishWithResponse:nil error:error];
+    if (completion) completion();
+  }];
+}
+
+- (BOOL)shouldHandleURL:(NSURL *)URL {
+  // The logic of when to handle the URL is the same as for authorization requests: should match
+  // down to the path component.
+  return [[OIDAuthorizationSession class] URL:URL
+                        matchesRedirectionURL:_request.postLogoutRedirectURL];
+}
+
+- (BOOL)resumeExternalUserAgentFlowWithURL:(NSURL *)URL {
+  // rejects URLs that don't match redirect (these may be completely unrelated to the authorization)
+  if (![self shouldHandleURL:URL]) {
+    return NO;
+  }
+  // checks for an invalid state
+  if (!_pendingEndSessionCallback) {
+    [NSException raise:OIDOAuthExceptionInvalidAuthorizationFlow
+                format:@"%@", OIDOAuthExceptionInvalidAuthorizationFlow, nil];
+  }
+  
+  
+  NSError *error;
+  OIDEndSessionResponse *response = nil;
+
+  OIDURLQueryComponent *query = [[OIDURLQueryComponent alloc] initWithURL:URL];
+  response = [[OIDEndSessionResponse alloc] initWithRequest:_request
+                                                 parameters:query.dictionaryValue];
+  
+  // verifies that the state in the response matches the state in the request, or both are nil
+  if (!OIDIsEqualIncludingNil(_request.state, response.state)) {
+    NSMutableDictionary *userInfo = [query.dictionaryValue mutableCopy];
+    userInfo[NSLocalizedDescriptionKey] =
+    [NSString stringWithFormat:@"State mismatch, expecting %@ but got %@ in authorization "
+     "response %@",
+     _request.state,
+     response.state,
+     response];
+    response = nil;
+    error = [NSError errorWithDomain:OIDOAuthAuthorizationErrorDomain
+                                code:OIDErrorCodeOAuthAuthorizationClientError
+                            userInfo:userInfo];
+  }
+  
+  [_externalUserAgent dismissExternalUserAgentAnimated:YES completion:^{
+    [self didFinishWithResponse:response error:error];
+  }];
+  
+  return YES;
+}
+
+- (void)failExternalUserAgentFlowWithError:(NSError *)error {
+  [self didFinishWithResponse:nil error:error];
+}
+
+/*! @brief Invokes the pending callback and performs cleanup.
+ @param response The authorization response, if any to return to the callback.
+ @param error The error, if any, to return to the callback.
+ */
+- (void)didFinishWithResponse:(nullable OIDEndSessionResponse *)response
+                        error:(nullable NSError *)error {
+  OIDEndSessionCallback callback = _pendingEndSessionCallback;
+  _pendingEndSessionCallback = nil;
+  _externalUserAgent = nil;
+  if (callback) {
+    callback(response, error);
+  }
 }
 
 @end
 
 @implementation OIDAuthorizationService
-
-@synthesize configuration = _configuration;
 
 + (void)discoverServiceConfigurationForIssuer:(NSURL *)issuerURL
                                    completion:(OIDDiscoveryCallback)completion {
@@ -274,23 +397,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Authorization Endpoint
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-+ (id<OIDExternalUserAgentSession, OIDAuthorizationFlowSession>)
-    presentAuthorizationRequest:(OIDAuthorizationRequest *)request
-              externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
-                       callback:(OIDAuthorizationCallback)callback {
++ (id<OIDExternalUserAgentSession>) presentAuthorizationRequest:(OIDAuthorizationRequest *)request
+    externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
+             callback:(OIDAuthorizationCallback)callback {
   
   AppAuthRequestTrace(@"Authorization Request: %@", request);
   
-  OIDAuthorizationFlowSessionImplementation *flowSession =
-      [[OIDAuthorizationFlowSessionImplementation alloc] initWithRequest:request];
+  OIDAuthorizationSession *flowSession = [[OIDAuthorizationSession alloc] initWithRequest:request];
   [flowSession presentAuthorizationWithExternalUserAgent:externalUserAgent callback:callback];
   return flowSession;
 }
 
-#pragma GCC diagnostic pop
++ (id<OIDExternalUserAgentSession>)
+    presentEndSessionRequest:(OIDEndSessionRequest *)request
+           externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
+                    callback:(OIDEndSessionCallback)callback {
+  OIDEndSessionImplementation *flowSession =
+      [[OIDEndSessionImplementation alloc] initWithRequest:request];
+  [flowSession presentAuthorizationWithExternalUserAgent:externalUserAgent callback:callback];
+  return flowSession;
+}
 
 #pragma mark - Token Endpoint
 
@@ -448,10 +574,12 @@ NS_ASSUME_NONNULL_BEGIN
         return;
       }
 
-      // OpenID Connect Core Section 3.1.3.7. rule #3
-      // Validates that the audience of the ID Token matches the client ID.
+      // OpenID Connect Core Section 3.1.3.7. rule #3 & Section 2 azp Claim
+      // Validates that the aud (audience) Claim contains the client ID, or that the azp
+      // (authorized party) Claim matches the client ID.
       NSString *clientID = tokenResponse.request.clientID;
-      if (![idToken.audience containsObject:clientID]) {
+      if (![idToken.audience containsObject:clientID] &&
+          ![idToken.claims[@"azp"] isEqualToString:clientID]) {
         NSError *invalidIDToken =
           [OIDErrorUtilities errorWithCode:OIDErrorCodeIDTokenFailedValidationError
                            underlyingError:nil
@@ -491,12 +619,15 @@ NS_ASSUME_NONNULL_BEGIN
       // OpenID Connect Core Section 3.1.3.7. rule #10
       // Validates that the issued at time is not more than +/- 10 minutes on the current time.
       NSTimeInterval issuedAtDifference = [idToken.issuedAt timeIntervalSinceNow];
-      if (fabs(issuedAtDifference) > 600) {
+      if (fabs(issuedAtDifference) > kOIDAuthorizationSessionIATMaxSkew) {
+        NSString *message =
+            [NSString stringWithFormat:@"Issued at time is more than %d seconds before or after "
+                                        "the current time",
+                                       kOIDAuthorizationSessionIATMaxSkew];
         NSError *invalidIDToken =
           [OIDErrorUtilities errorWithCode:OIDErrorCodeIDTokenFailedValidationError
                            underlyingError:nil
-                               description:@"Issued at time is more than 5 minutes before or after "
-                                            "the current time"];
+                               description:message];
         dispatch_async(dispatch_get_main_queue(), ^{
           callback(nil, invalidIDToken);
         });

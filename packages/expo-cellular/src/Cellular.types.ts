@@ -3,4 +3,4 @@ export enum CellularGeneration {
   '2G',
   '3G',
   '4G',
-};
+}

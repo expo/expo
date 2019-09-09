@@ -52,6 +52,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   }
 }
 
+const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
 const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScreen'));
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
@@ -63,6 +64,7 @@ const MediaLibraryScreens = optionalRequire(() =>
 );
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
+const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 
 const optionalScreens: {
   [key: string]: React.ComponentType | undefined;
@@ -70,6 +72,8 @@ const optionalScreens: {
   Accelerometer,
   ActionSheet,
   AppAuth,
+  Appearance,
+  AppleAuthentication,
   Audio,
   AuthSession,
   BackgroundFetch,

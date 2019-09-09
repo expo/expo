@@ -50,7 +50,7 @@
   }
 }
 
-- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:(NSArray<UIView *> *)clickable
+- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBMediaView *)adIconView clickableViews:(NSArray<UIView *> *)clickable
 {
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
