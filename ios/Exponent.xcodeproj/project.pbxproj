@@ -311,6 +311,12 @@
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */ = {isa = PBXBuildFile; fileRef = D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		09642C2C78D047D0AFCB7C1D /* RNSharedElementTransitionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -964,6 +970,20 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */ = {isa = PBXFileReference; name = "RNSharedElementDelegate.h"; path = "RNSharedElementDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */ = {isa = PBXFileReference; name = "RNSharedElementNode.h"; path = "RNSharedElementNode.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */ = {isa = PBXFileReference; name = "RNSharedElementNode.m"; path = "RNSharedElementNode.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		C6C45542575546F8AAC2AE50 /* RNSharedElementNodeManager.h */ = {isa = PBXFileReference; name = "RNSharedElementNodeManager.h"; path = "RNSharedElementNodeManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; name = "RNSharedElementNodeManager.m"; path = "RNSharedElementNodeManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		23181375B61140378B02E53B /* RNSharedElementStyle.h */ = {isa = PBXFileReference; name = "RNSharedElementStyle.h"; path = "RNSharedElementStyle.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */ = {isa = PBXFileReference; name = "RNSharedElementStyle.m"; path = "RNSharedElementStyle.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; name = "RNSharedElementTransition.h"; path = "RNSharedElementTransition.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */ = {isa = PBXFileReference; name = "RNSharedElementTransition.m"; path = "RNSharedElementTransition.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		E307EED1B62C455182DBF80B /* RNSharedElementTransitionItem.h */ = {isa = PBXFileReference; name = "RNSharedElementTransitionItem.h"; path = "RNSharedElementTransitionItem.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; name = "RNSharedElementTransitionItem.m"; path = "RNSharedElementTransitionItem.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */ = {isa = PBXFileReference; name = "RNSharedElementTransitionManager.h"; path = "RNSharedElementTransitionManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */ = {isa = PBXFileReference; name = "RNSharedElementTransitionManager.m"; path = "RNSharedElementTransitionManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */ = {isa = PBXFileReference; name = "RNSharedElementTypes.h"; path = "RNSharedElementTypes.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1797,6 +1817,7 @@
 				B5FB72E11FF6DADB001C764B /* Lottie */,
 				B5FB72E61FF6DADB001C764B /* Maps */,
 				314410BF223BF50E00310599 /* WebView */,
+				65B902B660654403B6731F7E /* SharedElement */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2166,6 +2187,28 @@
 				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
 			);
 			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
+		65B902B660654403B6731F7E /* SharedElement */ = {
+			isa = PBXGroup;
+			children = (
+				B27236FEB631478AB1A6C384 /* RNSharedElementDelegate.h */,
+				626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */,
+				D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */,
+				C6C45542575546F8AAC2AE50 /* RNSharedElementNodeManager.h */,
+				80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */,
+				23181375B61140378B02E53B /* RNSharedElementStyle.h */,
+				391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */,
+				AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */,
+				C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */,
+				E307EED1B62C455182DBF80B /* RNSharedElementTransitionItem.h */,
+				7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */,
+				143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */,
+				1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */,
+				CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */,
+			);
+			name = SharedElement;
+			path = SharedElement;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2778,6 +2821,12 @@
 				BB50E89420B9C0D3003C752D /* RNPinchHandler.m in Sources */,
 				BBCC403FA67946E08560B394 /* RNCWebView.m in Sources */,
 				E7F4DCD62B6043AEB2B9F2B5 /* RNCWebViewManager.m in Sources */,
+				2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */,
+				2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */,
+				50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */,
+				BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */,
+				09642C2C78D047D0AFCB7C1D /* RNSharedElementTransitionItem.m in Sources */,
+				B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
