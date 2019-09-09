@@ -94,9 +94,6 @@ ABI33_0_0EX_EXPORT_SCOPED_MODULE(ABI33_0_0RNBranch, ScopedBranchManager);
     if (config.delayInitToCheckForSearchAds) {
         [instance delayInitToCheckForSearchAds];
     }
-    if (config.appleSearchAdsDebugMode) {
-        [instance setAppleSearchAdsDebugMode];
-    }
 }
 
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
@@ -150,11 +147,6 @@ ABI33_0_0EX_EXPORT_SCOPED_MODULE(ABI33_0_0RNBranch, ScopedBranchManager);
 + (void)delayInitToCheckForSearchAds
 {
     [self.branch delayInitToCheckForSearchAds];
-}
-
-+ (void)setAppleSearchAdsDebugMode
-{
-    [self.branch setAppleSearchAdsDebugMode];
 }
 
 + (void)setRequestMetadataKey:(NSString *)key value:(NSObject *)value
