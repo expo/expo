@@ -1,7 +1,7 @@
 {
   "name": "expo",
   "version": "34.0.4",
-  "description": "The Expo SDK",
+  "description": "The Expo SDK ...",
   "main": "build/ExpoLazy.js",
   "module": "build/Expo.js",
   "types": "build/Expo.d.ts",
