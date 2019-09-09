@@ -14,10 +14,12 @@ on:
       - '!*.md'
   pull_request:
     paths:
-      - '/.github/*'
-      - '/packages/*'
-      - '/react-native-lab/*'
-      - '/tools/*'
+      - '*'
+      - '!*.md'
+      # - '/.github/*'
+      # - '/packages/*'
+      # - '/react-native-lab/*'
+      # - '/tools/*'
 
 jobs:
   test:
@@ -36,13 +38,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn
-        env:
-          CI: true
-      - name: Check packages
-        run: expotools check-packages
-        env:
-          LANG: en_US.UTF-8
-          FASTLANE_SKIP_UPDATE_CHECK: 1
-          FASTLANE_DISABLE_COLORS: 1
-          CI: true
+      # - run: yarn
+      #   env:
+      #     CI: true
+      # - name: Check packages
+      #   run: expotools check-packages
+      #   env:
+      #     LANG: en_US.UTF-8
+      #     FASTLANE_SKIP_UPDATE_CHECK: 1
+      #     FASTLANE_DISABLE_COLORS: 1
+      #     CI: true
