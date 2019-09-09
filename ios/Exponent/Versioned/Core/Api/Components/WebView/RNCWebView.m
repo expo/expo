@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "RNCWKWebView.h"
+#import "RNCWebView.h"
 #import <React/RCTConvert.h>
 #import <React/RCTAutoInsetsProtocol.h>
 #import "RNCWKProcessPoolManager.h"
@@ -27,7 +27,7 @@ static NSURLCredential* clientAuthenticationCredential;
 }
 @end
 
-@interface RNCWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate, RCTAutoInsetsProtocol>
+@interface RNCWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate, RCTAutoInsetsProtocol>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingFinish;
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingError;
@@ -38,17 +38,21 @@ static NSURLCredential* clientAuthenticationCredential;
 @property (nonatomic, copy) WKWebView *webView;
 @end
 
-@implementation RNCWKWebView
+@implementation RNCWebView
 {
   UIColor * _savedBackgroundColor;
   BOOL _savedHideKeyboardAccessoryView;
   BOOL _savedKeyboardDisplayRequiresUserAction;
-  
+
   // Workaround for StatusBar appearance bug for iOS 12
   // https://github.com/react-native-community/react-native-webview/issues/62
   BOOL _isFullScreenVideoOpen;
   UIStatusBarStyle _savedStatusBarStyle;
   BOOL _savedStatusBarHidden;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+  UIScrollViewContentInsetAdjustmentBehavior _savedContentInsetAdjustmentBehavior;
+#endif
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -65,6 +69,10 @@ static NSURLCredential* clientAuthenticationCredential;
     _savedKeyboardDisplayRequiresUserAction = YES;
     _savedStatusBarStyle = RCTSharedApplication().statusBarStyle;
     _savedStatusBarHidden = RCTSharedApplication().statusBarHidden;
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+    _savedContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+#endif
   }
 
   if (@available(iOS 12.0, *)) {
@@ -78,12 +86,12 @@ static NSURLCredential* clientAuthenticationCredential;
       addObserver:self
       selector:@selector(keyboardWillShow)
       name:UIKeyboardWillShowNotification object:nil];
-    
+
     // Workaround for StatusBar appearance bug for iOS 12
     // https://github.com/react-native-community/react-native-webview/issues/62
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleFullScreenVideoStatusBars) name:@"_MRMediaRemotePlayerSupportedCommandsDidChangeNotification" object:nil];
   }
-  
+
   return self;
 }
 
@@ -107,6 +115,11 @@ static NSURLCredential* clientAuthenticationCredential;
 {
   if (self.window != nil && _webView == nil) {
     WKWebViewConfiguration *wkWebViewConfig = [WKWebViewConfiguration new];
+    WKPreferences *prefs = [[WKPreferences alloc]init];
+    if (!_javaScriptEnabled) {
+      prefs.javaScriptEnabled = NO;
+      wkWebViewConfig.preferences = prefs;
+    }
     if (_incognito) {
       wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
     } else if (_cacheEnabled) {
@@ -227,7 +240,7 @@ static NSURLCredential* clientAuthenticationCredential;
     }
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
-      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      _webView.scrollView.contentInsetAdjustmentBehavior = _savedContentInsetAdjustmentBehavior;
     }
 #endif
 
@@ -328,6 +341,22 @@ static NSURLCredential* clientAuthenticationCredential;
   _webView.backgroundColor = backgroundColor;
 }
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+- (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
+{
+    _savedContentInsetAdjustmentBehavior = behavior;
+    if (_webView == nil) {
+        return;
+    }
+
+    if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+        CGPoint contentOffset = _webView.scrollView.contentOffset;
+        _webView.scrollView.contentInsetAdjustmentBehavior = behavior;
+        _webView.scrollView.contentOffset = contentOffset;
+    }
+}
+#endif
+
 /**
  * This method is called whenever JavaScript running within the web view calls:
  *   - window.webkit.messageHandlers[MessageHandlerName].postMessage
@@ -346,6 +375,17 @@ static NSURLCredential* clientAuthenticationCredential;
 {
   if (![_source isEqualToDictionary:source]) {
     _source = [source copy];
+
+    if (_webView != nil) {
+      [self visitSource];
+    }
+  }
+}
+
+- (void)setAllowingReadAccessToURL:(NSString *)allowingReadAccessToURL
+{
+  if (![_allowingReadAccessToURL isEqualToString:allowingReadAccessToURL]) {
+    _allowingReadAccessToURL = [allowingReadAccessToURL copy];
 
     if (_webView != nil) {
       [self visitSource];
@@ -398,7 +438,8 @@ static NSURLCredential* clientAuthenticationCredential;
         [_webView loadRequest:request];
     }
     else {
-        [_webView loadFileURL:request.URL allowingReadAccessToURL:request.URL];
+        NSURL* readAccessUrl = _allowingReadAccessToURL ? [NSURL URLWithString:_allowingReadAccessToURL] : request.URL;
+        [_webView loadFileURL:request.URL allowingReadAccessToURL:readAccessUrl];
     }
 }
 
@@ -408,30 +449,40 @@ static NSURLCredential* clientAuthenticationCredential;
         _savedKeyboardDisplayRequiresUserAction = keyboardDisplayRequiresUserAction;
         return;
     }
-  
+
     if (_savedKeyboardDisplayRequiresUserAction == true) {
         return;
     }
-  
+
     UIView* subview;
-  
+
     for (UIView* view in _webView.scrollView.subviews) {
         if([[view.class description] hasPrefix:@"WK"])
             subview = view;
     }
-  
+
     if(subview == nil) return;
-  
+
     Class class = subview.class;
-  
+
     NSOperatingSystemVersion iOS_11_3_0 = (NSOperatingSystemVersion){11, 3, 0};
     NSOperatingSystemVersion iOS_12_2_0 = (NSOperatingSystemVersion){12, 2, 0};
+    NSOperatingSystemVersion iOS_13_0_0 = (NSOperatingSystemVersion){13, 0, 0};
 
     Method method;
     IMP override;
-  
-    if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion: iOS_12_2_0]) {
-        // iOS 12.2.0 - Future
+
+    if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion: iOS_13_0_0]) {
+        // iOS 13.0.0 - Future
+        SEL selector = sel_getUid("_elementDidFocus:userIsInteracting:blurPreviousNode:activityStateChanges:userObject:");
+        method = class_getInstanceMethod(class, selector);
+        IMP original = method_getImplementation(method);
+        override = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, BOOL arg3, id arg4) {
+            ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3, arg4);
+        });
+    }
+    else if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion: iOS_12_2_0]) {
+        // iOS 12.2.0 - iOS 13.0.0
         SEL selector = sel_getUid("_elementDidFocus:userIsInteracting:blurPreviousNode:changingActivityState:userObject:");
         method = class_getInstanceMethod(class, selector);
         IMP original = method_getImplementation(method);
@@ -456,7 +507,7 @@ static NSURLCredential* clientAuthenticationCredential;
             ((void (*)(id, SEL, void*, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3);
         });
     }
-  
+
     method_setImplementation(method, override);
 }
 
@@ -572,7 +623,7 @@ static NSURLCredential* clientAuthenticationCredential;
 {
   [super layoutSubviews];
 
-  // Ensure webview takes the position and dimensions of RNCWKWebView
+  // Ensure webview takes the position and dimensions of RNCWebView
   _webView.frame = self.bounds;
   _webView.scrollView.contentInset = _contentInset;
 }
@@ -643,12 +694,17 @@ static NSURLCredential* clientAuthenticationCredential;
 - (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *))completionHandler{
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:prompt preferredStyle:UIAlertControllerStyleAlert];
     [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.textColor = [UIColor lightGrayColor];
-        textField.placeholder = defaultText;
+        textField.text = defaultText;
     }];
-    [alert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         completionHandler([[alert.textFields lastObject] text]);
-    }]];
+    }];
+    [alert addAction:okAction];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(nil);
+    }];
+    [alert addAction:cancelAction];
+    alert.preferredAction = okAction;
     [[self topViewController] presentViewController:alert animated:YES completion:NULL];
 }
 
@@ -790,12 +846,11 @@ static NSURLCredential* clientAuthenticationCredential;
           thenCall: (void (^)(NSString*)) callback
 {
   [self.webView evaluateJavaScript: js completionHandler: ^(id result, NSError *error) {
-    if (error == nil) {
-      if (callback != nil) {
-        callback([NSString stringWithFormat:@"%@", result]);
-      }
-    } else {
-      RCTLogError(@"Error evaluating injectedJavaScript: This is possibly due to an unsupported return type. Try adding true to the end of your injectedJavaScript string.");
+    if (callback != nil) {
+      callback([NSString stringWithFormat:@"%@", result]);
+    }
+    if (error != nil) {
+      RCTLogWarn([NSString stringWithFormat:@"Error evaluating injectedJavaScript: This is possibly due to an unsupported return type. Try adding true to the end of your injectedJavaScript string. %@", error]);
     }
   }];
 }
