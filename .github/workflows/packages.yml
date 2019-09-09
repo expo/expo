@@ -1,0 +1,48 @@
+# Useful resource: https://github.com/actions/starter-workflows
+
+name: Check Packages
+
+on:
+  # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
+  # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
+  push:
+    branches:
+      # If this isn't defined then all PR tests will be run twice
+      - master
+    paths:
+      - '*'
+      - '!*.md'
+  pull_request:
+    paths:
+      - '/.github/*'
+      - '/packages/*'
+      - '/react-native-lab/*'
+      - '/tools/*'
+
+jobs:
+  test:
+    name: Check Packages
+    strategy:
+      matrix:
+        # Run tests with all of these node versions/systems :]
+        # node-version: [8.x, 10.x, 12.x]
+        node-version: [10.x]
+        # os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn
+        env:
+          CI: true
+      - name: Check packages
+        run: expotools check-packages
+        env:
+          LANG: en_US.UTF-8
+          FASTLANE_SKIP_UPDATE_CHECK: 1
+          FASTLANE_DISABLE_COLORS: 1
+          CI: true
