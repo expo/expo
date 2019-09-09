@@ -16,6 +16,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -23,14 +24,6 @@
   "contributors": [
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
-  "jest": {
-    "preset": "jest-expo-puppeteer"
-  },
-  "peerDependencies": {
-    "react": "~16.8.3",
-    "react-native": "*",
-    "react-native-web": "*"
-  },
   "dependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-flow": "^7.0.0",

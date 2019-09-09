@@ -44,7 +44,7 @@ function withExpoPuppeteer(config = {}) {
     const { web = {} } = config_1.readConfigJson(projectPath);
     const hasServerSideRendering = web.use === 'nextjs';
     const defaultPort = hasServerSideRendering ? 8000 : 5000;
-    const serverPort = !server.port ? defaultPort : server.port;
+    const { port: serverPort = defaultPort } = server;
     let defaultURL;
     let command;
     // Tell Expo CLI to use the same port on which the test runner expects there to be a server
