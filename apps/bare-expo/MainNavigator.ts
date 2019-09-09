@@ -1,23 +1,21 @@
-import { createAppContainer, createStackNavigator } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import { createBrowserApp } from '@react-navigation/web';
+import { Platform } from 'react-native';
 
 import TestSuite from '../test-suite/App.bare';
 
 // import NativeComponentList from '../native-component-list/App';
 
-const MainNavigator = createStackNavigator(
+const MainNavigator = createSwitchNavigator(
   {
     TestSuite: { screen: TestSuite, path: 'test-suite' },
     // NativeComponentList: { screen: NativeComponentList, path: 'native-component-list' },
-  },
-  {
-    // @ts-ignore
-    headerMode: 'none',
-    transitionConfig: () => ({
-      transitionSpec: {
-        duration: 0,
-      },
-    }),
   }
 );
 
-export default createAppContainer(MainNavigator);
+const createApp = Platform.select({
+  web: (input) => createBrowserApp(input, { history: 'hash' }),
+  default: input => createAppContainer(input),
+});
+
+export default createApp(MainNavigator);
