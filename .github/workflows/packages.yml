@@ -25,14 +25,16 @@ on:
 jobs:
   test:
     name: Check Packages
-    strategy:
-      matrix:
-        # Run tests with all of these node versions/systems :]
-        # node-version: [8.x, 10.x, 12.x]
-        node-version: [10.x]
-        # os: [ubuntu-latest, windows-latest, macOS-latest]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     # Run tests with all of these node versions/systems :]
+    #     # node-version: [8.x, 10.x, 12.x]
+    #     node-version: [10.x]
+    #     # os: [ubuntu-latest, windows-latest, macOS-latest]
+    #     os: [ubuntu-latest]
+    # runs-on: ${{ matrix.os }}
+    runs-on: macOS-10.14
+
     steps:
       - name: Install Nix
         run: curl https://nixos.org/releases/nix/nix-2.1.2/install | bash -s -- --no-daemon
