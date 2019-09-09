@@ -3,23 +3,24 @@
 name: Check Packages
 
 on:
-  # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
-  # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
-  push:
-    branches:
-      # If this isn't defined then all PR tests will be run twice
-      - master
-    paths:
-      - '*'
-      - '!*.md'
-  pull_request:
-    paths:
-      - '*'
-      - '!*.md'
-      # - '/.github/*'
-      # - '/packages/*'
-      # - '/react-native-lab/*'
-      # - '/tools/*'
+  [push, pull_request]
+  # # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
+  # # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
+  # push:
+  #   branches:
+  #     # If this isn't defined then all PR tests will be run twice
+  #     - master
+  #   paths:
+  #     - '*'
+  #     - '!*.md'
+  # pull_request:
+  #   paths:
+  #     - '*'
+  #     - '!*.md'
+  #     # - '/.github/*'
+  #     # - '/packages/*'
+  #     # - '/react-native-lab/*'
+  #     # - '/tools/*'
 
 jobs:
   test:
