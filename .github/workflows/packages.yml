@@ -40,7 +40,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Update submodules
-        command: git submodule update --init
+        run: git submodule update --init
       - run: yarn
         env:
           CI: true
