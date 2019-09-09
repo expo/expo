@@ -435,14 +435,16 @@ type PushMessage = {
 
   /**
    * A sound to play when the recipient receives this notification. Specify
-   * "default" to play the device's default notification sound, or omit this
-   * field to play no sound.
+   * "default" to play the device's default notification sound, omit this
+   * field to play no sound, or specify a filename (without any directory).
+   * If you wish to use a custom file, you should also set path to those files
+   * in `notification.bundledSounds` in `app.json`.
    *
    * Note that on apps that target Android 8.0+ (if using `expo build`, built
    * in June 2018 or later), this setting will have no effect on Android.
    * Instead, use `channelId` and a channel with the desired setting.
    */
-  sound?: 'default' | null,
+  sound?: 'default' | string | null,
 
   /**
    * Number to display in the badge on the app icon. Specify zero to clear the
