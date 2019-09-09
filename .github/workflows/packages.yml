@@ -39,9 +39,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: textbook/git-checkout-submodule-action@master
-      - name: Update submodules
-        run: git submodule update --init
       - run: yarn
         env:
           CI: true
