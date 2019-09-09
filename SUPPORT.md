@@ -1,6 +1,6 @@
 # Expo Support
 
-To best serve our users, we provide a couple different channels of support, depending on what you need.
+To best serve Expo developers, the Expo team provides a couple different channels of support, depending on what you need.
 
 - Github issues are reserved for bug reports **only**
 - General questions regarding Expo and its services should be asked on our [Forums](https://forums.expo.io/)
