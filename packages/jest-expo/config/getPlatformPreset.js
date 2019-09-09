@@ -1,6 +1,6 @@
 'use strict';
-
 const expoPreset = require('../jest-preset');
+const { withWatchPlugins } = require('./withWatchPlugins');
 
 function getModuleFileExtensions(...platforms) {
   let fileExtensions = [];
@@ -29,17 +29,18 @@ function getPlatformPreset(displayOptions, extensions) {
       `**/?(*.)+(spec|test)${platformExtension}${sourceExtension}`,
     ];
   }, []);
-  return {
+
+  return withWatchPlugins({
     displayName: displayOptions,
     testMatch,
     moduleFileExtensions,
-    snapshotResolver: require.resolve(`./snapshot/resolver.${extensions[0]}.js`),
+    snapshotResolver: require.resolve(`../src/snapshot/resolver.${extensions[0]}.js`),
     haste: {
       ...expoPreset.haste,
       defaultPlatform: extensions[0],
       platforms: extensions,
     },
-  };
+  });
 }
 
 // Combine React Native for web with React Native
