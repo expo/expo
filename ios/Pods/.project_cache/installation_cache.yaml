@@ -2521,11 +2521,11 @@ CACHE_KEYS:
   Branch:
     BUILD_SETTINGS_CHECKSUM:
       Branch: d23e73f5a01f3f6344223485955c69ad
-    CHECKSUM: 1ace77c04b6e3efbf982bf4364f0662bfac156a0
+    CHECKSUM: edf6cab0cecb437d6a6abba3a25d0a0fa6f277ec
     PROJECT_NAME: Branch
     SPECS:
-      - Branch (0.27.1)
-      - Branch/Core (0.27.1)
+      - Branch (0.28.1)
+      - Branch/Core (0.28.1)
   CocoaLumberjack:
     BUILD_SETTINGS_CHECKSUM:
       CocoaLumberjack: 1b30c793f1e19a27f117ad95710fe447
@@ -2874,7 +2874,7 @@ CACHE_KEYS:
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook: abea3ef79476e083995184af2c4950a7
-    CHECKSUM: 655b2c9808463d29873ca2649324d95380937105
+    CHECKSUM: d2989903befa74ac2661859d970e6a8ac7aa04b0
     FILES:
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
@@ -3328,19 +3328,19 @@ CACHE_KEYS:
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
-    CHECKSUM: 5144671077d67f07d7d243dbc7fd57a171f73954
+    CHECKSUM: 7ade9cfea30eef2f6cf105a1aa904f89ea68fb7d
     PROJECT_NAME: Facebook
     SPECS:
-      - FBSDKCoreKit (5.4.1)
-      - FBSDKCoreKit/Basics (5.4.1)
-      - FBSDKCoreKit/Core (5.4.1)
+      - FBSDKCoreKit (5.5.0)
+      - FBSDKCoreKit/Basics (5.5.0)
+      - FBSDKCoreKit/Core (5.5.0)
   FBSDKLoginKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKLoginKit: 72881b173101b43cccd14b82d97d4691
-    CHECKSUM: ff38b353b6843353f090028eb1b895c78aa82796
+    CHECKSUM: bb28062f24e79590c44ba03297ca9bea4b6436d2
     PROJECT_NAME: Facebook
     SPECS:
-      - FBSDKLoginKit (5.4.1)
+      - FBSDKLoginKit (5.5.0)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase: edb040c94d569207ed4eee19e7aaa404
@@ -3556,16 +3556,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 3d7bd44b0830eeb2ed1b6ce6c5c86c55
-      Release: 3d7bd44b0830eeb2ed1b6ce6c5c86c55
+      Debug: 18dba56055a2fb91150d4cec0c8e9a6a
+      Release: 18dba56055a2fb91150d4cec0c8e9a6a
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8329b1fbeb2089b592109d6bfdd034af
-      Release: 8329b1fbeb2089b592109d6bfdd034af
+      Debug: fe4755b6ed63bad7d634bab481808619
+      Release: fe4755b6ed63bad7d634bab481808619
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 8329b1fbeb2089b592109d6bfdd034af
-      Release: 8329b1fbeb2089b592109d6bfdd034af
+      Debug: fe4755b6ed63bad7d634bab481808619
+      Release: fe4755b6ed63bad7d634bab481808619
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: 984e9f934a23b843d02efe3856627b34
