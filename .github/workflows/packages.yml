@@ -39,15 +39,15 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      # - name: Update submodules
-      #   command: git submodule update --init
-      # - run: yarn
-      #   env:
-      #     CI: true
-      # - name: Check packages
-      #   run: expotools check-packages
-      #   env:
-      #     LANG: en_US.UTF-8
-      #     FASTLANE_SKIP_UPDATE_CHECK: 1
-      #     FASTLANE_DISABLE_COLORS: 1
-      #     CI: true
+      - name: Update submodules
+        command: git submodule update --init
+      - run: yarn
+        env:
+          CI: true
+      - name: Check packages
+        run: expotools check-packages
+        env:
+          LANG: en_US.UTF-8
+          FASTLANE_SKIP_UPDATE_CHECK: 1
+          FASTLANE_DISABLE_COLORS: 1
+          CI: true
