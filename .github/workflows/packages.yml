@@ -39,6 +39,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: ./scripts/remap-submodules-to-https.sh ./scripts/test-input.txt ./.gitmodules
+      - run: git submodule update --init
+        env:
+          CI: true
       - run: yarn
         env:
           CI: true
