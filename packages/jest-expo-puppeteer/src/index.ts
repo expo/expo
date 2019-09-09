@@ -27,7 +27,14 @@ function ofCommands(commands: string[]): string {
 }
 
 export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
-  const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot, ...partConfig } = config;
+  const {
+    mode = process.env.EXPO_WEB_E2E_ENV,
+    preventRebuild,
+    server = {},
+    launch = {},
+    projectRoot,
+    ...partConfig
+  } = config;
   const projectPath = path.resolve(projectRoot || process.cwd());
 
   const { web = {} } = readConfigJson(projectPath);
@@ -50,7 +57,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
     const serveCommand = `serve ${buildFolder}`;
     const commands = [serveCommand];
     const hasBuild = fs.existsSync(buildFolder);
-  
+
     if (!preventRebuild || !hasBuild) {
       const buildCommand = `node ${require.resolve('./build-expo.js')} ${projectPath}`;
       commands.unshift(buildCommand);
@@ -69,8 +76,6 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
   }
 
   const url = isUndefined(config.url) ? defaultURL : config.url;
-
-  
 
   return {
     hasServerSideRendering,
