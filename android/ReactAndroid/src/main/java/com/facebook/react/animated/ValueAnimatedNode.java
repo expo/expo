@@ -30,6 +30,9 @@ import javax.annotation.Nullable;
   }
 
   public double getValue() {
+    if (Double.isNaN(mOffset + mValue)) {
+      this.update();
+    }
     return mOffset + mValue;
   }
 
