@@ -61,14 +61,14 @@ export interface SQLResultSetRowList {
 }
 
 export declare class SQLError {
-  static UNKNOWN_ERR: number; 
-  static DATABASE_ERR: number; 
-  static VERSION_ERR: number; 
-  static TOO_LARGE_ERR: number; 
-  static QUOTA_ERR: number; 
-  static SYNTAX_ERR: number; 
-  static CONSTRAINT_ERR: number; 
-  static TIMEOUT_ERR: number; 
+  static UNKNOWN_ERR: number;
+  static DATABASE_ERR: number;
+  static VERSION_ERR: number;
+  static TOO_LARGE_ERR: number;
+  static QUOTA_ERR: number;
+  static SYNTAX_ERR: number;
+  static CONSTRAINT_ERR: number;
+  static TIMEOUT_ERR: number;
 
   code: number;
   message: string;
