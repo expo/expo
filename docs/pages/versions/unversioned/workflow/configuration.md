@@ -426,6 +426,14 @@ Configuration for how and when the app should request OTA JavaScript updates
     "usesIcloudStorage": BOOLEAN,
 
     /*
+      A boolean indicating if the app uses Apple Sign In.
+      See AppleAuthentication docs for details.
+
+      ExpoKit: use Xcode to set this.
+    */
+    "usesAppleSignIn": BOOLEAN,
+
+    /*
       Extra module configuration to be added to your app's native Info.plist.
 
       For ExpoKit apps, just add these to the Info.plist file directly.
