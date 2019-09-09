@@ -3154,8 +3154,12 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-print/ios/EXPrint/EXPrint.h"
       - "../../packages/expo-print/ios/EXPrint/EXPrint.m"
-      - "../../packages/expo-print/ios/EXPrint/EXPrintPDFRenderTask.h"
-      - "../../packages/expo-print/ios/EXPrint/EXPrintPDFRenderTask.m"
+      - "../../packages/expo-print/ios/EXPrint/EXWKPDFRenderer.h"
+      - "../../packages/expo-print/ios/EXPrint/EXWKPDFRenderer.m"
+      - "../../packages/expo-print/ios/EXPrint/EXWKSnapshotPDFRenderer.h"
+      - "../../packages/expo-print/ios/EXPrint/EXWKSnapshotPDFRenderer.m"
+      - "../../packages/expo-print/ios/EXPrint/EXWKViewPDFRenderer.h"
+      - "../../packages/expo-print/ios/EXPrint/EXWKViewPDFRenderer.m"
     PROJECT_NAME: EXPrint
     SPECS:
       - EXPrint (6.0.0)
