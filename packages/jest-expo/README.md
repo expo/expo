@@ -37,6 +37,18 @@ The recommended way to test your project is with `jest-expo/universal` which run
 
 Pressing **X** will open a platform-selection dialog that you can use to test individual platforms. You can also create a custom Jest config and combine the individual platforms with `jest-expo/ios`, `jest-expo/android`, `jest-expo/web`, and `jest-expo/node`.
 
+### Snapshots
+
+Because a test is run with multiple different platforms, `jest-expo` saves snapshots using the name of the platform as the extension. This is very useful for testing something like view styles, which are computed differently across web and native.
+
+Here is an example output:
+
+|- `View-test.tsx`
+|-- `__snapshots__/View-test.tsx.snap.android`
+|-- `__snapshots__/View-test.tsx.snap.ios`
+|-- `__snapshots__/View-test.tsx.snap.node`
+|-- `__snapshots__/View-test.tsx.snap.web`
+
 ### Extensions
 
 To test specific platforms you can use the following extensions:
@@ -45,6 +57,25 @@ To test specific platforms you can use the following extensions:
 - Android: `-test.android.*`, `-test.native.*`
 - web: `-test.web.*`
 - Node: `-test.node.*`, `-test.web.*`
+
+### Mixing runners
+
+If you don't want to use every runner you can always mix runners by using the `projects` field of your Jest config. This will only work with single-runner projects like `jest-expo/ios`, `jest-expo/android`, `jest-expo/web`, and `jest-expo/node`.
+
+```diff
+"jest": {
+-  "preset": "jest-expo/universal"
+// Skip web and Node tests
++ "projects": [
++    { "preset": "jest-expo/ios" },
++    { "preset": "jest-expo/android"}
++ ]
+},
+```
+
+### Testing JSX Components
+
+To test the output of your React components you can use the library **jest-expo-enzyme**, which extends `jest-expo` and adds universal [Enzyme](https://airbnb.io/enzyme/) support.
 
 ### ⚙️ Configuring your preset
 
