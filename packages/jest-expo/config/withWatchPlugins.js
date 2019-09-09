@@ -18,6 +18,7 @@ function getWatchPlugins({ projects = [] } = {}) {
   }
   return watchPlugins;
 }
+
 function withWatchPlugins({ watchPlugins = [], ...config }) {
   const customPlugins = getWatchPlugins(config);
   return {
@@ -25,6 +26,7 @@ function withWatchPlugins({ watchPlugins = [], ...config }) {
     watchPlugins: [...watchPlugins, ...customPlugins],
   };
 }
+
 module.exports = {
   getWatchPlugins,
   withWatchPlugins,
