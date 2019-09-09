@@ -43,7 +43,7 @@ jobs:
         env:
           CI: true
       - name: Check packages
-        run: expotools check-packages
+        run: tools/expotools/bin/expotools.js check-packages
         env:
           LANG: en_US.UTF-8
           FASTLANE_SKIP_UPDATE_CHECK: 1
