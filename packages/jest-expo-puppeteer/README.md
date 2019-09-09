@@ -62,7 +62,7 @@ You can customize the `jest-dev-server`, `puppeteer`, and `expo-cli` options fro
 ```js
 const { withExpoPuppeteer } = require('jest-expo-puppeteer');
 
-withExpoPuppeteer({
+module.exports = withExpoPuppeteer({
   // development will run `expo start`
   // production will run `expo build:web` then serve the static bundle
   // this value can also be defined inline with `process.env.EXPO_WEB_E2E_ENV`
@@ -81,6 +81,12 @@ withExpoPuppeteer({
   ...jestPuppeteerConfig,
 });
 ```
+
+## Running in watch mode
+
+Because [jest-puppeteer doesn't start the server in watch mode](https://github.com/smooth-code/jest-puppeteer/issues/229) you will need to start the Webpack server manually. A simple way to do this is by opening a new terminal window and running: `WEB_PORT=5000 expo start:web --https`. For SSR you'll need to change the port to `8000`.
+
+If you get the error `"start:web" is not an expo command. See "expo --help" for the full list of commands.` then you may need to update **expo-cli** (`npm i -g expo-cli`) or use the older command `expo start --web-only`.
 
 ## Usage in Circle CI
 
