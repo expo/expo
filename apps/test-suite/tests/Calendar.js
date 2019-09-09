@@ -499,7 +499,7 @@ export async function test(t) {
     }
 
     if (Platform.OS === 'ios') {
-      t.describe("getDefaultCalendarAsync()", () => {
+      t.describe('getDefaultCalendarAsync()', () => {
         t.it('get default calendar', async () => {
           const calendar = await Calendar.getDefaultCalendarAsync();
 

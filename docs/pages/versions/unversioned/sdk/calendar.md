@@ -38,7 +38,7 @@ An array of [calendar objects](#calendar 'Calendar') matching the provided entit
 
 #### Returns
 
-A [calendar object](#calendar 'Calendar').
+A promise resolving to [calendar object](#calendar) that is the user's default calendar.
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
