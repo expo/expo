@@ -24,6 +24,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - added [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) to Expo client and standalone apps by [@sjchmiela](https://github.com/sjchmiela) ([#5446](https://github.com/expo/expo/pull/5446))
 - added supports for push notification in Expo for Web by [@hesyifei](https://github.com/hesyifei) ([#4963](https://github.com/expo/expo/pull/4963))
 - added `expo-apple-authentication` unimodule ([#5421](https://github.com/expo/expo/pull/5421))
+- added `Calendar.getDefaultCalendarAsync` method on iOS. ([#5485](https://github.com/expo/expo/pull/5485) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
