@@ -935,8 +935,12 @@ CACHE_KEYS:
     FILES:
       - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXPrint.h"
       - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXPrint.m"
-      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXPrintPDFRenderTask.h"
-      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXPrintPDFRenderTask.m"
+      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXWKPDFRenderer.h"
+      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXWKPDFRenderer.m"
+      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXWKSnapshotPDFRenderer.h"
+      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXWKSnapshotPDFRenderer.m"
+      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXWKViewPDFRenderer.h"
+      - "../versioned-react-native/ABI33_0_0/EXPrint/ABI33_0_0EXPrint/ABI33_0_0EXWKViewPDFRenderer.m"
     PROJECT_NAME: ABI33_0_0
     SPECS:
       - ABI33_0_0EXPrint (5.0.0-rc.0)
@@ -2177,8 +2181,12 @@ CACHE_KEYS:
     FILES:
       - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXPrint.h"
       - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXPrint.m"
-      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXPrintPDFRenderTask.h"
-      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXPrintPDFRenderTask.m"
+      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXWKPDFRenderer.h"
+      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXWKPDFRenderer.m"
+      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXWKSnapshotPDFRenderer.h"
+      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXWKSnapshotPDFRenderer.m"
+      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXWKViewPDFRenderer.h"
+      - "../versioned-react-native/ABI34_0_0/EXPrint/ABI34_0_0EXPrint/ABI34_0_0EXWKViewPDFRenderer.m"
     PROJECT_NAME: ABI34_0_0
     SPECS:
       - ABI34_0_0EXPrint (5.0.0)

@@ -162,7 +162,6 @@
 		0D6429740C1B9FCB478C3A33F631B2FA /* ABI33_0_0AIRMapCallout.m in Sources */ = {isa = PBXBuildFile; fileRef = D2394AA22F6EE781164DDACC0407D30C /* ABI33_0_0AIRMapCallout.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0D757151B42BC135D69C57BC30C50ED6 /* ABI33_0_0EXLocationTaskConsumer.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C4E36A10008425754631D6F1E889DD /* ABI33_0_0EXLocationTaskConsumer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0D7B0BA21D7DBC784785FBBA0EDD724A /* ABI33_0_0RCTManagedPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 93EBE7ECFEC0B536FDC8D79CCDD56414 /* ABI33_0_0RCTManagedPointer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0E008AE636F623F6C24E90C21ED7556F /* ABI33_0_0EXPrintPDFRenderTask.m in Sources */ = {isa = PBXBuildFile; fileRef = DCE19B31C0C46C1D9B6F9872B0D428D2 /* ABI33_0_0EXPrintPDFRenderTask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0E5F6E4B2AD320E3E2F0EBCCC34FC7AE /* ABI33_0_0RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F16DF19DD7B54751D7BDB10A70231CF5 /* ABI33_0_0RCTWebSocketModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0E7891AE292B009DFB8A95928A39C066 /* ABI33_0_0RNSVGLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 7361C1C832AB1E8BAB4F403FC8DDF282 /* ABI33_0_0RNSVGLine.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0E8266BD64BD51C49F87C3E2D3DCB23C /* ABI33_0_0RCTTiming.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F529482E516552EF15E8865ECF2B320 /* ABI33_0_0RCTTiming.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -192,6 +191,7 @@
 		1422E0D9A8BA3C40C20B1AC3D0C1A50E /* ABI33_0_0RCTFrameUpdate.h in Headers */ = {isa = PBXBuildFile; fileRef = 3CCC2F760DC08B956EC5EFAB93A7C97D /* ABI33_0_0RCTFrameUpdate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1433890AF3CDE28C2DC9C52D80B7FFED /* ABI33_0_0EXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 892CA385D8469B207D21AE7F22B48732 /* ABI33_0_0EXTest.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		144BBD1477082BE6A97B6978BC6BA1C0 /* ABI33_0_0RCTMaskedViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E3A2532B309844C6608C5036FE14518A /* ABI33_0_0RCTMaskedViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		14BB5579E0CD5E95369E045CFDEC6245 /* ABI33_0_0EXWKViewPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 6C645F54F9DB932D6D1961C802F2E77B /* ABI33_0_0EXWKViewPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		14E7EA3452E28E33F18849A0C9F80B84 /* ABI33_0_0YGStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE8B5BC3D627F28BCD235B42997B4480 /* ABI33_0_0YGStyle.cpp */; settings = {COMPILER_FLAGS = "-fno-omit-frame-pointer -fexceptions -Wall -Werror -std=c++1y -fPIC -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		14F04A2C0FB9E3DE1A8DF60BB1389F92 /* ABI33_0_0EXScopedModuleRegistryAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8818F8D6AFD6C5A7449CA6C1A7D5BC2F /* ABI33_0_0EXScopedModuleRegistryAdapter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1505E13CF79084850781E8658E5C0D05 /* ABI33_0_0RCTMultilineTextInputViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F8940D828C1B596D831929506EF0E3BB /* ABI33_0_0RCTMultilineTextInputViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -210,7 +210,6 @@
 		1743CCCEC168ACB76CEC76403A833FED /* ABI33_0_0AIRMapCalloutSubviewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 293879AE561E565DB8610E80B5973EA7 /* ABI33_0_0AIRMapCalloutSubviewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		17560DF1FF7C3586651639AED4666261 /* ABI33_0_0EXFaceDetectorUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 161D1B34E2CE528E4BE1813F284CB6D9 /* ABI33_0_0EXFaceDetectorUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		178823876DB413B4322ED4695AD027CA /* ABI33_0_0AIRMapUrlTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BFFDE6C68B9BDA0BB21687E281DABB8 /* ABI33_0_0AIRMapUrlTileManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		179D38EF50C7440D5DD6453392EA2E5A /* ABI33_0_0EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = FB67BBA06DD36E9F300F454154E01DC9 /* ABI33_0_0EXPrint-dummy.m */; };
 		17C5D51902F30CFAF78B6A86522A21CD /* ABI33_0_0RNGestureHandlerButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BE4319E2E3214363A620C8DEA2BC447 /* ABI33_0_0RNGestureHandlerButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		181E2D61F47CF2C2F3CA38EDCB75E655 /* ABI33_0_0RNSVGRenderableManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 525AB704D0D2D36D4D27A0C603078134 /* ABI33_0_0RNSVGRenderableManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		183938D73B1E8D4BB2917939A348B7CC /* ABI33_0_0RCTInputAccessoryViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 386D2C6FD70944803A060687047130DB /* ABI33_0_0RCTInputAccessoryViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -375,6 +374,7 @@
 		372ACAAC1721A499AB930E2253DE1926 /* ABI33_0_0RNSVGLength.h in Headers */ = {isa = PBXBuildFile; fileRef = 42E1900022B754648B9B4D74E5472A40 /* ABI33_0_0RNSVGLength.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		37549144D08F24F0664561C609831A17 /* ABI33_0_0RNSVGPatternManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A59EF4131D520F225292BED62E9ABDC8 /* ABI33_0_0RNSVGPatternManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		378445487D79F709B1096D01EDB69425 /* ABI33_0_0RNSVGGroupManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 51B7066AFBA62CA4C5E04EAA50FF535E /* ABI33_0_0RNSVGGroupManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		37F05D04DD8679C0D811DD2D50EE1D44 /* ABI33_0_0EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ED5367B3B92FE28F64002F1F61F08666 /* ABI33_0_0EXPrint-dummy.m */; };
 		38142155E22C59A38DEECFF5904C88B9 /* ABI33_0_0EXTaskService.h in Headers */ = {isa = PBXBuildFile; fileRef = F200C3F3B5A9BD52ECEC66588595C708 /* ABI33_0_0EXTaskService.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		381D73C4EC7280808BEDBEC69DF48AC0 /* ABI33_0_0jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCC43DD4513ED4FA22495B20AC4C943F /* ABI33_0_0jsi.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		38486BD661DF7DE9704E6FA4E1141345 /* ABI33_0_0AIRGMSPolyline.m in Sources */ = {isa = PBXBuildFile; fileRef = D4987FB9BAA37C5DF30C172CBE0D0418 /* ABI33_0_0AIRGMSPolyline.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -635,6 +635,7 @@
 		69C1E1C350FD7344B15CC96DF6C4AE8F /* ABI33_0_0RNSVGMask.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EE8436C3264DC4A73E8C2DB23557220 /* ABI33_0_0RNSVGMask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		69CFFEAC32F0F112E885D6C2BE87CC71 /* ABI33_0_0EXAdOptionsViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C60D7592C24304687ABD3FB1CAB5699 /* ABI33_0_0EXAdOptionsViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6AB57074858D227BC27CBE04CF9703C2 /* ABI33_0_0EXFaceDetectorManagerProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = C260C9A3ECF985D6A9AB5C76D8C6D23C /* ABI33_0_0EXFaceDetectorManagerProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6ADEF8EBE96A5F65122E94C88763F3D9 /* ABI33_0_0EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = DC3FD9C933DA07DE963784001990076E /* ABI33_0_0EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6AF5A72B346B4B565FCCA6AAC6DD4A7B /* ABI33_0_0REABlockNode.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1A5CD291CA8E8F2354E4473A9B3513 /* ABI33_0_0REABlockNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6B1ABC456697193E602601B629360536 /* ABI33_0_0EXTaskManagerAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = D6CC90913085A81C2D4D835BD0EF73D4 /* ABI33_0_0EXTaskManagerAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6B3A7FF344BAFC55521F776D421974C6 /* ABI33_0_0EXBarCodeScannerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 7326D9AD28E2F63332473BCDD241C572 /* ABI33_0_0EXBarCodeScannerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -719,6 +720,7 @@
 		75F5DD901C47E3DDE9DB0119501D7C92 /* ABI33_0_0RCTFPSGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E453C8B0C26445A854E316C7357901F /* ABI33_0_0RCTFPSGraph.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		761E8C00D3F567D212B681155A5591A6 /* ABI33_0_0EXConstantsBinding.h in Headers */ = {isa = PBXBuildFile; fileRef = C2158FF633854EE7150DC3A335F08A9F /* ABI33_0_0EXConstantsBinding.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		762481D6D1D516CE9A534B2F22A68840 /* ABI33_0_0REAPropsNode.h in Headers */ = {isa = PBXBuildFile; fileRef = F58D529D12ED2E638525B1F02BD751A1 /* ABI33_0_0REAPropsNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		763F1C30D36780F14CC0FAC5C64E38B9 /* ABI33_0_0EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = E385B32AF5A88C347155DA9E61FCAD49 /* ABI33_0_0EXWKPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		76D5D2A61B711348C5C1523BEC99C72D /* ABI33_0_0RCTVirtualTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E0BADF469C3BE3483DE19C934C2D25CC /* ABI33_0_0RCTVirtualTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		772F947C4E3D3D64B2111EF69A4D3FEF /* ABI33_0_0RCTVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 30BE6D62072D3E1CBB2CEF8FCAD450A3 /* ABI33_0_0RCTVersion.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		777404494CA508EB631EDEC7DC11EC86 /* ABI33_0_0EXSensorsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E284435508907B9F090635B0C4B6A34 /* ABI33_0_0EXSensorsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1005,6 +1007,7 @@
 		AA84DF2525DDA8E3C4DECC0101DAE2E2 /* ABI33_0_0EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = A07C54A59A1A8844033FDF708522F30A /* ABI33_0_0EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AAAFA24076E3E374F9763D8AA86099E7 /* ABI33_0_0RNCWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = A4695BABA253912C1177EEF2F50627E9 /* ABI33_0_0RNCWKWebView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AB0C7106B1B538DB1E398D4346D82D2D /* ABI33_0_0UMReactFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD06A2CB0D109F4FB22C2666346FFB6D /* ABI33_0_0UMReactFontManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AB51E3B5AF73E77218549DAB8341F2FD /* ABI33_0_0EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E46972D8536EDF77D41D547254916C /* ABI33_0_0EXWKViewPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AB6D828FD3F82DA2CD3D77D1B1AAA85F /* ABI33_0_0EXFaceDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 63F5DD0A9D049D1740ED10D3B0F3D022 /* ABI33_0_0EXFaceDetector.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		ABD26CFF0D9574301301DC545746B345 /* ABI33_0_0EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = CB02F2FE14A891D691C58AD71875BC2D /* ABI33_0_0EXSQLite.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AC0D419A12EF730FB10FC6DC0D2A6780 /* ABI33_0_0RCTImageViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CF9DC02B2C1C4CE2ACFB7EC0A21ED04E /* ABI33_0_0RCTImageViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1024,6 +1027,7 @@
 		AEE7AFA17A25364A4B4E1F9DD6DBD2E7 /* ABI33_0_0EXBarometer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9831F7031937B5CD139BB18553B3F530 /* ABI33_0_0EXBarometer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AF3EC8FA021EC586284A7E0B7426ED7B /* ABI33_0_0RCTAsyncLocalStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E2A6A806B362563EA2A401C6B7B1479 /* ABI33_0_0RCTAsyncLocalStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AF57FCB17E0185A280B091C3A9A825F5 /* ABI33_0_0RCTDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 91A8AB80BF481072277CB919731235D3 /* ABI33_0_0RCTDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AF69B90C296E0CEAA5BD847A52DF5158 /* ABI33_0_0EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 420F4E907F586A3796A195AA6CEC3290 /* ABI33_0_0EXWKSnapshotPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AFCD3081CB9A6B98DEBB45CDE7F973B9 /* ABI33_0_0RNSVGTSpanManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DACF16FCBA0FB58AAC70CEAA2B625AAD /* ABI33_0_0RNSVGTSpanManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AFDF04518D3DF33C23BCAF5DEFF4B196 /* ABI33_0_0EXBarCodeScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = 143D86D353357DD3909B4C2DE8E761C7 /* ABI33_0_0EXBarCodeScanner.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AFF70EDC28CDC20751BBC5AB63C9F497 /* ABI33_0_0RCTPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 351FBFF70472F0302A73A4119FCCAD64 /* ABI33_0_0RCTPlatform.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1117,6 +1121,7 @@
 		C242D4272A2A5C587F23C822E6133366 /* ABI33_0_0RCTCameraRollManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF57E54B975EFC606F2EB12A0852EE1C /* ABI33_0_0RCTCameraRollManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C25BC1EA5740F5942DFCA495716649CA /* ABI33_0_0RCTNetInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = E2F0601B03C27885FD43C3443DE52D1D /* ABI33_0_0RCTNetInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C26810CDAF2F4E06B55AE4E55BE56B15 /* ABI33_0_0RNSVGMaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 65C9FDA401A01D67BBBDEFB7CF13B8E7 /* ABI33_0_0RNSVGMaskManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C27BCA9416FF7EBC95BA0051B2314E31 /* ABI33_0_0EXWKPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 51F1D5D0E5D119ABE69B986A55347D11 /* ABI33_0_0EXWKPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C29EAF33AB41188827490DB5729F1EAD /* ABI33_0_0EXWebBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = A01D2505B9EC83D3D1F04D44B178D224 /* ABI33_0_0EXWebBrowser.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C2BBEF748E3ECE2291689318171A7AD8 /* ABI33_0_0RNCWKWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E91AE5F83E2701A49CA89A8C2E46C84 /* ABI33_0_0RNCWKWebViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C2CEE6A20852F75A5904375C7691C4F4 /* ABI33_0_0EXGLARSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B9DEB7854A991C989B5B9C943561C28 /* ABI33_0_0EXGLARSessionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1155,6 +1160,7 @@
 		C807BA86A1805CC48F6B211C4589C6D2 /* ABI33_0_0RNSVGSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = D1FBB9DA2FB98BBA0B66182778C43348 /* ABI33_0_0RNSVGSymbol.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C8322B62F2CE1106EAEAE935DB422F06 /* ABI33_0_0AIRMapManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A113597FC190C343B0AE608F24EC26FB /* ABI33_0_0AIRMapManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C83604676D413CDABCA04C23281E91A7 /* ABI33_0_0REASetNode.h in Headers */ = {isa = PBXBuildFile; fileRef = E3AB8E5B2896145C73C3F4EACA2F5EFE /* ABI33_0_0REASetNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C8924CF3ED778F09BA31882524CECE25 /* ABI33_0_0EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = E359A2C504D9C65B1DAD2BD3C857D4D9 /* ABI33_0_0EXPrint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C8C63BC66C8DCAA175F0EC54FD447F8A /* ABI33_0_0RCTWKWebViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FAEF1997F4204451BE3744692AE5CAB /* ABI33_0_0RCTWKWebViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C8D4AF8EBCEAA9D60FC8DF8D349AF8BC /* ABI33_0_0EXDevSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 308A3466A39B3E00EB24E77058A1AB31 /* ABI33_0_0EXDevSettings.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C8E387DA11CA2EAA40507313C86CFC71 /* ABI33_0_0AIRMapCircleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4355B52205ACF8401668876C789EED9D /* ABI33_0_0AIRMapCircleManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1317,7 +1323,6 @@
 		E589DBC313D0459667642E034AC27494 /* ABI33_0_0EXAV.h in Headers */ = {isa = PBXBuildFile; fileRef = A636A6F3D90E56DD9B22BB539EC312FD /* ABI33_0_0EXAV.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E5E58BFCB0F16EAA08E51ED6E8E4A5F2 /* ABI33_0_0JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = 194001E77997FFCE56AF8B542098DD48 /* ABI33_0_0JSIExecutor.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E633733D7596B9D44592378FEBFD8AA2 /* ABI33_0_0RCTUITextView.h in Headers */ = {isa = PBXBuildFile; fileRef = FBA2F06A0C987051A5DB441DA383C237 /* ABI33_0_0RCTUITextView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E65EAD9C75EDF4EB3E689C04A3BF85D7 /* ABI33_0_0EXPrintPDFRenderTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 84697CF615FDD13E7404BA3D4CE35171 /* ABI33_0_0EXPrintPDFRenderTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E661D79A9E95AA87755B8DA8D65FE80C /* ABI33_0_0RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DF3E1FC43A57319BD4E26B3022E6094 /* ABI33_0_0RCTI18nManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		E66200B1D6D81B78DD1488A754579CC0 /* ABI33_0_0RNSVGNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 36E3B6FEFE900BFF70400A31A8A6DFE1 /* ABI33_0_0RNSVGNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E6F282FCED0C58E270540EC225A417FD /* ABI33_0_0AIRGoogleMapCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 15B701EC86749E9D2AC01D7ECDD6CDAB /* ABI33_0_0AIRGoogleMapCircle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1358,6 +1363,7 @@
 		EDAEE29BF93C9E6D412809109C9A1948 /* ABI33_0_0RCTVirtualTextViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C06774C9E1978A72A5DE94647BCB936 /* ABI33_0_0RCTVirtualTextViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		EDC41A6BB064431B4DDC5DC24238339F /* ABI33_0_0AIRMapWMSTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A9904647B8FE2FB571262D7E7C2A641 /* ABI33_0_0AIRMapWMSTileManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		EDCDDD22A26B1A32E1271C242368B9AA /* ABI33_0_0EXConstants-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F3AF26A2DBCD1C59E59C5EE1BD5D5F /* ABI33_0_0EXConstants-dummy.m */; };
+		EDD73277FAC7339326B5EC0831A7D6FA /* ABI33_0_0EXWKSnapshotPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = CBCBE027E2425F6EC61A056581A60E1E /* ABI33_0_0EXWKSnapshotPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		EE38294A3595411485E47D42B582283C /* ABI33_0_0NSTextStorage+FontScaling.h in Headers */ = {isa = PBXBuildFile; fileRef = D28DA5EA113909ADE906619D0C271515 /* ABI33_0_0NSTextStorage+FontScaling.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		EE529FD3FB781CD92F34245ADC1BA092 /* ABI33_0_0EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 9839C5A67CD6D0A06094A2294553BCE6 /* ABI33_0_0EXSecureStore.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		EF21D28C76827F2CC89ADF490810176B /* ABI33_0_0EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B660BF883DF2ADD6CD662AAFB33CD47A /* ABI33_0_0EXNativeAdManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1376,7 +1382,6 @@
 		F2577F25A2534C0DB5EFDB5F180AF188 /* ABI33_0_0RCTProfileTrampoline-x86_64.S in Sources */ = {isa = PBXBuildFile; fileRef = 21040D3674725661DD6673AF5707FB3C /* ABI33_0_0RCTProfileTrampoline-x86_64.S */; };
 		F2879BEC9AD7C6AB289FC9FCC25665E0 /* ABI33_0_0UMNativeModulesProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AEA9F84F3B291C717D5AA6181FA1008 /* ABI33_0_0UMNativeModulesProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F2A5F4B2479C1F491F2DDE4354F50B04 /* ABI33_0_0RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1212F53AF3BB81A334506BC2F9E27035 /* ABI33_0_0RCTModuloAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F2C757A802EB84E8FAA95C28B66EBE47 /* ABI33_0_0EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = 56C06933F8D2BE75BD959B053AE578D4 /* ABI33_0_0EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F2D6686C1898225A4DE5BA37EE504F09 /* ABI33_0_0RCTImageSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 853F14E0C2197FFF58CDDFFB3AA10087 /* ABI33_0_0RCTImageSource.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F2E2CE925BB0E1CA715BFAE787CCB8D5 /* ABI33_0_0EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DB82AB15412046D9FECD2662C1307C5 /* ABI33_0_0EXRemoteNotificationRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F2F06D24220E54C3FCE72A73592BFA90 /* ABI33_0_0EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF34FE86F24C00783EF695076C8F02BD /* ABI33_0_0EXLocalAuthentication-dummy.m */; };
@@ -1392,7 +1397,6 @@
 		F4E0B7A2B3D971FB419C5CFC497EFB91 /* ABI33_0_0RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BBA359ED98AC37F647FE6507140BD2E /* ABI33_0_0RCTDatePickerManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F5292E099B28DB0CE552B63A8C79187E /* ABI33_0_0EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F906FFD2CDD8822C432C12E46A114391 /* ABI33_0_0EXPermissions-dummy.m */; };
 		F52DA8DF1A745A9B3DC527C2952E46EE /* ABI33_0_0YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B3E1CD25BBAD4B6957070E88B596C16 /* ABI33_0_0YGConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F59CD3FE1BA511C4F5BFFD602C255544 /* ABI33_0_0EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = E5276703B481A02B75E59DB80CA2DA0A /* ABI33_0_0EXPrint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F59E46ABAE94E114656C3A690EF6984F /* ABI33_0_0YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = E6F1A98EABD1A3D1A2B664D038AB46FD /* ABI33_0_0YGValue.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F5DC3023A6EA3AB6A51C1F077C23CE1D /* ABI33_0_0AIRMapCalloutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BECF2E5021250EF1BE529940E9F26B91 /* ABI33_0_0AIRMapCalloutManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F6307F757B0EE1CF000270F0E625B0AC /* ABI33_0_0RNSVGPainter.h in Headers */ = {isa = PBXBuildFile; fileRef = DC3FC5F7BEE8A4C853C8CBB9DDEC136F /* ABI33_0_0RNSVGPainter.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1468,13 +1472,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 29CAEF828D29084D2E5C21EA9C01F503;
 			remoteInfo = ABI33_0_0EXSensors;
-		};
-		027BD648BF533B7A654B0E671E535354 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C0515A11953BA0C7B2A8B397EF934BE2;
-			remoteInfo = ABI33_0_0UMFileSystemInterface;
 		};
 		037ACE971E7E9E32EDA674C458818141 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2288,6 +2285,13 @@
 			remoteGlobalIDString = 55B5B69CD0128658056242174A61815A;
 			remoteInfo = JKBigInteger2;
 		};
+		BA87133A65C611E418E4A5F589F58B5A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C0515A11953BA0C7B2A8B397EF934BE2;
+			remoteInfo = ABI33_0_0UMFileSystemInterface;
+		};
 		BADD4D42213A5AF6CF24EE5A3C675596 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
@@ -2575,13 +2579,6 @@
 			remoteGlobalIDString = 55F8DEE9FFDFC41A12CFD48DCD5BADD5;
 			remoteInfo = ABI33_0_0UMPermissionsInterface;
 		};
-		EF048C27A393D88B0FA4D31AD784A85A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5525AF966AE228479212FF7A78D25C18;
-			remoteInfo = ABI33_0_0UMCore;
-		};
 		EF657522878A580A53F1AE370407716A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
@@ -2602,6 +2599,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = A6E0C907314B2CBFBFD6928A6ACF77F8;
 			remoteInfo = ABI33_0_0EXFaceDetector;
+		};
+		F4CA46B2E7A8A0516A52DCA1B9DDE9FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5525AF966AE228479212FF7A78D25C18;
+			remoteInfo = ABI33_0_0UMCore;
 		};
 		F5204C1721669524710B0905A26F5DBE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2732,6 +2736,7 @@
 		0729C46B50E5B3F433F1C813EEE83714 /* ABI33_0_0RCTURLRequestHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTURLRequestHandler.h; sourceTree = "<group>"; };
 		072A2254A2D40110112C0951A5CA3EB4 /* ABI33_0_0RNSVGUseManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGUseManager.m; sourceTree = "<group>"; };
 		0760A00185CE5D305D089F23618D5725 /* ABI33_0_0ARTTextManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0ARTTextManager.m; sourceTree = "<group>"; };
+		0768093EE8D0F8FC196F0F5AAB4A7498 /* ABI33_0_0EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		07960D9BDF35D9FF1D2BC2EA2AD80A37 /* ABI33_0_0UMNativeModulesProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0UMNativeModulesProxy.m; sourceTree = "<group>"; };
 		07F7F221AD1BF286B3C23E66325D020F /* ABI33_0_0RCTSurfaceRootShadowViewDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTSurfaceRootShadowViewDelegate.h; sourceTree = "<group>"; };
 		084D92289C8BBEA8021628B2C1A5E1BD /* ABI33_0_0UMReactNativeAdapter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0UMReactNativeAdapter.h; sourceTree = "<group>"; };
@@ -2966,7 +2971,6 @@
 		2F642DD049EE7684EF19AE26219B0E9F /* ABI33_0_0EXDownloadDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXDownloadDelegate.m; path = ABI33_0_0EXFileSystem/ABI33_0_0EXDownloadDelegate.m; sourceTree = "<group>"; };
 		2F874AE80E9A6EBA320A086C6AD89710 /* ABI33_0_0EXAdsAdMobDFPManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXAdsAdMobDFPManager.m; path = ABI33_0_0EXAdsAdMob/ABI33_0_0EXAdsAdMobDFPManager.m; sourceTree = "<group>"; };
 		2F9FFD7F3A7DD5773BD5C2621C63B77D /* ABI33_0_0UMCore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0UMCore.xcconfig; sourceTree = "<group>"; };
-		2FBC9FFB850283B3934F0C02927C6A3E /* ABI33_0_0EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXPrint-prefix.pch"; sourceTree = "<group>"; };
 		2FC5C38326522C635A6BC916049D771C /* ABI33_0_0BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
 		300357EB3B28EAF3FA7FE936C9DF0947 /* ABI33_0_0EXAppLoaderProvider-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXAppLoaderProvider-dummy.m"; sourceTree = "<group>"; };
 		302D9EAF7060458E014A15DD8C9F6F94 /* ABI33_0_0RNBranchEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNBranchEventEmitter.h; sourceTree = "<group>"; };
@@ -3070,6 +3074,7 @@
 		41BC8B19F91AFB9DBF3FB3023E0A9635 /* ABI33_0_0EXBarCodeScannerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXBarCodeScannerProvider.h; path = ABI33_0_0EXBarCodeScanner/ABI33_0_0EXBarCodeScannerProvider.h; sourceTree = "<group>"; };
 		41F1174BCCBE6E27B15E30A271381322 /* ABI33_0_0EXMailComposer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXMailComposer.m; path = ABI33_0_0EXMailComposer/ABI33_0_0EXMailComposer.m; sourceTree = "<group>"; };
 		42085BD2602892283584782A85DD9ACB /* ABI33_0_0RCTActionSheetManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTActionSheetManager.h; path = Libraries/ActionSheetIOS/ABI33_0_0RCTActionSheetManager.h; sourceTree = "<group>"; };
+		420F4E907F586A3796A195AA6CEC3290 /* ABI33_0_0EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXWKSnapshotPDFRenderer.m; path = ABI33_0_0EXPrint/ABI33_0_0EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
 		42554C4314B27911F06172FF8E36831C /* ABI33_0_0REAAllTransitions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REAAllTransitions.m; sourceTree = "<group>"; };
 		425FFF6E52E1752C043E3A2C493B5614 /* ABI33_0_0RCTPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTPicker.h; sourceTree = "<group>"; };
 		42854C6EA8AF71C2F0B95C7AE0E97886 /* ABI33_0_0AIRMapUrlTileManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRMapUrlTileManager.h; sourceTree = "<group>"; };
@@ -3161,6 +3166,7 @@
 		51B7066AFBA62CA4C5E04EAA50FF535E /* ABI33_0_0RNSVGGroupManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGGroupManager.m; sourceTree = "<group>"; };
 		51B873F74587936F5F39D78065A4B43D /* ABI33_0_0RCTRootShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTRootShadowView.m; sourceTree = "<group>"; };
 		51C12E5580C247DE729138629A177667 /* ABI33_0_0EXAccelerometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXAccelerometer.h; sourceTree = "<group>"; };
+		51F1D5D0E5D119ABE69B986A55347D11 /* ABI33_0_0EXWKPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXWKPDFRenderer.h; path = ABI33_0_0EXPrint/ABI33_0_0EXWKPDFRenderer.h; sourceTree = "<group>"; };
 		5200ED0BE76574213D6319E4E582CB39 /* ABI33_0_0REATransformNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0REATransformNode.h; sourceTree = "<group>"; };
 		52259ACA02AAFABA6B6A7136C819444E /* ABI33_0_0RCTSurfaceStage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTSurfaceStage.m; sourceTree = "<group>"; };
 		522EB42C11DF275FCC1CB603BD7645BD /* ABI33_0_0RCTMultipartStreamReader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTMultipartStreamReader.m; sourceTree = "<group>"; };
@@ -3198,7 +3204,6 @@
 		56A6C9588E1E633EAA182171B028657D /* ABI33_0_0RCTStatusBarManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTStatusBarManager.m; sourceTree = "<group>"; };
 		56BB32751E0800E7AC73E23E1CFBBD4D /* ABI33_0_0YGLayout.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0YGLayout.h; path = yoga/ABI33_0_0YGLayout.h; sourceTree = "<group>"; };
 		56C001EB391CEA3EEBB07C8F5886F2EF /* ABI33_0_0REACondNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0REACondNode.h; sourceTree = "<group>"; };
-		56C06933F8D2BE75BD959B053AE578D4 /* ABI33_0_0EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXPrint.h; path = ABI33_0_0EXPrint/ABI33_0_0EXPrint.h; sourceTree = "<group>"; };
 		5741A57601BF928230887AF2B2163110 /* ABI33_0_0REAJSCallNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0REAJSCallNode.h; sourceTree = "<group>"; };
 		576722202EB260395866883EA32629A7 /* ABI33_0_0EXCrypto-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXCrypto-prefix.pch"; sourceTree = "<group>"; };
 		576818FC94DF68644516BC4B891BFEF1 /* ABI33_0_0EXBannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXBannerViewManager.m; path = ABI33_0_0EXAdsFacebook/ABI33_0_0EXBannerViewManager.m; sourceTree = "<group>"; };
@@ -3276,7 +3281,6 @@
 		61789E3A4FDC8335B689865249458621 /* ABI33_0_0EXVideoThumbnailsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXVideoThumbnailsModule.m; path = ABI33_0_0EXVideoThumbnails/ABI33_0_0EXVideoThumbnailsModule.m; sourceTree = "<group>"; };
 		61A26394013DC58B522340CFA4CB387E /* ABI33_0_0RNSVGSolidColorBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGSolidColorBrush.h; sourceTree = "<group>"; };
 		61AC87BFFDADDAD8F15D9C44AA77369C /* ABI33_0_0EXBlurViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXBlurViewManager.m; path = ABI33_0_0EXBlur/ABI33_0_0EXBlurViewManager.m; sourceTree = "<group>"; };
-		61FC12CEB86E63E5F540AC307DF7F2A0 /* ABI33_0_0EXPrint.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXPrint.xcconfig; sourceTree = "<group>"; };
 		6200D13B7C4BD2A049499C5402E44432 /* ABI33_0_0AIRGoogleMapManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRGoogleMapManager.h; sourceTree = "<group>"; };
 		624DC10ED293FDE19BB3D3C6B90DB225 /* ABI33_0_0RCTResizeMode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTResizeMode.h; path = Libraries/Image/ABI33_0_0RCTResizeMode.h; sourceTree = "<group>"; };
 		6294C156B948C2AABC6BEA82330F6D0D /* ABI33_0_0RCTSegmentedControlManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTSegmentedControlManager.h; sourceTree = "<group>"; };
@@ -3336,6 +3340,7 @@
 		6BA196315F84E6FF6C31F1A800A1EF61 /* ABI33_0_0RNGestureHandlerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNGestureHandlerModule.m; sourceTree = "<group>"; };
 		6BB7CFA5256B281940FBF33A86F4ED35 /* ABI33_0_0RCTSafeAreaShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTSafeAreaShadowView.m; sourceTree = "<group>"; };
 		6BC07B571352FAF9B3B66227EDAFA8C8 /* ABI33_0_0RCTBorderStyle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTBorderStyle.h; sourceTree = "<group>"; };
+		6C645F54F9DB932D6D1961C802F2E77B /* ABI33_0_0EXWKViewPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXWKViewPDFRenderer.h; path = ABI33_0_0EXPrint/ABI33_0_0EXWKViewPDFRenderer.h; sourceTree = "<group>"; };
 		6C8DE826C9812894AB08AB140E365443 /* ReactABI33_0_0-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ReactABI33_0_0-dummy.m"; sourceTree = "<group>"; };
 		6C901DF32CDFF7B305026762448EA8EC /* ABI33_0_0RNSVGCircleManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGCircleManager.m; sourceTree = "<group>"; };
 		6C9B8ECEA608CBB2FDF32DC7F41DFF6D /* ABI33_0_0RCTI18nUtil.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTI18nUtil.m; sourceTree = "<group>"; };
@@ -3490,7 +3495,6 @@
 		844861C945704BBE4A5F7EF3AF1AA866 /* ABI33_0_0EXInterstitialAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXInterstitialAdManager.h; path = ABI33_0_0EXAdsFacebook/ABI33_0_0EXInterstitialAdManager.h; sourceTree = "<group>"; };
 		8449CA76E9699D1CCDF749D939DAD26F /* Facebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Facebook; path = Facebook.xcodeproj; sourceTree = "<group>"; };
 		844A13F925AD50F24D6E354A02467AB4 /* ABI33_0_0EXBarCodeScannerProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXBarCodeScannerProvider.m; path = ABI33_0_0EXBarCodeScanner/ABI33_0_0EXBarCodeScannerProvider.m; sourceTree = "<group>"; };
-		84697CF615FDD13E7404BA3D4CE35171 /* ABI33_0_0EXPrintPDFRenderTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXPrintPDFRenderTask.h; path = ABI33_0_0EXPrint/ABI33_0_0EXPrintPDFRenderTask.h; sourceTree = "<group>"; };
 		8469F6B39AA61F3424D40C98D8BFFC95 /* ABI33_0_0RCTTextShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTTextShadowView.h; sourceTree = "<group>"; };
 		8482F45B7F5066705262E5EC9146B219 /* ABI33_0_0EXBrightness.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXBrightness.h; path = ABI33_0_0EXBrightness/ABI33_0_0EXBrightness.h; sourceTree = "<group>"; };
 		8496898A9A65CF544DFBA5B9245FE581 /* ABI33_0_0REAConcatNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0REAConcatNode.h; sourceTree = "<group>"; };
@@ -3922,6 +3926,7 @@
 		C57820A2160398B5CD0FB6626B3522D7 /* lottie-ios */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "lottie-ios"; path = "lottie-ios.xcodeproj"; sourceTree = "<group>"; };
 		C57E066AD6193B62E3F19E25131B0CCD /* ABI33_0_0RCTSinglelineTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTSinglelineTextInputViewManager.h; sourceTree = "<group>"; };
 		C59D39FC980B80F455AAFEE99FCEB3B8 /* ABI33_0_0EXImagePicker.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXImagePicker.xcconfig; sourceTree = "<group>"; };
+		C5E46972D8536EDF77D41D547254916C /* ABI33_0_0EXWKViewPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXWKViewPDFRenderer.m; path = ABI33_0_0EXPrint/ABI33_0_0EXWKViewPDFRenderer.m; sourceTree = "<group>"; };
 		C6349AB2B0F3DF4FC1B09218E52D4B94 /* ABI33_0_0EXBackgroundFetch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXBackgroundFetch.h; path = ABI33_0_0EXBackgroundFetch/ABI33_0_0EXBackgroundFetch.h; sourceTree = "<group>"; };
 		C63D8BB0A8423D70C9F3126032A267BB /* ABI33_0_0EXSharing.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0EXSharing.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		C679DC6018AD2431F2873F8E43EF37AF /* ABI33_0_0NSDataBigString.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI33_0_0NSDataBigString.mm; sourceTree = "<group>"; };
@@ -3954,12 +3959,15 @@
 		C9FB28A1E56878C129D3B539C2E2F2E9 /* ABI33_0_0RCTAdditionAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTAdditionAnimatedNode.m; sourceTree = "<group>"; };
 		CA0A5D4ECFE448DAD23A33DC834C60F7 /* ABI33_0_0RCTKeyCommands.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTKeyCommands.h; sourceTree = "<group>"; };
 		CA44BD3C5FD99C478C630A2E09B9C162 /* ABI33_0_0RCTActivityIndicatorViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTActivityIndicatorViewManager.h; sourceTree = "<group>"; };
+		CA5AEF6E2301247BE1DFEADCE8A299E8 /* ABI33_0_0EXPrint.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXPrint.xcconfig; sourceTree = "<group>"; };
 		CA93C5C6AC07C02F304571489238AE84 /* ABI33_0_0UMBridgeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMBridgeModule.h; path = ABI33_0_0UMReactNativeAdapter/ABI33_0_0UMBridgeModule.h; sourceTree = "<group>"; };
+		CA9B7A86E6D33DFAD8D89174023A2A2C /* ABI33_0_0EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXPrint-prefix.pch"; sourceTree = "<group>"; };
 		CA9BAB8A749160E17BFEADBA1E99F75A /* ABI33_0_0RCTConvert+Text.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "ABI33_0_0RCTConvert+Text.h"; path = "Libraries/Text/ABI33_0_0RCTConvert+Text.h"; sourceTree = "<group>"; };
 		CB02F2FE14A891D691C58AD71875BC2D /* ABI33_0_0EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXSQLite.m; path = ABI33_0_0EXSQLite/ABI33_0_0EXSQLite.m; sourceTree = "<group>"; };
 		CB245ECFC6627809B27B6E33586D8DAC /* ABI33_0_0REANodesManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REANodesManager.m; sourceTree = "<group>"; };
 		CB52F11612D285D06ABC978E3EAC13D2 /* ABI33_0_0RNSVGLineManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGLineManager.h; sourceTree = "<group>"; };
 		CBABFB10FE002096E5C7C85C96D6139F /* ABI33_0_0UMFaceDetectorInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0UMFaceDetectorInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CBCBE027E2425F6EC61A056581A60E1E /* ABI33_0_0EXWKSnapshotPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXWKSnapshotPDFRenderer.h; path = ABI33_0_0EXPrint/ABI33_0_0EXWKSnapshotPDFRenderer.h; sourceTree = "<group>"; };
 		CBD93D25927C35E6E7F150EFCE4750BE /* ABI33_0_0BranchContentMetadata+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0BranchContentMetadata+RNBranch.h"; sourceTree = "<group>"; };
 		CBF0BF2F3E0D8F0DE1A3B010714348AF /* ABI33_0_0RCTImageStoreManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTImageStoreManager.h; path = Libraries/Image/ABI33_0_0RCTImageStoreManager.h; sourceTree = "<group>"; };
 		CC06EF0233DFF8A6B5739EC6A3501CC6 /* libABI33_0_0EXPermissions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI33_0_0EXPermissions.a; path = libABI33_0_0EXPermissions.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3980,7 +3988,6 @@
 		CEB733E63212382B3EC072B923FCD921 /* ABI33_0_0EXCamera-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXCamera-prefix.pch"; sourceTree = "<group>"; };
 		CEF734A9E361C15288C7EB506F985C00 /* ABI33_0_0RNSVGBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGBrush.h; sourceTree = "<group>"; };
 		CF095244178E3DD6C30E63B348018EE5 /* ABI33_0_0EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXAmplitude-dummy.m"; sourceTree = "<group>"; };
-		CF3166464EDC3C1071B0D11787899B14 /* ABI33_0_0EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		CF75EC13EEE34E2B8D1EB8B146336002 /* ABI33_0_0RNCNetInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNCNetInfo.m; sourceTree = "<group>"; };
 		CF9DC02B2C1C4CE2ACFB7EC0A21ED04E /* ABI33_0_0RCTImageViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTImageViewManager.m; path = Libraries/Image/ABI33_0_0RCTImageViewManager.m; sourceTree = "<group>"; };
 		CFC0EDA13208B387F50E67B2382774AD /* ABI33_0_0RCTFollyConvert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTFollyConvert.h; sourceTree = "<group>"; };
@@ -4056,13 +4063,13 @@
 		DBF0B637B7C1CC9C25009D5B5C377CB6 /* ABI33_0_0AIRGoogleMapWMSTileManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0AIRGoogleMapWMSTileManager.m; sourceTree = "<group>"; };
 		DC35C60187EE3AB6DD7D832842CC7360 /* ABI33_0_0RCTPhotoLibraryImageLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTPhotoLibraryImageLoader.h; path = Libraries/CameraRoll/ABI33_0_0RCTPhotoLibraryImageLoader.h; sourceTree = "<group>"; };
 		DC3FC5F7BEE8A4C853C8CBB9DDEC136F /* ABI33_0_0RNSVGPainter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGPainter.h; sourceTree = "<group>"; };
+		DC3FD9C933DA07DE963784001990076E /* ABI33_0_0EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXPrint.h; path = ABI33_0_0EXPrint/ABI33_0_0EXPrint.h; sourceTree = "<group>"; };
 		DC5581BEBA34EE1E8D424A4B9F4AD3E1 /* ABI33_0_0AIRDummyView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRDummyView.h; sourceTree = "<group>"; };
 		DC57E6FFF7F9862C0FEA716483C15BA1 /* ABI33_0_0EXSensors-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXSensors-prefix.pch"; sourceTree = "<group>"; };
 		DC5C918889C438518CF9BC5E8A7630F6 /* ABI33_0_0UMGyroscopeInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMGyroscopeInterface.h; path = ABI33_0_0UMSensorsInterface/ABI33_0_0UMGyroscopeInterface.h; sourceTree = "<group>"; };
 		DC8BBFA3D5614CFCB12D575ACE349598 /* ABI33_0_0EXWebBrowser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXWebBrowser.m; path = ABI33_0_0EXWebBrowser/ABI33_0_0EXWebBrowser.m; sourceTree = "<group>"; };
 		DCC6EB1471D18D34E8A22B722CD96FF7 /* ABI33_0_0RCTLayoutAnimationGroup.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTLayoutAnimationGroup.h; sourceTree = "<group>"; };
 		DCDDC8EC8A8524D43C512B0125DD8842 /* ABI33_0_0REABezierNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REABezierNode.m; sourceTree = "<group>"; };
-		DCE19B31C0C46C1D9B6F9872B0D428D2 /* ABI33_0_0EXPrintPDFRenderTask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXPrintPDFRenderTask.m; path = ABI33_0_0EXPrint/ABI33_0_0EXPrintPDFRenderTask.m; sourceTree = "<group>"; };
 		DCF5AF1A51EABA571D49DBCFE8F6955B /* ABI33_0_0RNSVGPattern.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGPattern.m; sourceTree = "<group>"; };
 		DD42209E4773D9592EF6397894E37BE4 /* ABI33_0_0ExpoKit.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0ExpoKit.xcconfig; sourceTree = "<group>"; };
 		DD8E0FC7DA6E346CFDC359CA9B42E34B /* ABI33_0_0RCTAssert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTAssert.h; sourceTree = "<group>"; };
@@ -4099,9 +4106,11 @@
 		E239B8C9A650C9F9B3C227417ABC55F9 /* ABI33_0_0EXContacts-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXContacts-dummy.m"; sourceTree = "<group>"; };
 		E2818AE5FC7C169573B6F0D45566BD71 /* ABI33_0_0EXSMSModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXSMSModule.m; path = ABI33_0_0EXSMS/ABI33_0_0EXSMSModule.m; sourceTree = "<group>"; };
 		E2F0601B03C27885FD43C3443DE52D1D /* ABI33_0_0RCTNetInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTNetInfo.h; path = Libraries/Network/ABI33_0_0RCTNetInfo.h; sourceTree = "<group>"; };
+		E359A2C504D9C65B1DAD2BD3C857D4D9 /* ABI33_0_0EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXPrint.m; path = ABI33_0_0EXPrint/ABI33_0_0EXPrint.m; sourceTree = "<group>"; };
 		E370C1DB51B7DF685E59FDA459F358DD /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		E380FE02E7A6484F90A2BC47EA89B458 /* ABI33_0_0EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXSQLite.h; path = ABI33_0_0EXSQLite/ABI33_0_0EXSQLite.h; sourceTree = "<group>"; };
 		E38464EA486220B5F030AA48CD0FF729 /* ABI33_0_0EXContacts.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXContacts.h; path = ABI33_0_0EXContacts/ABI33_0_0EXContacts.h; sourceTree = "<group>"; };
+		E385B32AF5A88C347155DA9E61FCAD49 /* ABI33_0_0EXWKPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXWKPDFRenderer.m; path = ABI33_0_0EXPrint/ABI33_0_0EXWKPDFRenderer.m; sourceTree = "<group>"; };
 		E38FD749C19D9A1082EC5F8827599CF3 /* ABI33_0_0RNGestureHandlerRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNGestureHandlerRegistry.h; sourceTree = "<group>"; };
 		E3A2532B309844C6608C5036FE14518A /* ABI33_0_0RCTMaskedViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTMaskedViewManager.h; sourceTree = "<group>"; };
 		E3A71EFE98723CDC72E392B3A160F5B1 /* ABI33_0_0REAOperatorNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REAOperatorNode.m; sourceTree = "<group>"; };
@@ -4113,7 +4122,6 @@
 		E4D6C1B0C47B623D94CCA2FFB3D2E986 /* ABI33_0_0EXLocalization-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXLocalization-prefix.pch"; sourceTree = "<group>"; };
 		E4D78847DCA6A7195D87DA5A1367533D /* ABI33_0_0RCTPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTPicker.m; sourceTree = "<group>"; };
 		E518B80D3324EFFB0960C32A5FB8ED3D /* ABI33_0_0RCTEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTEventEmitter.h; sourceTree = "<group>"; };
-		E5276703B481A02B75E59DB80CA2DA0A /* ABI33_0_0EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXPrint.m; path = ABI33_0_0EXPrint/ABI33_0_0EXPrint.m; sourceTree = "<group>"; };
 		E53D06A34789ABFE877A8849C153ABE7 /* ABI33_0_0EXLinearGradient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0EXLinearGradient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		E54C08EF33FB107F3B1E66C1EA842DA9 /* ABI33_0_0EXSystemBrightnessRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXSystemBrightnessRequester.m; path = ABI33_0_0EXPermissions/ABI33_0_0EXSystemBrightnessRequester.m; sourceTree = "<group>"; };
 		E593D8763D9778F67E24B743B30531D3 /* ABI33_0_0RNGestureHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNGestureHandler.m; sourceTree = "<group>"; };
@@ -4157,6 +4165,7 @@
 		EC6DB9802254EE7CF276CEFD9080BD05 /* ABI33_0_0RCTSpringAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTSpringAnimation.m; sourceTree = "<group>"; };
 		EC8073739F76908CFE9FB8C9D257393D /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
 		ED2E0B151BA9A6A3610EDBA70B1EA4F2 /* ABI33_0_0RCTModalManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTModalManager.m; sourceTree = "<group>"; };
+		ED5367B3B92FE28F64002F1F61F08666 /* ABI33_0_0EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXPrint-dummy.m"; sourceTree = "<group>"; };
 		ED70FFF88CAB61358BC770580E05E55C /* ABI33_0_0RNBranchConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNBranchConfig.h; sourceTree = "<group>"; };
 		EDA6B72903E2D58A4EF3AF6AE9070CAC /* ABI33_0_0EXCalendarRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXCalendarRequester.m; path = ABI33_0_0EXPermissions/ABI33_0_0EXCalendarRequester.m; sourceTree = "<group>"; };
 		EDF6F0574F413E40BA03AEF6E340C359 /* ABI33_0_0RNGestureHandlerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNGestureHandlerManager.m; sourceTree = "<group>"; };
@@ -4260,7 +4269,6 @@
 		FAFBCF726DDEABFBFC0F749B01997B03 /* ABI33_0_0EXFileSystemAssetLibraryHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXFileSystemAssetLibraryHandler.h; path = ABI33_0_0EXFileSystem/ABI33_0_0EXFileSystemAssetLibraryHandler.h; sourceTree = "<group>"; };
 		FB35B085E28359B7E854673AA2287CEB /* ABI33_0_0RNGestureHandlerDirection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNGestureHandlerDirection.h; sourceTree = "<group>"; };
 		FB5BFEC17BCD5B76600D76F3D1C5AC24 /* ABI33_0_0YGMarker.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0YGMarker.cpp; path = yoga/ABI33_0_0YGMarker.cpp; sourceTree = "<group>"; };
-		FB67BBA06DD36E9F300F454154E01DC9 /* ABI33_0_0EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXPrint-dummy.m"; sourceTree = "<group>"; };
 		FB8192E0C7C53236F29A39B3F6514CB9 /* ABI33_0_0RNSVGPattern.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGPattern.h; sourceTree = "<group>"; };
 		FB9036D1AD5FE6AB352D2130A327FC4B /* ABI33_0_0NSObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0NSObject+RNBranch.h"; sourceTree = "<group>"; };
 		FBA2F06A0C987051A5DB441DA383C237 /* ABI33_0_0RCTUITextView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTUITextView.h; sourceTree = "<group>"; };
@@ -4462,6 +4470,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5F76C1208264DADB92ED6BB67D72D877 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		62C854B07460F84ABF971FE6EF7E09AF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4575,13 +4590,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		AFE8D6F753C416DA25A0B33409BA278A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B18BE6123A04D9504ED850EC7A7E0785 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -5027,6 +5035,24 @@
 			path = "../versioned-react-native/ABI33_0_0/EXDocumentPicker";
 			sourceTree = "<group>";
 		};
+		141EF36B403368F1178A5E850E5115BB /* ABI33_0_0EXPrint */ = {
+			isa = PBXGroup;
+			children = (
+				DC3FD9C933DA07DE963784001990076E /* ABI33_0_0EXPrint.h */,
+				E359A2C504D9C65B1DAD2BD3C857D4D9 /* ABI33_0_0EXPrint.m */,
+				51F1D5D0E5D119ABE69B986A55347D11 /* ABI33_0_0EXWKPDFRenderer.h */,
+				E385B32AF5A88C347155DA9E61FCAD49 /* ABI33_0_0EXWKPDFRenderer.m */,
+				CBCBE027E2425F6EC61A056581A60E1E /* ABI33_0_0EXWKSnapshotPDFRenderer.h */,
+				420F4E907F586A3796A195AA6CEC3290 /* ABI33_0_0EXWKSnapshotPDFRenderer.m */,
+				6C645F54F9DB932D6D1961C802F2E77B /* ABI33_0_0EXWKViewPDFRenderer.h */,
+				C5E46972D8536EDF77D41D547254916C /* ABI33_0_0EXWKViewPDFRenderer.m */,
+				5696305537C992462742DCDD7CBAB2B5 /* Pod */,
+				8C2FD394753A8DC1C6E98A74418CDAA2 /* Support Files */,
+			);
+			name = ABI33_0_0EXPrint;
+			path = "../versioned-react-native/ABI33_0_0/EXPrint";
+			sourceTree = "<group>";
+		};
 		144F32067CA3EFB7E78085913F9D701E /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -5275,17 +5301,6 @@
 			name = Pod;
 			sourceTree = "<group>";
 		};
-		28C5443342CA14E81D7DEE678439AD58 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				61FC12CEB86E63E5F540AC307DF7F2A0 /* ABI33_0_0EXPrint.xcconfig */,
-				FB67BBA06DD36E9F300F454154E01DC9 /* ABI33_0_0EXPrint-dummy.m */,
-				2FBC9FFB850283B3934F0C02927C6A3E /* ABI33_0_0EXPrint-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../Pods/Target Support Files/ABI33_0_0EXPrint";
-			sourceTree = "<group>";
-		};
 		29470900BA71035EE0C1DB86632B9C13 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -5294,14 +5309,6 @@
 			);
 			name = Services;
 			path = ABI33_0_0UMCore/Services;
-			sourceTree = "<group>";
-		};
-		2949F8EBC200A3DDC38370817AADCBB7 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				CF3166464EDC3C1071B0D11787899B14 /* ABI33_0_0EXPrint.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		2ACDC494CF5649E5F16926E6F17012AA /* Views */ = {
@@ -6167,6 +6174,14 @@
 			);
 			name = UniversalModules;
 			path = Expo/Core/UniversalModules;
+			sourceTree = "<group>";
+		};
+		5696305537C992462742DCDD7CBAB2B5 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				0768093EE8D0F8FC196F0F5AAB4A7498 /* ABI33_0_0EXPrint.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		57652ACFEC43B8C1DD347FEC3B53127E /* Support Files */ = {
@@ -7065,6 +7080,17 @@
 			name = ABI33_0_0jsiexecutor;
 			sourceTree = "<group>";
 		};
+		8C2FD394753A8DC1C6E98A74418CDAA2 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				CA5AEF6E2301247BE1DFEADCE8A299E8 /* ABI33_0_0EXPrint.xcconfig */,
+				ED5367B3B92FE28F64002F1F61F08666 /* ABI33_0_0EXPrint-dummy.m */,
+				CA9B7A86E6D33DFAD8D89174023A2A2C /* ABI33_0_0EXPrint-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../Pods/Target Support Files/ABI33_0_0EXPrint";
+			sourceTree = "<group>";
+		};
 		8D82A05C321CA05C8125C9B266076B98 /* ABI33_0_0UMImageLoaderInterface */ = {
 			isa = PBXGroup;
 			children = (
@@ -7634,20 +7660,6 @@
 			);
 			name = DevSupport;
 			path = React/DevSupport;
-			sourceTree = "<group>";
-		};
-		B996B3B670E7BE9340B8E8C18A13FFCB /* ABI33_0_0EXPrint */ = {
-			isa = PBXGroup;
-			children = (
-				56C06933F8D2BE75BD959B053AE578D4 /* ABI33_0_0EXPrint.h */,
-				E5276703B481A02B75E59DB80CA2DA0A /* ABI33_0_0EXPrint.m */,
-				84697CF615FDD13E7404BA3D4CE35171 /* ABI33_0_0EXPrintPDFRenderTask.h */,
-				DCE19B31C0C46C1D9B6F9872B0D428D2 /* ABI33_0_0EXPrintPDFRenderTask.m */,
-				2949F8EBC200A3DDC38370817AADCBB7 /* Pod */,
-				28C5443342CA14E81D7DEE678439AD58 /* Support Files */,
-			);
-			name = ABI33_0_0EXPrint;
-			path = "../versioned-react-native/ABI33_0_0/EXPrint";
 			sourceTree = "<group>";
 		};
 		B9BF85DA6864F4FBA7A188AE32A4BE89 /* Pod */ = {
@@ -8233,7 +8245,7 @@
 				D775C621218D117D91400A63BD7233AE /* ABI33_0_0EXMediaLibrary */,
 				7227EA8B8C35ED5218AAB6B570696F03 /* ABI33_0_0EXPermissions */,
 				8DAED3A669D9C1C09EBE4A0F18413445 /* ABI33_0_0ExpoKit */,
-				B996B3B670E7BE9340B8E8C18A13FFCB /* ABI33_0_0EXPrint */,
+				141EF36B403368F1178A5E850E5115BB /* ABI33_0_0EXPrint */,
 				DD9ECFCD3E9D0CFDB0D8A2D8BA11B1F1 /* ABI33_0_0EXRandom */,
 				9DAD2545ACA777BC6FB38944001E9AB9 /* ABI33_0_0EXSecureStore */,
 				BCBF6461844EB734E49723104B6F615C /* ABI33_0_0EXSegment */,
@@ -9580,6 +9592,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B40E82EE57DED52A71A704FF1EC29B76 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6ADEF8EBE96A5F65122E94C88763F3D9 /* ABI33_0_0EXPrint.h in Headers */,
+				C27BCA9416FF7EBC95BA0051B2314E31 /* ABI33_0_0EXWKPDFRenderer.h in Headers */,
+				EDD73277FAC7339326B5EC0831A7D6FA /* ABI33_0_0EXWKSnapshotPDFRenderer.h in Headers */,
+				14BB5579E0CD5E95369E045CFDEC6245 /* ABI33_0_0EXWKViewPDFRenderer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B5CC98E92B1A4C0FA6164B7BAB2AD693 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -9647,15 +9670,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ADE1BEC06E1E82ACFEB63FCC65D3CCA5 /* ABI33_0_0EXBrightness.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F072E28E75D2A8813DB387A1EAD32F61 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F2C757A802EB84E8FAA95C28B66EBE47 /* ABI33_0_0EXPrint.h in Headers */,
-				E65EAD9C75EDF4EB3E689C04A3BF85D7 /* ABI33_0_0EXPrintPDFRenderTask.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10200,17 +10214,17 @@
 		};
 		55F206718ED1DCCEE6CE21287E8A0C08 /* ABI33_0_0EXPrint */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1340364B9D7A4283F906AB2C0EF3767C /* Build configuration list for PBXNativeTarget "ABI33_0_0EXPrint" */;
+			buildConfigurationList = 83E732C94C74D7E2164740F72BCD7984 /* Build configuration list for PBXNativeTarget "ABI33_0_0EXPrint" */;
 			buildPhases = (
-				F072E28E75D2A8813DB387A1EAD32F61 /* Headers */,
-				7A2015FA0152680A5F3B3C8B801F98F9 /* Sources */,
-				B18BE6123A04D9504ED850EC7A7E0785 /* Frameworks */,
+				B40E82EE57DED52A71A704FF1EC29B76 /* Headers */,
+				534D8B7E1CE08B4E17729AE82EAD3F84 /* Sources */,
+				5F76C1208264DADB92ED6BB67D72D877 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				025298D3B2009465AD20111043254038 /* PBXTargetDependency */,
-				1660764821E8EBFC5952A2206C328A41 /* PBXTargetDependency */,
+				D8D83F03E899E27E3D44BFCBE131FE5F /* PBXTargetDependency */,
+				40BA8B185409387EB7917C9AD763B1CF /* PBXTargetDependency */,
 			);
 			name = ABI33_0_0EXPrint;
 			productName = ABI33_0_0EXPrint;
@@ -11320,6 +11334,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		534D8B7E1CE08B4E17729AE82EAD3F84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				37F05D04DD8679C0D811DD2D50EE1D44 /* ABI33_0_0EXPrint-dummy.m in Sources */,
+				C8924CF3ED778F09BA31882524CECE25 /* ABI33_0_0EXPrint.m in Sources */,
+				763F1C30D36780F14CC0FAC5C64E38B9 /* ABI33_0_0EXWKPDFRenderer.m in Sources */,
+				AF69B90C296E0CEAA5BD847A52DF5158 /* ABI33_0_0EXWKSnapshotPDFRenderer.m in Sources */,
+				AB51E3B5AF73E77218549DAB8341F2FD /* ABI33_0_0EXWKViewPDFRenderer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		571E49BF5DB771421BA4611A7D5D60B3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -11439,16 +11465,6 @@
 				F64EEC8DEF22255EDA084903E172FF3D /* ABI33_0_0EXFileSystem.m in Sources */,
 				31DCD90A4EAD9DFA2E44BAFC318FA1E3 /* ABI33_0_0EXFileSystemAssetLibraryHandler.m in Sources */,
 				9315770F21706D46BFC5323425BF876E /* ABI33_0_0EXFileSystemLocalFileHandler.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		7A2015FA0152680A5F3B3C8B801F98F9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				179D38EF50C7440D5DD6453392EA2E5A /* ABI33_0_0EXPrint-dummy.m in Sources */,
-				F59CD3FE1BA511C4F5BFFD602C255544 /* ABI33_0_0EXPrint.m in Sources */,
-				0E008AE636F623F6C24E90C21ED7556F /* ABI33_0_0EXPrintPDFRenderTask.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11924,12 +11940,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		025298D3B2009465AD20111043254038 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ABI33_0_0UMCore;
-			target = 5525AF966AE228479212FF7A78D25C18 /* ABI33_0_0UMCore */;
-			targetProxy = EF048C27A393D88B0FA4D31AD784A85A /* PBXContainerItemProxy */;
-		};
 		032B4A57B04C76E050029EF55160BF35 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI33_0_0EXFacebook;
@@ -12066,12 +12076,6 @@
 			isa = PBXTargetDependency;
 			name = "Google-Mobile-Ads-SDK";
 			targetProxy = 64D716DED8820C776C4BA9D97CDF4768 /* PBXContainerItemProxy */;
-		};
-		1660764821E8EBFC5952A2206C328A41 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ABI33_0_0UMFileSystemInterface;
-			target = C0515A11953BA0C7B2A8B397EF934BE2 /* ABI33_0_0UMFileSystemInterface */;
-			targetProxy = 027BD648BF533B7A654B0E671E535354 /* PBXContainerItemProxy */;
 		};
 		17D40BB2B5BED1FA4D251155AAC921AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -12247,6 +12251,12 @@
 			name = ABI33_0_0UMCore;
 			target = 5525AF966AE228479212FF7A78D25C18 /* ABI33_0_0UMCore */;
 			targetProxy = 59F66CDCF1AE588DA3882010BBA0EB99 /* PBXContainerItemProxy */;
+		};
+		40BA8B185409387EB7917C9AD763B1CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ABI33_0_0UMFileSystemInterface;
+			target = C0515A11953BA0C7B2A8B397EF934BE2 /* ABI33_0_0UMFileSystemInterface */;
+			targetProxy = BA87133A65C611E418E4A5F589F58B5A /* PBXContainerItemProxy */;
 		};
 		4249C3079833D23B291C002D70B025F0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -12838,6 +12848,12 @@
 			name = ABI33_0_0UMFileSystemInterface;
 			target = C0515A11953BA0C7B2A8B397EF934BE2 /* ABI33_0_0UMFileSystemInterface */;
 			targetProxy = F7CD06D4FE1D26936CE33F3A8A223096 /* PBXContainerItemProxy */;
+		};
+		D8D83F03E899E27E3D44BFCBE131FE5F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ABI33_0_0UMCore;
+			target = 5525AF966AE228479212FF7A78D25C18 /* ABI33_0_0UMCore */;
+			targetProxy = F4CA46B2E7A8A0516A52DCA1B9DDE9FA /* PBXContainerItemProxy */;
 		};
 		DBFD5D633F29A49DA2C852275B8AE723 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -13609,30 +13625,6 @@
 			};
 			name = Release;
 		};
-		3132D53DFDE6330B71DBEF4F20288BC2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 61FC12CEB86E63E5F540AC307DF7F2A0 /* ABI33_0_0EXPrint.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/ABI33_0_0EXPrint/ABI33_0_0EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = ABI33_0_0EXPrint;
-				PRODUCT_NAME = ABI33_0_0EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		3192C0813B38252AB097461797D723B1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E5FB0B2DFD1F0CB195ACE2B04220A3C1 /* ABI33_0_0EXSMS.xcconfig */;
@@ -13984,6 +13976,30 @@
 			};
 			name = Release;
 		};
+		5531737C0CBDBE635627E690E8E70DF9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CA5AEF6E2301247BE1DFEADCE8A299E8 /* ABI33_0_0EXPrint.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI33_0_0EXPrint/ABI33_0_0EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI33_0_0EXPrint;
+				PRODUCT_NAME = ABI33_0_0EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		5563CFB4CD793B9994C8B62C82B25A7E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FDE53BEECE48B1381E6F82576EB55FF7 /* ABI33_0_0EXKeepAwake.xcconfig */;
@@ -14194,31 +14210,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		6CA66527639C92A5240E60998587FEBC /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 61FC12CEB86E63E5F540AC307DF7F2A0 /* ABI33_0_0EXPrint.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/ABI33_0_0EXPrint/ABI33_0_0EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = ABI33_0_0EXPrint;
-				PRODUCT_NAME = ABI33_0_0EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		6D76230562F25DB332F933BBA143C89C /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -15873,6 +15864,31 @@
 			};
 			name = Release;
 		};
+		FCEEFEA92C4A2D03DBB775C46E5F6F4D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CA5AEF6E2301247BE1DFEADCE8A299E8 /* ABI33_0_0EXPrint.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI33_0_0EXPrint/ABI33_0_0EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI33_0_0EXPrint;
+				PRODUCT_NAME = ABI33_0_0EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		FFA2D64847BB3CA8708222232DD2C8E6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14EA9B0416AB1CA313AA0D20E080AD86 /* ABI33_0_0EXAV.xcconfig */;
@@ -15929,15 +15945,6 @@
 			buildConfigurations = (
 				6D76230562F25DB332F933BBA143C89C /* Debug */,
 				1A9D2AE508DB3404C548732C6B5D5D25 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1340364B9D7A4283F906AB2C0EF3767C /* Build configuration list for PBXNativeTarget "ABI33_0_0EXPrint" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3132D53DFDE6330B71DBEF4F20288BC2 /* Debug */,
-				6CA66527639C92A5240E60998587FEBC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -16154,6 +16161,15 @@
 			buildConfigurations = (
 				BFC5E3E119A6F79B6BE221ED6B41D480 /* Debug */,
 				4B15A7F188AB81474CB4E4B9BD54772C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		83E732C94C74D7E2164740F72BCD7984 /* Build configuration list for PBXNativeTarget "ABI33_0_0EXPrint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5531737C0CBDBE635627E690E8E70DF9 /* Debug */,
+				FCEEFEA92C4A2D03DBB775C46E5F6F4D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

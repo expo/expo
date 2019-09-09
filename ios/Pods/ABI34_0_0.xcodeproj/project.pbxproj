@@ -199,6 +199,7 @@
 		1098756AAA45FA2087C02C944F67B710 /* ABI34_0_0EXGoogleSignIn-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 27B9A8604876302A0A8CCBED256B96CE /* ABI34_0_0EXGoogleSignIn-dummy.m */; };
 		113C2B2DD81252421BFA2DC1BC5A6BEB /* ABI34_0_0REATransitionValues.h in Headers */ = {isa = PBXBuildFile; fileRef = AC279B8E89A27EE7258D961659809B5D /* ABI34_0_0REATransitionValues.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		114C0101515D29438C8DBAB55C21B802 /* ABI34_0_0RCTImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 23245144C677A39A36516954104E1175 /* ABI34_0_0RCTImageView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		118A588BDF4E43D72B4A64DA07CD4F7F /* ABI34_0_0EXWKSnapshotPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A687E36CD84DF1BC5AB05B9C939F0D2 /* ABI34_0_0EXWKSnapshotPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		11B8FA296FB96BF87FA02D6DF36D052D /* ABI34_0_0EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = ABD34F655D98D25B3527328761B50BA6 /* ABI34_0_0EXRandom.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		11D90CC89BAB0C10DD72388CC2D320F0 /* ABI34_0_0RCTViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AF4BDEEBD143439341080DF0FCB85C57 /* ABI34_0_0RCTViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		12207DEC6B532E80786821B4244A53C8 /* ABI34_0_0RCTShadowView+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0FDEC0F65ADE2C7F0F47BA57511E15 /* ABI34_0_0RCTShadowView+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -312,6 +313,7 @@
 		26CE898FFD1214FC92FF60A5DA6D7782 /* ABI34_0_0RCTDivisionAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 07704ACA5A58999D1886CBBA30BBA171 /* ABI34_0_0RCTDivisionAnimatedNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		26DFC1F094D4992D707DF676AC6E5ADC /* ABI34_0_0RNSVGUseManager.h in Headers */ = {isa = PBXBuildFile; fileRef = EA095684486647C3B84FEF6B65998DEE /* ABI34_0_0RNSVGUseManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		27313150EE11D7563A06B72B5156E33F /* ABI34_0_0EXGeofencingTaskConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 32E747C0352D86EF4ABDEE4251993959 /* ABI34_0_0EXGeofencingTaskConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		27756919BC24EEDA99823A411EE3047B /* ABI34_0_0EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 605B3523DC79D9229AEF102E62B86F01 /* ABI34_0_0EXPrint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		27863B5343BA8C8C720305E9523F634F /* ABI34_0_0EXFileSystemAssetLibraryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 223DD77EAB276819C5C522424DB5626B /* ABI34_0_0EXFileSystemAssetLibraryHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		279CA6D8C9665C2CCB78588CE7F10436 /* ABI34_0_0RCTSurfaceHostingProxyRootView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 64E69821C106D8BACB21887E453FD459 /* ABI34_0_0RCTSurfaceHostingProxyRootView.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		27E8B1534BBF13C06053D3ED20E59CED /* ABI34_0_0BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 21B0DCF2CD1E6107602BDA9FCC9FA42C /* ABI34_0_0BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -416,7 +418,6 @@
 		37E2A95C29BEA0A654FEB46958CC36EB /* ABI34_0_0EXScopedEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 13024F33F00965D345311E6CE5CFD8C6 /* ABI34_0_0EXScopedEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		383664710A84EE7774B44FCA3D09BCDB /* ABI34_0_0EXContacts-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5927C28F76772F0B50524C487EB126C3 /* ABI34_0_0EXContacts-dummy.m */; };
 		3866612890F6CBA43A85D4ABE91EB3F3 /* ABI34_0_0RCTSubtractionAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = DE23437776864A1BC4BEB68CEC790F04 /* ABI34_0_0RCTSubtractionAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		38696341F2893B590231FEE3AD5AFB8F /* ABI34_0_0EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = A578F9457A24818E99F69E5BA9D00A4E /* ABI34_0_0EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		387044DD0B90BB5FFB6A292B1924D6AD /* ABI34_0_0EXViewShot.h in Headers */ = {isa = PBXBuildFile; fileRef = CC739EA500EDA19AB7DED88DEE3119A7 /* ABI34_0_0EXViewShot.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		392BC539951D2E9FD8CD166002BC5DC1 /* ABI34_0_0BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CD198EC8B6B8782F72BA5B6C542426F /* ABI34_0_0BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		392E17C6F38091D418EE666FB7B35D76 /* ABI34_0_0EXCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EF6C45A96E1ED495977786F414F6D26 /* ABI34_0_0EXCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -555,6 +556,7 @@
 		5588018A57460494E714FA874939E365 /* ABI34_0_0ARTSurfaceViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 55FB88D38D3B944C469DD4FC3CCC59B8 /* ABI34_0_0ARTSurfaceViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		55B2DCFE80C41F60572349112B4AE13B /* ABI34_0_0JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB72CD3C3B19A6C884FB6C69D51FC45F /* ABI34_0_0JSExecutor.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		55DF3A77C64542AAC433FAA12155AE0F /* ABI34_0_0AIRGMSPolyline.h in Headers */ = {isa = PBXBuildFile; fileRef = 29B986ACC962CA0F7A866A0E94265431 /* ABI34_0_0AIRGMSPolyline.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		563C466D6B799051A42FE855CF3E0CFF /* ABI34_0_0EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 062A9C0A619EF85810372EA2F54569DB /* ABI34_0_0EXWKSnapshotPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		564CAFD64B289C627974F3DB66843581 /* ABI34_0_0RNFlingHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = DB2B42CE879B4FACC193D1802BCCCD23 /* ABI34_0_0RNFlingHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		565D6A7A3CA8945878304900CEF94EB6 /* ABI34_0_0ARTContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 405E351D09DDC650A45B4AC7A2221B6B /* ABI34_0_0ARTContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		56B464E72DD864A410C10D09C33C427B /* ABI34_0_0EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D43235F8CDB60FF532A52B1EB6F51AC5 /* ABI34_0_0EXBlurViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -588,9 +590,9 @@
 		5DC74DFB444A5241B40FEEB6F08534CB /* ABI34_0_0EXAppState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E1343CBF3F9F708DFE20835FF08F789 /* ABI34_0_0EXAppState.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5E2E9286DCF727013807827E1D828EDF /* ABI34_0_0UMViewManagerAdapterClassesRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = FD3157F53688562A9BD610F50025AB78 /* ABI34_0_0UMViewManagerAdapterClassesRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5E3B067CA21FDF4E98182DA27024BB8B /* ABI34_0_0EXGLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 15C77C3C4AAA957796F786D443F1AC0A /* ABI34_0_0EXGLObject.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5E728EDDE9ED4582DB69D4F502B1248D /* ABI34_0_0EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C3611E72413AB85F3114DED9996D64A /* ABI34_0_0EXWKPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5E779D9F7EF691104B87555F0D50066D /* ABI34_0_0AIRMapCircle.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F5569359567F7512CA9FBCF87D48D2C /* ABI34_0_0AIRMapCircle.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5EB8807E0FBBCA1E2AF2882464CFE32A /* ABI34_0_0RCTInspectorDevServerHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = ED70B87614093D2B89A8C8F636F468C6 /* ABI34_0_0RCTInspectorDevServerHelper.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5EC2E059498C07B6CA104AA7BA610663 /* ABI34_0_0EXPrintPDFRenderTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 873253BCA41B0343C026F53899BAF3C3 /* ABI34_0_0EXPrintPDFRenderTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5EDFFAA6E6B66E576BDFF70D7639E523 /* ABI34_0_0RNSVGEllipse.h in Headers */ = {isa = PBXBuildFile; fileRef = CCA1808A972EFB78FBE88AE48F572211 /* ABI34_0_0RNSVGEllipse.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5F61AD6D78C62C78F6F8B85689D66E35 /* ABI34_0_0YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 397A73123177546AAF87423274083E80 /* ABI34_0_0YGConfig.cpp */; settings = {COMPILER_FLAGS = "-fno-omit-frame-pointer -fexceptions -Wall -Werror -std=c++1y -fPIC -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5F7DD318D7F8546511EE6A571BDF1088 /* ABI34_0_0EXConstantsBinding.h in Headers */ = {isa = PBXBuildFile; fileRef = F164FF60C8EE7ADE16CECCC2415A3EB9 /* ABI34_0_0EXConstantsBinding.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -699,6 +701,7 @@
 		70F4C3023AA170819F14468A07E8204F /* ABI34_0_0ARTShape.h in Headers */ = {isa = PBXBuildFile; fileRef = 6590E8F9105A514AF68B54C2B411AE57 /* ABI34_0_0ARTShape.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		710DAD088659B6E921BE25F56FC08C21 /* ABI34_0_0EXScopedBridgeModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BF92399EDFC07A0DD3C6A599A2F0997 /* ABI34_0_0EXScopedBridgeModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		71305285D0C0AD0D4F8391431DB6FFD5 /* ABI34_0_0EXMediaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E76A277D12CB40FFD2BCC4537524632 /* ABI34_0_0EXMediaLibrary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		718091CCFA4F6E83FD741A24113B905D /* ABI34_0_0EXWKPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 81558C79544F1C2B906D3ADEA666B415 /* ABI34_0_0EXWKPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		71B105147F078824ED49388B2E547B81 /* ABI34_0_0RCTScrollContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 727C54EB7BCEAE0B236675688CB2EA3A /* ABI34_0_0RCTScrollContentView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		71BF6C0D58168324A4599CA0428475BF /* ABI34_0_0EXAppRecordInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 86AC33035D9DF17ACD456ABD0FECC3C8 /* ABI34_0_0EXAppRecordInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		71FCFE7C0520EFA2E094931D264B3B47 /* ABI34_0_0RNSVGGroupManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5792E713FAFA799CC8F052AFBCE1C9B7 /* ABI34_0_0RNSVGGroupManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -812,8 +815,10 @@
 		842E3FC1D610184775EBDC874ED18B25 /* ABI34_0_0EXCameraRollRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = A63CC18F425C5C41D1E9C0943B130E0C /* ABI34_0_0EXCameraRollRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		843DDCA762F38BF12A02717192D4438F /* ABI34_0_0RCTDiffClampAnimatedNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A3A3C9E8EA02694D36B62938BAA498B3 /* ABI34_0_0RCTDiffClampAnimatedNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		84A5A41FD54FDEF4C961CB1BCB694EA2 /* ABI34_0_0RCTBundleURLProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B0E5C7ABE64E45FF326F593623D9062 /* ABI34_0_0RCTBundleURLProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		84DCCA6A73532875674D45F21E9477B3 /* ABI34_0_0EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B16F2F387B2D1FEE406D2B01FEBFFD7 /* ABI34_0_0EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		84FF1323BF7173E509C90AF53D70642C /* ABI34_0_0RCTShadowView+Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = 6007E822F2BF58167511B7C94515B3E2 /* ABI34_0_0RCTShadowView+Internal.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		852CA65778A3A053951CE15603382738 /* ABI34_0_0RCTModalHostViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 81674F4F55F0053BDAF1F534E1187F3D /* ABI34_0_0RCTModalHostViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		85C8ADF6719A90B879FCACBCC1202872 /* ABI34_0_0EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 32CC7B6BCE6F3D04B289C216607AB464 /* ABI34_0_0EXPrint-dummy.m */; };
 		85E1C34F480BB9F037E7298217AEB361 /* ABI34_0_0EXNativeAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A18EDCADA8CC542E03BDA0592E8766B3 /* ABI34_0_0EXNativeAdManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		866A58CBB322597430BD824CB021F172 /* ABI34_0_0EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F523E8350301104EBB112D0832E08424 /* ABI34_0_0EXRandom-dummy.m */; };
 		867034900FD48C7BEA5B21A7734D7A9A /* ABI34_0_0EXCameraUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3F2F1EC090AC7C12FE21D72B807A3D /* ABI34_0_0EXCameraUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -882,7 +887,6 @@
 		91EF77F040130D262A693AA1F35CD1D6 /* ABI34_0_0REAPropsNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8997321244C8BA3F319F90D349EAAA /* ABI34_0_0REAPropsNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		921B9CF8E46D6C8F86EF338225BF290A /* ABI34_0_0RCTWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E65C4B074BE3854DCB2A9BD5062D31 /* ABI34_0_0RCTWebViewManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		922CFADB8A96760EBD7B7D7CE4A59C74 /* ABI34_0_0EXBarCodeScannerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD24D9C959568D06E6F970159495678 /* ABI34_0_0EXBarCodeScannerUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		922F1849ADAF03EA7D1C77B25133A3B4 /* ABI34_0_0EXPrintPDFRenderTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C1DAEBB4D34D009BA85E78812D52B14F /* ABI34_0_0EXPrintPDFRenderTask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		929BF48AA9E2D9BC132EC7D8BC1BB1C4 /* ABI34_0_0RNCUIWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = F63EFFF10A2F994D2E8C29788056CE97 /* ABI34_0_0RNCUIWebView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		92D9D02E63BD1F01641845A85890B398 /* ABI34_0_0RNSVGVectorEffect.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B83B2DE0E75E07A23E228D289E5C05B /* ABI34_0_0RNSVGVectorEffect.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		92DD7C842CC632FA6D6F78085FECC706 /* ABI34_0_0RNSVGRadialGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C64FE6E8D28E6DC2C136091BC18B6 /* ABI34_0_0RNSVGRadialGradientManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -952,7 +956,6 @@
 		9E2F332A4B61555877FB5697B41301AB /* ABI34_0_0RCTSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = DE8DDB1BA8F5CF082AA71E0D5B67A9F5 /* ABI34_0_0RCTSegmentedControl.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9E64A0C0EFD510A8CCE7BAF94076378F /* ABI34_0_0RCTMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB52E0216F59DDEB1F54825B858D0227 /* ABI34_0_0RCTMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9ECE7A074A211F39AF18426F53F36191 /* ABI34_0_0RCTTransformAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 847F45A4D000EF5D3F205B74768A2CAF /* ABI34_0_0RCTTransformAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		9ED6137CAEB1307D452A1829845A1787 /* ABI34_0_0EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E8EA6CC6BE1CE98FA053EE12FB7562A /* ABI34_0_0EXPrint-dummy.m */; };
 		9F5E8C91D412D3474A82D10A451868E3 /* ABI34_0_0EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = C2EBDBBA39824446A69E4D91B8806CF3 /* ABI34_0_0EXAudioRecordingPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9F623C239E4EA4D0ECC2688824DAC97E /* ABI34_0_0RNSVGBrushType.h in Headers */ = {isa = PBXBuildFile; fileRef = 53C8E8B01EEA2445367F2643912FB58C /* ABI34_0_0RNSVGBrushType.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9F9E6862F8F56DAFC79F7FF0A1CC7B52 /* ABI34_0_0EXCSBufferOrientationCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 5337C056A7E61EAA6F3C3F03A0B09969 /* ABI34_0_0EXCSBufferOrientationCalculator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1183,6 +1186,7 @@
 		CBCC6B6724697F26AB6A720D5DB1FEB0 /* ABI34_0_0EXRemoteNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 013E741ABA538D413A6A9C094BA6A404 /* ABI34_0_0EXRemoteNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CBE5288053F6C24E64A26EA535477D14 /* ABI34_0_0RCTImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A70027E19EC7A4B8F91432B6DAE9CFA /* ABI34_0_0RCTImageCache.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CBFC8EC9EF7903B5FA908BD305753134 /* ABI34_0_0RCTNetInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 748E4A4861CAFE725A0844AFD4CA7F53 /* ABI34_0_0RCTNetInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CCB0C77A50620CB842A236BE08B39ED4 /* ABI34_0_0EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A3C8A669BD01DE8E99C309EF5AAD310E /* ABI34_0_0EXWKViewPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CCE8A9888FE6F9900CAAC2F3AE7F954B /* ABI34_0_0RNGestureHandlerEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = 785F666AC6272210E6745910423723F6 /* ABI34_0_0RNGestureHandlerEvents.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CCEEFD0FC56C0AEE8B8E0BFE142937BA /* ABI34_0_0SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 159D03A4C3E764205ADF52C4AB7B5980 /* ABI34_0_0SampleCxxModule.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CD232A3BA183DB9C9972DCB923CDED4F /* ABI34_0_0RCTAlertManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6D08706167614938B0E8C9A1A599E16A /* ABI34_0_0RCTAlertManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1227,6 +1231,7 @@
 		D3D50AA6C0F160A395DACFEB982F94B3 /* ABI34_0_0RCTKeyCommands.m in Sources */ = {isa = PBXBuildFile; fileRef = 49FE7F6A1AD628F52125BEA8028EC014 /* ABI34_0_0RCTKeyCommands.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D3F0008BE2761E54838F7B43C775CB82 /* ABI34_0_0AIRGoogleMapCalloutSubviewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D9AAC219626D03A55EA927E503189EA1 /* ABI34_0_0AIRGoogleMapCalloutSubviewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D416AFD8BE205F82CDDA9E715B5E1140 /* ABI34_0_0EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 75D7D56F0D43AAA509C238674BA2CE8A /* ABI34_0_0EXAmplitude-dummy.m */; };
+		D45672B6F4296E1E00EC230A6D3A5DC8 /* ABI34_0_0EXWKViewPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = CE9D96659D1C4749CC539BA3079502E1 /* ABI34_0_0EXWKViewPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D466BF993ACA9AE5C83703730040F9D5 /* ABI34_0_0RCTScrollViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0795EB45455BAF357F898E3E4057B424 /* ABI34_0_0RCTScrollViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D47BAFB082D69415117286AD01AD53BA /* ABI34_0_0RCTWrapperViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E515E8DE194E8E582B6A73BE82594024 /* ABI34_0_0RCTWrapperViewController.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D49EF66A8947431FA675BD990EB80534 /* ABI34_0_0ARTLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = CACF9CDB7ED6920894A1C71A86B76C6B /* ABI34_0_0ARTLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1266,7 +1271,6 @@
 		DBD55303E17A041A987929983F1C842C /* ABI34_0_0RNCWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BCE23C6D37216FF237F97A726CBFC62B /* ABI34_0_0RNCWKWebViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DC00A6B625BF1D0CD2B43F7FD6BD4DC1 /* ABI34_0_0JSIndexedRAMBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = BEE184E12FC914C8768AF4C5F8DB5867 /* ABI34_0_0JSIndexedRAMBundle.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		DC1D05ECB307CD0A04191CC7D737D084 /* ABI34_0_0RCTInspector.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B16DEFA890481148783F6FE1358D40D /* ABI34_0_0RCTInspector.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DC22A26BC6E1646D4783886842170D07 /* ABI34_0_0EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = D48489813307FF5D4C9F4007886EA346 /* ABI34_0_0EXPrint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DC400D0819AF31B0DA605B9019C63828 /* ABI34_0_0RNSVGSymbol.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F190F4342CC6CEFA76831DF1FE0A848 /* ABI34_0_0RNSVGSymbol.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DC5AD3B6B69BBEF94EA4CC216DEBD654 /* ABI34_0_0UMModuleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = E6DD0C3EF936EF2451709440E470D6CB /* ABI34_0_0UMModuleRegistry.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DD01BAB5E90EEAAD2A810AA878976720 /* ABI34_0_0REAOperatorNode.h in Headers */ = {isa = PBXBuildFile; fileRef = B263A76311E458E140AE45FFBD73B857 /* ABI34_0_0REAOperatorNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1562,6 +1566,13 @@
 			remoteGlobalIDString = 65B730B1B61938A9B2E66B9D55A755EE;
 			remoteInfo = ABI34_0_0UMCore;
 		};
+		152585213EADC698E507A74C042EB88F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 143D040B3DE0113B247FCD71D87ECC33 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 65B730B1B61938A9B2E66B9D55A755EE;
+			remoteInfo = ABI34_0_0UMCore;
+		};
 		15F14BA27C1EBDB0182A5250A0178279 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 143D040B3DE0113B247FCD71D87ECC33 /* Project object */;
@@ -1617,13 +1628,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 805FA72DE29DECC3445041D10969C1F0;
 			remoteInfo = ABI34_0_0EXSensors;
-		};
-		22A6150638F4AE5F9C48479BD70106DA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 143D040B3DE0113B247FCD71D87ECC33 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = BCD417EF394C8430CC9CAB3956CD445D;
-			remoteInfo = ABI34_0_0UMFileSystemInterface;
 		};
 		241DF1AADD6F9DB630B9F0D779043083 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1743,6 +1747,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0C80ABCC197F7889FF44C2517104CE35;
 			remoteInfo = ABI34_0_0EXImageManipulator;
+		};
+		3B9DF17394CCDD3D79127F711F681C5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 143D040B3DE0113B247FCD71D87ECC33 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BCD417EF394C8430CC9CAB3956CD445D;
+			remoteInfo = ABI34_0_0UMFileSystemInterface;
 		};
 		3CF6578876DF04FD8C730F85F8555F91 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2121,13 +2132,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 087CBDC6111C285722CA84B7BAC8BE3C;
 			remoteInfo = ABI34_0_0UMReactNativeAdapter;
-		};
-		81ADB4295BBF7F10864E51B8F8743868 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 143D040B3DE0113B247FCD71D87ECC33 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 65B730B1B61938A9B2E66B9D55A755EE;
-			remoteInfo = ABI34_0_0UMCore;
 		};
 		81E998402BA625BDBB63D4E7E4ED6070 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2724,6 +2728,7 @@
 		053997BB265B07B79DD1596A8C2FF6DC /* ABI34_0_0EXGLARSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXGLARSessionManager.h; path = Expo/Optional/ARKit/ABI34_0_0EXGLARSessionManager.h; sourceTree = "<group>"; };
 		05747F640BE1F72F7DEC62C947D84C83 /* ABI34_0_0EXAppLoaderProvider.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXAppLoaderProvider.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		05BA4AE4D4C57C73FB7CB44FF2F0625A /* ABI34_0_0RCTPerformanceLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTPerformanceLogger.h; sourceTree = "<group>"; };
+		062A9C0A619EF85810372EA2F54569DB /* ABI34_0_0EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXWKSnapshotPDFRenderer.m; path = ABI34_0_0EXPrint/ABI34_0_0EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
 		0647CC1AB2A9F1E849C13463D252E338 /* ABI34_0_0EXScopedPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXScopedPermissions.m; sourceTree = "<group>"; };
 		065E48FD61D19D28539ED47D7CC60756 /* ABI34_0_0RNSScreen.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSScreen.m; sourceTree = "<group>"; };
 		069D6F93C4328588D82021D7EE1F04D1 /* ABI34_0_0RNSVGGlyphContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGGlyphContext.h; sourceTree = "<group>"; };
@@ -2765,6 +2770,7 @@
 		0BC5BE55AE1F86D1C72FD51BCF47C516 /* ABI34_0_0EXAppLoaderProvider-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXAppLoaderProvider-dummy.m"; sourceTree = "<group>"; };
 		0BDEC05477E3E52201F26E900EC8A655 /* ABI34_0_0RCTBaseTextViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTBaseTextViewManager.m; sourceTree = "<group>"; };
 		0BF1D3938FFECA3AD1396E5E44D48F1B /* ABI34_0_0UMBarCodeScannerInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0UMBarCodeScannerInterface.xcconfig; sourceTree = "<group>"; };
+		0C3611E72413AB85F3114DED9996D64A /* ABI34_0_0EXWKPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXWKPDFRenderer.m; path = ABI34_0_0EXPrint/ABI34_0_0EXWKPDFRenderer.m; sourceTree = "<group>"; };
 		0C388BF4EB27FFBF37854110DA7DD171 /* ABI34_0_0EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		0C78937831B1DF426FFF83DAF2B3F633 /* ABI34_0_0UMFileSystemInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0UMFileSystemInterface.h; path = ABI34_0_0UMFileSystemInterface/ABI34_0_0UMFileSystemInterface.h; sourceTree = "<group>"; };
 		0CA4EE5285A3D4FEB238B380493D12FD /* ABI34_0_0RNSVGGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGGroup.m; sourceTree = "<group>"; };
@@ -2872,7 +2878,6 @@
 		1E1804DE5265B8AC82182066CF5A6398 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
 		1E8132CD793F492ED841535E9F19AFEB /* ABI34_0_0UMSingletonModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0UMSingletonModule.m; path = ABI34_0_0UMCore/ABI34_0_0UMSingletonModule.m; sourceTree = "<group>"; };
 		1E8251ABBD34B67544E4926B6FF039E3 /* ABI34_0_0EXBackgroundFetch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXBackgroundFetch.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		1E8EA6CC6BE1CE98FA053EE12FB7562A /* ABI34_0_0EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXPrint-dummy.m"; sourceTree = "<group>"; };
 		1EA7E9ECA9DF16864A505EF6486179D6 /* ABI34_0_0EXBackgroundFetch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXBackgroundFetch.h; path = ABI34_0_0EXBackgroundFetch/ABI34_0_0EXBackgroundFetch.h; sourceTree = "<group>"; };
 		1EA9AD0D49FED2DF666940F72127E5E5 /* ABI34_0_0RNAWSCognito.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNAWSCognito.h; sourceTree = "<group>"; };
 		1F06A8C6D49E03126FF6DB3282C3B9F7 /* ABI34_0_0RNPinchHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNPinchHandler.h; sourceTree = "<group>"; };
@@ -2910,9 +2915,7 @@
 		23A758C3F9AC88184077CD7408CE8172 /* ABI34_0_0RNGestureHandlerButton.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNGestureHandlerButton.h; sourceTree = "<group>"; };
 		23C1A55AB07A8A07706675E8CEB90097 /* ABI34_0_0EXFontScalersManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXFontScalersManager.m; sourceTree = "<group>"; };
 		23C46191096178E716BE12B8492E0AC4 /* ABI34_0_0RCTSwitch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSwitch.m; sourceTree = "<group>"; };
-		23E18AA695B71725538CF90467451F9D /* ABI34_0_0EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		2408850A3A947171C94E329EDB43531A /* ABI34_0_0SMCalloutView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0SMCalloutView.m; sourceTree = "<group>"; };
-		241534C465532AD6E535990155BF6450 /* ABI34_0_0EXPrint.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXPrint.xcconfig; sourceTree = "<group>"; };
 		2478FA0D8DEEBDEABCC0A0B30E986A18 /* ABI34_0_0UMAppLifecycleListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0UMAppLifecycleListener.h; sourceTree = "<group>"; };
 		2484731D66FA2703861EB99828C8F64C /* ABI34_0_0EXRemindersRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXRemindersRequester.m; path = ABI34_0_0EXPermissions/ABI34_0_0EXRemindersRequester.m; sourceTree = "<group>"; };
 		24B9FE9DD087639C5ACE0AE9CADA56AD /* ABI34_0_0AIRGoogleMap.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRGoogleMap.h; sourceTree = "<group>"; };
@@ -2996,6 +2999,7 @@
 		324740F2AE7FB1A02CF8D96BC2A2CF4D /* ReactABI34_0_0.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ReactABI34_0_0.xcconfig; sourceTree = "<group>"; };
 		3255630AEB5DA38E42634508D775EAC1 /* ABI34_0_0EXSplashScreen.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXSplashScreen.h; sourceTree = "<group>"; };
 		32A58E5221201E7D38141EB8EB99B77C /* ABI34_0_0EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXLocation-prefix.pch"; sourceTree = "<group>"; };
+		32CC7B6BCE6F3D04B289C216607AB464 /* ABI34_0_0EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXPrint-dummy.m"; sourceTree = "<group>"; };
 		32E747C0352D86EF4ABDEE4251993959 /* ABI34_0_0EXGeofencingTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXGeofencingTaskConsumer.h; sourceTree = "<group>"; };
 		331AD1FA099083B7EA9D84BF0F93C29D /* ABI34_0_0EXGoogleSignIn+Serialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "ABI34_0_0EXGoogleSignIn+Serialization.h"; path = "ABI34_0_0EXGoogleSignIn/ABI34_0_0EXGoogleSignIn+Serialization.h"; sourceTree = "<group>"; };
 		333E4B32759A4A38C07D37CF71C183A7 /* ABI34_0_0RNSVGTextPathManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGTextPathManager.m; sourceTree = "<group>"; };
@@ -3048,6 +3052,7 @@
 		3987F0F0545AEB98598606111A3B1B60 /* ABI34_0_0RCTSurfaceView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI34_0_0RCTSurfaceView.mm; sourceTree = "<group>"; };
 		399F8293916F1C81DA4ECF7C95F76326 /* ABI34_0_0RCTAppState.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTAppState.m; sourceTree = "<group>"; };
 		39BD79F014A6488148122560BC5F4597 /* ABI34_0_0EXFont.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXFont.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		39EC20007C56FCD79F52FA85E6D7A03A /* ABI34_0_0EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXPrint-prefix.pch"; sourceTree = "<group>"; };
 		3A0BEE79A9F8FECEB3637611CA283AD1 /* ABI34_0_0AIRMapCalloutSubviewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapCalloutSubviewManager.m; sourceTree = "<group>"; };
 		3A4D1AEB98DB83D5861C20CF8699B9E2 /* ABI34_0_0UMJavaScriptContextProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0UMJavaScriptContextProvider.h; sourceTree = "<group>"; };
 		3A6E42A1836DEDA80E58C24A07F44D9E /* ABI34_0_0EXInterstitialAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXInterstitialAdManager.h; path = ABI34_0_0EXAdsFacebook/ABI34_0_0EXInterstitialAdManager.h; sourceTree = "<group>"; };
@@ -3300,6 +3305,7 @@
 		60109EB66FE5C2B4CD8556E03270E2E3 /* ABI34_0_0SharedProxyCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0SharedProxyCxxModule.h; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0SharedProxyCxxModule.h; sourceTree = "<group>"; };
 		603470A71EABB4FE994D2C99C7E2A7FD /* ABI34_0_0JSBigString.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0JSBigString.cpp; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0JSBigString.cpp; sourceTree = "<group>"; };
 		603C40D966F80FDB1656E85DA626F141 /* ABI34_0_0EXCalendar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXCalendar.m; path = ABI34_0_0EXCalendar/ABI34_0_0EXCalendar.m; sourceTree = "<group>"; };
+		605B3523DC79D9229AEF102E62B86F01 /* ABI34_0_0EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXPrint.m; path = ABI34_0_0EXPrint/ABI34_0_0EXPrint.m; sourceTree = "<group>"; };
 		6064B8655D035671148524B5923F85CA /* ABI34_0_0RCTViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTViewManager.m; sourceTree = "<group>"; };
 		608B24FFAFE0952CD34C51C6A5C14F1B /* ABI34_0_0RNSVGFontData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGFontData.m; sourceTree = "<group>"; };
 		60950D0728A65C4B50051725F54ABA5A /* ABI34_0_0JSBundleType.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0JSBundleType.cpp; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0JSBundleType.cpp; sourceTree = "<group>"; };
@@ -3410,6 +3416,7 @@
 		71EDB1DA89771B78CB4C10BD2965E6ED /* ABI34_0_0RCTPlatform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTPlatform.m; sourceTree = "<group>"; };
 		71FACF529C73574A79EF9D1D57FBA2B3 /* ABI34_0_0RNSVGLineManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGLineManager.m; sourceTree = "<group>"; };
 		7207D6A06C86DC087A5C736397A0CB7A /* ABI34_0_0RCTFont.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI34_0_0RCTFont.mm; sourceTree = "<group>"; };
+		7236D64D2DDE3E039A6E474BF6118323 /* ABI34_0_0EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		724BAB106ED815B8F3702727FF1A7589 /* ABI34_0_0EXBarCodeScannerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXBarCodeScannerProvider.h; path = ABI34_0_0EXBarCodeScanner/ABI34_0_0EXBarCodeScannerProvider.h; sourceTree = "<group>"; };
 		7266917D67C1538B1301EA4CCD0F2C07 /* ABI34_0_0EXFaceDetector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXFaceDetector.m; path = ABI34_0_0EXFaceDetector/ABI34_0_0EXFaceDetector.m; sourceTree = "<group>"; };
 		727072CC4511804A4F3EEF5736BA1C12 /* ABI34_0_0RCTI18nManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTI18nManager.m; sourceTree = "<group>"; };
@@ -3498,7 +3505,6 @@
 		7DCFE18586637315F06ACA2ECBED5240 /* ABI34_0_0EXBlurViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXBlurViewManager.h; path = ABI34_0_0EXBlur/ABI34_0_0EXBlurViewManager.h; sourceTree = "<group>"; };
 		7DD5666897D087ED32E2E9D2C0CDE597 /* ABI34_0_0RCTVirtualTextViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTVirtualTextViewManager.m; sourceTree = "<group>"; };
 		7DEDA2762F6D26051997684811FABAEC /* ABI34_0_0EXContactsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXContactsViewController.h; path = ABI34_0_0EXContacts/ABI34_0_0EXContactsViewController.h; sourceTree = "<group>"; };
-		7E2EC1AB3EECAE1F544871BB7D0EE86B /* ABI34_0_0EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXPrint-prefix.pch"; sourceTree = "<group>"; };
 		7E335F6E18F8806D1CFDB22181A79C41 /* ABI34_0_0REAEventNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0REAEventNode.h; sourceTree = "<group>"; };
 		7E4C8F5B3F9A528A239CD2F10D55C101 /* ABI34_0_0RNSVGPainter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGPainter.h; sourceTree = "<group>"; };
 		7F07CB4F6F53919F8272D0645490B3F5 /* ABI34_0_0RNBranchEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNBranchEventEmitter.h; sourceTree = "<group>"; };
@@ -3522,6 +3528,7 @@
 		80C2C571EDB390C36597C3AB0BD47C44 /* ABI34_0_0AIRMapOverlayManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRMapOverlayManager.h; sourceTree = "<group>"; };
 		80C598F469ECE52BCE1430C48069A3E0 /* ABI34_0_0EXBarCodeScannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXBarCodeScannerView.h; path = ABI34_0_0EXBarCodeScanner/ABI34_0_0EXBarCodeScannerView.h; sourceTree = "<group>"; };
 		812F6B38958314EF63806524FC77F8A5 /* ABI34_0_0EXMagnetometer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXMagnetometer.m; sourceTree = "<group>"; };
+		81558C79544F1C2B906D3ADEA666B415 /* ABI34_0_0EXWKPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXWKPDFRenderer.h; path = ABI34_0_0EXPrint/ABI34_0_0EXWKPDFRenderer.h; sourceTree = "<group>"; };
 		815DF56B1636DF0A67DF823319441E21 /* ABI34_0_0REABlockNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0REABlockNode.m; sourceTree = "<group>"; };
 		81674F4F55F0053BDAF1F534E1187F3D /* ABI34_0_0RCTModalHostViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTModalHostViewController.h; sourceTree = "<group>"; };
 		8174E8B8D2F5C021E26D16D36DAE9E1D /* ABI34_0_0JSCRuntime.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0JSCRuntime.cpp; path = ReactCommon/ABI34_0_0jsi/ABI34_0_0JSCRuntime.cpp; sourceTree = "<group>"; };
@@ -3560,7 +3567,6 @@
 		870BD4BDCB9B92AC8797484C631B5B02 /* ABI34_0_0RNSScreenContainer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSScreenContainer.h; sourceTree = "<group>"; };
 		871125C4D0CA9DFFC2317073432FE75A /* ABI34_0_0UMCameraInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0UMCameraInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		87195015224BD620F487316610BA1FE1 /* ABI34_0_0REAClockNodes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0REAClockNodes.m; sourceTree = "<group>"; };
-		873253BCA41B0343C026F53899BAF3C3 /* ABI34_0_0EXPrintPDFRenderTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXPrintPDFRenderTask.h; path = ABI34_0_0EXPrint/ABI34_0_0EXPrintPDFRenderTask.h; sourceTree = "<group>"; };
 		8765555503FA4FC6467F2B6FE1D1D8B7 /* ABI34_0_0EXSharing-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXSharing-prefix.pch"; sourceTree = "<group>"; };
 		87AE06F359C64482047F0DE3224373B9 /* ABI34_0_0RCTDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTDefines.h; sourceTree = "<group>"; };
 		87C687F18AC07115C68267ED45A0859D /* ABI34_0_0RNSVGImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGImage.m; sourceTree = "<group>"; };
@@ -3584,6 +3590,7 @@
 		8A21769E9AB31F5713B7E23AF0794D11 /* ABI34_0_0RCTSurfaceStage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSurfaceStage.m; sourceTree = "<group>"; };
 		8A2BFE23AB7DECFB6A20C8191410514C /* ABI34_0_0RCTMultipartDataTask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTMultipartDataTask.m; sourceTree = "<group>"; };
 		8A6199EA7B8615FE69A61F98D4628E33 /* ABI34_0_0EXKeepAwake-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXKeepAwake-prefix.pch"; sourceTree = "<group>"; };
+		8A687E36CD84DF1BC5AB05B9C939F0D2 /* ABI34_0_0EXWKSnapshotPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXWKSnapshotPDFRenderer.h; path = ABI34_0_0EXPrint/ABI34_0_0EXWKSnapshotPDFRenderer.h; sourceTree = "<group>"; };
 		8A94F6199C18FB9129806BC11D250237 /* ABI34_0_0RNSVGViewBox.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGViewBox.h; sourceTree = "<group>"; };
 		8AA73E5DD7EEA2B2088D68AB737740E9 /* ABI34_0_0RCTNullability.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTNullability.h; sourceTree = "<group>"; };
 		8ADB07AD0DBDAC6CDAA7912D4EB0F183 /* ABI34_0_0RCTObjcExecutor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTObjcExecutor.h; sourceTree = "<group>"; };
@@ -3673,6 +3680,7 @@
 		9B09D50ADB1635E21D5457F6619E9328 /* ABI34_0_0RNSVGDefsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGDefsManager.m; sourceTree = "<group>"; };
 		9B0C99DB0F7D4597D427BA2506CE5760 /* ABI34_0_0EXFileSystem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXFileSystem.h; path = ABI34_0_0EXFileSystem/ABI34_0_0EXFileSystem.h; sourceTree = "<group>"; };
 		9B0F76A986695583AA33808B9E18E5C5 /* ABI34_0_0ARTNodeManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0ARTNodeManager.h; sourceTree = "<group>"; };
+		9B16F2F387B2D1FEE406D2B01FEBFFD7 /* ABI34_0_0EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXPrint.h; path = ABI34_0_0EXPrint/ABI34_0_0EXPrint.h; sourceTree = "<group>"; };
 		9B293E02003260A6279A214115BBD0DF /* ABI34_0_0EXVideoThumbnails.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXVideoThumbnails.xcconfig; sourceTree = "<group>"; };
 		9B368C13A031992C8C548C0AD3B1AC82 /* ABI34_0_0EXNativeModuleIntrospection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXNativeModuleIntrospection.h; sourceTree = "<group>"; };
 		9B4386C93140FAC5F0AFC297F6CF51E5 /* ABI34_0_0ARTNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0ARTNode.m; path = Libraries/ART/ABI34_0_0ARTNode.m; sourceTree = "<group>"; };
@@ -3733,6 +3741,7 @@
 		A35A11F53CCB6DC47864FF3C10D2AB95 /* ABI34_0_0UMMagnetometerUncalibratedInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0UMMagnetometerUncalibratedInterface.h; path = ABI34_0_0UMSensorsInterface/ABI34_0_0UMMagnetometerUncalibratedInterface.h; sourceTree = "<group>"; };
 		A384E93ED96011ACBE6F5EBF401B17E3 /* ABI34_0_0EXLocationTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXLocationTaskConsumer.m; sourceTree = "<group>"; };
 		A3A3C9E8EA02694D36B62938BAA498B3 /* ABI34_0_0RCTDiffClampAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTDiffClampAnimatedNode.h; sourceTree = "<group>"; };
+		A3C8A669BD01DE8E99C309EF5AAD310E /* ABI34_0_0EXWKViewPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXWKViewPDFRenderer.m; path = ABI34_0_0EXPrint/ABI34_0_0EXWKViewPDFRenderer.m; sourceTree = "<group>"; };
 		A3F19771B1E685066A69997AF4BFE5D4 /* libABI34_0_0EXGoogleSignIn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0EXGoogleSignIn.a; path = libABI34_0_0EXGoogleSignIn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4449C20A9B961AC2AF10D386FF8D68F /* ABI34_0_0EXKeepAwake.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXKeepAwake.m; path = ABI34_0_0EXKeepAwake/ABI34_0_0EXKeepAwake.m; sourceTree = "<group>"; };
 		A492EF061829FAB64CD843ED5251FD85 /* ABI34_0_0EXBarCodeScannerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXBarCodeScannerModule.m; path = ABI34_0_0EXBarCodeScanner/ABI34_0_0EXBarCodeScannerModule.m; sourceTree = "<group>"; };
@@ -3740,7 +3749,6 @@
 		A4CA4E33BB29874479E807A0E2931A16 /* ABI34_0_0RCTProgressViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTProgressViewManager.m; sourceTree = "<group>"; };
 		A53089D8871AE11A171D8F89B948F8A0 /* ABI34_0_0RCTMultiplicationAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTMultiplicationAnimatedNode.h; sourceTree = "<group>"; };
 		A53DE6EA4A3337868311A04D8F875D1E /* ABI34_0_0RCTFileReaderModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTFileReaderModule.h; path = Libraries/Blob/ABI34_0_0RCTFileReaderModule.h; sourceTree = "<group>"; };
-		A578F9457A24818E99F69E5BA9D00A4E /* ABI34_0_0EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXPrint.h; path = ABI34_0_0EXPrint/ABI34_0_0EXPrint.h; sourceTree = "<group>"; };
 		A5C0E4EE5C925B3E7CE28EDF03C8C249 /* ABI34_0_0EXGyroscope.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXGyroscope.m; sourceTree = "<group>"; };
 		A5C13C9D84A0B8D57713E236624123F3 /* ABI34_0_0RCTActionSheetManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTActionSheetManager.h; path = Libraries/ActionSheetIOS/ABI34_0_0RCTActionSheetManager.h; sourceTree = "<group>"; };
 		A62B49742661C00715F19AD064405585 /* ABI34_0_0EXErrorRecovery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXErrorRecovery.h; sourceTree = "<group>"; };
@@ -3920,7 +3928,6 @@
 		C156854D6F95F1FF16E5CCA949401473 /* ABI34_0_0RNSVGViewBox.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGViewBox.m; sourceTree = "<group>"; };
 		C16B515915FAC06C24435A0B7BEAB9C1 /* ABI34_0_0EXConstants.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXConstants.m; path = ABI34_0_0EXConstants/ABI34_0_0EXConstants.m; sourceTree = "<group>"; };
 		C17EDBA5F3229FECAFE748B23720DAE0 /* ABI34_0_0RNBranchProperty.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNBranchProperty.m; sourceTree = "<group>"; };
-		C1DAEBB4D34D009BA85E78812D52B14F /* ABI34_0_0EXPrintPDFRenderTask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXPrintPDFRenderTask.m; path = ABI34_0_0EXPrint/ABI34_0_0EXPrintPDFRenderTask.m; sourceTree = "<group>"; };
 		C240AE86535637E502639891B2C88AEF /* ABI34_0_0NativeToJsBridge.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0NativeToJsBridge.cpp; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0NativeToJsBridge.cpp; sourceTree = "<group>"; };
 		C276525F51F48AED243CB86F940A61A6 /* ABI34_0_0RCTAsyncLocalStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTAsyncLocalStorage.m; sourceTree = "<group>"; };
 		C2D7A1589287A8E29BC0A4BB74AF3C64 /* ABI34_0_0RCTNativeAnimatedModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0RCTNativeAnimatedModule.m; path = Libraries/NativeAnimation/ABI34_0_0RCTNativeAnimatedModule.m; sourceTree = "<group>"; };
@@ -3973,6 +3980,7 @@
 		C98B5BA710523CB9827BC7B9A0937AF6 /* ABI34_0_0RCTSurfaceView+Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0RCTSurfaceView+Internal.h"; sourceTree = "<group>"; };
 		C9A7C7F54BB11159227456DD97E0507C /* ABI34_0_0ARTLinearGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0ARTLinearGradient.m; sourceTree = "<group>"; };
 		C9E9B90F622A54D0FAAF39EE5BED2A1E /* ABI34_0_0EXAuthTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXAuthTask.h; path = ABI34_0_0EXGoogleSignIn/ABI34_0_0EXAuthTask.h; sourceTree = "<group>"; };
+		C9F0904DCDD4558036406248EB87F363 /* ABI34_0_0EXPrint.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXPrint.xcconfig; sourceTree = "<group>"; };
 		CA038E97DA383145BF69A4C49602BD78 /* ABI34_0_0JSINativeModules.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0JSINativeModules.cpp; path = ReactCommon/ABI34_0_0jsiexecutor/jsireact/ABI34_0_0JSINativeModules.cpp; sourceTree = "<group>"; };
 		CA2482592CD00C41CE2781493D07CD01 /* ABI34_0_0RCTBackedTextInputDelegateAdapter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTBackedTextInputDelegateAdapter.m; sourceTree = "<group>"; };
 		CA2AF25837BF1702A102416A05CBA6F8 /* ABI34_0_0EXHapticsModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXHapticsModule.h; path = ABI34_0_0EXHaptics/ABI34_0_0EXHapticsModule.h; sourceTree = "<group>"; };
@@ -4005,6 +4013,7 @@
 		CE3ADC2C5F4527C783E1F69A2BE94349 /* ABI34_0_0EXCalendar.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXCalendar.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		CE7D8059462A237BA60ED6552CAA2E05 /* ABI34_0_0EXCamera.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXCamera.h; path = ABI34_0_0EXCamera/ABI34_0_0EXCamera.h; sourceTree = "<group>"; };
 		CE85E830E6E6BC075AFFB58D67F0B42B /* ABI34_0_0EXCalendar-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXCalendar-dummy.m"; sourceTree = "<group>"; };
+		CE9D96659D1C4749CC539BA3079502E1 /* ABI34_0_0EXWKViewPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXWKViewPDFRenderer.h; path = ABI34_0_0EXPrint/ABI34_0_0EXWKViewPDFRenderer.h; sourceTree = "<group>"; };
 		CEE0151C0A08E3478824E789D032ABAA /* ABI34_0_0UMReactNativeEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0UMReactNativeEventEmitter.h; sourceTree = "<group>"; };
 		CEE67891DD989C5A08D5B8D66F984586 /* libABI34_0_0EXLocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0EXLocation.a; path = libABI34_0_0EXLocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF2887E24B123AFC025FCD62DCB3C5D5 /* ABI34_0_0RCTConvert+RNSVG.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0RCTConvert+RNSVG.h"; sourceTree = "<group>"; };
@@ -4046,7 +4055,6 @@
 		D3CE1B3EF3C40C51A1E8852B96FE03C7 /* ABI34_0_0RCTPickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTPickerManager.m; sourceTree = "<group>"; };
 		D3D75CA20547E445AF1E2AA5649397B8 /* ABI34_0_0RCTTrackingAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTTrackingAnimatedNode.m; sourceTree = "<group>"; };
 		D43235F8CDB60FF532A52B1EB6F51AC5 /* ABI34_0_0EXBlurViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXBlurViewManager.m; path = ABI34_0_0EXBlur/ABI34_0_0EXBlurViewManager.m; sourceTree = "<group>"; };
-		D48489813307FF5D4C9F4007886EA346 /* ABI34_0_0EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXPrint.m; path = ABI34_0_0EXPrint/ABI34_0_0EXPrint.m; sourceTree = "<group>"; };
 		D4983859DDCA8CDB50F72E9F6109A811 /* ABI34_0_0Yoga.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0Yoga.h; path = yoga/ABI34_0_0Yoga.h; sourceTree = "<group>"; };
 		D4EBF497327580A5A22C2E38598558FF /* ABI34_0_0EXLinearGradientManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXLinearGradientManager.m; path = ABI34_0_0EXLinearGradient/ABI34_0_0EXLinearGradientManager.m; sourceTree = "<group>"; };
 		D540E66FF1CB156E5C3AFE61D47BCB57 /* ABI34_0_0RCTBorderStyle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTBorderStyle.h; sourceTree = "<group>"; };
@@ -4312,13 +4320,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0CCFB01550EF30F4CD08DAC23794C2E5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		10562A17D9A3DF9D0E0C193D18A68059 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4606,6 +4607,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DD6C3453870F7B04739D5CFC9B1CF634 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DD86EFFBCE2B0A5469E7BE8A5D401793 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4796,7 +4804,7 @@
 				5F15FD73743EC6F5ABC8DCB5F6B1CD2A /* ABI34_0_0EXMediaLibrary */,
 				6BBCD6B9F21A9E714D26B41279D8BD93 /* ABI34_0_0EXPermissions */,
 				94FE0BBFB9DD18E2E509EB2A6E4E5827 /* ABI34_0_0ExpoKit */,
-				6EA177C665C2E70D0F2CDCB3B48B200B /* ABI34_0_0EXPrint */,
+				1A3F4E5FD330F683118FE65B17A12F33 /* ABI34_0_0EXPrint */,
 				C0665696A4C359DC15D24A29035C65CF /* ABI34_0_0EXRandom */,
 				43EF45CF6B4A7A32A6F388836770949E /* ABI34_0_0EXSecureStore */,
 				39B5387CDD87D5E0ECB1123D43FAA7D4 /* ABI34_0_0EXSegment */,
@@ -4856,17 +4864,6 @@
 				926380EE41A1F2F8D0D6F3FBAB815D82 /* ABI34_0_0UMSensorsInterface.podspec */,
 			);
 			name = Pod;
-			sourceTree = "<group>";
-		};
-		0A07DB8756D339670B9E0B334415E84E /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				241534C465532AD6E535990155BF6450 /* ABI34_0_0EXPrint.xcconfig */,
-				1E8EA6CC6BE1CE98FA053EE12FB7562A /* ABI34_0_0EXPrint-dummy.m */,
-				7E2EC1AB3EECAE1F544871BB7D0EE86B /* ABI34_0_0EXPrint-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../Pods/Target Support Files/ABI34_0_0EXPrint";
 			sourceTree = "<group>";
 		};
 		0AA05AEB9B6E98AAD63BDE20AD35DF87 /* Pod */ = {
@@ -5075,6 +5072,24 @@
 			path = "../../../Pods/Target Support Files/ABI34_0_0UMSensorsInterface";
 			sourceTree = "<group>";
 		};
+		1A3F4E5FD330F683118FE65B17A12F33 /* ABI34_0_0EXPrint */ = {
+			isa = PBXGroup;
+			children = (
+				9B16F2F387B2D1FEE406D2B01FEBFFD7 /* ABI34_0_0EXPrint.h */,
+				605B3523DC79D9229AEF102E62B86F01 /* ABI34_0_0EXPrint.m */,
+				81558C79544F1C2B906D3ADEA666B415 /* ABI34_0_0EXWKPDFRenderer.h */,
+				0C3611E72413AB85F3114DED9996D64A /* ABI34_0_0EXWKPDFRenderer.m */,
+				8A687E36CD84DF1BC5AB05B9C939F0D2 /* ABI34_0_0EXWKSnapshotPDFRenderer.h */,
+				062A9C0A619EF85810372EA2F54569DB /* ABI34_0_0EXWKSnapshotPDFRenderer.m */,
+				CE9D96659D1C4749CC539BA3079502E1 /* ABI34_0_0EXWKViewPDFRenderer.h */,
+				A3C8A669BD01DE8E99C309EF5AAD310E /* ABI34_0_0EXWKViewPDFRenderer.m */,
+				B3C7DC3CEEB121A3A09309F49A7CC716 /* Pod */,
+				1EE7675FB2B588544CD0446053A4D8CD /* Support Files */,
+			);
+			name = ABI34_0_0EXPrint;
+			path = "../versioned-react-native/ABI34_0_0/EXPrint";
+			sourceTree = "<group>";
+		};
 		1A527724C97919811194F65AAAB1ABFE /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -5147,6 +5162,17 @@
 			);
 			name = ABI34_0_0EXKeepAwake;
 			path = "../versioned-react-native/ABI34_0_0/EXKeepAwake";
+			sourceTree = "<group>";
+		};
+		1EE7675FB2B588544CD0446053A4D8CD /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				C9F0904DCDD4558036406248EB87F363 /* ABI34_0_0EXPrint.xcconfig */,
+				32CC7B6BCE6F3D04B289C216607AB464 /* ABI34_0_0EXPrint-dummy.m */,
+				39EC20007C56FCD79F52FA85E6D7A03A /* ABI34_0_0EXPrint-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../Pods/Target Support Files/ABI34_0_0EXPrint";
 			sourceTree = "<group>";
 		};
 		201C43B98B5D0D814CBB60F127CE1406 /* ABI34_0_0EXAppAuth */ = {
@@ -6368,20 +6394,6 @@
 			path = "../versioned-react-native/ABI34_0_0/EXCamera";
 			sourceTree = "<group>";
 		};
-		6EA177C665C2E70D0F2CDCB3B48B200B /* ABI34_0_0EXPrint */ = {
-			isa = PBXGroup;
-			children = (
-				A578F9457A24818E99F69E5BA9D00A4E /* ABI34_0_0EXPrint.h */,
-				D48489813307FF5D4C9F4007886EA346 /* ABI34_0_0EXPrint.m */,
-				873253BCA41B0343C026F53899BAF3C3 /* ABI34_0_0EXPrintPDFRenderTask.h */,
-				C1DAEBB4D34D009BA85E78812D52B14F /* ABI34_0_0EXPrintPDFRenderTask.m */,
-				8E5B8E2CD3FDE5A0BF8CAD1030AE0949 /* Pod */,
-				0A07DB8756D339670B9E0B334415E84E /* Support Files */,
-			);
-			name = ABI34_0_0EXPrint;
-			path = "../versioned-react-native/ABI34_0_0/EXPrint";
-			sourceTree = "<group>";
-		};
 		6EF95FF0B2298CCB17D665D4B86C4544 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -6977,14 +6989,6 @@
 			path = ABI34_0_0UMCore/UMModuleRegistryProvider;
 			sourceTree = "<group>";
 		};
-		8E5B8E2CD3FDE5A0BF8CAD1030AE0949 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				23E18AA695B71725538CF90467451F9D /* ABI34_0_0EXPrint.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		8FC5AA49D7A9CE5DA92C3F22D181FD4C /* Svg */ = {
 			isa = PBXGroup;
 			children = (
@@ -7492,6 +7496,14 @@
 			);
 			name = "Support Files";
 			path = "../../../Pods/Target Support Files/ABI34_0_0UMReactNativeAdapter";
+			sourceTree = "<group>";
+		};
+		B3C7DC3CEEB121A3A09309F49A7CC716 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				7236D64D2DDE3E039A6E474BF6118323 /* ABI34_0_0EXPrint.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		B4461568490E4AFCF53F6A52C0E1135C /* Support Files */ = {
@@ -9324,6 +9336,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9F40FCB8D1364EEAF257ECCBCA0E8D79 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84DCCA6A73532875674D45F21E9477B3 /* ABI34_0_0EXPrint.h in Headers */,
+				718091CCFA4F6E83FD741A24113B905D /* ABI34_0_0EXWKPDFRenderer.h in Headers */,
+				118A588BDF4E43D72B4A64DA07CD4F7F /* ABI34_0_0EXWKSnapshotPDFRenderer.h in Headers */,
+				D45672B6F4296E1E00EC230A6D3A5DC8 /* ABI34_0_0EXWKViewPDFRenderer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A3BCD7E8D153ED7EACEA3BA125112E7D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -9424,15 +9447,6 @@
 				A2E5EF45C04AE890AA63DC0B98BB9108 /* ABI34_0_0EXFileSystem.h in Headers */,
 				27863B5343BA8C8C720305E9523F634F /* ABI34_0_0EXFileSystemAssetLibraryHandler.h in Headers */,
 				8E89F7DA9277C766DD00757E90716FC3 /* ABI34_0_0EXFileSystemLocalFileHandler.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C7D7ABD5C0EBA47AF122F11054D18151 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				38696341F2893B590231FEE3AD5AFB8F /* ABI34_0_0EXPrint.h in Headers */,
-				5EC2E059498C07B6CA104AA7BA610663 /* ABI34_0_0EXPrintPDFRenderTask.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10694,17 +10708,17 @@
 		};
 		F5DCE07A12345C610E4DDC9DD32D1639 /* ABI34_0_0EXPrint */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EBC1E8A23B075FF8AB26359CC6D30402 /* Build configuration list for PBXNativeTarget "ABI34_0_0EXPrint" */;
+			buildConfigurationList = 6366E1DEAB62037AB0389E6D789DD869 /* Build configuration list for PBXNativeTarget "ABI34_0_0EXPrint" */;
 			buildPhases = (
-				C7D7ABD5C0EBA47AF122F11054D18151 /* Headers */,
-				E3D9496D501E1D290E3FDA69F2160F45 /* Sources */,
-				0CCFB01550EF30F4CD08DAC23794C2E5 /* Frameworks */,
+				9F40FCB8D1364EEAF257ECCBCA0E8D79 /* Headers */,
+				0B6663C779665C86826CDB2CBAE16E3F /* Sources */,
+				DD6C3453870F7B04739D5CFC9B1CF634 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				85D08876BE81A2CD9784BC5169EF565D /* PBXTargetDependency */,
-				9E8B03AB657F5AE58AF5B2A295378F6C /* PBXTargetDependency */,
+				9F0FB323CCB08786774E06FD39828B9E /* PBXTargetDependency */,
+				847DE5B0273FF7DB1DBFF502B67D16F3 /* PBXTargetDependency */,
 			);
 			name = ABI34_0_0EXPrint;
 			productName = ABI34_0_0EXPrint;
@@ -10930,6 +10944,18 @@
 			files = (
 				DD1C76D4A544E3768E9F32E30A6FD898 /* ABI34_0_0EXLocalization-dummy.m in Sources */,
 				7EB72ACCC667DB44E91A3BCD8DF08057 /* ABI34_0_0EXLocalization.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0B6663C779665C86826CDB2CBAE16E3F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				85C8ADF6719A90B879FCACBCC1202872 /* ABI34_0_0EXPrint-dummy.m in Sources */,
+				27756919BC24EEDA99823A411EE3047B /* ABI34_0_0EXPrint.m in Sources */,
+				5E728EDDE9ED4582DB69D4F502B1248D /* ABI34_0_0EXWKPDFRenderer.m in Sources */,
+				563C466D6B799051A42FE855CF3E0CFF /* ABI34_0_0EXWKSnapshotPDFRenderer.m in Sources */,
+				CCB0C77A50620CB842A236BE08B39ED4 /* ABI34_0_0EXWKViewPDFRenderer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -11832,16 +11858,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E3D9496D501E1D290E3FDA69F2160F45 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9ED6137CAEB1307D452A1829845A1787 /* ABI34_0_0EXPrint-dummy.m in Sources */,
-				DC22A26BC6E1646D4783886842170D07 /* ABI34_0_0EXPrint.m in Sources */,
-				922F1849ADAF03EA7D1C77B25133A3B4 /* ABI34_0_0EXPrintPDFRenderTask.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E3DDBC41CC804148CC543D5E122B662B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -12484,11 +12500,11 @@
 			target = 9F89089BFB912F3B2C1D0CDB08A59765 /* ABI34_0_0UMFaceDetectorInterface */;
 			targetProxy = FAD3E8D02A1CC29FBE7C35CA9A2BB8E6 /* PBXContainerItemProxy */;
 		};
-		85D08876BE81A2CD9784BC5169EF565D /* PBXTargetDependency */ = {
+		847DE5B0273FF7DB1DBFF502B67D16F3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = ABI34_0_0UMCore;
-			target = 65B730B1B61938A9B2E66B9D55A755EE /* ABI34_0_0UMCore */;
-			targetProxy = 81ADB4295BBF7F10864E51B8F8743868 /* PBXContainerItemProxy */;
+			name = ABI34_0_0UMFileSystemInterface;
+			target = BCD417EF394C8430CC9CAB3956CD445D /* ABI34_0_0UMFileSystemInterface */;
+			targetProxy = 3B9DF17394CCDD3D79127F711F681C5D /* PBXContainerItemProxy */;
 		};
 		89AF8C51AF8AC126E4A1E788EDDCC5E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -12556,12 +12572,6 @@
 			target = 65B730B1B61938A9B2E66B9D55A755EE /* ABI34_0_0UMCore */;
 			targetProxy = 03595E111754CD60CDC0D8603B72DBAD /* PBXContainerItemProxy */;
 		};
-		9E8B03AB657F5AE58AF5B2A295378F6C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ABI34_0_0UMFileSystemInterface;
-			target = BCD417EF394C8430CC9CAB3956CD445D /* ABI34_0_0UMFileSystemInterface */;
-			targetProxy = 22A6150638F4AE5F9C48479BD70106DA /* PBXContainerItemProxy */;
-		};
 		9EB26846AD7142A0869FF799746E3166 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI34_0_0EXAmplitude;
@@ -12573,6 +12583,12 @@
 			name = ABI34_0_0EXKeepAwake;
 			target = 9F784041C752B6133D1B0899B83C6126 /* ABI34_0_0EXKeepAwake */;
 			targetProxy = E54BC2F448FB325CD086F3D7F0C05983 /* PBXContainerItemProxy */;
+		};
+		9F0FB323CCB08786774E06FD39828B9E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ABI34_0_0UMCore;
+			target = 65B730B1B61938A9B2E66B9D55A755EE /* ABI34_0_0UMCore */;
+			targetProxy = 152585213EADC698E507A74C042EB88F /* PBXContainerItemProxy */;
 		};
 		9F66C6AD554BF403F8F5662A474257B4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -13928,6 +13944,31 @@
 			};
 			name = Debug;
 		};
+		577E090823B409F288A11C2AE4FD0B00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9F0904DCDD4558036406248EB87F363 /* ABI34_0_0EXPrint.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI34_0_0EXPrint/ABI34_0_0EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI34_0_0EXPrint;
+				PRODUCT_NAME = ABI34_0_0EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		5B05A8CB529D50C084349F891D200C53 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ABE061898D03BEC9685B1A7D5BD21D2F /* ABI34_0_0UMCameraInterface.xcconfig */;
@@ -14540,30 +14581,6 @@
 			};
 			name = Release;
 		};
-		84669C58BAABE7BC9D760C36CF7E8E1C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 241534C465532AD6E535990155BF6450 /* ABI34_0_0EXPrint.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/ABI34_0_0EXPrint/ABI34_0_0EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = ABI34_0_0EXPrint;
-				PRODUCT_NAME = ABI34_0_0EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		8764027931E5A613A6722A021CB6309A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 780C468A031D9F349F2A418F9454951F /* ABI34_0_0EXMediaLibrary.xcconfig */;
@@ -14718,6 +14735,30 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_MODULE_NAME = ABI34_0_0UMReactNativeAdapter;
 				PRODUCT_NAME = ABI34_0_0UMReactNativeAdapter;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		914096257D1E2F381218ECE30BC9CF11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9F0904DCDD4558036406248EB87F363 /* ABI34_0_0EXPrint.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI34_0_0EXPrint/ABI34_0_0EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI34_0_0EXPrint;
+				PRODUCT_NAME = ABI34_0_0EXPrint;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -15305,31 +15346,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		CF75B19D90D3B94418A993CE4EF7501D /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 241534C465532AD6E535990155BF6450 /* ABI34_0_0EXPrint.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/ABI34_0_0EXPrint/ABI34_0_0EXPrint-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = ABI34_0_0EXPrint;
-				PRODUCT_NAME = ABI34_0_0EXPrint;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		D024C99C4326F830A4301BF8DB9430B7 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -16085,6 +16101,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		6366E1DEAB62037AB0389E6D789DD869 /* Build configuration list for PBXNativeTarget "ABI34_0_0EXPrint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				914096257D1E2F381218ECE30BC9CF11 /* Debug */,
+				577E090823B409F288A11C2AE4FD0B00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		698DF8A888A784DFA751C978CA60DB49 /* Build configuration list for PBXNativeTarget "ABI34_0_0EXFileSystem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -16423,15 +16448,6 @@
 			buildConfigurations = (
 				6EB0E316AB249FD8F303BC678C7A78BF /* Debug */,
 				8134CEA8D89CCF58B96DB61807616967 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		EBC1E8A23B075FF8AB26359CC6D30402 /* Build configuration list for PBXNativeTarget "ABI34_0_0EXPrint" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				84669C58BAABE7BC9D760C36CF7E8E1C /* Debug */,
-				CF75B19D90D3B94418A993CE4EF7501D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
