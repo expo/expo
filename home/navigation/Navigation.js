@@ -2,11 +2,9 @@
 
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import {
-  createAppContainer,
-  createStackNavigator,
-  createBottomTabNavigator,
-} from 'react-navigation';
+import { createAppContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';

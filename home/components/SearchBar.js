@@ -5,10 +5,11 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import {
   useTheme,
   ThemeContext,
-  HeaderBackButton,
   withNavigation,
   withNavigationFocus,
-} from 'react-navigation';
+} from '@react-navigation/core';
+
+import { HeaderBackButton } from 'react-navigation-stack';
 
 import Colors from '../constants/Colors';
 import * as Kernel from '../kernel/Kernel';

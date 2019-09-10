@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import SelectScreen from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';

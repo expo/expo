@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import * as Calendar from 'expo-calendar';
-import { NavigationScreenProps } from 'react-navigation';
+import { NavigationScreenProps } from '@react-navigation/core';
 
 interface RowProps {
   reminder: Calendar.Reminder;

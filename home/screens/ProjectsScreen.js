@@ -15,7 +15,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Themed, withNavigationFocus, withNavigation } from 'react-navigation';
+import { withNavigationFocus, withNavigation } from '@react-navigation/core';
+import { Themed } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import semver from 'semver';
 import ScrollView from '../components/NavigationScrollView';

@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ThemeContext } from 'react-navigation';
+import { ThemeContext } from '@react-navigation/core';
 
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import DevIndicator from '../components/DevIndicator';

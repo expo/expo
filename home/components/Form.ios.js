@@ -3,7 +3,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, TextInput } from 'react-native';
-import { ThemeContext } from 'react-navigation';
+import { ThemeContext } from '@react-navigation/core';
 import { StyledView } from './Views';
 import { StyledText } from './Text';
 

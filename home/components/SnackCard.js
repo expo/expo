@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Linking, Platform, Share, StyleSheet, TouchableHighlight, View } from 'react-native';
-import { withNavigation } from 'react-navigation';
+import { withNavigation } from '@react-navigation/core';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';

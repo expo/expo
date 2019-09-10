@@ -3,7 +3,7 @@
 import React from 'react';
 import { Image, Keyboard, Platform, StyleSheet, TouchableHighlight, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
-import { withNavigation } from 'react-navigation';
+import { withNavigation } from '@react-navigation/core';
 
 import { StyledButton, StyledView } from '../components/Views';
 import { StyledText } from '../components/Text';

@@ -8,7 +8,7 @@ import {
   View,
   ListRenderItem,
 } from 'react-native';
-import { withNavigation, NavigationScreenProps } from 'react-navigation';
+import { withNavigation, NavigationScreenProps } from '@react-navigation/core';
 
 import { EvilIcons } from '@expo/vector-icons';
 

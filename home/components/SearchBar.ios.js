@@ -10,7 +10,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { withNavigation, withNavigationFocus, ThemeContext } from 'react-navigation';
+import { withNavigation, withNavigationFocus, ThemeContext } from '@react-navigation/core';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';

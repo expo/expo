@@ -15,7 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import HeaderButtons from 'react-navigation-header-buttons';
-import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+import { NavigationScreenProps, NavigationScreenConfig } from '@react-navigation/core';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../../constants/Colors';

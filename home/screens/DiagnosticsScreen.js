@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
-import { ThemeContext } from 'react-navigation';
+import { ThemeContext } from '@react-navigation/core';
 import { BaseButton } from 'react-native-gesture-handler';
 
 import ScrollView from '../components/NavigationScrollView';

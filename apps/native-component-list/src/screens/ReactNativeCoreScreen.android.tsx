@@ -28,7 +28,7 @@ import {
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 // @ts-ignore
-import { ScrollView as NavigationScrollView } from 'react-navigation';
+import { ScrollView as NavigationScrollView } from '@react-navigation/native';
 
 import { Colors, Layout } from '../constants';
 import ModalExample from './ModalExample';

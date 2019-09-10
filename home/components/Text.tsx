@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useTheme } from 'react-navigation';
+import { useTheme } from '@react-navigation/core';
 import { Platform, StyleSheet, Text } from 'react-native';
 
 import Colors from '../constants/Colors';

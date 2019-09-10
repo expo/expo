@@ -3,7 +3,7 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { withNavigation } from 'react-navigation';
+import { withNavigation } from '@react-navigation/core';
 
 import Colors from '../constants/Colors';
 import ProjectCard from './ProjectCard';
@@ -54,7 +54,7 @@ export default class ProjectList extends React.PureComponent {
 
   _renderContent = () => {
     return (
-      <FlatList
+      <
         data={this.props.data.apps}
         keyExtractor={this._extractKey}
         renderItem={this._renderItem}

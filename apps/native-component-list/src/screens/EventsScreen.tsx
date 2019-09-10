@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
+import { NavigationScreenProps } from '@react-navigation/core';
 import * as Calendar from 'expo-calendar';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';

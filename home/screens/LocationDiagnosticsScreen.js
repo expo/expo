@@ -5,7 +5,7 @@ import { EventEmitter } from 'fbemitter';
 import React from 'react';
 import { AppState, AsyncStorage, Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
-import { NavigationEvents } from 'react-navigation';
+import { NavigationEvents } from '@react-navigation/core';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 import Button from '../components/PrimaryButton';

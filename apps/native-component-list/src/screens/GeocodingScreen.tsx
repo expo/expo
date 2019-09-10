@@ -8,7 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { NavigationEvents } from 'react-navigation';
+import { NavigationEvents } from '@react-navigation/core';
 import Touchable from 'react-native-platform-touchable';
 
 import * as Location from 'expo-location';

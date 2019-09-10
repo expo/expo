@@ -3,7 +3,7 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import { withNavigation } from 'react-navigation';
+import { withNavigation } from '@react-navigation/core';
 
 import Colors from '../constants/Colors';
 import SnackCard from './SnackCard';
