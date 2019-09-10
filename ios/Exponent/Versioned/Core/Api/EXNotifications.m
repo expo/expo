@@ -353,7 +353,9 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   content.title = payload[@"title"];
   content.body = payload[@"body"];
 
-  if ([payload[@"sound"] boolValue]) {
+  if ([payload[@"sound"] isKindOfClass:[NSString class]]) {
+    content.sound = payload[@"sound"];
+  } else if ([payload[@"sound"] boolValue]) {
     content.sound = [UNNotificationSound defaultSound];
   }
 
