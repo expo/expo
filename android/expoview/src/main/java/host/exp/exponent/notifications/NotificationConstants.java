@@ -23,6 +23,7 @@ public class NotificationConstants {
   public static final String NOTIFICATION_CHANNEL_DESCRIPTION = "description";
   public static final String NOTIFICATION_CHANNEL_PRIORITY = "priority";
   public static final String NOTIFICATION_CHANNEL_SOUND = "sound";
+  public static final String NOTIFICATION_CHANNEL_DEFAULT_SOUND_NAME = "default";
   public static final String NOTIFICATION_CHANNEL_VIBRATE = "vibrate";
   public static final String NOTIFICATION_CHANNEL_BADGE = "badge";
 

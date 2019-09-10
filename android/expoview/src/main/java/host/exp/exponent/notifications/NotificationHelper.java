@@ -13,6 +13,7 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -178,6 +179,19 @@ public class NotificationHelper {
     });
   }
 
+  private static String processSoundName(Object soundObject) {
+    if (soundObject != null) {
+      if (soundObject instanceof Boolean) {
+        if ((Boolean) soundObject) {
+          return NotificationConstants.NOTIFICATION_CHANNEL_DEFAULT_SOUND_NAME;
+        }
+      } else {
+        return (String) soundObject;
+      }
+    }
+    return null;
+  }
+
   public static void createChannel(
       Context context,
       String experienceId,
@@ -187,7 +201,7 @@ public class NotificationHelper {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       String description = null;
       String importance = null;
-      Boolean sound = null;
+      String sound = null;
       Object vibrate = null;
       Boolean badge = null;
 
@@ -195,7 +209,8 @@ public class NotificationHelper {
         importance = (String) details.get(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY);
       }
       if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)) {
-        sound = (Boolean) details.get(NotificationConstants.NOTIFICATION_CHANNEL_SOUND);
+        Object soundObject = details.get(NotificationConstants.NOTIFICATION_CHANNEL_SOUND);
+        sound = processSoundName(soundObject);
       }
       if (details.containsKey(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE)) {
         vibrate = details.get(NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE);
@@ -237,7 +252,7 @@ public class NotificationHelper {
       String channelName = details.getString(NotificationConstants.NOTIFICATION_CHANNEL_NAME);
       String description = null;
       String priority = null;
-      Boolean sound = null;
+      String sound = null;
       Boolean badge = null;
 
       if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION)) {
@@ -247,7 +262,8 @@ public class NotificationHelper {
         priority = details.optString(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY);
       }
       if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)) {
-        sound = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_SOUND);
+        Object soundObject = details.opt(NotificationConstants.NOTIFICATION_CHANNEL_SOUND);
+        sound = processSoundName(soundObject);
       }
       if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_BADGE)) {
         badge = details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_BADGE, true);
@@ -288,7 +304,7 @@ public class NotificationHelper {
       String channelName,
       String description,
       String importanceString,
-      Boolean sound,
+      String sound,
       Object vibrate,
       Boolean badge) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -315,9 +331,16 @@ public class NotificationHelper {
 
       NotificationChannel channel = new NotificationChannel(ExponentNotificationManager.getScopedChannelId(experienceId, channelId), channelName, importance);
 
-      // sound is now on by default for channels
-      if (sound == null || !sound) {
+      if (sound == null) {
         channel.setSound(null, null);
+      } else if (!sound.equals(NotificationConstants.NOTIFICATION_CHANNEL_DEFAULT_SOUND_NAME)) {
+        String filenameWithoutExtension = sound.substring(0, sound.lastIndexOf('.'));
+        int soundId = context.getResources().getIdentifier(filenameWithoutExtension, "raw", context.getPackageName());
+        Log.w("TESTTEST", "soundId: " + soundId);
+        Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
+        Log.w("TESTTEST", "soundUri: " + soundUri.toString());
+      } else {
+        // Do nothing, since having sound is on by default for channels.
       }
 
       if (vibrate != null) {
