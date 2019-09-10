@@ -25,7 +25,7 @@
   CGRect initialFrame = webView.frame;
   UIView *initialSuperview = webView.superview;
   CGPoint initialContentOffset = webView.scrollView.contentOffset;
-  NSUInteger initialIndex = [webView.subviews indexOfObject:webView];
+  NSUInteger initialIndex = [webView.superview.subviews indexOfObject:webView];
 
   // Attach WebView to view hierarchy - otherwise nothing is rendered
   UIWindow *window = [UIApplication sharedApplication].keyWindow;

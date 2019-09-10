@@ -57,7 +57,6 @@
 - (WKWebView *)createWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-//  configuration.userContentController = [self userContentController];
   CGRect frame = CGRectMake(0, 0, _pageSize.width, _pageSize.height);
   WKWebView *webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
   webView.navigationDelegate = self;
@@ -66,27 +65,6 @@
   webView.scrollView.showsVerticalScrollIndicator = NO;
 
   return webView;
-}
-
-- (WKUserContentController *)userContentController
-{
-  WKUserContentController *controller = [WKUserContentController new];
-  [controller addUserScript:[self scaleToOne]];
-  return controller;
-}
-
-- (WKUserScript *)scaleToOne
-{
-  NSString *addMetaScript = @""
-  "var meta = document.createElement('meta');"
-  "meta.setAttribute('name', 'viewport');"
-  "meta.setAttribute('content', 'width=device-width');"
-  "meta.setAttribute('initial-scale', '1.0');"
-  "meta.setAttribute('maximum-scale', '1.0');"
-  "meta.setAttribute('minimum-scale', '1.0');"
-  "meta.setAttribute('user-scalable', 'no');"
-  "document.getElementsByTagName('head')[0].appendChild(meta);";
-  return [[WKUserScript alloc] initWithSource:addMetaScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
 }
 
 @end
