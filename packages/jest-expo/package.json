@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "34.2.0",
+  "version": "34.0.1",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -23,6 +23,7 @@
     "jest": "bin/jest.js"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "jest"
   },
   "jest": {
