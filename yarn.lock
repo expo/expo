@@ -12562,10 +12562,9 @@ react-native-web@^0.11.0, react-native-web@^0.11.4:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-react-native-webview@~7.0.0:
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-7.0.1.tgz#ea2650d30acaa1fd443595d9f7f2a2648f54e0b5"
-  integrity sha512-KySHdf/nvGgFXwQEb7AH8id2dYdzSiIqWjMPdlql6+5Gi9kaEGiojGabXV2UYJRNk54Y8COFMDr65zdgdLlctw==
+"react-native-webview@https://github.com/expo/react-native-webview/archive/2cd7005.tar.gz":
+  version "7.0.5"
+  resolved "https://github.com/expo/react-native-webview/archive/2cd7005.tar.gz#892d965988fafa6d142f50e4e45c0db81e8f0bc4"
   dependencies:
     escape-string-regexp "1.0.5"
     invariant "2.2.4"
