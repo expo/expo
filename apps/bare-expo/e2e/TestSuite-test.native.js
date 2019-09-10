@@ -22,23 +22,23 @@ const TESTS = [
       'Permissions',
     ],
   },
-  {
-    name: 'Protected',
-    tests: [],
-  },
-  {
-    name: 'API',
-    tests: [
-      'Crypto',
-      'Random',
-      'Haptics',
-      'Localization',
-      'SecureStore',
-      'SQLite',
-      'Random',
-      // 'Audio',
-    ],
-  },
+  // {
+  //   name: 'Protected',
+  //   tests: [],
+  // },
+  // {
+  //   name: 'API',
+  //   tests: [
+  //     'Crypto',
+  //     'Random',
+  //     'Haptics',
+  //     'Localization',
+  //     'SecureStore',
+  //     'SQLite',
+  //     'Random',
+  //     // 'Audio',
+  //   ],
+  // },
   // {
   //   name: 'Components',
   //   tests: [
