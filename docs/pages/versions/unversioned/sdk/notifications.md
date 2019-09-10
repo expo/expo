@@ -240,6 +240,8 @@ A Promise that resolves to an object with the following fields:
 
 ### Use custom notification sound files
 
+Note that custom notification sound files will only work in the standalone build. If the notification is send to the Expo client, you will always hear the default sound.
+
 Only `.wav` file is supported by both iOS and Android.
 
 In `app.json`:
