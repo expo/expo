@@ -163,7 +163,6 @@ PODS:
   - React/DevSupport (0.59.8):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.59.8)
   - React/jsi (0.59.8):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -198,7 +197,6 @@ PODS:
     - React/Core
   - React/RCTWebSocket (0.59.8):
     - React/Core
-    - React/fishhook
     - React/RCTBlob
   - RNGestureHandler (1.3.0):
     - React
@@ -543,7 +541,7 @@ SPEC CHECKSUMS:
   GoogleSignIn: a62edd0516721d2a3db1259a5681b91f9b41c06a
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
-  React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
+  React: 841af16feb8e7936838a626bfa1b8faaa07d9e6c
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   UMBarCodeScannerInterface: 84ea2d6b58ff0dc27ef9b68bab71286be18ee020
