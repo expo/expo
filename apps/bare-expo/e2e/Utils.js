@@ -4,6 +4,18 @@ const { device, init, expect, element, by } = detox;
 
 export const sleepAsync = t => new Promise(res => setTimeout(res, t));
 
+export function runTestsAsync(tests, timeout, callback) {
+  describe('test-suite', () => {
+    tests.map(suite => {
+      describe(suite.name, () => {
+        suite.tests.map(testName => {
+          it(`passes ${testName}`, async () => callback({ testName }), timeout);
+        });
+      });
+    });
+  });
+}
+
 export async function launchWithPermissionsAsync(config, permissions, options) {
   if (Object.keys(permissions).length) {
     await init(config, { launchApp: false, ...options });
