@@ -3572,7 +3572,7 @@ CACHE_KEYS:
   React:
     BUILD_SETTINGS_CHECKSUM:
       React: 711620d5f38a5191979095e3b51ddb6b
-    CHECKSUM: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
+    CHECKSUM: 841af16feb8e7936838a626bfa1b8faaa07d9e6c
     FILES:
       - "../../react-native-lab/react-native/Libraries/ActionSheetIOS/RCTActionSheetManager.h"
       - "../../react-native-lab/react-native/Libraries/ActionSheetIOS/RCTActionSheetManager.m"
@@ -4122,7 +4122,6 @@ CACHE_KEYS:
       - React/CxxBridge (0.59.8)
       - React/cxxreact (0.59.8)
       - React/DevSupport (0.59.8)
-      - React/fishhook (0.59.8)
       - React/jsi (0.59.8)
       - React/jsiexecutor (0.59.8)
       - React/jsinspector (0.59.8)

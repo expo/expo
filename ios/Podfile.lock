@@ -809,7 +809,6 @@ PODS:
   - React/DevSupport (0.59.8):
     - React/Core
     - React/RCTWebSocket
-  - React/fishhook (0.59.8)
   - React/jsi (0.59.8):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -843,7 +842,6 @@ PODS:
     - React/Core
   - React/RCTWebSocket (0.59.8):
     - React/Core
-    - React/fishhook
     - React/RCTBlob
   - ReactABI33_0_0 (0.59.8):
     - ReactABI33_0_0/Core (= 0.59.8)
@@ -1933,7 +1931,7 @@ SPEC CHECKSUMS:
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
-  React: 76e6aa2b87d05eb6cccb6926d72685c9a07df152
+  React: 841af16feb8e7936838a626bfa1b8faaa07d9e6c
   ReactABI33_0_0: c2470ed130198ad8b34cdc39e1cf01bf1cd80519
   ReactABI34_0_0: 62be061dc1a8d0580da0f3d63a8ab9ccc90461ab
   UMBarCodeScannerInterface: 84ea2d6b58ff0dc27ef9b68bab71286be18ee020
