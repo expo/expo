@@ -17,7 +17,7 @@ xcodebuild \
 
 if ! grep '\*\* BUILD SUCCEEDED \*\*' result.txt; then
     echo 'Build Failed'
-    # cat result.txt | xcpretty -k
+    cat result.txt
     rm result.txt
     set +e
     exit 1
