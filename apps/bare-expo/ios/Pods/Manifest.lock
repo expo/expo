@@ -15,6 +15,8 @@ PODS:
   - EXAppAuth (6.0.0):
     - AppAuth
     - UMCore
+  - EXAppleAuthentication (1.0.0):
+    - UMCore
   - EXApplication (0.0.1):
     - UMCore
   - EXAppLoaderProvider (6.0.0)
@@ -221,6 +223,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../../../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAmplitude (from `../../../packages/expo-analytics-amplitude/ios`)
   - EXAppAuth (from `../../../packages/expo-app-auth/ios`)
+  - EXAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAppLoaderProvider (from `../../../packages/expo-app-loader-provider/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
@@ -313,6 +316,9 @@ EXTERNAL SOURCES:
   EXAppAuth:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-app-auth/ios"
+  EXAppleAuthentication:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-apple-authentication/ios"
   EXApplication:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-application/ios"
@@ -493,6 +499,7 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAmplitude: 6227e588e326a691fbb5c5fef7a585f442f0d563
   EXAppAuth: a5e758845e701381b5a7bedafe29e83f9cd165eb
+  EXAppleAuthentication: 73447420d5b740854610befc0eb6558261e694ad
   EXApplication: 79926cde236e05302805c31581000bcfa352049a
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
   EXAV: 7228890721d1d74779bc3154fb678a44249b1c71
