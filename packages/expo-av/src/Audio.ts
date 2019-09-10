@@ -37,7 +37,7 @@ const _populateMissingKeys = (userAudioMode: Object, defaultAudioMode: AudioMode
   return userAudioMode as AudioMode;
 };
 
-const defaultMode = {
+const defaultMode: AudioMode = {
   allowsRecordingIOS: false,
   interruptionModeIOS: INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
   playsInSilentModeIOS: false,
