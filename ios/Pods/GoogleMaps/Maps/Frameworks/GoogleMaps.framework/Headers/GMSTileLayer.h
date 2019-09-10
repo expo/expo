@@ -12,7 +12,7 @@
 
 @class GMSMapView;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Stub tile that is used to indicate that no tile exists for a specific tile coordinate. May be
@@ -102,4 +102,4 @@ FOUNDATION_EXTERN UIImage *const kGMSTileLayerNoTile;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

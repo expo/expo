@@ -8,53 +8,57 @@ import {
   Platform,
   Share,
   StyleSheet,
-  Text,
   TouchableHighlight,
   View,
 } from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
-import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
+import { StyledButton } from '../components/Views';
+import { StyledText } from '../components/Text';
 
 @withNavigation
 export default class ProjectCard extends React.PureComponent {
   render() {
-    let { id, description, projectName, username } = this.props;
+    let { description, projectName, username } = this.props;
 
     return (
       <View style={[styles.spacerContainer, this.props.style]}>
-        <TouchableNativeFeedbackSafe
+        <StyledButton
           onPress={this._handlePressProject}
+          style={[styles.container, styles.bottomBorder]}
           onLongPress={this._handleLongPressProject}
           fallback={TouchableHighlight}
-          underlayColor="#b7b7b7"
-          style={[styles.container, styles.bottomBorder]}>
-          <View>
-            <View style={styles.header}>
-              <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-                  {projectName}
-                </Text>
-                <View style={styles.projectExtraInfoContainer}>
-                  <Text
-                    onPress={this._handlePressUsername}
-                    style={styles.projectExtraInfoText}
-                    ellipsizeMode="tail"
-                    numberOfLines={1}>
-                    {username}
-                  </Text>
-                </View>
+          underlayColor="#b7b7b7">
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
+            <View style={styles.infoContainer}>
+              <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {projectName}
+              </StyledText>
+              <View style={styles.projectExtraInfoContainer}>
+                <StyledText
+                  lightColor="rgba(36, 44, 58, 0.4)"
+                  darkColor="#ccc"
+                  onPress={this._handlePressUsername}
+                  style={styles.projectExtraInfoText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
+                  {username}
+                </StyledText>
               </View>
             </View>
-            <View style={styles.body}>
-              <Text style={styles.descriptionText}>{description}</Text>
-            </View>
           </View>
-        </TouchableNativeFeedbackSafe>
+          <View style={styles.body}>
+            <StyledText
+              lightColor="rgba(36, 44, 58, 0.7)"
+              darkColor="#eee"
+              style={styles.descriptionText}>
+              {description}
+            </StyledText>
+          </View>
+        </StyledButton>
       </View>
     );
   }
@@ -106,9 +110,7 @@ export default class ProjectCard extends React.PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   spacerContainer: {
@@ -134,7 +136,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   descriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     lineHeight: 19,
   },
   icon: {
@@ -154,7 +155,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   projectNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginRight: 170,
     marginBottom: 2,
@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   projectExtraInfoText: {
-    color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 13,
     lineHeight: 16,
   },

@@ -20,6 +20,7 @@
 
 #import "FBSDKIcon.h"
 
+NS_SWIFT_NAME(FBLogo)
 @interface FBSDKLogo : FBSDKIcon
 
 @end

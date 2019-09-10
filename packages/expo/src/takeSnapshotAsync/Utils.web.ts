@@ -1,5 +1,5 @@
 function parseExtension(url: string): string {
-  const match = /\.([^\.\/]*?)$/g.exec(url);
+  const match = /\.([^./]*?)$/g.exec(url);
   if (match) {
     return match[1].toLowerCase();
   }
@@ -58,7 +58,7 @@ export async function getBlobFromCanvasAsync(
       canvas.toBlob(
         blob => {
           if (blob == null) {
-            reject('Failed to convert canvas to blob!');
+            reject(new Error(`Failed to convert canvas to blob!`));
           } else {
             resolve(blob);
           }
@@ -89,7 +89,7 @@ export function getImageElementFromURIAsync(uri: string): Promise<HTMLImageEleme
       resolve(image);
     };
     image.onerror = () => {
-      reject(`Image could not be loaded ${image.src}`);
+      reject(new Error(`Image could not be loaded: ${image.src}`));
     };
     image.src = uri;
   });
@@ -173,7 +173,7 @@ export function formatDataAsUrl(content: string, type: string): string {
 }
 
 export function getEscapedString(string: string): string {
-  return string.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1');
+  return string.replace(/([.*+?^${}()|[\]/\\])/g, '\\$1');
 }
 
 export function getEscapedXHTMLString(input: string): string {

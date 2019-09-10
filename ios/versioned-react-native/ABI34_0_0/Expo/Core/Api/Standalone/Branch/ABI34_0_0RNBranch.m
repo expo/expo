@@ -57,7 +57,7 @@ static NSString * const REQUIRED_BRANCH_SDK = @"0.27.0";
 
 @synthesize bridge = _bridge;
 
-ABI34_0_0EX_EXPORT_SCOPED_MODULE(ABI34_0_0RNBranch, BranchManager);
+ABI34_0_0EX_EXPORT_SCOPED_MODULE(ABI34_0_0RNBranch, ScopedBranchManager);
 
 + (Branch *)branch
 {

@@ -1,9 +1,8 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { Ionicons } from '@expo/vector-icons';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 
@@ -13,6 +12,9 @@ import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../FeatureFlags';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 import isIPhoneX from '../utils/isIPhoneX';
+import { StyledView } from '../components/Views';
+import { StyledText } from '../components/Text';
+import { Ionicons } from '../components/Icons';
 
 let TabTitles: Object = {
   new: 'New projects',
@@ -29,6 +31,7 @@ class SearchButton extends React.Component {
     return (
       <TouchableNativeFeedback
         onPress={this._handlePress}
+        background={TouchableNativeFeedback.Ripple('#eee', true)}
         style={{
           flex: 1,
           paddingLeft: 20,
@@ -36,7 +39,7 @@ class SearchButton extends React.Component {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ionicons name="md-search" size={27} color="#000" />
+        <Ionicons name="md-search" size={27} lightColor={Colors.light.text} />
       </TouchableNativeFeedback>
     );
   }
@@ -60,10 +63,13 @@ export default class ExploreScreen extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.greyBackground }}>
+      <StyledView
+        style={{ flex: 1 }}
+        darkBackgroundColor="#000"
+        lightBackgroundColor={Colors.light.greyBackground}>
         {this._renderSearchBar()}
         {this._renderContent()}
-      </View>
+      </StyledView>
     );
   }
 
@@ -80,23 +86,23 @@ export default class ExploreScreen extends React.Component {
   _renderSearchBar() {
     if (Platform.OS === 'android') {
       return (
-        <View style={styles.titleBarAndroid}>
+        <StyledView style={styles.titleBarAndroid} darkBackgroundColor="#000">
           <View style={styles.titleAndroid}>
-            <Text numberOfLines={1} style={styles.titleTextAndroid}>
+            <StyledText numberOfLines={1} style={styles.titleTextAndroid}>
               {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Explore'}
-            </Text>
+            </StyledText>
           </View>
 
           <View style={styles.rightButtonAndroid}>
             <SearchButton />
           </View>
-        </View>
+        </StyledView>
       );
     } else {
       return (
-        <View style={styles.titleBarIOS}>
+        <StyledView style={styles.titleBarIOS} darkBackgroundColor="#000">
           <SearchBar.PlaceholderButton />
-        </View>
+        </StyledView>
       );
     }
   }
@@ -106,46 +112,17 @@ export default class ExploreScreen extends React.Component {
   };
 }
 
-let navBarBorder = {};
-
-if (FeatureFlags.HIDE_EXPLORE_TABS) {
-  navBarBorder = {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.navBarBorderBottom,
-  };
-}
-
 const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 15,
-    backgroundColor: Colors.greyBackground,
-    borderRightWidth: 1,
-    borderRightColor: '#f6f6f6',
-  },
-  tabBarAndroid: {
-    paddingTop: 5,
-    paddingBottom: 5,
-    // note(brentvatne): B&B design called for a border here but in the
-    // app it didn't look as nice as in the design, so we'll see if they
-    // feel the same
-    // borderTopWidth: StyleSheet.hairlineWidth * 2,
-    // marginTop: 1,
-  },
   titleBarIOS: {
     height: 70 + NOTCH_HEIGHT,
-    backgroundColor: '#fff',
     paddingTop: 20 + NOTCH_HEIGHT,
-    ...navBarBorder,
   },
   titleBarAndroid: {
     height: 79,
-    backgroundColor: '#fff',
     paddingTop: 26,
     marginBottom: 0,
-    ...navBarBorder,
   },
   titleAndroid: {
     flex: 1,
@@ -155,7 +132,6 @@ const styles = StyleSheet.create({
   },
   titleTextAndroid: {
     flex: 1,
-    color: 'rgba(0, 0, 0, .9)',
     fontSize: 20,
     textAlign: 'left',
   },

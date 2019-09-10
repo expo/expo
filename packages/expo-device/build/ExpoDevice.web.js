@@ -1,7 +1,11 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
 import { DeviceType } from './Device.types';
-const parser = new UAParser(window.navigator.userAgent);
-const result = parser.getResult();
+let result = null;
+if (canUseDOM) {
+    const parser = new UAParser(window.navigator.userAgent);
+    result = parser.getResult();
+}
 export default {
     get isDevice() {
         return true;
@@ -10,10 +14,10 @@ export default {
         return null;
     },
     get manufacturer() {
-        return result.device.vendor || null;
+        return (result && result.device.vendor) || null;
     },
     get modelName() {
-        return result.device.model || null;
+        return (result && result.device.model) || null;
     },
     get deviceYearClass() {
         return null;
@@ -22,13 +26,13 @@ export default {
         return null;
     },
     get supportedCpuArchitectures() {
-        return result.cpu.architecture ? [result.cpu.architecture] : null;
+        return result && result.cpu.architecture ? [result.cpu.architecture] : null;
     },
     get osName() {
-        return result.os.name;
+        return (result && result.os.name) || '';
     },
     get osVersion() {
-        return result.os.version;
+        return (result && result.os.version) || '';
     },
     get osBuildId() {
         return null;

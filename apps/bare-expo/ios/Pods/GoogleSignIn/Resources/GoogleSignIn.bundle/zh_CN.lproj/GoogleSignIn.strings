@@ -1,0 +1,44 @@
+/* Sign-in button text */
+"Sign in" = "登录";
+
+/* Long form sign-in button text */
+"Sign in with Google" = "使用 Google 帐号登录";
+
+/* The title of the promotional prompt to install the Google app. */
+"PromoTitle" = "使用 Google 帐号登录";
+
+/* The body message of the promotional prompt to install the Google app. */
+"PromoMessage" = "安装免费的“Google”应用后，您可以使用自己的 Google 帐号登录众多应用（无需记住众多密码）。";
+
+/* The cancel button on the promotional prompt to install the Google app. */
+"PromoActionCancel" = "取消";
+
+/* The install button on the promotional prompt to install the Google app. */
+"PromoActionInstall" = "安装";
+
+/* The text for the button for user to acknowledge and dismiss a dialog. */
+"OK" = "确定";
+
+/* The text for the button for user to dismiss a dialog without taking any action. */
+"Cancel" = "取消";
+
+/* The name of the iOS native "Settings" app. */
+"SettingsAppName" = "设置";
+
+/* The title for the error dialog for unable to sign in because of EMM policy. */
+"EmmErrorTitle" = "无法登录帐号";
+
+/* The text in the error dialog asking user to set up a passcode for the device due to EMM policy. */
+"EmmPasscodeRequired" = "您的管理员要求您必须先在此设备上设置密码，然后才能访问此帐号。请设置密码并重试。";
+
+/* The text in the error dialog informing user that EMM policy prevented sign-in on the device. */
+"EmmGeneralError" = "该设备不符合管理员设置的安全政策。";
+
+/* The title in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectTitle" = "要关联 Device Policy 应用吗？";
+
+/* The text in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectText" = "要保护您组织的数据，您必须在登录前关联 Device Policy 应用。";
+
+/* The action button label in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectLabel" = "关联";

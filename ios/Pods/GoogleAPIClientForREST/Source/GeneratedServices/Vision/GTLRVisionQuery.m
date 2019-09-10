@@ -201,6 +201,206 @@
 
 @end
 
+@implementation GTLRVisionQuery_ProjectsFilesAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/files:annotate";
+  GTLRVisionQuery_ProjectsFilesAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_BatchAnnotateFilesResponse class];
+  query.loggingName = @"vision.projects.files.annotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsFilesAsyncBatchAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/files:asyncBatchAnnotate";
+  GTLRVisionQuery_ProjectsFilesAsyncBatchAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_Operation class];
+  query.loggingName = @"vision.projects.files.asyncBatchAnnotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsImagesAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/images:annotate";
+  GTLRVisionQuery_ProjectsImagesAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_BatchAnnotateImagesResponse class];
+  query.loggingName = @"vision.projects.images.annotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsImagesAsyncBatchAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/images:asyncBatchAnnotate";
+  GTLRVisionQuery_ProjectsImagesAsyncBatchAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_Operation class];
+  query.loggingName = @"vision.projects.images.asyncBatchAnnotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsLocationsFilesAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/files:annotate";
+  GTLRVisionQuery_ProjectsLocationsFilesAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_BatchAnnotateFilesResponse class];
+  query.loggingName = @"vision.projects.locations.files.annotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsLocationsFilesAsyncBatchAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateFilesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/files:asyncBatchAnnotate";
+  GTLRVisionQuery_ProjectsLocationsFilesAsyncBatchAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_Operation class];
+  query.loggingName = @"vision.projects.locations.files.asyncBatchAnnotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsLocationsImagesAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_BatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/images:annotate";
+  GTLRVisionQuery_ProjectsLocationsImagesAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_BatchAnnotateImagesResponse class];
+  query.loggingName = @"vision.projects.locations.images.annotate";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsLocationsImagesAsyncBatchAnnotate
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_AsyncBatchAnnotateImagesRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/images:asyncBatchAnnotate";
+  GTLRVisionQuery_ProjectsLocationsImagesAsyncBatchAnnotate *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_Operation class];
+  query.loggingName = @"vision.projects.locations.images.asyncBatchAnnotate";
+  return query;
+}
+
+@end
+
 @implementation GTLRVisionQuery_ProjectsLocationsOperationsGet
 
 @dynamic name;
@@ -523,6 +723,31 @@
   query.name = name;
   query.expectedObjectClass = [GTLRVision_Product class];
   query.loggingName = @"vision.projects.locations.products.patch";
+  return query;
+}
+
+@end
+
+@implementation GTLRVisionQuery_ProjectsLocationsProductsPurge
+
+@dynamic parent;
+
++ (instancetype)queryWithObject:(GTLRVision_PurgeProductsRequest *)object
+                         parent:(NSString *)parent {
+  if (object == nil) {
+    GTLR_DEBUG_ASSERT(object != nil, @"Got a nil object");
+    return nil;
+  }
+  NSArray *pathParams = @[ @"parent" ];
+  NSString *pathURITemplate = @"v1/{+parent}/products:purge";
+  GTLRVisionQuery_ProjectsLocationsProductsPurge *query =
+    [[self alloc] initWithPathURITemplate:pathURITemplate
+                               HTTPMethod:@"POST"
+                       pathParameterNames:pathParams];
+  query.bodyObject = object;
+  query.parent = parent;
+  query.expectedObjectClass = [GTLRVision_Operation class];
+  query.loggingName = @"vision.projects.locations.products.purge";
   return query;
 }
 

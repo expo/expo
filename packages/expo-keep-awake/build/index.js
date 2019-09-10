@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
-// NOTE(brentvatne): in tests this value won't be reset because we
-// can render a component and never unmount it.
+// NOTE(brentvatne): in tests this value won't be reset because we can render a component and never
+// unmount it.
 let __keepAwakeMountedCount = 0;
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 export default class KeepAwake extends React.PureComponent {

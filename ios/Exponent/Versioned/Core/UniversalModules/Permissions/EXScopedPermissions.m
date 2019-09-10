@@ -118,11 +118,6 @@
   return [_permissionsService getPermission:permissionType forExperience:_experienceId] == EXPermissionStatusGranted;
 }
 
-- (BOOL)hasGrantedPermission:(NSString *)permissionType
-{
-  return [super hasGrantedPermission:permissionType] && [self hasGrantedScopedPermission:permissionType];
-}
-
 - (void)askForScopedPermissions:(NSArray<NSString *> *)permissionsTypes
                    withResolver:(void (^)(NSDictionary *))resolver
                    withRejecter:(UMPromiseRejectBlock)reject

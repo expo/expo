@@ -13,7 +13,7 @@
 @class GMSIndoorBuilding;
 @class GMSIndoorLevel;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /** Delegate for events on GMSIndoorDisplay. */
 @protocol GMSIndoorDisplayDelegate<NSObject>
@@ -63,4 +63,4 @@ NS_ASSUME_NONNULL_BEGIN;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

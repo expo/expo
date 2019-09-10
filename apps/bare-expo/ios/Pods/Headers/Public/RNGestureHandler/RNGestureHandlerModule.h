@@ -1,0 +1,1 @@
+../../../RNGestureHandler/ios/RNGestureHandlerModule.h

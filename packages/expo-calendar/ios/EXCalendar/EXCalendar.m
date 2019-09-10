@@ -74,6 +74,17 @@ UM_EXPORT_METHOD_AS(getCalendarsAsync,
   resolve([EXCalendarConverter serializeCalendars:calendars]);
 }
 
+UM_EXPORT_METHOD_AS(getDefaultCalendarAsync,
+                    getDefaultCalendarAsync:(UMPromiseResolveBlock)resolve
+                    rejector:(UMPromiseRejectBlock)reject)
+{
+  EKCalendar *defaultCalendar = [self.eventStore defaultCalendarForNewEvents];
+  if (defaultCalendar == nil) {
+    return reject(@"E_CALENDARS_NOT_FOUND", @"Could not find default calendars", nil);
+  }
+  resolve([EXCalendarConverter serializeCalendar:defaultCalendar]);
+}
+
 UM_EXPORT_METHOD_AS(saveCalendarAsync,
                     saveCalendarAsync:(NSDictionary *)details
                     resolver:(UMPromiseResolveBlock)resolve

@@ -70,6 +70,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Reanimated',
         sourceAndroidPath: 'android/src/main/java/com/swmansion/reanimated',
@@ -79,7 +80,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
     warnings: [
-      `NOTE: Any files in ${chalk.magenta('com.facebook.react')} will not be updated -- you'll need to add these to ReactAndroid manually!`,
+      `NOTE: Any files in ${chalk.magenta(
+        'com.facebook.react'
+      )} will not be updated -- you'll need to add these to ReactAndroid manually!`,
     ],
   },
   'react-native-screens': {
@@ -93,6 +96,16 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/screens',
         sourceAndroidPackage: 'com.swmansion.rnscreens',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+      },
+    ],
+  },
+  'react-native-appearance': {
+    repoUrl: 'https://github.com/expo/react-native-appearance.git',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios/Appearance',
+        targetIosPath: 'Api/Appearance',
       },
     ],
   },
@@ -130,7 +143,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceIosPath: 'ios',
         targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
         sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-        targetAndroidPath: '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
+        targetAndroidPath:
+          '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
         sourceAndroidPackage: 'io.branch.rnbranch',
         targetAndroidPackage: 'expo.modules.branch.vendored',
         recursive: false,
@@ -158,6 +172,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/Svg',
         sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
@@ -201,7 +216,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'react-native-webview': {
-    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
+    repoUrl: 'https://github.com/expo/react-native-webview.git',
     installableInManagedApps: true,
     steps: [
       {
@@ -214,8 +229,32 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
     warnings: [
-      chalk.bold.yellow(`\n${chalk.green('react-native-webview')} exposes ${chalk.blue('useSharedPool')} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`),
+      chalk.bold.yellow(
+        `\n${chalk.green('react-native-webview')} exposes ${chalk.blue(
+          'useSharedPool'
+        )} property which has to be handled differently in Expo Client. After upgrading this library, please ensure that proper patch is in place.`
+      ),
       chalk.bold.yellow(`See commit ${chalk.cyan('0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
+    ],
+  },
+  'react-native-safe-area-context': {
+    repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
+    steps: [
+      {
+        sourceIosPath: 'ios/SafeAreaView',
+        targetIosPath: 'Api/SafeAreaContext',
+        sourceAndroidPath: 'android/src/main/java/com/th3rdwave/safeareacontext',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+      },
+    ],
+    warnings: [
+      chalk.bold.yellow(
+        `Last time checked, ${chalk.green('react-native-safe-area-context')} used ${chalk.blue(
+          'androidx'
+        )} which wasn't at that time supported by Expo. Please ensure that the project builds on Android after upgrading or remove this warning.`
+      ),
     ],
   },
   'react-native-datetimepicker': {
@@ -233,10 +272,25 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'react-native-shared-element': {
+    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
+    packageName: 'react-native-shared-element',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SharedElement',
+        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
+        targetAndroidPath: 'modules/api/components/sharedelement',
+        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {
-  return await JsonFile.readAsync(BUNDLED_NATIVE_MODULES_PATH) as { [key: string]: string };
+  return (await JsonFile.readAsync(BUNDLED_NATIVE_MODULES_PATH)) as { [key: string]: string };
 }
 
 async function updateBundledNativeModulesAsync(updater) {
@@ -263,7 +317,11 @@ async function findObjcFilesAsync(dir: string, recursive: boolean): Promise<stri
   return await glob(pattern);
 }
 
-async function renamePackageAndroidAsync(file: string, sourceAndroidPackage: string, targetAndroidPackage: string) {
+async function renamePackageAndroidAsync(
+  file: string,
+  sourceAndroidPackage: string,
+  targetAndroidPackage: string
+) {
   const content = await fs.readFile(file, 'utf8');
 
   // Note: this only works for a single package. If react-native-svg separates
@@ -285,7 +343,7 @@ async function findAndroidFilesAsync(dir: string): Promise<string[]> {
 async function loadXcodeprojFileAsync(file: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const pbxproj = xcode.project(file);
-    pbxproj.parse(err => err ? reject(err) : resolve(pbxproj));
+    pbxproj.parse(err => (err ? reject(err) : resolve(pbxproj)));
   });
 }
 
@@ -300,7 +358,11 @@ function pbxGroupHasChildWithRef(group: any, ref: string): boolean {
   return group.children.some(child => child.value === ref);
 }
 
-async function addFileToPbxprojAsync(filePath: string, targetDir: string, pbxproj: any): Promise<void> {
+async function addFileToPbxprojAsync(
+  filePath: string,
+  targetDir: string,
+  pbxproj: any
+): Promise<void> {
   const fileName = path.basename(filePath);
 
   // The parent group of the target directory that should already be created in the project, e.g. `Components` or `Api`.
@@ -318,9 +380,10 @@ async function addFileToPbxprojAsync(filePath: string, targetDir: string, pbxpro
     const groupName = path.basename(path.dirname(filePath));
 
     // Add a file to pbxproj tree.
-    const file = path.extname(fileName) === '.h'
-      ? pbxproj.addHeaderFile(fileName, fileOptions, groupName)
-      : pbxproj.addSourceFile(fileName, fileOptions, groupName);
+    const file =
+      path.extname(fileName) === '.h'
+        ? pbxproj.addHeaderFile(fileName, fileOptions, groupName)
+        : pbxproj.addSourceFile(fileName, fileOptions, groupName);
 
     // Search for the group where the file should be placed.
     const group = pbxproj.pbxGroupByName(groupName);
@@ -345,7 +408,11 @@ async function addFileToPbxprojAsync(filePath: string, targetDir: string, pbxpro
   }
 }
 
-async function copyFilesAsync(files: string[], sourceDir: string, targetDir: string): Promise<void> {
+async function copyFilesAsync(
+  files: string[],
+  sourceDir: string,
+  targetDir: string
+): Promise<void> {
   for (const file of files) {
     const fileRelativePath = path.relative(sourceDir, file);
     const fileTargetPath = path.join(targetDir, fileRelativePath);
@@ -353,10 +420,7 @@ async function copyFilesAsync(files: string[], sourceDir: string, targetDir: str
     await fs.mkdirs(path.dirname(fileTargetPath));
     await fs.copy(file, fileTargetPath);
 
-    console.log(
-      chalk.yellow('>'),
-      chalk.magenta(path.relative(targetDir, fileTargetPath)),
-    );
+    console.log(chalk.yellow('>'), chalk.magenta(path.relative(targetDir, fileTargetPath)));
   }
 }
 
@@ -366,11 +430,16 @@ async function action(options: ActionOptions) {
 
     for (const vendoredModuleName in vendoredModulesConfig) {
       const moduleConfig = vendoredModulesConfig[vendoredModuleName];
-      const currentBundledVersion = bundledNativeModules[moduleConfig.packageName || vendoredModuleName];
+      const currentBundledVersion =
+        bundledNativeModules[moduleConfig.packageName || vendoredModuleName];
 
       console.log(chalk.bold.green(vendoredModuleName));
       console.log(chalk.yellow('>'), 'repository:', chalk.magenta(moduleConfig.repoUrl));
-      console.log(chalk.yellow('>'), 'current bundled version:', (currentBundledVersion ? chalk.cyan : chalk.gray)(currentBundledVersion));
+      console.log(
+        chalk.yellow('>'),
+        'current bundled version:',
+        (currentBundledVersion ? chalk.cyan : chalk.gray)(currentBundledVersion)
+      );
       console.log();
     }
     return;
@@ -383,17 +452,26 @@ async function action(options: ActionOptions) {
   const moduleConfig = vendoredModulesConfig[options.module];
 
   if (!moduleConfig) {
-    throw new Error(`Config for module ${chalk.green(options.module)} not found. Run with \`--list\` to show a list of available 3rd party modules`);
+    throw new Error(
+      `Config for module ${chalk.green(
+        options.module
+      )} not found. Run with \`--list\` to show a list of available 3rd party modules`
+    );
   }
 
-  moduleConfig.installableInManagedApps = moduleConfig.installableInManagedApps == null ? true : moduleConfig.installableInManagedApps;
+  moduleConfig.installableInManagedApps =
+    moduleConfig.installableInManagedApps == null ? true : moduleConfig.installableInManagedApps;
 
   const tmpDir = path.join(os.tmpdir(), options.module);
 
   // Cleanup tmp dir.
   await fs.remove(tmpDir);
 
-  console.log(`Cloning ${chalk.green(options.module)}${chalk.red('#')}${chalk.cyan(options.commit)} from GitHub ...`);
+  console.log(
+    `Cloning ${chalk.green(options.module)}${chalk.red('#')}${chalk.cyan(
+      options.commit
+    )} from GitHub ...`
+  );
 
   // Clone the repository.
   await spawnAsync('git', ['clone', moduleConfig.repoUrl, tmpDir]);
@@ -417,7 +495,9 @@ async function action(options: ActionOptions) {
       const sourceDir = path.join(tmpDir, step.sourceIosPath);
       const targetDir = path.join(IOS_DIR, 'Exponent', 'Versioned', 'Core', step.targetIosPath);
 
-      console.log(`\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`);
+      console.log(
+        `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
+      );
 
       await fs.remove(targetDir);
       await fs.mkdirs(targetDir);
@@ -440,12 +520,20 @@ async function action(options: ActionOptions) {
           await addFileToPbxprojAsync(fileTargetPath, targetDir, pbxproj);
         }
 
-        console.log(`Saving updated pbxproj structure to the file ${chalk.magenta(path.relative(IOS_DIR, pbxprojPath))} ...`);
+        console.log(
+          `Saving updated pbxproj structure to the file ${chalk.magenta(
+            path.relative(IOS_DIR, pbxprojPath)
+          )} ...`
+        );
         await fs.writeFile(pbxprojPath, pbxproj.writeSync());
       }
 
       if (step.iosPrefix) {
-        console.log(`\nUpdating classes prefix from ${chalk.yellow(step.iosPrefix)} to ${chalk.yellow('EX')} ...`);
+        console.log(
+          `\nUpdating classes prefix from ${chalk.yellow(step.iosPrefix)} to ${chalk.yellow(
+            'EX'
+          )} ...`
+        );
 
         const files = await findObjcFilesAsync(targetDir, step.recursive);
 
@@ -454,17 +542,40 @@ async function action(options: ActionOptions) {
         }
       }
 
-      console.log(chalk.yellow(
-        `\nSuccessfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(`Exponent/Versioned/Modules/${step.targetIosPath}`)}`
-      ));
+      console.log(
+        chalk.yellow(
+          `\nSuccessfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(
+            `Exponent/Versioned/Core/${step.targetIosPath}`
+          )}`
+        )
+      );
     }
 
     // Android
-    if (executeAndroid && step.sourceAndroidPath && step.targetAndroidPath && step.sourceAndroidPackage && step.targetAndroidPackage) {
+    if (
+      executeAndroid &&
+      step.sourceAndroidPath &&
+      step.targetAndroidPath &&
+      step.sourceAndroidPackage &&
+      step.targetAndroidPackage
+    ) {
       const sourceDir = path.join(tmpDir, step.sourceAndroidPath);
-      const targetDir = path.join(ANDROID_DIR, 'expoview', 'src', 'main', 'java', 'versioned', 'host', 'exp', 'exponent', step.targetAndroidPath);
+      const targetDir = path.join(
+        ANDROID_DIR,
+        'expoview',
+        'src',
+        'main',
+        'java',
+        'versioned',
+        'host',
+        'exp',
+        'exponent',
+        step.targetAndroidPath
+      );
 
-      console.log(`\nCleaning up Android files at ${chalk.magenta(path.relative(ANDROID_DIR, targetDir))} ...`);
+      console.log(
+        `\nCleaning up Android files at ${chalk.magenta(path.relative(ANDROID_DIR, targetDir))} ...`
+      );
 
       await fs.remove(targetDir);
       await fs.mkdirs(targetDir);
@@ -483,21 +594,34 @@ async function action(options: ActionOptions) {
     }
   }
 
-  await updateBundledNativeModulesAsync(async (bundledNativeModules) => {
-    const { name, version } = await JsonFile.readAsync(path.join(tmpDir, 'package.json')) as { name: string, version: string };
+  await updateBundledNativeModulesAsync(async bundledNativeModules => {
+    const { name, version } = (await JsonFile.readAsync(path.join(tmpDir, 'package.json'))) as {
+      name: string;
+      version: string;
+    };
 
     if (moduleConfig.installableInManagedApps) {
       bundledNativeModules[name] = `~${version}`;
-      console.log(`Updated ${chalk.green(name)} version number in ${chalk.magenta('bundledNativeModules.json')}`);
+      console.log(
+        `Updated ${chalk.green(name)} version number in ${chalk.magenta(
+          'bundledNativeModules.json'
+        )}`
+      );
     } else if (bundledNativeModules[name]) {
       delete bundledNativeModules[name];
-      console.log(`Removed non-installable package ${chalk.green(name)} from ${chalk.magenta('bundledNativeModules.json')}`);
+      console.log(
+        `Removed non-installable package ${chalk.green(name)} from ${chalk.magenta(
+          'bundledNativeModules.json'
+        )}`
+      );
     }
     return bundledNativeModules;
   });
 
   console.log(
-    `\nFinished updating ${chalk.green(options.module)}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`,
+    `\nFinished updating ${chalk.green(
+      options.module
+    )}, make sure to update files in the Xcode project (if you updated iOS, see logs above) and test that it still works. 🙂`
   );
 }
 
@@ -508,8 +632,16 @@ export default (program: Command) => {
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
     .option('-m, --module <string>', 'Name of the module to update.')
-    .option('-p, --platform <string>', 'A platform on which the vendored module will be updated.', 'all')
-    .option('-c, --commit <string>', 'Git reference on which to checkout when copying 3rd party module.', 'master')
+    .option(
+      '-p, --platform <string>',
+      'A platform on which the vendored module will be updated.',
+      'all'
+    )
+    .option(
+      '-c, --commit <string>',
+      'Git reference on which to checkout when copying 3rd party module.',
+      'master'
+    )
     .option('--no-pbxproj', 'Whether to skip updating project.pbxproj file.', false)
     .asyncAction(action);
 };

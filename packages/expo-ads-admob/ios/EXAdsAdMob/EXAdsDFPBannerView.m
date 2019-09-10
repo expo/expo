@@ -27,7 +27,7 @@
 }
 
 - (void)loadBanner {
-  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError) {
+  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError && _additionalRequestParams) {
     GADAdSize size = [self getAdSizeFromString:_bannerSize];
     _bannerView = [[DFPBannerView alloc] initWithAdSize:size];
     [_bannerView setAppEventDelegate:self];
@@ -50,7 +50,9 @@
         request.testDevices = @[_testDeviceID];
       }
     }
-    
+    GADExtras *extras = [[GADExtras alloc] init];
+    extras.additionalParameters = _additionalRequestParams;
+    [request registerAdNetworkExtras:extras];
     [_bannerView loadRequest:request];
   }
 }
@@ -93,6 +95,18 @@
     [self loadBanner];
   }
 }
+
+- (void)setAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+{
+  if (![additionalRequestParams isEqual:_additionalRequestParams]) {
+    _additionalRequestParams = additionalRequestParams;
+    if (_bannerView) {
+      [_bannerView removeFromSuperview];
+    }
+    [self loadBanner];
+  }
+}
+
 - (void)setTestDeviceID:(NSString *)testDeviceID {
   if (![testDeviceID isEqual:_testDeviceID]) {
     _testDeviceID = testDeviceID;

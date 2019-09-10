@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, FBSDKTriStateBOOL)
   FBSDKTriStateBOOLValueUnknown = -1,
   FBSDKTriStateBOOLValueNO = 0,
   FBSDKTriStateBOOLValueYES = 1,
-};
+} NS_SWIFT_NAME(TriStateBool.Value);
 
 FOUNDATION_EXPORT FBSDKTriStateBOOL FBSDKTriStateBOOLFromBOOL(BOOL value);
 FOUNDATION_EXPORT FBSDKTriStateBOOL FBSDKTriStateBOOLFromNSNumber(NSNumber *value);

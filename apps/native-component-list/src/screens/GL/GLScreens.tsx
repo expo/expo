@@ -1,21 +1,19 @@
 import './BeforePIXI';
 
-import * as GL from 'expo-gl';
 import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
 import * as PIXI from 'pixi.js';
 import { Dimensions } from 'react-native';
 
-import ExpoTHREE from './ExpoTHREE';
+import { Renderer, TextureLoader, THREE } from 'expo-three';
 import GLWrap from './GLWrap';
 import GLCameraScreen from './GLCameraScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import ProcessingWrap from './ProcessingWrap';
 
-const THREE = require('three');
 // @ts-ignore
-global.THREE = THREE;
+global.THREE = global.THREE || THREE;
 require('three/examples/js/shaders/CopyShader');
 require('three/examples/js/shaders/DigitalGlitch');
 require('three/examples/js/shaders/FilmShader');
@@ -27,7 +25,7 @@ require('three/examples/js/postprocessing/FilmPass');
 
 interface Screens {
   [key: string]: {
-    screen: React.ComponentType & { title: string }
+    screen: React.ComponentType & { title: string };
   };
 }
 
@@ -96,7 +94,9 @@ const GLScreens: Screens = {
       (async () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const imageAsset = Asset.fromModule(require('../../../assets/images/nikki-small-purple.png'));
+        const imageAsset = Asset.fromModule(
+          require('../../../assets/images/nikki-small-purple.png')
+        );
         await imageAsset.downloadAsync();
         gl.texSubImage2D(gl.TEXTURE_2D, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, imageAsset as any);
         // Use below to test using a `TypedArray` parameter
@@ -136,16 +136,14 @@ const GLScreens: Screens = {
         1000
       );
 
-      const renderer = new ExpoTHREE.Renderer({ gl });
+      const renderer = new Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.loadAsync(
-          Asset.fromModule(require('../../../assets/images/nikki.png'))
-        ),
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
       });
       const cube = new THREE.Mesh(geometry, material);
       scene.add(cube);
@@ -175,7 +173,7 @@ const GLScreens: Screens = {
         1000
       );
 
-      const renderer = new ExpoTHREE.Renderer({ gl });
+      const renderer = new Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
@@ -189,9 +187,7 @@ const GLScreens: Screens = {
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshBasicMaterial({
         transparent: true,
-        map: await ExpoTHREE.loadAsync(
-          Asset.fromModule(require('../../../assets/images/nikki.png'))
-        ),
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
       });
 
       const cubes = Array(24)
@@ -236,14 +232,12 @@ const GLScreens: Screens = {
         1000
       );
 
-      const renderer = new ExpoTHREE.Renderer({ gl });
+      const renderer = new Renderer({ gl });
       renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       renderer.setClearColor(0xffffff);
 
       const spriteMaterial = new THREE.SpriteMaterial({
-        map: await ExpoTHREE.loadAsync(
-          Asset.fromModule(require('../../../assets/images/nikki.png'))
-        ),
+        map: new TextureLoader().load(require('../../../assets/images/nikki.png')),
         color: 0xffffff,
       });
       const sprite = new THREE.Sprite(spriteMaterial);

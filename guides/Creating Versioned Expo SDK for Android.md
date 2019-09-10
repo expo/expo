@@ -13,14 +13,9 @@ This document will guide you through the process of creating a versioned snapsho
     **Why:** Expo client contains native code for multiple SDKs (that's one of its purposes). Often (if not always) when releasing a new version of Expo we drop the last one (smaller maintenance burden).
 
     **How:** Any directory pointers from now on will assume current working directory is `android`.
-        - remove `versioned-abis/expoview-abiXX_X_X` for deprecated SDKs
-        - if deprecated SDKs depended on any `expolib_vX` libraries on which no other SDK now depends, remove those dependencies from `verisoned-abis/maven/` (`expolib_vX` libraries are created by us with [JarJar](https://github.com/shevek/jarjar) so we can have multiple versions of dependencies in one application)
-        - remove `abiXX_X_X` item from a list of supported SDKs in `settings.gradle` (the list is mapped to include supported `expoview-abiXX_X_X` projects in the `android` project)
-        - remove appropriate entry from `allprojects.repositories` block from `build.gradle` (`maven { url { …abiXX_X_X… } }`)
-        - search in `.` (`/android`) for `SDK_XX` string — go through every found entry and decide what to do with the appropriate code. At the moment all search results are `BEGIN_SDK_XX` and `END_SDK_XX`, code between which should be just removed
-        - (I would suggest _with Android Studio_) look for every usage of `ABIVersion.toNumber(String abiVersion)` method which is used whenever someone wants to create a code path depending on the SDK version in the unversioned code. Try to remove the codepath if possible
-        - search in Java and Kotlin files for `/SDK(?!_INT)/`. Look through every entry and see if you can drop any no longer used code path
-        - (if dropping some Android version support) look for `SDK_INT` in the codebase and see if you can simplify the logic
+      - Run `et remove-sdk-version -p android` and choose the SDK to remove from the list. This script removes versioned code for given SDK version and removes almost all references to this version in source files. Any references that the script couldn't remove automatically will be shown at the end of the script - iterate through them and decide what to do with each one, most of them can be just removed if the code is no longer used.
+      - Search in Java and Kotlin files for `/SDK(?!_INT)/`. Look through every entry and see if you can drop any no longer used code path.
+      - (If dropping some Android version support) Look for `SDK_INT` in the codebase and see if you can simplify the logic.
 
 3. **`react-native` submodule is set to proper commit for the new SDK**
 

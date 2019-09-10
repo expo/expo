@@ -16,7 +16,9 @@ async function getTemplateSubstitutionsFromSecrets() {
     return await new JsonFile(path.join(EXPO_DIR, 'secrets', 'keys.json')).readAsync();
   } catch (e) {
     // Don't have access to decrypted secrets, use public keys
-    console.log('You don\'t have access to decrypted secrets. Falling back to `template-files/keys.json`.');
+    console.log(
+      "You don't have access to decrypted secrets. Falling back to `template-files/keys.json`."
+    );
     return await new JsonFile(path.join(EXPO_DIR, 'template-files', 'keys.json')).readAsync();
   }
 }
@@ -47,7 +49,7 @@ async function generateMacrosAsync(platform, configuration) {
     console.log(
       'Resolved %s macro to %s',
       chalk.green(name),
-      chalk.yellow(JSON.stringify(macroValue)),
+      chalk.yellow(JSON.stringify(macroValue))
     );
   }
   console.log();
@@ -76,12 +78,9 @@ async function generateDynamicMacrosAsync(args) {
 
     // Copy template files - it is platform-agnostic.
     await copyTemplateFilesAsync(platform, args, templateSubstitutions);
-
   } catch (error) {
     console.error(
-      `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${
-        error.stack
-      }`
+      `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`
     );
     process.exit(1);
   }
@@ -105,7 +104,12 @@ async function readExistingSourceAsync(filepath) {
   }
 }
 
-async function copyTemplateFileAsync(source, dest, templateSubstitutions, configuration): Promise<void> {
+async function copyTemplateFileAsync(
+  source,
+  dest,
+  templateSubstitutions,
+  configuration
+): Promise<void> {
   let [currentSourceFile, currentDestFile] = await Promise.all([
     readExistingSourceAsync(source),
     readExistingSourceAsync(dest),
@@ -123,7 +127,7 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions, config
     // ending up in our release.
     currentSourceFile = currentSourceFile.replace(
       `<!-- ADD TEST PERMISSIONS HERE -->`,
-      `<uses-permission android:name="android.permission.WRITE_CONTACTS" />`,
+      `<uses-permission android:name="android.permission.WRITE_CONTACTS" />`
     );
   }
 
@@ -134,7 +138,9 @@ async function copyTemplateFileAsync(source, dest, templateSubstitutions, config
 
 async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   const templateFilesPath = args.templateFilesPath || path.join(EXPO_DIR, 'template-files');
-  const templatePaths = await new JsonFile(path.join(templateFilesPath, `${platform}-paths.json`)).readAsync();
+  const templatePaths = await new JsonFile(
+    path.join(templateFilesPath, `${platform}-paths.json`)
+  ).readAsync();
   const promises: Promise<any>[] = [];
 
   for (const [source, dest] of Object.entries(templatePaths)) {
@@ -143,7 +149,7 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
         path.join(templateFilesPath, platform, source),
         path.join(EXPO_DIR, dest as string, source),
         templateSubstitutions,
-        args.configuration,
+        args.configuration
       )
     );
   }
@@ -151,8 +157,4 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   await Promise.all(promises);
 }
 
-export {
-  generateDynamicMacrosAsync,
-  cleanupDynamicMacrosAsync,
-  getTemplateSubstitutions,
-};
+export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutions };

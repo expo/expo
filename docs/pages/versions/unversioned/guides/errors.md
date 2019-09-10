@@ -10,7 +10,7 @@ If your app encounters a fatal JS error, Expo will report the error differently 
 
 **In Development:** If you're serving your app from Expo CLI, the fatal JS error will be reported to the [React Native RedBox](https://facebook.github.io/react-native/docs/debugging.html#in-app-errors-and-warnings) and no other action will be taken.
 
-**In Production:** If your published app encounters a fatal JS error, Expo will immediately reload your app. If the error happens very quickly after reloading, Expo will show a generic error screen with a button to try manually reloading.
+**In Production:** If your published app encounters a fatal JS error, Expo will immediately reload your app. If the error happens very quickly after reloading, your app will crash.
 
 Expo can also report custom information back to you after your app reloads. If you use `ErrorRecovery.setRecoveryProps`, and the app later encounters a fatal JS error, the contents of that method call will be passed back into your app's initial props upon reloading. See [Expo.ErrorRecovery](../../sdk/error-recovery/).
 

@@ -2,10 +2,13 @@
 
 import React from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ThemeContext } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
 export class FormInput extends React.Component {
+  static contextType = ThemeContext;
+
   constructor(props, context) {
     super(props, context);
 
@@ -44,14 +47,28 @@ export class FormInput extends React.Component {
           }}
           onFocus={this._handleFocus}
           onBlur={this._handleBlur}
-          underlineColorAndroid={this.state.isFocused ? Colors.tintColor : 'rgba(46, 59, 76, 0.10)'}
+          underlineColorAndroid={
+            this.state.isFocused
+              ? Colors.light.tintColor
+              : this.context === 'light'
+              ? 'rgba(46, 59, 76, 0.10)'
+              : '#888'
+          }
           {...props}
           placeholder={this.props.label}
-          placeholderTextColor="rgba(36, 44, 58, 0.4)"
-          style={[styles.textInput, style]}
+          placeholderTextColor={this.context === 'light' ? 'rgba(36, 44, 58, 0.4)' : '#ccc'}
+          style={[styles.textInput, this.context === 'dark' && { color: '#fff' }, style]}
         />
         <Animated.View style={[styles.floatingLabel, this._getAnimatedLabelStyles()]}>
-          <Text style={styles.floatingLabelText}>{this.props.label}</Text>
+          <Text
+            style={[
+              styles.floatingLabelText,
+              {
+                color: this.context === 'light' ? 'rgba(0, 0, 0, 0.38)' : '#fff',
+              },
+            ]}>
+            {this.props.label}
+          </Text>
         </Animated.View>
       </View>
     );
@@ -137,9 +154,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     flexDirection: 'row',
   },
-  inputContainerWithoutBorderBottom: {
-    borderBottomWidth: 0,
-  },
   textInput: {
     flex: 1,
     fontSize: 18,
@@ -156,6 +170,5 @@ const styles = StyleSheet.create({
   },
   floatingLabelText: {
     fontSize: 12,
-    color: 'rgba(0, 0, 0, 0.38)',
   },
 });

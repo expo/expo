@@ -1,15 +1,10 @@
-/* @flow */
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import React from 'react';
 import {
   ActivityIndicator,
   Keyboard,
-  Linking,
-  ListView,
+  SectionList,
   Platform,
-  ScrollView,
   StyleSheet,
-  Text,
   TouchableHighlight,
   View,
 } from 'react-native';
@@ -17,27 +12,30 @@ import {
 import ProfileCard from '../components/ProfileCard';
 import ProjectCard from '../components/ProjectCard';
 import Colors from '../constants/Colors';
-import SharedStyles from '../constants/SharedStyles';
 import * as Kernel from '../kernel/Kernel';
 import UrlUtils from '../utils/UrlUtils';
+import { StyledText, SectionLabelText } from './Text';
+import {
+  GenericCardContainer,
+  StyledScrollView,
+  SectionLabelContainer,
+  StyledView,
+  StyledButton,
+} from './Views';
 
 const SectionIds = ['UserSearchResult', 'AppSearchResult'];
 
 export default class SearchResults extends React.Component {
   state = {
-    dataSource: new ListView.DataSource({
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
-      rowHasChanged: (r1, r2) => r1 !== r2,
-      lastQueryHadNoResults: false,
-    }),
+    sections: [],
   };
 
   componentWillMount() {
-    this._maybeUpdateDataSource(this.props);
+    this._maybeUpdateSections(this.props);
   }
 
-  componentWillReceiveProps(nextProps: Object) {
-    this._maybeUpdateDataSource(nextProps);
+  componentWillReceiveProps(nextProps) {
+    this._maybeUpdateSections(nextProps);
   }
 
   render() {
@@ -49,29 +47,24 @@ export default class SearchResults extends React.Component {
     );
   }
 
-  _maybeUpdateDataSource = (newProps: Object) => {
+  _maybeUpdateSections = newProps => {
     if (!newProps.data) {
       return;
     }
 
     if (newProps.data.results !== this.props.data.results) {
-      let { dataSource } = this.state;
-      let { results } = newProps.data;
-      let populatedSectionIds = [];
+      let results = newProps.data?.results || {};
 
-      results = results || {};
+      let sections = [];
+      Object.keys(results).forEach(key => {
+        sections.push({ title: key, data: results[key] });
+      });
 
-      if (results.UserSearchResult) {
-        populatedSectionIds = populatedSectionIds.concat('UserSearchResult');
-      }
+      // note(brentvatne):
+      // Filter out Snack search results until this is supported
+      sections = sections.filter(section => SectionIds.includes(section.title));
 
-      if (results.AppSearchResult) {
-        populatedSectionIds = populatedSectionIds.concat('AppSearchResult');
-      }
-
-      let newDataSource = dataSource.cloneWithRowsAndSections(results, populatedSectionIds);
-
-      this.setState({ dataSource: newDataSource });
+      this.setState({ sections });
     }
   };
 
@@ -82,61 +75,69 @@ export default class SearchResults extends React.Component {
   _maybeRenderLoading = () => {
     if (this._isLoading() && this.props.query.length > 0) {
       return (
-        <View
+        <StyledView
+          lightBackgroundColor={Colors.light.greyBackground}
+          darkBackgroundColor="#000"
           style={[
             StyleSheet.absoluteFill,
             {
               padding: 30,
               alignItems: 'center',
-              backgroundColor: Colors.greyBackground,
             },
           ]}
           pointerEvents="none">
-          <ActivityIndicator />
-        </View>
+          <ActivityIndicator color={Colors.light.tintColor} />
+        </StyledView>
       );
     }
   };
 
   _renderContent = () => {
-    if (
-      this.state.dataSource.getRowCount() === 0 &&
-      !this._isLoading() &&
-      this.props.query.length >= 1
-    ) {
+    if (this.state.sections.length === 0 && !this._isLoading() && this.props.query.length >= 1) {
       return (
-        <ScrollView
+        <StyledScrollView
+          lightBackgroundColor={Colors.light.greyBackground}
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
           style={styles.scrollContainer}>
-          <View
-            style={[
-              SharedStyles.sectionLabelContainer,
-              { backgroundColor: Colors.greyBackground, marginTop: 7 },
-            ]}>
-            <Text style={SharedStyles.sectionLabelText}>NO RESULTS FOUND</Text>
-          </View>
+          <SectionLabelContainer style={{ marginTop: 7 }}>
+            <SectionLabelText>NO RESULTS FOUND</SectionLabelText>
+          </SectionLabelContainer>
 
-          <TouchableNativeFeedbackSafe
-            onPress={this._handleOpenUrl}
-            fallback={TouchableHighlight}
-            underlayColor="#b7b7b7"
-            style={styles.cardContainer}>
-            <Text style={styles.cardTitleText}>Tap to attempt to open project at</Text>
-            <Text style={styles.urlText}>{this.props.query}</Text>
-          </TouchableNativeFeedbackSafe>
-        </ScrollView>
+          <GenericCardContainer style={styles.cardContainer}>
+            <StyledButton
+              onPress={this._handleOpenUrl}
+              fallback={TouchableHighlight}
+              foreground
+              style={styles.button}
+              underlayColor="#b7b7b7">
+              <StyledText style={styles.cardTitleText}>
+                Tap to attempt to open project at
+              </StyledText>
+              <StyledText
+                style={styles.urlText}
+                lightColor="rgba(36, 44, 58, 0.4)"
+                darkColor="#888">
+                {this.props.query}
+              </StyledText>
+            </StyledButton>
+          </GenericCardContainer>
+        </StyledScrollView>
       );
     } else {
       return (
-        <ListView
+        <SectionList
           keyboardShouldPersistTaps="always"
           keyboardDismissMode="on-drag"
-          dataSource={this.state.dataSource}
-          renderRow={this._renderRow}
+          keyExtractor={item => item.id}
+          sections={this.state.sections}
+          renderItem={this._renderItem}
+          renderScrollComponent={props => (
+            <StyledScrollView {...props} lightBackgroundColor={Colors.light.greyBackground} />
+          )}
           renderSectionHeader={this._renderSectionHeader}
           contentContainerStyle={{ paddingTop: 5, paddingBottom: 15 }}
-          style={{ flex: 1, backgroundColor: Colors.greyBackground }}
+          style={{ flex: 1 }}
         />
       );
     }
@@ -148,37 +149,29 @@ export default class SearchResults extends React.Component {
     Kernel.openURLAsync(url);
   };
 
-  _renderSectionHeader = (sectionData: Object, sectionId: string) => {
+  _renderSectionHeader = ({ section }) => {
+    let title;
+    if (section.title === 'AppSearchResult') {
+      title = 'PROJECTS';
+    } else {
+      title = 'PEOPLE';
+    }
+
     return (
-      <View
-        key={sectionData}
-        style={[SharedStyles.sectionLabelContainer, { backgroundColor: Colors.greyBackground }]}>
-        <Text style={SharedStyles.sectionLabelText}>
-          {sectionId === 'AppSearchResult' ? 'PROJECTS' : 'PEOPLE'}
-        </Text>
-      </View>
+      <SectionLabelContainer key={section}>
+        <SectionLabelText>{title}</SectionLabelText>
+      </SectionLabelContainer>
     );
   };
 
-  _isLastAppSearchResult = (index: number) => {
-    let appSectionIdx = SectionIds.indexOf('AppSearchResult');
-    let appSectionLength = this.state.dataSource.getSectionLengths()[appSectionIdx];
-    return parseInt(index, 0) + 1 === appSectionLength;
-  };
-
-  _isLastUserSearchResult = (index: number) => {
-    let userSectionIdx = SectionIds.indexOf('UserSearchResult');
-    let userSectionLength = this.state.dataSource.getSectionLengths()[userSectionIdx];
-    return parseInt(index, 0) + 1 === userSectionLength;
-  };
-
-  _renderRow = (rowData: Object, sectionId: string, rowId: number) => {
-    if (sectionId === 'AppSearchResult') {
-      let { app } = rowData;
+  _renderItem = ({ item, index, section }) => {
+    let isLastItem = index === section.data.length - 1;
+    if (section.title === 'AppSearchResult') {
+      let { app } = item;
 
       return (
         <ProjectCard
-          style={{ marginBottom: this._isLastAppSearchResult(rowId) ? 0 : 15 }}
+          style={{ marginBottom: isLastItem ? 15 : 0 }}
           id={app.id}
           iconUrl={app.iconUrl}
           projectName={app.name}
@@ -187,12 +180,12 @@ export default class SearchResults extends React.Component {
           description={app.description}
         />
       );
-    } else if (sectionId === 'UserSearchResult') {
-      let { user } = rowData;
+    } else if (section.title === 'UserSearchResult') {
+      let { user } = item;
 
       return (
         <ProfileCard
-          style={{ marginBottom: this._isLastUserSearchResult(rowId) ? 7 : 0 }}
+          style={{ marginBottom: isLastItem ? 7 : 0 }}
           fullName={user.fullName}
           username={user.username}
           appCount={user.appCount}
@@ -200,24 +193,25 @@ export default class SearchResults extends React.Component {
           isLegacy={user.isLegacy}
         />
       );
+    } else {
+      return <StyledText>{section.title}</StyledText>;
     }
   };
 }
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    backgroundColor: Colors.greyBackground,
     flex: 1,
   },
   cardContainer: {
-    backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
+  },
+  button: {
+    backgroundColor: 'transparent',
     padding: 13,
   },
   cardTitleText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginBottom: 2,
     ...Platform.select({
@@ -231,7 +225,6 @@ const styles = StyleSheet.create({
     }),
   },
   urlText: {
-    color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 13,
     lineHeight: 16,
   },

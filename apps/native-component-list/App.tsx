@@ -6,7 +6,9 @@ import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 import { Assets as StackAssets } from 'react-navigation-stack';
+import { AppearanceProvider } from 'react-native-appearance';
 import { useScreens } from 'react-native-screens';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Icons from './src/constants/Icons';
 import RootNavigation from './src/navigation/RootNavigation';
@@ -60,13 +62,15 @@ export default class App extends React.Component<{}, State> {
   render() {
     if (this.state.appIsReady) {
       return (
-        <View style={styles.container} testID="native_component_list">
-          {Platform.OS === 'android' && (
-            <View style={styles.statusBarUnderlay} />
-          )}
-          <RootNavigation />
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        </View>
+        <SafeAreaProvider>
+          <AppearanceProvider>
+            <View style={styles.container} testID="native_component_list">
+              {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
+              <RootNavigation />
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            </View>
+          </AppearanceProvider>
+        </SafeAreaProvider>
       );
     } else {
       return <AppLoading />;

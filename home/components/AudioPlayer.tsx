@@ -5,6 +5,7 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
+import { StyledText } from '../components/Text';
 
 interface Props {
   isAudioEnabled: boolean;
@@ -90,7 +91,7 @@ export default function AudioPlayer(props: Props) {
             }
           }}
         />
-        <Text
+        <StyledText
           style={{ width: 100, textAlign: 'right', fontVariant: ['tabular-nums'] }}
           adjustsFontSizeToFit
           numberOfLines={1}>
@@ -99,7 +100,7 @@ export default function AudioPlayer(props: Props) {
                 playback.durationMillis / 1000
               )}`
             : '00:00 / 00:00'}
-        </Text>
+        </StyledText>
       </View>
       <View style={styles.buttonContainer}>
         <AudioSettingsButton
@@ -255,12 +256,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    color: Colors.tintColor,
+    color: Colors.light.tintColor,
     fontSize: 24,
     padding: 8,
   },
   disabledButton: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
   },
   playButtonIcon: {
     fontSize: 34,
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 12,
-    color: Colors.tintColor,
+    color: Colors.light.tintColor,
     fontWeight: 'bold',
     textAlign: 'center',
     justifyContent: 'center',
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     height: 36,
   },
   activeButton: {
-    backgroundColor: Colors.tintColor,
+    backgroundColor: Colors.light.tintColor,
     borderRadius: 12,
   },
   activeButtonText: {

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentStoreReview.js","sourceRoot":"","sources":["../../src/StoreReview/ExponentStoreReview.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAC7C,eAAe,aAAa,CAAC,mBAAmB,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\nexport default NativeModules.ExponentStoreReview;\n"]}

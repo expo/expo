@@ -13,7 +13,7 @@
 
 #import "GMSCALayer.h"
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /*
  * The following layer properties and constants describe the camera properties that may be animated
@@ -107,4 +107,4 @@ extern NSString *const kGMSLayerCameraViewingAngleKey;
 @property(nonatomic, assign) double cameraViewingAngle;
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

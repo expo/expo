@@ -2,9 +2,14 @@
 
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
+import { ThemeContext } from 'react-navigation';
+import { StyledView } from './Views';
+import { StyledText } from './Text';
 
 export class FormInput extends React.Component {
+  static contextType = ThemeContext;
+
   state = {
     labelWidth: null,
   };
@@ -41,6 +46,10 @@ export class FormInput extends React.Component {
   };
 
   _renderGradientOverlay = () => {
+    if (this.context === 'dark') {
+      return;
+    }
+
     return (
       <LinearGradient
         colors={['rgba(255,255,255, 1)', 'rgba(255,255,255, 0.2)']}
@@ -62,25 +71,25 @@ export class FormInput extends React.Component {
     let { label, hideBottomBorder, style, ...props } = this.props;
 
     return (
-      <View
+      <StyledView
         style={[
           styles.inputContainer,
           hideBottomBorder && styles.inputContainerWithoutBorderBottom,
         ]}>
-        <View style={styles.inputLabelContainer} onLayout={this._handleLayoutLabel}>
-          <Text style={styles.inputLabelText}>{label}</Text>
-        </View>
+        <StyledView style={styles.inputLabelContainer} onLayout={this._handleLayoutLabel}>
+          <StyledText style={styles.inputLabelText}>{label}</StyledText>
+        </StyledView>
 
         <TextInput
           ref={view => {
             this._input = view;
           }}
           {...props}
-          style={[styles.textInput, style]}
+          style={[styles.textInput, { color: this.context === 'dark' ? '#fff' : '#000' }, style]}
         />
 
         {this.state.labelWidth && this._renderGradientOverlay()}
-      </View>
+      </StyledView>
     );
   }
 }
@@ -90,27 +99,23 @@ export default class Form extends React.Component {
 
   render() {
     return (
-      <View {...this.props} style={[styles.formContainer, this.props.style]}>
+      <StyledView {...this.props} style={[styles.formContainer, this.props.style]}>
         {this.props.children}
-      </View>
+      </StyledView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   formContainer: {
-    backgroundColor: '#fff',
     borderTopWidth: 0.5,
     borderBottomWidth: 0.5,
-    borderColor: 'rgba(46, 59, 76, 0.10)',
   },
   inputContainer: {
     height: 50,
     marginHorizontal: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderColor: 'rgba(46, 59, 76, 0.10)',
   },
   inputContainerWithoutBorderBottom: {
     borderBottomWidth: 0,
