@@ -13,22 +13,25 @@ const _isValueValid = (value, validValues) => {
     return validValues.filter(validValue => validValue === value).length > 0;
 };
 // Returns array of missing keys in object. Returns an empty array if no missing keys are found.
-const _findMissingKeys = (object, requiredKeys) => {
-    return requiredKeys.filter(requiredKey => !(requiredKey in object));
+const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
+    for (let key in defaultAudioMode) {
+        if (!userAudioMode.hasOwnProperty(key)) {
+            userAudioMode[key] = defaultAudioMode[key];
+        }
+    }
+    return userAudioMode;
+};
+const defaultMode = {
+    allowsRecordingIOS: false,
+    interruptionModeIOS: INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+    playsInSilentModeIOS: false,
+    staysActiveInBackground: false,
+    interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+    shouldDuckAndroid: true,
+    playThroughEarpieceAndroid: true,
 };
 export async function setAudioModeAsync(mode) {
-    const missingKeys = _findMissingKeys(mode, [
-        'allowsRecordingIOS',
-        'interruptionModeIOS',
-        'playsInSilentModeIOS',
-        'staysActiveInBackground',
-        'interruptionModeAndroid',
-        'shouldDuckAndroid',
-        'playThroughEarpieceAndroid',
-    ]);
-    if (missingKeys.length > 0) {
-        throw new Error(`Audio mode attempted to be set without the required keys: ${JSON.stringify(missingKeys)}`);
-    }
+    mode = _populateMissingKeys(mode, defaultMode);
     if (!_isValueValid(mode.interruptionModeIOS, [
         INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         INTERRUPTION_MODE_IOS_DO_NOT_MIX,
