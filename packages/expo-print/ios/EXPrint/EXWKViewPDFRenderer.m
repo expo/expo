@@ -25,7 +25,7 @@
   CGRect initialFrame = webView.frame;
   UIView *initialSuperview = webView.superview;
   CGPoint initialContentOffset = webView.scrollView.contentOffset;
-  NSUInteger initialIndex = [webView.subviews indexOfObject:webView];
+  NSUInteger initialIndex = [webView.superview.subviews indexOfObject:webView];
 
   // Attach WebView to view hierarchy - otherwise nothing is rendered
   UIWindow *window = [UIApplication sharedApplication].keyWindow;
@@ -38,6 +38,8 @@
   [window addSubview:_containerView];
 
   UM_WEAKIFY(self);
+  // Questionable dispatch_after. Simple dispatch_async doesn't work, only divs are rendered properly then.
+  // (Tested with some position:absolute colorful divs) Text is rendered only when dispatched after a timeout.
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     [webView evaluateJavaScript:@"document.body.scrollHeight;" completionHandler:^(id jsValue, NSError * _Nullable error) {
       UM_ENSURE_STRONGIFY(self);

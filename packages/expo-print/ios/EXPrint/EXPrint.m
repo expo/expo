@@ -328,6 +328,7 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
 
 - (CGSize)_paperSizeFromOptions:(NSDictionary *)options
 {
+  // defaults to pixel size for A4 paper format with 72 PPI
   CGSize paperSize = CGSizeMake(kLetterPaperSize.width, kLetterPaperSize.height);
 
   if (options[@"width"]) {
@@ -340,10 +341,9 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
 
   if ([options[@"orientation"] isEqualToString:@"landscape"]) {
     // Make height the lesser dimension if the orientation is landscape.
-    paperSize = CGSizeMake(
-                                 fmax(paperSize.width, paperSize.height),
-                                 fmin(paperSize.width, paperSize.height)
-                                 );
+    CGFloat biggerValue = fmax(paperSize.width, paperSize.height);
+    CGFloat smallerValue = fmin(paperSize.width, paperSize.height);
+    paperSize = CGSizeMake(biggerValue, smallerValue);
   }
 
   return paperSize;
