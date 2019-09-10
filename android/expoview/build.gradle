@@ -245,6 +245,9 @@ dependencies {
   // See explanation in expo-av/build.gradle
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
 
+  // expo-application
+  api 'com.android.installreferrer:installreferrer:1.0'
+
   //dbflow
   annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
   compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
