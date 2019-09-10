@@ -9,6 +9,7 @@
     "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
     "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
     "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
+    "test:web:debug": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
     "test:web": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
     "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.json",
     "web": "expo start --web",
@@ -55,7 +56,8 @@
     "expo-ads-admob",
     "expo-video-thumbnails",
     "expo-module-template",
-    "expo-in-app-purchases"
+    "expo-in-app-purchases",
+    "expo-apple-authentication"
   ],
   "detox": {
     "configurations": {

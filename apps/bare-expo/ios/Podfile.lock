@@ -1,5 +1,5 @@
 PODS:
-  - Amplitude-iOS (4.7.1)
+  - Amplitude-iOS (4.8.0)
   - Analytics (3.7.0)
   - AppAuth (1.2.0):
     - AppAuth/Core (= 1.2.0)
@@ -488,7 +488,7 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
+  Amplitude-iOS: 2f704f85db0a6ded42cdeadb8aa0918d68019db1
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
