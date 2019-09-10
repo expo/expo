@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/filesystem/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/universal"
   },
   "dependencies": {
     "uuid-js": "^0.7.5"
