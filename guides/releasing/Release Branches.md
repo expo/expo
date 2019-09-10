@@ -1,6 +1,6 @@
 # Release Branches
 
-The release process begins when we decide that the clients and libraries on the master branch are ready for the next release. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
+The release process begins when we decide that the clients and libraries on the master branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
 
 The release branch is named `sdk-XX` and is based on master. The main purpose of the release branch is to release new versions of the clients and libraries; we use the release branch to build the clients we submit to the app stores and to publish our JS libraries to npm.
 
@@ -37,6 +37,10 @@ Sometimes code on master will be significantly different than code on a release 
 It’s OK to write the fix on your local copy of the release branch if it’s easier to develop that way. If a tree falls in a forest and no one is around to hear it, does it make a sound? But when it comes time to send the commit for code review and push it to GitHub, commit it to the master branch first.
 
 Note that even with these edge cases, we always preserve the unidirectional commit invariant.
+
+# Versioning Android and iOS Code
+
+When we version the native SDK code, we need to be able to test that versioned code and commit it to master without new commits to master breaking the versioned code. We defer merging high-risk commits or commits that affect many files until after the versioned code has been committed. This time period should be very short so the team can commit to master as usual as soon as possible.
 
 # Incrementing Version Numbers
 
