@@ -7,6 +7,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 📚 3rd party library updates
 
 ### 🛠 Breaking changes
+
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync) ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 - Google Mobile Ads now require `expo.[platform].config.googleMobileAdsAppId` configuration value present in `app.json`. The value can be found by following the guide in [this Google Support answer](https://support.google.com/admob/answer/7356431). ([#5447](https://github.com/expo/expo/pull/5447)) by [@sjchmiela](https://github.com/sjchmiela)
 - Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
@@ -33,6 +34,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - fixed crashes when adding attachments with `MailComposer` by [@sjchmiela](https://github.com/sjchmiela) ([#5449](https://github.com/expo/expo/pull/5449))
 - fixed `ImagePicker.launchImageLibraryAsync` not working on iOS 13. ([#5434](https://github.com/expo/expo/pull/5434) by [@tsapeta](https://github.com/tsapeta))
 - fixed `ImaheManipulator.manipulateAsync` not working with local paths by [@bbarthec](https://github.com/bbarthec) ([#5531](https://github.com/expo/expo/pull/5531))
+- fixed `Audio.setAudioModeAsync` to auto-fill with default values (stated in docs), rather than throwing an Error by [@cruzach](https://github.com/cruzach) ([#5593](https://github.com/expo/expo/pull/5593))
 
 ## 34.0.0
 
