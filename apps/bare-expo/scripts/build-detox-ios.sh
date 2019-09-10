@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# This script is design to wrap the xcodebuild command
+# and exit with non-zero if the build fails. 
+#
+# This ensures that CI fails on the correct step 
+# instead of attempting to run Detox tests without a build.
 
 set -e
 
