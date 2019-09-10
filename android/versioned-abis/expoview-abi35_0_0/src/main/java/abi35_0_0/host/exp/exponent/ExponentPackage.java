@@ -12,9 +12,9 @@ import abi35_0_0.com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.SingletonModule;
 import abi35_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi35_0_0.org.unimodules.core.interfaces.Package;
-import abi35_0_0.org.unimodules.core.interfaces.SingletonModule;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ import java.util.Set;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.utils.ScopedContext;
 import abi35_0_0.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import abi35_0_0.host.exp.exponent.modules.api.KeyboardModule;

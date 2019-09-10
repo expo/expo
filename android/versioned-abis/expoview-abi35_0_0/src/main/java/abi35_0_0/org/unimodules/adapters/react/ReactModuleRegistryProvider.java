@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
   private Collection<ViewManager> mViewManagers;
-  private Collection<com.facebook.react.uimanager.ViewManager> mReactViewManagers;
+  private Collection<abi35_0_0.com.facebook.react.uimanager.ViewManager> mReactViewManagers;
   private Collection<SingletonModule> mSingletonModules;
 
   public ReactModuleRegistryProvider(List<Package> initialPackages, List<SingletonModule> singletonModules) {
@@ -78,7 +78,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
     return mViewManagers;
   }
 
-  /* package */ Collection<com.facebook.react.uimanager.ViewManager> getReactViewManagers(ReactApplicationContext context) {
+  /* package */ Collection<abi35_0_0.com.facebook.react.uimanager.ViewManager> getReactViewManagers(ReactApplicationContext context) {
     if (mReactViewManagers != null) {
       return mReactViewManagers;
     }
