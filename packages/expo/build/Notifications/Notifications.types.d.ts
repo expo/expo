@@ -10,7 +10,7 @@ export declare type LocalNotification = {
     data?: any;
     categoryId?: string;
     ios?: {
-        sound?: boolean;
+        sound?: boolean | string;
         _displayInForeground?: boolean;
     };
     android?: {
@@ -26,7 +26,7 @@ export declare type Channel = {
     name: string;
     description?: string;
     priority?: string;
-    sound?: boolean;
+    sound?: boolean | string;
     vibrate?: boolean | number[];
     badge?: boolean;
 };
