@@ -25,14 +25,14 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'Crashlytics', '~> 3.13.4'
     ss.dependency 'FBAudienceNetwork', '5.5.0'
-    ss.dependency 'FBSDKCoreKit', '~> 5.4.1'
-    ss.dependency 'FBSDKLoginKit', '~> 5.4.1'
+    ss.dependency 'FBSDKCoreKit', '~> 5.5'
+    ss.dependency 'FBSDKLoginKit', '~> 5.5'
     ss.dependency 'Fabric', '~> 1.10.2'
     ss.dependency 'GoogleSignIn', '~> 5.0'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
-    ss.dependency 'Branch', '~> 0.27.1'
+    ss.dependency 'Branch', '~> 0.28'
     ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.49.0'
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 

@@ -38,19 +38,18 @@
 
 + (NSArray<NSString *> *)getClassNames
 {
+  NSMutableArray<NSString *> *classNames = [NSMutableArray new];
   unsigned int numClasses;
   Class *classes = objc_copyClassList(&numClasses);
-  NSMutableArray<NSString *> *classNames = [NSMutableArray new];
 
   if (numClasses > 0) {
-    NSString *className;
-    Class singleClass = nil;
     for (int i = 0; i < numClasses; i++) {
-      singleClass = classes[i];
-      const char *name = class_getName(singleClass);
-      className = [NSString stringWithUTF8String:name];
-      if ([className containsString:@"FBSDK"]) {
-        [classNames addObject:className];
+      const char *name = class_getName(classes[i]);
+      if (name != NULL) {
+        NSString *className = [NSString stringWithUTF8String:name];
+        if ([className hasPrefix:@"FBSDK"] || [className hasPrefix:@"_FBSDK"]) {
+          [classNames addObject:className];
+        }
       }
     }
     free(classes);

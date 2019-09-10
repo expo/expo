@@ -88,7 +88,8 @@ typedef NS_ENUM(NSUInteger, FBSDKLoginBehavior)
     which present specialized SafariViewControllers. Falls back to plain SFSafariViewController (iOS 9 and 10) or Safari (iOS 8).
    */
   FBSDKLoginBehaviorBrowser = 0,
-} NS_SWIFT_NAME(LoginBehavior);
+} NS_SWIFT_NAME(LoginBehavior)
+DEPRECATED_MSG_ATTRIBUTE("All login flows utilize the browser. This will be removed in the next major release");
 
 /**
   `FBSDKLoginManager` provides methods for logging the user in and out.
@@ -119,7 +120,8 @@ NS_SWIFT_NAME(LoginManager)
 /**
   the login behavior
  */
-@property (assign, nonatomic) FBSDKLoginBehavior loginBehavior;
+@property (assign, nonatomic) FBSDKLoginBehavior loginBehavior
+DEPRECATED_MSG_ATTRIBUTE("All login flows utilize the browser. This will be removed in the next major release");
 
 /**
  Logs the user in or authorizes additional permissions.

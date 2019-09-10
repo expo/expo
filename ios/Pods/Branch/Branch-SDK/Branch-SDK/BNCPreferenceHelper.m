@@ -11,7 +11,6 @@
 #import "BNCConfig.h"
 #import "Branch.h"
 #import "BNCLog.h"
-#import "BNCFabricAnswers.h"
 #import "BranchConstants.h"
 #import "NSString+Branch.h"
 
@@ -676,19 +675,6 @@ static NSString * const BRANCH_PREFS_KEY_ANALYTICS_MANIFEST = @"bnc_branch_analy
 }
 
 #pragma mark - Count Storage
-
-- (void)updateBranchViewCount:(NSString *)branchViewID {
-    NSInteger currentCount = [self getBranchViewCount:branchViewID] + 1;
-    [self writeObjectToDefaults:[BRANCH_PREFS_KEY_BRANCH_VIEW_USAGE_CNT stringByAppendingString:branchViewID] value:@(currentCount)];
-}
-
-- (NSInteger)getBranchViewCount:(NSString *)branchViewID {
-    NSInteger count = [self readIntegerFromDefaults:[BRANCH_PREFS_KEY_BRANCH_VIEW_USAGE_CNT stringByAppendingString:branchViewID]];
-    if (count == NSNotFound){
-        count = 0;
-    }
-    return count;
-}
 
 - (void)saveBranchAnalyticsData:(NSDictionary *)analyticsData {
     if (_sessionID) {
