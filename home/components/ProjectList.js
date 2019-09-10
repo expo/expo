@@ -54,7 +54,7 @@ export default class ProjectList extends React.PureComponent {
 
   _renderContent = () => {
     return (
-      <
+      <FlatList
         data={this.props.data.apps}
         keyExtractor={this._extractKey}
         renderItem={this._renderItem}

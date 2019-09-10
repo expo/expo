@@ -12590,10 +12590,10 @@ react-navigation-shared-element@^0.5.0:
   dependencies:
     hoist-non-react-statics "^3.3.0"
 
-react-navigation-stack@1.6.0-alpha.0:
-  version "1.6.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.6.0-alpha.0.tgz#41d0888b9b24a8530ee5ab947df02a7652159863"
-  integrity sha512-1SinC2vKlAqQ+V2LSR1N2kI1Iqq3lI5G7uGdaipdOo3+JtM26Op2SIlfJykXm9nxSKX8my4M31lBGyyr94oVXg==
+react-navigation-stack@1.6.0-alpha.1:
+  version "1.6.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.6.0-alpha.1.tgz#763e04b2dd856fc7efc71f4907369385f5e3532d"
+  integrity sha512-g8Ck2qJJ+lp8b3HvOzbBMmrEEisi4wxq1O3E1mHl9lgFM0t2P6U2dlGt36efefANgtaRnmv6108tvwoBy7XtWg==
   dependencies:
     prop-types "^15.7.2"
 
