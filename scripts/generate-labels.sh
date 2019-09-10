@@ -2,7 +2,7 @@
 # Copyright 2019-present 650 Industries. All rights reserved.
 
 # exit when any command fails
-set -e
+set -euo pipefail
 
 # Erase current file
 echo "" > .github/labeler.yml 
