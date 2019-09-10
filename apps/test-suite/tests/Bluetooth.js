@@ -6,7 +6,7 @@ import * as Bluetooth from 'expo-bluetooth';
 //   nativeToJSON,
 //   Services,
 // } from 'expo-bluetooth-utils';
-import { Platform } from 'expo-core';
+import { Platform } from '@unimodules/core';
 
 const JSONToNative = () => {
   throw new Error('expo-bluetooth-utils is not ready.');
@@ -161,6 +161,14 @@ export async function test({
   beforeAll,
   jasmine,
 }) {
+  const isSupported = await Bluetooth.isSupportedAsync();
+
+  if (!isSupported) {
+    xdescribe('Bluetooth is not available on this device', () => {
+    });
+    return;
+  }
+
   await Bluetooth.requestPermissionAsync();
 
   const connected = await Bluetooth.getConnectedPeripheralsAsync();

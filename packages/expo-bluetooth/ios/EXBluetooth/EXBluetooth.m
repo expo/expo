@@ -9,6 +9,7 @@
 @interface EXBluetooth()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
 @property (nonatomic, assign) BOOL isObserving;
 @property (nonatomic, strong) EXBluetoothCentralManager *manager;
 

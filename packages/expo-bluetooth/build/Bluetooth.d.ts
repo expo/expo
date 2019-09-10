@@ -43,6 +43,7 @@ export declare function getDescriptorAsync({ peripheralUUID, serviceUUID, charac
     characteristicUUID: any;
     descriptorUUID: any;
 }): Promise<Descriptor>;
+export declare function isSupportedAsync(): Promise<boolean>;
 export declare function isScanningAsync(): Promise<boolean>;
 export declare function discoverServicesForPeripheralAsync(options: {
     id: string;

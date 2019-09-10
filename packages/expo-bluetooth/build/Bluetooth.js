@@ -1,4 +1,4 @@
-import { CharacteristicProperty, } from './Bluetooth.types';
+import { CharacteristicProperty, CentralState, } from './Bluetooth.types';
 import { AndroidGATTError, BluetoothError, invariant, invariantAvailability, invariantUUID, } from './errors';
 import ExpoBluetooth, { DELIMINATOR, EVENTS } from './ExpoBluetooth';
 import { _resetAllHandlers, addHandlerForID, addHandlerForKey, addListener, fireMultiEventHandlers, firePeripheralObservers, fireSingleEventHandlers, resetHandlersForKey, } from './localEventHandler';
@@ -183,6 +183,15 @@ export async function getDescriptorAsync({ peripheralUUID, serviceUUID, characte
         descriptorUUID,
     });
 }
+export async function isSupportedAsync() {
+    try {
+        const { state } = await getCentralAsync();
+        return state !== CentralState.Unsupported;
+    }
+    catch (error) {
+        return false;
+    }
+}
 export async function isScanningAsync() {
     const { isScanning } = await getCentralAsync();
     return isScanning;
@@ -238,17 +247,13 @@ export async function loadPeripheralAsync({ id }, skipConnecting = false) {
                     console.log('On Disconnect public callback', ...props);
                 },
             });
-            console.log('loadPeripheralAsync(): connected!');
             return loadPeripheralAsync(connectedPeripheral, true);
         }
-        console.log('loadPeripheralAsync(): NEVER CALL', peripheral.state);
         // This should never be called because in theory connectAsync would throw an error.
     }
     else if (peripheral.state === 'connected') {
-        console.log('loadPeripheralAsync(): _loadChildrenRecursivelyAsync!');
         await _loadChildrenRecursivelyAsync({ id: peripheralId });
     }
-    console.log('loadPeripheralAsync(): fully loaded');
     // In case any updates occured during this function.
     return getPeripherals()[peripheralId];
 }

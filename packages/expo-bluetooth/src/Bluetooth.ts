@@ -19,6 +19,7 @@ import {
   UUID,
   WriteCharacteristicOptions,
   ReadCharacteristicOptions,
+  CentralState,
 } from './Bluetooth.types';
 import {
   AndroidGATTError,
@@ -308,6 +309,15 @@ export async function getDescriptorAsync({
   });
 }
 
+export async function isSupportedAsync(): Promise<boolean> {
+  try {
+    const { state } = await getCentralAsync();
+    return state !== CentralState.Unsupported;
+  } catch (error) {
+   return false;
+  }
+}
+
 export async function isScanningAsync(): Promise<boolean> {
   const { isScanning } = await getCentralAsync();
   return isScanning;
@@ -387,17 +397,12 @@ export async function loadPeripheralAsync(
           console.log('On Disconnect public callback', ...props);
         },
       });
-      console.log('loadPeripheralAsync(): connected!');
       return loadPeripheralAsync(connectedPeripheral, true);
     }
-    console.log('loadPeripheralAsync(): NEVER CALL', peripheral.state);
     // This should never be called because in theory connectAsync would throw an error.
   } else if (peripheral.state === 'connected') {
-    console.log('loadPeripheralAsync(): _loadChildrenRecursivelyAsync!');
     await _loadChildrenRecursivelyAsync({ id: peripheralId });
   }
-  console.log('loadPeripheralAsync(): fully loaded');
-
   // In case any updates occured during this function.
   return getPeripherals()[peripheralId];
 }
