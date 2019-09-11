@@ -1,20 +1,5 @@
 #!/usr/bin/env bash
 
-# Install yarn globally if it doesn't exist
-if [ -z $(which yarn) ]; then
-  npm install -g yarn
-fi
-
-# Setup submodules
-git submodule update --init
-git submodule foreach --recursive git checkout .
-
-# Pull the large git files
-git lfs pull
-
-# Install the dependencies
-yarn
-
 # Required by ios
 # Downloading rncache can be fail easily, so we just copy it.
 # See node_modules/react-native/src/rncache.json

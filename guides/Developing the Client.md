@@ -2,19 +2,19 @@
 
 ## Introduction
 
-This is the source code for the Expo client app used to view experiences published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
+This is the source code for the Expo client app used to view projects published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
 
-To build the Expo client app, follow the instructions in the [Set Up](#set-up) section below. Use the [expo-cli](https://docs.expo.io/versions/latest/workflow/expo-cli) command line to use Expo's infrastructure to build your app.
+To build the Expo client app, follow the instructions in the [Setup](#setup) section below. Use the [Expo CLI](https://docs.expo.io/versions/latest/workflow/expo-cli) to use Expo's infrastructure to build your app.
 
 Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
 
 **Disclaimers:**
 
-If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/). You're in the wrong place, you shouldn't need to build the Expo clients from source.
+If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/). You're in the wrong place and you shouldn't need to build the Expo clients from source.
 
-If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/expokit/eject). You're in the wrong place, you shouldn't need to build the Expo clients from source.
+If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/expokit/eject). You're in the wrong place and you shouldn't need to build the Expo clients from source.
 
-## Set Up
+## Configuring your environment
 
 Note: We support building the clients only on macOS.
 
@@ -24,14 +24,14 @@ Note: We support building the clients only on macOS.
 - Run `yarn` in the root and `tools-public` directories.
 - Run `yarn build` in the `packages/expo` directory.
 
-#### iOS
+### iOS
 
 - Make sure you have latest non-beta Xcode installed.
 - Run `git lfs pull`.
 - Run `et ios-generate-dynamic-macros`.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
-#### Android
+### Android
 
 - Make sure you have Android Studio 3 installed
 - Run `android/install-ndk-17c.sh` to get the required version of the Android NDK.
@@ -63,7 +63,7 @@ If you need standalone apps as built by running `expo build:ios` or `expo build:
 
 If you're still here, you need to build a standalone app with code currently on `master` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
-#### Android
+### Android
 
 The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
 
@@ -74,7 +74,7 @@ Here are the steps to build a standalone Android app:
 - If you don't want a signed `.apk`, run `et android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience]`.
 - The `.apk` file will be at `/tmp/shell-signed.apk` for a signed `.apk` or at `/tmp/shell-debug.apk` for an unsigned `.apk`.
 
-#### iOS
+### iOS
 
 The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Expo iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo experience rather than as the Expo client app.
 

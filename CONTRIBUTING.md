@@ -24,14 +24,14 @@ As you might imagine web code is very easy to test and contribute to, so that's 
 
    <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
 
-   - Download submodules (like `react-native`)
-   - Setup _git large-file-system_ which we use for big native libraries like Google Mobile Vision
+   - Downloads submodules (like `react-native`) with `git submodule update --init`
+   - Fetches files with [_git lfs_](https://git-lfs.github.com), which we use for big native libraries like Google Mobile Vision. Note: you must have `git lfs` already installed.
    - Ensure yarn is installed
    - Ensure your computer is setup for `React Native` (Will install the Android NDK if it's not present)
    - Downloads the node modules (`yarn install`)
 
-3. Navigate to the demo React Native project `cd apps/bare-expo`
-4. Run the demo on any platform (Maybe start with web; it's the fastest! 😁)
+3. Navigate to the bare sandbox project `cd apps/bare-expo`
+4. Run the project on any platform (maybe start with web; it's the fastest! 😁)
 
    - Web: `yarn web`
    - iOS: `yarn ios`
@@ -41,15 +41,15 @@ As you might imagine web code is very easy to test and contribute to, so that's 
 
 ## ✏️ Editing Packages
 
-All of our packages (Unimodules) can be found in the `packages/` directory. These packages are universally linked to the projects in the `apps/` directory (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). `bare-expo` is a Bare-Workflow React Native app that acts as a runner for the other projects in the `apps/` directory.
+All of our packages (including Foundation Unimodules) can be found in the `packages/` directory. These packages are universally linked to the projects in the `apps/` directory (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). `bare-expo` is a bare-workflow Expo app that acts as a runner for the other projects in the `apps/` directory.
 
-- `native-component-list`: This is where you can write demos or tests that require physical interaction (A good playground for testing).
-- `test-suite`: You can write your E2E tests in here, when pushed to the remote, CI will run this project in Device Farm for Android, Detox for iOS, and Puppeteer for web!
+- `native-component-list`: This is where you can write demos or tests that require physical interaction (a good playground for testing).
+- `test-suite`: You can write your E2E tests in here. When pushed to the remote, CI will run this project with Device Farm for Android, Detox for iOS, and Puppeteer for web!
 
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
 2. Start the TypeScript build in watch mode: `yarn build`
 3. Edit code in that package's `src/` directory
-4. Play with your changes on a Simulator or device through `bare-expo`:
+4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
    - Run the code from the `bare-expo` project with `yarn <android | ios | web>` or test the code with `yarn test:<ios | web>`
 5. You can edit the native code by opening the projects in their respective editors:
@@ -57,32 +57,36 @@ All of our packages (Unimodules) can be found in the `packages/` directory. Thes
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
 
-**Extra Credit**
+### Extra Credit
 
 - [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (This will only enable the shake gesture, CMD+R won't work yet).
-- We use a fork of `react-native` in this repo, this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want).
-- All of the package's `build/` code should be committed. This is because working with native code can make things very unpredictable, we found this is the best way to cut down on confusion.
-- We use a unified set of basic bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Flow, Babel, Jest, etc...).
+- We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want).
+- All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozen of packages locally on every `git pull` or `git checkout` operation.
+- We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
-### ⏱ Testing your changes
+## ⏱ Testing your changes
 
-The best way to get your changes merged is to build good tests for them! We have three different kinds of tests: unit-tests, automated E2E-tests, and demos (Adding tests that you notice are missing is a great way to become my friend 🥳)!
+The best way to get your changes merged is to build good tests for them! We have three different kinds of tests: unit-tests, automated E2E tests, and demos (adding tests that you notice are missing is a great way to become my friend 🥳)!
 
-- Unit-testing:
-  - Create a test for your feature in the appropriate package's `src/__tests__` (If the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
-  - Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `-test.ios.ts`, `-test.native.ts`, `-test.web.ts`...
-  - You can also test platforms one at a time by pressing `"X"` and selecting the platform you want to test!
-- E2E-testing:
-  - Write your tests in `apps/test-suite/tests`
-    - These tests are written with a non-feature complete version of jasmine that runs on native, so no special features like snapshot testing will be available.
-    - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`. This is where you can do platform exclusion. Use `global.DETOX` to test for iOS tests, and `ExponentTest.isInCI` to test for Android Device Farm.
-  - Run your tests locally from the `bare-expo` directory with `yarn test:ios`, or `yarn test:web`.
-    - For the moment Android Detox is not setup, but you can still run the project in an emulator or on a device to test it.
-    - It's important you test locally because native CI tests can be fragile, take a while to finish, and be frustrating when they fail.
-    - When testing for web, you can set `headless: false` in the `apps/bare-expo/jest-puppeteer.config.js` to watch the tests live. You can also execute `await jestPuppeteer.debug();` in `apps/bare-expo/e2e/TestSuite-test.web.js` to pause the tests and debug them!
-  - Remember to try and get your feature running on as many platforms as possible.
+### ✅ Unit Testing
+
+1. Create a test for your feature in the appropriate package's `src/__tests__` directory (if the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
+2. Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `-test.ios.ts`, `-test.native.ts`, `-test.web.ts`...
+3. You can also test platforms one at a time by pressing `X` and selecting the platform you want to test!
+
+### 🏁 E2E Testing
+
+1. Write your tests in `apps/test-suite/tests`
+   - These tests are written with a non-feature-complete version of Jasmine that runs on the Android and iOS clients, so no special features like snapshot testing will be available.
+   - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`. This is where you can do platform exclusion. Use `global.DETOX` to test for iOS tests, and `ExponentTest.isInCI` to test for Android Device Farm.
+2. Run your tests locally from the `bare-expo` directory with `yarn test:ios`, or `yarn test:web`.
+    <!-- TODO(Bacon): Remove once Android Detox is setup -->
+   - For the moment Android Detox is not set up, but you can still run the project in an emulator or on a device to test it.
+   - It's important you test locally because native CI tests can be fragile, take a while to finish, and be frustrating when they fail.
+   - When testing for web, you can set `headless: false` in the `apps/bare-expo/jest-puppeteer.config.js` to watch the tests live. You can also execute `await jestPuppeteer.debug();` in `apps/bare-expo/e2e/TestSuite-test.web.js` to pause the tests and debug them!
+3. Remember to try and get your feature running on as many platforms as possible.
 
 Thanks again for helping to make sure that Expo is stable for everyone!
 
@@ -104,22 +108,22 @@ To help keep CI green, please make sure of the following ():
 - Remember to add a concise description of the change to [CHANGELOG.md](/CHANGELOG.md). This is especially helpful for breaking changes!
 - If you modified anything in `packages/`:
   - You transpiled the TypeScript with `yarn build` in the directory of whichever package you modified.
-  - Run `yarn lint --fix` to fix the formatting of the code.
+  - Run `yarn lint --fix` to fix the formatting of the code. Ensure that `yarn lint` succeeds without errors or warnings.
   - Run `yarn test` to ensure all existing tests pass for that package, along with any new tests you would've written.
   - All `console.log`s or commented out code blocks are removed! :]
 - If you edited the `docs/`:
   - Any change to the current SDK version should also be in the unversioned copy as well. Example:
-    - You fixed a typo in `docs/pages/versions/v34.0.0/sdk/app-auth.md` (latest at the time of writing this)
+    - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
     - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
-  - You don't need to run the docs tests locally, just ensure the links you include aren't broken, and the format is correct!
+  - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, and the format is correct!
 
-**Extra Credit**
+### Extra Credit
 
-- Our CI tests will halt if you didn't make changes to certain directories. If you want to **get results faster** then you should make changes to `docs/` in one PR, and changes to anything else in another!
+- Our CI tests will finish early if you didn't make changes to certain directories. If you want to **get results faster** then you should make changes to `docs/` in one PR, and changes to anything else in another!
 
 ## Expo client
 
-Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
+Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client and the types of PRs that we accept so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
 
 ---
 
