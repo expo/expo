@@ -17,12 +17,12 @@ on:
       - '!*.md'
   pull_request:
     paths:
-      # - '*'
+      - '*'
       - '!*.md'
-      - '.github/**/*'
-      - 'packages/**/*'
-      - 'react-native-lab/**/*'
-      - 'tools/**/*'
+      # - '.github/**/*'
+      # - 'packages/**/*'
+      # - 'react-native-lab/**/*'
+      # - 'tools/**/*'
 
 jobs:
   check-packages:
