@@ -355,7 +355,7 @@ public class NotificationHelper {
 
         channel.setSound(soundUri, audioAttributes);
       } else {
-        // Do nothing, since having sound is on by default for channels.
+        // Do nothing, since sound is on by default for channels.
       }
 
       if (vibrate != null) {

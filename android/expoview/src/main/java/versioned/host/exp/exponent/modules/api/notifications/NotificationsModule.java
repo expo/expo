@@ -204,7 +204,10 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
           data.toHashMap());
       promise.resolve(null);
     } catch (Resources.NotFoundException e) {
-      promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel: custom sound file not found. Make sure you have entered the correct filename as well as set up bundledSound correctly. URL here.", e);
+      promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel: " +
+          "the audio file is not found. Make sure you have entered the correct filename " +
+          "as well as set up `notification.bundledSounds` correctly in `app.json`. " +
+          "Learn more here: https://docs.expo.io/versions/latest/sdk/notifications/#usecustomnotificationalertsounds.", e);
     } catch (Exception e) {
       promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel", e);
     }
