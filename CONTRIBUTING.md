@@ -1,5 +1,18 @@
 # Contributing to Expo
 
+- [📦 Download and Setup](#---download-and-setup)
+- [✏️ Editing Packages](#---editing-packages)
+  - [⏱ Testing your changes](#--testing-your-changes)
+- [📚 Updating Documentation](#---updating-documentation)
+- [🔎 Before Submitting](#---before-submitting)
+- [Expo client](#expo-client)
+- [Code reviews](#code-reviews)
+- [Updating the changelog](#updating-the-changelog)
+- [Writing a commit message](#writing-a-commit-message)
+- [Guidance](#guidance)
+  - [On coherent pull requests](#on-coherent-pull-requests)
+  - [On maintainable code](#on-maintainable-code)
+
 Thanks so much for coming to help! Currently we accept PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/` and markdown files. Because the native clients (`ios/`, `android/`) are so articulate you may not find that much progress can be made externally (but you're always allowed to try!). We've moved most of the fun code out of the client anyways to support the bare-workflow, this means that you'll do the majority of your native testing in a \*regular React Native project.
 
 As you might imagine web code is very easy to test and contribute to, so that's all on the table! You may find that some of the web features you're looking for are actually in the [expo-cli repo](https://github.com/expo/expo-cli).
@@ -7,15 +20,22 @@ As you might imagine web code is very easy to test and contribute to, so that's 
 ## 📦 Download and Setup
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
-2. Install yarn: `npm install -g yarn`
-3. Install the dependencies: `yarn`
-4. Configure your device for React Native: `yarn setup`
-5. Navigate to the demo React Native project `cd apps/bare-expo`
-6. Run the demo on any platform (Maybe start with web; it's the fastest! 😁)
+2. Run the setup script with: `npm run setup`
 
-- Web: `yarn web`
-- iOS: `yarn ios`
-- Android: `yarn android`
+   <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
+
+   - Download submodules (like `react-native`)
+   - Setup _git large-file-system_ which we use for big native libraries like Google Mobile Vision
+   - Ensure yarn is installed
+   - Ensure your computer is setup for `React Native` (Will install the Android NDK if it's not present)
+   - Downloads the node modules (`yarn install`)
+
+3. Navigate to the demo React Native project `cd apps/bare-expo`
+4. Run the demo on any platform (Maybe start with web; it's the fastest! 😁)
+
+   - Web: `yarn web`
+   - iOS: `yarn ios`
+   - Android: `yarn android`
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
 
@@ -39,6 +59,8 @@ All of our packages (Unimodules) can be found in the `packages/` directory. Thes
 
 **Extra Credit**
 
+- [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
+- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (This will only enable the shake gesture, CMD+R won't work yet).
 - We use a fork of `react-native` in this repo, this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want).
 - All of the package's `build/` code should be committed. This is because working with native code can make things very unpredictable, we found this is the best way to cut down on confusion.
@@ -94,6 +116,10 @@ To help keep CI green, please make sure of the following ():
 **Extra Credit**
 
 - Our CI tests will halt if you didn't make changes to certain directories. If you want to **get results faster** then you should make changes to `docs/` in one PR, and changes to anything else in another!
+
+## Expo client
+
+Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
 
 ---
 
