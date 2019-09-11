@@ -17,7 +17,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - Added `expo-network` unimodule that provides device's network information such as its IP address or airplane mode status. ([#5533](https://github.com/expo/expo/pull/5074) by [@ninjaachibi](https://github.com/ninjaachibi))
 - Added `expo-cellular` unimodule that provides information about the user's cellular service provider. ([#5098](https://github.com/expo/expo/pull/5098) by [@vivianzzhu91](https://github.com/vivianzzhu91]))
-- Added `expo-battery` unimodule providing informations about the physical device's battery. ([#4804](https://github.com/expo/expo/pull/4804) by [@ninjaachibi](https://github.com/ninjaachibi) and [@vivianzzhu91](https://github.com/vivianzzhu91])) 
+- Added `expo-battery` unimodule providing informations about the physical device's battery. ([#4804](https://github.com/expo/expo/pull/4804) by [@ninjaachibi](https://github.com/ninjaachibi) and [@vivianzzhu91](https://github.com/vivianzzhu91]))
 - Added `expo-apple-authentication` unimodule providing "Sign In with Apple" functionality. ([#5421](https://github.com/expo/expo/pull/5421) by [@matt-oakes](https://github.com/matt-oakes), [@vonovak](https://github.com/vonovak), [@bbarthec](https://github.com/bbarthec), [@esamelson](https://github.com/esamelson) and [@tsapeta](https://github.com/tsapeta))
 - Added [`react-native-shared-element`](https://github.com/IjzerenHein/react-native-shared-element) to Expo client and standalone apps. ([#5533](https://github.com/expo/expo/pull/5533) by [@brentvatne](https://github.com/brentvatne))
 - Added an option which allows displaying notifications in foreground on iOS. ([#4802](https://github.com/expo/expo/pull/4802) by [@hesyifei](https://github.com/hesyifei))
@@ -40,6 +40,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed crashes when adding attachments with `MailComposer`. ([#5449](https://github.com/expo/expo/pull/5449) by [@sjchmiela](https://github.com/sjchmiela))
 - Fixed `ImagePicker.launchImageLibraryAsync` not working on iOS 13. ([#5434](https://github.com/expo/expo/pull/5434) by [@tsapeta](https://github.com/tsapeta))
 - Fixed `ImageManipulator.manipulateAsync` not working with local paths. ([#5531](https://github.com/expo/expo/pull/5531) by [@bbarthec](https://github.com/bbarthec))
+- Fixed `Camera#onBarCodeScanned` not firing when added at first rendering ([#5606](https://github.com/expo/expo/pull/5606) by [@bbarthec](https://github.com/bbarthec))
 
 ## 34.0.0
 
