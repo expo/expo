@@ -181,7 +181,7 @@ An object used to describe the local notification that you would like to present
 - **data (_optional_) (_object_)** -- any data that has been attached with the notification.
 - **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 - **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
-  - **sound** (_optional_) (_boolean_ or _string_) -- if `true`, notifications posted to this channel will play a sound (the system's default sound). If a string, the custom audio file will be played (you will also have to make some changes to `app.json`, see [below](#usecustomnotificationsoundfiles)). Default: `false`.
+  - **sound** (_optional_) (_boolean_ or _string_) -- if `true`, notifications posted to this channel will play a sound (the system's default sound). If a string, the specified custom audio file will be played (you will also have to make some changes to `app.json`, see [below](#usecustomnotificationalertsounds)). Default: `false`.
   - **_displayInForeground** (_optional_) (_boolean_) -- if `true`, display the notification when the app is foreground. Default: `false`.
 - **android (_optional_) (_object_)** -- notification configuration specific to Android.
   - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
@@ -196,7 +196,7 @@ An object used to describe an Android notification channel that you would like t
 
 - **name (_string_)** -- user-facing name of the channel (or "category" in the Settings UI). Required.
 - **description (_optional_) (_string_)** -- user-facing description of the channel, which will be displayed in the Settings UI.
-- **sound (_optional_) (_boolean_ or _string_)** -- if `true`, notifications posted to this channel will play a sound (the system's default sound). If a string, the custom audio file will be played (you will also have to make some changes to `app.json`, see [below](#usecustomnotificationsoundfiles)). Default: `false`.
+- **sound (_optional_) (_boolean_ or _string_)** -- if `true`, notifications posted to this channel will play a sound (the system's default sound). If a string, the specified custom audio file will be played (you will also have to make some changes to `app.json`, see [below](#usecustomnotificationalertsounds)). Default: `false`.
 - **priority (_optional_) (_min | low | default | high | max_)** -- Android may present notifications in this channel differently according to the priority. For example, a `high` priority notification will likely to be shown as a heads-up notification. Note that the Android OS gives no guarantees about the user-facing behavior these abstractions produce -- for example, on many devices, there is no noticeable difference between `high` and `max`.
 - **vibrate (_optional_) (_boolean_ or _array_)** -- if `true`, vibrate the device whenever a notification is posted to this channel. An array can be supplied instead to customize the vibration pattern, e.g. - `[ 0, 500 ]` or `[ 0, 250, 250, 250 ]`. Default: `false`.
 - **badge (_optional_) (_boolean_)** -- if `true`, unread notifications posted to this channel will cause the app launcher icon to be displayed with a badge on Android 8.0+. If `false`, notifications in this channel will never cause a badge. Default: `true`.
@@ -238,13 +238,13 @@ A Promise that resolves to an object with the following fields:
 - `E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG` - (web only) you did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/))
 - `E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED` - (web only) the device was unable to register for remote notifications with the browser endpoint.
 
-### Use custom notification sound files
+### Use custom notification alert sounds
 
-Note that custom notification sound files will only work in the standalone build. If the notification is send to the Expo client, you will always hear the default sound.
+> Note that custom notification alert sounds will only work in the standalone build. If the notification is sent to the Expo client, you will always hear the default sound.
+>
+> You should use `.wav` audio format since it is supported by both iOS and Android.
 
-Only `.wav` file is supported by both iOS and Android.
-
-In `app.json`:
+To use custom notification alert sounds, you have to first add the path(s) to your audio file(s) to the `expo.notification.bundledSounds` array in `app.json`:
 
 ```jsonc
 {
@@ -252,22 +252,25 @@ In `app.json`:
     // ...
     "notification": {
       // ...
-      "bundledSounds": ["./assets/sound1.wav", "./assets/sound2.wav"]
+      "bundledSounds": [
+        "./assets/sound1.wav",
+        "./assets/sound2.wav"
+      ]
     }
+  }
 }
 ```
 
-For Android channel:
+Then when referring to the sound file in your app, you should use the filename only (including the extension, but without any directory). Here is an example:
+
 ```js
 Notifications.createChannelAndroidAsync('mychannel', {
   // ...
   sound: 'sound1.wav'
-})
-```
+});
 
-For local notification:
+// ...
 
-```js
 Notifications.presentLocalNotificationAsync({
   // ...
   ios: {
@@ -279,25 +282,15 @@ Notifications.presentLocalNotificationAsync({
 });
 ```
 
-For push notification:
+Similarly, for push notifications:
 
-```json
-[
-  {
-    "to": "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]",
-    "body": "With no sound"
-  },
-  {
-    "to": "ExponentPushToken[bbbbbbbbbbbbbbbbbbbbbb]",
-    "sound": "default",
-    "body": "With default sound"
-  },
-  {
-    "to": "ExponentPushToken[cccccccccccccccccccccc]",
-    "sound": "sound2.wav",
-    "body": "With custom sound"
-  }
-]
+```jsonc
+{
+  "to": "ExponentPushToken[aaaaaaaaaaaaaaaaaaaaaa]",
+  // ...
+  "sound": "sound1.wav",
+  "channelId": "mychannel"
+}
 ```
 
 ## Error Codes

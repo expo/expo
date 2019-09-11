@@ -434,11 +434,12 @@ type PushMessage = {
   subtitle?: string,
 
   /**
-   * A sound to play when the recipient receives this notification. Specify
-   * "default" to play the device's default notification sound, omit this
-   * field to play no sound, or specify a filename (without any directory).
-   * If you wish to use a custom file, you should also set path to those files
-   * in `notification.bundledSounds` in `app.json`.
+   * A sound to play when the recipient receives this notification.
+   * - Omit this field to play no sound;
+   * - Specify "default" to play the device's default notification sound; or
+   * - Specify a filename (without any directory) to play the custom notification
+   *   alert sound. You will also need to make some changes to `app.json`: see
+   *   https://docs.expo.io/versions/latest/sdk/notifications/#usecustomnotificationalertsounds
    *
    * Note that on apps that target Android 8.0+ (if using `expo build`, built
    * in June 2018 or later), this setting will have no effect on Android.
