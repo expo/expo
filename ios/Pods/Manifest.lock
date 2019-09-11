@@ -1613,7 +1613,6 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - AppAuth
-    - Branch
     - CocoaLumberjack
     - Crashlytics
     - Fabric

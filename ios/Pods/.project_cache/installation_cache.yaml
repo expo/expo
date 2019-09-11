@@ -4895,16 +4895,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7bebcd60871269f4f67a6c6c8f40f0a3
-      Release: 7bebcd60871269f4f67a6c6c8f40f0a3
+      Debug: 9b236b0eb669dd889248b9c48144e852
+      Release: 9b236b0eb669dd889248b9c48144e852
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1aeb8b1ccac3cd876fdb52df41d00242
-      Release: 1aeb8b1ccac3cd876fdb52df41d00242
+      Debug: e07e0c648356dd6dd5854888d248af8b
+      Release: e07e0c648356dd6dd5854888d248af8b
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1aeb8b1ccac3cd876fdb52df41d00242
-      Release: 1aeb8b1ccac3cd876fdb52df41d00242
+      Debug: e07e0c648356dd6dd5854888d248af8b
+      Release: e07e0c648356dd6dd5854888d248af8b
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: 984e9f934a23b843d02efe3856627b34
