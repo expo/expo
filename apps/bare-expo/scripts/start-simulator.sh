@@ -27,7 +27,7 @@ if [ "${CURRENT_ENV}" = "test" ]; then
         echo " ✅ Debug Detox project is built for iOS"
     else
         echo " ⚠️  Building the debug Detox project..."
-        yarn run ios:detox:build:debug --watch
+        yarn run ios:detox:build:debug
     fi
 
     echo " ☛  Opening the iOS simulator app"
@@ -36,7 +36,7 @@ if [ "${CURRENT_ENV}" = "test" ]; then
 
     echo " ☛  Starting Detox in watch mode"
     # Run our default E2E tests
-    yarn run ios:detox:test:debug
+    yarn run ios:detox:test:debug --watch
 else 
 
     echo " ☛  Running the iOS project..."
