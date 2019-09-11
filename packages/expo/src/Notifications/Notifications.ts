@@ -58,11 +58,6 @@ function _processNotification(notification) {
     }
 
     if (notification.ios) {
-      if (typeof notification.ios.sound === 'string' && notification.ios.sound !== 'default') {
-        // To use a custom audio file, we have to add the folder name too.
-        notification.ios.sound = `NotificationSounds/${notification.ios.sound}`;
-      }
-
       notification = Object.assign(notification, notification.ios);
       notification.data._displayInForeground = notification.ios._displayInForeground;
       delete notification.ios;

@@ -354,7 +354,14 @@ RCT_REMAP_METHOD(deleteCategoryAsync,
   content.body = payload[@"body"];
 
   if ([payload[@"sound"] isKindOfClass:[NSString class]]) {
-    content.sound = payload[@"sound"];
+    NSString *soundString = payload[@"sound"];
+    if ([soundString isEqualToString:@"default"]) {
+      content.sound = [UNNotificationSound defaultSound];
+    } else {
+      // To use the custom audio file, we have to add the folder name too.
+      NSString *soundName = [@"NotificationSounds/" stringByAppendingString:payload[@"sound"]];
+      content.sound = [UNNotificationSound soundNamed:soundName];
+    }
   } else if ([payload[@"sound"] boolValue]) {
     content.sound = [UNNotificationSound defaultSound];
   }
