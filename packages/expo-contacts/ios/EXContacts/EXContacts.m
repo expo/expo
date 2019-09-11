@@ -903,7 +903,12 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     
     if (fields == nil) {
         // If no fields are defined, get all fields.
-        fields = [mapping allKeys];
+      NSMutableArray *mutableFields = [[mapping allKeys] mutableCopy];
+
+      // Since iOS 13 `com.apple.developer.contacts.notes` entitlement is required to get contact's note, see here: https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes
+      [mutableFields removeObject:@"note"];
+
+      fields = mutableFields;
     } else {
         // Add default fields to our user defined fields.
         fields = [fields arrayByAddingObjectsFromArray:@[
