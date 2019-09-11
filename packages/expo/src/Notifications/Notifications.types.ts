@@ -1,3 +1,5 @@
+export type Sound = boolean | string;
+
 export type Notification = {
   origin: 'selected' | 'received';
   data: any;
@@ -12,7 +14,7 @@ export type LocalNotification = {
   data?: any;
   categoryId?: string;
   ios?: {
-    sound?: boolean | string;
+    sound?: Sound;
     _displayInForeground?: boolean;
   };
   android?: {
@@ -29,7 +31,7 @@ export type Channel = {
   name: string;
   description?: string;
   priority?: string;
-  sound?: boolean | string;
+  sound?: Sound;
   vibrate?: boolean | number[];
   badge?: boolean;
 };
