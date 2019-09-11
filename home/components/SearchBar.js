@@ -2,13 +2,9 @@
 
 import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import {
-  useTheme,
-  ThemeContext,
-  HeaderBackButton,
-  withNavigation,
-  withNavigationFocus,
-} from 'react-navigation';
+import { useTheme, ThemeContext, withNavigation, withNavigationFocus } from 'react-navigation';
+
+import { HeaderBackButton } from 'react-navigation-stack';
 
 import Colors from '../constants/Colors';
 import * as Kernel from '../kernel/Kernel';

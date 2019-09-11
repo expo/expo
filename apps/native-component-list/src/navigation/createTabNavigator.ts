@@ -1,2 +1,2 @@
-import { createBottomTabNavigator } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 export default createBottomTabNavigator;
