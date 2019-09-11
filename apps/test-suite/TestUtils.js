@@ -43,6 +43,9 @@ export function getTestModules() {
     require('./tests/Permissions')
   );
 
+  // Universally tested APIs
+  modules.push(require('./tests/Contacts'), require('./tests/Crypto'));
+
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
   }
@@ -54,7 +57,6 @@ export function getTestModules() {
   if (Platform.OS === 'web') {
     modules.push(
       optionalRequire(() => require('./tests/SVG')),
-      optionalRequire(() => require('./tests/Contacts')),
       optionalRequire(() => require('./tests/Crypto')),
       optionalRequire(() => require('./tests/Random')),
       optionalRequire(() => require('./tests/Localization'))
@@ -107,7 +109,7 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Contacts')));
+    modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
 

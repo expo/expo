@@ -24,6 +24,10 @@ const TESTS = [
       'Permissions',
     ],
   },
+  {
+    name: 'API',
+    tests: ['Contacts', 'Crypto'],
+  },
   // {
   //   name: 'Protected',
   //   tests: [],

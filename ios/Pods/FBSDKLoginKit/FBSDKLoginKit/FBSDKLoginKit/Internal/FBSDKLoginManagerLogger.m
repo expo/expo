@@ -93,15 +93,8 @@ static NSString *const FBSDKLoginManagerLoggerTryBrowser = @"trySafariAuth";
 {
   BOOL isReauthorize = ([FBSDKAccessToken currentAccessToken] != nil);
   BOOL willTryNative = NO;
-  BOOL willTryBrowser = NO;
-  NSString *behaviorString = nil;
-
-  switch (loginManager.loginBehavior) {
-    case FBSDKLoginBehaviorBrowser:
-      willTryBrowser = YES;
-      behaviorString = @"FBSDKLoginBehaviorBrowser";
-      break;
-  }
+  BOOL willTryBrowser = YES;
+  NSString *behaviorString = @"FBSDKLoginBehaviorBrowser";
 
   [_extras addEntriesFromDictionary:@{
     FBSDKLoginManagerLoggerTryNative : @(willTryNative),

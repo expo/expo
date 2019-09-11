@@ -26,12 +26,12 @@
   },
   {
     "name": "FBSDKCoreKit",
-    "version": "~> 5.4.1",
+    "version": "~> 5.5",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
     "name": "FBSDKLoginKit",
-    "version": "~> 5.4.1",
+    "version": "~> 5.5",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
@@ -56,7 +56,7 @@
   },
   {
     "name": "Branch",
-    "version": "~> 0.27.1"
+    "version": "~> 0.28"
   },
   {
     "name": "Google-Mobile-Ads-SDK",
