@@ -3,7 +3,7 @@
 name: SDK
 
 on:
-  pull_request
+  # pull_request
   # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
   # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
   push:
