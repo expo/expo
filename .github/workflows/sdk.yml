@@ -1,30 +1,32 @@
 # Useful resource: https://github.com/actions/starter-workflows
 
-name: Check Packages
+name: SDK
 
 on:
   pull_request
-  # # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
-  # # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
-  # push:
-  #   branches:
-  #     # If this isn't defined then all PR tests will be run twice
-  #     - master
-  #   paths:
-  #     - '*'
-  #     - '!*.md'
-  # pull_request:
-  #   paths:
-  #     - '*'
-  # - '!*.md'
-  # - '/.github/*'
-  # - '/packages/*'
-  # - '/react-native-lab/*'
-  # - '/tools/*'
+  # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
+  # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
+  push:
+    branches:
+      # If this isn't defined then all PR tests will be run twice
+      - master
+    paths:
+      # By default all files are excluded. 
+      # Include everything then exclude markdown
+      - '*'
+      - '!*.md'
+  pull_request:
+    paths:
+      - '*'
+      - '!*.md'
+      - '/.github/*'
+      - '/packages/*'
+      - '/react-native-lab/*'
+      - '/tools/*'
 
 jobs:
-  test:
-    name: Check Packages
+  check-packages:
+    name: Check packages
     strategy:
       matrix:
         # Run tests with all of these node versions/systems :]
@@ -40,17 +42,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Use HTTPS instead of SSH for submodule remotes
-        run:scripts/remap-submodules-to-https.sh .gitmodules > .gitmodules
+        run: scripts/remap-submodules-to-https.sh .gitmodules > .gitmodules
       - run: git submodule update --init
         env:
           CI: true
-      - run: yarn
+      - run: yarn --frozen-lockfile
         env:
           CI: true
       - name: Check packages
         run: tools/expotools/bin/expotools.js check-packages
         env:
-          LANG: en_US.UTF-8
-          FASTLANE_SKIP_UPDATE_CHECK: 1
-          FASTLANE_DISABLE_COLORS: 1
           CI: true
