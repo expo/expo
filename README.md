@@ -1,4 +1,4 @@
-[![Expo.io](/style/header.png)](https://expo.io)
+[![Expo](/style/header.png)](https://expo.io)
 
 
 <p align="center">
