@@ -1,26 +1,30 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXOta/EXOtaModule.h>
+#import <EXOta/EXKeyValueStorage.h>
 
 @interface EXOtaModule ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
-@implementation EXOtaModule
-
-EX_EXPORT_MODULE(ExpoOta);
-
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
+@implementation EXOtaModule {
+    EXKeyValueStorage *keyValueStorage;
 }
 
-EX_EXPORT_METHOD_AS(someGreatMethodAsync,
+UM_EXPORT_MODULE(ExpoOta);
+
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+{
+    _moduleRegistry = moduleRegistry;
+    keyValueStorage = [EXKeyValueStorage init];
+}
+
+UM_EXPORT_METHOD_AS(saveValueAsync,
                     options:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
 }
 

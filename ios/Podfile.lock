@@ -595,6 +595,8 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (0.0.1):
     - UMCore
+  - EXOta (6.0.0):
+    - UMCore
   - EXPermissions (6.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -1139,6 +1141,7 @@ DEPENDENCIES:
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXNetwork (from `../packages/expo-network/ios`)
+  - EXOta (from `../packages/expo-ota/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
@@ -1220,21 +1223,15 @@ DEPENDENCIES:
   - yogaABI34_0_0 (from `./versioned-react-native/ABI34_0_0/ReactCommon/ABI34_0_0yoga`)
 
 SPEC REPOS:
-  trunk:
-    - Amplitude-iOS
-    - Analytics
+  https://github.com/CocoaPods/Specs.git:
     - AppAuth
-    - boost-for-react-native
     - Branch
     - CocoaLumberjack
     - Crashlytics
     - Fabric
-    - FBAudienceNetwork
     - FBSDKCoreKit
-    - FBSDKLoginKit
     - Firebase
     - FirebaseAnalytics
-    - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
@@ -1242,22 +1239,39 @@ SPEC REPOS:
     - FirebaseMLVision
     - FirebaseMLVisionFaceModel
     - Google-Maps-iOS-Utils
-    - Google-Mobile-Ads-SDK
     - GoogleAPIClientForREST
-    - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleMaps
     - GoogleMobileVision
-    - GoogleSignIn
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - JKBigInteger2
-    - lottie-ios
     - nanopb
     - Protobuf
+  trunk:
+    - Amplitude-iOS
+    - Analytics
+    - AppAuth
+    - boost-for-react-native
+    - Branch
+    - FBAudienceNetwork
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - FirebaseCore
+    - Google-Maps-iOS-Utils
+    - Google-Mobile-Ads-SDK
+    - GoogleAPIClientForREST
+    - GoogleAppMeasurement
+    - GoogleMaps
+    - GoogleMobileVision
+    - GoogleSignIn
+    - GoogleUtilities
+    - GTMSessionFetcher
+    - lottie-ios
+    - nanopb
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
@@ -1611,6 +1625,9 @@ EXTERNAL SOURCES:
   EXNetwork:
     :path: !ruby/object:Pathname
     path: "../packages/expo-network/ios"
+  EXOta:
+    :path: !ruby/object:Pathname
+    path: "../packages/expo-ota/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../packages/expo-permissions/ios"
@@ -1870,6 +1887,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 801ebd0bfd0c6e743a69102168b35b00efa67277
   EXMediaLibrary: 0b9e6c90cd40f5d5df8b58c9f68665039a485146
   EXNetwork: be7e9060970126a0ee277b4bbc5ad59fe26e99a5
+  EXOta: 2707cc9e72c631070e08c49842c98bfcb51e2db4
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   EXPrint: ad5e463fbc7de12f44339685612d3fb086d936ab
   EXRandom: 805938db37fa1d66833cb9c0cf44fb54cd208b5a

@@ -1,0 +1,408 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0950EA690F96705097C7F08AFB5C449F /* EXOtaUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = F98FC11D56642318B3551A73AE93F963 /* EXOtaUpdater.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0A14591905DD2BF3E1C7802CB758D89F /* EXOta-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B032DABA086163B2D2825F28FD8383C8 /* EXOta-dummy.m */; };
+		0B80302E0AAC6600FF278AD2B5872D16 /* EXKeyValueStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F046A32553520543A72EB28F7D40A34E /* EXKeyValueStorage.m */; };
+		4634E988D772104F544229F2B1D82C13 /* EXOtaModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EF39FEC300B25EA79F7529DE33487FA3 /* EXOtaModule.m */; };
+		4A046C299B65E67CF47DDD9F412A35CB /* EXOtaUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = 099DDF158B1E45FE4DE9903A3F0D5951 /* EXOtaUpdater.m */; };
+		7DF02CAA6E1348E6A903A462DEBDC748 /* EXOtaModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 637217AE9E87B5010A64B1E3F69226ED /* EXOtaModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9DCCCCA605A87D2B1D95CB694A55C654 /* EXKeyValueStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DAE79B69E6030F5BAD43326CC9B8689 /* EXKeyValueStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		75BB76AFE92682A14D33A519AAD29F84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7799C7F7AB2F80C52CCFE3C372525F6F /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		099DDF158B1E45FE4DE9903A3F0D5951 /* EXOtaUpdater.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaUpdater.m; path = EXOta/EXOtaUpdater.m; sourceTree = "<group>"; };
+		17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXOta.xcconfig; sourceTree = "<group>"; };
+		42901338C01ACFBACD664E8B98D88A12 /* libEXOta.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXOta.a; path = libEXOta.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		637217AE9E87B5010A64B1E3F69226ED /* EXOtaModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaModule.h; path = EXOta/EXOtaModule.h; sourceTree = "<group>"; };
+		6DAA2BE1058E9D2973FDA0F7C4103DBB /* EXOta.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXOta.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		7799C7F7AB2F80C52CCFE3C372525F6F /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		9DAE79B69E6030F5BAD43326CC9B8689 /* EXKeyValueStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXKeyValueStorage.h; path = EXOta/EXKeyValueStorage.h; sourceTree = "<group>"; };
+		B032DABA086163B2D2825F28FD8383C8 /* EXOta-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXOta-dummy.m"; sourceTree = "<group>"; };
+		DFFBF0B81621F22FAF2AA8B7976AFAC4 /* EXOta-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXOta-prefix.pch"; sourceTree = "<group>"; };
+		EF39FEC300B25EA79F7529DE33487FA3 /* EXOtaModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaModule.m; path = EXOta/EXOtaModule.m; sourceTree = "<group>"; };
+		F046A32553520543A72EB28F7D40A34E /* EXKeyValueStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXKeyValueStorage.m; path = EXOta/EXKeyValueStorage.m; sourceTree = "<group>"; };
+		F98FC11D56642318B3551A73AE93F963 /* EXOtaUpdater.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaUpdater.h; path = EXOta/EXOtaUpdater.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3DC505833F9F2AB52DF35BF920580AFB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		20D42FC4A313C22E4BFC5982A0806281 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				7799C7F7AB2F80C52CCFE3C372525F6F /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		2D250F21126D2CDAF335FFA6E4D813AA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		77375786F06B777DFD86A2FADF767B85 /* EXOta */ = {
+			isa = PBXGroup;
+			children = (
+				9DAE79B69E6030F5BAD43326CC9B8689 /* EXKeyValueStorage.h */,
+				F046A32553520543A72EB28F7D40A34E /* EXKeyValueStorage.m */,
+				637217AE9E87B5010A64B1E3F69226ED /* EXOtaModule.h */,
+				EF39FEC300B25EA79F7529DE33487FA3 /* EXOtaModule.m */,
+				F98FC11D56642318B3551A73AE93F963 /* EXOtaUpdater.h */,
+				099DDF158B1E45FE4DE9903A3F0D5951 /* EXOtaUpdater.m */,
+				849A8C29E1D794E7B284114E805C7A84 /* Pod */,
+				EF5F5B683DF72749933D45864CEF0178 /* Support Files */,
+			);
+			name = EXOta;
+			path = "../../packages/expo-ota/ios";
+			sourceTree = "<group>";
+		};
+		849A8C29E1D794E7B284114E805C7A84 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				6DAA2BE1058E9D2973FDA0F7C4103DBB /* EXOta.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		EB438A5843B0B2FD0430BBBF5A6E80CB = {
+			isa = PBXGroup;
+			children = (
+				20D42FC4A313C22E4BFC5982A0806281 /* Dependencies */,
+				77375786F06B777DFD86A2FADF767B85 /* EXOta */,
+				2D250F21126D2CDAF335FFA6E4D813AA /* Frameworks */,
+				F03E3210E9A6B05D3FCD1D280E7386AC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EF5F5B683DF72749933D45864CEF0178 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */,
+				B032DABA086163B2D2825F28FD8383C8 /* EXOta-dummy.m */,
+				DFFBF0B81621F22FAF2AA8B7976AFAC4 /* EXOta-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXOta";
+			sourceTree = "<group>";
+		};
+		F03E3210E9A6B05D3FCD1D280E7386AC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				42901338C01ACFBACD664E8B98D88A12 /* libEXOta.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		4A52FAA2D63C405A1DB0397A8EBDF60D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9DCCCCA605A87D2B1D95CB694A55C654 /* EXKeyValueStorage.h in Headers */,
+				7DF02CAA6E1348E6A903A462DEBDC748 /* EXOtaModule.h in Headers */,
+				0950EA690F96705097C7F08AFB5C449F /* EXOtaUpdater.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0EFFE1CC81989F6A8BAED5E4079EBEA9 /* EXOta */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1676E090CBBA777892AC1A63A5D7F388 /* Build configuration list for PBXNativeTarget "EXOta" */;
+			buildPhases = (
+				4A52FAA2D63C405A1DB0397A8EBDF60D /* Headers */,
+				D4F4320DBA474551B10BE5F7BF34931D /* Sources */,
+				3DC505833F9F2AB52DF35BF920580AFB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				20B269FCF87A053AB396BE97515D1472 /* PBXTargetDependency */,
+			);
+			name = EXOta;
+			productName = EXOta;
+			productReference = 42901338C01ACFBACD664E8B98D88A12 /* libEXOta.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C4AE1CD9461435B2B8094BB25812213B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 64F3E449AF5C573C84F0E0B5345FE7D4 /* Build configuration list for PBXProject "EXOta" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EB438A5843B0B2FD0430BBBF5A6E80CB;
+			productRefGroup = F03E3210E9A6B05D3FCD1D280E7386AC /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 7799C7F7AB2F80C52CCFE3C372525F6F /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				0EFFE1CC81989F6A8BAED5E4079EBEA9 /* EXOta */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D4F4320DBA474551B10BE5F7BF34931D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0B80302E0AAC6600FF278AD2B5872D16 /* EXKeyValueStorage.m in Sources */,
+				0A14591905DD2BF3E1C7802CB758D89F /* EXOta-dummy.m in Sources */,
+				4634E988D772104F544229F2B1D82C13 /* EXOtaModule.m in Sources */,
+				4A046C299B65E67CF47DDD9F412A35CB /* EXOtaUpdater.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		20B269FCF87A053AB396BE97515D1472 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 75BB76AFE92682A14D33A519AAD29F84 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4B165CBE06389584AFFF3D8045DCAB4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		79B69282155B10B3D0044B59E8C20419 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXOta/EXOta-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXOta;
+				PRODUCT_NAME = EXOta;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CBE09E4ADCCD06A0AAFDC0A4F20EF639 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		E5058B0E139AEE1D99EE4B17E42E661C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXOta/EXOta-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXOta;
+				PRODUCT_NAME = EXOta;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1676E090CBBA777892AC1A63A5D7F388 /* Build configuration list for PBXNativeTarget "EXOta" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E5058B0E139AEE1D99EE4B17E42E661C /* Debug */,
+				79B69282155B10B3D0044B59E8C20419 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		64F3E449AF5C573C84F0E0B5345FE7D4 /* Build configuration list for PBXProject "EXOta" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CBE09E4ADCCD06A0AAFDC0A4F20EF639 /* Debug */,
+				4B165CBE06389584AFFF3D8045DCAB4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C4AE1CD9461435B2B8094BB25812213B /* Project object */;
+}

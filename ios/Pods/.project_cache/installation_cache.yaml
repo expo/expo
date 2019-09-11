@@ -3102,6 +3102,20 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (0.0.1)
+  EXOta:
+    BUILD_SETTINGS_CHECKSUM:
+      EXOta: 65bc5bff08bf6830d0cee6f2fb022ac9
+    CHECKSUM: 2707cc9e72c631070e08c49842c98bfcb51e2db4
+    FILES:
+      - "../../packages/expo-ota/ios/EXOta/EXKeyValueStorage.h"
+      - "../../packages/expo-ota/ios/EXOta/EXKeyValueStorage.m"
+      - "../../packages/expo-ota/ios/EXOta/EXOtaModule.h"
+      - "../../packages/expo-ota/ios/EXOta/EXOtaModule.m"
+      - "../../packages/expo-ota/ios/EXOta/EXOtaUpdater.h"
+      - "../../packages/expo-ota/ios/EXOta/EXOtaUpdater.m"
+    PROJECT_NAME: EXOta
+    SPECS:
+      - EXOta (6.0.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 01facc4b997afa118e7a72afc53a6858
@@ -3237,8 +3251,8 @@ CACHE_KEYS:
       EXSQLite: 77ab6e5f34f98aafc6050b539a6c5108
     CHECKSUM: 8dab6a5ab1b78be7925073d6071eb22095d4dda6
     FILES:
-      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.h"
-      - "../../packages/expo-sqlite/ios/EXSQLite/EXSQLite.m"
+      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.h"
+      - "../../packages/expo-sqlite/ios/EXSQlite/EXSQLite.m"
     PROJECT_NAME: EXSQLite
     SPECS:
       - EXSQLite (6.0.0)
@@ -3535,16 +3549,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 458137b8a60c6afa663a52efec45fbec
-      Release: 458137b8a60c6afa663a52efec45fbec
+      Debug: d8fd8ee2b1752e3321c35c5878e156e5
+      Release: d8fd8ee2b1752e3321c35c5878e156e5
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ab9f096d3992690fb973619eac622134
-      Release: ab9f096d3992690fb973619eac622134
+      Debug: 49bfbc19c035b2c9b7c90c273f5d0473
+      Release: 49bfbc19c035b2c9b7c90c273f5d0473
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: ab9f096d3992690fb973619eac622134
-      Release: ab9f096d3992690fb973619eac622134
+      Debug: 49bfbc19c035b2c9b7c90c273f5d0473
+      Release: 49bfbc19c035b2c9b7c90c273f5d0473
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: 984e9f934a23b843d02efe3856627b34
