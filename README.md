@@ -1,3 +1,5 @@
+[![Expo.io](/style/header.png)](https://expo.io)
+
 
 <p align="center">
  
@@ -23,10 +25,6 @@
     <img alt="Circle CI" src="https://circleci.com/gh/expo/expo.svg">
   </a>
 </p>
-
-[![Expo.io](/style/header.png)](https://expo.io)
-
-
 
 <p align="center">
     Check out our documentation <a aria-label="expo documentation" href="https://docs.expo.io">https://docs.expo.io</a> to learn more about developing with Expo
