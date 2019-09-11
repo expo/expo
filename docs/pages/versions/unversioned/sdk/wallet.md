@@ -4,9 +4,22 @@ title: Wallet
 
 Provides interactions for applications to add passes to Apple Wallet.
 
+
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-wallet).
+This module is currently only available in the [bare](../../introduction/managed-vs-bare/#bare-workflow) workflow.
+
+You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+
+### Add the package to your dependencies
+
+```
+npm install expo-wallet
+```
+
+### Configure for iOS
+
+Run `pod install` in the ios directory after installing the npm package.
 
 ## API
 
