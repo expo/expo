@@ -6,12 +6,12 @@ import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 
+import { SafeAreaConsumer } from 'react-native-safe-area-context';
 import Colors from '../constants/Colors';
 import SearchBar from '../components/SearchBar';
 import ExploreTabContainer from '../containers/ExploreTabContainer';
 import FeatureFlags from '../FeatureFlags';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
-import isIPhoneX from '../utils/isIPhoneX';
 import { StyledView } from '../components/Views';
 import { StyledText } from '../components/Text';
 import { Ionicons } from '../components/Icons';
@@ -86,23 +86,35 @@ export default class ExploreScreen extends React.Component {
   _renderSearchBar() {
     if (Platform.OS === 'android') {
       return (
-        <StyledView style={styles.titleBarAndroid} darkBackgroundColor="#000">
-          <View style={styles.titleAndroid}>
-            <StyledText numberOfLines={1} style={styles.titleTextAndroid}>
-              {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Explore'}
-            </StyledText>
-          </View>
+        <SafeAreaConsumer>
+          {insets => (
+            <StyledView
+              style={[styles.titleBarAndroid, { height: 56 + insets.top, paddingTop: insets.top }]}
+              darkBackgroundColor="#000">
+              <View style={styles.titleAndroid}>
+                <StyledText numberOfLines={1} style={styles.titleTextAndroid}>
+                  {FeatureFlags.HIDE_EXPLORE_TABS ? 'Featured Projects' : 'Explore'}
+                </StyledText>
+              </View>
 
-          <View style={styles.rightButtonAndroid}>
-            <SearchButton />
-          </View>
-        </StyledView>
+              <View style={[styles.rightButtonAndroid, { top: insets.top + 5 }]}>
+                <SearchButton />
+              </View>
+            </StyledView>
+          )}
+        </SafeAreaConsumer>
       );
     } else {
       return (
-        <StyledView style={styles.titleBarIOS} darkBackgroundColor="#000">
-          <SearchBar.PlaceholderButton />
-        </StyledView>
+        <SafeAreaConsumer>
+          {insets => (
+            <StyledView
+              style={[styles.titleBarIOS, { height: 70 + insets.top, paddingTop: 26 + insets.top }]}
+              darkBackgroundColor="#000">
+              <SearchBar.PlaceholderButton />
+            </StyledView>
+          )}
+        </SafeAreaConsumer>
       );
     }
   }
@@ -112,16 +124,9 @@ export default class ExploreScreen extends React.Component {
   };
 }
 
-const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
-
 const styles = StyleSheet.create({
-  titleBarIOS: {
-    height: 70 + NOTCH_HEIGHT,
-    paddingTop: 20 + NOTCH_HEIGHT,
-  },
+  titleBarIOS: {},
   titleBarAndroid: {
-    height: 79,
-    paddingTop: 26,
     marginBottom: 0,
   },
   titleAndroid: {
@@ -138,7 +143,6 @@ const styles = StyleSheet.create({
   rightButtonAndroid: {
     position: 'absolute',
     right: 0,
-    top: 24,
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',

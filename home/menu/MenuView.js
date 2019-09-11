@@ -189,9 +189,13 @@ class MenuView extends React.Component {
     return (
       <View style={styles.nuxRow}>
         <View style={styles.nuxHeadingRow}>
-          <StyledText style={headingStyles} lightColor="#595c68">Hello there, friend! 👋</StyledText>
+          <StyledText style={headingStyles} lightColor="#595c68">
+            Hello there, friend! 👋
+          </StyledText>
         </View>
-        <StyledText style={styles.nuxTooltip} lightColor="#595c68">{tooltipMessage}</StyledText>
+        <StyledText style={styles.nuxTooltip} lightColor="#595c68">
+          {tooltipMessage}
+        </StyledText>
         <TouchableOpacity style={styles.nuxButton} onPress={this._onPressFinishNux}>
           <Text style={styles.nuxButtonLabel}>Got it</Text>
         </TouchableOpacity>
