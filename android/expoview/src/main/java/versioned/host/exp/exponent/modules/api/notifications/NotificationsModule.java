@@ -2,6 +2,8 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
+import android.content.res.Resources;
+
 import com.cronutils.model.Cron;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -201,6 +203,8 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
           channelName,
           data.toHashMap());
       promise.resolve(null);
+    } catch (Resources.NotFoundException e) {
+      promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel: custom sound file not found. Make sure you have entered the correct filename as well as set up bundledSound correctly. URL here.", e);
     } catch (Exception e) {
       promise.reject("E_FAILED_CREATING_CHANNEL", "Could not create channel", e);
     }

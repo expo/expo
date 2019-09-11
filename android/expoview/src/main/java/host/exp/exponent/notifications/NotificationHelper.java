@@ -3,17 +3,19 @@ package host.exp.exponent.notifications;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -334,11 +336,24 @@ public class NotificationHelper {
       if (sound == null) {
         channel.setSound(null, null);
       } else if (!sound.equals(NotificationConstants.NOTIFICATION_CHANNEL_DEFAULT_SOUND_NAME)) {
+        Resources resources = context.getResources();
+
         String filenameWithoutExtension = sound.substring(0, sound.lastIndexOf('.'));
-        int soundId = context.getResources().getIdentifier(filenameWithoutExtension, "raw", context.getPackageName());
-        Log.w("TESTTEST", "soundId: " + soundId);
-        Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + soundId);
-        Log.w("TESTTEST", "soundUri: " + soundUri.toString());
+        int soundId = context.getResources()
+            .getIdentifier(filenameWithoutExtension, "raw", context.getPackageName());
+        Uri soundUri = new Uri.Builder()
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .authority(resources.getResourcePackageName(soundId))
+            .appendPath(resources.getResourceTypeName(soundId))
+            .appendPath(resources.getResourceEntryName(soundId))
+            .build();
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build();
+
+        channel.setSound(soundUri, audioAttributes);
       } else {
         // Do nothing, since having sound is on by default for channels.
       }
