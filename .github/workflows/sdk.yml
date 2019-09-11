@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Use HTTPS instead of SSH for submodule remotes
-        run: scripts/remap-submodules-to-https.sh .gitmodules > .gitmodules
+        run: scripts/remap-submodules-to-https.sh .gitmodules
       - run: git submodule update --init
         env:
           CI: true
