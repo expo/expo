@@ -177,6 +177,20 @@ export default {
       console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
       return Promise.resolve();
     }
+
+    if (
+      Constants.appOwnership === 'expo' &&
+      channel.sound &&
+      typeof channel.sound === 'string' &&
+      channel.sound !== 'default'
+    ) {
+      console.warn(
+        'createChannelAndroidAsync with custom notification alert sounds is not supported in the Expo client. It will work in the standalone build.'
+      );
+      // Use the default sound.
+      channel.sound = true;
+    }
+
     // This codepath will never be triggered in SDK 28 and above
     // TODO: remove before releasing
     if (!IS_USING_NEW_BINARY) {
