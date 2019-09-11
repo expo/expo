@@ -41,6 +41,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed `ImagePicker.launchImageLibraryAsync` not working on iOS 13. ([#5434](https://github.com/expo/expo/pull/5434) by [@tsapeta](https://github.com/tsapeta))
 - Fixed `ImageManipulator.manipulateAsync` not working with local paths. ([#5531](https://github.com/expo/expo/pull/5531) by [@bbarthec](https://github.com/bbarthec))
 - Fixed `Camera#onBarCodeScanned` not firing when added at first rendering ([#5606](https://github.com/expo/expo/pull/5606) by [@bbarthec](https://github.com/bbarthec))
+- Fixed background fetch calls throwing exceptions about mutating an array while being enumerated. ([#5612](https://github.com/expo/expo/pull/5612) by [@tsapeta](https://github.com/tsapeta))
 
 ## 34.0.0
 
