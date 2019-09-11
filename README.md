@@ -13,7 +13,7 @@
    <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square" target="_blank" />
   </a>
-    <a aria-label="follow @expo on Twitter" href="https://twitter.com/expo" target="_blank">
+    <a aria-label="Follow @expo on Twitter" href="https://twitter.com/expo" target="_blank">
     <img alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?logo=twitter&style=flat-square" target="_blank" />
   </a>
 
