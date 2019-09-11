@@ -42,7 +42,7 @@ NS_SWIFT_NAME(BrowserLoginSuccessBlock);
 
 // available to internal types to trigger login without checking read/publish mixtures.
 - (void)logInWithPermissions:(NSSet *)permissions handler:(FBSDKLoginManagerLoginResultBlock)handler;
-- (void)logInWithBehavior:(FBSDKLoginBehavior)loginBehavior;
+- (void)logIn;
 
 // made available for testing only
 - (NSDictionary *)logInParametersWithPermissions:(NSSet *)permissions serverConfiguration:(FBSDKServerConfiguration *)serverConfiguration;

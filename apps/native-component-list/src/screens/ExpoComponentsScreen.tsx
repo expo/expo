@@ -33,6 +33,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'ReanimatedImagePreview',
       'ReanimatedProgress',
       'Screens',
+      'SharedElement',
       'SVG',
       'Video',
       'WebView',

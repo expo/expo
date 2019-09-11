@@ -52,6 +52,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   }
 }
 
+const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
 const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScreen'));
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
@@ -72,6 +73,7 @@ const optionalScreens: {
   ActionSheet,
   AppAuth,
   Appearance,
+  AppleAuthentication,
   Audio,
   AuthSession,
   BackgroundFetch,

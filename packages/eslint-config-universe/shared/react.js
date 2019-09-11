@@ -7,6 +7,7 @@ module.exports = {
       'warn',
       { nonEmpty: 'after-props', selfClosing: 'tag-aligned' },
     ],
+    'react/jsx-curly-brace-presence': ['warn', 'never'],
     'react/jsx-curly-spacing': ['warn', { when: 'never' }],
     'react/jsx-equals-spacing': ['warn', 'never'],
     'react/jsx-first-prop-new-line': ['warn', 'multiline'],

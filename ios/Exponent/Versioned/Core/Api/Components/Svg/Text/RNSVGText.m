@@ -36,6 +36,15 @@
     cachedAdvance = NAN;
 }
 
+- (void)setInlineSize:(RNSVGLength *)inlineSize
+{
+    if ([inlineSize isEqualTo:_inlineSize]) {
+        return;
+    }
+    [self invalidate];
+    _inlineSize = inlineSize;
+}
+
 - (void)setTextLength:(RNSVGLength *)textLength
 {
     if ([textLength isEqualTo:_textLength]) {
@@ -122,7 +131,9 @@
     [self clip:context];
     CGContextSaveGState(context);
     [self setupGlyphContext:context];
-    [self renderGroupTo:context rect:rect];
+    [self pushGlyphContext];
+    [super renderGroupTo:context rect:rect];
+    [self popGlyphContext];
     CGContextRestoreGState(context);
 }
 

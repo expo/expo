@@ -69,7 +69,4 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     const dbWithExec = addExecMethod(db);
     return dbWithExec;
 }
-export default {
-    openDatabase,
-};
 //# sourceMappingURL=SQLite.js.map

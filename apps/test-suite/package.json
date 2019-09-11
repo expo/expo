@@ -6,8 +6,6 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "cd runner && yarn && cd .. && node runner/index.js .",
-    "test:web": "node puppeteer-test/index.js",
-    "test:web:ci": "cd puppeteer-test && yarn && cd .. && node puppeteer-test/index.js .",
     "openbrowser": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:19006",
     "web": "expo start --web-only --web --https",
     "web:serve": "serve ./web-build"
@@ -20,7 +18,7 @@
     "expo-ads-admob": "~6.0.0",
     "expo-ads-facebook": "~6.0.0",
     "expo-analytics-segment": "~6.0.0",
-    "expo-application": "^0.0.1-rc.0",    
+    "expo-application": "^0.0.1-rc.0",
     "expo-asset": "~6.0.0",
     "expo-av": "~6.0.0",
     "expo-barcode-scanner": "~6.0.0",
@@ -61,7 +59,6 @@
     "sinon": "^7.1.1"
   },
   "devDependencies": {
-    "@expo/webpack-config": "^0.1.4",
     "babel-loader": "^8.0.5",
     "expo-yarn-workspaces": "^1.2.0",
     "serve": "^10.1.2",

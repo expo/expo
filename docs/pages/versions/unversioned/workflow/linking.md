@@ -63,9 +63,9 @@ export default class Anchor extends React.Component {
 // <Anchor href="mailto://support@expo.io">Email support</Anchor>
 ```
 
-### Using `Expo.WebBrowser` instead of `Linking` for opening web links
+### Using `WebBrowser` instead of `Linking` for opening web links
 
-The following example illustrates the difference between opening a web link with `Expo.WebBrowser.openBrowserAsync` and React Native's `Linking.openURL`. Often `WebBrowser` is a better option because it's a modal within your app and users can easily close out of it and return to your app.
+The following example illustrates the difference between opening a web link with `WebBrowser.openBrowserAsync` and React Native's `Linking.openURL`. Often `WebBrowser` is a better option because it's a modal within your app and users can easily close out of it and return to your app.
 
 <SnackEmbed snackId="H11a8rk7b" />
 
@@ -113,15 +113,15 @@ Once you build your standalone app and install it to your device, you will be ab
 
 If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your ejected app, see [this guide](../../expokit/advanced-expokit-topics/#changing-the-deep-link-scheme).
 
-### `Expo.Linking` module
+### `Linking` module
 
-To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Expo.Linking.makeUrl()` and it will resolve to the following:
+To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.makeUrl()` and it will resolve to the following:
 
 - _Published app in Expo client_: `exp://exp.host/@community/with-webbrowser-redirect`
 - _Published app in standalone_: `myapp://`
 - _Development_: `exp://wg-qka.community.app.exp.direct:80`
 
-You can also change the returned url by passing optional parameters into `Expo.Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
+You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
 
 ### Handling links into your app
 
@@ -139,22 +139,22 @@ See the examples below to see these in action.
 
 ### Passing data to your app through the URL
 
-To pass some data into your app, you can append it as a path or query string on your url. `Expo.Linking.makeUrl(path, queryParams)` will construct a working url automatically for you. You can use it like this:
+To pass some data into your app, you can append it as a path or query string on your url. `Linking.makeUrl(path, queryParams)` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
-let redirectUrl = Expo.Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
+let redirectUrl = Linking.makeUrl('path/into/app', { hello: 'world', goodbye: 'now' });
 ```
 
 This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
 
-When your app is opened using the deep link, you can parse the link with `Expo.Linking.parse()` to get back the path and query parameters you passed in.
+When your app is opened using the deep link, you can parse the link with `Linking.parse()` to get back the path and query parameters you passed in.
 
 When [handling the URL that is used to open/foreground your app](#handling-urls-in-your-app), it would look something like this:
 
 ```javascript
 _handleUrl = url => {
   this.setState({ url });
-  let { path, queryParams } = Expo.Linking.parse(url);
+  let { path, queryParams } = Linking.parse(url);
   alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}`);
 };
 ```

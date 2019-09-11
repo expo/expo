@@ -1,0 +1,54 @@
+{
+  "name": "jest-expo-enzyme",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "src",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/expo/expo.git",
+    "directory": "packages/jest-expo-enzyme"
+  },
+  "files": [
+    "android",
+    "bin",
+    "ios",
+    "node",
+    "src",
+    "universal",
+    "web",
+    "enzyme",
+    "sunset",
+    "jest-preset.js"
+  ],
+  "jest": {
+    "preset": "jest-expo-enzyme"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "peerDependencies": {
+    "react": "~16.8.3",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "enzyme-to-json": "^3.4.0",
+    "jest-canvas-mock": "^2.1.1",
+    "jest-enzyme": "^7.1.0",
+    "jest-expo": "^34.0.1",
+    "react-test-renderer": "~16.8.3"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "^6.0.1",
+    "react": "16.8.3"
+  },
+  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme"
+}

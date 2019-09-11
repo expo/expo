@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public class ReanimatedModule extends ReactContextBaseJavaModule implements
         LifecycleEventListener, UIManagerModuleListener {
 
-  protected static final String NAME = "ReanimatedModule";
+  public static final String NAME = "ReanimatedModule";
 
   private interface UIThreadOperation {
     void execute(NodesManager nodesManager);

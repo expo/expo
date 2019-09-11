@@ -333,9 +333,9 @@ didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *
 
 - (void)_setSessionCompletionHandlerFromHandler:(void(^)(BOOL, NSError *))handler
 {
-  __weak typeof(self) weakSelf = self;
+  __weak FBSDKBridgeAPI *weakSelf = self;
   _authenticationSessionCompletionHandler = ^ (NSURL *aURL, NSError *error) {
-    typeof(self) strongSelf = weakSelf;
+    FBSDKBridgeAPI *strongSelf = weakSelf;
     strongSelf->_isRequestingSFAuthenticationSession = NO;
     handler(error == nil, error);
     if (error == nil) {

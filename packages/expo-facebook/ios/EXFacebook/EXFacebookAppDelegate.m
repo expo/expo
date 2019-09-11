@@ -12,7 +12,7 @@
 
 @end
 
-BOOL isRegisteredURLScheme(id self, SEL _cmd, NSString *urlScheme)
+static BOOL isRegisteredURLScheme(id self, SEL _cmd, NSString *urlScheme)
 {
   // copied from FBSDKInternalUtility.h
   // !!!: Make FB SDK think we can open fb<app id>:// urls
