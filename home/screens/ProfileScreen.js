@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { withNavigation } from '@react-navigation/core';
+import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 
 import Colors from '../constants/Colors';

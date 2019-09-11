@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useTheme } from '@react-navigation/core';
+import { useTheme } from 'react-navigation';
 import {
   Ionicons as DefaultIonicons,
   MaterialIcons as DefaultMaterialIcons,

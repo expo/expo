@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useTheme } from '@react-navigation/core';
+import { useTheme } from 'react-navigation';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import Colors from '../constants/Colors';

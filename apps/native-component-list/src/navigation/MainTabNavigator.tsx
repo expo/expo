@@ -39,7 +39,8 @@ const MainTabNavigator = createTabNavigator(
     ReactNativeCore: ReactNativeCoreStackNavigator,
   },
   {
-    defaultNavigationOptions: ({ navigation }) => {
+    // @ts-ignore
+    defaultNavigationOptions: ({ navigation }: any) => {
       let tabBarLabel;
       const { routeName } = navigation.state;
       if (routeName === 'ReactNativeCore') {

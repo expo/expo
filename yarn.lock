@@ -1654,15 +1654,6 @@
     query-string "^6.4.2"
     react-is "^16.8.6"
 
-"@react-navigation/native@^3.6.2":
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.6.2.tgz#3634697b6350cc5189657ae4551f2d52b57fbbf0"
-  integrity sha512-Cybeou6N82ZeRmgnGlu+wzlV3z5BZQR2dmYaNFV1TNLUGHqtvv8E7oNw9uYcz9Ox5LFbiX+FdNTn2d6ZPlK0kg==
-  dependencies:
-    hoist-non-react-statics "^3.0.1"
-    react-native-safe-area-view "^0.14.1"
-    react-native-screens "^1.0.0 || ^1.0.0-alpha"
-
 "@react-navigation/native@^4.0.0-alpha.0":
   version "4.0.0-alpha.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-4.0.0-alpha.0.tgz#ac12610925af3569aa6a0370c59b6d7a711047d9"
@@ -12490,7 +12481,7 @@ react-native-safe-area-view@1.0.0-alpha.1:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-safe-area-view@^0.14, react-native-safe-area-view@^0.14.1, react-native-safe-area-view@^0.14.6:
+react-native-safe-area-view@^0.14, react-native-safe-area-view@^0.14.6:
   version "0.14.8"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-view/-/react-native-safe-area-view-0.14.8.tgz#ef33c46ff8164ae77acad48c3039ec9c34873e5b"
   integrity sha512-MtRSIcZNstxv87Jet+UsPhEd1tpGe8cVskDXlP657x6rHpSrbrc+y13ZNXrwAgGNNhqQNX7UJT68ZIq//ZRmvw==
@@ -12616,13 +12607,13 @@ react-navigation-tabs@~1.2.0:
     prop-types "^15.6.1"
     react-native-tab-view "^1.4.1"
 
-react-navigation@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.0.2.tgz#09fe915cdc2436c964b8f85b642eaf8d429305c6"
-  integrity sha512-c95NfoOCTb5GEHUTcngtJ9h9lxU484UftYAZ8oeNWWVW4YPbCuvUqwviUCSq3uT0JVkcEhdUqHekmL+eqYhg8g==
+react-navigation@4.1.0-alpha.0, react-navigation@^4.1.0-alpha.0:
+  version "4.1.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.1.0-alpha.0.tgz#6d75556d8279377a79ff7e241bf3f00a7fa8bfe1"
+  integrity sha512-mDlRhPEa7jzGeRHW456GRJyCzJub+jlm8P3cHKM/aAkWfiu545bXmTZXgp8lldssdrt7S0rXrGDBTfIKqGMyNg==
   dependencies:
     "@react-navigation/core" "^3.5.0"
-    "@react-navigation/native" "^3.6.2"
+    "@react-navigation/native" "^4.0.0-alpha.0"
 
 react-proxy@^1.1.7:
   version "1.1.8"

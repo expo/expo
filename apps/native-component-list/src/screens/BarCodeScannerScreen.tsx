@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationEvents } from '@react-navigation/core';
+import { NavigationEvents } from 'react-navigation';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { ScreenOrientation } from 'expo';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View } from 'react-native';
-import { NavigationScreenProps, NavigationScreenConfig } from '@react-navigation/core';
+import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
 
 import examples from './examples';
 

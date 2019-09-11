@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { withNavigation } from '@react-navigation/core';
+import { withNavigation } from 'react-navigation';
 
 import PrimaryButton from './PrimaryButton';
 import ScrollView from './NavigationScrollView';

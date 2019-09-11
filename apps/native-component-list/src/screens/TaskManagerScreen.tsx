@@ -1,6 +1,6 @@
 import React from 'react';
 import * as TaskManager from 'expo-task-manager';
-import { NavigationEvents, NavigationScreenProps } from '@react-navigation/core';
+import { NavigationEvents, NavigationScreenProps } from 'react-navigation';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import Button from '../components/Button';

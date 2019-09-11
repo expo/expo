@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
-import { withNavigation } from '@react-navigation/core';
+import { withNavigation } from 'react-navigation';
 
 import UrlUtils from '../utils/UrlUtils';
 import { StyledButton } from '../components/Views';

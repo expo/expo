@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { ActivityIndicator, Platform, TouchableOpacity, StyleSheet, View } from 'react-native';
-import { useTheme } from '@react-navigation/core';
-import { FlatList } from '@react-navigation/native';
+import { useTheme, FlatList } from 'react-navigation';
+
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import dedent from 'dedent';

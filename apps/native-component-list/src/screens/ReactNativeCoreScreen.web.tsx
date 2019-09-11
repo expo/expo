@@ -22,7 +22,7 @@ import {
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
-import { NavigationScreenProps } from '@react-navigation/core';
+import { NavigationScreenProps } from 'react-navigation';
 
 export default class ReactNativeCoreScreen extends React.Component<NavigationScreenProps> {
   static path = '';

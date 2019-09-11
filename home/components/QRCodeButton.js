@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { withNavigation } from '@react-navigation/core';
+import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';

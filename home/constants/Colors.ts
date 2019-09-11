@@ -1,4 +1,4 @@
-import { ThemeColors } from '@react-navigation/core';
+import { ThemeColors } from 'react-navigation';
 const tintColor = '#4e9bde';
 const darkTintColor = '#1a74b3';
 

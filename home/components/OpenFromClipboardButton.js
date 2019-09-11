@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import Constants from 'expo-constants';
-import { withNavigation } from '@react-navigation/core';
+import { withNavigation } from 'react-navigation';
 import { StyledText } from './Text';
 import { StyledView, StyledButton } from './Views';
 import { Ionicons } from './Icons';

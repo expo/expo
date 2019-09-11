@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { withNavigation } from '@react-navigation/core';
+import { withNavigation } from 'react-navigation';
 import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { connect } from 'react-redux';
 

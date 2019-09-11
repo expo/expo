@@ -8,7 +8,7 @@ import {
   PixelRatio,
   ListRenderItem,
 } from 'react-native';
-import { NavigationScreenProps } from '@react-navigation/core';
+import { NavigationScreenProps } from 'react-navigation';
 import { EvilIcons } from '@expo/vector-icons';
 
 import examples from './examples';

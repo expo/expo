@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Animated, StyleSheet, Text, TextInput, View } from 'react-native';
-import { ThemeContext } from '@react-navigation/core';
+import { ThemeContext } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 
