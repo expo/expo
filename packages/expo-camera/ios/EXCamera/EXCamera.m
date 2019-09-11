@@ -611,13 +611,17 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       });
     }]];
     
-    [self maybeStartFaceDetection:self.presetCamera!=1];
-    if (self.barCodeScanner) {
-      [self.barCodeScanner maybeStartBarCodeScanning];
-    }
-    
-    [self.session startRunning];
-    [self onReady:nil];
+    // when BarCodeScanner is enabled from the beginning of camera component some race condition occurs in camera reconfiguretion and barcodes aren't scanned at all
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_USEC), self.sessionQueue, ^{
+      UM_ENSURE_STRONGIFY(self);
+      [self maybeStartFaceDetection:self.presetCamera!=1];
+      if (self.barCodeScanner) {
+        [self.barCodeScanner maybeStartBarCodeScanning];
+      }
+
+      [self.session startRunning];
+      [self onReady:nil];
+    });
   });
 #pragma clang diagnostic pop
 }
