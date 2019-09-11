@@ -108,6 +108,21 @@ function postTransforms({ versionPrefix }: TransformConfig): TransformPattern[] 
       replace: /\b(PatternFunction)\b/g,
       with: `${versionPrefix}$1`,
     },
+    {
+      paths: 'RNSVGFontData.m',
+      replace: /\b(AbsoluteFontWeight|bolder|lighter|nearestFontWeight)\(/gi,
+      with: `${versionPrefix}$1(`,
+    },
+    {
+      paths: 'RNSVGTSpan.m',
+      replace: /\b(TopAlignedLabel\s*\*\s*label)\b/gi,
+      with: 'static $1',
+    },
+    {
+      paths: 'RNSVGTSpan.m',
+      replace: /\b(TopAlignedLabel)\b/gi,
+      with: `${versionPrefix}$1`,
+    },
 
     // react-native-webview
     {
@@ -132,6 +147,13 @@ function postTransforms({ versionPrefix }: TransformConfig): TransformPattern[] 
       paths: 'REATransitionAnimation.m',
       replace: /(SimAnimationDragCoefficient)\(/g,
       with: `${versionPrefix}$1(`
+    },
+
+    // react-native-shared-element
+    {
+      paths: 'RNSharedElementNode.m',
+      replace: /\b(NSArray\s*\*\s*_imageResolvers)\b/,
+      with: 'static $1',
     },
   ];
 }
