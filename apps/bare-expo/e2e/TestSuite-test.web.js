@@ -7,6 +7,7 @@ import { expectResults } from './utils/report';
 const TESTS = [
   'Basic',
   'Constants',
+  'Contacts',
   'Crypto',
   //   'Haptics',
   'Localization',
