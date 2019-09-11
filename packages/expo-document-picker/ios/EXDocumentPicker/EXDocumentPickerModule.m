@@ -73,28 +73,34 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
   
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == NO ? NO : YES;
-  
-  UIDocumentMenuViewController *documentMenuVC;
-  @try {
-    documentMenuVC = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[type]
-                                                                          inMode:UIDocumentPickerModeImport];
-  }
-  @catch (NSException *exception) {
-    reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
-    _resolve = nil;
-    _reject = nil;
-    return;
-  }
-  documentMenuVC.delegate = self;
-  
-  // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
-  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([_utilities.currentViewController.view frame]), CGRectGetMaxY([_utilities.currentViewController.view frame]), 0, 0);
-    documentMenuVC.popoverPresentationController.sourceView = _utilities.currentViewController.view;
-    documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
-  }
-  
-  [_utilities.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
+
+  UM_WEAKIFY(self);
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    UIDocumentMenuViewController *documentMenuVC;
+
+    @try {
+      documentMenuVC = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[type]
+                                                                            inMode:UIDocumentPickerModeImport];
+    }
+    @catch (NSException *exception) {
+      reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
+      self->_resolve = nil;
+      self->_reject = nil;
+      return;
+    }
+    documentMenuVC.delegate = self;
+
+    // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+      documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([self->_utilities.currentViewController.view frame]), CGRectGetMaxY([self->_utilities.currentViewController.view frame]), 0, 0);
+      documentMenuVC.popoverPresentationController.sourceView = self->_utilities.currentViewController.view;
+      documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
+    }
+
+    [self->_utilities.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
+  });
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
