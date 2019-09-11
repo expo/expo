@@ -3,4 +3,4 @@
 
 set -e
 
-sed 's#git@github.com:#https://github.com/#g' $1
+sed 's#git@github.com:#https://github.com/#g' $1 > $1
