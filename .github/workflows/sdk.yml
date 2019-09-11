@@ -2,27 +2,26 @@
 
 name: SDK
 
-on:
-  # pull_request
+on: push
   # https://help.github.com/en/articles/workflow-syntax-for-github-actions#onpushpull_requestpaths
   # More helpful: https://help.github.com/en/articles/events-that-trigger-workflows#webhook-events
-  push:
-    branches:
-      # If this isn't defined then all PR tests will be run twice
-      - master
-    paths:
-      # By default all files are excluded. 
-      # Include everything then exclude markdown
-      - '*'
-      - '!*.md'
-  pull_request:
-    paths:
-      - '*'
-      - '!*.md'
-      # - '.github/**/*'
-      # - 'packages/**/*'
-      # - 'react-native-lab/**/*'
-      # - 'tools/**/*'
+  # push:
+  #   branches:
+  #     # If this isn't defined then all PR tests will be run twice
+  #     - master
+  #   paths:
+  #     # By default all files are excluded. 
+  #     # Include everything then exclude markdown
+  #     - '*'
+  #     - '!*.md'
+  # pull_request:
+  #   paths:
+  #     - '*'
+  #     - '!*.md'
+  #     - '.github/**/*'
+  #     - 'packages/**/*'
+  #     - 'react-native-lab/**/*'
+  #     - 'tools/**/*'
 
 jobs:
   check-packages:
