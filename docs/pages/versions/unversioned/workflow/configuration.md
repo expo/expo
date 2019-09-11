@@ -247,6 +247,13 @@ Configuration for remote (push) notifications.
     "color": STRING,
 
     /*
+      An array of paths to .wav audio files that should be bundled into your build.
+      Note that this works in the standalone build only.
+      Learn more: https://docs.expo.io/versions/latest/sdk/notifications/#use-custom-notification-sound-files
+    */
+    "bundledSounds": ARRAY,
+
+    /*
       Whether or not to display notifications when the app is in the foreground on iOS.
       `_displayInForeground` option in the individual push notification message overrides this option.
       Learn more: https://docs.expo.io/versions/latest/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
