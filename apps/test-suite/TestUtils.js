@@ -55,6 +55,7 @@ export function getTestModules() {
 
   const modules = [
     require('./tests/Basic'),
+    optionalRequire(() => require('./tests/Contacts')),
     optionalRequire(() => require('./tests/Application')),
     optionalRequire(() => require('./tests/Asset')),
     optionalRequire(() => require('./tests/Constants')),
@@ -106,7 +107,6 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Contacts')));
     modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
