@@ -111,18 +111,18 @@ function postTransforms({ versionPrefix }: TransformConfig): TransformPattern[] 
 
     // react-native-webview
     {
-      paths: 'RNCWKWebView.m',
+      paths: 'RNCWebView.m',
       replace: new RegExp(`#import "${versionPrefix}objc/runtime\\.h"`, ''),
       with: '#import "objc/runtime.h"',
     },
     {
-      paths: 'RNCWKWebView.m',
+      paths: 'RNCWebView.m',
       replace: /\b(_SwizzleHelperWK)\b/g,
       with: `${versionPrefix}$1`,
     },
     {
       // see issue: https://github.com/expo/expo/issues/4463
-      paths: 'RNCWKWebView.m',
+      paths: 'RNCWebView.m',
       replace: /MessageHandlerName = @"ReactABI\d+_\d+_\d+NativeWebView";/,
       with: `MessageHandlerName = @"ReactNativeWebView";`,
     },
