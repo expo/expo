@@ -109,7 +109,7 @@ export default class ExploreScreen extends React.Component {
         <SafeAreaConsumer>
           {insets => (
             <StyledView
-              style={[styles.titleBarIOS, { height: 70 + insets.top, paddingTop: 26 + insets.top }]}
+              style={[styles.titleBarIOS, { height: 55 + insets.top, paddingTop: insets.top }]}
               darkBackgroundColor="#000">
               <SearchBar.PlaceholderButton />
             </StyledView>
