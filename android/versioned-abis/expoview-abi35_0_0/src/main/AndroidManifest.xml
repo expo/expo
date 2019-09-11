@@ -66,7 +66,7 @@
         </provider>
 
         <provider
-            android:name="versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewFileProvider"
+            android:name="abi35_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewFileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -74,6 +74,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <activity
+            android:name="abi35_0_0.expo.modules.appauth.AppAuthBrowserActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
     </application>
 
 </manifest>
