@@ -1,8 +1,43 @@
-# Expo Client [![CircleCI](https://circleci.com/gh/expo/expo.svg?style=svg)](https://circleci.com/gh/expo/expo/tree/master) [![Forums](https://img.shields.io/badge/expo-forum-blue.svg)](https://forums.expo.io) [![Twitter: Expo](https://img.shields.io/twitter/follow/expo.svg?style=social)](https://twitter.com/expo) [![Twitter: expo_status](https://img.shields.io/twitter/follow/expo_status.svg?style=social)](https://twitter.com/expo_status)
+[![Expo](/style/header.png)](https://expo.io)
+
+
+<p align="center">
+ 
+   <a aria-label="SDK version" href="https://www.npmjs.com/package/expo" target="_blank">
+    <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB">
+  </a>
+    
+  <a aria-label="join our fourms" href="https://expo-developers.slack.com" target="_blank">
+    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=20&labelColor=000000&color=4630EB">
+  </a>
+   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square" target="_blank" />
+  </a>
+    <a aria-label="Follow @expo on Twitter" href="https://twitter.com/expo" target="_blank">
+    <img alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?logo=twitter&style=flat-square" target="_blank" />
+  </a>
+
+<a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
+    <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=000000&color=417505" />
+</a>
+<br>
+    <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
+    <img alt="Circle CI" src="https://circleci.com/gh/expo/expo.svg">
+  </a>
+</p>
+
+<p align="center">
+    Check out our documentation <a aria-label="expo documentation" href="https://docs.expo.io">https://docs.expo.io</a> to learn more about developing with Expo.
+  <br />
+
+</p>
+
+---
+
 
 Expo is a set of tools, libraries, and services that let you build native iOS and Android apps by writing JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, and more.
 
-[Click here to view our documentation](https://docs.expo.io) for developing on Expo. If you're new to the Expo community, [click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
+[Click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
 
 ## Introduction
 
