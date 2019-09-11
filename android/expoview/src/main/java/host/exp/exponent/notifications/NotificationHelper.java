@@ -339,7 +339,7 @@ public class NotificationHelper {
         Resources resources = context.getResources();
 
         String filenameWithoutExtension = sound.substring(0, sound.lastIndexOf('.'));
-        int soundId = context.getResources()
+        int soundId = resources
             .getIdentifier(filenameWithoutExtension, "raw", context.getPackageName());
         Uri soundUri = new Uri.Builder()
             .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
