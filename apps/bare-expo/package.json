@@ -63,13 +63,13 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/BareExpo.app",
-        "build": "xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -quiet | xcpretty -k",
+        "build": "./scripts/build-detox-ios.sh Debug",
         "type": "ios.simulator",
         "name": "iPhone X"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/BareExpo.app",
-        "build": "xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "build": "./scripts/build-detox-ios.sh Release YES",
         "type": "ios.simulator",
         "name": "iPhone X"
       },
