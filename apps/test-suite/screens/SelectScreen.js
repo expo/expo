@@ -13,7 +13,7 @@ import {
   PixelRatio,
   AppState,
 } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import SafeAreaView from 'react-native-safe-area-view';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getTestModules } from '../TestUtils';
 

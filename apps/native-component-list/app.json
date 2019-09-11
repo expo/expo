@@ -27,6 +27,9 @@
     "facebookAppId": "1201211719949057",
     "facebookDisplayName": "Expo APIs",
     "androidShowExponentNotificationInShellApp": true,
+    "androidStatusBar": {
+      "backgroundColor": "#4630eb"
+    },
     "android": {
       "package": "host.exp.nclexp",
       "versionCode": 11,
