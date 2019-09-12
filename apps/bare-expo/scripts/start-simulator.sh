@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+# set -e
 
+SIMULATOR_NAME="bare-expo"
 port=${2:-8081}
 CURRENT_ENV=${NODE_ENV:-"development"}
 
@@ -9,12 +10,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 
-"$DIR/setup-project.sh"
+$DIR/setup-project.sh
 
-"$DIR/start-metro.sh" "$port"
+$DIR/start-metro.sh $port
 
 if [ "${CURRENT_ENV}" = "test" ]; then
-    if command -v applesimutils > /dev/null; then 
+    if which applesimutils > /dev/null; then 
     # if brew ls --versions applesimutils > /dev/null; then 
         echo " ✅ Detox simulators are installed"
     else
@@ -27,7 +28,7 @@ if [ "${CURRENT_ENV}" = "test" ]; then
         echo " ✅ Debug Detox project is built for iOS"
     else
         echo " ⚠️  Building the debug Detox project..."
-        yarn run ios:detox:build:debug --watch
+        yarn run ios:detox:build:debug
     fi
 
     echo " ☛  Opening the iOS simulator app"
@@ -36,7 +37,7 @@ if [ "${CURRENT_ENV}" = "test" ]; then
 
     echo " ☛  Starting Detox in watch mode"
     # Run our default E2E tests
-    yarn run ios:detox:test:debug
+    yarn run ios:detox:test:debug --watch
 else 
 
     echo " ☛  Running the iOS project..."
@@ -44,7 +45,7 @@ else
     # CONNECTED_DEVICE=$(node ios-deploy -c | grep -oE 'Found ([0-9A-Za-z\-]+)' | sed 's/Found //g')
     # if [ -z "${CONNECTED_DEVICE}" ]; then
         # Build and run the iOS project using `react-native run-ios`
-        node "node_modules/react-native/cli.js" run-ios --no-packager --port "$port"
+        node "node_modules/react-native/cli.js" run-ios --no-packager --port ${port}
     # else
     #     # Build and run the iOS project using `react-native run-ios`
     #     node "node_modules/react-native/cli.js" run-ios --no-packager --udid ${CONNECTED_DEVICE} --port ${port}
