@@ -5,8 +5,6 @@ import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
 
 import Colors from '../constants/Colors';
-import { StyledView } from './Views';
-import { StyledText } from './Text';
 import SharedStyles from '../constants/SharedStyles';
 import PrimaryButton from './PrimaryButton';
 
@@ -14,10 +12,10 @@ export default class EmptyProfileSnacksNotice extends React.Component {
   render() {
     if (this.props.isOwnProfile) {
       return (
-        <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
-          <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
+        <View style={styles.container}>
+          <Text style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
             Snacks that you save to your profile will appear here!
-          </StyledText>
+          </Text>
 
           <PrimaryButton
             plain
@@ -26,15 +24,15 @@ export default class EmptyProfileSnacksNotice extends React.Component {
             style={{ marginBottom: 5 }}>
             Learn more about Snack
           </PrimaryButton>
-        </StyledView>
+        </View>
       );
     } else {
       return (
-        <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
-          <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
+        <View style={styles.container}>
+          <Text style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
             No saved Snacks
-          </StyledText>
-        </StyledView>
+          </Text>
+        </View>
       );
     }
   }
@@ -47,6 +45,7 @@ export default class EmptyProfileSnacksNotice extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.light.greyBackground,
     paddingTop: 5,
     alignItems: 'flex-start',
     paddingHorizontal: 15,

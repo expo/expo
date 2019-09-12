@@ -94,7 +94,7 @@ export default class SignUpScreen extends React.Component {
         style={styles.container}>
         <Form>
           <Form.Input
-            onChangeText={(value) => this._updateValue('firstName', value)}
+            onChangeText={() => this._updateValue('firstName')}
             onSubmitEditing={() => this._handleSubmitEditing('firstName')}
             value={this.state.firstName}
             autoFocus
@@ -108,7 +108,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._lastNameInput = view;
             }}
-            onChangeText={(value) => this._updateValue('lastName', value)}
+            onChangeText={() => this._updateValue('lastName')}
             onSubmitEditing={() => this._handleSubmitEditing('lastName')}
             value={this.state.lastName}
             autoCorrect={false}
@@ -121,7 +121,7 @@ export default class SignUpScreen extends React.Component {
             ref={view => {
               this._usernameInput = view;
             }}
-            onChangeText={(value) => this._updateValue('username', value)}
+            onChangeText={() => this._updateValue('username')}
             onSubmitEditing={() => this._handleSubmitEditing('username')}
             value={this.state.username}
             autoCorrect={false}
@@ -135,7 +135,7 @@ export default class SignUpScreen extends React.Component {
               this._emailInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('email')}
-            onChangeText={(value) => this._updateValue('email', value)}
+            onChangeText={() => this._updateValue('email')}
             autoCorrect={false}
             autoCapitalize="none"
             value={this.state.email}
@@ -148,7 +148,7 @@ export default class SignUpScreen extends React.Component {
               this._passwordInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('password')}
-            onChangeText={(value) => this._updateValue('password', value)}
+            onChangeText={() => this._updateValue('password')}
             value={this.state.password}
             autoCorrect={false}
             autoCapitalize="none"
@@ -161,7 +161,7 @@ export default class SignUpScreen extends React.Component {
               this._passwordConfirmationInput = view;
             }}
             onSubmitEditing={() => this._handleSubmitEditing('passwordConfirmation')}
-            onChangeText={(value) => this._updateValue('passwordConfirmation', value)}
+            onChangeText={() => this._updateValue('passwordConfirmation')}
             value={this.state.passwordConfirmation}
             hideBottomBorder
             autoCorrect={false}
