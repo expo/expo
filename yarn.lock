@@ -1549,6 +1549,14 @@
     react-native-safe-area-view "^0.14"
     react-native-screens "^1.0.0 || ^1.0.0-alpha"
 
+"@react-navigation/web@2.0.0-alpha.0":
+  version "2.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/web/-/web-2.0.0-alpha.0.tgz#1ac782c47b7aad0100877b7dd4d50745c5aede3f"
+  integrity sha512-afaDckHZhPZFvRYtGTR/A4vtu6cuHaRzO006EzbaYew/bQfYyGZmE7UZtYsOFKciR9XLoJ8nWsWeH4vzCwJ/UA==
+  dependencies:
+    history "^4.7.2"
+    query-string "^6.2.0"
+
 "@react-navigation/web@^1.0.0-alpha.7", "@react-navigation/web@^1.0.0-alpha.8":
   version "1.0.0-alpha.9"
   resolved "https://registry.yarnpkg.com/@react-navigation/web/-/web-1.0.0-alpha.9.tgz#bb960fe7040a0cd1359b84b9921212a9468bace3"
@@ -12236,10 +12244,19 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-appearance@0.1.0, react-native-appearance@^0.1.0:
+react-native-appearance@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.1.0.tgz#a195d9a71c03dc4de246b86a18e95c8ecd08d505"
   integrity sha512-WitRX+1bYCwTOxh0dV+/3Pv/O0jzKl/Y+O4kMiPhiJFe/tibAE8l5wYw6l3X1gkPMn52khdxBDV0Ndkp3Pjvdw==
+  dependencies:
+    fbemitter "^2.1.1"
+    invariant "^2.2.4"
+    use-subscription "^1.0.0"
+
+react-native-appearance@~0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.0.8.tgz#b887931c7ea03664792e509c657a01fb7b2ad83b"
+  integrity sha512-nxYAMjjj+OBtczK3EwGQdghJQkPtupqoraKF//fIbcgNRZ9dMhoUMmbLOV9oLLY5Wxu3DbxGsebGGZdEtyVVjQ==
   dependencies:
     fbemitter "^2.1.1"
     invariant "^2.2.4"
@@ -12381,30 +12398,6 @@ react-native-tab-view@^2.9.0:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.10.0.tgz#5e249e5650502010013449ffd4e5edc18a95364b"
   integrity sha512-qgexVz5eO4yaFjdkmn/sURXgVvaBo6pZD/q1eoca96SbPVbaH3WzVhF3bRUfeTHwZkXwznFTpS3JURqIFU8vQA==
-
-react-native-unimodules@^0.5.3, react-native-unimodules@~0.5.0, react-native-unimodules@~0.5.2:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.5.4.tgz#d4d779576a027f0455b14d396b0e002cb57963fe"
-  integrity sha512-47ZJzZriaVtvDJp24HLu6xcKBaDScDcx71yIDmahsKKJtbEHmXl7jPz1y/2FhAKSb174m9niu3F97Di5Bo+91g==
-  dependencies:
-    "@unimodules/core" "~3.0.2"
-    "@unimodules/react-native-adapter" "~3.0.0"
-    chalk "^2.4.2"
-    expo-app-loader-provider "~6.0.0"
-    expo-asset "~6.0.0"
-    expo-constants "~6.0.0"
-    expo-file-system "~6.0.1"
-    expo-permissions "~6.0.0"
-    unimodules-barcode-scanner-interface "~3.0.0"
-    unimodules-camera-interface "~3.0.0"
-    unimodules-constants-interface "~3.0.0"
-    unimodules-face-detector-interface "~3.0.0"
-    unimodules-file-system-interface "~3.0.0"
-    unimodules-font-interface "~3.0.0"
-    unimodules-image-loader-interface "~3.0.0"
-    unimodules-permissions-interface "~3.0.0"
-    unimodules-sensors-interface "~3.0.0"
-    unimodules-task-manager-interface "~3.0.0"
 
 react-native-view-shot@2.6.0:
   version "2.6.0"
