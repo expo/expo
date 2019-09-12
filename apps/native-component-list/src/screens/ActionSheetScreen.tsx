@@ -1,7 +1,6 @@
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import SafeAreaView from 'react-native-safe-area-view';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 

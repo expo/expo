@@ -1,6 +1,6 @@
 import { Platform, StyleSheet } from 'react-native';
 import { Colors } from '../constants';
-import { StackNavigatorConfig } from 'react-navigation-stack';
+import { StackNavigatorConfig } from 'react-navigation';
 
 const styles = StyleSheet.create({
   header: {
@@ -16,13 +16,6 @@ const styles = StyleSheet.create({
 
 const platformNavigationOptions = Platform.select({
   default: {},
-  android: {
-    headerStyle: {
-      elevation: 0,
-      borderBottomWidth: 1,
-      borderBottomColor: '#eee',
-    }
-  },
   web: {
     headerLayoutPreset: 'left',
   },
@@ -32,11 +25,11 @@ const StackConfig: StackNavigatorConfig = {
   cardStyle: styles.card,
   headerTransitionPreset: 'uikit',
   defaultNavigationOptions: () => ({
+    ...platformNavigationOptions,
     headerStyle: styles.header,
     headerTintColor: Colors.tintColor,
     headerTitleStyle: styles.headerTitle,
     headerPressColorAndroid: Colors.tintColor,
-    ...platformNavigationOptions,
   }),
 };
 

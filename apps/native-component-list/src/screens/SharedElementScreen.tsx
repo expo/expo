@@ -1,6 +1,10 @@
 import * as React from 'react';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createAppContainer, NavigationScreenProp, NavigationState } from 'react-navigation';
+import {
+  createAppContainer,
+  createStackNavigator,
+  NavigationScreenProp,
+  NavigationState,
+} from 'react-navigation';
 import { createSharedElementStackNavigator, SharedElement } from 'react-navigation-shared-element';
 import { View, Image, StyleSheet, Text, TouchableOpacity, Animated } from 'react-native';
 import { Colors } from '../constants';

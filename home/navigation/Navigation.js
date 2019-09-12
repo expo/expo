@@ -2,9 +2,11 @@
 
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { createAppContainer } from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { createStackNavigator } from 'react-navigation-stack';
+import {
+  createAppContainer,
+  createStackNavigator,
+  createBottomTabNavigator,
+} from 'react-navigation';
 
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
@@ -172,10 +174,9 @@ const TabNavigator =
         },
       })
     : createMaterialBottomTabNavigator(TabRoutes, {
-        initialRouteName: 'ExploreStack',
-        activeColor: Colors.tabIconSelected,
-        inactiveColor: Colors.tabIconDefault,
-        shifting: true,
+        initialRouteName: 'ProjectsStack',
+        activeTintColor: Colors.tabIconSelected,
+        inactiveTintColor: Colors.tabIconDefault,
         navigationOptions: {
           header: null,
         },

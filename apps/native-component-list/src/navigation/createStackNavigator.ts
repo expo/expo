@@ -1,2 +1,2 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import { createStackNavigator } from 'react-navigation';
 export default createStackNavigator;

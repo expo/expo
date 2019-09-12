@@ -39,8 +39,7 @@ const MainTabNavigator = createTabNavigator(
     ReactNativeCore: ReactNativeCoreStackNavigator,
   },
   {
-    // @ts-ignore
-    defaultNavigationOptions: ({ navigation }: any) => {
+    defaultNavigationOptions: ({ navigation }) => {
       let tabBarLabel;
       const { routeName } = navigation.state;
       if (routeName === 'ReactNativeCore') {
@@ -69,7 +68,7 @@ const MainTabNavigator = createTabNavigator(
       };
     },
     // @ts-ignore
-    resetOnBlur: false,
+    resetOnBlur: true,
     /* Below applies to material bottom tab navigator */
     activeTintColor: Colors.tabIconSelected,
     inactiveTintColor: Colors.tabIconDefault,
