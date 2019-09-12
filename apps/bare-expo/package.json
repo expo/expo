@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "^34.0.1",
     "expo-yarn-workspaces": "^1.2.0",
     "react": "16.8.3",
@@ -40,7 +41,9 @@
     "react-native-reanimated": "~1.1.0",
     "react-native-safe-area-context": "~0.3.5",
     "react-native-unimodules": "~0.5.2",
-    "react-native-web": "^0.11.4"
+    "react-native-web": "^0.11.4",
+    "react-navigation": "4.1.0-alpha.0",
+    "test-suite": "*"
   },
   "excludedUnimodules": [
     "expo-task-manager",
