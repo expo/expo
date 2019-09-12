@@ -12,14 +12,8 @@ compare-versions@^3.4.0:
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.5.1.tgz#26e1f5cf0d48a77eced5046b9f67b6b61075a393"
   integrity sha512-9fGPIB7C6AyM18CJJBHt5EnCZDG3oiTJYy0NjfIAGjKpzv0tkxWko7TNQHF5ymqm7IH03tqmeuBxtvD+Izh6mg==
 
-"expo-permissions-interface@file:../../expo-permissions-interface":
-  version "0.0.0"
-
 "expo-permissions@file:../../expo-permissions":
   version "7.0.0"
-
-"expo-sensors-interface@file:../../expo-sensors-interface":
-  version "0.0.0"
 
 "expo-sensors@file:../../expo-sensors":
   version "7.0.0"
@@ -44,3 +38,9 @@ loose-envify@^1.0.0:
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
+
+"unimodules-permissions-interface@file:../../unimodules-permissions-interface":
+  version "3.0.0"
+
+"unimodules-sensors-interface@file:../../unimodules-sensors-interface":
+  version "3.0.0"

@@ -62,8 +62,8 @@ post_install do |installer|
   end
 end
 
-pod 'EXCore', path: '../node_modules/expo-core/ios'
-pod 'EXPermissionsInterface', path: '../node_modules/expo-permissions-interface/ios'
+pod 'UMCore', path: '../node_modules/@unimodules/core/ios'
+pod 'UMPermissionsInterface', path: '../node_modules/unimodules-permissions-interface/ios'
 pod 'EXPermissions', path: '../node_modules/expo-permissions/ios'
-pod 'EXSensorsInterface', path: '../node_modules/expo-sensors-interface/ios'
+pod 'UMSensorsInterface', path: '../node_modules/unimodules-sensors-interface/ios'
 pod 'EXSensors', path: '../node_modules/expo-sensors/ios'
