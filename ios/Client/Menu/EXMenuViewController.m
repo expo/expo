@@ -61,12 +61,7 @@
 {
   [super viewWillAppear:animated];
   [self _maybeRebuildRootView];
-  [self _updateMenuPropsWithVisibility:TRUE];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-  [self _updateMenuPropsWithVisibility:FALSE];
+  [self _updateMenuProps];
 }
 
 - (BOOL)shouldAutorotate
@@ -81,7 +76,7 @@
 
 #pragma mark - internal
 
-- (void)_updateMenuPropsWithVisibility:(BOOL)visible
+- (void)_updateMenuProps
 {
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   NSDictionary *task = @{
@@ -89,7 +84,7 @@
     @"manifest": (visibleApp.appLoader.manifest) ? visibleApp.appLoader.manifest : [NSNull null],
   };
   // include randomness to force the component to rerender
-  NSDictionary *menuProps = @{ @"task": task, @"uuid": [[NSUUID UUID] UUIDString], @"visible": [NSNumber numberWithBool:visible] };
+  NSDictionary *menuProps = @{ @"task": task, @"uuid": [[NSUUID UUID] UUIDString] };
   [EXUtil performSynchronouslyOnMainThread:^{
     [self _forceRootViewToRenderHack];
     self->_reactRootView.frame = self.view.bounds;
@@ -97,7 +92,6 @@
     self->_reactRootView.appProperties = menuProps;
   }];
 }
-
 
   // RCTRootView assumes it is created on a loading bridge.
   // in our case, the bridge has usually already loaded. so we need to prod the view.

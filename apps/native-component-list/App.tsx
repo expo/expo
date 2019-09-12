@@ -5,12 +5,13 @@ import { Asset } from 'expo-asset';
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Assets as StackAssets } from 'react-navigation-stack';
+import { AppearanceProvider } from 'react-native-appearance';
 import { useScreens } from 'react-native-screens';
-import { AppearanceProvider, useColorScheme, ColorSchemeName } from 'react-native-appearance';
 
 import Icons from './src/constants/Icons';
 import RootNavigation from './src/navigation/RootNavigation';
 
+// workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
   useScreens();
 }
@@ -19,15 +20,9 @@ const initialState = {
   appIsReady: false,
 };
 
-type Props = { colorScheme: ColorSchemeName };
 type State = typeof initialState;
 
-export default function AppContainer() {
-  let colorScheme = useColorScheme();
-  return <AppearanceProvider><App colorScheme={colorScheme} /></AppearanceProvider>
-}
-
-class App extends React.Component<Props, State> {
+export default class App extends React.Component<{}, State> {
   readonly state: State = initialState;
 
   componentWillMount() {
@@ -63,10 +58,12 @@ class App extends React.Component<Props, State> {
   render() {
     if (this.state.appIsReady) {
       return (
-        <View style={styles.container} testID="native_component_list">
-          <RootNavigation />
-          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
-        </View>
+        <AppearanceProvider>
+          <View style={styles.container} testID="native_component_list">
+            <RootNavigation />
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          </View>
+        </AppearanceProvider>
       );
     } else {
       return <AppLoading />;
