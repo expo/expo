@@ -28,20 +28,6 @@ declare type PropsType = React.ComponentProps<typeof View> & {
      */
     testDeviceID?: string;
     /**
-     * Additional request params added to underlying request for the ad.
-     */
-    additionalRequestParams?: {
-        [key: string]: string;
-    };
-    /**
-     * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
-     * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
-     * https://developers.google.com/admob/ios/eu-consent#forward_consent_to_the_google_mobile_ads_sdk
-     * and
-     * https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
-     */
-    servePersonalizedAds?: boolean;
-    /**
      * AdMob iOS library events
      */
     onAdViewDidReceiveAd?: () => void;
@@ -115,9 +101,7 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
         bannerSize: PropTypes.Requireable<string>;
         adUnitID: PropTypes.Requireable<string>;
         testDeviceID: PropTypes.Requireable<string>;
-        servePersonalizedAds: PropTypes.Requireable<boolean>;
         onAdViewDidReceiveAd: PropTypes.Requireable<(...args: any[]) => any>;
-        additionalRequestParams: PropTypes.Requireable<object>;
         onDidFailToReceiveAdWithError: PropTypes.Requireable<(...args: any[]) => any>;
         onAdViewWillPresentScreen: PropTypes.Requireable<(...args: any[]) => any>;
         onAdViewWillDismissScreen: PropTypes.Requireable<(...args: any[]) => any>;
