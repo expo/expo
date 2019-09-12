@@ -60,6 +60,14 @@ class MenuView extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.visible && !this.props.visible) {
+      this.restoreStatusBar();
+    } else if (!prevProps.visible && this.props.visible) {
+      this.forceStatusBarUpdateAsync();
+    }
+  }
+
   _loadStateAsync = async () => {
     this.setState({ isLoading: true, isLoaded: false }, async () => {
       const enableDevMenuTools = await Kernel.doesCurrentTaskEnableDevtoolsAsync();
