@@ -7,7 +7,7 @@
     <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB">
   </a>
     
-  <a aria-label="join our fourms" href="https://expo-developers.slack.com" target="_blank">
+  <a aria-label="join our fourms" href="https://forums.expo.io" target="_blank">
     <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=20&labelColor=000000&color=4630EB">
   </a>
    <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
