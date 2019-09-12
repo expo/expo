@@ -5,6 +5,11 @@ Hi! This is what will make Expo never break ever. 🙏
 If you have problems with the code in this repository, please file issues & bug reports
 at https://github.com/expo/expo. Thanks!
 
+## Enabling Dev Tools
+
+We disable DevSupport in our fork of React Native. To get the shake gesture enabled you can run the following (assuming you have an up-to-date react-native copy cloned outside the expo repo)
+`cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/`
+
 ## Running in the browser
 
 You will need to run with HTTPS in a canary browser with SSL disabled. Otherwise you'll get `An SSL certificate error occurred when fetching the script.` thrown which may randomly break tests. This can be done by running `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:19006` (don't browse the internet with this window).

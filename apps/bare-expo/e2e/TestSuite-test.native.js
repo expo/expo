@@ -3,21 +3,20 @@ import { by, device, element, expect as detoxExpect, waitFor } from 'detox';
 import { getTextAsync, sleepAsync } from './Utils';
 import { expectResults } from './utils/report';
 
-let TESTS = [
+const TESTS = [
+  'Application',
+  // 'Device',
+  'Network',
   'Basic',
-  // 'Asset',
   'Constants',
   'Contacts',
   'Crypto',
-  // 'GLView',
-  'Haptics',
-  'Localization',
-  'SecureStore',
-  // 'Segment',
-  // 'SQLite',
+  'Font',
   'Random',
+  'Localization',
   'Permissions',
-  // 'Audio',
+  'SecureStore',
+  'Haptics',
 ];
 
 const MIN_TIME = 50000;
