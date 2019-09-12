@@ -6,55 +6,31 @@ labels: 'bug'
 assignees: ''
 
 ---
+## 🐛 Bug Report - Please complete all 6 steps! 
 
-## 🐛 Bug Report
+### 1. Environment: (Run `expo diagnostics` and copy the output)
 
-### Environment
+Replace this text with log output.
 
-<!-- In your terminal run `expo diagnostics` and paste the output here. -->
+### 2. Targets: (iOS, Android, Web, Client, Standalone, ExpoKit)
 
-<!-- Please also let us know about your app's target (iOS, Android, Client, Standalone, ExpoKit) -->
+Replace this text with all applicable targets.
 
-### Steps to Reproduce
+### 3. Steps to Reproduce: (Be as detailed and specific as possible)
 
-<!--
-  How would you describe your issue to someone who doesn’t know you or your project?
-  Try to write a sequence of steps that anybody can repeat to see the issue.
-  Be specific! If the bug cannot be reproduced, your issue may be closed.
--->
+Replace this text with reproduction steps.
 
-### Expected Behavior
+### 4. Expected Behavior: (Explain what should happen)
 
-<!--
-  How did you expect your project to behave?
-  It’s fine if you’re not sure your understanding is correct.
-  Just write down what you thought would happen.
--->
+Replace this text with explanation.
 
-### Actual Behavior
+### 5. Actual Behavior: (Explain what happens instead)
 
-<!--
-  Did something go wrong?
-  Is something broken, or not behaving as you expected?
-  Describe this section in detail, and attach screenshots if possible.
-  Don't just say "it doesn't work"!
--->
+Replace this text with explanation.
 
-### Reproducible Demo
+### 6. Reproducible [MVCE](https://stackoverflow.com/help/mcve) Demo:
 
-<!--
-  Please share a project that reproduces the issue.
-  There are two ways to do it:
-
-    * Create a new app using https://snack.expo.io/ and try to reproduce the issue in it.
-      This is useful if you roughly know where the problem is, or can’t share the real code.
-
-    * Or, copy your app and remove things until you’re left with the minimal reproducible demo.
-      This is useful for finding the root cause. You may then optionally create a Snack.
-
-  This is a good guide to creating bug demos: https://stackoverflow.com/help/mcve
-  Once you’re done, copy and paste the link to the Snack or a public GitHub repository below:
--->
+Replace this text with [Snack](https://snack.expo.io/) or public Github repo link.
 
 <!--
   What happens if you skip this step?
@@ -71,3 +47,4 @@ assignees: ''
 
   Thanks for helping us help you!
 -->
+
