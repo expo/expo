@@ -14,17 +14,44 @@
 #if !TARGET_OS_TV
 @implementation ABI35_0_0RCTConvert (UIStatusBar)
 
-ABI35_0_0RCT_ENUM_CONVERTER(UIStatusBarStyle, (@{
-  @"default": @(UIStatusBarStyleDefault),
-  @"light-content": @(UIStatusBarStyleLightContent),
-  @"dark-content": @(UIStatusBarStyleDefault),
-}), UIStatusBarStyleDefault, integerValue);
++ (UIStatusBarStyle)UIStatusBarStyle:(id)json ABI35_0_0RCT_DYNAMIC
+{
+  static NSDictionary *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    if (@available(iOS 13.0, *)) {
+      mapping = @{
+        @"default" : @(UIStatusBarStyleDefault),
+        @"light-content" : @(UIStatusBarStyleLightContent),
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+        @"dark-content" : @(UIStatusBarStyleDarkContent)
+#else
+          @"dark-content": @(UIStatusBarStyleDefault)
+#endif
+      };
 
-ABI35_0_0RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
-  @"none": @(UIStatusBarAnimationNone),
-  @"fade": @(UIStatusBarAnimationFade),
-  @"slide": @(UIStatusBarAnimationSlide),
-}), UIStatusBarAnimationNone, integerValue);
+    } else {
+      mapping = @{
+        @"default" : @(UIStatusBarStyleDefault),
+        @"light-content" : @(UIStatusBarStyleLightContent),
+        @"dark-content" : @(UIStatusBarStyleDefault)
+      };
+    }
+  });
+  return _ABI35_0_0RCT_CAST(
+      type, [ABI35_0_0RCTConvertEnumValue("UIStatusBarStyle", mapping, @(UIStatusBarStyleDefault), json) integerValue]);
+}
+
+ABI35_0_0RCT_ENUM_CONVERTER(
+    UIStatusBarAnimation,
+    (@{
+      @"none" : @(UIStatusBarAnimationNone),
+      @"fade" : @(UIStatusBarAnimationFade),
+      @"slide" : @(UIStatusBarAnimationSlide),
+    }),
+    UIStatusBarAnimationNone,
+    integerValue);
 
 @end
 #endif
@@ -36,8 +63,9 @@ static BOOL ABI35_0_0RCTViewControllerBasedStatusBarAppearance()
   static BOOL value;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    value = [[[NSBundle mainBundle] objectForInfoDictionaryKey:
-              @"UIViewControllerBasedStatusBarAppearance"] ?: @YES boolValue];
+    value =
+        [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"]
+                ?: @YES boolValue];
   });
 
   return value;
@@ -47,8 +75,7 @@ ABI35_0_0RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"statusBarFrameDidChange",
-           @"statusBarFrameWillChange"];
+  return @[ @"statusBarFrameDidChange", @"statusBarFrameWillChange" ];
 }
 
 #if !TARGET_OS_TV
@@ -56,8 +83,14 @@ ABI35_0_0RCT_EXPORT_MODULE()
 - (void)startObserving
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc addObserver:self selector:@selector(applicationDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
-  [nc addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
+  [nc addObserver:self
+         selector:@selector(applicationDidChangeStatusBarFrame:)
+             name:UIApplicationDidChangeStatusBarFrameNotification
+           object:nil];
+  [nc addObserver:self
+         selector:@selector(applicationWillChangeStatusBarFrame:)
+             name:UIApplicationWillChangeStatusBarFrameNotification
+           object:nil];
 }
 
 - (void)stopObserving
@@ -74,11 +107,11 @@ ABI35_0_0RCT_EXPORT_MODULE()
 {
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
   NSDictionary *event = @{
-    @"frame": @{
-      @"x": @(frame.origin.x),
-      @"y": @(frame.origin.y),
-      @"width": @(frame.size.width),
-      @"height": @(frame.size.height),
+    @"frame" : @{
+      @"x" : @(frame.origin.x),
+      @"y" : @(frame.origin.y),
+      @"width" : @(frame.size.width),
+      @"height" : @(frame.size.height),
     },
   };
   [self sendEventWithName:eventName body:event];
@@ -94,42 +127,38 @@ ABI35_0_0RCT_EXPORT_MODULE()
   [self emitEvent:@"statusBarFrameWillChange" forNotification:notification];
 }
 
-ABI35_0_0RCT_EXPORT_METHOD(getHeight:(ABI35_0_0RCTResponseSenderBlock)callback)
+ABI35_0_0RCT_EXPORT_METHOD(getHeight : (ABI35_0_0RCTResponseSenderBlock)callback)
 {
-  callback(@[@{
-    @"height": @(ABI35_0_0RCTSharedApplication().statusBarFrame.size.height),
-  }]);
+  callback(@[ @{
+    @"height" : @(ABI35_0_0RCTSharedApplication().statusBarFrame.size.height),
+  } ]);
 }
 
-ABI35_0_0RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
-                  animated:(BOOL)animated)
-{
-  if (ABI35_0_0RCTViewControllerBasedStatusBarAppearance()) {
-    ABI35_0_0RCTLogError(@"ABI35_0_0RCTStatusBarManager module requires that the \
-                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
-  } else {
-    [ABI35_0_0RCTSharedApplication() setStatusBarStyle:statusBarStyle
-                                     animated:animated];
-  }
-}
-
-ABI35_0_0RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
-                  withAnimation:(UIStatusBarAnimation)animation)
+ABI35_0_0RCT_EXPORT_METHOD(setStyle : (UIStatusBarStyle)statusBarStyle animated : (BOOL)animated)
 {
   if (ABI35_0_0RCTViewControllerBasedStatusBarAppearance()) {
     ABI35_0_0RCTLogError(@"ABI35_0_0RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-    [ABI35_0_0RCTSharedApplication() setStatusBarHidden:hidden
-                                 withAnimation:animation];
+    [ABI35_0_0RCTSharedApplication() setStatusBarStyle:statusBarStyle animated:animated];
   }
 }
 
-ABI35_0_0RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible:(BOOL)visible)
+ABI35_0_0RCT_EXPORT_METHOD(setHidden : (BOOL)hidden withAnimation : (UIStatusBarAnimation)animation)
+{
+  if (ABI35_0_0RCTViewControllerBasedStatusBarAppearance()) {
+    ABI35_0_0RCTLogError(@"ABI35_0_0RCTStatusBarManager module requires that the \
+                UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
+  } else {
+    [ABI35_0_0RCTSharedApplication() setStatusBarHidden:hidden withAnimation:animation];
+  }
+}
+
+ABI35_0_0RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 {
   ABI35_0_0RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
-#endif //TARGET_OS_TV
+#endif // TARGET_OS_TV
 
 @end
