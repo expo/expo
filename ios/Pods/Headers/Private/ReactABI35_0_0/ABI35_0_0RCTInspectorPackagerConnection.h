@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/React/Inspector/ABI35_0_0RCTInspectorPackagerConnection.h

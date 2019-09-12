@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/React/DevSupport/ABI35_0_0RCTInspectorDevServerHelper.h
