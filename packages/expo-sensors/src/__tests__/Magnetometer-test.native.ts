@@ -25,7 +25,7 @@ function declareMagnetometerSpecs(Magnetometer, NativeMagnetometer, eventNames) 
       Magnetometer.removeAllListeners();
     });
 
-    if (Platform.OS == 'ios') {
+    if (Platform.OS === 'ios') {
       it(`adds an magnetometer update listener`, () => {
         const mockListener = jest.fn();
         const subscription = Magnetometer.addListener(mockListener);
