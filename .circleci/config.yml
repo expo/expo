@@ -255,8 +255,8 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
-          command: test:web
-          working_directory: ~/expo/apps/bare-expo
+          command: test:web:ci
+          working_directory: ~/expo/apps/test-suite
 
   web_storybook:
     executor: web
@@ -379,17 +379,17 @@ jobs:
           working_directory: ~/project
           no_output_timeout: 40m
           command: |
-            export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
-            tar \
-              -zcf "/tmp/$TARBALL" \
-              package.json \
-              exponent-view-template \
-              shellAppBase-builds \
-              shellAppWorkspaces \
-              ios
-            ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
-            echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
-            echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
+              export TARBALL=ios-shell-builder-sdk-latest-$CIRCLE_SHA1.tar.gz
+              tar \
+                -zcf "/tmp/$TARBALL" \
+                package.json \
+                exponent-view-template \
+                shellAppBase-builds \
+                shellAppWorkspaces \
+                ios
+              ~/project/bin/aws s3 cp --acl public-read "/tmp/$TARBALL" s3://exp-artifacts
+              echo "Release tarball uploaded to s3://exp-artifacts/$TARBALL"
+              echo "You can deploy this in Terraform by setting commit to $CIRCLE_SHA1"
 
   shell_app_android_build:
     executor: android
