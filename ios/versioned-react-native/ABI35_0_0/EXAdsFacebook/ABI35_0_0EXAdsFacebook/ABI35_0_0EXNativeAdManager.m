@@ -102,7 +102,7 @@ ABI35_0_0UM_EXPORT_METHOD_AS(registerViewsForInteraction,
       }
     }
 
-    [(ABI35_0_0EXNativeAdView *)nativeAdView registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBMediaView *)adIconView clickableViews:clickableViews];
+    [(ABI35_0_0EXNativeAdView *)nativeAdView registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:clickableViews];
     resolve(@[]);
   }];
 }
