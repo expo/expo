@@ -147,6 +147,8 @@ PODS:
     - GTMSessionFetcher/Core (= 1.2.2)
   - React (0.59.8):
     - React/Core (= 0.59.8)
+  - react-native-safe-area-context (0.3.5):
+    - React
   - React/Core (0.59.8):
     - yoga (= 0.59.8.React)
   - React/CxxBridge (0.59.8):
@@ -266,6 +268,7 @@ DEPENDENCIES:
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - Folly (from `../../../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../../../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
+  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - React/Core (from `../../../react-native-lab/react-native`)
   - React/CxxBridge (from `../../../react-native-lab/react-native`)
   - React/DevSupport (from `../../../react-native-lab/react-native`)
@@ -448,6 +451,8 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../../../react-native-lab/react-native"
+  react-native-safe-area-context:
+    :podspec: "../../../node_modules/react-native-safe-area-context"
   RNGestureHandler:
     :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
   RNReanimated:
@@ -542,6 +547,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   React: 841af16feb8e7936838a626bfa1b8faaa07d9e6c
+  react-native-safe-area-context: e8579f0401ada23a7850fee7069313b1e1a46d76
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   RNReanimated: 7a52c90473b5e81c13408d40d797b98387eaddde
   UMBarCodeScannerInterface: 84ea2d6b58ff0dc27ef9b68bab71286be18ee020
@@ -556,6 +562,6 @@ SPEC CHECKSUMS:
   UMSensorsInterface: 0ed023ce9b96f2ca6fada7bda05b7760da60b293
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: 89d36f5a85f14250f85476dcc6c968499f450490
+PODFILE CHECKSUM: d4b154d721002b6dfac8755ed4790c0a6a1b5cc9
 
 COCOAPODS: 1.8.0.beta.1

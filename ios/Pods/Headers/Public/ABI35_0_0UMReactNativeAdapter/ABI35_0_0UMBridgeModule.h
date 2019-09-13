@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/UMReactNativeAdapter/ABI35_0_0UMReactNativeAdapter/ABI35_0_0UMBridgeModule.h

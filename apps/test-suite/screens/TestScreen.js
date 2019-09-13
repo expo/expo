@@ -115,17 +115,17 @@ export default class TestScreen extends React.Component {
           }
           const emoji = result.status === 'passed' ? ':green_heart:' : ':broken_heart:';
           console.log(`${grouping} ${emoji} ${result.fullName}`);
-          this._results += `${grouping} ${result.fullName}\n`;
+          app._results += `${grouping} ${result.fullName}\n`;
 
           if (result.status === 'failed') {
-            this._failures += `${grouping} ${result.fullName}\n`;
+            app._failures += `${grouping} ${result.fullName}\n`;
             result.failedExpectations.forEach(({ matcherName = 'NO_MATCHER', message }) => {
               if (ExponentTest && ExponentTest.log) {
                 ExponentTest.log(`${matcherName}: ${message}`);
               }
               console.log(`${matcherName}: ${message}`);
-              this._results += `${matcherName}: ${message}\n`;
-              this._failures += `${matcherName}: ${message}\n`;
+              app._results += `${matcherName}: ${message}\n`;
+              app._failures += `${matcherName}: ${message}\n`;
             });
             failedSpecs.push(result);
           }
@@ -143,8 +143,8 @@ export default class TestScreen extends React.Component {
         const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
-          failures: this._failures,
-          results: this._results,
+          failures: app._failures,
+          results: app._results,
         };
 
         const jsonResult = JSON.stringify(result);
@@ -163,8 +163,8 @@ export default class TestScreen extends React.Component {
           ExponentTest.completed(
             JSON.stringify({
               failed: failedSpecs.length,
-              failures: this._failures,
-              results: this._results,
+              failures: app._failures,
+              results: app._results,
             })
           );
         }

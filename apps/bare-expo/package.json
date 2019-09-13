@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "^34.0.1",
     "expo-yarn-workspaces": "^1.2.0",
     "react": "16.8.3",
@@ -40,8 +41,11 @@
     "react-native": "0.59.8",
     "react-native-gesture-handler": "~1.3.0",
     "react-native-reanimated": "~1.1.0",
+    "react-native-safe-area-context": "0.3.6",
     "react-native-unimodules": "~0.5.2",
-    "react-native-web": "^0.11.4"
+    "react-native-web": "^0.11.4",
+    "react-navigation": "4.1.0-alpha.0",
+    "test-suite": "*"
   },
   "excludedUnimodules": [
     "expo-task-manager",
@@ -67,13 +71,13 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/BareExpo.app",
         "build": "./scripts/build-detox-ios.sh Debug",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone Xs"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/BareExpo.app",
         "build": "./scripts/build-detox-ios.sh Release YES",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone Xs"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",

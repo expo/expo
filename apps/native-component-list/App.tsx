@@ -4,29 +4,30 @@ import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
 import { Assets as StackAssets } from 'react-navigation-stack';
-import { AppearanceProvider } from 'react-native-appearance';
 import { useScreens } from 'react-native-screens';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AppearanceProvider, useColorScheme, ColorSchemeName } from 'react-native-appearance';
 
 import Icons from './src/constants/Icons';
 import RootNavigation from './src/navigation/RootNavigation';
 
-// workaround for large android status bar in react-nav beta.27
 if (Platform.OS === 'android') {
   useScreens();
-  // @ts-ignore
-  SafeAreaView.setStatusBarHeight(0);
 }
 
 const initialState = {
   appIsReady: false,
 };
 
+type Props = { colorScheme: ColorSchemeName };
 type State = typeof initialState;
 
-export default class App extends React.Component<{}, State> {
+export default function AppContainer() {
+  let colorScheme = useColorScheme();
+  return <AppearanceProvider><App colorScheme={colorScheme} /></AppearanceProvider>
+}
+
+class App extends React.Component<Props, State> {
   readonly state: State = initialState;
 
   componentWillMount() {
@@ -62,15 +63,10 @@ export default class App extends React.Component<{}, State> {
   render() {
     if (this.state.appIsReady) {
       return (
-        <SafeAreaProvider>
-          <AppearanceProvider>
-            <View style={styles.container} testID="native_component_list">
-              {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
-              <RootNavigation />
-              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            </View>
-          </AppearanceProvider>
-        </SafeAreaProvider>
+        <View style={styles.container} testID="native_component_list">
+          <RootNavigation />
+          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
+        </View>
       );
     } else {
       return <AppLoading />;
@@ -82,9 +78,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  statusBarUnderlay: {
-    height: 24,
-    backgroundColor: 'rgba(0,0,0,0.2)',
   },
 });
