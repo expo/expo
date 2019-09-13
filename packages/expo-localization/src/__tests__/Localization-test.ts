@@ -24,7 +24,7 @@ const fakeLocalization = {
   locales: ['en-US', 'fr'],
   timezone: 'Etc/UTC',
   isoCurrencyCodes: [],
-  country: 'US',
+  region: 'US',
   isRTL: false,
 };
 
@@ -58,13 +58,13 @@ describe(`Localization methods`, () => {
       locales,
       timezone,
       isoCurrencyCodes,
-      country,
+      region,
       isRTL,
     } = await Localization.getLocalizationAsync();
 
     validateString(locale);
     validateString(timezone);
-    validateString(country);
+    validateString(region);
 
     validateStringArray(isoCurrencyCodes);
     validateStringArray(locales);
@@ -74,8 +74,8 @@ describe(`Localization methods`, () => {
 });
 
 describe(`Localization defines constants`, () => {
-  it(`Gets the current device country`, async () => {
-    const result = Localization.country;
+  it(`Gets the current device region`, async () => {
+    const result = Localization.region;
 
     expect(result).toBeDefined();
     expect(typeof result).toBe('string');

@@ -3,7 +3,6 @@
  */
 
 import Constants from 'expo-constants';
-import _ from 'lodash';
 import React from 'react';
 import {
   AppState,
@@ -11,20 +10,19 @@ import {
   Clipboard,
   Platform,
   RefreshControl,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { withNavigationFocus, withNavigation } from 'react-navigation';
+import { withNavigationFocus, withNavigation, Themed } from 'react-navigation';
+
 import { connect } from 'react-redux';
 import semver from 'semver';
 import ScrollView from '../components/NavigationScrollView';
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import DevIndicator from '../components/DevIndicator';
 import HistoryActions from '../redux/HistoryActions';
@@ -34,9 +32,10 @@ import NoProjectsOpen from '../components/NoProjectsOpen';
 import ProjectTools from '../components/ProjectTools';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from '../components/SmallProjectCard';
-import Store from '../redux/Store';
 import Connectivity from '../api/Connectivity';
 import getSnackId from '../utils/getSnackId';
+import { SectionLabelContainer, GenericCardBody, GenericCardContainer } from '../components/Views';
+import { SectionLabelText } from '../components/Text';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
@@ -89,17 +88,13 @@ export default class ProjectsScreen extends React.Component {
     Connectivity.addListener(this._updateConnectivity);
     this._startPollingForProjects();
 
+    // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
+    // find a way to move this listener up to the root of the app in order to ensure
+    // that it has been registered regardless of whether we have been on the project
+    // screen in the home app
     addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
       this.props.navigation.showModal('QRCode');
       return { success: true };
-    });
-
-    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
-      let { manifestUrl, manifest, manifestString } = event;
-      if (!manifest && manifestString) {
-        manifest = JSON.parse(manifestString);
-      }
-      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
     });
   }
 
@@ -121,50 +116,46 @@ export default class ProjectsScreen extends React.Component {
               onRefresh={this._handleRefreshAsync}
             />
           }
-          key={
-            /* note(brent): sticky headers break re-rendering scrollview */
-            /* contents on sdk17, remove this in sdk18 */
-            Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'
-          }
+          key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
           stickyHeaderIndices={Platform.OS === 'ios' ? [0, 2, 4] : []}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
-          <View style={SharedStyles.sectionLabelContainer}>
-            <Text style={SharedStyles.sectionLabelText}>
+          <SectionLabelContainer>
+            <SectionLabelText>
               {Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR'
                 ? 'CLIPBOARD'
                 : 'TOOLS'}
-            </Text>
-          </View>
+            </SectionLabelText>
+          </SectionLabelContainer>
           {this._renderProjectTools()}
 
-          <View style={SharedStyles.sectionLabelContainer}>
+          <SectionLabelContainer>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <DevIndicator
                 style={{ marginRight: 7 }}
                 isActive={projects && projects.length}
                 isNetworkAvailable={this.state.isNetworkAvailable}
               />
-              <Text style={SharedStyles.sectionLabelText}>RECENTLY IN DEVELOPMENT</Text>
+              <SectionLabelText>RECENTLY IN DEVELOPMENT</SectionLabelText>
             </View>
             <TouchableOpacity onPress={this._handlePressHelpProjects} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>HELP</Text>
             </TouchableOpacity>
-          </View>
+          </SectionLabelContainer>
           {this._renderProjects()}
 
-          <View style={SharedStyles.sectionLabelContainer}>
-            <Text style={SharedStyles.sectionLabelText}>RECENTLY OPENED</Text>
+          <SectionLabelContainer>
+            <SectionLabelText>RECENTLY OPENED</SectionLabelText>
             <TouchableOpacity onPress={this._handlePressClearHistory} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
-          </View>
+          </SectionLabelContainer>
 
           {this._renderRecentHistory()}
           {this._renderConstants()}
         </ScrollView>
 
-        <StatusBar barStyle="default" />
+        <Themed.StatusBar />
       </View>
     );
   }
@@ -278,13 +269,13 @@ export default class ProjectsScreen extends React.Component {
 
   _renderEmptyRecentHistory = () => {
     return (
-      <View style={SharedStyles.genericCardContainer} key="empty-history">
-        <View style={SharedStyles.genericCardBody}>
+      <GenericCardContainer key="empty-history">
+        <GenericCardBody>
           <Text style={[SharedStyles.faintText, { textAlign: 'center' }]}>
             You haven't opened any projects recently.
           </Text>
-        </View>
-      </View>
+        </GenericCardBody>
+      </GenericCardContainer>
     );
   };
 
@@ -333,8 +324,7 @@ export default class ProjectsScreen extends React.Component {
         <Text style={styles.supportSdksText}>
           Supported SDK
           {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
-          {SupportedExpoSdks
-            .map(semver.major)
+          {SupportedExpoSdks.map(semver.major)
             .sort((a, b) => a - b)
             .join(', ')}
         </Text>
@@ -389,7 +379,6 @@ export default class ProjectsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   inDevelopmentContainer: {
     marginBottom: 15,
@@ -404,12 +393,11 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   clearButton: {
-    position: 'absolute',
-    right: Platform.OS === 'android' ? 15 : 0,
-    top: Platform.OS === 'android' ? 12 : 0,
+    alignItems: 'flex-end',
+    flex: 1,
   },
   clearButtonText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 11,
     letterSpacing: 0.92,
     ...Platform.select({

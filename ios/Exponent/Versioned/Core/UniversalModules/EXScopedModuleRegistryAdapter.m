@@ -14,6 +14,7 @@
 #import "EXScopedPermissions.h"
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
+#import "EXScopedBranch.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -80,6 +81,11 @@
 #if __has_include(<EXSegment/EXSegment.h>)
   EXScopedSegment *segmentModule = [[EXScopedSegment alloc] init];
   [moduleRegistry registerExportedModule:segmentModule];
+#endif
+
+#if __has_include(<EXBranch/RNBranch.h>)
+  EXScopedBranch *branchModule = [[EXScopedBranch alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerInternalModule:branchModule];
 #endif
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)

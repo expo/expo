@@ -249,7 +249,7 @@ describe('within Expo client', () => {
     });
 
     afterEach(() => {
-      console = originalConsole;
+      console = originalConsole; // eslint-disable-line no-global-assign
     });
 
     it(`handles empty values`, () => {
@@ -326,7 +326,9 @@ describe('in standalone app', () => {
     jest.unmock('expo-constants');
   });
 
-  it(`does not scope font names`, async () => {
+  // NOTE(brentvatne): we need to disable scoping on native side on iOS
+  // in standalone apps: https://github.com/expo/expo/issues/5118
+  xit(`does not scope font names`, async () => {
     const fontName = 'test-font';
     const mockAsset = _createMockAsset();
     await Font.loadAsync(fontName, mockAsset);

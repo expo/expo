@@ -1,0 +1,12 @@
+{
+  "expo-ads-admob": "https://github.com/expo/expo/tree/master/packages/expo-ads-admob",
+  "expo-camera": "https://github.com/expo/expo/tree/master/packages/expo-camera",
+  "expo-facebook": "https://github.com/expo/expo/tree/master/packages/expo-facebook",
+  "expo-google-sign-in": "https://github.com/expo/expo/tree/master/packages/expo-google-sign-in",
+  "expo-image-picker": "https://github.com/expo/expo/tree/master/packages/expo-image-picker",
+  "lottie-react-native": "https://github.com/react-native-community/lottie-react-native",
+  "react-native-maps": "https://github.com/react-native-community/react-native-maps",
+  "react-native-view-shot": "https://github.com/gre/react-native-view-shot",
+  "react-native-webview": "https://github.com/react-native-community/react-native-webview",
+  "react-native-shared-element": "https://github.com/IjzerenHein/react-native-shared-element"
+}

@@ -12,7 +12,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-If you're using the iOS or Android Emulators, ensure that [Location is enabled](#Enabling-Emulator-Location).
+If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
 You must request permission to access the user's location before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
 
@@ -52,7 +52,7 @@ Get the current position of the device.
 
 #### Returns
 
-Returns a promise resolving to an object representing [Location](#typelocation) type.
+Returns a promise resolving to an object representing [Location](#type-location) type.
 
 ### `Location.watchPositionAsync(options, callback)`
 
@@ -69,7 +69,7 @@ Subscribe to location updates from the device. Please note that updates will onl
 
 - **callback (_function_)** --
 
-  This function is called on each location update. It is passed exactly one parameter: an object representing [Location](#typelocation) type.
+  This function is called on each location update. It is passed exactly one parameter: an object representing [Location](#type-location) type.
 
 #### Returns
 
@@ -197,9 +197,9 @@ Polyfills `navigator.geolocation` for interop with the core React Native and Web
 
 Background Location API can notify your app about new locations, also while it's in background. There are some requirements in order to use Background Location API:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (_iOS only_)
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager/#configuration). (_iOS only_)
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
 
 ### `Location.startLocationUpdatesAsync(taskName, options)`
 
@@ -220,7 +220,7 @@ Registers for receiving location updates that can also come when the app is in t
     - **notificationBody (_string_)** -- Subtitle of the foreground service notification. _required_
     - **notificationColor (_string_)** -- Color of the foreground service notification. Accepts `#RRGGBB` and `#AARRGGBB` hex formats. _optional_
   - **pausesUpdatesAutomatically (_boolean_)** -- A boolean value indicating whether the location manager can pause location updates to improve battery life without sacrificing location data. When this option is set to `true`, the location manager pauses updates (and powers down the appropriate hardware) at times when the location data is unlikely to change. You can help the determination of when to pause location updates by assigning a value to the `activityType` property. Defaults to `false`. (**iOS only**)
-  - **activityType : [Location.ActivityType](#activityType)** -- The type of user activity associated with the location updates. See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details. Defaults to `Location.ActivityType.Other`. (**iOS only**)
+  - **activityType : [Location.ActivityType](#locationactivitytype)** -- The type of user activity associated with the location updates. See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details. Defaults to `Location.ActivityType.Other`. (**iOS only**)
 
 > Deferred updates provide a way to report locations in a batch when the app is in the background state. Location updates aren't being deferred in the foreground.
 
@@ -232,7 +232,7 @@ A promise resolving once the task with location updates is registered.
 
 Background location task will be receiving following data:
 
-- **locations : [Location](#typelocation)[]** - An array of the new locations.
+- **locations : [Location](#type-location)[]** - An array of the new locations.
 
 ```javascript
 import * as TaskManager from 'expo-task-manager';
@@ -271,11 +271,11 @@ A promise resolving to boolean value indicating whether the location task is sta
 ## Geofencing
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
-To make it work in the background, it uses [TaskManager](../task-manager) Native API under the hood. There are some requirements in order to use Geofencing API:
+To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. There are some requirements in order to use Geofencing API:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager#configuration). (_iOS only_)
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
+- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 
@@ -302,7 +302,7 @@ A promise resolving as soon as the task is registered.
 Geofencing task will be receiving following data:
 
 - **eventType : [Location.GeofencingEventType](#locationgeofencingeventtype)** -- Indicates the reason for calling the task, which can be triggered by entering or exiting the region. See [Location.GeofencingEventType](#locationgeofencingeventtype).
-- **region : [Region](#typeregion)** -- Object containing details about updated region. See [Region](#typeregion) for more details.
+- **region : [Region](#type-region)** -- Object containing details about updated region. See [Region](#type-region) for more details.
 
 ```javascript
 import * as Location from 'expo-location';

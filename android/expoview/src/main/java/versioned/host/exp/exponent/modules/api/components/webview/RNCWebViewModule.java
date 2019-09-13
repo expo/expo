@@ -244,8 +244,8 @@ public class RNCWebViewModule extends ReactContextBaseJavaModule implements Acti
     Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
     // @todo from experience, for Videos we get the data onActivityResult
     // so there's no need to store the Uri
-    Uri outputVideoUri = getOutputUri(MediaStore.ACTION_VIDEO_CAPTURE);
-    intent.putExtra(MediaStore.EXTRA_OUTPUT, outputVideoUri);
+    outputFileUri = getOutputUri(MediaStore.ACTION_VIDEO_CAPTURE);
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
     return intent;
   }
 

@@ -12,6 +12,8 @@ import android.util.DisplayMetrics;
 import android.content.res.Configuration;
 import android.os.SystemClock;
 
+import com.facebook.device.yearclass.YearClass;
+
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -25,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.lang.Runtime;
-
-import com.facebook.device.yearclass.YearClass;
 
 public class DeviceModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String NAME = "ExpoDevice";
@@ -42,24 +42,24 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     mContext = context;
   }
 
-  public enum DeviceType {
-    PHONE("PHONE"),
-    TABLET("TABLET"),
-    DESKTOP("DESKTOP"),
-    TV("TV"),
-    UNKNOWN("UNKNOWN");
+  // Keep this enum in sync with JavaScript
+  public static enum DeviceType {
+    UNKNOWN(0),
+    PHONE(1),
+    TABLET(2),
+    DESKTOP(3),
+    TV(4);
+    
+    private final int value;
 
-    private final String value;
-
-    DeviceType(String value) {
+    DeviceType(int value) {
       this.value = value;
     }
 
-    public String getValue() {
+    public int getJSValue() {
       return value;
     }
   }
-
 
   @Override
   public String getName() {
@@ -77,31 +77,32 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   public Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<>();
 
+    constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
     constants.put("brand", Build.BRAND);
     constants.put("manufacturer", Build.MANUFACTURER);
     constants.put("modelName", Build.MODEL);
-    constants.put("osName", this.getSystemName());
-    String[] supported_abis = Build.SUPPORTED_ABIS;
-    if (supported_abis != null && supported_abis.length == 0) {
-      supported_abis = null;
-    }
-    constants.put("supportedCpuArchitectures", supported_abis);
     constants.put("designName", Build.DEVICE);
-    constants.put("osBuildId", Build.DISPLAY);
     constants.put("productName", Build.PRODUCT);
-    constants.put("platformApiLevel", Build.VERSION.SDK_INT);
-    constants.put("osVersion", Build.VERSION.RELEASE);
-    constants.put("deviceName", Settings.Secure.getString(mContext.getContentResolver(), "bluetooth_name"));
-    constants.put("osBuildFingerprint", Build.FINGERPRINT);
-    constants.put("osInternalBuildId", Build.ID);
     constants.put("deviceYearClass", getDeviceYearClass());
 
-    ActivityManager actMgr = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-    ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
-    actMgr.getMemoryInfo(memInfo);
-    constants.put("totalMemory", memInfo.totalMem);
+    ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+    ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+    activityManager.getMemoryInfo(memoryInfo);
+    constants.put("totalMemory", memoryInfo.totalMem);
 
-    constants.put("isDevice", !isRunningOnGenymotion() && !isRunningOnStockEmulator());
+    String[] supportedAbis = Build.SUPPORTED_ABIS;
+    if (supportedAbis != null && supportedAbis.length == 0) {
+      supportedAbis = null;
+    }
+    constants.put("supportedCpuArchitectures", supportedAbis);
+
+    constants.put("osName", this.getSystemName());
+    constants.put("osVersion", Build.VERSION.RELEASE);
+    constants.put("osBuildId", Build.DISPLAY);
+    constants.put("osInternalBuildId", Build.ID);
+    constants.put("osBuildFingerprint", Build.FINGERPRINT);
+    constants.put("platformApiLevel", Build.VERSION.SDK_INT);
+    constants.put("deviceName", Settings.Secure.getString(mContext.getContentResolver(), "bluetooth_name"));
 
     return constants;
   }
@@ -119,7 +120,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   private String getSystemName() {
-    String systemName = "";
+    String systemName;
     if (Build.VERSION.SDK_INT < 23) {
       systemName = "Android";
     } else {
@@ -131,8 +132,14 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     return systemName;
   }
 
+  @ExpoMethod
+  public void getDeviceTypeAsync(Promise promise) {
+    DeviceType mDeviceType = DeviceModule.getDeviceType(mContext);
+    promise.resolve(mDeviceType.getJSValue());
+  }
+
   private static DeviceType getDeviceType(Context context) {
-    // Detect TVs via ui mode (Android TVs) or system features (Fire TV).
+    // Detect TVs via UI mode (Android TVs) or system features (Fire TV).
     if (context.getApplicationContext().getPackageManager().hasSystemFeature("amazon.hardware.fire_tv")) {
       return DeviceType.TV;
     }
@@ -148,7 +155,7 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
       return DeviceType.UNKNOWN;
     }
 
-    // Get display metrics to see if we can differentiate handsets and tablets.
+    // Get display metrics to see if we can differentiate phones and tablets.
     DisplayMetrics metrics = new DisplayMetrics();
     windowManager.getDefaultDisplay().getMetrics(metrics);
 
@@ -158,20 +165,21 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     double diagonalSizeInches = Math.sqrt(Math.pow(widthInches, 2) + Math.pow(heightInches, 2));
 
     if (diagonalSizeInches >= 3.0 && diagonalSizeInches <= 6.9) {
-      // Devices in a sane range for phones are considered to be Handsets.
+      // Devices in a sane range for phones are considered to be phones.
       return DeviceType.PHONE;
     } else if (diagonalSizeInches > 6.9 && diagonalSizeInches <= 18.0) {
-      // Devices larger than handset and in a sane range for tablets are tablets.
+      // Devices larger than a phone and in a sane range for tablets are tablets.
       return DeviceType.TABLET;
     } else {
-      // Otherwise, we don't know what device type we're on/
+      // Otherwise, we don't know what device type we're on.
       return DeviceType.UNKNOWN;
     }
   }
 
   @ExpoMethod
-  public void hasPlatformFeatureAsync(String feature, Promise promise) {
-    promise.resolve(mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature));
+  public void getUptimeAsync(Promise promise) {
+    Long uptime = SystemClock.uptimeMillis();
+    promise.resolve(uptime.doubleValue());
   }
 
   @ExpoMethod
@@ -183,33 +191,6 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
     } else {
       promise.resolve(maxMemory.doubleValue());
     }
-  }
-
-  @ExpoMethod
-  public void isSideLoadingEnabledAsync(Promise promise) {
-    boolean enabled;
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      if (Settings.Global.getInt(mContext.getApplicationContext().getContentResolver(), Settings.Global.INSTALL_NON_MARKET_APPS, 0) == 1) {
-        enabled = true;
-      } else {
-        enabled = false;
-      }
-    } else {
-      enabled = mContext.getApplicationContext().getPackageManager().canRequestPackageInstalls();
-    }
-    promise.resolve(enabled);
-  }
-
-  @ExpoMethod
-  public void getUptimeAsync(Promise promise) {
-    Long uptime = SystemClock.uptimeMillis();
-    promise.resolve(uptime.doubleValue());
-  }
-
-  @ExpoMethod
-  public void getDeviceTypeAsync(Promise promise) {
-    DeviceType mDeviceType = getDeviceType(mContext);
-    promise.resolve(mDeviceType.getValue());
   }
 
   @ExpoMethod
@@ -242,14 +223,33 @@ public class DeviceModule extends ExportedModule implements RegistryLifecycleLis
   }
 
   @ExpoMethod
+  public void isSideLoadingEnabledAsync(Promise promise) {
+    boolean enabled;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      enabled = Settings.Global.getInt(
+        mContext.getApplicationContext().getContentResolver(),
+        Settings.Global.INSTALL_NON_MARKET_APPS,
+        0) == 1;
+    } else {
+      enabled = mContext.getApplicationContext().getPackageManager().canRequestPackageInstalls();
+    }
+    promise.resolve(enabled);
+  }
+
+  @ExpoMethod
   public void getPlatformFeaturesAsync(Promise promise) {
     FeatureInfo[] allFeatures = mContext.getApplicationContext().getPackageManager().getSystemAvailableFeatures();
-    List<String> featureString = new ArrayList<>();
+    List<String> featureList = new ArrayList<>();
     for (int i = 0; i < allFeatures.length; i++) {
       if (allFeatures[i].name != null) {
-        featureString.add(allFeatures[i].name);
+        featureList.add(allFeatures[i].name);
       }
     }
-    promise.resolve(featureString);
+    promise.resolve(featureList);
+  }
+
+  @ExpoMethod
+  public void hasPlatformFeatureAsync(String feature, Promise promise) {
+    promise.resolve(mContext.getApplicationContext().getPackageManager().hasSystemFeature(feature));
   }
 }

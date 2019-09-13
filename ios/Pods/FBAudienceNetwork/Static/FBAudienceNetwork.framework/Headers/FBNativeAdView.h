@@ -34,6 +34,8 @@ typedef NS_ENUM(NSInteger, FBNativeAdViewType) {
     FBNativeAdViewTypeGenericHeight300 = 3,
     /// Fixed height view, 400 points
     FBNativeAdViewTypeGenericHeight400 = 4,
+    /// Dynamic height, will be rendered to make the best use of the size set.
+    FBNativeAdViewTypeDynamic = 6,
 };
 
 /**
@@ -46,6 +48,18 @@ FB_CLASS_EXPORT
  The type of the view, specifies which template to use
  */
 @property (nonatomic, assign, readonly) FBNativeAdViewType type;
+
+/**
+ This is a method to create a native ad template using the given native ad and using default ad view attributes.
+ @param nativeAd The native ad to use to create this view.
+ */
++ (instancetype)nativeAdViewWithNativeAd:(FBNativeAd *)nativeAd;
+
+/**
+ This is a method to create a native ad template using the given native ad and ad view attributes.
+ @param nativeAd The native ad to use to create this view.
+ */
++ (instancetype)nativeAdViewWithNativeAd:(FBNativeAd *)nativeAd withAttributes:(FBNativeAdViewAttributes *)attributes;
 
 /**
  This is a method to create a native ad template using the given placement id and type.

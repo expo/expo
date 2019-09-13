@@ -1,5 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 
@@ -49,12 +48,24 @@ export default {
 
     await AdMobNativeModule.setTestDeviceID(id);
   },
-  async requestAdAsync(): Promise<void> {
+  async requestAdAsync(
+    options: {
+      servePersonalizedAds?: boolean;
+      additionalRequestParams?: { [key: string]: string };
+    } = {}
+  ): Promise<void> {
     if (!AdMobNativeModule.requestAd) {
       throw new UnavailabilityError(moduleName, 'requestAdAsync');
     }
 
-    await AdMobNativeModule.requestAd();
+    const params: { [key: string]: string } = {
+      ...options.additionalRequestParams,
+    };
+    if (!options.servePersonalizedAds) {
+      params.npa = '1';
+    }
+
+    await AdMobNativeModule.requestAd(params);
   },
   async showAdAsync(): Promise<void> {
     if (!AdMobNativeModule.showAd) {

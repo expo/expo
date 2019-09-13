@@ -176,26 +176,28 @@ it(`coalesces downloads`, async () => {
   expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(1);
 });
 
-describe('web', () => {
-  beforeEach(() => {
-    const { Platform } = require('@unimodules/core');
-    Platform.OS = 'web';
+const { Platform } = require('@unimodules/core');
+if (Platform.OS === 'web') {
+  describe('web', () => {
+    it(`fetches images to determine the dimensions`, async () => {
+      const ImageAssets = require('../ImageAssets');
+      const { Asset } = require('../index');
+
+      let asset = Asset.fromMetadata(mockImageMetadata);
+      ImageAssets.getImageInfoAsync.mockResolvedValueOnce({
+        width: 120,
+        height: 180,
+        name: 'test',
+      });
+      await asset.downloadAsync();
+
+      expect(asset.width).toBe(120);
+      expect(asset.height).toBe(180);
+      expect(asset.downloaded).toBe(true);
+      expect(asset.localUri).toBe(asset.uri);
+    });
   });
-
-  it(`fetches images to determine the dimensions`, async () => {
-    const ImageAssets = require('../ImageAssets');
-    const { Asset } = require('../index');
-
-    let asset = Asset.fromMetadata(mockImageMetadata);
-    ImageAssets.getImageInfoAsync.mockResolvedValueOnce({ width: 120, height: 180, name: 'test' });
-    await asset.downloadAsync();
-
-    expect(asset.width).toBe(120);
-    expect(asset.height).toBe(180);
-    expect(asset.downloaded).toBe(true);
-    expect(asset.localUri).toBe(asset.uri);
-  });
-});
+}
 
 describe('embedding', () => {
   beforeAll(() => {

@@ -1,8 +1,7 @@
 'use strict';
-
-import React from 'react';
-import { forEach } from 'lodash';
 import { PublisherBanner } from 'expo-ads-admob';
+import { forEach } from 'lodash';
+import React from 'react';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
@@ -35,7 +34,6 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           'onAdViewDidReceiveAd'
         );
       });
-
       t.it('displays an ad', async () => {
         await mountAndWaitFor(
           <PublisherBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />

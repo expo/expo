@@ -1,7 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
-;
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -108,7 +107,7 @@ export async function createEventAsync(calendarId, { id, ...details } = {}) {
     }
     const newDetails = {
         ...details,
-        calendarId
+        calendarId,
     };
     return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
@@ -184,6 +183,12 @@ export async function updateAttendeeAsync(id, details = {}) {
     const newDetails = { ...details, id };
     return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
 } // Android
+export async function getDefaultCalendarAsync() {
+    if (!ExpoCalendar.getDefaultCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'getDefaultCalendarAsync');
+    }
+    return ExpoCalendar.getDefaultCalendarAsync();
+} // iOS
 export async function deleteAttendeeAsync(id) {
     if (!ExpoCalendar.deleteAttendeeAsync) {
         throw new UnavailabilityError('Calendar', 'deleteAttendeeAsync');
@@ -223,7 +228,7 @@ export async function createReminderAsync(calendarId, { id, ...details } = {}) {
     }
     const newDetails = {
         ...details,
-        calendarId: calendarId === null ? undefined : calendarId
+        calendarId: calendarId === null ? undefined : calendarId,
     };
     return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
@@ -309,6 +314,7 @@ export const CalendarType = {
     EXCHANGE: 'exchange',
     SUBSCRIBED: 'subscribed',
     BIRTHDAYS: 'birthdays',
+    UNKNOWN: 'unknown',
 }; // iOS
 export const EventStatus = {
     NONE: 'none',

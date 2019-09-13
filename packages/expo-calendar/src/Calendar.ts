@@ -27,7 +27,7 @@ export interface Calendar {
   isVisible?: boolean; // Android
   isSynced?: boolean; // Android
   accessLevel?: string; // Android
-};
+}
 
 export type Source = {
   id?: string; // iOS only ??
@@ -122,7 +122,6 @@ type OptionalKeys<T> = {
   [P in keyof T]?: T[P];
 };
 
-
 export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   if (!ExpoCalendar.getCalendarsAsync) {
     throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -142,7 +141,10 @@ export async function createCalendarAsync(details: OptionalKeys<Calendar> = {}):
   return ExpoCalendar.saveCalendarAsync(newDetails);
 }
 
-export async function updateCalendarAsync(id: string, details: OptionalKeys<Calendar> = {}): Promise<string> {
+export async function updateCalendarAsync(
+  id: string,
+  details: OptionalKeys<Calendar> = {}
+): Promise<string> {
   if (!ExpoCalendar.saveCalendarAsync) {
     throw new UnavailabilityError('Calendar', 'updateCalendarAsync');
   }
@@ -243,7 +245,10 @@ export async function getEventAsync(
   }
 }
 
-export async function createEventAsync(calendarId: string, { id, ...details }: OptionalKeys<Event> = {}): Promise<string> {
+export async function createEventAsync(
+  calendarId: string,
+  { id, ...details }: OptionalKeys<Event> = {}
+): Promise<string> {
   if (!ExpoCalendar.saveEventAsync) {
     throw new UnavailabilityError('Calendar', 'createEventAsync');
   }
@@ -262,9 +267,9 @@ export async function createEventAsync(calendarId: string, { id, ...details }: O
 
   const newDetails = {
     ...details,
-    calendarId
+    calendarId,
   };
-  
+
   return ExpoCalendar.saveEventAsync(stringifyDateValues(newDetails), {});
 }
 
@@ -355,7 +360,10 @@ export async function createAttendeeAsync(
   return ExpoCalendar.saveAttendeeForEventAsync(newDetails, eventId);
 } // Android
 
-export async function updateAttendeeAsync(id: string, details: OptionalKeys<Attendee> = {}): Promise<string> {
+export async function updateAttendeeAsync(
+  id: string,
+  details: OptionalKeys<Attendee> = {}
+): Promise<string> {
   if (!ExpoCalendar.saveAttendeeForEventAsync) {
     throw new UnavailabilityError('Calendar', 'updateAttendeeAsync');
   }
@@ -365,6 +373,13 @@ export async function updateAttendeeAsync(id: string, details: OptionalKeys<Atte
   const newDetails = { ...details, id };
   return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
 } // Android
+
+export async function getDefaultCalendarAsync(): Promise<Calendar> {
+  if (!ExpoCalendar.getDefaultCalendarAsync) {
+    throw new UnavailabilityError('Calendar', 'getDefaultCalendarAsync');
+  }
+  return ExpoCalendar.getDefaultCalendarAsync();
+} // iOS
 
 export async function deleteAttendeeAsync(id: string): Promise<void> {
   if (!ExpoCalendar.deleteAttendeeAsync) {
@@ -428,7 +443,7 @@ export async function createReminderAsync(
 
   const newDetails = {
     ...details,
-    calendarId: calendarId === null ? undefined : calendarId
+    calendarId: calendarId === null ? undefined : calendarId,
   };
   return ExpoCalendar.saveReminderAsync(stringifyDateValues(newDetails));
 } // iOS
@@ -533,6 +548,7 @@ export const CalendarType = {
   EXCHANGE: 'exchange',
   SUBSCRIBED: 'subscribed',
   BIRTHDAYS: 'birthdays',
+  UNKNOWN: 'unknown',
 }; // iOS
 
 export const EventStatus = {
@@ -619,7 +635,6 @@ export const ReminderStatus = {
   COMPLETED: 'completed',
   INCOMPLETE: 'incomplete',
 };
-
 
 function stringifyIfDate(date: any): any {
   return date instanceof Date ? date.toISOString() : date;

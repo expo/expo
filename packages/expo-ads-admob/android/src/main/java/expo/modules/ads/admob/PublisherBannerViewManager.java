@@ -2,13 +2,14 @@ package expo.modules.ads.admob;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
+import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoProp;
 import org.unimodules.core.interfaces.services.EventEmitter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PublisherBannerViewManager extends ViewManager<PublisherBannerView> {
   public enum Events {
@@ -36,6 +37,7 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
   public static final String PROP_BANNER_SIZE = "bannerSize";
   public static final String PROP_AD_UNIT_ID = "adUnitID";
   public static final String PROP_TEST_DEVICE_ID = "testDeviceID";
+  public static final String PROP_ADDITIONAL_REQUEST_PARAMS = "additionalRequestParams";
 
   private EventEmitter mEventEmitter;
 
@@ -62,7 +64,7 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
   @Override
   public List<String> getExportedEventNames() {
     List<String> eventNames = new ArrayList<>(AdMobBannerViewManager.Events.values().length);
-    for(AdMobBannerViewManager.Events event : AdMobBannerViewManager.Events.values()) {
+    for (AdMobBannerViewManager.Events event : AdMobBannerViewManager.Events.values()) {
       eventNames.add(event.toString());
     }
     return eventNames;
@@ -81,5 +83,10 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
   @ExpoProp(name = PROP_TEST_DEVICE_ID)
   public void setPropTestDeviceID(PublisherBannerView view, final String testDeviceID) {
     view.setPropTestDeviceID(testDeviceID);
+  }
+
+  @ExpoProp(name = PROP_ADDITIONAL_REQUEST_PARAMS)
+  public void setPropAdditionalRequestParams(PublisherBannerView view, final ReadableArguments additionalRequestParams) {
+    view.setAdditionalRequestParams(additionalRequestParams.toBundle());
   }
 }

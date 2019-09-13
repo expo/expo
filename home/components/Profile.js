@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ScrollView } from 'react-navigation';
 import FadeIn from 'react-native-fade-in-image';
 
 import { take, takeRight } from 'lodash';
@@ -24,6 +23,9 @@ import SeeAllSnacksButton from './SeeAllSnacksButton';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from './SmallProjectCard';
 import SnackCard from './SnackCard';
+import ScrollView from '../components/NavigationScrollView';
+import { SectionLabelText, StyledText } from '../components/Text';
+import { SectionLabelContainer, StyledView } from '../components/Views';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -70,6 +72,7 @@ export default class Profile extends React.Component {
     // NOTE(brentvatne): investigate why `user` is null when there
     // is an error, even if it loaded before. This seems undesirable,
     // can it be avoided with apollo-client?
+
     if (this.props.data.error && !this.props.data.user) {
       return this._renderError();
     }
@@ -120,13 +123,18 @@ export default class Profile extends React.Component {
 
   _renderError = () => {
     // NOTE(brentvatne): sorry for this
-    let isConnectionError = this.props.data.error.message.includes('No connection available');
+    let isConnectionError = this.props.data?.error?.message?.includes('No connection available');
 
     return (
-      <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <Text style={SharedStyles.noticeDescriptionText}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
+        <StyledText
+          style={SharedStyles.noticeDescriptionText}
+          lightColor="rgba(36, 44, 58, 0.7)"
+          darkColor="#ccc">
           {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
-        </Text>
+        </StyledText>
 
         <PrimaryButton plain onPress={this._handleRefreshAsync} fallback={TouchableOpacity}>
           Try again
@@ -134,17 +142,17 @@ export default class Profile extends React.Component {
 
         {this.state.isRefetching && (
           <View style={{ marginTop: 20 }}>
-            <ActivityIndicator />
+            <ActivityIndicator color={Colors.light.tintColor} />
           </View>
         )}
-      </View>
+      </ScrollView>
     );
   };
 
   _renderLoading() {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
-        <ActivityIndicator />
+        <ActivityIndicator color={Colors.light.tintColor} />
       </View>
     );
   }
@@ -161,20 +169,22 @@ export default class Profile extends React.Component {
     let { firstName, lastName, username, profilePhoto } = this.props.data.user;
 
     return (
-      <View style={styles.header}>
+      <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
         <View style={styles.headerAvatarContainer}>
           <FadeIn>
             <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
           </FadeIn>
         </View>
-        <Text style={styles.headerFullNameText}>
+        <StyledText style={styles.headerFullNameText}>
           {firstName} {lastName}
-        </Text>
+        </StyledText>
         <View style={styles.headerAccountsList}>
-          <Text style={styles.headerAccountText}>@{username}</Text>
+          <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
+            @{username}
+          </StyledText>
           {this._maybeRenderGithubAccount()}
         </View>
-      </View>
+      </StyledView>
     );
   };
 
@@ -206,7 +216,7 @@ export default class Profile extends React.Component {
     } else {
       let otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
       content = (
-        <React.Fragment>
+        <>
           {take(apps, MAX_APPS_TO_DISPLAY).map(this._renderApp)}
           <SeeAllProjectsButton
             apps={otherApps}
@@ -214,15 +224,15 @@ export default class Profile extends React.Component {
             label="See all projects"
             onPress={this._handlePressProjectList}
           />
-        </React.Fragment>
+        </>
       );
     }
 
     return (
       <View style={{ marginBottom: 3 }}>
-        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
-          <Text style={SharedStyles.sectionLabelText}>PUBLISHED PROJECTS</Text>
-        </View>
+        <SectionLabelContainer style={{ marginTop: 10 }}>
+          <SectionLabelText>PUBLISHED PROJECTS</SectionLabelText>
+        </SectionLabelContainer>
         {content}
       </View>
     );
@@ -241,22 +251,22 @@ export default class Profile extends React.Component {
     } else {
       let otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
       content = (
-        <React.Fragment>
+        <>
           {take(snacks, MAX_SNACKS_TO_DISPLAY).map(this._renderSnack)}
           <SeeAllSnacksButton
             snacks={otherSnacks}
             label="See all Snacks"
             onPress={this._handlePressSnackList}
           />
-        </React.Fragment>
+        </>
       );
     }
 
     return (
       <View style={{ marginBottom: 3 }}>
-        <View style={[SharedStyles.sectionLabelContainer, { marginTop: 10 }]}>
-          <Text style={SharedStyles.sectionLabelText}>SAVED SNACKS</Text>
-        </View>
+        <SectionLabelContainer style={{ marginTop: 10 }}>
+          <SectionLabelText>SAVED SNACKS</SectionLabelText>
+        </SectionLabelContainer>
         {content}
       </View>
     );
@@ -302,7 +312,6 @@ export default class Profile extends React.Component {
       />
     );
   };
-
   _maybeRenderGithubAccount() {
     // ..
   }
@@ -311,16 +320,12 @@ export default class Profile extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
     marginTop: -1,
   },
   header: {
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: Colors.separator,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.separator,
   },
   headerAvatarContainer: {
     marginTop: 20,
@@ -340,11 +345,10 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerAccountText: {
-    color: 'rgba(36, 44, 58, 0.4)',
+    // color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 14,
   },
   headerFullNameText: {
-    color: '#232B3A',
     fontSize: 20,
     fontWeight: '500',
   },

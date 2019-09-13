@@ -21,7 +21,7 @@
   if (type == EKCalendarTypeExchange) return @"exchange";
   if (type == EKCalendarTypeSubscription) return @"subscribed";
   if (type == EKCalendarTypeBirthday) return @"birthdays";
-  return @"none";
+  return @"unknown";
 }
 
 + (NSString *)_entityType:(EKEntityMask)entityType
@@ -128,7 +128,7 @@
        };
 }
 
-+ (NSMutableDictionary *)_serializeCalendar:(EKCalendar *)calendar
++ (NSMutableDictionary *)serializeCalendar:(EKCalendar *)calendar
 {
   NSMutableDictionary *serializedCalendar = [[NSMutableDictionary alloc] init];
 
@@ -149,7 +149,7 @@
   NSMutableArray *serializedCalendars = [[NSMutableArray alloc] init];
 
   for (EKCalendar *calendar in calendars) {
-    [serializedCalendars addObject:[EXCalendarConverter _serializeCalendar:calendar]];
+    [serializedCalendars addObject:[EXCalendarConverter serializeCalendar:calendar]];
   }
 
   return serializedCalendars;

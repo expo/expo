@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+  <files-path name="expo_files" path="." />
+  <cache-path name="cached_expo_files" path="." />
+</paths>
+

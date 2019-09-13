@@ -334,7 +334,7 @@ UM_EXPORT_METHOD_AS(startLocationUpdatesAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject] || ![self checkBackgroundServices:reject]) {
+  if (![self checkPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
     return;
   }
   if (![CLLocationManager significantLocationChangeMonitoringAvailable]) {
@@ -355,6 +355,10 @@ UM_EXPORT_METHOD_AS(stopLocationUpdatesAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
+  if (![self checkTaskManagerExists:reject]) {
+    return;
+  }
+
   @try {
     [_tasksManager unregisterTaskWithName:taskName consumerClass:[EXLocationTaskConsumer class]];
   } @catch (NSException *e) {
@@ -368,6 +372,10 @@ UM_EXPORT_METHOD_AS(hasStartedLocationUpdatesAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
+  if (![self checkTaskManagerExists:reject]) {
+    return;
+  }
+
   resolve(@([_tasksManager taskWithName:taskName hasConsumerOfClass:[EXLocationTaskConsumer class]]));
 }
 
@@ -379,7 +387,7 @@ UM_EXPORT_METHOD_AS(startGeofencingAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self checkPermissions:reject] || ![self checkBackgroundServices:reject]) {
+  if (![self checkPermissions:reject] || ![self checkTaskManagerExists:reject]) {
     return;
   }
   if (![CLLocationManager isMonitoringAvailableForClass:[CLCircularRegion class]]) {
@@ -399,7 +407,7 @@ UM_EXPORT_METHOD_AS(stopGeofencingAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self checkBackgroundServices:reject]) {
+  if (![self checkTaskManagerExists:reject]) {
     return;
   }
 
@@ -416,6 +424,10 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
+  if (![self checkTaskManagerExists:reject]) {
+    return;
+  }
+
   resolve(@([_tasksManager taskWithName:taskName hasConsumerOfClass:[EXGeofencingTaskConsumer class]]));
 }
 
@@ -449,12 +461,17 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
   return YES;
 }
 
-- (BOOL)checkBackgroundServices:(UMPromiseRejectBlock)reject
+- (BOOL)checkTaskManagerExists:(UMPromiseRejectBlock)reject
 {
   if (_tasksManager == nil) {
     reject(@"E_TASKMANAGER_NOT_FOUND", @"`expo-task-manager` module is required to use background services.", nil);
     return NO;
   }
+  return YES;
+}
+
+- (BOOL)checkBackgroundServices:(UMPromiseRejectBlock)reject
+{
   if (![_tasksManager hasBackgroundModeEnabled:@"location"]) {
     reject(@"E_BACKGROUND_SERVICES_DISABLED", @"Background Location has not been configured. To enable it, add `location` to `UIBackgroundModes` in Info.plist file.", nil);
     return NO;

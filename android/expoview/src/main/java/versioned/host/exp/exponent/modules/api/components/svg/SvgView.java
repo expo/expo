@@ -176,6 +176,8 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         } else {
             mTintColor = tintColor;
         }
+        invalidate();
+        clearChildCache();
     }
 
     @ReactProp(name = "minX")
@@ -258,6 +260,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     synchronized void drawChildren(final Canvas canvas) {
         mRendered = true;
         mCanvas = canvas;
+        Matrix mViewBoxMatrix = new Matrix();
         if (mAlign != null) {
             RectF vbRect = getViewBox();
             float width = canvas.getWidth();
@@ -271,7 +274,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             if (nested) {
                 canvas.clipRect(eRect);
             }
-            Matrix mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
+            mViewBoxMatrix = ViewBox.getTransform(vbRect, eRect, mAlign, mMeetOrSlice);
             mInvertible = mViewBoxMatrix.invert(mInvViewBoxMatrix);
             canvas.concat(mViewBoxMatrix);
         }
@@ -294,7 +297,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
             View lNode = getChildAt(i);
             if (lNode instanceof VirtualView) {
                 VirtualView node = (VirtualView)lNode;
-                int count = node.saveAndSetupCanvas(canvas);
+                int count = node.saveAndSetupCanvas(canvas, mViewBoxMatrix);
                 node.render(canvas, paint, 1f);
                 node.restoreCanvas(canvas, count);
 

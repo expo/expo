@@ -3,10 +3,10 @@
   <groupId>org.unimodules</groupId>
   <artifactId>unimodules-task-manager-interface</artifactId>
   <versioning>
-    <release>2.0.1</release>
+    <release>3.0.0</release>
     <versions>
-      <version>2.0.1</version>
+      <version>3.0.0</version>
     </versions>
-    <lastUpdated>20190702091646</lastUpdated>
+    <lastUpdated>20190910235549</lastUpdated>
   </versioning>
 </metadata>

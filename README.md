@@ -1,8 +1,43 @@
-# Expo Client [![CircleCI](https://circleci.com/gh/expo/expo.svg?style=svg)](https://circleci.com/gh/expo/expo/tree/master) [![Forums](https://img.shields.io/badge/expo-forum-blue.svg)](https://forums.expo.io)
+[![Expo](/style/header.png)](https://expo.io)
+
+
+<p align="center">
+ 
+   <a aria-label="SDK version" href="https://www.npmjs.com/package/expo" target="_blank">
+    <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB">
+  </a>
+    
+  <a aria-label="join our fourms" href="https://forums.expo.io" target="_blank">
+    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=20&labelColor=000000&color=4630EB">
+  </a>
+   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square" target="_blank" />
+  </a>
+    <a aria-label="Follow @expo on Twitter" href="https://twitter.com/expo" target="_blank">
+    <img alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?logo=twitter&style=flat-square" target="_blank" />
+  </a>
+
+<a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
+    <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=000000&color=417505" />
+</a>
+<br>
+    <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
+    <img alt="Circle CI" src="https://circleci.com/gh/expo/expo.svg">
+  </a>
+</p>
+
+<p align="center">
+    Check out our documentation <a aria-label="expo documentation" href="https://docs.expo.io">https://docs.expo.io</a> to learn more about developing with Expo.
+  <br />
+
+</p>
+
+---
+
 
 Expo is a set of tools, libraries, and services that let you build native iOS and Android apps by writing JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, and more.
 
-[Click here to view our documentation](https://docs.expo.io) for developing on Expo. If you're new to the Expo community, [click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
+[Click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
 
 ## Introduction
 
@@ -29,12 +64,14 @@ Note: We support building the clients only on macOS.
 - Run `yarn build` in the `packages/expo` directory.
 
 #### iOS
+
 - Make sure you have latest non-beta Xcode installed.
 - Run `git lfs pull`.
 - Run `et ios-generate-dynamic-macros`.
 - Open and run `ios/Exponent.xcworkspace` in Xcode.
 
 #### Android
+
 - Make sure you have Android Studio 3 installed
 - Run `android/install-ndk-17c.sh` to get the required version of the Android NDK.
 - See "Running on a Device"
@@ -42,7 +79,8 @@ Note: We support building the clients only on macOS.
 ## Running on a Device
 
 ### iOS
-- In Xcode's menu bar, open the **Xcode** drop-down menu, and select **Preferences**.  Then in the **Accounts** tab of the preferences menu, add your personal or team apple developer account.
+
+- In Xcode's menu bar, open the **Xcode** drop-down menu, and select **Preferences**. Then in the **Accounts** tab of the preferences menu, add your personal or team apple developer account.
 - Connect your test device to your computer with a USB cable.
 - In Xcode's menu bar, open the **Product** drop-down menu, select **Destination**, then in the _Device_ grouping select your device.
 - In the project navigator, select the **Exponent** project to bring up the project's settings, and then:
@@ -51,6 +89,7 @@ Note: We support building the clients only on macOS.
 - Finally, run the build
 
 ### Android
+
 - If the Play Store version of the Expo Client App is installed on your test device, uninstall it.
 - Connect your test device to your computer with a USB cable.
 - Run `fastlane android start`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
@@ -59,24 +98,27 @@ Note: We support building the clients only on macOS.
 
 If you don't need custom native code outside of the Expo SDK, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/).
 
-If you're still here, make sure to follow the [Configure app.json](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
+If you need standalone apps as built by running `expo build:ios` or `expo build:android` for a supported SDK version, check out our docs on [using turtle-cli to build apps locally or on CI](https://docs.expo.io/versions/latest/distribution/turtle-cli/).
+
+If you're still here, you need to build a standalone app with code currently on `master` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
 #### Android
+
 The Android standalone app script creates a new directory `android-shell-app` with the modified Android project in it. It then compiles that new directory giving you a signed or unsigned `.apk` depending on whether you provide a keystore and the necessary passwords. If there are issues with the app you can open the `android-shell-app` project in Android Studio to debug.
 
 Here are the steps to build a standalone Android app:
+
 - Publish your experience with Expo CLI. Note the published URL.
-- `cd tools-public`.
-- If you want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password] --workingDir=../`.
-- If you don't want a signed `.apk`, run `gulp android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --workingDir=../`.
+- If you want a signed `.apk`, run `et android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience] --keystore [path to keystore] --alias [keystore alias] --keystorePassword [keystore password] --keyPassword [key password]`.
+- If you don't want a signed `.apk`, run `et android-shell-app --url [the published experience url] --sdkVersion [sdk version of your experience]`.
 - The `.apk` file will be at `/tmp/shell-signed.apk` for a signed `.apk` or at `/tmp/shell-debug.apk` for an unsigned `.apk`.
-- `adb install` the `.apk` file to test it.
-- Upload to the Play Store!
 
 #### iOS
+
 The iOS standalone app script has two actions, `build` and `configure`. `build` creates an archive or a simulator build of the Expo iOS workspace. `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo experience rather than as the Expo client app.
 
 Here are the steps to build a standalone iOS app:
+
 - Publish your experience with Expo CLI. Note the published URL.
 - `cd tools-public`.
 - `gulp ios-shell-app --action build --type [simulator or archive] --configuration [Debug or Release]`
@@ -87,6 +129,7 @@ Here are the steps to build a standalone iOS app:
 - There are a few more optional flags you can pass to this script. They are all documented in the block comments inside `xdl/src/detach/IosShellApp.js`.
 
 ## Modifying JS Code
+
 The Expo client apps run a root Expo project in addition to native code. By default this will use a published version of the project, so any changes made in the `home` directory will not show up without some extra work.
 
 Serve this project locally by running `expo start` from the `home` directory. On iOS, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
@@ -129,4 +172,5 @@ The Foundation Unimodules by Expo are under `packages`, along with other JS pack
 Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
 
 ## License
+
 The Expo source code is made available under the [MIT license](LICENSE). Some of the dependencies are licensed differently, with the BSD license, for example.

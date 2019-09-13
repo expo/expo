@@ -3,8 +3,8 @@
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import { Platform } from 'react-native';
+import { Asset } from 'expo-asset';
 import * as TestUtils from '../TestUtils';
-
 export const name = 'Contacts';
 
 async function sortContacts(expect, sortField) {
@@ -25,6 +25,16 @@ async function sortContacts(expect, sortField) {
   }
 }
 
+async function getContactAtIndex(index, fields) {
+  // Make sure the contact has a phone number to skip!
+  const { data } = await Contacts.getContactsAsync({
+    fields,
+    pageSize: 1,
+    pageOffset: index,
+  });
+  return data[0];
+}
+
 export async function test({ describe, it, xdescribe, jasmine, expect }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
@@ -40,13 +50,45 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
       let customContactId;
       describe('Contacts.addContactAsync()', () => {
         it('creates contact', async () => {
+          const image = Asset.fromModule(require('../assets/icons/app.png'));
+          await image.downloadAsync();
+
           customContactId = await Contacts.addContactAsync({
+            [Contacts.Fields.Image]: image.localUri,
             [Contacts.Fields.FirstName]: 'Eric',
             [Contacts.Fields.LastName]: 'Cartman',
             [Contacts.Fields.JobTitle]: 'Actor',
           });
           expect(typeof customContactId).toBe('string');
         });
+      });
+
+      it('gets a local image', async () => {
+        // This may need to be tweaked because you cannot add test contacts on android
+        const contact = await Contacts.getContactByIdAsync(customContactId, [
+          Contacts.Fields.Image,
+          'imageBase64',
+        ]);
+        expect(contact.imageAvailable).toBe(true);
+        expect(contact.thumbnail).toBeUndefined();
+
+        // TODO(Bacon): Add contact creation for Android
+        if (isAndroid) {
+          expect(contact.image).toEqual(
+            jasmine.objectContaining({
+              uri: jasmine.any(String),
+            })
+          );
+        } else {
+          expect(contact.image).toEqual(
+            jasmine.objectContaining({
+              uri: jasmine.any(String),
+              height: jasmine.any(Number),
+              width: jasmine.any(Number),
+              base64: jasmine.any(String),
+            })
+          );
+        }
       });
 
       describe('Contacts.writeContactToFileAsync()', () => {
@@ -129,16 +171,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
         expect(data[0].imageAvailable).toBeDefined();
       });
 
-      async function getContactAtIndex(index, fields) {
-        // Make sure the contact has a phone number to skip!
-        const { data } = await Contacts.getContactsAsync({
-          fields,
-          pageSize: 1,
-          pageOffset: index,
-        });
-        return data[0];
-      }
-
       it('skips phone number if not asked', async () => {
         // This may need to be tweaked because you cannot add test contacts on android
         const testIndex = 1;
@@ -155,30 +187,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
 
         const initialContactWithoutNumbers = await getContactAtIndex(testIndex, []);
         expect(initialContactWithoutNumbers.phoneNumbers).toBeUndefined();
-      });
-
-      it('gets a local image', async () => {
-        // This may need to be tweaked because you cannot add test contacts on android
-        const contact = await getContactAtIndex(0, [Contacts.Fields.Image, 'imageBase64']);
-        expect(contact.imageAvailable).toBe(true);
-        expect(contact.thumbnail).toBeUndefined();
-
-        if (isAndroid) {
-          expect(contact.image).toEqual(
-            jasmine.objectContaining({
-              uri: jasmine.any(String),
-            })
-          );
-        } else {
-          expect(contact.image).toEqual(
-            jasmine.objectContaining({
-              uri: jasmine.any(String),
-              height: jasmine.any(Number),
-              width: jasmine.any(Number),
-              base64: jasmine.any(String),
-            })
-          );
-        }
       });
 
       it('respects the page size', async () => {
@@ -228,7 +236,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
             Contacts.Fields.PhoneNumbers,
             Contacts.Fields.Emails,
           ]);
-          const { id, name, phoneNumbers, emails } = contact;
+          const { phoneNumbers, emails } = contact;
 
           expect(contact.note).toBeUndefined();
           expect(contact.relationships).toBeUndefined();
@@ -265,7 +273,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.createGroupAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.createGroupAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(typeof groupId).toBe('string');
           }
@@ -284,7 +294,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getGroupsAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getGroupsAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(Array.isArray(groups)).toBe(true);
             expect(groups.length).toBeGreaterThan(0);
@@ -304,7 +316,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getGroupsAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getGroupsAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(Array.isArray(groups)).toBe(true);
             expect(groups.length).toBeGreaterThan(0);
@@ -327,7 +341,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getDefaultContainerIdAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getDefaultContainerIdentifierAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(Array.isArray(groups)).toBe(true);
             expect(groups.length).toBeGreaterThan(0);
@@ -352,11 +368,13 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
         if (isAndroid) {
           let errorMessage;
           try {
-            const success = await Contacts.removeGroupAsync('some-value');
+            await Contacts.removeGroupAsync('some-value');
           } catch ({ message }) {
             errorMessage = message;
           } finally {
-            expect(errorMessage).toBe('Error: Contacts.removeGroupAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.removeGroupAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           }
         } else {
           for (let group of testGroups) {
@@ -382,7 +400,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
           errorMessage = message;
         } finally {
           if (isAndroid) {
-            expect(errorMessage).toBe('Error: Contacts.getDefaultContainerIdAsync: iOS Only');
+            expect(errorMessage).toBe(
+              `The method or property Contacts.getDefaultContainerIdentifierAsync is not available on android, are you sure you've linked all the native dependencies properly?`
+            );
           } else {
             expect(typeof defaultContainerId).toBe('string');
           }

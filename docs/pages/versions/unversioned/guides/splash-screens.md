@@ -89,6 +89,12 @@ Your app can be opened from the Expo client or in a standalone app, and it can b
 - **In the middle**, we are in the Expo client and we are loading a published app. Notice that again the splash image does not appear immediately.
 - **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
 
+### Using a `.xib` file as the launch screen for the standalone iOS app
+
+For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in `app.json` to the path to your `.xib` file.
+
+> **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo client.
+
 ### Splash screen API limitations on Android
 
 Splash screen behaves in most cases exactly the same as in iOS case.

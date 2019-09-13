@@ -1,6 +1,7 @@
 // Importing these modules from the 'expo' package was deprecated in SDK 33.
 // Please import them from the each individual unimodule package instead.
 import removedModule from './removedModule';
+/* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
     AdMobBanner: {
         enumerable: true,
@@ -360,6 +361,12 @@ Object.defineProperties(module.exports, {
         enumerable: true,
         get() {
             removedModule(`import { SQLite } from 'expo' -> import { SQLite } from 'expo-sqlite'`, 'SQLite', 'expo-sqlite');
+        },
+    },
+    StoreReview: {
+        enumerable: true,
+        get() {
+            removedModule(`import { StoreReview } from 'expo' -> import { StoreReview } from 'expo-store-review'`, 'StoreReview', 'expo-store-review');
         },
     },
     TaskManager: {

@@ -58,6 +58,6 @@ function prependLibrary(library: string, message: string): string {
  * expo-ar -> EXPO_AR
  */
 function codeFromLibrary(library: string): string {
-  const code = library.replace(/[-\.]/g, '_').toUpperCase();
+  const code = library.replace(/[-.]/g, '_').toUpperCase();
   return code;
 }

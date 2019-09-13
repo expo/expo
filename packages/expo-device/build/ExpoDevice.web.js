@@ -1,28 +1,38 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
-const parser = new UAParser(window.navigator.userAgent);
-const result = parser.getResult();
+import { DeviceType } from './Device.types';
+let result = null;
+if (canUseDOM) {
+    const parser = new UAParser(window.navigator.userAgent);
+    result = parser.getResult();
+}
 export default {
     get isDevice() {
         return true;
     },
+    get brand() {
+        return null;
+    },
+    get manufacturer() {
+        return (result && result.device.vendor) || null;
+    },
     get modelName() {
-        return result.device.model || null;
-    },
-    get osName() {
-        return result.os.name;
-    },
-    get osVersion() {
-        return result.os.version;
-    },
-    get supportedCpuArchitectures() {
-        return result.cpu.architecture ? [result.cpu.architecture] : null;
-    },
-    get deviceName() {
-        const { browser, engine, os: OS } = parser.getResult();
-        return browser.name || engine.name || OS.name || null;
+        return (result && result.device.model) || null;
     },
     get deviceYearClass() {
         return null;
+    },
+    get totalMemory() {
+        return null;
+    },
+    get supportedCpuArchitectures() {
+        return result && result.cpu.architecture ? [result.cpu.architecture] : null;
+    },
+    get osName() {
+        return (result && result.os.name) || '';
+    },
+    get osVersion() {
+        return (result && result.os.version) || '';
     },
     get osBuildId() {
         return null;
@@ -30,14 +40,27 @@ export default {
     get osInternalBuildId() {
         return null;
     },
-    get totalMemory() {
+    get deviceName() {
         return null;
     },
-    get manufacturer() {
-        return null;
+    async getDeviceTypeAsync() {
+        switch (result.device.type) {
+            case 'mobile':
+                return DeviceType.PHONE;
+            case 'tablet':
+                return DeviceType.TABLET;
+            case 'smarttv':
+                return DeviceType.TV;
+            case 'console':
+            case 'embedded':
+            case 'wearable':
+                return DeviceType.UNKNOWN;
+            default:
+                return DeviceType.DESKTOP;
+        }
     },
-    get brand() {
-        return null;
+    async isRootedExperimentalAsync() {
+        return false;
     },
 };
 //# sourceMappingURL=ExpoDevice.web.js.map

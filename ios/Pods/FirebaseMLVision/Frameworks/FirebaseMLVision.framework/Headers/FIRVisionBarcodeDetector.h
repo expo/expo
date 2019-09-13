@@ -15,15 +15,11 @@ typedef void (^FIRVisionBarcodeDetectionCallback)(NSArray<FIRVisionBarcode *> *_
                                                   NSError *_Nullable error)
     NS_SWIFT_NAME(VisionBarcodeDetectionCallback);
 
-/**
- * A barcode detector that detects barcodes in an image.
- */
+/** A barcode detector that detects barcodes in an image. */
 NS_SWIFT_NAME(VisionBarcodeDetector)
 @interface FIRVisionBarcodeDetector : NSObject
 
-/**
- * Unavailable.  Use `Vision` factory methods.
- */
+/** Unavailable. Use `Vision` factory methods. */
 - (instancetype)init NS_UNAVAILABLE;
 
 /**

@@ -14,7 +14,7 @@ declare type Point = {
 export default class LinearGradient extends React.Component<Props> {
     static propTypes: {
         colors: PropTypes.Validator<string[]>;
-        locations: PropTypes.Requireable<(number | null)[]>;
+        locations: PropTypes.Requireable<(number | null | undefined)[]>;
         start: PropTypes.Requireable<object>;
         end: PropTypes.Requireable<object>;
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
@@ -57,14 +57,15 @@ export default class LinearGradient extends React.Component<Props> {
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityRole?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined> | undefined;
-        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined> | undefined;
+        accessibilityRole?: PropTypes.Validator<"button" | "header" | "link" | "menu" | "menuitem" | "summary" | "image" | "switch" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | "alert" | "checkbox" | "combobox" | "menubar" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
+        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
+        accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;

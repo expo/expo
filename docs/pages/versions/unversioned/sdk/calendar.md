@@ -32,6 +32,14 @@ Gets an array of calendar objects with details about the different calendars sto
 
 An array of [calendar objects](#calendar 'Calendar') matching the provided entity type (if provided).
 
+### `Calendar.getDefaultCalendarAsync()`
+
+**iOS only**. Gets an instance of the default calendar object.
+
+#### Returns
+
+A promise resolving to [calendar object](#calendar) that is the user's default calendar.
+
 ### `Calendar.requestRemindersPermissionsAsync()`
 
 **iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
@@ -405,7 +413,7 @@ A calendar record upon which events (or, on iOS, reminders) can be stored. Setti
 | source                | _Source_  | both      | Object representing the source to be used for the calendar                    |                                                                                                                                                                                                                                                                                                                                                                    |
 | color                 | _string_  | both      | Color used to display this calendar's events                                  |                                                                                                                                                                                                                                                                                                                                                                    |
 | allowsModifications   | _boolean_ | both      | Boolean value that determines whether this calendar can be modified           |                                                                                                                                                                                                                                                                                                                                                                    |
-| type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`                                                                                                                                                                                             |
+| type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`, `Calendar.CalendarType.UNKNOWN`                                                                                                                                                              |
 | isPrimary             | _boolean_ | Android   | Boolean value indicating whether this is the device's primary calendar        |                                                                                                                                                                                                                                                                                                                                                                    |
 | name                  | _string_  | Android   | Internal system name of the calendar                                          |                                                                                                                                                                                                                                                                                                                                                                    |
 | ownerAccount          | _string_  | Android   | Name for the account that owns this calendar                                  |                                                                                                                                                                                                                                                                                                                                                                    |

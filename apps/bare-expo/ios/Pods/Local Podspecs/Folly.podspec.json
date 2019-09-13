@@ -1,0 +1,66 @@
+{
+  "name": "Folly",
+  "version": "2018.10.22.00",
+  "license": {
+    "type": "Apache License, Version 2.0"
+  },
+  "homepage": "https://github.com/facebook/folly",
+  "summary": "An open-source C++ library developed and used at Facebook.",
+  "authors": "Facebook",
+  "source": {
+    "git": "https://github.com/facebook/folly.git",
+    "tag": "v2018.10.22.00"
+  },
+  "module_name": "folly",
+  "dependencies": {
+    "boost-for-react-native": [
+
+    ],
+    "DoubleConversion": [
+
+    ],
+    "glog": [
+
+    ]
+  },
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+  "source_files": [
+    "folly/String.cpp",
+    "folly/Conv.cpp",
+    "folly/Demangle.cpp",
+    "folly/Format.cpp",
+    "folly/ScopeGuard.cpp",
+    "folly/Unicode.cpp",
+    "folly/dynamic.cpp",
+    "folly/json.cpp",
+    "folly/json_pointer.cpp",
+    "folly/container/detail/F14Table.cpp",
+    "folly/detail/Demangle.cpp",
+    "folly/hash/SpookyHashV2.cpp",
+    "folly/lang/Assume.cpp",
+    "folly/lang/ColdClass.cpp",
+    "folly/memory/detail/MallocImpl.cpp"
+  ],
+  "preserve_paths": [
+    "folly/*.h",
+    "folly/container/*.h",
+    "folly/container/detail/*.h",
+    "folly/detail/*.h",
+    "folly/functional/*.h",
+    "folly/hash/*.h",
+    "folly/lang/*.h",
+    "folly/memory/*.h",
+    "folly/memory/detail/*.h",
+    "folly/portability/*.h"
+  ],
+  "libraries": "stdc++",
+  "pod_target_xcconfig": {
+    "USE_HEADERMAP": "NO",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++14",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\""
+  },
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  }
+}

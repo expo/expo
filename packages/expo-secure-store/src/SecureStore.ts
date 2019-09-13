@@ -76,7 +76,9 @@ function _isValidValue(value: string) {
     return false;
   }
   if (_byteCount(value) > VALUE_BYTES_LIMIT) {
-    console.warn('Provided value to SecureStore is larger than 2048 bytes. An attempt to store such a value will throw an error in SDK 35.');
+    console.warn(
+      'Provided value to SecureStore is larger than 2048 bytes. An attempt to store such a value will throw an error in SDK 35.'
+    );
   }
   return true;
 }
@@ -89,11 +91,11 @@ function _byteCount(value: string) {
     const codePoint = value.charCodeAt(i);
 
     // Lone surrogates cannot be passed to encodeURI
-    if (codePoint >= 0xD800 && codePoint < 0xE000) {
-      if (codePoint < 0xDC00 && i + 1 < value.length) {
+    if (codePoint >= 0xd800 && codePoint < 0xe000) {
+      if (codePoint < 0xdc00 && i + 1 < value.length) {
         const next = value.charCodeAt(i + 1);
 
-        if (next >= 0xDC00 && next < 0xE000) {
+        if (next >= 0xdc00 && next < 0xe000) {
           bytes += 4;
           i++;
           continue;
@@ -101,7 +103,7 @@ function _byteCount(value: string) {
       }
     }
 
-    bytes += (codePoint < 0x80 ? 1 : (codePoint < 0x800 ? 2 : 3));
+    bytes += codePoint < 0x80 ? 1 : codePoint < 0x800 ? 2 : 3;
   }
 
   return bytes;

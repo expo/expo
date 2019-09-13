@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BaseGLViewProps, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions } from './GLView.types';
-export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
-interface GLViewProps extends BaseGLViewProps {
+import { BaseGLViewProps, GLSnapshot, SnapshotOptions } from './GLView.types';
+export interface GLViewProps extends BaseGLViewProps {
     onContextCreate: (gl: WebGLRenderingContext) => void;
     onContextRestored?: (gl?: WebGLRenderingContext) => void;
     onContextLost?: () => void;
@@ -48,3 +47,4 @@ export declare class GLView extends React.Component<GLViewProps, State> {
     createCameraTextureAsync(): Promise<void>;
     destroyObjectAsync(glObject: WebGLObject): Promise<void>;
 }
+export {};

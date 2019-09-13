@@ -14,34 +14,17 @@ export default class FacebookLoginScreen extends React.Component {
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'web')}
-          title="Authenticate with Facebook (web)"
-        />
-        <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'browser')}
-          title="Authenticate with Facebook (browser)"
-        />
-        <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'native')}
-          title="Authenticate with Facebook (native)"
-        />
-        <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions, 'system')}
-          title="Authenticate with Facebook (system)"
+          onPress={() => this._testFacebookLogin('1201211719949057', permissions)}
+          title="Authenticate with Facebook"
         />
       </ScrollView>
     );
   }
 
-  _testFacebookLogin = async (
-    id: string,
-    perms: string[],
-    behavior: 'web' | 'native' | 'browser' | 'system' = 'web'
-  ) => {
+  _testFacebookLogin = async (id: string, perms: string[]) => {
     try {
       const result = await Facebook.logInWithReadPermissionsAsync(id, {
         permissions: perms,
-        behavior,
       });
 
       const { type, token } = result;
@@ -59,5 +42,5 @@ export default class FacebookLoginScreen extends React.Component {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
     }
-  }
+  };
 }
