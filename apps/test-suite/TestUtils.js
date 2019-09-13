@@ -35,7 +35,6 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Basic')),
       optionalRequire(() => require('./tests/Constants')),
-      optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Contacts')),
       optionalRequire(() => require('./tests/Crypto')),
       optionalRequire(() => require('./tests/Font')),
@@ -55,7 +54,6 @@ export function getTestModules() {
 
   const modules = [
     require('./tests/Basic'),
-    optionalRequire(() => require('./tests/Contacts')),
     optionalRequire(() => require('./tests/Application')),
     optionalRequire(() => require('./tests/Asset')),
     optionalRequire(() => require('./tests/Constants')),
@@ -73,6 +71,7 @@ export function getTestModules() {
 
   if (global.DETOX) {
     modules.push(
+      optionalRequire(() => require('./tests/Contacts')),
       modules.push(optionalRequire(() => require('./tests/Permissions'))),
       modules.push(optionalRequire(() => require('./tests/Calendar'))),
       modules.push(optionalRequire(() => require('./tests/Video'))),
