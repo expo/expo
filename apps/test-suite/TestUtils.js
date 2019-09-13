@@ -58,9 +58,9 @@ export function getTestModules() {
   if (Platform.OS === 'web') {
     modules.push(
       require('./tests/Contacts'),
-      optionalRequire(() => require('./tests/SVG')),
-      optionalRequire(() => require('./tests/Random')),
-      optionalRequire(() => require('./tests/Localization'))
+      require('./tests/SVG'),
+      require('./tests/Random'),
+      require('./tests/Localization')
     );
 
     if (browserSupportsWebGL()) {
