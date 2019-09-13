@@ -1,5 +1,22 @@
+import groovy.json.JsonSlurper
+import org.gradle.api.Project
+
 class UnimodulesPlugin implements Plugin<Project> {
     void apply(Project project) {
+        
+        // Ensure android is included
+        if (!project.hasProperty('android')) {
+            project.configure(project) {
+                apply plugin: 'com.android.library'
+            }
+        }
+        // Ensure maven is included
+        if (!project.hasProperty('maven')) {
+            project.configure(project) {
+                apply plugin: 'maven'
+            }
+        }
+
         // Exclude '*/flutter/*' files if not compiling for Flutter
         if (!(new File(project.rootProject.projectDir.parentFile, 'pubspec.yaml').exists())) {
             project.android.sourceSets {
@@ -30,7 +47,116 @@ class UnimodulesPlugin implements Plugin<Project> {
 
                 project.dependencies.add(configurationName, dependency, closure)
         }
+
+        // Apply default linting options 
+        project.android {
+            lintOptions {
+                disable 'GradleCompatible'
+                abortOnError false
+            }
+            // Use Java 8
+            compileOptions {
+               sourceCompatibility '1.8'
+               targetCompatibility '1.8'
+            }
+            // Help prevent `duplicate file` build-time errors by ignoring these files
+            packagingOptions {
+                exclude 'META-INF/LICENSE'
+                exclude 'META-INF/LICENSE.txt'
+                exclude 'META-INF/NOTICE'
+                exclude 'META-INF/NOTICE.txt'
+                exclude 'META-INF/DEPENDENCIES'
+                exclude 'META-INF/-no-jdk.kotlin_module'
+            }
+        }
+
+        useNodePackageVersion(project)
     }
+
+    Integer safeExtGet(Project project, String prop, Integer fallback) {
+        return project.rootProject.ext.has(prop) ? project.rootProject.ext.get(prop) : fallback
+    }
+    
+    Object parseNodePackageJson(Project project, File file) {
+        Object contents = null
+
+        try {
+            contents = new JsonSlurper().parseText(file.text)
+        } catch (Exception noop) {
+        }
+
+        if (contents == null) {
+            project.logger.warn " ${project.name} failed to parse package.json: ${file.toString()}"
+        }
+        return contents
+    }
+
+    Object getNodePackage(Project project) {
+        File pkgFile = new File(project.rootProject.projectDir.parentFile, 'package.json')
+       
+        if (pkgFile == null) {
+            println Colors.RED + " ${project.name} failed to load package.json" + Colors.NORMAL
+            return null
+        } 
+        println Colors.GREEN + " ${project.name} package.json found: ${pkgFile.toString()}" + Colors.NORMAL
+
+        return parseNodePackageJson(project, pkgFile);
+    }
+
+    void useNodePackageVersion(Project project) {
+        Object pkg = getNodePackage(project)
+
+        if (pkg == null) {
+
+            project.android {
+                compileSdkVersion safeExtGet(project, "compileSdkVersion", 28)
+
+                defaultConfig {
+                    versionCode 1
+                    versionName "1"
+                    minSdkVersion safeExtGet(project, "minSdkVersion", 21)
+                    targetSdkVersion safeExtGet(project, "targetSdkVersion", 28)
+                }
+            }
+
+            return;
+        } 
+
+        Object androidConfig = pkg.getAt("gradle")
+        String version = pkg.getAt("version")
+        String[] tokens = version.tokenize('.')
+        int major = Integer.parseInt(tokens[0])
+        int patch = Integer.parseInt(tokens[2].tokenize('-')[0])
+        int minor = Integer.parseInt(tokens[1])
+        int code = major * 100000 + minor * 100 + patch
+
+        project.version = version
+
+        project.android {
+            defaultConfig {
+                versionCode code
+                versionName version
+            }
+
+            if (androidConfig) {
+                compileSdkVersion safeExtGet(project, "compileSdkVersion", androidConfig.compileSdkVersion, 28)
+                defaultConfig {   
+                    minSdkVersion safeExtGet(project, "minSdkVersion", androidConfig.minSdkVersion, 21)
+                    targetSdkVersion safeExtGet(project, "targetSdkVersion", androidConfig.targetSdkVersion, 28)
+                }
+            }
+        }
+
+        println ' ' + Colors.GREEN + project.name + Colors.YELLOW + '@' + Colors.RED + "${version} (${major},${minor},${patch} - ${code})" + Colors.NORMAL
+    }
+}
+
+class Colors {
+  static final String NORMAL = "\u001B[0m"
+  static final String RED = "\u001B[31m"
+  static final String GREEN = "\u001B[32m"
+  static final String YELLOW = "\u001B[33m"
+  static final String MAGENTA = "\u001B[35m"
 }
 
 apply plugin: UnimodulesPlugin

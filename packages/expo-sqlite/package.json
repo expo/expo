@@ -14,6 +14,12 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
+  "gradle": {
+    "group": "host.exp.exponent",
+    "compileSdkVersion": 28,
+    "minSdkVersion": 21,
+    "targetSdkVersion": 28
+  },
   "keywords": [
     "react-native",
     "expo",
