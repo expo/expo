@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "expo": "~34.0.4",
-    "expokit": "^33.0.3",
+    "expokit": "^34.0.0",
     "expo-in-app-purchases": "~6.0.0",
     "react": "16.8.3",
     "react-dom": "16.8.3",
@@ -22,7 +22,7 @@
     "regenerator-runtime": "^0.13.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.1.1",
+    "babel-preset-expo": "^6.0.0",
     "expo-yarn-workspaces": "^1.2.0"
   },
   "private": true

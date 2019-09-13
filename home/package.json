@@ -60,7 +60,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "jest-expo": "~34.0.0",
+    "jest-expo": "~34.2.0",
     "uuid": "^3.3.2"
   }
 }
