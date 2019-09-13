@@ -20,17 +20,17 @@ afterEach(() => {
   unmockAllProperties();
 });
 
-it('returns correct redirect URL from getRedirectUrl', () => {
+it(`returns correct redirect URL from getRedirectUrl`, () => {
   expect(AuthSession.getRedirectUrl()).toEqual('https://auth.expo.io/@example/abc');
 });
 
-it('returns the correct return URL from getDefaultReturnUrl', () => {
+it(`returns the correct return URL from getDefaultReturnUrl`, () => {
   expect(AuthSession.getDefaultReturnUrl()).toEqual(
     'exp://exp.host/@test/test/--/expo-auth-session'
   );
 });
 
-it('returns the correct start URL from getStartUrl', () => {
+it(`returns the correct start URL from getStartUrl`, () => {
   const authUrl = 'https://signin.com';
   const returnUrl = 'exp://expo.io/@example/abc+';
   const result = AuthSession.getStartUrl(authUrl, returnUrl);
@@ -39,7 +39,7 @@ it('returns the correct start URL from getStartUrl', () => {
   );
 });
 
-it('opens WebBrowser startAsync to the start URL', async () => {
+it(`opens WebBrowser startAsync to the start URL`, async () => {
   const authUrl = 'abcd.com';
   const returnUrl = 'efgh.com';
 
@@ -52,7 +52,7 @@ it('opens WebBrowser startAsync to the start URL', async () => {
   );
 });
 
-it('only lets you call startAsync once at a time', async () => {
+it(`only lets you call startAsync once at a time`, async () => {
   const authUrl = 'abcd.com';
   const returnUrl = 'efgh.com';
   const normalResponse = { type: 'cancel' };
@@ -81,7 +81,7 @@ it('only lets you call startAsync once at a time', async () => {
   expect(console.warn).toHaveBeenCalledWith(expect.stringMatching(/Only one AuthSession/));
 });
 
-it('returns success with params on redirect', async () => {
+it(`returns success with params on redirect`, async () => {
   const emitLinkingEvent = mockLinking();
   const authUrl = 'http://example.io';
   const returnUrl = 'https://example-return.io/+';
@@ -98,7 +98,7 @@ it('returns success with params on redirect', async () => {
   expect((result as any).params).toEqual({ token: 'abc123', id: '42' });
 });
 
-it('returns error when errorCode is present', async () => {
+it(`returns error when errorCode is present`, async () => {
   const emitLinkingEvent = mockLinking();
 
   const authUrl = 'http://example.io';
@@ -117,7 +117,7 @@ it('returns error when errorCode is present', async () => {
   expect((result as any).params).toEqual({ id: '42' });
 });
 
-it('throws from AuthSession.startAsync if authUrl is falsy', async () => {
+it(`throws from AuthSession.startAsync if authUrl is falsy`, async () => {
   expect.assertions(1);
   try {
     await AuthSession.startAsync({
@@ -128,7 +128,7 @@ it('throws from AuthSession.startAsync if authUrl is falsy', async () => {
   }
 });
 
-it('lets us call AuthSession.startAsync after param validation throws', async () => {
+it(`lets us call AuthSession.startAsync after param validation throws`, async () => {
   AuthSession.startAsync({ authUrl: null as any });
 
   const emitLinkingEvent = mockLinking();
@@ -147,14 +147,14 @@ it('lets us call AuthSession.startAsync after param validation throws', async ()
   expect(result.type).not.toEqual('locked');
 });
 
-it('returns getRedirectUrl and calls a warning when getRedirectUri is called', () => {
+it(`returns getRedirectUrl and calls a warning when getRedirectUri is called`, () => {
   mockProperty(console, 'warn', jest.fn());
   expect(AuthSession.getRedirectUri()).toEqual(AuthSession.getRedirectUrl());
 
   expect((console.warn as jest.Mock).mock.calls).toMatchSnapshot();
 });
 
-it('warns if user is @anonymous in getRedirectUrl', () => {
+it(`warns if user is @anonymous in getRedirectUrl`, () => {
   mockProperty(Constants.manifest, 'id', '@anonymous/abc');
   mockProperty(console, 'warn', jest.fn());
   AuthSession.getRedirectUrl();

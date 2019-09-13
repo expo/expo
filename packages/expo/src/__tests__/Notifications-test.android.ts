@@ -12,7 +12,7 @@ const mockedScheduledNotifIOS = {
   title: 'Mock notification',
   body: 'hello',
 };
-it('properly passes time as millis when scheduling notification on Android', async () => {
+it(`properly passes time as millis when scheduling notification on Android`, async () => {
   const spy = jest.fn();
   NativeModules.ExponentNotifications.scheduleLocalNotification = spy;
 
@@ -34,7 +34,7 @@ it('properly passes time as millis when scheduling notification on Android', asy
   );
 });
 
-it('properly passes "options.intervalMs" when scheduling notification on android', async () => {
+it(`properly passes "options.intervalMs" when scheduling notification on android`, async () => {
   const spy = jest.fn();
   NativeModules.ExponentNotifications.scheduleLocalNotification = spy;
 
@@ -55,7 +55,7 @@ it('properly passes "options.intervalMs" when scheduling notification on android
   );
 });
 
-it('properly throws if both "options.repeat" and "options.intervalMs" are set in scheduled notification options on android', async () => {
+it(`properly throws if both "options.repeat" and "options.intervalMs" are set in scheduled notification options on android`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
@@ -69,7 +69,7 @@ it('properly throws if both "options.repeat" and "options.intervalMs" are set in
   expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(0);
 });
 
-it('properly throws for negative number for "options.intervalMs" in scheduled notification options on android', async () => {
+it(`properly throws for negative number for "options.intervalMs" in scheduled notification options on android`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
@@ -82,7 +82,7 @@ it('properly throws for negative number for "options.intervalMs" in scheduled no
   expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(0);
 });
 
-it('properly throws for non-integer for "options.intervalMs" in scheduled notification options on android', async () => {
+it(`properly throws for non-integer for "options.intervalMs" in scheduled notification options on android`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {

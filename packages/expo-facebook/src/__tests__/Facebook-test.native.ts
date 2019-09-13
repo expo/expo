@@ -23,7 +23,7 @@ afterEach(() => {
   unmockAllProperties();
 });
 
-it('calls with correct parameters', () => {
+it(`calls with correct parameters`, () => {
   Facebook.logInWithReadPermissionsAsync('appId', {
     permissions: ['email'],
   });
@@ -32,7 +32,7 @@ it('calls with correct parameters', () => {
   });
 });
 
-it('converts to appId string when called with a number parameter', () => {
+it(`converts to appId string when called with a number parameter`, () => {
   Facebook.logInWithReadPermissionsAsync(1234 as any, {
     permissions: ['email'],
   });

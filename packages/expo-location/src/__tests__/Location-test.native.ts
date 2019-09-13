@@ -42,7 +42,7 @@ it(`getCurrentPositionAsync works`, async () => {
 });
 
 describe('watchPositionAsync', () => {
-  it('receives repeated events', async () => {
+  it(`receives repeated events`, async () => {
     let resolveBarrier;
     const callback = jest.fn();
     const watchBarrier = new Promise(resolve => {
@@ -65,7 +65,7 @@ describe('watchPositionAsync', () => {
 if (Platform.OS === 'android') {
   xdescribe('geocodeAsync', () => {
     // TODO(@tsapeta): This doesn't work due to missing Google Maps API key.
-    it('falls back to Google Maps API on Android without Google Play services', () => {
+    it(`falls back to Google Maps API on Android without Google Play services`, () => {
       mockProperty(NativeModulesProxy.ExpoLocation, 'geocodeAsync', async () => {
         const error = new Error();
         (error as any).code = 'E_NO_GEOCODER';
@@ -79,7 +79,7 @@ if (Platform.OS === 'android') {
 }
 
 describe('reverseGeocodeAsync', () => {
-  it('rejects non-numeric latitude/longitude', () => {
+  it(`rejects non-numeric latitude/longitude`, () => {
     // We need to cast these latitude/longitude strings to any type, so TypeScript diagnostics will pass here.
     return expect(
       Location.reverseGeocodeAsync({ latitude: '37.7' as any, longitude: '-122.5' as any })
@@ -97,7 +97,7 @@ describe('navigator.geolocation polyfill', () => {
   });
 
   describe('getCurrentPosition', () => {
-    it('delegates to getCurrentPositionAsync', async () => {
+    it(`delegates to getCurrentPositionAsync`, async () => {
       let pass;
       const barrier = new Promise(resolve => {
         pass = resolve;
@@ -110,7 +110,7 @@ describe('navigator.geolocation polyfill', () => {
   });
 
   describe('watchPosition', () => {
-    it('watches for updates and stops when clearWatch is called', async () => {
+    it(`watches for updates and stops when clearWatch is called`, async () => {
       let resolveBarrier;
       const watchBarrier = new Promise(resolve => {
         resolveBarrier = resolve;

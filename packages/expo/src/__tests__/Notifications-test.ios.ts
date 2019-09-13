@@ -13,7 +13,7 @@ const mockedScheduledNotifIOS = {
   body: 'hello',
 };
 
-it('properly schedules notification when options are correct (time passed as date obj, not repeated)', async () => {
+it(`properly schedules notification when options are correct (time passed as date obj, not repeated)`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
   await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
@@ -23,7 +23,7 @@ it('properly schedules notification when options are correct (time passed as dat
   expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
 });
 
-it('properly passes time as mumber when scheduling notification', async () => {
+it(`properly passes time as mumber when scheduling notification`, async () => {
   const spy = jest.fn();
   NativeModules.ExponentNotifications.scheduleLocalNotification = spy;
 
@@ -41,7 +41,7 @@ it('properly passes time as mumber when scheduling notification', async () => {
   );
 });
 
-it('properly throws if "options.intervalMs" is used', async () => {
+it(`properly throws if "options.intervalMs" is used`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
     await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
