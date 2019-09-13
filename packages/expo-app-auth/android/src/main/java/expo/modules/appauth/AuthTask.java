@@ -48,4 +48,8 @@ public class AuthTask {
     mPromise = null;
     mTag = null;
   }
+
+  public boolean running() {
+    return mPromise != null;
+  }
 }
