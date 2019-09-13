@@ -1,10 +1,9 @@
-import { describeCrossPlatform } from 'jest-expo';
 import { NativeModulesProxy } from '@unimodules/core';
 import * as Amplitude from '../Amplitude';
 
 const { ExpoAmplitude } = NativeModulesProxy;
 
-describeCrossPlatform('all Amplitude methods available', () => {
+describe('all Amplitude methods available', () => {
   it('initializes', () => {
     expect(Amplitude.initialize('test-api-key')).not.toBeUndefined();
     expect(ExpoAmplitude.initialize).toHaveBeenCalledTimes(1);
