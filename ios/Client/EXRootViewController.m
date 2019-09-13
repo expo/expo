@@ -89,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
   // where a user opened a project, then went to home and cleared history, then went back to a
   // the already open project.
   [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
+
 }
 
 - (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion

@@ -24,7 +24,7 @@
     "preset": "jest-expo-enzyme"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "expo-module eslint src tests",
     "test": "jest"
   },
   "peerDependencies": {

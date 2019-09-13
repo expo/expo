@@ -41,10 +41,11 @@ type PropsType = React.ComponentProps<typeof View> & {
   additionalRequestParams?: { [key: string]: string },
 
   /**
-   * Whether the SDK should serve personalized ads (use only with user's consent).
-   * Setting this value to true sets `npa` key of `additionalRequestParams` to `1`
-   * following https://developers.google.com/admob/ios/eu-consent#forward_consent_to_the_google_mobile_ads_sdk
-   * and https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
+   * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
+   * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
+   * https://developers.google.com/admob/ios/eu-consent#forward_consent_to_the_google_mobile_ads_sdk
+   * and
+   * https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
    */
   servePersonalizedAds?: boolean,
 

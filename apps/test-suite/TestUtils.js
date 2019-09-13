@@ -29,7 +29,7 @@ function optionalRequire(requirer) {
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
-  let modules = [
+  const modules = [
     // Sanity
     require('./tests/Basic'),
   ];
@@ -44,20 +44,21 @@ export function getTestModules() {
   );
 
   // Universally tested APIs
-  modules.push(require('./tests/Contacts'), require('./tests/Crypto'));
+  modules.push(require('./tests/Crypto'));
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
   }
 
   if (global.DETOX) {
+    modules.push(require('./tests/Contacts'));
     return modules;
   }
 
   if (Platform.OS === 'web') {
     modules.push(
+      require('./tests/Contacts'),
       optionalRequire(() => require('./tests/SVG')),
-      optionalRequire(() => require('./tests/Crypto')),
       optionalRequire(() => require('./tests/Random')),
       optionalRequire(() => require('./tests/Localization'))
     );
@@ -74,7 +75,6 @@ export function getTestModules() {
 
   modules.push(
     optionalRequire(() => require('./tests/Application')),
-    optionalRequire(() => require('./tests/Crypto')),
     optionalRequire(() => require('./tests/Device')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),

@@ -13,8 +13,8 @@ import {
   TouchableNativeFeedback,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-
+import SafeAreaView from 'react-native-safe-area-view';
+import { MaterialIcons } from '@expo/vector-icons';
 import { getTestModules } from '../TestUtils';
 
 class ListItem extends React.Component {
@@ -150,7 +150,7 @@ export default class SelectScreen extends React.PureComponent {
       if (state.selected.size === this.modules.length) {
         return { selected: new Set() };
       }
-      return { selected: new Set(this.modules.map(this._keyExtractor)) };
+      return { selected: new Set(this.modules.map(item => item.name)) };
     });
   };
 

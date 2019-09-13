@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { ScrollView, useTheme } from 'react-navigation';
+import { useTheme, ScrollView } from 'react-navigation';
+
 import Colors from '../constants/Colors';
 
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
