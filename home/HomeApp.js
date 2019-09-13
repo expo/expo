@@ -129,11 +129,7 @@ export default class App extends React.Component {
         {Platform.OS === 'ios' && (
           <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
         )}
-        {Platform.OS === 'android' ||
-          (Platform.OS === 'ios' &&
-            parseInt(Platform.Version, 10) >= 13 &&
-            theme === 'light' &&
-            this.props.colorScheme === 'dark' && <View style={styles.statusBarUnderlay} />)}
+        {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
       </View>
     );
   }

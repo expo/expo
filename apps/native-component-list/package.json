@@ -88,7 +88,7 @@
     "react-native-svg": "~9.9.2",
     "react-native-web": "^0.11.0",
     "react-native-webview": "https://github.com/expo/react-native-webview/archive/2cd7005.tar.gz",
-    "react-navigation": "4.1.0-alpha.0",
+    "react-navigation": "4.1.0-alpha.1",
     "react-navigation-header-buttons": "^1.2.1",
     "react-navigation-material-bottom-tabs": "^1.1.0",
     "react-navigation-shared-element": "^0.5.0",
