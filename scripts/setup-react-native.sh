@@ -19,9 +19,7 @@ if [ -z "$ANDROID_PATH_EXIST" ]; then
 fi
 source $HOME/.bash_profile
 
-# Required by android
-# Install sdk tools
-# User may not install Android Studio
+# Required for React Android to work
 if [ ! -f "${ANDROID_HOME}/tools/bin/sdkmanager" ]; then
   echo ""
   echo "Downloading android sdk tools..."
@@ -34,10 +32,10 @@ if [ ! -f "${ANDROID_HOME}/tools/bin/sdkmanager" ]; then
   tar -zxvf ${sdk_tools_name} -C ${ANDROID_HOME}
 fi
 
-# This file may not exist.
 mkdir -p $HOME/.android
 touch $HOME/.android/repositories.cfg
-# Accept all the licences, so the program will not ask again.
+
+# Auto accept the licenses
 yes | sdkmanager --licenses
 
 # Required by android
@@ -50,7 +48,7 @@ sdkmanager ndk-bundle ${sdk_manager_options}
 sdkmanager platform-tools ${sdk_manager_options}
 # Intel HAXM
 sdkmanager "extras;intel;Hardware_Accelerated_Execution_Manager" ${sdk_manager_options}
-# RN version required.
+# React Native version required.
 sdkmanager "platforms;android-26" "system-images;android-26;google_apis;x86_64" "build-tools;26.0.3" ${sdk_manager_options}
 sdkmanager --update ${sdk_manager_options}
 

@@ -26,9 +26,9 @@ As you might imagine web code is very easy to test and contribute to, so that's 
 
    - Downloads submodules (like `react-native`) with `git submodule update --init`
    - Fetches files with [_git lfs_](https://git-lfs.github.com), which we use for big native libraries like Google Mobile Vision. Note: you must have `git lfs` already installed.
-   - Ensure yarn is installed
-   - Ensure your computer is setup for `React Native` (Will install the Android NDK if it's not present)
-   - Downloads the node modules (`yarn install`)
+   - Ensures Yarn is installed
+   - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
+   - Downloads the Node packages (`yarn install`)
 
 3. Navigate to the bare sandbox project `cd apps/bare-expo`
 4. Run the project on any platform (maybe start with web; it's the fastest! 😁)
