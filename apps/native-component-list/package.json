@@ -82,7 +82,7 @@
     "react-native-platform-touchable": "^1.1.1",
     "react-native-reanimated": "~1.2.0",
     "react-native-safe-area-context": "0.3.6",
-    "react-native-safe-area-view": "1.0.0-alpha.1",
+    "react-native-safe-area-view": "^0.14.8",
     "react-native-screens": "~1.0.0-alpha.23",
     "react-native-shared-element": "~0.5.1",
     "react-native-svg": "~9.9.2",
