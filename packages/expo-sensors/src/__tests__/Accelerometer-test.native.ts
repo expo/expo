@@ -1,4 +1,3 @@
-import { mockPlatformIOS } from '../../test/mocking';
 import Accelerometer from '../Accelerometer';
 import ExponentAccelerometer from '../ExponentAccelerometer';
 
