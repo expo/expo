@@ -1,12 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
-import normalizeColor from 'react-native-web/src/modules/normalizeColor';
-const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...props }) => {
-    const [layout, setLayout] = useState(null);
-    const [gradientColors, setGradientColors] = useState([]);
-    const [pseudoAngle, setPseudoAngle] = useState(0);
-    useEffect(() => {
-        const getControlPoints = () => {
+const PI_2 = Math.PI / 2;
+export default class NativeLinearGradient extends React.PureComponent {
+    constructor() {
+        super(...arguments);
+        this.state = {
+            width: undefined,
+            height: undefined,
+        };
+        this.onLayout = event => {
+            this.setState({
+                width: event.nativeEvent.layout.width,
+                height: event.nativeEvent.layout.height,
+            });
+            if (this.props.onLayout) {
+                this.props.onLayout(event);
+            }
+        };
+        this.getControlPoints = () => {
+            const { startPoint, endPoint } = this.props;
             let correctedStartPoint = [0, 0];
             if (Array.isArray(startPoint)) {
                 correctedStartPoint = [
@@ -23,19 +35,23 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
             }
             return [correctedStartPoint, correctedEndPoint];
         };
-        const [start, end] = getControlPoints();
-        const { width = 1, height = 1 } = layout || {};
-        start[0] *= width;
-        end[0] *= width;
-        start[1] *= height;
-        end[1] *= height;
-        const py = end[1] - start[1];
-        const px = end[0] - start[0];
-        setPseudoAngle(90 + (Math.atan2(py, px) * 180) / Math.PI);
-    }, [startPoint, endPoint]);
-    useEffect(() => {
-        const nextGradientColors = colors.map((color, index) => {
-            const hexColor = normalizeColor(color);
+        this.calculateGradientAngleFromControlPoints = () => {
+            const [start, end] = this.getControlPoints();
+            const { width = 1, height = 1 } = this.state;
+            start[0] *= width;
+            end[0] *= width;
+            start[1] *= height;
+            end[1] *= height;
+            const py = end[1] - start[1];
+            const px = end[0] - start[0];
+            return 90 + (Math.atan2(py, px) * 180) / Math.PI;
+        };
+        this.getWebGradientColorStyle = () => {
+            return this.getGradientValues().join(',');
+        };
+        this.convertJSColorToGradientSafeColor = (color, index) => {
+            const { locations } = this.props;
+            const hexColor = hexStringFromProcessedColor(color);
             let output = hexColor;
             if (locations && locations[index]) {
                 const location = Math.max(0, Math.min(1, locations[index]));
@@ -44,23 +60,32 @@ const NativeLinearGradient = ({ colors, locations, startPoint, endPoint, ...prop
                 output += ` ${percentage}%`;
             }
             return output;
-        });
-        setGradientColors(nextGradientColors);
-    }, [colors, locations]);
-    const colorStyle = gradientColors.join(',');
-    const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
-    // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
-    // browser support.
-    return (<View {...props} style={[
-        props.style,
-        // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
-        { backgroundImage },
-    ]} onLayout={event => {
-        setLayout(event.nativeEvent.layout);
-        if (props.onLayout) {
-            props.onLayout(event);
-        }
-    }}/>);
-};
-export default NativeLinearGradient;
+        };
+        this.getGradientValues = () => {
+            return this.props.colors.map(this.convertJSColorToGradientSafeColor);
+        };
+        this.getBackgroundImage = () => {
+            return `linear-gradient(${this.calculateGradientAngleFromControlPoints()}deg, ${this.getWebGradientColorStyle()})`;
+        };
+    }
+    render() {
+        const { colors, locations, startPoint, endPoint, onLayout, style, ...props } = this.props;
+        const backgroundImage = this.getBackgroundImage();
+        // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more browser support.
+        return (<View style={[
+            style,
+            // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
+            { backgroundImage },
+        ]} onLayout={this.onLayout} {...props}/>);
+    }
+}
+function hexStringFromProcessedColor(argbColor) {
+    if (argbColor === 0) {
+        return `rgba(0,0,0,0)`;
+    }
+    const hexColorString = argbColor.toString(16);
+    const withoutAlpha = hexColorString.substring(2);
+    const alpha = hexColorString.substring(0, 2);
+    return `#${withoutAlpha}${alpha}`;
+}
 //# sourceMappingURL=NativeLinearGradient.web.js.map
