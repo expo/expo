@@ -12253,15 +12253,6 @@ react-native-appearance@0.1.0:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
-react-native-appearance@~0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.0.8.tgz#b887931c7ea03664792e509c657a01fb7b2ad83b"
-  integrity sha512-nxYAMjjj+OBtczK3EwGQdghJQkPtupqoraKF//fIbcgNRZ9dMhoUMmbLOV9oLLY5Wxu3DbxGsebGGZdEtyVVjQ==
-  dependencies:
-    fbemitter "^2.1.1"
-    invariant "^2.2.4"
-    use-subscription "^1.0.0"
-
 react-native-branch@~3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-3.0.1.tgz#5b07b61cbd290168cd3c3662e017ebe0f356d2ca"
@@ -12339,10 +12330,10 @@ react-native-reanimated@~1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.2.0.tgz#9219227a52a5dfa4d34c324596d6726ccd874293"
   integrity sha512-vkWRHrPK5qfHP/ZawlRoo38oeYe9NZaaOH/lmFxRcsKzaSK6x3H5ZPXI8lK6MfTLveqwo1QhJje3zIKXO4nQQw==
 
-react-native-safe-area-context@~0.3.5:
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-0.3.5.tgz#1bfe0d1d4f5fb3462c07e3337d2f71eb1932c570"
-  integrity sha512-nh3Q4mmPmaCr1q0hHsReWXL8nlYKXOtLpPNeN57V1bB/QyJ7zL0nYR6c0cDR2/wPBA/DNm4wNllUAT842xb2zw==
+react-native-safe-area-context@0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-0.3.6.tgz#666bf581b59aa49a9685aea4e76dfd6e1c8a8a52"
+  integrity sha512-5wlaJplOlWxBNnjmCtY/FAlsgRDuoKzmLQzbWUw4NDuOa3H2uq1kTdqTWOw78Nzm5FRqGWe1ZSLWU9+nSaN+vA==
 
 react-native-safe-area-view@1.0.0-alpha.1:
   version "1.0.0-alpha.1"
