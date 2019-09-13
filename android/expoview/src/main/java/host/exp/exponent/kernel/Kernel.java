@@ -627,7 +627,7 @@ public class Kernel extends KernelInterface {
       return;
     }
 
-    if (manifestUrl.equals(Constants.INITIAL_URL)) {
+    if (Constants.isStandaloneApp()) {
       openShellAppActivity(forceCache);
       return;
     }
