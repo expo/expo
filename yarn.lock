@@ -1549,6 +1549,15 @@
     react-native-safe-area-view "^0.14"
     react-native-screens "^1.0.0 || ^1.0.0-alpha"
 
+"@react-navigation/native@^4.0.0-alpha.2":
+  version "4.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-4.0.0-alpha.2.tgz#792e1ead3ae2e6c32ed11f443a15ff5e159efab2"
+  integrity sha512-eKk1vgacfqe1rEGF1hE5bradKr8o5M06RcIKMgmGqwP0LaU+eJb4BDE9gnTc3/cZZEFj9/29rdFkCI3nU79/WQ==
+  dependencies:
+    hoist-non-react-statics "^3.0.1"
+    react-native-safe-area-view "^0.14"
+    react-native-screens "^1.0.0 || ^1.0.0-alpha"
+
 "@react-navigation/web@2.0.0-alpha.0":
   version "2.0.0-alpha.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/web/-/web-2.0.0-alpha.0.tgz#1ac782c47b7aad0100877b7dd4d50745c5aede3f"
@@ -12460,13 +12469,21 @@ react-navigation-tabs@~1.2.0:
     prop-types "^15.6.1"
     react-native-tab-view "^1.4.1"
 
-react-navigation@4.1.0-alpha.0, react-navigation@^4.1.0-alpha.0:
+react-navigation@4.1.0-alpha.0:
   version "4.1.0-alpha.0"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.1.0-alpha.0.tgz#6d75556d8279377a79ff7e241bf3f00a7fa8bfe1"
   integrity sha512-mDlRhPEa7jzGeRHW456GRJyCzJub+jlm8P3cHKM/aAkWfiu545bXmTZXgp8lldssdrt7S0rXrGDBTfIKqGMyNg==
   dependencies:
     "@react-navigation/core" "^3.5.0"
     "@react-navigation/native" "^4.0.0-alpha.0"
+
+react-navigation@4.1.0-alpha.1, react-navigation@^4.1.0-alpha.1:
+  version "4.1.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-4.1.0-alpha.1.tgz#549d8e47f2e9023cf6b1f0f395cfba881e8c0c7a"
+  integrity sha512-3X+kgAhITeMqYmWqzYt8MBQUGfffpjN986VqZKc1NvFFoWgdAsDH88PMipQOBYC0nC5q7KHf+CcUgYA+WZoujA==
+  dependencies:
+    "@react-navigation/core" "^3.5.0"
+    "@react-navigation/native" "^4.0.0-alpha.2"
 
 react-proxy@^1.1.7:
   version "1.1.8"
