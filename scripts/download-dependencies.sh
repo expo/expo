@@ -10,7 +10,7 @@ if [[ -z $(command -v npm 2>/dev/null) ]]; then
   echo " 🛑  Please install npm and try again"
   exit 1
 fi
-if [ -z $(command -v git-lfs 2>/dev/null) ]; then
+if [[ -z $(command -v git-lfs 2>/dev/null) ]]; then
   echo " 🛑  Please install git-lfs and retry..."
   exit 1
 fi
@@ -20,7 +20,7 @@ if [[ -z $(command -v yarn 2>/dev/null) ]]; then
   npm install -g yarn
 fi
 
-# Setup submodules
+# Set up submodules
 git submodule update --init
 git submodule foreach --recursive git checkout .
 
