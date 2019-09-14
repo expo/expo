@@ -40,15 +40,15 @@ module.exports = function(api, options = {}) {
     ],
     plugins: [
       [
-        'babel-plugin-module-resolver',
+        require.resolve('babel-plugin-module-resolver'),
         {
           alias: {
             'react-native-vector-icons': '@expo/vector-icons',
           },
         },
       ],
-      ['@babel/plugin-proposal-decorators', { legacy: true }],
-      isWeb && ['babel-plugin-react-native-web'],
+      [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
+      isWeb && [require.resolve('babel-plugin-react-native-web')],
     ].filter(Boolean),
   };
 };
