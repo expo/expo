@@ -1,16 +1,7 @@
 {
   "name": "expo-app-loader-provider",
-  "version": "6.0.0",
+  "version": "7.0.0-rc.0",
   "description": "Provides application loaders",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
     "react-native",
     "expo"
@@ -27,8 +18,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-app-loader-provider",
   "devDependencies": {
-    "babel-preset-expo": "^6.0.0",
-    "expo-module-scripts": "^1.0.0"
+    "babel-preset-expo": "~7.0.0-rc.0"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
 }

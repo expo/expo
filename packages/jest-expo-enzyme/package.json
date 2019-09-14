@@ -1,6 +1,6 @@
 {
   "name": "jest-expo-enzyme",
-  "version": "0.0.0",
+  "version": "0.0.0-rc.0",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -39,14 +39,14 @@
     "enzyme-to-json": "^3.4.0",
     "jest-canvas-mock": "^2.1.1",
     "jest-enzyme": "^7.1.0",
-    "jest-expo": "^34.0.1",
+    "jest-expo": "~35.0.0-rc.0",
     "react-test-renderer": "~16.8.3"
   },
   "devDependencies": {
-    "babel-preset-expo": "^6.0.1",
+    "babel-preset-expo": "~7.0.0-rc.0",
     "react": "16.8.3"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a",
+  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
