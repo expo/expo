@@ -11,7 +11,7 @@ ABI35_0_0UM_EXPORT_MODULE(AdIconViewManager)
 
 - (UIView *)view
 {
-  return [[FBMediaView alloc] init];
+  return [[FBAdIconView alloc] init];
 }
 
 @end
