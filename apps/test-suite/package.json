@@ -4,11 +4,7 @@
   "description": "Test suite for the Expo SDK",
   "main": "__generated__/AppEntry.js",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall",
-    "test": "cd runner && yarn && cd .. && node runner/index.js .",
-    "openbrowser": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:19006",
-    "web": "expo start --web-only --web --https",
-    "web:serve": "serve ./web-build"
+    "postinstall": "expo-yarn-workspaces postinstall"
   },
   "author": "",
   "license": "MIT",
@@ -62,10 +58,7 @@
     "sinon": "^7.1.1"
   },
   "devDependencies": {
-    "babel-loader": "^8.0.5",
-    "expo-yarn-workspaces": "^1.2.0",
-    "serve": "^10.1.2",
-    "webpack-cli": "^3.3.0"
+    "expo-yarn-workspaces": "^1.2.0"
   },
   "browserslist": [
     ">0.2%",
