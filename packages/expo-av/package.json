@@ -40,7 +40,7 @@
   },
   "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a",
   "dependencies": {
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "nullthrows": "^1.1.0"
   }
 }

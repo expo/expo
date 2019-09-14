@@ -8,7 +8,6 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "web:publish": "netlify deploy --dir web-build",
-    "web:serve": "serve ./web-build",
     "tsc": "tsc --noEmit --watch -p ./tsconfig.json"
   },
   "dependencies": {
@@ -112,13 +111,6 @@
     "babel-preset-expo": "^6.0.0",
     "expo-module-scripts": "^1.0.0",
     "expo-yarn-workspaces": "^1.2.0",
-    "serve": "^10.1.2",
     "typescript": "^3.4.2"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }
