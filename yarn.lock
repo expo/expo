@@ -1943,7 +1943,7 @@
     lodash.unescape "4.0.1"
     semver "^6.3.0"
 
-"@unimodules/core@~3.0.0", "@unimodules/core@~3.0.2":
+"@unimodules/core@~3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@unimodules/core/-/core-3.0.2.tgz#a2b143fb1e743809ba17c60ae1848f82b8637901"
   integrity sha512-EMZjVp+yrtoPKpDBPvj4+hyDWALl7gvpWeUsDz2Nb9MMBPLnhag1uNk3KC98StJdnjbSXKSdKrCMMidOXnyKcg==
