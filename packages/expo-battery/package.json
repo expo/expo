@@ -29,6 +29,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-battery",
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.1"
+  },
   "peerDependencies": {
     "@unimodules/core": "~1.0.0"
   },
