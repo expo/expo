@@ -46,7 +46,8 @@ export default class LinearGradientScreen extends React.Component {
         contentContainerStyle={{
           alignItems: 'stretch',
           paddingVertical: 10,
-        }}>
+        }}
+      >
         <ColorsTest colors={[this.state.colorTop, this.state.colorBottom]} />
         <LocationsTest locations={[location, 1.0 - location]} />
         <ControlPointTest start={[position, 0]} />
@@ -72,8 +73,7 @@ const SnapshotTest = () => (
         end={[1, 1]}
         style={{
           width: 100,
-          maxHeight: 200,
-          minHeight: 200,
+          height: 200,
           borderWidth: 1,
           marginVertical: 20,
           borderColor: 'black',
@@ -91,7 +91,10 @@ const SnapshotTest = () => (
 const ControlPointTest: React.FunctionComponent<{
   start?: [number, number];
   end?: [number, number];
-}> = ({ start = [0.5, 0], end = [0, 1] }) => {
+}> = ({
+  start = [0.5, 0],
+  end = [0, 1],
+}) => {
   const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
   const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
 
@@ -99,7 +102,9 @@ const ControlPointTest: React.FunctionComponent<{
     <Container title="Control Points">
       <View>
         {[startInfo, endInfo].map((pointInfo, index) => (
-          <MonoText key={'--' + index}>{pointInfo}</MonoText>
+          <MonoText key={'--' + index}>
+            {pointInfo}
+          </MonoText>
         ))}
       </View>
       <LinearGradient
@@ -107,7 +112,7 @@ const ControlPointTest: React.FunctionComponent<{
         end={end}
         locations={[0.5, 0.5]}
         colors={['blue', 'lime']}
-        style={styles.gradient}
+        style={{ flex: 1, height: 200 }}
       />
     </Container>
   );
@@ -118,7 +123,7 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
   return (
     <Container title="Colors">
       <MonoText>{`colors={[${info}]}`}</MonoText>
-      <LinearGradient colors={colors} style={styles.gradient} />
+      <LinearGradient colors={colors} style={{ flex: 1, height: 200 }} />
     </Container>
   );
 };
@@ -128,7 +133,11 @@ const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locat
   return (
     <Container title="Locations">
       <MonoText>{`locations={[${locationsInfo}]}`}</MonoText>
-      <LinearGradient colors={['red', 'blue']} locations={locations} style={styles.gradient} />
+      <LinearGradient
+        colors={['red', 'blue']}
+        locations={locations}
+        style={{ flex: 1, height: 200 }}
+      />
     </Container>
   );
 };
@@ -136,18 +145,11 @@ const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locat
 const styles = StyleSheet.create({
   container: {
     padding: 8,
-    flexShrink: 0,
   },
   containerTitle: {
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 8,
-  },
-  gradient: {
-    flex: 1,
-    flexShrink: 0,
-    minHeight: 200,
-    maxHeight: 200,
   },
 });
