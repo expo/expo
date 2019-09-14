@@ -63,7 +63,7 @@ export function getTestModules() {
   if (Platform.OS === 'web') {
     modules.push(
       require('./tests/Contacts'),
-      require('./tests/SVG'),
+      // require('./tests/SVG'),
       require('./tests/Localization')
     );
 
