@@ -29,11 +29,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-network",
+  "devDependencies": {
+    "expo-module-scripts": "^1.0.1"
+  },
   "peerDependencies": {
     "@unimodules/core": "~1.0.0"
   },
-  "gitHead": "f213c9be2a909dae42a0a27d8aa4b9eac8e97be1",
-  "_resolved": "",
-  "_integrity": "",
-  "_from": "expo-network@latest"
+  "gitHead": "f213c9be2a909dae42a0a27d8aa4b9eac8e97be1"
 }
