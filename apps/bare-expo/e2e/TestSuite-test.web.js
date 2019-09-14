@@ -8,44 +8,16 @@ import { runTestsAsync } from './Utils';
 const TESTS = [
   {
     name: 'Sanity',
-    tests: [
-      // Sanity
-      'Basic',
-    ],
+    tests: ['Basic'],
   },
   {
     name: 'Core',
-    tests: [
-      // Core
-      'Asset',
-      'Constants',
-      'FileSystem',
-      'Font',
-      'Permissions',
-    ],
+    tests: ['Asset', 'Constants', 'FileSystem', 'Font', 'Permissions'],
   },
   {
     name: 'API',
-    tests: ['Contacts', 'Crypto'],
+    tests: ['Localization', 'SecureStore', 'Contacts', 'Random', 'Crypto'],
   },
-  // {
-  //   name: 'Protected',
-  //   tests: [],
-  // },
-  // {
-  //   name: 'API',
-  //   tests: [
-  //     'Crypto',
-  //     'Random',
-  //     'Haptics',
-  //     'Localization',
-  //     'SecureStore',
-  //     'SQLite',
-  //     'Random',
-  //     // 'Audio',
-  //   ],
-  // },
-
   // {
   //   name: 'Components',
   //   tests: [
@@ -58,17 +30,6 @@ const TESTS = [
   //     'Segment',
   //   ]
   // }
-
-  // 'SVG',
-  // 'Battery',
-  // 'Contacts',
-  // 'Crypto',
-  // 'Random',
-  // 'Localization',
-  // 'GLView',
-  // //   'Haptics',
-  // //   'SecureStore',
-  // //   'Permissions',
 ];
 
 // This is how long we allocate for the actual tests to be run after the test screen has mounted.

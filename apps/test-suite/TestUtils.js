@@ -44,14 +44,19 @@ export function getTestModules() {
   );
 
   // Universally tested APIs
-  modules.push(require('./tests/Crypto'));
+  modules.push(require('./tests/Random'), require('./tests/Crypto'));
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
   }
 
   if (global.DETOX) {
-    modules.push(require('./tests/Contacts'));
+    modules.push(
+      require('./tests/Contacts'),
+      require('./tests/Haptics'),
+      require('./tests/Localization'),
+      require('./tests/SecureStore')
+    );
     return modules;
   }
 
@@ -59,7 +64,6 @@ export function getTestModules() {
     modules.push(
       require('./tests/Contacts'),
       require('./tests/SVG'),
-      require('./tests/Random'),
       require('./tests/Localization')
     );
 
@@ -89,8 +93,7 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/Random'))
+    optionalRequire(() => require('./tests/FBBannerAd'))
   );
 
   if (!isDeviceFarm()) {
