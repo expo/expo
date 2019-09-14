@@ -62,9 +62,6 @@
         }
       }
     },
-    "web": {
-      "productionPath": "web-build"
-    },
     "assetBundlePatterns": [
       "assets/**",
       "node_modules/react-navigation/src/**/*.png",
