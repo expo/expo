@@ -41,7 +41,7 @@ As you might imagine web code is very easy to test and contribute to, so that's 
 
 ## ✏️ Editing Packages
 
-All of our packages (including Foundation Unimodules) can be found in the `packages/` directory. These packages are universally linked to the projects in the `apps/` directory (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). `bare-expo` is a bare-workflow Expo app that acts as a runner for the other projects in the `apps/` directory.
+All of our packages (including Foundation Unimodules) can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). `bare-expo` is a bare workflow Expo app that acts as a runner for the other projects in the `apps/` directory.
 
 - `native-component-list`: This is where you can write demos or tests that require physical interaction (a good playground for testing).
 - `test-suite`: You can write your E2E tests in here. When pushed to the remote, CI will run this project with Device Farm for Android, Detox for iOS, and Puppeteer for web!
@@ -62,7 +62,7 @@ All of our packages (including Foundation Unimodules) can be found in the `packa
 - [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (This will only enable the shake gesture, CMD+R won't work yet).
-- We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want).
+- We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
 - All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozen of packages locally on every `git pull` or `git checkout` operation.
 - We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
@@ -103,7 +103,7 @@ Our docs are made with [Next.js](https://github.com/zeit/next.js). They're locat
 
 ## 🔎 Before Submitting
 
-To help keep CI green, please make sure of the following ():
+To help keep CI green, please make sure of the following:
 
 - Remember to add a concise description of the change to [CHANGELOG.md](/CHANGELOG.md). This is especially helpful for breaking changes!
 - If you modified anything in `packages/`:
