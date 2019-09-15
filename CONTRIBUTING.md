@@ -13,7 +13,7 @@
   - [On coherent pull requests](#on-coherent-pull-requests)
   - [On maintainable code](#on-maintainable-code)
 
-Thanks so much for coming to help! Currently we accept PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/` and markdown files. Because the native clients (`ios/`, `android/`) are so articulate you may not find that much progress can be made externally (but you're always allowed to try!). We've moved most of the fun code out of the client anyways to support the bare-workflow, this means that you'll do the majority of your native testing in a \*regular React Native project.
+Thanks so much for coming to help! Currently we review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files. Because the native clients (`ios/`, `android/`) are so articulate you may not find that much progress can be made externally (but you're always allowed to try!). We've moved most of the fun code out of the client anyways to support the bare-workflow, this means that you'll do the majority of your native testing in a \*regular React Native project.
 
 As you might imagine web code is very easy to test and contribute to, so that's all on the table! You may find that some of the web features you're looking for are actually in the [expo-cli repo](https://github.com/expo/expo-cli).
 
