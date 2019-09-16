@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { Notification, LocalNotification, Channel, ActionType } from './Notifications.types';
+import { Notification, LocalNotification, Channel, ActionType, NotificationListener } from './Notifications.types';
 export declare function emitNotification(notification: any): void;
 declare const _default: {
     _setInitialNotification(notification: Notification): void;
@@ -24,7 +24,8 @@ declare const _default: {
     dismissAllNotificationsAsync(): Promise<void>;
     cancelScheduledNotificationAsync(notificationId: import("react").ReactText): Promise<void>;
     cancelAllScheduledNotificationsAsync(): Promise<void>;
-    addListener(listener: (notification: Notification) => unknown): EventSubscription;
+    addListener(listener: NotificationListener): EventSubscription;
+    addActionListener(listener: NotificationListener): void;
     getBadgeNumberAsync(): Promise<number>;
     setBadgeNumberAsync(number: number): Promise<void>;
     scheduleNotificationWithCalendarAsync(notification: LocalNotification, options?: {
@@ -41,5 +42,6 @@ declare const _default: {
         interval: number;
         repeat?: boolean | undefined;
     }): Promise<string>;
+    getScopedIdIfNotDetached(categoryId: string): string;
 };
 export default _default;
