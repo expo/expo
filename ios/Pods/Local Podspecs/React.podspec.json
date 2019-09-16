@@ -519,17 +519,9 @@
         ],
         "React/RCTBlob": [
 
-        ],
-        "React/fishhook": [
-
         ]
       },
       "source_files": "Libraries/WebSocket/*.{h,m}"
-    },
-    {
-      "name": "fishhook",
-      "header_dir": "fishhook",
-      "source_files": "Libraries/fishhook/*.{h,c}"
     },
     {
       "name": "RCTLinkingIOS",

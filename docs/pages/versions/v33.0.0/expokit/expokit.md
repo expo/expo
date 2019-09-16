@@ -80,10 +80,11 @@ ExpoKit's release cycle follows the Expo SDK release cycle. When a new version o
 
 ### iOS
 
+**NOTE:** Read the "If upgrading from..." sections below and follow those instructions first, then come back to these:
 - Open up `ios/Podfile` in your project, and update the `ExpoKit` tag to point at the [release](https://github.com/expo/expo/releases) corresponding to your SDK version. Run `pod update` then `pod install`.
 - Open `ios/your-project/Supporting/EXSDKVersions.plist` in your project and change all the values to the new SDK version.
 
-If upgrading from SDK 32 or below:
+#### If upgrading from SDK 32 or below:
 
 1. Install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
 2. Remove the list of unimodules' dependencies:
@@ -153,7 +154,9 @@ If upgrading from SDK 32 or below:
     end
     ```
 
-If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
+#### If upgrading from SDK 31 or below:
+
+You'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate ` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.
 
 If you have never made any edits to your Expo-generated `AppDelegate` files, then you can just replace them with these new template files:
 
@@ -162,16 +165,19 @@ If you have never made any edits to your Expo-generated `AppDelegate` files, the
 
 If you override any `AppDelegate` methods to add custom behavior, you'll need to either refactor your `AppDelegate` to subclass `EXStandaloneAppDelegate` and call `super` methods when necessary, or start with the new template files above and add your custom logic again (be sure to keep the calls to `super` methods).
 
-If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9.0'` to `platform :ios, '10.0'` in `ios/Podfile`.
+#### If upgrading from SDK 30 or below: 
+
+You'll also need to change `platform :ios, '9.0'` to `platform :ios, '10.0'` in `ios/Podfile`.
 
 ### Android
 
 - Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
 - Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and yarn/npm install.
-- If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
+- **If upgrading from SDK 31 or below**, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. 
+- **If upgrading from SDK 32 or above**, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 
-If upgrading from SDK32 or below:
+#### If upgrading from SDK32 or below:
 
 1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.4.0` in your project (`yarn add -D react-native-unimodules@^0.4.0` or `npm install --save-dev react-native-unimodules@^0.4.0` if you prefer npm over Yarn).
 2. In `android/settings.gradle` add to the bottom of the file:
@@ -181,7 +187,7 @@ If upgrading from SDK32 or below:
     // Include unimodules.
     includeUnimodulesProjects()
     ```
-3. In `android/app/build.gradle` remove an explicit list of `host.exp.exponent:…` dependencies with
+3. In `android/app/build.gradle` remove the explicit list of all `host.exp.exponent:…` dependencies with
     ```groovy
     addUnimodulesDependencies([
       modulesPaths : [
@@ -236,19 +242,20 @@ If upgrading from SDK32 or below:
     ```java
     import org.unimodules.core.interfaces.Package;
     ```
-11. In `android/app/src/main/java/host/exp/exponent/MainApplication.java` change:
+11. In `android/app/src/main/java/host/exp/exponent/MainApplication.java` replace all `expo.modules` (not `expo.loaders`):
     ```java
-    // only expo.modules!
     import expo.modules.ads.admob.AdMobPackage;
     import expo.modules.analytics.segment.SegmentPackage;
     import expo.modules.appauth.AppAuthPackage;
     import expo.modules.backgroundfetch.BackgroundFetchPackage;
+    import expo.modules...
+    // etc..
     ```
-    to
+    with:
     ```java
     import host.exp.exponent.generated.BasePackageList;
     ```
-    and
+    and replace:
     ```java
     public List<Package> getExpoPackages() {
       return Arrays.<Package>asList(
@@ -256,13 +263,13 @@ If upgrading from SDK32 or below:
       );
     }
     ```
-    to
+    with:
     ```java
     public List<Package> getExpoPackages() {
       return new BasePackageList().getPackageList();
     }
     ```
-12. From `android/app/src/main/java/host/exp/exponent/MainApplication.java` remove the following method:
+12. From `android/app/src/main/java/host/exp/exponent/MainApplication.java` (same file) remove the following method:
     ```java
     @Override
     public boolean shouldUseInternetKernel() {
@@ -284,7 +291,7 @@ If upgrading from SDK32 or below:
     ```
     If you used Gradle tasks anywhere in your custom code you'll need to remove `DevKernel` and `ProdKernel` parts of task names, so e.g., `:app:installDevKernelDebug` becomes `:app:installDebug`.
 
-If upgrading from SDK31 or below:
+#### If upgrading from SDK31 or below:
 
 1. add the following lines to `android/app/build.gradle`:
     ```groovy
@@ -399,14 +406,16 @@ If upgrading from SDK31 or below:
     }
     ```
 
-If upgrading from SDK 30 or below, remove the following lines from `android/app/build.gradle`:
+#### If upgrading from SDK 30 or below:
+
+Remove the following lines from `android/app/build.gradle`:
 ```groovy
 implementation 'com.squareup.okhttp3:okhttp:3.4.1'
 implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
 implementation 'com.squareup.okhttp3:okhttp-ws:3.4.1'
 ```
 
-If upgrading from SDK 28 or below, you'll also need to follow these instructions:
+#### If upgrading from SDK 28 or below:
 
 - Change all instances of `android\\detach-scripts` and `android/detach-scripts` to `node_modules\\expokit\\detach-scripts` and `node_modules/expokit/detach-scripts` respectively in `android/app/expo.gradle`.
 - Add `maven { url "$rootDir/../node_modules/expokit/maven" }` under `allprojects.repositories` in `android/build.gradle`.

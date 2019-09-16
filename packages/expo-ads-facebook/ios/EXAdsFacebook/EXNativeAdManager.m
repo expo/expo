@@ -64,9 +64,6 @@ UM_EXPORT_METHOD_AS(registerViewsForInteraction,
     for (id tag in tags) {
       if (viewRegistry[tag]) {
         [clickableViews addObject:viewRegistry[tag]];
-      } else {
-        clickableViews = nil;
-        break;
       }
     }
 
@@ -102,7 +99,10 @@ UM_EXPORT_METHOD_AS(registerViewsForInteraction,
       }
     }
 
-    [(EXNativeAdView *)nativeAdView registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBMediaView *)adIconView clickableViews:clickableViews];
+    [clickableViews addObject:mediaView];
+    [clickableViews addObject:adIconView];
+
+    [(EXNativeAdView *)nativeAdView registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:clickableViews];
     resolve(@[]);
   }];
 }

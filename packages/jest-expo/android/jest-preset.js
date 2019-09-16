@@ -1,2 +1,2 @@
-const { getAndroidPreset } = require('../src/getPlatformPreset');
+const { getAndroidPreset } = require('../config/getPlatformPreset');
 module.exports = getAndroidPreset();

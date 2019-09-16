@@ -35,7 +35,6 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Basic')),
       optionalRequire(() => require('./tests/Constants')),
-      optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Contacts')),
       optionalRequire(() => require('./tests/Crypto')),
       optionalRequire(() => require('./tests/Font')),
@@ -72,6 +71,7 @@ export function getTestModules() {
 
   if (global.DETOX) {
     modules.push(
+      optionalRequire(() => require('./tests/Contacts')),
       modules.push(optionalRequire(() => require('./tests/Permissions'))),
       modules.push(optionalRequire(() => require('./tests/Calendar'))),
       modules.push(optionalRequire(() => require('./tests/Video'))),
@@ -106,7 +106,6 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Contacts')));
     modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));

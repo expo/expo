@@ -22,7 +22,7 @@ import { AR } from 'expo';
 
 ### Getting Started
 
-Here is an example of a 3D scene that is configured with `three.js` and `Expo.AR`
+Here is an example of a 3D scene that is configured with `three.js` and `AR`
 
 <SnackEmbed snackId="@charliecruzan/basicar" platform="ios" preview="true" />
 
@@ -172,13 +172,13 @@ Given an image, ARKit will update you when it finds it in the real world.
 ##### Example
 
 ```js
-const asset = Expo.Asset.fromModule(require('./image.png'))
+const asset = Asset.fromModule(require('./image.png'))
 await asset.downloadAsync();
 
 await AR.setDetectionImagesAsync({
   myDopeImage: {
     /**
-     * The local uri of the image, this can be obtained with Expo.Asset.fromModule()
+     * The local uri of the image, this can be obtained with Asset.fromModule()
      */
     uri: asset.localUri,
     /**

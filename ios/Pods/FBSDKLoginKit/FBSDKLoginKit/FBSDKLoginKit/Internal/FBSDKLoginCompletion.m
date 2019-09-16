@@ -214,7 +214,7 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
   }
 
   if ([FBSDKBridgeAPI sharedInstance].isActive) {
-    [loginManager logInWithBehavior:FBSDKLoginBehaviorBrowser];
+    [loginManager logIn];
   } else {
     // The application is active but due to notification ordering the FBSDKApplicationDelegate
     // doesn't know it yet. Wait one more turn of the run loop.

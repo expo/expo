@@ -346,7 +346,7 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
 
   [_logger startSessionForLoginManager:self];
 
-  [self logInWithBehavior:self.loginBehavior];
+  [self logIn];
 }
 
 - (void)reauthorizeDataAccess:(FBSDKLoginManagerLoginResultBlock)handler
@@ -358,10 +358,10 @@ typedef NS_ENUM(NSInteger, FBSDKLoginManagerState) {
   _requestedPermissions = [NSSet set];
   self.authType = FBSDKLoginAuthTypeReauthorize;
   [_logger startSessionForLoginManager:self];
-  [self logInWithBehavior:self.loginBehavior];
+  [self logIn];
 }
 
-- (void)logInWithBehavior:(FBSDKLoginBehavior)loginBehavior
+- (void)logIn
 {
   FBSDKServerConfiguration *serverConfiguration = [FBSDKServerConfigurationManager cachedServerConfiguration];
   NSDictionary *loginParams = [self logInParametersWithPermissions:_requestedPermissions serverConfiguration:serverConfiguration];

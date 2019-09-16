@@ -6,7 +6,7 @@ apply plugin: 'com.jakewharton.butterknife'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '34.0.0'
+version = '35.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -142,7 +142,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:34.0.0'
+  api 'com.facebook.react:react-native:35.0.0'
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
@@ -166,6 +166,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_35
+  api 'host.exp:reactandroid-abi35_0_0:1.0.0'
+  // END_SDK_35
   // BEGIN_SDK_34
   api 'host.exp:reactandroid-abi34_0_0:1.0.0'
   // END_SDK_34
@@ -241,6 +244,9 @@ dependencies {
   // expo-av
   // See explanation in expo-av/build.gradle
   api 'com.google.android.exoplayer:extension-okhttp:2.9.2'
+
+  // expo-application
+  api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
   annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"

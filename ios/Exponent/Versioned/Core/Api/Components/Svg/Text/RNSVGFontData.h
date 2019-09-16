@@ -12,6 +12,7 @@
     enum RNSVGFontStyle fontStyle;
     NSDictionary * fontData;
     enum RNSVGFontWeight fontWeight;
+    int absoluteFontWeight;
     NSString *fontFeatureSettings;
     enum RNSVGFontVariantLigatures fontVariantLigatures;
     enum RNSVGTextAnchor textAnchor;

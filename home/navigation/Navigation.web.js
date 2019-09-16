@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { createBrowserApp } from '@react-navigation/web';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
