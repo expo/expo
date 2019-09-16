@@ -110,7 +110,8 @@
   }
   NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
   
-  if ([self shouldVerifyScopedPermission:permissionType]
+  if ([_constantsBinding.appOwnership isEqualToString:@"expo"]
+      && [self shouldVerifyScopedPermission:permissionType]
       && [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
   }
