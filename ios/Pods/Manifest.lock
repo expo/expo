@@ -1537,6 +1537,7 @@ DEPENDENCIES:
   - Google-Mobile-Ads-SDK (~> 7.49.0)
   - GoogleMaps (~> 3.3)
   - GoogleSignIn (~> 5.0)
+  - JKBigInteger2 (= 0.0.5)
   - lottie-ios (~> 2.5.0)
   - React/ART (from `../react-native-lab/react-native`)
   - React/Core (from `../react-native-lab/react-native`)
@@ -2539,6 +2540,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: fe52634268bb3ed8914dda9f744beacce700e17e
+PODFILE CHECKSUM: 18c2d51eb48f96bf29761eff73760784c16145c4
 
 COCOAPODS: 1.8.0.beta.1
