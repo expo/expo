@@ -90,7 +90,11 @@ You're now good to go! If you are experiencing any issues or want to learn more 
 
 ## Hot Reloading and Live Reloading
 
-[Hot Module Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html) is a quick way to reload changes without losing your state in the screen or navigation stack. To enable, invoke the developer menu and tap the "Enable Hot Reloading" item. Whereas Live Reload will reload the entire JS context, Hot Module Reloading will make your debug cycles even faster. However, make sure you don't have both options turned on, as that is unsupported behavior.
+[Hot Module Reloading](http://facebook.github.io/react-native/blog/2016/03/24/introducing-hot-reloading.html) is a quick way to reload changes without losing your state in the screen or navigation stack. To enable, invoke the developer menu and tap the "Enable Hot Reloading" item. Whereas Live Reload will reload the entire JS context, Hot Module Reloading will make your debug cycles even faster.
+
+> **Note**: Make sure you don't have both options turned on. Hot reloading will not work if you do.
+
+> **Note**: In order to use Live Reload, your components must be **class** components, rather than a functional components. You can read about their differences [here](https://reactjs.org/docs/components-and-props.html#function-and-class-components).
 
 ## Other Debugging Tips
 

@@ -4,7 +4,7 @@
 #import "AMPConstants.h"
 
 NSString *const kAMPLibrary = @"amplitude-ios";
-NSString *const kAMPVersion = @"4.6.0";
+NSString *const kAMPVersion = @"4.7.1";
 NSString *const kAMPEventLogDomain = @"api.amplitude.com";
 NSString *const kAMPEventLogUrl = @"https://api.amplitude.com/";
 NSString *const kAMPDefaultInstance = @"$default_instance";
@@ -18,11 +18,16 @@ const int kAMPEventUploadThreshold = 1;
 const int kAMPEventMaxCount = 100;
 NSString *const kAMPPlatform = @"tvOS";
 NSString *const kAMPOSName = @"tvos";
-#else  // iOS
+#else  // macOS/iOS
 const int kAMPEventUploadThreshold = 30;
 const int kAMPEventMaxCount = 1000;
+#if TARGET_OS_MACCATALYST
+NSString *const kAMPPlatform = @"mac";
+NSString *const kAMPOSName = @"mac";
+#else
 NSString *const kAMPPlatform = @"iOS";
 NSString *const kAMPOSName = @"ios";
+#endif
 #endif
 
 const int kAMPEventUploadMaxBatchSize = 100;

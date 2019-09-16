@@ -14,6 +14,8 @@ import ExpoBattery from './ExpoBattery';
 
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
+export const isSupported = ExpoBattery.isSupported;
+
 export async function getBatteryLevelAsync(): Promise<number> {
   if (!ExpoBattery.getBatteryLevelAsync) {
     return -1;
@@ -36,14 +38,16 @@ export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
 }
 
 export async function getPowerStateAsync(): Promise<PowerState> {
-  if (!ExpoBattery.getPowerStateAsync) {
-    return {
-      batteryLevel: -1,
-      batteryState: BatteryState.UNKNOWN,
-      lowPowerMode: false,
-    };
-  }
-  return await ExpoBattery.getPowerStateAsync();
+  const [batteryLevel, batteryState, lowPowerMode] = await Promise.all([
+    getBatteryLevelAsync(),
+    getBatteryStateAsync(),
+    isLowPowerModeEnabledAsync(),
+  ]);
+  return {
+    batteryLevel,
+    batteryState,
+    lowPowerMode,
+  };
 }
 
 export function addBatteryLevelListener(listener: BatteryLevelUpdateListener): Subscription {

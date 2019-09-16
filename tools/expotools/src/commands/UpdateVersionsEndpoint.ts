@@ -125,14 +125,13 @@ async function action(options: ActionOptions) {
     // Save new configuration.
     try {
       await Versions.setVersionsAsync(newVersions);
+      console.log(
+        chalk.green('\nSuccessfully updated staging config. You can check it out on'),
+        chalk.blue(`https://${STAGING_HOST}/--/api/v2/versions`)
+      );
     } catch (error) {
       console.error(error);
     }
-
-    console.log(
-      chalk.green('\nSuccessfully updated staging config. You can check it out on'),
-      chalk.blue(`https://${STAGING_HOST}/--/api/v2/versions`)
-    );
   } else {
     console.log(chalk.yellow('Canceled'));
   }

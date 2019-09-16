@@ -21,11 +21,11 @@ let _categoriesWithBackgroundAction: Set<string> = new Set();
 function _maybeInitEmitter() {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    RCTDeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+    RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
   }
 }
 
-function _emitNotification(notification) {
+export function emitNotification(notification) {
   if (typeof notification === 'string') {
     notification = JSON.parse(notification);
   }
@@ -408,7 +408,7 @@ export default {
       const initialNotification = _initialNotification;
       _initialNotification = null;
       setTimeout(() => {
-        _emitNotification(initialNotification);
+        emitNotification(initialNotification);
       }, 0);
     }
 

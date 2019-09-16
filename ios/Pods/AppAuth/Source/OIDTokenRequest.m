@@ -69,17 +69,6 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 
 @implementation OIDTokenRequest
 
-@synthesize configuration = _configuration;
-@synthesize grantType = _grantType;
-@synthesize authorizationCode = _authorizationCode;
-@synthesize redirectURL = _redirectURL;
-@synthesize clientID = _clientID;
-@synthesize clientSecret = _clientSecret;
-@synthesize scope = _scope;
-@synthesize refreshToken = _refreshToken;
-@synthesize codeVerifier = _codeVerifier;
-@synthesize additionalParameters = _additionalParameters;
-
 - (instancetype)init
     OID_UNAVAILABLE_USE_INITIALIZER(
         @selector(initWithConfiguration:

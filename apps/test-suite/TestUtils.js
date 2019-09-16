@@ -2,7 +2,7 @@
 
 import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
-
+import { isDeviceFarm } from './utils/Environment';
 import ExponentTest from './ExponentTest';
 
 function browserSupportsWebGL() {
@@ -26,10 +26,6 @@ function optionalRequire(requirer) {
   }
 }
 
-export function isInDeviceFarm() {
-  return ExponentTest && ExponentTest.isInCI && Platform.OS === 'android';
-}
-
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
@@ -39,7 +35,6 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Basic')),
       optionalRequire(() => require('./tests/Constants')),
-      optionalRequire(() => require('./tests/SVG')),
       optionalRequire(() => require('./tests/Contacts')),
       optionalRequire(() => require('./tests/Crypto')),
       optionalRequire(() => require('./tests/Font')),
@@ -59,12 +54,15 @@ export function getTestModules() {
 
   const modules = [
     require('./tests/Basic'),
+    optionalRequire(() => require('./tests/Application')),
     optionalRequire(() => require('./tests/Asset')),
     optionalRequire(() => require('./tests/Constants')),
     optionalRequire(() => require('./tests/Crypto')),
+    optionalRequire(() => require('./tests/Device')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
     optionalRequire(() => require('./tests/Localization')),
+    optionalRequire(() => require('./tests/Network')),
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
     optionalRequire(() => require('./tests/SQLite')),
@@ -73,6 +71,7 @@ export function getTestModules() {
 
   if (global.DETOX) {
     modules.push(
+      optionalRequire(() => require('./tests/Contacts')),
       modules.push(optionalRequire(() => require('./tests/Permissions'))),
       modules.push(optionalRequire(() => require('./tests/Calendar'))),
       modules.push(optionalRequire(() => require('./tests/Video'))),
@@ -86,14 +85,17 @@ export function getTestModules() {
       optionalRequire(() => require('./tests/ScreenOrientation')),
       optionalRequire(() => require('./tests/Payments')),
       optionalRequire(() => require('./tests/AdMobInterstitial')),
-      optionalRequire(() => require('./tests/AdMobBanner')),
-      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
       optionalRequire(() => require('./tests/AdMobRewarded')),
       optionalRequire(() => require('./tests/FBBannerAd'))
     );
   }
 
-  if (!global.DETOX && !isInDeviceFarm()) {
+  if (!global.DETOX && !isDeviceFarm()) {
+    // Times out sometimes
+    modules.push(
+      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
+      optionalRequire(() => require('./tests/AdMobBanner'))
+    );
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)
@@ -104,11 +106,11 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
-    modules.push(optionalRequire(() => require('./tests/Contacts')));
     modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
     if (Constants.isDevice) {
+      modules.push(optionalRequire(() => require('./tests/Battery')));
       modules.push(optionalRequire(() => require('./tests/Brightness')));
     }
     // Crashes app when mounting component
@@ -124,6 +126,7 @@ export function getTestModules() {
   }
   if (Platform.OS === 'android') modules.push(optionalRequire(() => require('./tests/JSC')));
   if (Constants.isDevice) {
+    modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
   return modules.filter(Boolean);

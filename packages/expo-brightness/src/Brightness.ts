@@ -5,7 +5,7 @@ export enum BrightnessMode {
   UNKNOWN = 0,
   AUTOMATIC = 1,
   MANUAL = 2,
-};
+}
 
 export async function getBrightnessAsync(): Promise<number> {
   return await NativeModulesProxy.ExpoBrightness.getBrightnessAsync();

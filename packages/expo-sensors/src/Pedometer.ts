@@ -1,6 +1,6 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { UnavailabilityError } from '@unimodules/core';
+
 import ExponentPedometer from './ExponentPedometer';
 
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);

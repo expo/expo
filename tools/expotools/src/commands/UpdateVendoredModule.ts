@@ -70,6 +70,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Reanimated',
         sourceAndroidPath: 'android/src/main/java/com/swmansion/reanimated',
@@ -95,6 +96,16 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/screens',
         sourceAndroidPackage: 'com.swmansion.rnscreens',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+      },
+    ],
+  },
+  'react-native-appearance': {
+    repoUrl: 'https://github.com/expo/react-native-appearance.git',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios/Appearance',
+        targetIosPath: 'Api/Appearance',
       },
     ],
   },
@@ -161,6 +172,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/Svg',
         sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
@@ -204,7 +216,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'react-native-webview': {
-    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
+    repoUrl: 'https://github.com/expo/react-native-webview.git',
     installableInManagedApps: true,
     steps: [
       {
@@ -225,6 +237,26 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       chalk.bold.yellow(`See commit ${chalk.cyan('0e7d25bd9facba74828a0af971293d30f9ba22fc')}.\n`),
     ],
   },
+  'react-native-safe-area-context': {
+    repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
+    steps: [
+      {
+        sourceIosPath: 'ios/SafeAreaView',
+        targetIosPath: 'Api/SafeAreaContext',
+        sourceAndroidPath: 'android/src/main/java/com/th3rdwave/safeareacontext',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+      },
+    ],
+    warnings: [
+      chalk.bold.yellow(
+        `Last time checked, ${chalk.green('react-native-safe-area-context')} used ${chalk.blue(
+          'androidx'
+        )} which wasn't at that time supported by Expo. Please ensure that the project builds on Android after upgrading or remove this warning.`
+      ),
+    ],
+  },
   'react-native-datetimepicker': {
     repoUrl: 'https://github.com/react-native-community/react-native-datetimepicker.git',
     packageName: '@react-native-community/datetimepicker',
@@ -237,6 +269,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/datetimepicker',
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
+      },
+    ],
+  },
+  'react-native-shared-element': {
+    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
+    packageName: 'react-native-shared-element',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SharedElement',
+        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
+        targetAndroidPath: 'modules/api/components/sharedelement',
+        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
       },
     ],
   },
@@ -498,7 +545,7 @@ async function action(options: ActionOptions) {
       console.log(
         chalk.yellow(
           `\nSuccessfully updated iOS files, but please make sure Xcode project files are setup correctly in ${chalk.magenta(
-            `Exponent/Versioned/Modules/${step.targetIosPath}`
+            `Exponent/Versioned/Core/${step.targetIosPath}`
           )}`
         )
       );

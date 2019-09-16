@@ -78,7 +78,8 @@ UM_EXPORT_METHOD_AS(setTestDeviceID,
 }
 
 UM_EXPORT_METHOD_AS(requestAd,
-                    requestAd:(UMPromiseResolveBlock)resolve
+                    requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+                    resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if ([_interstitial hasBeenUsed] || _interstitial == nil) {
@@ -95,6 +96,11 @@ UM_EXPORT_METHOD_AS(requestAd,
       } else {
         request.testDevices = @[_testDeviceID];
       }
+    }
+    if (additionalRequestParams) {
+      GADExtras *extras = [[GADExtras alloc] init];
+      extras.additionalParameters = additionalRequestParams;
+      [request registerAdNetworkExtras:extras];
     }
     [_interstitial loadRequest:request];
   } else {
@@ -128,7 +134,7 @@ UM_EXPORT_METHOD_AS(dismissAd,
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
     UIViewController *presentedViewController = self.utilities.currentViewController;
-    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
+    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) hasPrefix:@"GAD"]) {
       [presentedViewController dismissViewControllerAnimated:true completion:^{
         resolve(nil);
         UM_ENSURE_STRONGIFY(self);

@@ -1,11 +1,11 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 declare type GLViewProps = {
     /**
-    * Called when the OpenGL context is created, with the context object as a parameter. The context
-    * object has an API mirroring WebGL's WebGLRenderingContext.
-    */
+     * Called when the OpenGL context is created, with the context object as a parameter. The context
+     * object has an API mirroring WebGL's WebGLRenderingContext.
+     */
     onContextCreate(gl: ExpoWebGLRenderingContext): void;
     /**
      * [iOS only] Number of samples for Apple's built-in multisampling.

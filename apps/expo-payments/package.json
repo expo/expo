@@ -11,18 +11,18 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
-    "expo": "~34.0.3",
+    "expo": "~35.0.0-rc.0",
     "expokit": "^34.0.1",
-    "expo-in-app-purchases": "~6.0.0",
+    "expo-in-app-purchases": "~7.0.0-rc.0",
     "react": "16.8.3",
-    "react-dom": "^16.8.6",
+    "react-dom": "16.8.3",
     "react-native": "0.59.8",
-    "react-native-unimodules": "^0.4.0",
+    "react-native-unimodules": "~0.6.0-rc.0",
     "react-native-web": "^0.11.4",
     "regenerator-runtime": "^0.13.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^6.0.1",
+    "babel-preset-expo": "~7.0.0-rc.0",
     "expo-yarn-workspaces": "^1.2.0"
   },
   "private": true

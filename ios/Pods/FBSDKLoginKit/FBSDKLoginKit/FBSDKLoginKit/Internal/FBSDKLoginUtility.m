@@ -40,7 +40,11 @@
 
 + (NSDictionary *)queryParamsFromLoginURL:(NSURL *)url
 {
-  NSString *expectedUrlPrefix = [FBSDKInternalUtility appURLWithHost:@"authorize" path:nil queryParameters:nil error:NULL].absoluteString;
+  NSString *expectedUrlPrefix = [FBSDKInternalUtility
+                                 appURLWithHost:@"authorize"
+                                 path:@""
+                                 queryParameters:@{}
+                                 error:NULL].absoluteString;
   if (![url.absoluteString hasPrefix:expectedUrlPrefix]) {
     // Don't have an App ID, just verify path.
     NSString *host = url.host;

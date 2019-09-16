@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-ads-admob" revision="6.0.0" status="integration" publication="20190726175245"/>
+  <info organisation="host.exp.exponent" module="expo-ads-admob" revision="6.0.0" status="integration" publication="20190910164809"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -110,25 +110,27 @@
     <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="com.google.android.gms" name="play-services-ads" rev="15.0.1" conf="api-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-core" rev="3.0.0" conf="implementation-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads" rev="17.2.1" conf="api-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-core" rev="3.0.2" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.3.2" conf="lintClassPath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-ads" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads" rev="17.2.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="customtabs" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-compat" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-annotations" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="android.arch.lifecycle" name="runtime" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="android.arch.lifecycle" name="common" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="android.arch.core" name="common" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-ads-base" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-ads-identifier" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-basement" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads-base" rev="17.2.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads-identifier" rev="16.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-basement" rev="16.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-v4" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-media-compat" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-core-utils" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-core-ui" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.android.support" name="support-fragment" rev="26.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-ads-lite" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-gass" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-ads-lite" rev="17.2.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-measurement-sdk-api" rev="16.3.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-measurement-base" rev="16.3.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-gass" rev="17.2.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>

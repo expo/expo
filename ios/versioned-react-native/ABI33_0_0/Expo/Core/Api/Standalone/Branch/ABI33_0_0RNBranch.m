@@ -51,7 +51,7 @@ static NSInteger const ABI33_0_0RNBranchUniversalObjectNotFoundError = 1;
 
 @synthesize bridge = _bridge;
 
-ABI33_0_0EX_EXPORT_SCOPED_MODULE(ABI33_0_0RNBranch, BranchManager);
+ABI33_0_0EX_EXPORT_SCOPED_MODULE(ABI33_0_0RNBranch, ScopedBranchManager);
 
 + (Branch *)branch
 {
@@ -93,9 +93,6 @@ ABI33_0_0EX_EXPORT_SCOPED_MODULE(ABI33_0_0RNBranch, BranchManager);
     }
     if (config.delayInitToCheckForSearchAds) {
         [instance delayInitToCheckForSearchAds];
-    }
-    if (config.appleSearchAdsDebugMode) {
-        [instance setAppleSearchAdsDebugMode];
     }
 }
 
@@ -150,11 +147,6 @@ ABI33_0_0EX_EXPORT_SCOPED_MODULE(ABI33_0_0RNBranch, BranchManager);
 + (void)delayInitToCheckForSearchAds
 {
     [self.branch delayInitToCheckForSearchAds];
-}
-
-+ (void)setAppleSearchAdsDebugMode
-{
-    [self.branch setAppleSearchAdsDebugMode];
 }
 
 + (void)setRequestMetadataKey:(NSString *)key value:(NSObject *)value

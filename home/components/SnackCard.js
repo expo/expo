@@ -1,12 +1,13 @@
 /* @flow */
 
 import React from 'react';
-import { Linking, Platform, Share, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { Linking, Platform, Share, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 
 import Colors from '../constants/Colors';
 import UrlUtils from '../utils/UrlUtils';
+import { StyledText } from './Text';
+import { StyledButton, StyledView } from './Views';
 
 function isDescriptionEmpty(description) {
   if (!description || description === 'No description') {
@@ -22,26 +23,30 @@ export default class SnackCard extends React.PureComponent {
     let { description, projectName } = this.props;
 
     return (
-      <TouchableNativeFeedbackSafe
+      <StyledButton
         onLongPress={this._handleLongPressProject}
         onPress={this._handlePressProject}
+        style={styles.container}
         fallback={TouchableHighlight}
-        underlayColor="#b7b7b7"
-        style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
-        <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
-          <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+        underlayColor="#b7b7b7">
+        <StyledView style={styles.infoContainer}>
+          <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
             {projectName}
-          </Text>
+          </StyledText>
 
           {isDescriptionEmpty(description) ? null : (
             <View style={[styles.projectExtraInfoContainer, { marginTop: 5 }]}>
-              <Text style={styles.projectExtraInfoText} ellipsizeMode="tail" numberOfLines={1}>
+              <StyledText
+                style={styles.projectExtraInfoText}
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                darkColor="#ccc">
                 {description}
-              </Text>
+              </StyledText>
             </View>
           )}
-        </View>
-      </TouchableNativeFeedbackSafe>
+        </StyledView>
+      </StyledButton>
     );
   }
 
@@ -65,26 +70,21 @@ export default class SnackCard extends React.PureComponent {
 }
 
 const styles = StyleSheet.create({
-  bottomBorder: {
-    flexGrow: 1,
-    borderBottomColor: Colors.separator,
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-  },
   container: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
     flexDirection: 'row',
-    backgroundColor: '#fff',
     flex: 1,
     paddingBottom: 3,
-    paddingHorizontal: 16,
   },
   infoContainer: {
+    backgroundColor: 'transparent',
     paddingTop: 13,
+    paddingHorizontal: 16,
     flexDirection: 'column',
     alignSelf: 'stretch',
     paddingBottom: 10,
   },
   projectNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   projectExtraInfoText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });
