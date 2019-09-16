@@ -42,7 +42,7 @@ def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-def getLastSupportedABI(){
+def getLastSupportedABI() {
   def lastSupportedVersion = "abi_999_0_0"
   (gradle.ext.has("supportedABIS") ? gradle.ext.supportedABIS : ["abi_0_0_0"]).forEach ({ version ->
     if (version < lastSupportedVersion) {

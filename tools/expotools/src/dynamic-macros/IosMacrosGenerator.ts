@@ -206,7 +206,7 @@ async function renderExpoKitPodfileAsync(
 }
 
 async function generateDefinesFile(): Promise<void> {
-  const oldestSDKVersionString = await ProjectVersions.getOldestSDKVersionAsync("ios");
+  const oldestSDKVersionString = await ProjectVersions.getOldestSDKVersionAsync('ios');
   if (!oldestSDKVersionString) {
     throw new Error(`Couldn't get supported SDK versions.`);
   }
@@ -221,11 +221,11 @@ async function generateDefinesFile(): Promise<void> {
   await fs.writeFile(
     path.join(
       Directories.getIosDir(),
-      "Exponent",
-      "Versioned",
-      "EXDefines.h"
-      ),
-      `${definesFileContent}\n`
+      'Exponent',
+      'Versioned',
+      'EXDefines.h'
+    ),
+    `${definesFileContent}\n`
   );
 }
 
@@ -252,7 +252,7 @@ export default class IosMacrosGenerator {
       templateSubstitutions
     );
 
-    // Generate EXDefinces
+    // Generate EXDefines
     await generateDefinesFile();
   }
 
