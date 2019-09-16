@@ -13,7 +13,7 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -41,7 +41,7 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsWrapper registerRequesters:@[[EXMediaLibraryCameraRollRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryCameraRollRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -86,7 +86,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                      withRequester:[EXMediaLibraryCameraRollRequester class]
                                                         withResult:resolve
                                                       withRejecter:reject];
@@ -96,7 +96,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
                                                        withRequester:[EXMediaLibraryCameraRollRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];

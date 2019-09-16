@@ -3,7 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
-@interface UMPermissionsMethodsWrapper : NSObject
+@interface UMPermissionsMethodsDelegate : NSObject
 
 + (void)getPermissionWithPermissionsManager:(id<UMPermissionsInterface>)permissionsManager
                               withRequester:(Class)requesterClass

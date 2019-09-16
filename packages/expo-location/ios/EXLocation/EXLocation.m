@@ -18,7 +18,7 @@
 #import <UMCore/UMAppLifecycleService.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
@@ -60,7 +60,7 @@ UM_EXPORT_MODULE(ExpoLocation);
 
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsWrapper registerRequesters:@[[EXLocationRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationRequester new]] withPermissionsManager:_permissionsManager];
   _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 
@@ -317,7 +317,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                      withRequester:[EXLocationRequester class]
                                                         withResult:resolve
                                                       withRejecter:reject];
@@ -327,7 +327,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
                                                        withRequester:[EXLocationRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];

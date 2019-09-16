@@ -6,7 +6,7 @@
 #import <UMCore/UMUIManager.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 @interface EXCameraManager ()
 
@@ -31,7 +31,7 @@ UM_EXPORT_MODULE(ExponentCameraManager);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsWrapper registerRequesters:@[[EXCameraRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (UIView *)view
@@ -334,7 +334,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                      withRequester:[EXCameraRequester class]
                                                         withResult:resolve
                                                       withRejecter:reject];
@@ -344,7 +344,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
                                                        withRequester:[EXCameraRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];

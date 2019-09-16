@@ -1,8 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
-@implementation UMPermissionsMethodsWrapper
+@implementation UMPermissionsMethodsDelegate
 
 + (void)askForPermissionWithPermissionsManger:(id<UMPermissionsInterface>)permissionsManager
                                 withRequester:(Class)requesterClass

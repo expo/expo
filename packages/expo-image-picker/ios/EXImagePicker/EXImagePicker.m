@@ -7,7 +7,7 @@
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 @import MobileCoreServices;
 @import Photos;
@@ -60,7 +60,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 {
   _moduleRegistry = moduleRegistry;
   _permissionsManager = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsWrapper registerRequesters:@[
+  [UMPermissionsMethodsDelegate registerRequesters:@[
                                                     [EXImagePickerCameraRequester new],
                                                     [EXImagePickerCameraRollRequester new]
                                                     ]
@@ -71,7 +71,7 @@ UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
                     getCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                      withRequester:[EXImagePickerCameraRequester class]
                                                         withResult:resolve
                                                       withRejecter:reject];
@@ -81,7 +81,7 @@ UM_EXPORT_METHOD_AS(getCameraRollPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                      withRequester:[EXImagePickerCameraRollRequester class]
                                                         withResult:resolve
                                                       withRejecter:reject];
@@ -91,7 +91,7 @@ UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
                     requestCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
                                                        withRequester:[EXImagePickerCameraRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];
@@ -101,7 +101,7 @@ UM_EXPORT_METHOD_AS(requestCameraRollPermissionsAsync,
                     requestCameraRollPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
                                                        withRequester:[EXImagePickerCameraRollRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];

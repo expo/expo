@@ -7,7 +7,7 @@
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsWrapper.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
@@ -117,7 +117,7 @@ UM_EXPORT_MODULE(ExponentAV);
 //  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
   _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsWrapper registerRequesters:@[[EXAudioRecordingRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (void)onAppForegrounded
@@ -754,7 +754,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper getPermissionWithPermissionsManager:_permissionsManager
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                      withRequester:[EXAudioRecordingRequester class]
                                                         withResult:resolve
                                                       withRejecter:reject];
@@ -764,7 +764,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsWrapper askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
                                                        withRequester:[EXAudioRecordingRequester class]
                                                           withResult:resolve
                                                        withRejecter:reject];
@@ -898,3 +898,4 @@ UM_EXPORT_METHOD_AS(unloadAudioRecorder,
 }
 
 @end
+
