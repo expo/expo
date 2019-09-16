@@ -68,21 +68,22 @@ export declare type PagedInfo<T> = {
     hasNextPage: boolean;
     totalCount: number;
 };
-export declare enum PermissionStatus {
-    UNDETERMINED = "undetermined",
-    GRANTED = "granted",
-    DENIED = "denied"
-}
-export declare type PermissionInfo = {
-    status: 'granted' | 'denied' | 'undetermined';
+export declare const PermissionsStatus: {
+    readonly GRANTED: "granted";
+    readonly UNDETERMINED: "undetermined";
+    readonly DENIED: "denied";
+};
+export declare type PermissionsResponse = {
+    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     granted: boolean;
+    expires: "never" | number;
 };
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;
 export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
-export declare function requestPermissionsAsync(): Promise<PermissionInfo>;
-export declare function getPermissionsAsync(): Promise<PermissionInfo>;
+export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function saveToLibraryAsync(localUri: string): Promise<void>;
 export declare function addAssetsToAlbumAsync(assets: Array<AssetRef> | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;

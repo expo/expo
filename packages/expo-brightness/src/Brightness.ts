@@ -8,6 +8,18 @@ export enum BrightnessMode {
   MANUAL = 2,
 }
 
+export const PermissionsStatus = {
+  GRANTED: 'granted',
+  UNDETERMINED: 'undetermined',
+  DENIED: 'denied',
+} as const;
+
+export type PermissionsResponse = {
+  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+  expires: "never" | number;
+  granted: boolean;
+};
+
 export async function getBrightnessAsync(): Promise<number> {
   if (!ExpoBrightness.getBrightnessAsync) {
     throw new UnavailabilityError('expo-brightness', 'getBrightnessAsync');
@@ -70,4 +82,12 @@ export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMod
     return;
   }
   return await ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
+}
+
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+  return NativeModulesProxy.ExpoBrightness.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+  return NativeModulesProxy.ExpoBrightness.requestPermissionsAsync();
 }

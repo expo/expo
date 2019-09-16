@@ -52,6 +52,8 @@ import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.permissions.PermissionsResponse;
+import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationRequestTimeoutException;
@@ -145,6 +147,16 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   //region Expo methods
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+  }
 
   @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
@@ -347,33 +359,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissions == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
-      return;
-    }
-
-    mPermissions.askForPermissions(
-        new String[] {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        },
-        new Permissions.PermissionsRequestListener() {
-          @Override
-          public void onPermissionsResult(int[] results) {
-            for (int result : results) {
-              // we need at least one of asked permissions to be granted
-              if (result == PackageManager.PERMISSION_GRANTED) {
-                promise.resolve(null);
-                return;
-              }
-            }
-            promise.reject(new LocationUnauthorizedException());
-          }
-        });
-  }
-
-  @ExpoMethod
   public void enableNetworkProviderAsync(final Promise promise) {
     if (LocationHelpers.hasNetworkProviderEnabled(mContext)) {
       promise.resolve(null);
@@ -496,11 +481,35 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   //region private methods
 
+  private Bundle parseLocationPermissions(Map<String, PermissionsStatus> permissions) {
+    PermissionsStatus status = PermissionsStatus.DENIED;
+    String scope = "none";
+    if (permissions.get(Manifest.permission.ACCESS_FINE_LOCATION) == PermissionsStatus.GRANTED) {
+      scope = "fine";
+      status = PermissionsStatus.GRANTED;
+    } else if (permissions.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionsStatus.GRANTED) {
+      scope = "coarse";
+      status = PermissionsStatus.GRANTED;
+    } else if (permissions.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionsStatus.UNDETERMINED
+        || permissions.get(Manifest.permission.ACCESS_FINE_LOCATION) == PermissionsStatus.UNDETERMINED) {
+      status = PermissionsStatus.UNDETERMINED;
+    }
+
+    Bundle result = new Bundle();
+    result.putString(PermissionsResponse.STATUS_KEY, status.getJsString());
+    result.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
+
+    Bundle scopeBundle = new Bundle();
+    scopeBundle.putString("scope", scope);
+    result.putBundle("android", scopeBundle);
+    return result;
+  }
+
   private boolean isMissingPermissions() {
     return mPermissions == null
         || (
-        mPermissions.getPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && mPermissions.getPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        mPermissions.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+            && mPermissions.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
     );
   }
 

@@ -32,6 +32,8 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.imageloader.ImageLoader;
 import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.permissions.PermissionsResponse;
+import org.unimodules.interfaces.permissions.PermissionsStatus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -245,6 +247,26 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     return true;
   }
 
+  @ExpoMethod
+  public void requestCameraRollPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+  }
+
+  @ExpoMethod
+  public void getCameraRollPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+  }
+
+  @ExpoMethod
+  public void requestCameraPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getCameraPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
   // NOTE: Currently not reentrant / doesn't support concurrent requests
   @ExpoMethod
   public void launchCameraAsync(final Map<String, Object> options, final Promise promise) {
@@ -267,13 +289,15 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     }
 
     Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-
-    String permissionsTable[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
-
-    permissionsModule.askForPermissions(permissionsTable, new Permissions.PermissionsRequestListener() {
+    if (permissionsModule == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsModule.askForPermissions(new PermissionsResponse() {
       @Override
-      public void onPermissionsResult(int[] results) {
-        if (results[0] == PackageManager.PERMISSION_GRANTED && results[1] == PackageManager.PERMISSION_GRANTED) {
+      public void onResult(Map<String, PermissionsStatus> permissionsResponse) {
+        if (permissionsResponse.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionsStatus.GRANTED
+            &&  permissionsResponse.get(Manifest.permission.CAMERA) == PermissionsStatus.GRANTED) {
           launchCameraWithPermissionsGranted(promise, cameraIntent);
         } else {
           promise.reject(new SecurityException("User rejected permissions"));

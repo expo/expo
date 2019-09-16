@@ -4,6 +4,7 @@
 #import <EXLocation/EXLocationDelegate.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
+#import <EXLocation/EXLocationRequester.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -15,7 +16,10 @@
 
 #import <UMCore/UMEventEmitterService.h>
 #import <UMCore/UMAppLifecycleService.h>
+
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,7 +33,7 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissions;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleService;
 @property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
 
@@ -55,7 +59,8 @@ UM_EXPORT_MODULE(ExpoLocation);
   }
 
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _permissions = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationRequester new]] withPermissionsManager:_permissionsManager];
   _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 
@@ -172,7 +177,7 @@ UM_EXPORT_METHOD_AS(watchDeviceHeading,
                     watchHeadingWithWatchId:(nonnull NSNumber *)watchId
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject) {
-  if (![_permissions hasGrantedPermission:@"location"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationRequester class]]) {
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
@@ -308,14 +313,24 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsResolver:(UMPromiseResolveBlock)resolve
-                                      rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissions) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissions askForPermission:@"location" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                     withRequester:[EXLocationRequester class]
+                                                        withResult:resolve
+                                                      withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
+                                                       withRequester:[EXLocationRequester class]
+                                                          withResult:resolve
+                                                        withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(hasServicesEnabledAsync,
@@ -454,7 +469,7 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
     return NO;
   }
-  if (![_permissions hasGrantedPermission:@"location"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationRequester class]]) {
     reject(@"E_NO_PERMISSIONS", @"LOCATION permission is required to do this operation.", nil);
     return NO;
   }

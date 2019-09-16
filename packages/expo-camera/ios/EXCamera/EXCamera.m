@@ -4,6 +4,7 @@
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraManager.h>
+#import <EXCamera/EXCameraRequester.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h>
@@ -578,8 +579,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
-  NSDictionary *cameraPermissions = [_permissionsManager getPermissionsForResource:@"camera"];
-  if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCameraRequester class]]) {
     [self onMountingError:@{@"message": @"Camera permissions not granted - component could not be rendered."}];
     return;
   }

@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -36,7 +35,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private static final String TAG = CalendarModule.class.getSimpleName();
 
   private Context mContext;
-  private Permissions mPermissionsModule;
+  private Permissions mPermissionsManager;
 
   public CalendarModule(Context context) {
     super(context);
@@ -50,7 +49,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mPermissionsModule = moduleRegistry.getModule(Permissions.class);
+    mPermissionsManager = moduleRegistry.getModule(Permissions.class);
   }
 
   //region Exported methods
@@ -252,24 +251,13 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   }
 
   @ExpoMethod
-  public void requestPermissionsAsync(final Promise promise) {
-    if (mPermissionsModule == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
-      return;
-    }
-    String[] permissions = new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR};
+  public void requestCalendarPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.CAMERA);
+  }
 
-    mPermissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
-      @Override
-      public void onPermissionsResult(int[] results) {
-        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
-        Bundle response = new Bundle();
-
-        response.putString("status", isGranted ? "granted" : "denied");
-        response.putBoolean("granted", isGranted);
-        promise.resolve(response);
-      }
-    });
+  @ExpoMethod
+  public void getCalendarPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.CAMERA);
   }
 
   //endregion
@@ -1403,11 +1391,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   }
 
   private boolean checkPermissions(Promise promise) {
-    if (mPermissionsModule == null) {
+    if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
       return false;
     }
-    if (!mPermissionsModule.hasPermissions(new String[]{Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR})) {
+    if (!mPermissionsManager.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
       promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.");
       return false;
     }

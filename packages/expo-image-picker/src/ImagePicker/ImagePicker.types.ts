@@ -28,3 +28,15 @@ export type OpenFileBrowserOptions = {
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };
+
+export const PermissionsStatus = {
+  GRANTED: 'granted',
+  UNDETERMINED: 'undetermined',
+  DENIED: 'denied',
+} as const;
+
+export type PermissionsResponse = {
+  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+  expires: "never" | number;
+  granted: boolean;
+};

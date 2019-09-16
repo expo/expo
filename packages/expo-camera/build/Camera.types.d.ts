@@ -77,3 +77,13 @@ export declare type NativeProps = {
     ratio?: string;
     useCamera2Api?: boolean;
 };
+export declare const PermissionsStatus: {
+    readonly GRANTED: "granted";
+    readonly UNDETERMINED: "undetermined";
+    readonly DENIED: "denied";
+};
+export declare type PermissionsResponse = {
+    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+    expires: "never" | number;
+    granted: boolean;
+};

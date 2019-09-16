@@ -95,15 +95,16 @@ export type PagedInfo<T> = {
   totalCount: number;
 };
 
-export enum PermissionStatus {
-  UNDETERMINED = 'undetermined',
-  GRANTED = 'granted',
-  DENIED = 'denied',
-}
+export const PermissionsStatus = {
+  GRANTED: 'granted',
+  UNDETERMINED: 'undetermined',
+  DENIED: 'denied',
+} as const;
 
-export type PermissionInfo = {
-  status: 'granted' | 'denied' | 'undetermined';
+export type PermissionsResponse = {
+  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
   granted: boolean;
+  expires: "never" | number;
 };
 
 export type AssetRef = Asset | string;
@@ -167,14 +168,14 @@ function dateToNumber(value?: Date | number): number | undefined {
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
 
-export async function requestPermissionsAsync(): Promise<PermissionInfo> {
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
   }
   return await MediaLibrary.requestPermissionsAsync();
 }
 
-export async function getPermissionsAsync(): Promise<PermissionInfo> {
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }

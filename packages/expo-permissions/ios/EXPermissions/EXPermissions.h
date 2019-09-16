@@ -8,11 +8,6 @@ FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
 @interface EXPermissions : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
 
-// TODO: Remove once SDK34 is phased out
-- (void)askForGlobalPermission:(NSString *)permissionType
-                  withResolver:(UMPromiseResolveBlock)resolver
-                  withRejecter:(UMPromiseRejectBlock)reject;
-
 + (UMPermissionStatus)statusForPermission:(NSDictionary *)permissions;
 
 + (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
@@ -20,5 +15,7 @@ FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
                                     withResolver:(UMPromiseResolveBlock)resolver
                                     withRejecter:(UMPromiseRejectBlock)reject;
+
+- (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass;
 
 @end

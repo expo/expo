@@ -232,6 +232,18 @@ export type Container = {
   type: ContainerType;
 };
 
+export const PermissionsStatus = {
+  GRANTED: 'granted',
+  UNDETERMINED: 'undetermined',
+  DENIED: 'denied',
+} as const;
+
+export type PermissionsResponse = {
+  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+  expires: "never" | number;
+  granted: boolean;
+};
+
 export async function shareContactAsync(
   contactId: string,
   message: string,
@@ -446,6 +458,22 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
   }
 
   return await ExpoContacts.getContainersAsync(containerQuery);
+}
+
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+  if (!ExpoContacts.getPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
+  }
+
+  return ExpoContacts.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+  if (!ExpoContacts.requestPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
+  }
+
+  return await ExpoContacts.requestPermissionsAsync();
 }
 
 // Legacy

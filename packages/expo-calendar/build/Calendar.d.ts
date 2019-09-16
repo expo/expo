@@ -104,6 +104,16 @@ export declare type RecurrenceRule = {
     endDate?: string;
     occurrence?: number;
 };
+export declare const PermissionsStatus: {
+    readonly GRANTED: "granted";
+    readonly UNDETERMINED: "undetermined";
+    readonly DENIED: "denied";
+};
+export declare type PermissionsResponse = {
+    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+    expires: "never" | number;
+    granted: boolean;
+};
 declare type OptionalKeys<T> = {
     [P in keyof T]?: T[P];
 };
@@ -129,8 +139,10 @@ export declare function deleteReminderAsync(id: string): Promise<void>;
 export declare function getSourcesAsync(): Promise<Source[]>;
 export declare function getSourceAsync(id: string): Promise<Source>;
 export declare function openEventInCalendar(id: string): void;
-export declare function requestPermissionsAsync(): Promise<void>;
-export declare function requestRemindersPermissionsAsync(): Promise<void>;
+export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function getRemindersPermissionsAync(): Promise<PermissionsResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function requestRemindersPermissionsAsync(): Promise<PermissionsResponse>;
 export declare const EntityTypes: {
     EVENT: string;
     REMINDER: string;

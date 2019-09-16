@@ -45,6 +45,16 @@ export interface Address {
     postalCode: string;
     name: string;
 }
+export declare const PermissionsStatus: {
+    readonly GRANTED: "granted";
+    readonly UNDETERMINED: "undetermined";
+    readonly DENIED: "denied";
+};
+export declare type PermissionsResponse = {
+    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+    expires: "never" | number;
+    granted: boolean;
+};
 interface LocationTaskOptions {
     accuracy?: LocationAccuracy;
     timeInterval?: number;
@@ -113,7 +123,8 @@ export declare function setApiKey(apiKey: string): void;
 export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;
-export declare function requestPermissionsAsync(): Promise<void>;
+export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
 export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;

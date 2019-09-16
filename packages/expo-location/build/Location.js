@@ -2,6 +2,11 @@ import { EventEmitter, Platform, CodedError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExpoLocation from './ExpoLocation';
 const LocationEventEmitter = new EventEmitter(ExpoLocation);
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 var LocationAccuracy;
 (function (LocationAccuracy) {
     LocationAccuracy[LocationAccuracy["Lowest"] = 1] = "Lowest";
@@ -303,8 +308,11 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
         error(e);
     }
 }
+export async function getPermissionsAsync() {
+    return await ExpoLocation.getPermissionsAsync();
+}
 export async function requestPermissionsAsync() {
-    await ExpoLocation.requestPermissionsAsync();
+    return await ExpoLocation.requestPermissionsAsync();
 }
 // --- Location service
 export async function hasServicesEnabledAsync() {

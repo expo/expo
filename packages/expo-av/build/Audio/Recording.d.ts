@@ -92,6 +92,18 @@ export declare type RecordingStatus = {
     isDoneRecording: boolean;
     durationMillis: number;
 };
+export declare const PermissionsStatus: {
+    readonly GRANTED: "granted";
+    readonly UNDETERMINED: "undetermined";
+    readonly DENIED: "denied";
+};
+export declare type PermissionsResponse = {
+    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+    expires: "never" | number;
+    granted: boolean;
+};
+export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
 export declare class Recording {
     _subscription: Subscription | null;
     _canRecord: boolean;

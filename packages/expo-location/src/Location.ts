@@ -56,6 +56,18 @@ export interface Address {
   name: string;
 }
 
+export const PermissionsStatus = {
+  GRANTED: 'granted',
+  UNDETERMINED: 'undetermined',
+  DENIED: 'denied',
+} as const;
+
+export type PermissionsResponse = {
+  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
+  expires: "never" | number;
+  granted: boolean;
+};
+
 interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
   timeInterval?: number; // Android only
@@ -472,8 +484,12 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-export async function requestPermissionsAsync(): Promise<void> {
-  await ExpoLocation.requestPermissionsAsync();
+export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+  return await ExpoLocation.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+  return await ExpoLocation.requestPermissionsAsync();
 }
 
 // --- Location service

@@ -5,14 +5,6 @@
 
 #import <EXPermissions/EXPermissions.h>
 
-#import <EXPermissions/EXAudioRecordingRequester.h>
-#import <EXPermissions/EXSystemBrightnessRequester.h>
-#import <EXPermissions/EXCalendarRequester.h>
-#import <EXPermissions/EXCameraRequester.h>
-#import <EXPermissions/EXCameraRollRequester.h>
-#import <EXPermissions/EXContactsRequester.h>
-#import <EXPermissions/EXLocationRequester.h>
-#import <EXPermissions/EXRemindersRequester.h>
 #import <EXPermissions/EXUserNotificationRequester.h>
 
 NSString * const EXPermissionExpiresNever = @"never";
@@ -54,20 +46,9 @@ UM_EXPORT_MODULE(ExpoPermissions);
 {
   _moduleRegistry = moduleRegistry;
   
-// only for test purpose
-  NSArray *requesters =@[
-                         [EXAudioRecordingRequester new],
-                         [EXSystemBrightnessRequester new],
-                         [EXCalendarRequester new],
-                         [EXCameraRequester new],
-                         [EXCameraRollRequester new],
-                         [EXContactsRequester new],
-                         [EXLocationRequester new],
-                         [EXRemindersRequester new],
-                         [[EXUserNotificationRequester alloc] initWithNotificationProxy:[moduleRegistry  getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMetodQueqe:self.methodQueue]
-                         ];
-  
-  [self registerRequesters:requesters];
+  id<UMPermissionsRequester> userNotificationRequester = [[EXUserNotificationRequester alloc] initWithNotificationProxy:[moduleRegistry  getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMetodQueqe:self.methodQueue];
+
+  [self registerRequesters:@[userNotificationRequester]];
 }
 
 # pragma mark - Exported methods
@@ -77,12 +58,13 @@ UM_EXPORT_METHOD_AS(getAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSDictionary *permission = [self getPermissionsForResource:permissionType];
-  // permission type not found - reject immediately
-  if (permission == nil) {
+  id<UMPermissionsRequester> requester = [self getPermissionRequesterForType:permissionType];
+  if (requester == nil) {
     return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
   }
-  resolve(permission);
+  [self getPermissionUsingRequesterClass:[requester class]
+                              withResult:resolve
+                            withRejecter:reject];
 }
 
 UM_EXPORT_METHOD_AS(askAsync,
@@ -90,12 +72,29 @@ UM_EXPORT_METHOD_AS(askAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [self askForPermissionWithType:permissionType
-                     withResults:resolve 
-                     withRejecter:reject];
+  id<UMPermissionsRequester> requester = [self getPermissionRequesterForType:permissionType];
+  if (requester == nil) {
+    return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
+  }
+  [self askForPermissionUsingRequesterClass:[requester class]
+                                 withResult:resolve
+                               withRejecter:reject];
 }
 
 # pragma mark - permission requsters / getters
+
+
+- (void)getPermissionUsingRequesterClass:(Class)requesterClass
+                              withResult:(UMPromiseResolveBlock)onResult
+                            withRejecter:(UMPromiseRejectBlock)reject
+{
+  id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
+  if (requester == nil) {
+    return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized requester: %@", NSStringFromClass(requesterClass)], nil);
+  }
+  
+  return onResult([self getPermissionUsingRequester:requester]);
+}
 
 - (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass
 {
@@ -127,19 +126,6 @@ UM_EXPORT_METHOD_AS(askAsync,
   return [permissions[@"status"] isEqualToString:@"granted"];
 }
 
-// From UMPermissionsInterface - use to check permission from code
-// shorthand method that checks both global and per-experience permission
-- (BOOL)hasGrantedPermission:(NSString *)permissionType
-{
-  NSDictionary *permissions = [self getPermissionsForResource:permissionType];
-  if (!permissions) {
-    UMLogWarn(@"Permission with type '%@' not found.", permissionType);
-    return false;
-  }
-  
-  return [permissions[@"status"] isEqualToString:@"granted"];
-}
-
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
                                  withResult:(UMPromiseResolveBlock)onResult
                                withRejecter:(UMPromiseRejectBlock)reject
@@ -161,55 +147,7 @@ UM_EXPORT_METHOD_AS(askAsync,
   id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
   [self askForGlobalPermissionUsingRequester:requester withResolver:onResult withRejecter:reject];
 }
-
-- (void)askForPermissionWithType:(NSString *)permissionType
-                     withResults:(UMPromiseResolveBlock)onResults
-                    withRejecter:(UMPromiseRejectBlock)reject
-{
-  NSMutableDictionary *permission = [[self getPermissionsForResource:permissionType] mutableCopy];
-    
-  // permission type not found - reject immediately
-  if (permission == nil) {
-    return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized permission: %@", permissionType], nil);
-  }
-    
-  BOOL isGranted = [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted;
-  permission[@"granted"] = @(isGranted);
-    
-  if (isGranted) {
-    return onResults(permission);
-  }
-  
-  [self askForGlobalPermission:permissionType
-                   withResolver:onResults
-                   withRejecter:reject];
-}
-
-// From UMPermissionsInterface
-- (void)askForPermission:(NSString *)permissionType
-              withResult:(UMPromiseResolveBlock)onResult
-            withRejecter:(UMPromiseRejectBlock)reject
-{
-  void (^customResolver)(NSDictionary *) = ^(NSDictionary *permission) {
-    NSMutableDictionary *result = [permission mutableCopy];
-    BOOL isGranted = [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted;
-    result[@"granted"] = @(isGranted);
-    onResult(result);
-  };
-  
-  return [self askForPermissionWithType:permissionType
-                            withResults:customResolver
-                           withRejecter:reject];
-}
-
-- (void)askForGlobalPermission:(NSString *)permissionType
-                  withResolver:(UMPromiseResolveBlock)resolver
-                  withRejecter:(UMPromiseRejectBlock)reject
-{
-  id<UMPermissionsRequester> requester = [self getPermissionRequesterForType:permissionType];
-  [self askForGlobalPermissionUsingRequester:requester withResolver:resolver withRejecter:reject];
-}
-
+   
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
                                      withResolver:(UMPromiseResolveBlock)resolver
                                      withRejecter:(UMPromiseRejectBlock)reject
@@ -234,12 +172,15 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 # pragma mark - helpers
+
 + (NSDictionary *)parsePermissionFromRequester:(NSDictionary *)permission
 {
   NSMutableDictionary *parsedPermission = [permission mutableCopy];
   UMPermissionStatus status = (UMPermissionStatus)[permission[@"status"] intValue];
+  BOOL granted = status == UMPermissionStatusGranted;
   [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:@"status"];
-  [parsedPermission setValue: EXPermissionExpiresNever forKey:@"expires"];
+  [parsedPermission setValue:EXPermissionExpiresNever forKey:@"expires"];
+  [parsedPermission setValue:@(granted) forKey:@"granted"];
   return parsedPermission;
 }
 
@@ -282,3 +223,4 @@ UM_EXPORT_METHOD_AS(askAsync,
 }
 
 @end
+

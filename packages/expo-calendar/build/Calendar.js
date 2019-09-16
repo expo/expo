@@ -1,6 +1,11 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -279,11 +284,23 @@ export function openEventInCalendar(id) {
     }
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
-export async function requestPermissionsAsync() {
-    if (!ExpoCalendar.requestPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
+export async function getPermissionsAsync() {
+    if (!ExpoCalendar.getCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getPermissionsAsync');
     }
-    return await ExpoCalendar.requestPermissionsAsync();
+    return ExpoCalendar.getCalendarPermissionsAsync();
+}
+export async function getRemindersPermissionsAync() {
+    if (!ExpoCalendar.getRemindersPermissionsAync) {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAync');
+    }
+    return ExpoCalendar.getRemindersPermissionsAync();
+}
+export async function requestPermissionsAsync() {
+    if (!ExpoCalendar.requestCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
+    }
+    return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
 export async function requestRemindersPermissionsAsync() {
     if (!ExpoCalendar.requestRemindersPermissionsAsync) {

@@ -7,6 +7,11 @@ export var BrightnessMode;
     BrightnessMode[BrightnessMode["AUTOMATIC"] = 1] = "AUTOMATIC";
     BrightnessMode[BrightnessMode["MANUAL"] = 2] = "MANUAL";
 })(BrightnessMode || (BrightnessMode = {}));
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 export async function getBrightnessAsync() {
     if (!ExpoBrightness.getBrightnessAsync) {
         throw new UnavailabilityError('expo-brightness', 'getBrightnessAsync');
@@ -62,5 +67,11 @@ export async function setSystemBrightnessModeAsync(brightnessMode) {
         return;
     }
     return await ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
+}
+export async function getPermissionsAsync() {
+    return NativeModulesProxy.ExpoBrightness.getPermissionsAsync();
+}
+export async function requestPermissionsAsync() {
+    return NativeModulesProxy.ExpoBrightness.requestPermissionsAsync();
 }
 //# sourceMappingURL=Brightness.js.map

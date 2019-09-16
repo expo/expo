@@ -2,6 +2,11 @@ import { UnavailabilityError } from '@unimodules/core';
 import { Platform, Share } from 'react-native';
 import UUID from 'uuid-js';
 import ExpoContacts from './ExpoContacts';
+export const PermissionsStatus = {
+    GRANTED: 'granted',
+    UNDETERMINED: 'undetermined',
+    DENIED: 'denied',
+};
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
     if (Platform.OS === 'ios') {
         const url = await writeContactToFileAsync({
@@ -156,6 +161,18 @@ export async function getContainersAsync(containerQuery) {
         throw new UnavailabilityError('Contacts', 'getContainersAsync');
     }
     return await ExpoContacts.getContainersAsync(containerQuery);
+}
+export async function getPermissionsAsync() {
+    if (!ExpoContacts.getPermissionsAsync) {
+        throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
+    }
+    return ExpoContacts.getPermissionsAsync();
+}
+export async function requestPermissionsAsync() {
+    if (!ExpoContacts.requestPermissionsAsync) {
+        throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
+    }
+    return await ExpoContacts.requestPermissionsAsync();
 }
 // Legacy
 export const PHONE_NUMBERS = 'phoneNumbers';

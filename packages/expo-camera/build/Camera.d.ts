@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+import { CapturedPicture, PictureOptions, Props, RecordingOptions, PermissionsResponse } from './Camera.types';
 export default class Camera extends React.Component<Props> {
     static Constants: {
         Type: any;
@@ -92,6 +92,8 @@ export default class Camera extends React.Component<Props> {
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
     static defaultProps: Props;
+    static getPermissionsAsync(): Promise<PermissionsResponse>;
+    static requestPermissionsAsync(): Promise<PermissionsResponse>;
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
@@ -129,3 +131,5 @@ export declare const Constants: {
     VideoQuality: any;
     VideoStabilization: any;
 };
+export declare const getPermissionsAsync: typeof Camera.getPermissionsAsync;
+export declare const requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
