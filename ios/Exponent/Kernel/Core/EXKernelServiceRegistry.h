@@ -4,7 +4,6 @@
 
 @class EXErrorRecoveryManager;
 @class EXFileSystemManager;
-@class EXGoogleAuthManager;
 @class EXKernelLinkingManager;
 @class EXKernelModuleManager;
 @class EXRemoteNotificationManager;
