@@ -5986,6 +5986,13 @@ expo-three@4.0.6:
     expo-asset-utils "^1.0.0"
     three "^0.102.1"
 
+expokit@^34.0.1:
+  version "34.0.2"
+  resolved "https://registry.yarnpkg.com/expokit/-/expokit-34.0.2.tgz#54173bb138fd0cedcc6785dbab7eb05469e416e7"
+  integrity sha512-CZanrZiwWtI4plxgh37Rc9aqGMQ8swVBXA4hx7xDUn1x9Spyxq+ZUguyk8pzFA1++Ih1XdWuxgxvljM5fBQMNA==
+  dependencies:
+    jsc-android "^245459.0.0"
+
 express@4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
