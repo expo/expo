@@ -8,6 +8,10 @@ This module is an extension of the React Native [Linking module](https://faceboo
 
 ## API
 
+```js
+import { Linking } from 'expo';
+```
+
 ### `Linking.makeUrl(path, queryParams)`
 
 Helper method for constructing a deep link into your app, given an optional path and set of query parameters.
