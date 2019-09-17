@@ -26,12 +26,12 @@
   },
   {
     "name": "FBSDKCoreKit",
-    "version": "~> 5.5",
+    "version": "~> 5.6.0",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
     "name": "FBSDKLoginKit",
-    "version": "~> 5.5",
+    "version": "~> 5.6.0",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
