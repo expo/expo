@@ -1,1 +1,1 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/Internal/Instrument/CrashReport/FBSDKCrashHandler.h
+../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/Basics/Instrument/FBSDKCrashHandler.h

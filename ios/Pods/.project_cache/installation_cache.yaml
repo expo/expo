@@ -4647,25 +4647,26 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: 0da38de9a1d3b00f2207eb2377ebb6a1
     CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
-    PROJECT_NAME: Facebook
+    PROJECT_NAME: FBAudienceNetwork
     SPECS:
       - FBAudienceNetwork (5.5.0)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
-    CHECKSUM: 7ade9cfea30eef2f6cf105a1aa904f89ea68fb7d
-    PROJECT_NAME: Facebook
+    CHECKSUM: d6655a343868d4bb5c29a60859bab07c3be14a0b
+    PROJECT_NAME: FBSDKCoreKit
     SPECS:
-      - FBSDKCoreKit (5.5.0)
-      - FBSDKCoreKit/Basics (5.5.0)
-      - FBSDKCoreKit/Core (5.5.0)
+      - FBSDKCoreKit (5.6.0)
+      - FBSDKCoreKit/Basics (5.6.0)
+      - FBSDKCoreKit/Core (5.6.0)
   FBSDKLoginKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKLoginKit: 72881b173101b43cccd14b82d97d4691
-    CHECKSUM: bb28062f24e79590c44ba03297ca9bea4b6436d2
-    PROJECT_NAME: Facebook
+    CHECKSUM: c5a623de88a6b0cda35b35582921f6cec2efcc36
+    PROJECT_NAME: FBSDKLoginKit
     SPECS:
-      - FBSDKLoginKit (5.5.0)
+      - FBSDKLoginKit (5.6.0)
+      - FBSDKLoginKit/Login (5.6.0)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase: edb040c94d569207ed4eee19e7aaa404
@@ -4881,8 +4882,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 87126328340af0aa5af6b38ee95f5645
-      Release: 87126328340af0aa5af6b38ee95f5645
+      Debug: 7bebcd60871269f4f67a6c6c8f40f0a3
+      Release: 7bebcd60871269f4f67a6c6c8f40f0a3
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 1aeb8b1ccac3cd876fdb52df41d00242

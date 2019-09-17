@@ -24,7 +24,6 @@
 #import "FBSDKAppEvents.h"
 #import "FBSDKApplicationDelegate+Internal.h"
 #import "FBSDKLogo.h"
-#import "FBSDKMath.h"
 #import "FBSDKUIUtility.h"
 #import "FBSDKViewImpressionTracker.h"
 

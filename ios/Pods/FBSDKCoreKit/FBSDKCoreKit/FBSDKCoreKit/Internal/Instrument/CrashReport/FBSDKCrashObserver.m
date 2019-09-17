@@ -16,37 +16,48 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKCrashHandler.h"
+#import "FBSDKCrashObserver.h"
 
-#import "FBSDKCrashStorage.h"
-#import "FBSDKFeatureManager.h"
+#import "FBSDKCrashHandler.h"
 #import "FBSDKGraphRequest.h"
 #import "FBSDKGraphRequestConnection.h"
 #import "FBSDKLibAnalyzer.h"
-#import "FBSDKLogger.h"
 #import "FBSDKSettings.h"
 
-static NSUncaughtExceptionHandler *previousExceptionHandler = NULL;
+@implementation FBSDKCrashObserver
 
-@implementation FBSDKCrashHandler
+@synthesize prefixes, frameworks;
 
-# pragma mark - Class Methods
+- (instancetype)init
+{
+  if ((self = [super init])) {
+    prefixes = @[@"FBSDK", @"_FBSDK"];
+    frameworks = @[@"FBSDKCoreKit",
+                   @"FBSDKLoginKit",
+                   @"FBSDKShareKit",
+                   @"FBSDKPlacesKit",
+                   @"FBSDKTVOSKit"];
+  }
+  return self;
+}
 
 + (void)enable
 {
-  static dispatch_once_t onceToken = 0;
-  dispatch_once(&onceToken, ^{
-    [FBSDKCrashHandler installExceptionsHandler];
-    [FBSDKCrashStorage generateMethodMapping];
-    if ([FBSDKSettings isAutoLogAppEventsEnabled]){
-      [self uploadCrashLogs];
-    }
-  });
+  [FBSDKCrashHandler addObserver:[FBSDKCrashObserver sharedInstance]];
 }
 
-+ (void)uploadCrashLogs
++ (FBSDKCrashObserver *)sharedInstance
 {
-  NSArray<NSDictionary<NSString *, id> *> *processedCrashLogs = [FBSDKCrashStorage getProcessedCrashLogs];
+  static FBSDKCrashObserver *_sharedInstance;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    _sharedInstance = [[self alloc] init];
+  });
+  return _sharedInstance;
+}
+
+- (void)didReceiveCrashLogs:(NSArray<NSDictionary<NSString *, id> *> *)processedCrashLogs
+{
   if (0 == processedCrashLogs.count) {
     return;
   }
@@ -56,38 +67,12 @@ static NSUncaughtExceptionHandler *previousExceptionHandler = NULL;
     FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:[NSString stringWithFormat:@"%@/instruments", [FBSDKSettings appID]]
                                                                    parameters:@{@"crash_reports" : crashReports ?: @""}
                                                                    HTTPMethod:FBSDKHTTPMethodPOST];
-    
+
     [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
       if (!error && [result isKindOfClass:[NSDictionary class]] && result[@"success"]) {
-        [FBSDKCrashStorage clearCrashReportFiles:nil];
+        [FBSDKCrashHandler clearCrashReportFiles];
       }
     }];
-  }
-}
-
-# pragma mark handler function
-
-+ (void)installExceptionsHandler
-{
-  NSUncaughtExceptionHandler *currentHandler = NSGetUncaughtExceptionHandler();
-
-  if (currentHandler != FBSDKExceptionHandler) {
-    previousExceptionHandler = currentHandler;
-    NSSetUncaughtExceptionHandler(&FBSDKExceptionHandler);
-  }
-}
-
-+ (void)uninstallExceptionsHandler
-{
-  NSSetUncaughtExceptionHandler(previousExceptionHandler);
-  previousExceptionHandler = nil;
-}
-
-static void FBSDKExceptionHandler(NSException *exception)
-{
-  [FBSDKCrashStorage saveException:exception];
-  if (previousExceptionHandler) {
-    previousExceptionHandler(exception);
   }
 }
 

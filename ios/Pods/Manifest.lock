@@ -892,13 +892,15 @@ PODS:
   - Fabric (1.10.2)
   - FBAudienceNetwork (5.5.0):
     - FBSDKCoreKit/Basics (>= 5.2.1)
-  - FBSDKCoreKit (5.5.0):
-    - FBSDKCoreKit/Basics (= 5.5.0)
-    - FBSDKCoreKit/Core (= 5.5.0)
-  - FBSDKCoreKit/Basics (5.5.0)
-  - FBSDKCoreKit/Core (5.5.0):
+  - FBSDKCoreKit (5.6.0):
+    - FBSDKCoreKit/Basics (= 5.6.0)
+    - FBSDKCoreKit/Core (= 5.6.0)
+  - FBSDKCoreKit/Basics (5.6.0)
+  - FBSDKCoreKit/Core (5.6.0):
     - FBSDKCoreKit/Basics
-  - FBSDKLoginKit (5.5.0):
+  - FBSDKLoginKit (5.6.0):
+    - FBSDKLoginKit/Login (= 5.6.0)
+  - FBSDKLoginKit/Login (5.6.0):
     - FBSDKCoreKit (~> 5.0)
   - Firebase/Core (6.7.0):
     - Firebase/CoreOnly
@@ -1529,11 +1531,12 @@ DEPENDENCIES:
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - Fabric (~> 1.10.2)
   - FBAudienceNetwork (= 5.5.0)
-  - FBSDKCoreKit (~> 5.5)
-  - FBSDKLoginKit (~> 5.5)
+  - FBSDKCoreKit (~> 5.6.0)
+  - FBSDKLoginKit (~> 5.6.0)
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
+  - Google-Mobile-Ads-SDK (~> 7.49.0)
   - GoogleMaps (~> 3.3)
   - GoogleSignIn (~> 5.0)
   - JKBigInteger2 (= 0.0.5)
@@ -1608,15 +1611,21 @@ DEPENDENCIES:
   - yogaABI35_0_0 (from `./versioned-react-native/ABI35_0_0/ReactCommon/ABI35_0_0yoga`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
+    - Amplitude-iOS
+    - Analytics
     - AppAuth
+    - boost-for-react-native
     - Branch
     - CocoaLumberjack
     - Crashlytics
     - Fabric
+    - FBAudienceNetwork
     - FBSDKCoreKit
+    - FBSDKLoginKit
     - Firebase
     - FirebaseAnalytics
+    - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
@@ -1624,39 +1633,22 @@ SPEC REPOS:
     - FirebaseMLVision
     - FirebaseMLVisionFaceModel
     - Google-Maps-iOS-Utils
+    - Google-Mobile-Ads-SDK
     - GoogleAPIClientForREST
+    - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
     - GoogleMaps
     - GoogleMobileVision
+    - GoogleSignIn
     - GoogleToolboxForMac
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
     - JKBigInteger2
-    - nanopb
-    - Protobuf
-  trunk:
-    - Amplitude-iOS
-    - Analytics
-    - AppAuth
-    - boost-for-react-native
-    - Branch
-    - FBAudienceNetwork
-    - FBSDKCoreKit
-    - FBSDKLoginKit
-    - FirebaseCore
-    - Google-Maps-iOS-Utils
-    - Google-Mobile-Ads-SDK
-    - GoogleAPIClientForREST
-    - GoogleAppMeasurement
-    - GoogleMaps
-    - GoogleMobileVision
-    - GoogleSignIn
-    - GoogleUtilities
-    - GTMSessionFetcher
     - lottie-ios
     - nanopb
+    - Protobuf
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
@@ -2488,8 +2480,8 @@ SPEC CHECKSUMS:
   EXWebBrowser: cb57200b93f24568c5becc363d7df4b4ac1ac58f
   Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBAudienceNetwork: 1ea26a004014ee6700dce1b7beb5e853887f498e
-  FBSDKCoreKit: 7ade9cfea30eef2f6cf105a1aa904f89ea68fb7d
-  FBSDKLoginKit: bb28062f24e79590c44ba03297ca9bea4b6436d2
+  FBSDKCoreKit: d6655a343868d4bb5c29a60859bab07c3be14a0b
+  FBSDKLoginKit: c5a623de88a6b0cda35b35582921f6cec2efcc36
   Firebase: 291d7b0a7b393f252358083b5d224884126fa46d
   FirebaseAnalytics: 843c7f64a8f9c79f0d03281197ebe7bb1d58d477
   FirebaseCore: 32b48f41c84a56fbde73b35ed01a830b3b6dc048
@@ -2539,6 +2531,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 0d1c5340a6869998b118c154c4d013ac9a4ccb6f
+PODFILE CHECKSUM: 4ef278915bf2a1efd48eec7207e832ef11b42eda
 
 COCOAPODS: 1.8.0.beta.1

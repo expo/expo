@@ -18,7 +18,7 @@
 
 #import "FBSDKBridgeAPI.h"
 
-#import "FBSDKCoreKit+Internal.h"
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 
 typedef void (^FBSDKAuthenticationCompletionHandler)(NSURL *_Nullable callbackURL, NSError *_Nullable error);
 
