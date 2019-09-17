@@ -17,6 +17,7 @@ fi
 
 # Install yarn globally if it doesn't exist
 if [[ -z $(command -v yarn 2>/dev/null) ]]; then
+  # We can install yarn because `npm install` is cross-platform
   npm install -g yarn
 fi
 
