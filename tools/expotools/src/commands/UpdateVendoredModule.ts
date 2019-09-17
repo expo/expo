@@ -130,9 +130,10 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceIosPath: 'ios',
         targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
         sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
-        targetAndroidPath: '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
+        targetAndroidPath:
+          '../../../../../../../../../packages/expo-branch/android/src/main/java/io/branch/rnbranch',
         sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'expo.modules.branch.vendored',
+        targetAndroidPackage: 'io.branch.rnbranch',
         recursive: false,
         updatePbxproj: false,
       },
