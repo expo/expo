@@ -83,14 +83,14 @@ In order to use the published release source maps with Issues in Sentry, you'll 
 
 ```javascript
 // e.g. in your `App.js`
-import Constants from "expo-constants"
+import Constants from 'expo-constants';
 
 // ... initialize Sentry first
 
-Sentry.setRelease(Constants.manifest.revisionId)
+Sentry.setRelease(Constants.manifest.revisionId);
 ```
 
-Note that the `revisionId` is not available in the manifest when running in development mode (using `expo-cli`), defaulting to `undefined`.
+Note that the `revisionId` is not available in the manifest when running in development mode (using Expo CLI), defaulting to `undefined`.
 
 ## Error reporting semantics
 
