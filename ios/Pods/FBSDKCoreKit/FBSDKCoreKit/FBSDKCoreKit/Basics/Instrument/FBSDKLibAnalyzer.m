@@ -22,44 +22,79 @@
 
 @implementation FBSDKLibAnalyzer
 
-+ (NSDictionary<NSString *, NSString *> *)getMethodsTable
+static NSMutableDictionary<NSString *, NSString *> *_methodMapping;
+
++ (void)initialize
 {
-  NSMutableDictionary<NSString *, NSString *> *methodMapping = [NSMutableDictionary dictionary];
-  NSArray<NSString *> *allClasses = [self getClassNames];
+  _methodMapping = [NSMutableDictionary dictionary];
+}
+
++ (NSDictionary<NSString *, NSString *> *)getMethodsTable:(NSArray<NSString *> *)prefixes
+                                               frameworks:(NSArray<NSString *> *)frameworks
+{
+  NSArray<NSString *> *allClasses = [self getClassNames:prefixes frameworks:frameworks];
   for (NSString *className in allClasses) {
     Class class = NSClassFromString(className);
-    [self addClass:class methodMapping:methodMapping isClassMethod:NO];
-    [self addClass:object_getClass(class) methodMapping:methodMapping isClassMethod:YES];
+    if (class) {
+      [self addClass:class isClassMethod:NO];
+      [self addClass:object_getClass(class) isClassMethod:YES];
+    }
   }
-  return methodMapping;
+  return [_methodMapping copy];
 }
 
 #pragma mark - private methods
 
-+ (NSArray<NSString *> *)getClassNames
++ (NSArray<NSString *> *)getClassNames:(NSArray<NSString *> *)prefixes
+                            frameworks:(NSArray<NSString *> *)frameworks
 {
   NSMutableArray<NSString *> *classNames = [NSMutableArray new];
-  unsigned int numClasses;
-  Class *classes = objc_copyClassList(&numClasses);
-
-  if (numClasses > 0) {
-    for (int i = 0; i < numClasses; i++) {
-      const char *name = class_getName(classes[i]);
-      if (name != NULL) {
-        NSString *className = [NSString stringWithUTF8String:name];
-        if ([className hasPrefix:@"FBSDK"] || [className hasPrefix:@"_FBSDK"]) {
-          [classNames addObject:className];
+  // from main bundle
+  [classNames addObjectsFromArray:[self getClassesFrom:[[NSBundle mainBundle] executablePath]
+                                              prefixes:prefixes]];
+  // from dynamic libraries
+  if (frameworks.count > 0) {
+    unsigned int count = 0;
+    const char **images = objc_copyImageNames(&count);
+    for (int i = 0; i < count; i++) {
+      NSString *image = [NSString stringWithUTF8String:images[i]];
+      for (NSString *framework in frameworks) {
+        if ([image containsString:framework]) {
+          [classNames addObjectsFromArray:[self getClassesFrom:image
+                                                      prefixes:nil]];
         }
       }
     }
-    free(classes);
+    free(images);
   }
 
-  return classNames;
+  return [classNames copy];
+}
+
++ (NSArray<NSString *> *)getClassesFrom:(NSString *)image
+                               prefixes:(NSArray<NSString *> *)prefixes
+{
+  NSMutableArray<NSString *> *classNames = [NSMutableArray array];
+  unsigned int count = 0;
+  const char **classes = objc_copyClassNamesForImage([image UTF8String], &count);
+  for (unsigned int i = 0; i < count; i++){
+    NSString *className = [NSString stringWithUTF8String:classes[i]];
+    if (prefixes.count > 0) {
+      for (NSString *prefix in prefixes) {
+        if ([className hasPrefix:prefix]) {
+          [classNames addObject:className];
+          break;
+        }
+      }
+    } else {
+      [classNames addObject:className];
+    }
+  }
+  free(classes);
+  return [classNames copy];
 }
 
 + (void)addClass:(Class)class
-   methodMapping:(NSMutableDictionary<NSString *, NSString *> *)methodMapping
    isClassMethod:(BOOL)isClassMethod
 {
   unsigned int methodsCount = 0;
@@ -81,7 +116,7 @@
                               NSStringFromSelector(selector)];
 
       if (methodAddress && methodName) {
-        [methodMapping setObject:methodName forKey:methodAddress];
+        [_methodMapping setObject:methodName forKey:methodAddress];
       }
     }
   }

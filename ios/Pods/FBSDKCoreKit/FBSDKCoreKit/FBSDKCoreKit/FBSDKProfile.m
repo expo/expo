@@ -18,7 +18,7 @@
 
 #import "FBSDKProfile+Internal.h"
 
-#import "FBSDKCoreKit+Internal.h"
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 

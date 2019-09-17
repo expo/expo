@@ -33,14 +33,14 @@
 /* Begin PBXContainerItemProxy section */
 		822A15132674D821FE651353ACC44E0E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7FF9EA2FE6F3E114F286B1522F7DF4F6 /* Facebook.xcodeproj */;
+			containerPortal = 30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 2772D2438D05A08E6CC3C94D1EAED922;
+			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
 		};
 		C048DCB8E29AD621B514966BCD33698A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = AAE616D8C3F97CE8519EBAE1E4CDBD98 /* UMCore.xcodeproj */;
+			containerPortal = 2E646D36A8FBC620CEC35887639914D6 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
@@ -51,6 +51,8 @@
 		0D57768A2FDB11248C054DBCA36F4457 /* EXAdsFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAdsFacebook-dummy.m"; sourceTree = "<group>"; };
 		15EDE6BDA576F4D322014F5DA817B861 /* EXInterstitialAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXInterstitialAdManager.m; path = EXAdsFacebook/EXInterstitialAdManager.m; sourceTree = "<group>"; };
 		1BDADF2B826F0513799839225CAB7692 /* EXAdOptionsViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdOptionsViewManager.h; path = EXAdsFacebook/EXAdOptionsViewManager.h; sourceTree = "<group>"; };
+		2E646D36A8FBC620CEC35887639914D6 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBAudienceNetwork; path = FBAudienceNetwork.xcodeproj; sourceTree = "<group>"; };
 		34EF5FF0177908013F59CAA43A86CEEA /* EXAdsFacebook.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAdsFacebook.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		43378B58E81E6DA47B3470912139A725 /* EXNativeAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNativeAdManager.m; path = EXAdsFacebook/EXNativeAdManager.m; sourceTree = "<group>"; };
 		47327B57E6C72AE89C047C10A585AD75 /* EXNativeAdView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeAdView.h; path = EXAdsFacebook/EXNativeAdView.h; sourceTree = "<group>"; };
@@ -60,10 +62,8 @@
 		63B42D6C58DFA6EE97C8A6864D816A31 /* EXFacebookAdHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFacebookAdHelper.h; path = EXAdsFacebook/EXFacebookAdHelper.h; sourceTree = "<group>"; };
 		684A4C1619DFA96DE4DBB9236B3F6C31 /* EXAdIconViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdIconViewManager.h; path = EXAdsFacebook/EXAdIconViewManager.h; sourceTree = "<group>"; };
 		69C2113E473B3A86B11FAC366B5B052A /* EXAdOptionsViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdOptionsViewManager.m; path = EXAdsFacebook/EXAdOptionsViewManager.m; sourceTree = "<group>"; };
-		7FF9EA2FE6F3E114F286B1522F7DF4F6 /* Facebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Facebook; path = Facebook.xcodeproj; sourceTree = "<group>"; };
 		85B25EDD893705A22EBDCD4449F041D1 /* EXInterstitialAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXInterstitialAdManager.h; path = EXAdsFacebook/EXInterstitialAdManager.h; sourceTree = "<group>"; };
 		9C24A4E134F8721FD75A25E94DA820F2 /* EXAdsFacebook-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAdsFacebook-prefix.pch"; sourceTree = "<group>"; };
-		AAE616D8C3F97CE8519EBAE1E4CDBD98 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		AD75BCAA8F4041CCC9CAFDDC18B82066 /* EXNativeAdManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNativeAdManager.h; path = EXAdsFacebook/EXNativeAdManager.h; sourceTree = "<group>"; };
 		B14F12F474123C6951389284FAA07514 /* EXBannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBannerViewManager.m; path = EXAdsFacebook/EXBannerViewManager.m; sourceTree = "<group>"; };
 		B23573F44BA03FF102601BC00EE50362 /* EXFacebookAdHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFacebookAdHelper.m; path = EXAdsFacebook/EXFacebookAdHelper.m; sourceTree = "<group>"; };
@@ -118,15 +118,6 @@
 			path = "../../packages/expo-ads-facebook/ios";
 			sourceTree = "<group>";
 		};
-		5C16BA24CEF2AA5D2A257998C6BC1EBD /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				7FF9EA2FE6F3E114F286B1522F7DF4F6 /* Facebook */,
-				AAE616D8C3F97CE8519EBAE1E4CDBD98 /* UMCore */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		6FB2D6C0C4DEA972AF5FF1E228B24E18 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -149,11 +140,20 @@
 		CC46659A91A7F098100E7B29AFBA27D8 = {
 			isa = PBXGroup;
 			children = (
-				5C16BA24CEF2AA5D2A257998C6BC1EBD /* Dependencies */,
+				E17B04D1FD1DF139C262DE70B1A39123 /* Dependencies */,
 				1C2D5418AB15B68606CEAC743E08C265 /* EXAdsFacebook */,
 				EEAD76596D819D51B20816002EF5A3A3 /* Frameworks */,
 				6FB2D6C0C4DEA972AF5FF1E228B24E18 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		E17B04D1FD1DF139C262DE70B1A39123 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork */,
+				2E646D36A8FBC620CEC35887639914D6 /* UMCore */,
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		E530ED5505CD68B5D6D626018933A70B /* Pod */ = {
@@ -234,10 +234,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = AAE616D8C3F97CE8519EBAE1E4CDBD98 /* UMCore */;
+					ProjectRef = 2E646D36A8FBC620CEC35887639914D6 /* UMCore */;
 				},
 				{
-					ProjectRef = 7FF9EA2FE6F3E114F286B1522F7DF4F6 /* Facebook */;
+					ProjectRef = 30370C30637C5BC8B26AF64A1A750B38 /* FBAudienceNetwork */;
 				},
 			);
 			projectRoot = "";
