@@ -1,6 +1,6 @@
 {
   "name": "expo-branch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -39,5 +39,5 @@
   "devDependencies": {
     "expo-module-scripts": "^1.0.0"
   },
-  "gitHead": "c1dc64e6ff18071dee2e03d4712e972231cd2642"
+  "gitHead": "c3d772ef12cc1f7ddcc43906fcd23e65823df5ff"
 }

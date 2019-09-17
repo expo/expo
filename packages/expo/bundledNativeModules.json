@@ -72,5 +72,5 @@
   "unimodules-task-manager-interface": "~3.0.0",
   "expo-video-thumbnails": "~2.0.0",
   "expo-in-app-purchases": "~6.0.0",
-  "expo-branch": "~1.0.0"
+  "expo-branch": "~1.0.1"
 }
