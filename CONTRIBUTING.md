@@ -55,7 +55,7 @@ All modules should adhere to the style guides which can be found here:
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
    - Run the code from the `bare-expo` project with `yarn <android | ios | web>` or test the code with `yarn test:<ios | web>`
-5. You can edit a package's native code directly from it's respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
+5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
