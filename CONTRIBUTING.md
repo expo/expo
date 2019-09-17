@@ -46,21 +46,24 @@ All of our packages (including Foundation Unimodules) can be found in the `packa
 - `native-component-list`: This is where you can write demos or tests that require physical interaction (a good playground for testing).
 - `test-suite`: You can write your E2E tests in here. When pushed to the remote, CI will run this project with Device Farm for Android, Detox for iOS, and Puppeteer for web!
 
+All modules should adhere to the style guides which can be found here:
+
+- [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
+- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
 2. Start the TypeScript build in watch mode: `yarn build`
 3. Edit code in that package's `src/` directory
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
    - Run the code from the `bare-expo` project with `yarn <android | ios | web>` or test the code with `yarn test:<ios | web>`
-5. You can edit the native code by opening the projects in their respective editors:
+5. You can edit a package's native code directly from it's respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
 
 ### Extra Credit
 
-- [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
-- [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (This will only enable the shake gesture, CMD+R won't work yet).
 - We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
 - All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozen of packages locally on every `git pull` or `git checkout` operation.
