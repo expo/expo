@@ -33,10 +33,10 @@
 
 ---
 
-- [🗺 Project Layout](#---project-layout)
-- [👏 Contributing](#---contributing)
-- [❓ FAQ](#--faq)
-- [💙 The Team](#---the-team)
+- [🗺 Project Layout](#-project-layout)
+- [👏 Contributing](#-contributing)
+- [❓ FAQ](#-faq)
+- [💙 The Team](#-the-team)
 - [License](#license)
 
 Expo is a set of tools, libraries, and services that let you build native iOS and Android apps by writing JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, and more.

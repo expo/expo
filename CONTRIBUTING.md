@@ -1,14 +1,14 @@
 # Contributing to Expo
 
-- [📦 Download and Setup](#---download-and-setup)
-- [✏️ Editing Packages](#---editing-packages)
+- [📦 Download and Setup](#-download-and-setup)
+- [✏️ Editing Packages](#-editing-packages)
   - [Extra Credit](#extra-credit)
-- [⏱ Testing your changes](#--testing-your-changes)
-  - [✅ Unit Testing](#--unit-testing)
-  - [🏁 E2E Testing](#---e2e-testing)
-- [📚 Updating Documentation](#---updating-documentation)
-- [📝 Writing a commit message](#---writing-a-commit-message)
-- [🔎 Before Submitting](#---before-submitting)
+- [⏱ Testing your changes](#-testing-your-changes)
+  - [✅ Unit Testing](#-unit-testing)
+  - [🏁 E2E Testing](#-e2e-testing)
+- [📚 Updating Documentation](#-updating-documentation)
+- [📝 Writing a commit message](#-writing-a-commit-message)
+- [🔎 Before Submitting](#-before-submitting)
   - [Extra Credit](#extra-credit-1)
 
 Thanks so much for coming to help! Currently we review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files. Because the native clients (`ios/`, `android/`) are so articulate you may not find that much progress can be made externally (but you're always allowed to try!). We've moved most of the fun code out of the client anyways to support the **bare-workflow**, this means that you'll do the majority of your native testing in a regular React Native project.
