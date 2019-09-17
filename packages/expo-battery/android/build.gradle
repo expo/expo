@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.4.1'
   }
 }
 
@@ -45,11 +45,11 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 2
     versionName '1.0.0'
   }
@@ -69,5 +69,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
 
-  implementation "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
 }
