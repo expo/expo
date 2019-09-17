@@ -6,7 +6,7 @@ type ActionOptions = {
   sdkVersion: string;
   releaseChannel?: string;
   keystore?: string;
-  alias?: string;
+  keystoreAlias?: string;
   keystorePassword?: string;
   keyPassword?: string;
   buildType?: string;
@@ -24,6 +24,7 @@ async function action(options: ActionOptions) {
     buildType: 'apk',
     workingDir: Directories.getExpoRepositoryRootDir(),
     ...options,
+    alias: options.keystoreAlias,
   });
 }
 
@@ -46,7 +47,7 @@ export default (program: any) => {
       'list of modules to include in the build (defaults to all modules)'
     )
     .option('--keystore [string]', 'Path to keystore (optional)')
-    .option('--alias [string]', 'Keystore alias (optional)')
+    .option('--keystoreAlias [string]', 'Keystore alias (optional)')
     .option('--keystorePassword [string]', 'Keystore password (optional)')
     .option('--keyPassword [string]', 'Key password (optional)')
     .asyncAction(action);
