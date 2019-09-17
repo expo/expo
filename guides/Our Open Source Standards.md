@@ -1,5 +1,10 @@
 # Our Open Source Standards
 
+- [Code reviews](#code-reviews)
+- [Guidance](#guidance)
+  - [On coherent pull requests](#on-coherent-pull-requests)
+  - [On maintainable code](#on-maintainable-code)
+
 ## Code reviews
 
 The Expo team reviews all PRs and makes the judgement call on whether to accept them. An Expo team member will look at each PR and assign it to the appropriate reviewer for an in-depth review or request changes.

@@ -33,11 +33,17 @@
 
 ---
 
+- [🗺 Project Layout](#---project-layout)
+- [👏 Contributing](#---contributing)
+- [❓ FAQ](#--faq)
+- [💙 The Team](#---the-team)
+- [License](#license)
+
 Expo is a set of tools, libraries, and services that let you build native iOS and Android apps by writing JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, and more.
 
 [Click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
 
-## Project Layout
+## 🗺 Project Layout
 
 - `packages` All the source code for the Unimodules, if you want to edit a library or just see how it works this is where you'll find it.
 - `apps` This is where you can find Expo projects which are linked to the development Unimodules. You'll do most of your testing in here.

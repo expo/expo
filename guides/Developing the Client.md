@@ -1,5 +1,21 @@
 # Developing the Client
 
+- [Introduction](#introduction)
+- [External Contributions](#external-contributions)
+- [Configuring your environment](#configuring-your-environment)
+  - [iOS](#ios)
+  - [Android](#android)
+- [Running on a Device](#running-on-a-device)
+  - [iOS](#ios-1)
+  - [Android](#android-1)
+- [Standalone Apps](#standalone-apps)
+  - [Android](#android-2)
+  - [iOS](#ios-2)
+- [Modifying JS Code](#modifying-js-code)
+- [Tests](#tests)
+
+  - [iOS](#ios-3)
+
 ## Introduction
 
 This is the source code for the Expo client app used to view projects published to the Expo service. If you want to build and install the Expo client directly onto a device, you're in the right place. Note that if you just want to install the Expo client app on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
