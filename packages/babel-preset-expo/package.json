@@ -4,7 +4,8 @@
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "lazy-imports-blacklist.js"
   ],
   "scripts": {
     "jest": "jest",
