@@ -1,17 +1,22 @@
 # Contributing to Expo
 
-- [📦 Download and Setup](#---download-and-setup)
-- [✏️ Editing Packages](#---editing-packages)
+- [Contributing to Expo](#contributing-to-expo)
+  - [📦 Download and Setup](#---download-and-setup)
+  - [✏️ Editing Packages](#---editing-packages)
+    - [Extra Credit](#extra-credit)
   - [⏱ Testing your changes](#--testing-your-changes)
-- [📚 Updating Documentation](#---updating-documentation)
-- [🔎 Before Submitting](#---before-submitting)
-- [Expo client](#expo-client)
-- [Code reviews](#code-reviews)
-- [Updating the changelog](#updating-the-changelog)
-- [Writing a commit message](#writing-a-commit-message)
-- [Guidance](#guidance)
-  - [On coherent pull requests](#on-coherent-pull-requests)
-  - [On maintainable code](#on-maintainable-code)
+    - [✅ Unit Testing](#--unit-testing)
+    - [🏁 E2E Testing](#---e2e-testing)
+  - [📚 Updating Documentation](#---updating-documentation)
+  - [🔎 Before Submitting](#---before-submitting)
+    - [Extra Credit](#extra-credit-1)
+  - [Expo client](#expo-client)
+  - [Code reviews](#code-reviews)
+  - [Updating the changelog](#updating-the-changelog)
+  - [Writing a commit message](#writing-a-commit-message)
+  - [Guidance](#guidance)
+    - [On coherent pull requests](#on-coherent-pull-requests)
+    - [On maintainable code](#on-maintainable-code)
 
 Thanks so much for coming to help! Currently we review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files. Because the native clients (`ios/`, `android/`) are so articulate you may not find that much progress can be made externally (but you're always allowed to try!). We've moved most of the fun code out of the client anyways to support the bare-workflow, this means that you'll do the majority of your native testing in a \*regular React Native project.
 
