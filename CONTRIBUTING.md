@@ -1,7 +1,7 @@
 # Contributing to Expo
 
 - [📦 Download and Setup](#-download-and-setup)
-- [✏️ Editing Packages](#-editing-packages)
+- [✍️ Editing Packages](#-editing-packages)
   - [Extra Credit](#extra-credit)
 - [⏱ Testing your changes](#-testing-your-changes)
   - [✅ Unit Testing](#-unit-testing)
@@ -37,7 +37,7 @@ As you might imagine web code is very easy to test and contribute to, so that's 
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
 
-## ✏️ Editing Packages
+## ✍️ Editing Packages
 
 All of our packages (including Foundation Unimodules) can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). `bare-expo` is a bare workflow Expo app that acts as a runner for the other projects in the `apps/` directory.
 
