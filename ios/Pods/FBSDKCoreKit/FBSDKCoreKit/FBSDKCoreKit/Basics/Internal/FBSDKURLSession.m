@@ -18,7 +18,7 @@
 
 #import "FBSDKURLSession.h"
 
-#import "FBSDKBasicUtility+Internal.h"
+#import "FBSDKBasicUtility.h"
 #import "FBSDKURLSessionTask.h"
 
 @implementation FBSDKURLSession

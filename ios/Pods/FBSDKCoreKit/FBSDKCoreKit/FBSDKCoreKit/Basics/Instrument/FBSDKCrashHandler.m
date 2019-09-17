@@ -16,21 +16,19 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKCrashStorage.h"
+#import "FBSDKCrashHandler.h"
 
 #import <sys/utsname.h>
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 #import "FBSDKLibAnalyzer.h"
-#import "FBSDKLogger.h"
-#import "FBSDKSettings.h"
 
 #define FBSDK_MAX_CRASH_LOGS 5
 #define FBSDK_CRASH_PATH_NAME @"instrument"
 
-static NSString *mappingTableSavedTime = NULL;
+static NSUncaughtExceptionHandler *previousExceptionHandler = NULL;
+static NSString *mappingTableIdentifier = NULL;
 static NSString *directoryPath;
 
 NSString *const kFBSDKAppVersion = @"app_version";
@@ -40,21 +38,125 @@ NSString *const kFBSDKCrashTimestamp = @"timestamp";
 NSString *const kFBSDKDeviceModel = @"device_model";
 NSString *const kFBSDKDeviceOSVersion = @"device_os_version";
 
-NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
+NSString *const kFBSDKMapingTable = @"mapping_table";
+NSString *const kFBSDKMappingTableIdentifier = @"mapping_table_identifier";
 
-@implementation FBSDKCrashStorage
+@implementation FBSDKCrashHandler
+
+static NSHashTable<id<FBSDKCrashObserving>> *_observers;
+static NSArray<NSDictionary<NSString *, id> *> *_processedCrashLogs;
+static BOOL _isTurnedOff;
+
+# pragma mark - Class Methods
 
 + (void)initialize
 {
   NSString *dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:FBSDK_CRASH_PATH_NAME];
   if (![[NSFileManager defaultManager] fileExistsAtPath:dirPath]) {
-    if (![[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:NO attributes:NULL error:NULL]) {
-      [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorInformational formatString:@"Failed to create library at %@", dirPath];
-    }
+    [[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:NO attributes:NULL error:NULL];
   }
   directoryPath = dirPath;
-  mappingTableSavedTime = [NSString stringWithFormat:@"%.0lf", [[NSDate date] timeIntervalSince1970]];
+  NSString *identifier = [[NSUUID UUID] UUIDString];
+  mappingTableIdentifier = [identifier stringByReplacingOccurrencesOfString:@"-" withString:@""];
+  _observers = [[NSHashTable alloc] init];
 }
+
++ (void)sendCrashLogs
+{
+  NSArray<id<FBSDKCrashObserving>> *observers = [_observers copy];
+  for (id<FBSDKCrashObserving> observer in observers) {
+    if (observer && [observer respondsToSelector:@selector(didReceiveCrashLogs:)]) {
+      NSArray<NSDictionary<NSString *, id> *> *filteredCrashLogs = [self filterCrashLogs:observer.prefixes];
+      [observer didReceiveCrashLogs:filteredCrashLogs];
+    }
+  }
+}
+
++ (NSArray<NSDictionary<NSString *, id> *> *)filterCrashLogs:(NSArray<NSString *> *)prefixList
+{
+  NSMutableArray<NSDictionary<NSString *, id> *> *crashLogs = [NSMutableArray array];
+  for (NSDictionary<NSString *, id> *crashLog in _processedCrashLogs) {
+    NSArray<NSString *> *callstack = crashLog[kFBSDKCallstack];
+    if ([self callstack:callstack containsPrefix:prefixList]) {
+      [crashLogs addObject:crashLog];
+    }
+  }
+  return crashLogs;
+}
+
++ (BOOL)callstack:(NSArray<NSString *> *)callstack
+   containsPrefix:(NSArray<NSString *> *)prefixList
+{
+  NSString *callStackString = [callstack componentsJoinedByString:@""];
+  for (NSString *prefix in prefixList) {
+    if ([callStackString containsString:prefix]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
++ (void)disable
+{
+  _isTurnedOff = YES;
+  [FBSDKCrashHandler uninstallExceptionsHandler];
+  _observers = nil;
+}
+
++ (void)addObserver:(id<FBSDKCrashObserving>)observer
+{
+  if (_isTurnedOff || ![self isSafeToGenerateMapping]) {
+    return;
+  }
+  static dispatch_once_t onceToken = 0;
+  dispatch_once(&onceToken, ^{
+    [FBSDKCrashHandler installExceptionsHandler];
+    _processedCrashLogs = [self getProcessedCrashLogs];
+  });
+  if (![_observers containsObject:observer]) {
+    [_observers addObject:observer];
+    [self generateMethodMapping:observer];
+    [self sendCrashLogs];
+  }
+}
+
++ (void)removeObserver:(id<FBSDKCrashObserving>)observer
+{
+  if ([_observers containsObject:observer]) {
+    [_observers removeObject:observer];
+    if (_observers.count == 0) {
+      [FBSDKCrashHandler uninstallExceptionsHandler];
+    }
+  }
+}
+
+# pragma mark handler function
+
++ (void)installExceptionsHandler
+{
+  NSUncaughtExceptionHandler *currentHandler = NSGetUncaughtExceptionHandler();
+
+  if (currentHandler != FBSDKExceptionHandler) {
+    previousExceptionHandler = currentHandler;
+    NSSetUncaughtExceptionHandler(&FBSDKExceptionHandler);
+  }
+}
+
++ (void)uninstallExceptionsHandler
+{
+  NSSetUncaughtExceptionHandler(previousExceptionHandler);
+  previousExceptionHandler = nil;
+}
+
+static void FBSDKExceptionHandler(NSException *exception)
+{
+  [FBSDKCrashHandler saveException:exception];
+  if (previousExceptionHandler) {
+    previousExceptionHandler(exception);
+  }
+}
+
+#pragma mark - Storage
 
 + (void)saveException:(NSException *)exception
 {
@@ -82,7 +184,7 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
 {
   NSArray<NSDictionary<NSString *, id> *> *crashLogs = [self loadCrashLogs];
   if (0 == crashLogs.count) {
-    [self clearCrashReportFiles:nil];
+    [self clearCrashReportFiles];
     return nil;
   }
   NSMutableArray<NSDictionary<NSString *, id> *> *processedCrashLogs = [NSMutableArray array];
@@ -94,7 +196,7 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
     NSMutableDictionary<NSString *, id> *symbolicatedCrashLog = [NSMutableDictionary dictionaryWithDictionary:crashLog];
     if (symbolicatedCallstack) {
       [symbolicatedCrashLog setObject:symbolicatedCallstack forKey:kFBSDKCallstack];
-      [symbolicatedCrashLog removeObjectForKey:kFBSDKMapingTableTimestamp];
+      [symbolicatedCrashLog removeObjectForKey:kFBSDKMappingTableIdentifier];
       [processedCrashLogs addObject:symbolicatedCrashLog];
     }
   }
@@ -110,7 +212,7 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
   NSMutableArray<NSDictionary<NSString *, id> *> *crashLogArray = [NSMutableArray array];
 
   for (NSUInteger i = 0; i < MIN(fileNames.count, FBSDK_MAX_CRASH_LOGS); i++) {
-    NSDictionary<NSString *, id> *crashLog = [FBSDKCrashStorage loadCrashLog:fileNames[i]];
+    NSDictionary<NSString *, id> *crashLog = [self loadCrashLog:fileNames[i]];
     [crashLogArray addObject:crashLog];
   }
   return [crashLogArray copy];
@@ -121,20 +223,15 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
   return [NSDictionary dictionaryWithContentsOfFile:[directoryPath stringByAppendingPathComponent:fileName]];
 }
 
-+ (void)clearCrashReportFiles:(nullable NSString*)timestamp
++ (void)clearCrashReportFiles
 {
-  if (!timestamp) {
-    NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:nil];
+  NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:nil];
 
-    for (NSUInteger i = 0; i < files.count; i++) {
-      // remove all crash related files except for the current mapping table
-      if ([files[i] hasPrefix:@"crash_"] && ![files[i] containsString:mappingTableSavedTime]) {
-        [[NSFileManager defaultManager] removeItemAtPath:[directoryPath stringByAppendingPathComponent:files[i]] error:nil];
-      }
+  for (NSUInteger i = 0; i < files.count; i++) {
+    // remove all crash related files except for the current mapping table
+    if ([files[i] hasPrefix:@"crash_"] && ![files[i] containsString:mappingTableIdentifier]) {
+      [[NSFileManager defaultManager] removeItemAtPath:[directoryPath stringByAppendingPathComponent:files[i]] error:nil];
     }
-  } else {
-    [[NSFileManager defaultManager] removeItemAtPath:[self getPathToCrashFile:timestamp] error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:[self getPathToLibDataFile:timestamp] error:nil];
   }
 }
 
@@ -151,15 +248,13 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
   return fileNames;
 }
 
-#pragma mark - disk operations
-
 + (void)saveCrashLog:(NSDictionary<NSString *, id> *)crashLog
 {
   NSMutableDictionary<NSString *, id> *completeCrashLog = [NSMutableDictionary dictionaryWithDictionary:crashLog];
   NSString *currentTimestamp = [NSString stringWithFormat:@"%.0lf", [[NSDate date] timeIntervalSince1970]];
 
   [completeCrashLog setObject:currentTimestamp forKey:kFBSDKCrashTimestamp];
-  [completeCrashLog setObject:mappingTableSavedTime forKey:kFBSDKMapingTableTimestamp];
+  [completeCrashLog setObject:mappingTableIdentifier forKey:kFBSDKMappingTableIdentifier];
 
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSString *version = [mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
@@ -172,25 +267,28 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
 
   [completeCrashLog setObject:[UIDevice currentDevice].systemVersion forKey:kFBSDKDeviceOSVersion];
 
-  [completeCrashLog writeToFile:[self getPathToCrashFile:mappingTableSavedTime]
+  [completeCrashLog writeToFile:[self getPathToCrashFile:currentTimestamp]
                      atomically:YES];
 }
 
-+ (void)generateMethodMapping
++ (void)generateMethodMapping:(id<FBSDKCrashObserving>)observer
 {
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-    NSDictionary<NSString *, NSString *> *methodMapping = [FBSDKLibAnalyzer getMethodsTable];
-    if (methodMapping){
-      [methodMapping writeToFile:[self getPathToLibDataFile:mappingTableSavedTime]
-                      atomically:YES];
-    }
-  });
+  if (observer.prefixes.count == 0) {
+    return;
+  }
+  [[NSUserDefaults standardUserDefaults] setObject:mappingTableIdentifier forKey:kFBSDKMappingTableIdentifier];
+  NSDictionary<NSString *, NSString *> *methodMapping = [FBSDKLibAnalyzer getMethodsTable:observer.prefixes
+                                                                               frameworks:observer.frameworks];
+  if (methodMapping.count > 0){
+    [methodMapping writeToFile:[self getPathToLibDataFile:mappingTableIdentifier]
+                    atomically:YES];
+  }
 }
 
 + (NSDictionary<NSString *, id> *)loadLibData:(NSDictionary<NSString *, id> *)crashLog
 {
-  NSString *timestamp = [crashLog objectForKey:kFBSDKMapingTableTimestamp];
-  return [NSDictionary dictionaryWithContentsOfFile:[self getPathToLibDataFile:timestamp]];
+  NSString *identifier = [crashLog objectForKey:kFBSDKMappingTableIdentifier];
+  return [NSDictionary dictionaryWithContentsOfFile:[self getPathToLibDataFile:identifier]];
 }
 
 + (NSString *)getPathToCrashFile:(NSString *)timestamp
@@ -199,11 +297,26 @@ NSString *const kFBSDKMapingTableTimestamp = @"mapping_table_timestamp";
           [NSString stringWithFormat:@"crash_log_%@.json", timestamp]];
 }
 
-+ (NSString *)getPathToLibDataFile:(NSString *)timestamp
++ (NSString *)getPathToLibDataFile:(NSString *)identifier
 {
   return [directoryPath stringByAppendingPathComponent:
-          [NSString stringWithFormat:@"crash_lib_data_%@.json", timestamp]];
+          [NSString stringWithFormat:@"crash_lib_data_%@.json", identifier]];
 
+}
+
++ (BOOL)isSafeToGenerateMapping
+{
+#if TARGET_OS_SIMULATOR
+  return YES;
+#else
+  NSString *identifier = [[NSUserDefaults standardUserDefaults] objectForKey:kFBSDKMappingTableIdentifier];
+  //first app start
+  if (!identifier) {
+    return YES;
+  }
+
+  return [[NSFileManager defaultManager] fileExistsAtPath:[self getPathToLibDataFile:identifier]];
+#endif
 }
 
 @end

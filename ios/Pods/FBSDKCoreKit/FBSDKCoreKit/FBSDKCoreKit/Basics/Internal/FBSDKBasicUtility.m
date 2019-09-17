@@ -20,8 +20,7 @@
 
 #import <zlib.h>
 
-#import "Internal/FBSDKBasicUtility+Internal.h"
-#import "Internal/FBSDKTypeUtility.h"
+#import "FBSDKTypeUtility.h"
 
 #define kChunkSize 1024
 

@@ -33,8 +33,10 @@ NOTE: By default, the Facebook SDK for iOS is installed in ~/Documents/FacebookS
 
 Please report bugs or issues to our designated developer support team -- <https://developers.facebook.com/support/bugs/> -- as this will help us resolve them more quickly.
 
-You can also join the [Facebook Developers Group on Facebook](https://www.facebook.com/groups/fbdevelopers/), ask
-questions on [Stack Overflow](http://facebook.stackoverflow.com), or open an issue in this repository.
+You can also visit our [Facebook Developer Community Forum](https://developers.facebook.com/community/),
+join the [Facebook Developers Group on Facebook](https://www.facebook.com/groups/fbdevelopers/),
+ask questions on [Stack Overflow](http://facebook.stackoverflow.com),
+or open an issue in this repository.
 
 ## LICENSE
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-ads-admob",
-  "version": "6.0.0",
+  "version": "7.0.0-rc.0",
   "description": "Provides support for the Google AdMob SDK (https://www.google.com/admob/) for mobile advertising. This module is largely based of the react-native-admob (https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful. A simple example implementing AdMob SDK can be found at https://github.com/deadcoder0904/expo-google-admob",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -41,7 +41,7 @@
     "prop-types": "^15.6.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "~1.1.1-rc.0"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
 }

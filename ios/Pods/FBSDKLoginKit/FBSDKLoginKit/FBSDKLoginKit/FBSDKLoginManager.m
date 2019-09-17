@@ -21,9 +21,13 @@
 
 #import <FBSDKCoreKit/FBSDKAccessToken.h>
 #import <FBSDKCoreKit/FBSDKSettings.h>
+#ifdef COCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
+#import "FBSDKCoreKit+Internal.h"
+#endif
 
 #import "_FBSDKLoginRecoveryAttempter.h"
-#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKLoginCompletion.h"
 #import "FBSDKLoginConstants.h"
 #import "FBSDKLoginError.h"

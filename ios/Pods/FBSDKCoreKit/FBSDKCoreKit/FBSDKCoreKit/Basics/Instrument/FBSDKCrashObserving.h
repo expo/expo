@@ -20,16 +20,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FBSDKCrashStorage : NSObject
+@protocol FBSDKCrashObserving <NSObject>
 
-+ (void)saveException:(NSException *)exception;
-+ (void)saveSignal:(int)signal
-     withCallStack:(NSArray<NSString *> *)callStack;
-+ (NSArray<NSDictionary<NSString *, id> *> *)getProcessedCrashLogs;
+@property (nonatomic, copy) NSArray<NSString *> *prefixes;
+@property (nonatomic, copy, nullable) NSArray<NSString *> *frameworks;
 
-+ (void)generateMethodMapping;
-+ (NSDictionary<NSString *, id> *)loadLibData:(NSDictionary<NSString *, id> *)crashLog;
-+ (void)clearCrashReportFiles:(nullable NSString*)timestamp;
+@optional
+
+- (void)didReceiveCrashLogs:(NSArray<NSDictionary<NSString *, id> *> *)crashLogs;
 
 @end
 
