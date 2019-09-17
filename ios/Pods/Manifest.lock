@@ -1534,7 +1534,6 @@ DEPENDENCIES:
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
-  - Google-Mobile-Ads-SDK (~> 7.49.0)
   - GoogleMaps (~> 3.3)
   - GoogleSignIn (~> 5.0)
   - JKBigInteger2 (= 0.0.5)
@@ -2540,6 +2539,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 18c2d51eb48f96bf29761eff73760784c16145c4
+PODFILE CHECKSUM: 0d1c5340a6869998b118c154c4d013ac9a4ccb6f
 
 COCOAPODS: 1.8.0.beta.1
