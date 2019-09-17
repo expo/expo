@@ -34,7 +34,6 @@ Pod::Spec.new do |s|
     ss.dependency 'lottie-ios', '~> 2.5.0'
     ss.dependency 'JKBigInteger2', '0.0.5'
     ss.dependency 'Branch', '~> 0.28'
-    ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.49.0'
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 
     # Universal modules required by ExpoKit so the code compiles

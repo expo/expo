@@ -729,7 +729,7 @@ PODS:
     - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (7.0.0-rc.0):
-    - Google-Mobile-Ads-SDK
+    - Google-Mobile-Ads-SDK (~> 7.49.0)
     - UMCore
   - EXAdsFacebook (7.0.0-rc.0):
     - FBAudienceNetwork
@@ -1534,7 +1534,6 @@ DEPENDENCIES:
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
-  - Google-Mobile-Ads-SDK (~> 7.49.0)
   - GoogleMaps (~> 3.3)
   - GoogleSignIn (~> 5.0)
   - JKBigInteger2 (= 0.0.5)
@@ -2433,7 +2432,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Crashlytics: 2dfd686bcb918dc10ee0e76f7f853fe42c7bd552
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
-  EXAdsAdMob: f1bcdb412d8ed70c2b23d5bd98e0a68806b94035
+  EXAdsAdMob: 5682ee61b463bba5e0e6f70a1361f6d7819d3a65
   EXAdsFacebook: 4d1e92d2e245b0f09b4b4216653882f173f15dbb
   EXAmplitude: 340bc6c852e87da2a02b51dc5828a774cf184966
   EXAppAuth: ecc5fc8dc2fb235a5c8d691c4143d0c27dadb861
@@ -2540,6 +2539,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 18c2d51eb48f96bf29761eff73760784c16145c4
+PODFILE CHECKSUM: 0d1c5340a6869998b118c154c4d013ac9a4ccb6f
 
 COCOAPODS: 1.8.0.beta.1
