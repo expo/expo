@@ -8,6 +8,10 @@ To build the Expo client app, follow the instructions in the [Setup](#setup) sec
 
 Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
 
+## External Contributions
+
+Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with the Expo client and the types of PRs that we accept so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
+
 **Disclaimers:**
 
 If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/). You're in the wrong place and you shouldn't need to build the Expo clients from source.
