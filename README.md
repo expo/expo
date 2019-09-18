@@ -45,19 +45,19 @@ Expo is a set of tools, libraries, and services that let you build native iOS an
 
 ## 🗺 Project Layout
 
-- `packages` All the source code for the Unimodules, if you want to edit a library or just see how it works this is where you'll find it.
-- `apps` This is where you can find Expo projects which are linked to the development Unimodules. You'll do most of your testing in here.
-- `docs` The source code for **https://docs.expo.io**
-- `templates` The template projects you get when you run `expo start`
-- `react-native-lab` This is our fork of `react-native`. We keep this very close to the upstream but sometimes need to add quick fixes locally before they can land.
-- `guides` In-depth tutorials for our most advanced topics like contributing to the client.
-- `android` contains the Android project.
-- `home` contains the JavaScript source code of the app.
-- `ios` contains the iOS project.
-- `ios/Exponent.xcworkspace` is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
-- `tools-public` contains build and configuration tools.
-- `template-files` contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
-- `template-files/ios/dependencies.json` specifies the CocoaPods dependencies of the app.
+- [`packages`](/packages) All the source code for the Unimodules, if you want to edit a library or just see how it works this is where you'll find it.
+- [`apps`](/apps) This is where you can find Expo projects which are linked to the development Unimodules. You'll do most of your testing in here.
+- [`docs`](/docs) The source code for **https://docs.expo.io**
+- [`templates`](/templates) The template projects you get when you run `expo start`
+- [`react-native-lab`](/react-native-lab) This is our fork of `react-native`. We keep this very close to the upstream but sometimes need to add quick fixes locally before they can land.
+- [`guides`](/guides) In-depth tutorials for our most advanced topics like contributing to the client.
+- [`android`](/android) contains the Android project.
+- [`home`](/home) contains the JavaScript source code of the app.
+- [`ios`](/ios) contains the iOS project.
+- [`ios/Exponent.xcworkspace`](/ios) is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
+- [`tools-public`](/tools-public) contains build and configuration tools.
+- [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
+- [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.
 
 ## 👏 Contributing
 
