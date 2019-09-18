@@ -18,9 +18,9 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMFaceDetectorInterface'
-  s.dependency 'Firebase/Core', "~> 6.2.1"
-  s.dependency 'Firebase/MLVision', "~> 0.17.0"
-  s.dependency 'Firebase/MLVisionFaceModel', "~> 0.17.0"
+  s.dependency 'Firebase/Core', "~> 6.7.0"
+  s.dependency 'Firebase/MLVision', "~> 6.7.0"
+  s.dependency 'Firebase/MLVisionFaceModel', "~> 6.7.0"
 
 end
 
