@@ -7,22 +7,23 @@
   </a>
     
   <a aria-label="Join our forums" href="https://forums.expo.io" target="_blank">
-    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=20&labelColor=000000&color=4630EB">
+    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB">
   </a>
-   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square" target="_blank" />
-  </a>
-    <a aria-label="Follow @expo on Twitter" href="https://twitter.com/expo" target="_blank">
-    <img alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?logo=twitter&style=flat-square" target="_blank" />
+  <a aria-label="Follow @expo on Twitter" href="https://twitter.com/expo" target="_blank">
+    <img alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?style=flat-square&label=Follow%20%40expo&logo=TWITTER&logoColor=FFFFFF&labelColor=00aced&logoWidth=15&color=lightgray" target="_blank" />
   </a>
 
-<a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
-    <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=000000&color=417505" />
-</a>
-<br>
-    <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
-    <img alt="Circle CI" src="https://circleci.com/gh/expo/expo.svg">
+  <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square&color=33CC12" target="_blank" />
   </a>
+<a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
+    <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads" />
+</a>
+    <br>
+    <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
+    <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&color=33CC12&&icon=circleci">
+  </a>
+  
 </p>
 
 <p align="center">
