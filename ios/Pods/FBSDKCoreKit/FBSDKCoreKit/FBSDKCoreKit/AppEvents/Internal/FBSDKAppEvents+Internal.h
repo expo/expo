@@ -39,10 +39,10 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventNamePermissionsUIDismiss;
 /** Use to log that the login view was used */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameLoginViewUsage;
 
-/*! Use to log that the share tray launched. */
+/** Use to log that the share tray launched. */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameShareTrayDidLaunch;
 
-/*! Use to log that the person selected a sharing target. */
+/** Use to log that the person selected a sharing target. */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameShareTrayDidSelectActivity;
 
 // Internally known event parameters
@@ -116,11 +116,11 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterDialogShareContentType;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterDialogShareContentUUID;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterDialogShareContentPageID;
 
-/*! Use to log parameters for share tray use */
+/** Use to log parameters for share tray use */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterShareTrayActivityName;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterShareTrayResult;
 
-/*! Use to log parameters for live streaming*/
+/** Use to log parameters for live streaming*/
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterLiveStreamingPrevStatus;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterLiveStreamingStatus;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterLiveStreamingError;

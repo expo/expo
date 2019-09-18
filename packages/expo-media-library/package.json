@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "6.1.0-rc.1",
+  "version": "6.1.0-rc.2",
   "description": "Provides access to user's media library.",
   "main": "build/MediaLibrary.js",
   "types": "build/MediaLibrary.d.ts",
@@ -42,7 +42,7 @@
     "unimodules-permissions-interface": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "~1.1.1-rc.0"
   },
-  "gitHead": "c6f5602a7c1e5ca5266b54788833cb1432da49b3"
+  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
 }

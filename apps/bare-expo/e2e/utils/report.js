@@ -4,8 +4,6 @@ export function reportMagic({ testName, failed, results, failures }) {
   const formatResults = results =>
     results &&
     results
-      // Remove random "undefined" from beginning
-      .substring(9)
       .replace(/---/g, chalk.cyan('---'))
       .split('+++')
       .join(chalk.red('+++'))

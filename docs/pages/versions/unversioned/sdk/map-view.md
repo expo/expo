@@ -6,8 +6,6 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 A Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo app, or within a standalone app for iOS. See below for instructions on how to configure for deployment as a standalone app on Android.
 
-Expo includes version 0.24.2 of react-native-maps (the latest as of the time of this writing).
-
 ## Installation
 
 To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-maps`. In bare apps, also follow the [react-native-maps linking and configuration instructions](https://github.com/react-native-community/react-native-maps).

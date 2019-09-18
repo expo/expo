@@ -13,6 +13,7 @@
 #import "BNCLog.h"
 #import "BNCConfig.h"
 #import "BNCPreferenceHelper.h"
+#import "BNCUserAgentCollector.h"
 
 #if __has_feature(modules)
 @import UIKit;
@@ -335,89 +336,8 @@ exit:
     return version;
 }
 
-+ (NSString*) userAgentString {
-    
-    static NSString* brn_browserUserAgentString = nil;
-
-    void (^setBrowserUserAgent)(void) = ^() {
-        @synchronized (self) {
-            if (!brn_browserUserAgentString) {
-                brn_browserUserAgentString =
-                    [[[UIWebView alloc]
-                      initWithFrame:CGRectZero]
-                        stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-                BNCPreferenceHelper *preferences = [BNCPreferenceHelper preferenceHelper];
-                preferences.browserUserAgentString = brn_browserUserAgentString;
-                preferences.lastSystemBuildVersion = self.systemBuildVersion;
-                BNCLogDebugSDK(@"userAgentString: '%@'.", brn_browserUserAgentString);
-            }
-        }
-	};
-
-    NSString* (^browserUserAgent)(void) = ^ NSString* () {
-        @synchronized (self) {
-            return brn_browserUserAgentString;
-        }
-    };
-
-    @synchronized (self) {
-        //	We only get the string once per app run:
-
-        if (brn_browserUserAgentString)
-            return brn_browserUserAgentString;
-
-        //  Did we cache it?
-
-        BNCPreferenceHelper *preferences = [BNCPreferenceHelper preferenceHelper];
-        if (preferences.browserUserAgentString &&
-            preferences.lastSystemBuildVersion &&
-            [preferences.lastSystemBuildVersion isEqualToString:self.systemBuildVersion]) {
-            brn_browserUserAgentString = [preferences.browserUserAgentString copy];
-            return brn_browserUserAgentString;
-        }
-
-        //	Make sure this executes on the main thread.
-        //	Uses an implied lock through dispatch_queues:  This can deadlock if mis-used!
-
-        if (NSThread.isMainThread) {
-            setBrowserUserAgent();
-            return brn_browserUserAgentString;
-        }
-
-    }
-
-    //  Different case for iOS 7.0:
-    if ([UIDevice currentDevice].systemVersion.doubleValue  < 8.0) {
-        BNCLogDebugSDK(@"Getting iOS 7 UserAgent.");
-        dispatch_sync(dispatch_get_main_queue(), ^ {
-            setBrowserUserAgent();
-        });
-        BNCLogDebugSDK(@"Got iOS 7 UserAgent.");            
-        return browserUserAgent();
-    }
-
-    //	Wait and yield to prevent deadlock:
-    int retries = 10;
-    int64_t timeoutDelta = (dispatch_time_t)((long double)NSEC_PER_SEC * (long double)0.100);
-    while (!browserUserAgent() && retries > 0) {
-
-        dispatch_block_t agentBlock = dispatch_block_create_with_qos_class(
-            DISPATCH_BLOCK_DETACHED | DISPATCH_BLOCK_ENFORCE_QOS_CLASS,
-            QOS_CLASS_USER_INTERACTIVE,
-            0,  ^ {
-                BNCLogDebugSDK(@"Will set userAgent.");
-                setBrowserUserAgent();
-                BNCLogDebugSDK(@"Did set userAgent.");
-            });
-        dispatch_async(dispatch_get_main_queue(), agentBlock);
-
-        dispatch_time_t timeoutTime = dispatch_time(DISPATCH_TIME_NOW, timeoutDelta);
-        dispatch_block_wait(agentBlock, timeoutTime);
-        retries--;
-    }
-    BNCLogDebugSDK(@"Retries: %d", 10-retries);
-
-    return browserUserAgent();
++ (NSString *)userAgentString {
+    return [BNCUserAgentCollector instance].userAgent;
 }
 
 - (NSDictionary*) v2dictionary {

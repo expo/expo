@@ -140,7 +140,7 @@ firebase.auth().onAuthStateChanged((user) => {
 });
 
 async function loginWithFacebook() {
-  const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
+  const { type, token } = await Facebook.logInWithReadPermissionsAsync(
     '<APP_ID>',
     { permissions: ['public_profile'] }
   );

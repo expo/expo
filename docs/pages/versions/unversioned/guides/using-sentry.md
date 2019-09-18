@@ -79,6 +79,19 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 
 With the `postPublish` hook in place, now all you need to do is hit publish and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](https://blog.expo.io/publishing-on-exponent-790493660d24).
 
+In order to use the published release source maps with Issues in Sentry, you'll have to set your Expo `revisionId` as the Sentry release identifier, like so:
+
+```javascript
+// e.g. in your `App.js`
+import Constants from 'expo-constants';
+
+// ... initialize Sentry first
+
+Sentry.setRelease(Constants.manifest.revisionId);
+```
+
+Note that the `revisionId` is not available in the manifest when running in development mode (using Expo CLI), defaulting to `undefined`.
+
 ## Error reporting semantics
 
 In order to ensure that errors are reported reliably, Sentry defers reporting the data to their backend until the next time you load the app after a fatal error rather than trying to report it upon catching the exception. It saves the stacktrace and other metadata to `AsyncStorage` and sends it immediately when the app starts.

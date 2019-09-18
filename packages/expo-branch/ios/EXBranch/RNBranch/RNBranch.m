@@ -89,9 +89,6 @@ RCT_EXPORT_MODULE();
     if (config.delayInitToCheckForSearchAds) {
         [instance delayInitToCheckForSearchAds];
     }
-    if (config.appleSearchAdsDebugMode) {
-        [instance setAppleSearchAdsDebugMode];
-    }
 }
 
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
@@ -145,11 +142,6 @@ RCT_EXPORT_MODULE();
 + (void)delayInitToCheckForSearchAds
 {
     [self.branch delayInitToCheckForSearchAds];
-}
-
-+ (void)setAppleSearchAdsDebugMode
-{
-    [self.branch setAppleSearchAdsDebugMode];
 }
 
 + (void)setRequestMetadataKey:(NSString *)key value:(NSObject *)value

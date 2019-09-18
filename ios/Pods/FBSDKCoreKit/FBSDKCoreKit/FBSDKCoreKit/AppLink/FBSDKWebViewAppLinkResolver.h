@@ -22,8 +22,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*!
- A reference implementation for an App Link resolver that uses a hidden UIWebView
+/**
+ A reference implementation for an App Link resolver that uses a hidden WKWebView
  to parse the HTML containing App Link metadata.
  */
 NS_SWIFT_NAME(WebViewAppLinkResolver)

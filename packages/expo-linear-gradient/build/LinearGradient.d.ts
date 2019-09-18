@@ -14,7 +14,7 @@ declare type Point = {
 export default class LinearGradient extends React.Component<Props> {
     static propTypes: {
         colors: PropTypes.Validator<string[]>;
-        locations: PropTypes.Requireable<(number | null)[]>;
+        locations: PropTypes.Requireable<(number | null | undefined)[]>;
         start: PropTypes.Requireable<object>;
         end: PropTypes.Requireable<object>;
         hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;

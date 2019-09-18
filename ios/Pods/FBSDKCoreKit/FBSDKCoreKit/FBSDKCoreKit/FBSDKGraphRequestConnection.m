@@ -18,9 +18,10 @@
 
 #import "FBSDKGraphRequestConnection+Internal.h"
 
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+
 #import "FBSDKAppEvents+Internal.h"
 #import "FBSDKConstants.h"
-#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKError.h"
 #import "FBSDKErrorConfiguration.h"
 #import "FBSDKGraphRequest+Internal.h"
@@ -1067,6 +1068,8 @@ NSURLSessionDataDelegate
   }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 + (NSString *)userAgent
 {
   static NSString *agent = nil;
@@ -1074,12 +1077,21 @@ NSURLSessionDataDelegate
   dispatch_once(&onceToken, ^{
     agent = [NSString stringWithFormat:@"%@.%@", kUserAgentBase, FBSDK_VERSION_STRING];
   });
-
+  NSString *agentWithSuffix = nil;
   if ([FBSDKSettings userAgentSuffix]) {
-    return [NSString stringWithFormat:@"%@/%@", agent, [FBSDKSettings userAgentSuffix]];
+    agentWithSuffix = [NSString stringWithFormat:@"%@/%@", agent, [FBSDKSettings userAgentSuffix]];
   }
-  return agent;
+  if (@available(iOS 13.0, *)) {
+    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+    SEL selector = NSSelectorFromString(@"isMacCatalystApp");
+    if (selector && [processInfo respondsToSelector:selector] && [processInfo performSelector:selector]) {
+      return [NSString stringWithFormat:@"%@/%@", agentWithSuffix ?: agent, @"macOS"];
+    }
+  }
+
+  return agentWithSuffix ?: agent;
 }
+#pragma clang diagnostic pop
 
 #pragma mark - NSURLSessionDataDelegate
 

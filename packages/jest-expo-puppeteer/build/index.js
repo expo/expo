@@ -73,7 +73,7 @@ function withExpoPuppeteer(config = {}) {
         command = ofCommands([`cd ${projectPath} && yarn && cd ${process.cwd()}`, command]);
     }
     const url = isUndefined(config.url) ? defaultURL : config.url;
-    return Object.assign({ hasServerSideRendering }, partConfig, { url, launch: Object.assign({}, getPuppeteerOptions(), launch), server: Object.assign({ launchTimeout, debug: true }, server, { command, port: serverPort }) });
+    return Object.assign(Object.assign({ hasServerSideRendering }, partConfig), { url, launch: Object.assign(Object.assign({}, getPuppeteerOptions()), launch), server: Object.assign(Object.assign({ launchTimeout, debug: true }, server), { command, port: serverPort }) });
 }
 exports.withExpoPuppeteer = withExpoPuppeteer;
 //# sourceMappingURL=index.js.map

@@ -22,11 +22,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*! The version of the App Link protocol that this library supports */
+/** The version of the App Link protocol that this library supports */
 FOUNDATION_EXPORT NSString *const FBSDKAppLinkVersion
 NS_SWIFT_NAME(AppLinkVersion);
 
-/*!
+/**
  Contains App Link metadata relevant for navigation on this device
  derived from the HTML at a given URL.
  */
@@ -36,7 +36,7 @@ NS_SWIFT_NAME(AppLink)
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-/*!
+/**
  Creates a FBSDKAppLink with the given list of FBSDKAppLinkTargets and target URL.
 
  Generally, this will only be used by implementers of the FBSDKAppLinkResolving protocol,
@@ -52,16 +52,16 @@ NS_SWIFT_NAME(AppLink)
                               webURL:(nullable NSURL *)webURL
 NS_SWIFT_NAME(init(sourceURL:targets:webURL:));
 
-/*! The URL from which this FBSDKAppLink was derived */
+/** The URL from which this FBSDKAppLink was derived */
 @property (nonatomic, strong, readonly) NSURL *sourceURL;
 
-/*!
+/**
  The ordered list of targets applicable to this platform that will be used
  for navigation.
  */
 @property (nonatomic, copy, readonly) NSArray<FBSDKAppLinkTarget *> *targets;
 
-/*! The fallback web URL to use if no targets are installed on this device. */
+/** The fallback web URL to use if no targets are installed on this device. */
 @property (nonatomic, strong, readonly, nullable) NSURL *webURL;
 
 @end
