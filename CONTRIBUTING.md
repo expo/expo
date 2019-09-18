@@ -3,7 +3,7 @@
 - [📦 Download and Setup](#-download-and-setup)
 - [✍️ Editing Packages](#-editing-packages)
   - [Extra Credit](#extra-credit)
-- [⏱ Testing your changes](#-testing-your-changes)
+- [⏱ Testing Your Changes](#-testing-your-changes)
   - [✅ Unit Testing](#-unit-testing)
   - [🏁 E2E Testing](#-e2e-testing)
 - [📚 Updating Documentation](#-updating-documentation)
