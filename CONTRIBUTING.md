@@ -67,7 +67,7 @@ All modules should adhere to the style guides which can be found here:
 - All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozen of packages locally on every `git pull` or `git checkout` operation.
 - We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
-## ⏱ Testing your changes
+## ⏱ Testing Your Changes
 
 > You'll need write about how you tested your changes in the PR under the **Test Plan** section.
 
@@ -104,7 +104,7 @@ Our docs are made with [Next.js](https://github.com/zeit/next.js). They're locat
 3. Navigate to the docs you want to edit: `cd docs/pages/versions/unversioned/`
 4. If you update an older version, ensure the relevant changes are copied into `unversioned/`
 
-## 📝 Writing a commit message
+## 📝 Writing a Commit Message
 
 > If this is your first time committing to a large public repo, you could look through this neat tutorial: ["How to Write a Git Commit Message"](https://chris.beams.io/posts/git-commit/)
 
