@@ -1,11 +1,8 @@
 package expo.modules.ota
 
 import android.content.Context
-
 import org.unimodules.core.BasePackage
 import org.unimodules.core.ExportedModule
-import org.unimodules.core.ViewManager
-import java.util.Collections.emptyList
 import java.util.Collections.singletonList
 
 class OtaPackage @JvmOverloads constructor(private val id: String = DEFAULT_EXPO_OTA_ID) : BasePackage() {
@@ -16,7 +13,4 @@ class OtaPackage @JvmOverloads constructor(private val id: String = DEFAULT_EXPO
         return singletonList<ExportedModule>(OtaModule(context, persistence, updater) as ExportedModule)
     }
 
-    override fun createViewManagers(context: Context): List<ViewManager<*>> {
-        return emptyList<ViewManager<*>>()
-    }
 }

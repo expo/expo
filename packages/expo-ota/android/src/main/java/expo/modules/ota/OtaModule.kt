@@ -78,6 +78,5 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
 
     companion object {
         private val NAME = "ExpoOta"
-        private val TAG = "expo.modules.expo.modules.ota.OtaModule"
     }
 }

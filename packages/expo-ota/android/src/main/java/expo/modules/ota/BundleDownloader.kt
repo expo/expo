@@ -1,25 +1,11 @@
 package expo.modules.ota
 
 import android.content.Context
-
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStream
-
-import okhttp3.CacheControl
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.HttpUrl
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.ResponseBody
+import okhttp3.*
 import okio.BufferedSource
 import okio.Okio
-import okio.Source
-import kotlin.error as error1
+import java.io.FileNotFoundException
+import java.io.IOException
 
 class BundleDownloader(private val context: Context, private val okHttpClient: OkHttpClient, private val fallbackResponses: List<FallbackResponse>) {
 

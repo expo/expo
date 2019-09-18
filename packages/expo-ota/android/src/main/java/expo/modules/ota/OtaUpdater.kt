@@ -7,7 +7,6 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.HashSet
 
 class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val id: String) {
     fun checkAndDownloadUpdate(success: (manifest: JSONObject, path: String) -> Unit,

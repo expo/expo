@@ -67,11 +67,11 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
 
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-  testImplementation "org.junit.jupiter:junit-jupiter-params:5.5.1"
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
+  implementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+  implementation "org.junit.jupiter:junit-jupiter-params:5.5.1"
+  runtimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
 
-  testImplementation 'io.mockk:mockk:1.9'
+  implementation 'io.mockk:mockk:1.9'
 
   api 'com.android.support:support-annotations:28.0.0'
 
