@@ -1,4 +1,4 @@
-package expo.modules.branch.vendored;
+package io.branch.rnbranch;
 
 /**
  * Created by jdee on 3/8/17.
