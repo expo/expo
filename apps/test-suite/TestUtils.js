@@ -29,18 +29,43 @@ function optionalRequire(requirer) {
 // List of all modules for tests. Each file path must be statically present for
 // the packager to pick them all up.
 export function getTestModules() {
+  const modules = [
+    // Sanity
+    require('./tests/Basic'),
+  ];
+
+  // Expo core modules should run everywhere
+  modules.push(
+    require('./tests/Asset'),
+    require('./tests/Constants'),
+    require('./tests/FileSystem'),
+    require('./tests/Font'),
+    require('./tests/Permissions')
+  );
+
+  // Universally tested APIs
+  modules.push(require('./tests/Random'), require('./tests/Crypto'));
+
+  if (Platform.OS === 'android') {
+    modules.push(require('./tests/JSC'));
+  }
+
+  if (global.DETOX) {
+    modules.push(
+      require('./tests/Contacts'),
+      require('./tests/Haptics'),
+      require('./tests/Localization'),
+      require('./tests/SecureStore')
+    );
+    return modules;
+  }
+
   if (Platform.OS === 'web') {
-    const modules = [
-      optionalRequire(() => require('./tests/Asset')),
-      optionalRequire(() => require('./tests/SVG')),
-      optionalRequire(() => require('./tests/Basic')),
-      optionalRequire(() => require('./tests/Constants')),
-      optionalRequire(() => require('./tests/Contacts')),
-      optionalRequire(() => require('./tests/Crypto')),
-      optionalRequire(() => require('./tests/Font')),
-      optionalRequire(() => require('./tests/Random')),
-      optionalRequire(() => require('./tests/Localization')),
-    ];
+    modules.push(
+      require('./tests/Contacts'),
+      // require('./tests/SVG'),
+      require('./tests/Localization')
+    );
 
     if (browserSupportsWebGL()) {
       modules.push(optionalRequire(() => require('./tests/GLView')));
@@ -52,12 +77,8 @@ export function getTestModules() {
     return modules.filter(Boolean);
   }
 
-  const modules = [
-    require('./tests/Basic'),
+  modules.push(
     optionalRequire(() => require('./tests/Application')),
-    optionalRequire(() => require('./tests/Asset')),
-    optionalRequire(() => require('./tests/Constants')),
-    optionalRequire(() => require('./tests/Crypto')),
     optionalRequire(() => require('./tests/Device')),
     optionalRequire(() => require('./tests/GLView')),
     optionalRequire(() => require('./tests/Haptics')),
@@ -66,31 +87,16 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/SecureStore')),
     optionalRequire(() => require('./tests/Segment')),
     optionalRequire(() => require('./tests/SQLite')),
-    optionalRequire(() => require('./tests/Random')),
-  ];
+    optionalRequire(() => require('./tests/Speech')),
+    optionalRequire(() => require('./tests/Recording')),
+    optionalRequire(() => require('./tests/ScreenOrientation')),
+    optionalRequire(() => require('./tests/Payments')),
+    optionalRequire(() => require('./tests/AdMobInterstitial')),
+    optionalRequire(() => require('./tests/AdMobRewarded')),
+    optionalRequire(() => require('./tests/FBBannerAd'))
+  );
 
-  if (global.DETOX) {
-    modules.push(
-      optionalRequire(() => require('./tests/Contacts')),
-      modules.push(optionalRequire(() => require('./tests/Permissions'))),
-      modules.push(optionalRequire(() => require('./tests/Calendar'))),
-      modules.push(optionalRequire(() => require('./tests/Video'))),
-      modules.push(optionalRequire(() => require('./tests/Audio')))
-    );
-  } else {
-    modules.push(
-      optionalRequire(() => require('./tests/Speech')),
-      optionalRequire(() => require('./tests/Recording')),
-      optionalRequire(() => require('./tests/FileSystem')),
-      optionalRequire(() => require('./tests/ScreenOrientation')),
-      optionalRequire(() => require('./tests/Payments')),
-      optionalRequire(() => require('./tests/AdMobInterstitial')),
-      optionalRequire(() => require('./tests/AdMobRewarded')),
-      optionalRequire(() => require('./tests/FBBannerAd'))
-    );
-  }
-
-  if (!global.DETOX && !isDeviceFarm()) {
+  if (!isDeviceFarm()) {
     // Times out sometimes
     modules.push(
       optionalRequire(() => require('./tests/AdMobPublisherBanner')),
@@ -109,6 +115,7 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
+
     if (Constants.isDevice) {
       modules.push(optionalRequire(() => require('./tests/Battery')));
       modules.push(optionalRequire(() => require('./tests/Brightness')));
@@ -124,7 +131,6 @@ export function getTestModules() {
     if (Constants.isDevice && Platform.OS === 'android')
       modules.push(optionalRequire(() => require('./tests/Camera')));
   }
-  if (Platform.OS === 'android') modules.push(optionalRequire(() => require('./tests/JSC')));
   if (Constants.isDevice) {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));

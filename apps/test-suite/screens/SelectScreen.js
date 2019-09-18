@@ -1,20 +1,20 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
-  TouchableHighlight,
-  TouchableNativeFeedback,
-  StyleSheet,
-  FlatList,
-  View,
-  Text,
-  Platform,
-  Linking,
   Alert,
   Button,
+  FlatList,
+  Linking,
   PixelRatio,
-  AppState,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  View,
 } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import { MaterialIcons } from '@expo/vector-icons';
+
 import { getTestModules } from '../TestUtils';
 
 class ListItem extends React.Component {
@@ -74,21 +74,12 @@ export default class SelectScreen extends React.PureComponent {
     this.modules = getTestModules();
     this.state = {
       selected: new Set(),
-      appState: AppState.currentState,
     };
   }
 
   componentWillUnmount() {
     Linking.removeEventListener('url', this._handleOpenURL);
   }
-
-  _handleAppStateChange = nextAppState => {
-    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      console.log('App has come to the foreground!');
-      this.checkLinking();
-    }
-    this.setState({ appState: nextAppState });
-  };
 
   checkLinking = incomingTests => {
     if (incomingTests) {
