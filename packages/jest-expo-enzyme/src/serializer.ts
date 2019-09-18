@@ -1,30 +1,33 @@
-import React from 'react';
+import { cloneElement, isValidElement } from 'react';
 import { StyleSheet } from 'react-native';
 
-function createSerializer(styleSheet) {
-  function flattenNodeStyles(node) {
+function create(StyleSheet: { flatten: (style: any) => any }): any {
+  function flattenNodeStyles(node?: any): any {
     if (node && node.props) {
       // check for React elements in any props
       const nextProps = Object.keys(node.props).reduce((acc, curr) => {
         const value = node.props[curr];
-        if (React.isValidElement(value)) {
+        if (isValidElement(value)) {
+          // @ts-ignore
           acc[curr] = flattenNodeStyles(value);
         }
         return acc;
       }, {});
-
+  
       // flatten styles and avoid empty objects in snapshots
       if (node.props.style) {
-        const style = styleSheet.flatten(node.props.style);
+        const style = StyleSheet.flatten(node.props.style);
         if (Object.keys(style).length > 0) {
+          // @ts-ignore
           nextProps.style = style;
         } else {
+          // @ts-ignore
           delete nextProps.style;
         }
       }
-
+  
       const args = [node, nextProps];
-
+  
       // recurse over children too
       const children = node.children || node.props.children;
       if (children) {
@@ -36,24 +39,22 @@ function createSerializer(styleSheet) {
           args.push(flattenNodeStyles(children));
         }
       }
-
-      return React.cloneElement.apply(React.cloneElement, args);
+  
+      // @ts-ignore
+      return cloneElement.apply(cloneElement, args);
     }
-
+  
     return node;
   }
-
-  function test(value) {
-    return !!value && value.$$typeof === Symbol.for('react.test.json');
-  }
-
-  function print(value, serializer) {
-    return serializer(flattenNodeStyles(value));
-  }
-
-  return { test, print };
+  
+return { 
+    test(value: any): boolean {
+      return !!value && value.$$typeof === Symbol.for('react.test.json');
+    }, 
+    print(value: any, serialize: (val: any) => string): string {
+      return serialize(flattenNodeStyles(value));
+    }  
+  };
 }
 
-const serializer = createSerializer(StyleSheet);
-
-export default serializer;
+export default create(StyleSheet);

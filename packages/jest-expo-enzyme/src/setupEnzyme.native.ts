@@ -7,6 +7,15 @@ import Adapter from 'enzyme-adapter-react-16';
 import Enzyme from 'enzyme';
 import serializer from './serializer';
 
+type Global = {
+  window: any;
+  document: any;
+  navigator: any;
+  expect: any;
+}
+
+declare const global: Global;
+
 /**
  * Set up DOM in node.js environment for Enzyme to mount to
  */
@@ -34,12 +43,12 @@ Object.defineProperties(global, {
  */
 Enzyme.configure({ adapter: new Adapter() });
 
-expect.addSnapshotSerializer(serializer);
+global.expect.addSnapshotSerializer(serializer);
 
 // Mute DOM formatting errors
 const originalConsoleError = console.error;
 
-console.error = message => {
+console.error = (message: string) => {
   if (message.startsWith('Warning:')) {
     return;
   }

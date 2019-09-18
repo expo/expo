@@ -2,29 +2,26 @@
   "name": "jest-expo-enzyme",
   "version": "0.0.0-rc.0",
   "license": "MIT",
-  "main": "src",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/*",
+    "jest-preset.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/expo/expo.git",
     "directory": "packages/jest-expo-enzyme"
   },
-  "files": [
-    "android",
-    "bin",
-    "ios",
-    "node",
-    "src",
-    "universal",
-    "web",
-    "enzyme",
-    "sunset",
-    "jest-preset.js"
-  ],
   "jest": {
     "preset": "jest-expo-enzyme"
   },
   "scripts": {
-    "lint": "expo-module eslint src tests",
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
     "test": "jest"
   },
   "peerDependencies": {
@@ -33,10 +30,14 @@
     "react-native-web": "*"
   },
   "dependencies": {
+    "@types/enzyme": "^3.10.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/jest": "^24.0.18",
     "chalk": "^2.4.2",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "enzyme-to-json": "^3.4.0",
+    "expo-module-scripts": "^1.0.1",
     "jest-canvas-mock": "^2.1.1",
     "jest-enzyme": "^7.1.0",
     "jest-expo": "~35.0.0-rc.0",
