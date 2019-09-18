@@ -23,13 +23,13 @@
 
     ],
     "Firebase/Core": [
-
+      "~> 6.7.0"
     ],
     "Firebase/MLVision": [
-
+      "~> 6.7.0"
     ],
     "Firebase/MLVisionFaceModel": [
-
+      "~> 6.7.0"
     ]
   }
 }
