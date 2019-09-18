@@ -25,7 +25,7 @@
     "@expo/commander": "2.21.1",
     "@expo/json-file": "^8.0.0",
     "@expo/spawn-async": "^1.5.0",
-    "@expo/xdl": "^56.2.0",
+    "@expo/xdl": "56.2.2-alpha.0",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
     "@types/connect": "^3.4.32",

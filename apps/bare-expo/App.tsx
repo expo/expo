@@ -7,7 +7,7 @@ import { createProxy, startAsync, addListener } from './relapse/client';
 
 export default function Main() {
   // @ts-ignore
-  if (DETOX) {
+  if (global.DETOX) {
     React.useEffect(() => {
       addListener(data => {
         if (data.globals) {

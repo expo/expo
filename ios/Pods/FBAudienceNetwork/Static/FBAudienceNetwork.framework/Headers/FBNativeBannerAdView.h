@@ -33,9 +33,9 @@ typedef NS_ENUM(NSInteger, FBNativeBannerAdViewType) {
     /// Fixed height view, 100 points (banner equivalent)
     FBNativeBannerAdViewTypeGenericHeight100 = 1,
     /// Fixed height view, 120 points (banner equivalent)
-    FBNativeBannerAdViewTypeGenericHeight120,
+    FBNativeBannerAdViewTypeGenericHeight120 = 2,
     /// Fixed height view, 50 points (banner equivalent)
-    FBNativeBannerAdViewTypeGenericHeight50,
+    FBNativeBannerAdViewTypeGenericHeight50 = 5,
 };
 
 /**

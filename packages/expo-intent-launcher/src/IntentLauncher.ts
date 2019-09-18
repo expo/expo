@@ -123,7 +123,10 @@ export enum ResultCode {
   FirstUser = 1,
 }
 
-export async function startActivityAsync(activityAction: string, params: IntentParams = {}): Promise<IntentResult> {
+export async function startActivityAsync(
+  activityAction: string,
+  params: IntentParams = {}
+): Promise<IntentResult> {
   if (!ExpoIntentLauncher.startActivity) {
     throw new UnavailabilityError('IntentLauncher', 'startActivityAsync');
   }

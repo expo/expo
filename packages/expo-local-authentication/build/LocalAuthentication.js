@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import { AuthenticationType } from './LocalAuthentication.types';
+import { AuthenticationType, } from './LocalAuthentication.types';
 export { AuthenticationType };
 export async function hasHardwareAsync() {
     if (!ExpoLocalAuthentication.hasHardwareAsync) {

@@ -64,10 +64,6 @@ export default class UserSettingsScreen extends React.Component {
   };
 
   _setPreferredAppearance = (preferredAppearance: 'light' | 'dark' | 'automatic') => {
-    Analytics.track(Analytics.events.USER_UPDATED_SETTINGS, {
-      preferredAppearance,
-    });
-
     this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
   };
 
@@ -131,7 +127,7 @@ export default class UserSettingsScreen extends React.Component {
     const { preferredAppearance } = this.props;
 
     return (
-      <View style={{marginTop: 25}}>
+      <View style={{ marginTop: 25 }}>
         <SectionLabelContainer>
           <SectionLabelText>THEME</SectionLabelText>
         </SectionLabelContainer>
@@ -171,16 +167,15 @@ export default class UserSettingsScreen extends React.Component {
           </GenericCardContainer>
         </TouchableHighlight>
 
-
         <View style={SharedStyles.genericCardDescriptionContainer}>
           <Text style={SharedStyles.genericCardDescriptionText}>
-            Automatic is only supported on operating systems that allow you to control the system-wide color scheme.
+            Automatic is only supported on operating systems that allow you to control the
+            system-wide color scheme.
           </Text>
         </View>
       </View>
     );
   }
-
 
   _renderCheckmark() {
     return (

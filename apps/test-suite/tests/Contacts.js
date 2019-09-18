@@ -3,8 +3,8 @@
 import * as Permissions from 'expo-permissions';
 import * as Contacts from 'expo-contacts';
 import { Platform } from 'react-native';
+import { Asset } from 'expo-asset';
 import * as TestUtils from '../TestUtils';
-
 export const name = 'Contacts';
 
 export function canRunAsync({ isAutomated }) {
@@ -33,6 +33,16 @@ async function sortContacts(expect, sortField) {
   }
 }
 
+async function getContactAtIndex(index, fields) {
+  // Make sure the contact has a phone number to skip!
+  const { data } = await Contacts.getContactsAsync({
+    fields,
+    pageSize: 1,
+    pageOffset: index,
+  });
+  return data[0];
+}
+
 export async function test({ describe, it, xdescribe, jasmine, expect }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
@@ -48,13 +58,45 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
       let customContactId;
       describe('Contacts.addContactAsync()', () => {
         it('creates contact', async () => {
+          const image = Asset.fromModule(require('../assets/icons/app.png'));
+          await image.downloadAsync();
+
           customContactId = await Contacts.addContactAsync({
+            [Contacts.Fields.Image]: image.localUri,
             [Contacts.Fields.FirstName]: 'Eric',
             [Contacts.Fields.LastName]: 'Cartman',
             [Contacts.Fields.JobTitle]: 'Actor',
           });
           expect(typeof customContactId).toBe('string');
         });
+      });
+
+      it('gets a local image', async () => {
+        // This may need to be tweaked because you cannot add test contacts on android
+        const contact = await Contacts.getContactByIdAsync(customContactId, [
+          Contacts.Fields.Image,
+          'imageBase64',
+        ]);
+        expect(contact.imageAvailable).toBe(true);
+        expect(contact.thumbnail).toBeUndefined();
+
+        // TODO(Bacon): Add contact creation for Android
+        if (isAndroid) {
+          expect(contact.image).toEqual(
+            jasmine.objectContaining({
+              uri: jasmine.any(String),
+            })
+          );
+        } else {
+          expect(contact.image).toEqual(
+            jasmine.objectContaining({
+              uri: jasmine.any(String),
+              height: jasmine.any(Number),
+              width: jasmine.any(Number),
+              base64: jasmine.any(String),
+            })
+          );
+        }
       });
 
       describe('Contacts.writeContactToFileAsync()', () => {
@@ -137,16 +179,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
         expect(data[0].imageAvailable).toBeDefined();
       });
 
-      async function getContactAtIndex(index, fields) {
-        // Make sure the contact has a phone number to skip!
-        const { data } = await Contacts.getContactsAsync({
-          fields,
-          pageSize: 1,
-          pageOffset: index,
-        });
-        return data[0];
-      }
-
       it('skips phone number if not asked', async () => {
         // This may need to be tweaked because you cannot add test contacts on android
         const testIndex = 1;
@@ -163,30 +195,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect }) {
 
         const initialContactWithoutNumbers = await getContactAtIndex(testIndex, []);
         expect(initialContactWithoutNumbers.phoneNumbers).toBeUndefined();
-      });
-
-      it('gets a local image', async () => {
-        // This may need to be tweaked because you cannot add test contacts on android
-        const contact = await getContactAtIndex(0, [Contacts.Fields.Image, 'imageBase64']);
-        expect(contact.imageAvailable).toBe(true);
-        expect(contact.thumbnail).toBeUndefined();
-
-        if (isAndroid) {
-          expect(contact.image).toEqual(
-            jasmine.objectContaining({
-              uri: jasmine.any(String),
-            })
-          );
-        } else {
-          expect(contact.image).toEqual(
-            jasmine.objectContaining({
-              uri: jasmine.any(String),
-              height: jasmine.any(Number),
-              width: jasmine.any(Number),
-              base64: jasmine.any(String),
-            })
-          );
-        }
       });
 
       it('respects the page size', async () => {

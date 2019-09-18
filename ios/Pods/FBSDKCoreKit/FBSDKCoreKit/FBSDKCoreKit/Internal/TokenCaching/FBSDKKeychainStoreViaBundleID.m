@@ -41,7 +41,7 @@
   query[(__bridge id)[FBSDKDynamicFrameworkLoader loadkSecAttrGeneric]] = key;
 
 #if !TARGET_IPHONE_SIMULATOR
-  [FBSDKInternalUtility dictionary:query setObject:self.accessGroup forKey:[FBSDKDynamicFrameworkLoader loadkSecAttrAccessGroup]];
+  [FBSDKBasicUtility dictionary:query setObject:self.accessGroup forKey:[FBSDKDynamicFrameworkLoader loadkSecAttrAccessGroup]];
 #endif
 
   return query;

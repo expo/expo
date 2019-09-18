@@ -11,6 +11,9 @@ project(':react-native-reanimated').projectDir = new File(rootProject.projectDir
 include ':react-native-screens'
 project(':react-native-screens').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-screens/android')
 
+include ':react-native-safe-area-context'
+project(':react-native-safe-area-context').projectDir = new File(rootProject.projectDir, '../../../node_modules/react-native-safe-area-context/android')
+
 // Unimodules
 
 // [Custom] load the excluded unimodules from the package.json to ensure 

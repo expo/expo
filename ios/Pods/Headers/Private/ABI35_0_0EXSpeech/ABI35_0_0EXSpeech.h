@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/EXSpeech/ABI35_0_0EXSpeech/ABI35_0_0EXSpeech.h

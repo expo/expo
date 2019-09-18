@@ -16,7 +16,7 @@
 @class GMSPanoramaView;
 @class UIImage;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * \defgroup MarkerAnimation GMSMarkerAnimation
@@ -176,4 +176,4 @@ FOUNDATION_EXTERN const CGPoint kGMSMarkerDefaultGroundAnchor;
  */
 FOUNDATION_EXTERN const CGPoint kGMSMarkerDefaultInfoWindowAnchor;
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

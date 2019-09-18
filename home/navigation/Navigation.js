@@ -2,12 +2,9 @@
 
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import {
-  createAppContainer,
-  createStackNavigator,
-  createBottomTabNavigator,
-  useTheme,
-} from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
 
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
@@ -165,7 +162,7 @@ const TabNavigator =
         },
         tabBarOptions: {
           activeTintColor: {
-            light: Colors.light.tintColor, 
+            light: Colors.light.tintColor,
             dark: Colors.light.tintColor,
           },
           style: {
@@ -175,14 +172,20 @@ const TabNavigator =
         },
       })
     : createMaterialBottomTabNavigator(TabRoutes, {
-        initialRouteName: 'ProjectsStack',
-        activeTintColor: Colors.tabIconSelected,
-        inactiveTintColor: Colors.tabIconDefault,
+        initialRouteName: 'ExploreStack',
+        activeColor: Colors.tabIconSelected,
+        inactiveColor: Colors.tabIconDefault,
+        shifting: true,
         navigationOptions: {
           header: null,
         },
-        barStyle: {
+        barStyleLight: {
           backgroundColor: '#fff',
+        },
+        barStyleDark: {
+          backgroundColor: Colors.dark.cardBackground,
+          borderTopWidth: StyleSheet.hairlineWidth * 2,
+          borderTopColor: Colors.dark.cardSeparator,
         },
       });
 

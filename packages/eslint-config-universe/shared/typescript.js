@@ -15,6 +15,8 @@ module.exports = {
       'warn',
       { vars: 'all', args: 'none', ignoreRestSiblings: true },
     ],
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'warn',
   },
   settings: {
     'import/extensions': allExtensions,

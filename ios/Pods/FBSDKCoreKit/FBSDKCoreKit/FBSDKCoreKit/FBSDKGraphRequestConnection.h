@@ -18,32 +18,45 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+/**
+ The key in the result dictionary for requests to old versions of the Graph API
+ whose response is not a JSON object.
+
+
+ When a request returns a non-JSON response (such as a "true" literal), that response
+ will be wrapped into a dictionary using this const as the key. This only applies for very few Graph API
+ prior to v2.1.
+ */
+FOUNDATION_EXPORT NSString *const FBSDKNonJSONResponseProperty
+NS_SWIFT_NAME(NonJSONResponseProperty);
+
 @class FBSDKGraphRequest;
 @class FBSDKGraphRequestConnection;
 
 /**
- FBSDKGraphRequestHandler
+ FBSDKGraphRequestBlock
 
   A block that is passed to addRequest to register for a callback with the results of that
  request once the connection completes.
 
-
-
  Pass a block of this type when calling addRequest.  This will be called once
  the request completes.  The call occurs on the UI thread.
 
- @param connection      The `FBSDKGraphRequestConnection` that sent the request.
+ @param connection The `FBSDKGraphRequestConnection` that sent the request.
 
- @param result          The result of the request.  This is a translation of
+ @param result The result of the request.  This is a translation of
  JSON data to `NSDictionary` and `NSArray` objects.  This
  is nil if there was an error.
 
- @param error           The `NSError` representing any error that occurred.
+ @param error The `NSError` representing any error that occurred.
 
  */
-typedef void (^FBSDKGraphRequestHandler)(FBSDKGraphRequestConnection *connection,
-                                         id result,
-                                         NSError *error);
+typedef void (^FBSDKGraphRequestBlock)(FBSDKGraphRequestConnection *_Nullable connection,
+                                       id _Nullable result,
+                                       NSError *_Nullable error)
+NS_SWIFT_NAME(GraphRequestBlock);
 
 /**
  @protocol
@@ -51,6 +64,7 @@ typedef void (^FBSDKGraphRequestHandler)(FBSDKGraphRequestConnection *connection
   The `FBSDKGraphRequestConnectionDelegate` protocol defines the methods used to receive network
  activity progress information from a <FBSDKGraphRequestConnection>.
  */
+NS_SWIFT_NAME(GraphRequestConnectionDelegate)
 @protocol FBSDKGraphRequestConnectionDelegate <NSObject>
 
 @optional
@@ -79,7 +93,7 @@ typedef void (^FBSDKGraphRequestHandler)(FBSDKGraphRequestConnection *connection
 
  If the request connection completes without a network error occurring then this method is called.
  Invocation of this method does not indicate success of every <FBSDKGraphRequest> made, only that the
- request connection has no further activity. Use the error argument passed to the FBSDKGraphRequestHandler
+ request connection has no further activity. Use the error argument passed to the FBSDKGraphRequestBlock
  block to determine success or failure of each <FBSDKGraphRequest>.
 
  This method is invoked after the completion handler for each <FBSDKGraphRequest>.
@@ -97,7 +111,7 @@ typedef void (^FBSDKGraphRequestHandler)(FBSDKGraphRequestConnection *connection
 
  If the request connection fails with a network error then this method is called. The `error`
  argument specifies why the network connection failed. The `NSError` object passed to the
- FBSDKGraphRequestHandler block may contain additional information.
+ FBSDKGraphRequestBlock block may contain additional information.
 
  @param connection    The request connection that successfully completed a network request
  @param error         The `NSError` representing the network error that occurred, if any. May be nil
@@ -141,12 +155,18 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  e.g. starting a connection, canceling a connection, or batching requests.
 
  */
+NS_SWIFT_NAME(GraphRequestConnection)
 @interface FBSDKGraphRequestConnection : NSObject
+
+/**
+ The default timeout on all FBSDKGraphRequestConnection instances. Defaults to 60 seconds.
+ */
+@property (class, nonatomic, assign) NSTimeInterval defaultConnectionTimeout;
 
 /**
   The delegate object that receives updates.
  */
-@property (nonatomic, weak) id<FBSDKGraphRequestConnectionDelegate> delegate;
+@property (nonatomic, weak, nullable) id<FBSDKGraphRequestConnectionDelegate> delegate;
 
 /**
   Gets or sets the timeout interval to wait for a response before giving up.
@@ -162,22 +182,21 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  the server.
 
  The property is nil until the request completes.  If there was a response
- then this property will be non-nil during the FBSDKGraphRequestHandler callback.
+ then this property will be non-nil during the FBSDKGraphRequestBlock callback.
  */
-@property (nonatomic, retain, readonly) NSHTTPURLResponse *URLResponse;
+@property (nonatomic, retain, readonly) NSHTTPURLResponse *urlResponse;
+
+/**
+ Determines the operation queue that is used to call methods on the connection's delegate.
+
+ By default, a connection is scheduled on the current thread in the default mode when it is created.
+ You cannot reschedule a connection after it has started.
+ */
+@property (nonatomic, retain) NSOperationQueue *delegateQueue;
 
 /**
  @methodgroup Class methods
  */
-
-/**
- @method
-
-  This method sets the default timeout on all FBSDKGraphRequestConnection instances. Defaults to 60 seconds.
-
- @param defaultConnectionTimeout     The timeout interval.
- */
-+ (void)setDefaultConnectionTimeout:(NSTimeInterval)defaultConnectionTimeout;
 
 /**
  @methodgroup Adding requests
@@ -191,13 +210,11 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  @param request       A request to be included in the round-trip when start is called.
  @param handler       A handler to call back when the round-trip completes or times out.
 
-
-
  The completion handler is retained until the block is called upon the
  completion or cancellation of the connection.
  */
 - (void)addRequest:(FBSDKGraphRequest *)request
- completionHandler:(FBSDKGraphRequestHandler)handler;
+ completionHandler:(FBSDKGraphRequestBlock)handler;
 
 /**
  @method
@@ -209,12 +226,10 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  @param handler         A handler to call back when the round-trip completes or times out.
  The handler will be invoked on the main thread.
 
- @param name            An optional name for this request.  This can be used to feed
+ @param name            A name for this request.  This can be used to feed
  the results of one request to the input of another <FBSDKGraphRequest> in the same
  `FBSDKGraphRequestConnection` as described in
  [Graph API Batch Requests]( https://developers.facebook.com/docs/reference/api/batch/ ).
-
-
 
  The completion handler is retained until the block is called upon the
  completion or cancellation of the connection. This request can be named
@@ -222,12 +237,7 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
  */
 - (void)addRequest:(FBSDKGraphRequest *)request
     batchEntryName:(NSString *)name
- completionHandler:(FBSDKGraphRequestHandler)handler;
-
-- (void)addRequest:(FBSDKGraphRequest *)request
- completionHandler:(FBSDKGraphRequestHandler)handler
-    batchEntryName:(NSString *)name
-DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchEntryName:completionHandler:`");
+ completionHandler:(FBSDKGraphRequestBlock)handler;
 
 /**
  @method
@@ -238,11 +248,9 @@ DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchEntryName:completionHandler:`
 
  @param handler         A handler to call back when the round-trip completes or times out.
 
- @param batchParameters The optional dictionary of parameters to include for this request
+ @param batchParameters The dictionary of parameters to include for this request
  as described in [Graph API Batch Requests]( https://developers.facebook.com/docs/reference/api/batch/ ).
  Examples include "depends_on", "name", or "omit_response_on_success".
-
-
 
  The completion handler is retained until the block is called upon the
  completion or cancellation of the connection. This request can be named
@@ -250,12 +258,7 @@ DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchEntryName:completionHandler:`
  */
 - (void)addRequest:(FBSDKGraphRequest *)request
    batchParameters:(NSDictionary<NSString *, id> *)batchParameters
- completionHandler:(FBSDKGraphRequestHandler)handler;
-
-- (void)addRequest:(FBSDKGraphRequest *)request
- completionHandler:(FBSDKGraphRequestHandler)handler
-   batchParameters:(NSDictionary *)batchParameters
-DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchParameters:completionHandler:`");
+ completionHandler:(FBSDKGraphRequestBlock)handler;
 
 /**
  @methodgroup Instance methods
@@ -266,8 +269,6 @@ DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchParameters:completionHandler:
 
   Signals that a connection should be logically terminated as the
  application is no longer interested in a response.
-
-
 
  Synchronously calls any handlers indicating the request was cancelled. Cancel
  does not guarantee that the request-related processing will cease. It
@@ -292,20 +293,9 @@ DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchParameters:completionHandler:
 - (void)start;
 
 /**
-  Determines the operation queue that is used to call methods on the connection's delegate.
- @param queue The operation queue to use when calling delegate methods.
-
- By default, a connection is scheduled on the current thread in the default mode when it is created.
- You cannot reschedule a connection after it has started.
- */
-- (void)setDelegateQueue:(NSOperationQueue *)queue;
-
-/**
  @method
 
   Overrides the default version for a batch request
-
-
 
  The SDK automatically prepends a version part, such as "v2.0" to API paths in order to simplify API versioning
  for applications. If you want to override the version part while using batch requests on the connection, call
@@ -315,18 +305,6 @@ DEPRECATED_MSG_ATTRIBUTE("Renamed `addRequest:batchParameters:completionHandler:
  */
 - (void)overrideGraphAPIVersion:(NSString *)version;
 
-- (void)overrideVersionPartWith:(NSString *)version
-DEPRECATED_MSG_ATTRIBUTE("Renamed `overrideGraphAPIVersion`");
-
 @end
 
-/**
-  The key in the result dictionary for requests to old versions of the Graph API
- whose response is not a JSON object.
-
-
- When a request returns a non-JSON response (such as a "true" literal), that response
- will be wrapped into a dictionary using this const as the key. This only applies for very few Graph API
- prior to v2.1.
- */
-FOUNDATION_EXPORT NSString *const FBSDKNonJSONResponseProperty;
+NS_ASSUME_NONNULL_END

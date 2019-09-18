@@ -8,11 +8,11 @@
 //  Service: https://developers.google.com/maps/terms
 //
 
-#import "GMSOverlay.h"
-
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN;
+#import "GMSOverlay.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A circle on the Earth's surface (spherical cap).
@@ -51,4 +51,4 @@ NS_ASSUME_NONNULL_BEGIN;
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

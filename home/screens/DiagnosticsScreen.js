@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { ThemeContext } from 'react-navigation';
 import { BaseButton } from 'react-native-gesture-handler';
 

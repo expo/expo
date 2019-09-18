@@ -1,15 +1,9 @@
 /* @flow */
 
 import React from 'react';
-import {
-  ActivityIndicator,
-  Platform,
-  TouchableOpacity,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { FlatList, useTheme } from 'react-navigation';
+import { ActivityIndicator, Platform, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { useTheme, FlatList } from 'react-navigation';
+
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import dedent from 'dedent';
@@ -82,7 +76,7 @@ class ExploreTab extends React.Component {
   _renderLoading() {
     return (
       <View style={{ flex: 1, alignItems: 'center', paddingTop: 30 }}>
-        <ActivityIndicator />
+        <ActivityIndicator color={Colors.light.tintColor} />
       </View>
     );
   }

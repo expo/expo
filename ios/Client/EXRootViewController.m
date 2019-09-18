@@ -84,6 +84,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
+
+  // When foregrounding the app record we want to add it to the history to handle the edge case
+  // where a user opened a project, then went to home and cleared history, then went back to a
+  // the already open project.
+  [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
+
 }
 
 - (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion

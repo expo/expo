@@ -155,13 +155,14 @@ static NSString *const GET_VALUE = @"SELECT %@, %@ FROM %@ WHERE %@ = ?;";
     __block BOOL success = YES;
 
     dispatch_sync(_queue, ^() {
-        if (sqlite3_open([_databasePath UTF8String], &_database) != SQLITE_OK) {
+        if (sqlite3_open([self->_databasePath UTF8String], &self->_database) != SQLITE_OK) {
             NSLog(@"Failed to open database");
+            sqlite3_close(self->_database);
             success = NO;
             return;
         }
-        block(_database);
-        sqlite3_close(_database);
+        block(self->_database);
+        sqlite3_close(self->_database);
     });
 
     return success;
@@ -185,23 +186,24 @@ static NSString *const GET_VALUE = @"SELECT %@, %@ FROM %@ WHERE %@ = ?;";
     __block BOOL success = YES;
 
     dispatch_sync(_queue, ^() {
-        if (sqlite3_open([_databasePath UTF8String], &_database) != SQLITE_OK) {
+        if (sqlite3_open([self->_databasePath UTF8String], &self->_database) != SQLITE_OK) {
             NSLog(@"Failed to open database");
+            sqlite3_close(self->_database);
             success = NO;
             return;
         }
 
         sqlite3_stmt *stmt;
-        if (sqlite3_prepare_v2(_database, [SQLString UTF8String], -1, &stmt, NULL) != SQLITE_OK) {
+        if (sqlite3_prepare_v2(self->_database, [SQLString UTF8String], -1, &stmt, NULL) != SQLITE_OK) {
             AMPLITUDE_LOG(@"Failed to prepare statement for query %@", SQLString);
-            sqlite3_close(_database);
+            sqlite3_close(self->_database);
             success = NO;
             return;
         }
 
         block(stmt);
         sqlite3_finalize(stmt);
-        sqlite3_close(_database);
+        sqlite3_close(self->_database);
     });
 
     return success;

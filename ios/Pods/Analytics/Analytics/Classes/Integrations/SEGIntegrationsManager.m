@@ -374,12 +374,12 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
         }
 
         self.settingsRequest = [self.httpClient settingsForWriteKey:self.configuration.writeKey completionHandler:^(BOOL success, NSDictionary *settings) {
-            seg_dispatch_specific_async(_serialQueue, ^{
+            seg_dispatch_specific_async(self -> _serialQueue, ^{
                 if (success) {
                     [self setCachedSettings:settings];
                 } else {
-                    // Hotfix: If settings request fail, fall back to using just Segment integration
-                    // Won't catch situation where this callback never gets called - that will get addressed separately in regular dev
+                    // If settings request fail, fall back to using just Segment integration.
+                    // Doesn't address situations where this callback never gets called (though we don't expect that to ever happen).
                     [self setCachedSettings:@{
                         @"integrations" : @{
                             @"Segment.io" : @{@"apiKey" : self.configuration.writeKey},
@@ -417,7 +417,7 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
     if ([key isEqualToString:@"Segment.io"]) {
         return YES;
     }
-    
+
     if (plan[@"track"][event]) {
         if ([plan[@"track"][event][@"enabled"] boolValue]) {
             return [self isIntegration:key enabledInOptions:plan[@"track"][event][@"integrations"]];
@@ -541,7 +541,15 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
     switch (context.eventType) {
         case SEGEventTypeIdentify: {
             SEGIdentifyPayload *p = (SEGIdentifyPayload *)context.payload;
-            [self identify:p.userId traits:p.traits options:p.options];
+            NSDictionary *options;
+            if (p.anonymousId) {
+                NSMutableDictionary *mutableOptions = [[NSMutableDictionary alloc] initWithDictionary:p.options];
+                mutableOptions[@"anonymousId"] = p.anonymousId;
+                options = [mutableOptions copy];
+            } else {
+                options =  p.options;
+            }
+            [self identify:p.userId traits:p.traits options:options];
             break;
         }
         case SEGEventTypeTrack: {

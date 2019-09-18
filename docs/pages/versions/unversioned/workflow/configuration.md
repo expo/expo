@@ -264,7 +264,13 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING
+    "androidCollapsedTitle": STRING,
+
+    /*
+     The URL-safe base64-encoded VAPID public key used for web push notifications.
+     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
+    */
+    "vapidPublicKey": STRING
   }
 }
 ```
@@ -418,6 +424,14 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "usesIcloudStorage": BOOLEAN,
+
+    /*
+      A boolean indicating if the app uses Apple Sign In.
+      See AppleAuthentication docs for details.
+
+      ExpoKit: use Xcode to set this.
+    */
+    "usesAppleSignIn": BOOLEAN,
 
     /*
       Extra module configuration to be added to your app's native Info.plist.

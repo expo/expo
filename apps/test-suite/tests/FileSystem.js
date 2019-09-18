@@ -2,6 +2,8 @@
 
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
+import Constants from 'expo-constants';
+import { Platform } from '@unimodules/core';
 
 export const name = 'FileSystem';
 
@@ -30,6 +32,35 @@ export async function test({
       }
       expect(error).toBeTruthy();
     };
+
+    if (Constants.appOwnership === 'expo') {
+      describe('managed workflow', () => {
+        it('throws out-of-scope exceptions', async () => {
+          const p = FS.documentDirectory;
+
+          await throws(() => FS.getInfoAsync(p + '../hello/world'));
+          await throws(() => FS.readAsStringAsync(p + '../hello/world'));
+          await throws(() => FS.writeAsStringAsync(p + '../hello/world', ''));
+          await throws(() => FS.deleteAsync(p + '../hello/world'));
+          await throws(() => FS.deleteAsync(p));
+          await throws(() => FS.deleteAsync(FS.cacheDirectory));
+          await throws(() => FS.moveAsync({ from: p + '../a/b', to: 'c' }));
+          await throws(() => FS.moveAsync({ from: 'c', to: p + '../a/b' }));
+          await throws(() => FS.copyAsync({ from: p + '../a/b', to: 'c' }));
+          await throws(() => FS.copyAsync({ from: 'c', to: p + '../a/b' }));
+          await throws(() => FS.makeDirectoryAsync(p + '../hello/world'));
+          await throws(() => FS.readDirectoryAsync(p + '../hello/world'));
+          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+          await throws(() => FS.readDirectoryAsync(p + '../'));
+          await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
+        });
+      });
+    }
+
+    if (Platform.OS === 'web') {
+      // Web doesn't support FileSystem
+      return;
+    }
 
     it(
       'delete(idempotent) -> !exists -> download(md5, uri) -> exists ' + '-> delete -> !exists',
@@ -361,26 +392,6 @@ export async function test({
 
       await FS.deleteAsync(localUri);
     }, 30000);
-
-    it('throws out-of-scope exceptions', async () => {
-      const p = FS.documentDirectory;
-
-      await throws(() => FS.getInfoAsync(p + '../hello/world'));
-      await throws(() => FS.readAsStringAsync(p + '../hello/world'));
-      await throws(() => FS.writeAsStringAsync(p + '../hello/world', ''));
-      await throws(() => FS.deleteAsync(p + '../hello/world'));
-      await throws(() => FS.deleteAsync(p));
-      await throws(() => FS.deleteAsync(FS.cacheDirectory));
-      await throws(() => FS.moveAsync({ from: p + '../a/b', to: 'c' }));
-      await throws(() => FS.moveAsync({ from: 'c', to: p + '../a/b' }));
-      await throws(() => FS.copyAsync({ from: p + '../a/b', to: 'c' }));
-      await throws(() => FS.copyAsync({ from: 'c', to: p + '../a/b' }));
-      await throws(() => FS.makeDirectoryAsync(p + '../hello/world'));
-      await throws(() => FS.readDirectoryAsync(p + '../hello/world'));
-      await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
-      await throws(() => FS.readDirectoryAsync(p + '../'));
-      await throws(() => FS.downloadAsync('http://www.google.com', p + '../hello/world'));
-    });
 
     it('missing parameters', async () => {
       const p = FS.documentDirectory + 'test';

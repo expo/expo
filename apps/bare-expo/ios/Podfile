@@ -43,9 +43,10 @@ target 'BareExpo' do
   pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
   pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
-  # [Custom] RNGH and Reanimated are installed as node_modules in the root of the workspace
+  # [Custom] RNGH, Reanimated, and SAC are installed as node_modules in the root of the workspace
   pod 'RNGestureHandler', :podspec => "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
   pod 'RNReanimated', :podspec => "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
+  pod 'react-native-safe-area-context', :podspec => "#{modules_path}/react-native-safe-area-context"
 
   use_unimodules!({
     # [Custom] Use the packages directory for unimodules

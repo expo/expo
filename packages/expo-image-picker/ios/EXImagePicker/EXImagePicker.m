@@ -294,17 +294,6 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 - (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
 {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-  if (info[UIImagePickerControllerReferenceURL]) { // video from gallery
-    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[[info valueForKey:UIImagePickerControllerReferenceURL]] options:nil];
-    if (assets.count > 0) {
-      PHAsset *videoAsset = assets.firstObject;
-      response[@"width"] = @(videoAsset.pixelWidth);
-      response[@"height"] = @(videoAsset.pixelHeight);
-      response[@"duration"] = @(videoAsset.duration * 1000);
-    } else {
-      UMLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
-    }
-  }
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
     AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
     CMTime duration = [editedAsset duration];
@@ -332,17 +321,16 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
   
-  // adding data to response if video came from camera
-  if (!info[UIImagePickerControllerReferenceURL]) {
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:fileURL options:nil];
-    CGSize size = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
-    response[@"width"] = @(size.width);
-    response[@"height"] = @(size.height);
-    if (!response[@"duration"]) {
-      CMTime duration = [asset duration];
-      response[@"duration"] = @(ceil((float) duration.value / duration.timescale * 1000));
-    }
+  // adding information about asset
+  AVURLAsset *asset = [AVURLAsset URLAssetWithURL:fileURL options:nil];
+  CGSize size = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
+  response[@"width"] = @(size.width);
+  response[@"height"] = @(size.height);
+  if (!response[@"duration"]) {
+    CMTime duration = [asset duration];
+    response[@"duration"] = @(ceil((float) duration.value / duration.timescale * 1000));
   }
+
   response[@"uri"] = filePath;
 }
 

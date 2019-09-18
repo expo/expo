@@ -166,7 +166,7 @@ ABI34_0_0RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)optio
   shareController.completionWithItemsHandler = ^(NSString *activityType, BOOL completed, __unused NSArray *returnedItems, NSError *activityError) {
     if (activityError) {
       failureCallback(activityError);
-    } else {
+    } else if (completed) {
       successCallback(@[@(completed), ABI34_0_0RCTNullIfNil(activityType)]);
     }
   };

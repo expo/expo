@@ -170,7 +170,7 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
-The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](../av/) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
