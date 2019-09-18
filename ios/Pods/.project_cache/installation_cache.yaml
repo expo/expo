@@ -4211,7 +4211,7 @@ CACHE_KEYS:
   EXFaceDetector:
     BUILD_SETTINGS_CHECKSUM:
       EXFaceDetector: 9f2014bad14966bf37687fd059c087d9
-    CHECKSUM: 3576d8f86ad59a146555d76bcce17bfb83c0e588
+    CHECKSUM: 72148069b755f482580c40d7e0ba57ce0027392f
     FILES:
       - "../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.h"
       - "../../packages/expo-face-detector/ios/EXFaceDetector/EXCSBufferOrientationCalculator.m"
