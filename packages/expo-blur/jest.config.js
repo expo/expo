@@ -6,6 +6,6 @@ module.exports = withWatchPlugins({
   projects: [
     require('jest-expo/ios/jest-preset'),
     require('jest-expo/web/jest-preset'),
-    // require('jest-expo/android/jest-preset'),
+    require('jest-expo/android/jest-preset'),
   ].map(preset => withExpoModuleScripts(withEnzyme(preset))),
 });
