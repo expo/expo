@@ -7,7 +7,7 @@
   - [✅ Unit Testing](#-unit-testing)
   - [🏁 E2E Testing](#-e2e-testing)
 - [📚 Updating Documentation](#-updating-documentation)
-- [📝 Writing a commit message](#-writing-a-commit-message)
+- [📝 Writing a Commit Message](#-writing-a-commit-message)
 - [🔎 Before Submitting](#-before-submitting)
   - [Extra Credit](#extra-credit-1)
 
