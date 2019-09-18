@@ -119,3 +119,7 @@ class ClassComponent extends React.Component {
   }
 }
 ```
+
+## Resources
+
+- Great article about how this libary can be used: https://dev.to/brunolemos/adding-notch-support-to-your-react-native-android-app-3ci3
