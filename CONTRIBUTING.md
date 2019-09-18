@@ -11,14 +11,14 @@
 - [🔎 Before Submitting](#-before-submitting)
   - [Extra Credit](#extra-credit-1)
 
-Thanks so much for coming to help! Currently we review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files. Because the native clients (`ios/`, `android/`) are so articulate you may not find that much progress can be made externally (but you're always allowed to try!). We've moved most of the fun code out of the client anyways to support the **bare-workflow**, this means that you'll do the majority of your native testing in a regular React Native project.
+Thanks so much for coming to help! Currently we review PRs for `packages/`, `docs/`, `templates/`, `guides/`, `apps/`, and markdown files. Because the native clients (`ios/`, `android/`) are difficult to setup and require API tokens, not much progress can be made externally (but you can always try!). We've moved most of the fun code out of the client anyways to support the **bare-workflow**; this means that you'll do the majority of your native testing in a bare Expo project.
 
 As you might imagine web code is very easy to test and contribute to, so that's all on the table! You may find that some of the web features you're looking for are actually in the [expo-cli repo](https://github.com/expo/expo-cli).
 
 ## 📦 Download and Setup
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
-2. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`)
+2. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
 
    <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
 
@@ -62,7 +62,7 @@ All modules should adhere to the style guides which can be found here:
 
 ### Extra Credit
 
-- The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (This will only enable the shake gesture, CMD+R won't work yet).
+- The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (this will only enable the shake gesture, CMD+R won't work yet).
 - We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
 - All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozen of packages locally on every `git pull` or `git checkout` operation.
 - We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
