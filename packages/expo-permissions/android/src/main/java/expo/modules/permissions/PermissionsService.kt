@@ -32,7 +32,7 @@ internal const val ERROR_TAG = "E_PERMISSIONS"
 typealias PermissionsListener = (result: IntArray) -> Unit
 
 class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
-  private lateinit var mActivityProvider: ActivityProvider
+  private var mActivityProvider: ActivityProvider? = null
 
 
   // state holders for asking for writing permissions
@@ -42,7 +42,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
   private lateinit var mPermissionsAskedStorage: SharedPreferences
 
-  fun didAsk(permission: String): Boolean = mPermissionsAskedStorage.getBoolean(permission, false)
+  private fun didAsk(permission: String): Boolean = mPermissionsAskedStorage.getBoolean(permission, false)
 
   private fun addToAskedPreferences(permissions: List<String>) {
     with(mPermissionsAskedStorage.edit()) {
@@ -140,7 +140,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
    * @param permission [android.Manifest.permission]
    */
   private fun getManifestPermission(permission: String): Int {
-    mActivityProvider.currentActivity?.let {
+    mActivityProvider?.currentActivity?.let {
       if (it is PermissionAwareActivity) {
         return ContextCompat.checkSelfPermission(it, permission)
       }
@@ -168,7 +168,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
       return
     }
 
-    mActivityProvider.currentActivity?.run {
+    mActivityProvider?.currentActivity?.run {
       if (this is PermissionAwareActivity) {
         this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
           when (PERMISSIONS_REQUEST) {
@@ -211,7 +211,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
   private fun hasWritePermission(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Settings.System.canWrite(mActivityProvider.currentActivity.applicationContext)
+      Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext)
     } else {
       true
     }

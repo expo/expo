@@ -302,6 +302,9 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
+    if (Constants.isStandaloneApp()) {
+      return globalResult;
+    }
 
     if (globalResult == PackageManager.PERMISSION_GRANTED &&
         mKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
