@@ -45,6 +45,7 @@ return @(OP); \
             @"pow": REA_REDUCE(pow(a, b)),
             @"modulo": REA_REDUCE(fmodf(fmodf(a, b) + b, b)),
             @"sqrt": REA_SINGLE(sqrt(a)),
+            @"log": REA_SINGLE(log(a)),
             @"sin": REA_SINGLE(sin(a)),
             @"cos": REA_SINGLE(cos(a)),
             @"tan": REA_SINGLE(tan(a)),
