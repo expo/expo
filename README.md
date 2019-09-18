@@ -61,7 +61,7 @@ Expo is a set of tools, libraries, and services that let you build native iOS an
 
 ## 👏 Contributing
 
-If you like Expo and want to help make it better then check out our [contributing guide](/CONTRIBUTING.md)!
+If you like Expo and want to help make it better then check out our [contributing guide](/CONTRIBUTING.md)! Check out the [Expo CLI repo](http://github.com/expo/expo-cli) to work on the Expo CLI, and various other universal development tools.
 
 ## ❓ FAQ
 
