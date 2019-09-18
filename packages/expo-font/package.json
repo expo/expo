@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/font/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/universal"
   },
   "unimodulePeerDependencies": {
     "expo-asset": "*",
