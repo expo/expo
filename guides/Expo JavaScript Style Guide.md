@@ -1,5 +1,20 @@
 # Expo JavaScript Style Guide
 
+- [Modern JavaScript](#modern-javascript)
+- [ESLint and Prettier](#eslint-and-prettier)
+  - [Editor Integration](#editor-integration)
+- [Formatting](#formatting)
+  - [Prettier](#prettier)
+  - [Comments](#comments)
+  - [Imports](#imports)
+- [Naming](#naming)
+  - [Classes, functions, and variables](#classes--functions--and-variables)
+  - [Async functions](#async-functions)
+  - [Private variables](#private-variables)
+  - [Boolean names](#boolean-names)
+- [Examples](#examples)
+- [Babel](#babel)
+
 This guide explains style guidelines for writing JavaScript for Expo. It prioritizes readability for the team and also is meant to simplify small decisions when writing code. Most of this guide applies widely across the Expo repository but sometimes writing JavaScript differs between React, the web, and Node.
 
 # Modern JavaScript
@@ -49,7 +64,7 @@ Since Prettier formats entire files (except ignored lines), we need to keep our 
 
 ## Comments
 
-Use `// line`  comments in most places. Use `/** block */` comments above classes, methods, and other structures and use `/* inline block */`  comments in the middle of lines:
+Use `// line` comments in most places. Use `/** block */` comments above classes, methods, and other structures and use `/* inline block */` comments in the middle of lines:
 
 ```js
 // CORRECT
@@ -59,10 +74,7 @@ Use `// line`  comments in most places. Use `/** block */` comments above classe
  */
 function getLatestAndroidVersion() {
   // Keep this logic in sync with Google's versioning scheme
-  return maxBy(
-    getAndroidVersions(/* includePrereleases */ false),
-    linearizeSemver
-  );
+  return maxBy(getAndroidVersions(/* includePrereleases */ false), linearizeSemver);
 }
 ```
 
@@ -74,12 +86,11 @@ Remove commented-out code before pushing it to GitHub.
 
 Group and sort `import` statements and `require()` calls in this order:
 
-
 1. `import` statements before `require()` calls
-  1. JavaScript hoists `import` statements; write the code to reflect that
-2. Unassigned imports (`import 'side-effect'`) before assigned imports (`import React from 'react'`)
-  1. Unassigned imports almost always have side effects, which we usually want to apply earlier in the program’s lifetime. 
-3. External modules and Node.js built-in modules (`path`, `react`) before aliased internal modules (`www/module`) before relative modules (`../a/b`, `./c`)
+1. JavaScript hoists `import` statements; write the code to reflect that
+1. Unassigned imports (`import 'side-effect'`) before assigned imports (`import React from 'react'`)
+1. Unassigned imports almost always have side effects, which we usually want to apply earlier in the program’s lifetime.
+1. External modules and Node.js built-in modules (`path`, `react`) before aliased internal modules (`www/module`) before relative modules (`../a/b`, `./c`)
 
 ```js
 // CORRECT
@@ -107,9 +118,9 @@ import a from 'y';
 import p from '@scope/package';
 ```
 
-Write default imports before namespace imports before named imports: 
+Write default imports before namespace imports before named imports:
 
-```js
+````js
 // CORRECT
 import a, * as b, { c } from 'module';
 ``
@@ -136,7 +147,7 @@ class Button extends React.Component {
   state: State = {
     isPressed: true,
   };
-  
+
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -144,13 +155,13 @@ class Button extends React.Component {
       bounce: new Animated.Value(1),
     };
   }
-  
+
   componentWillUnmount() {
     if (this.state.animation) {
       this.state.animation.stop();
     }
   }
-  
+
   render() {
     return (
       <Animated.View
@@ -162,14 +173,14 @@ class Button extends React.Component {
       </Animated.View>
     );
   }
-  
+
   _handlePress = event => {
     this._bounce();
     if (this.props.onPress) {
       this.props.onPress(event);
     }
   };
-  
+
   _bounce() {
     this.setState(state => {
       state.bounce.setValue(0);
@@ -183,7 +194,7 @@ class Button extends React.Component {
     });
   }
 }
-```
+````
 
 # Naming
 
@@ -217,6 +228,7 @@ Object.assign(Fish.prototype, ...);
 
 function populateAquarium(aquarium, school) {...}
 ```
+
 ```js
 // INCORRECT
 class house {
@@ -296,6 +308,7 @@ console.log(history.deletedEntries);
 ```
 
 # Examples
+
 ```js
 import Expo from 'expo';
 import PropTypes from 'prop-types';
@@ -310,24 +323,21 @@ export default class GreetingText extends React.PureComponent {
     greeting: PropTypes.string.isRequired,
     ...Text.propTypes,
   };
-  
+
   componentDidUpdate() {
     Log.info('The greeting was re-rendered');
   }
-  
+
   render() {
     let { greeting, style, ...props } = this.props;
     return (
-      <Text
-        {...props}
-        onPress={this._handlePress}
-        style={[styles.greeting, style]}>
+      <Text {...props} onPress={this._handlePress} style={[styles.greeting, style]}>
         {greeting}
       </Text>
     );
   }
-  
-  _handlePress = (event) => {
+
+  _handlePress = event => {
     alert('Congratulations!');
   };
 }
@@ -335,7 +345,7 @@ export default class GreetingText extends React.PureComponent {
 const styles = StyleSheet.create({
   greeting: {
     color: Colors.energetic,
-    fontSize: 30, 
+    fontSize: 30,
   },
 });
 ```
@@ -345,4 +355,3 @@ const styles = StyleSheet.create({
 We use Babel to enable some of the newer JavaScript features that are sufficiently stable for us. This mostly includes transforms for features that are in a finalized version of the JavaScript standard.
 
 We use `babel-eslint`, which allows ESLint to use the Babel parser. In practice, with newer syntax extensions, Babel produces AST nodes that ESLint can’t consume; stable linter compatibility is another feature we look for in Babel plugins.
-

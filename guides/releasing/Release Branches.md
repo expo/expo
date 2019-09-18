@@ -1,5 +1,16 @@
 # Release Branches
 
+- [Release Branches](#release-branches)
+  - [Example](#example)
+  - [Edge cases](#edge-cases)
+    - [The bug has been fixed on master but not on the release branch.](#the-bug-has-been-fixed-on-master-but-not-on-the-release-branch)
+    - [Master has significantly diverged from the release branch.](#master-has-significantly-diverged-from-the-release-branch)
+    - [It’s easier to write and test the fix on the release branch instead of master.](#it-s-easier-to-write-and-test-the-fix-on-the-release-branch-instead-of-master)
+- [Versioning Android and iOS Code](#versioning-android-and-ios-code)
+- [Incrementing Version Numbers](#incrementing-version-numbers)
+  - [Prelease Versions](#prelease-versions)
+  - [Shortcomings](#shortcomings)
+
 The release process begins when we decide that the clients and libraries on the master branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
 
 The release branch is named `sdk-XX` and is based on master. The main purpose of the release branch is to release new versions of the clients and libraries; we use the release branch to build the clients we submit to the app stores and to publish our JS libraries to npm.
