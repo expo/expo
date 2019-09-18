@@ -1,6 +1,7 @@
-import * as Calendar from 'expo-calendar';
-import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
+import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 
@@ -10,12 +11,8 @@ export function canRunAsync({ isAutomated }) {
   return !isAutomated;
 }
 
-import * as Permissions from 'expo-permissions';
-
 export function requiresPermissions() {
-  return [
-    Permissions.CALENDAR
-  ]
+  return [Permissions.CALENDAR];
 }
 
 async function createTestCalendarAsync(patch = {}) {

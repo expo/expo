@@ -200,6 +200,8 @@ PODS:
   - React/RCTWebSocket (0.59.8):
     - React/Core
     - React/RCTBlob
+  - RNCAsyncStorage (1.6.1):
+    - React
   - RNGestureHandler (1.3.0):
     - React
   - RNReanimated (1.2.0):
@@ -283,6 +285,7 @@ DEPENDENCIES:
   - React/RCTText (from `../../../react-native-lab/react-native`)
   - React/RCTVibration (from `../../../react-native-lab/react-native`)
   - React/RCTWebSocket (from `../../../react-native-lab/react-native`)
+  - "RNCAsyncStorage (from `../../../node_modules/@react-native-community/async-storage`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec`)
   - RNReanimated (from `../../../node_modules/react-native-reanimated/RNReanimated.podspec`)
   - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
@@ -453,6 +456,8 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native"
   react-native-safe-area-context:
     :podspec: "../../../node_modules/react-native-safe-area-context"
+  RNCAsyncStorage:
+    :podspec: "../../../node_modules/@react-native-community/async-storage"
   RNGestureHandler:
     :podspec: "../../../node_modules/react-native-gesture-handler/RNGestureHandler.podspec"
   RNReanimated:
@@ -548,6 +553,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   React: 841af16feb8e7936838a626bfa1b8faaa07d9e6c
   react-native-safe-area-context: e380a6f783ccaec848e2f3cc8eb205a62362950d
+  RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   UMBarCodeScannerInterface: 809e8be9219875ba926e35c599b09f202029a836
@@ -562,6 +568,6 @@ SPEC CHECKSUMS:
   UMSensorsInterface: 284b7144a5370e1733e4f8747c4feabea2bb38d7
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: d4b154d721002b6dfac8755ed4790c0a6a1b5cc9
+PODFILE CHECKSUM: b70091ce9e79374c9e2c276e1336adff4517cdf0
 
 COCOAPODS: 1.8.0.beta.1

@@ -7,7 +7,6 @@ import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
 import ModulesContext from '../ModulesContext';
 import setupJasmine from '../utils/setupJasmine';
-import { requirePackageTests } from '../TestUtils';
 
 const initialState = {
   portalChildShouldBeVisible: false,
@@ -144,7 +143,6 @@ TestRunner.defaultProps = {
 export default function ContextTestScreen(props) {
   const { modules, onTestsComplete } = React.useContext(ModulesContext);
   const activeModules = modules.filter(({ isActive }) => isActive);
-  console.log('RUN', activeModules);
   return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={activeModules} />;
 }
 
