@@ -1,4 +1,3 @@
-'use strict';
 import chalk from 'chalk';
 import { Config } from '@jest/types';
 
