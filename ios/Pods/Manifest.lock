@@ -797,9 +797,9 @@ PODS:
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (7.0.0-rc.0):
-    - Firebase/Core
-    - Firebase/MLVision
-    - Firebase/MLVisionFaceModel
+    - Firebase/Core (~> 6.7.0)
+    - Firebase/MLVision (~> 6.7.0)
+    - Firebase/MLVisionFaceModel (~> 6.7.0)
     - UMCore
     - UMFaceDetectorInterface
   - EXFileSystem (7.0.0-rc.0):
@@ -2446,7 +2446,7 @@ SPEC CHECKSUMS:
   EXDevice: 59fb763dbfe58d0c56c87baf6714f832ee545e8a
   EXDocumentPicker: 1434aeeb3ff2f405c7f8afaa8a8cdee09e2b7437
   EXFacebook: 3ebb72d3ad14e6864d13d4adc3f0ed694ffb4071
-  EXFaceDetector: 2454d95ae78edace40bca35982f13e725faa208d
+  EXFaceDetector: 3576d8f86ad59a146555d76bcce17bfb83c0e588
   EXFileSystem: d84b8baec96388a6b2dcced2f063171762571b40
   EXFont: aab27a5a1975aea0cf3b96fbe42752816028ddd5
   EXGL: 9f8561819fa6aca6b9331fb9be1edc6479770a94
@@ -2530,6 +2530,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 47161850294d2e9b77fff0a28ced02b929cd83d6
+PODFILE CHECKSUM: 4d2beeb21f382d16456f736463f9f3fc22db4dc0
 
 COCOAPODS: 1.8.0.beta.1
