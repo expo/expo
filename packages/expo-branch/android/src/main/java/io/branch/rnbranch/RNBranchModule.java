@@ -1,4 +1,4 @@
-package expo.modules.branch.vendored;
+package io.branch.rnbranch;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,7 +33,7 @@ import java.util.*;
 public class RNBranchModule extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "RNBranch";
     public static final String REACT_MODULE_NAME = "RNBranch";
-    public static final String NATIVE_INIT_SESSION_FINISHED_EVENT = "expo.modules.branch.vendored.RNBranchModule.onInitSessionFinished";
+    public static final String NATIVE_INIT_SESSION_FINISHED_EVENT = "io.branch.rnbranch.RNBranchModule.onInitSessionFinished";
     public static final String NATIVE_INIT_SESSION_FINISHED_EVENT_BRANCH_UNIVERSAL_OBJECT = "branch_universal_object";
     public static final String NATIVE_INIT_SESSION_FINISHED_EVENT_LINK_PROPERTIES = "link_properties";
     public static final String NATIVE_INIT_SESSION_FINISHED_EVENT_PARAMS = "params";

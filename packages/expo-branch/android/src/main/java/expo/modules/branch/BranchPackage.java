@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import expo.modules.branch.vendored.RNBranchPackage;
+import io.branch.rnbranch.RNBranchPackage;
 
 public class BranchPackage extends BasePackage implements ReactPackage {
   private RNBranchPackage mPackage = new RNBranchPackage();
