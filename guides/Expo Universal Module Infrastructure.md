@@ -1,12 +1,22 @@
 # Expo Universal Module Development Guide
 
+- [Generating a new universal module using `expo-cli` command](#generating-a-new-universal-module-using--expo-cli--command)
+- [The Standard Configuration](#the-standard-configuration)
+  - [npm Scripts](#npm-scripts)
+  - [Auto-generated Configuration Files](#auto-generated-configuration-files)
+  - [Directory Structure](#directory-structure)
+  - [Compiling TypeScript](#compiling-typescript)
+  - [Fast Unit Tests](#fast-unit-tests)
+- [package.json Fields](#packagejson-fields)
+
 This guide explains the standard configuration and tools for working on universal modules in this repository. One of our goals is to write a coherent, high-quality SDK that is consistent across APIs and stays reliable in a way that is sustainable for the Expo team. Another goal is to reuse knowledge from working on one module and apply it to others by reducing disparity and fragmentation between modules. Expo has many modules and we need to keep Expo and working on Expo simple.
 
 # Generating a new universal module using `expo-cli` command
 
 `expo-cli` has specific command that would generate universal module that support TypeScript!
 Run:
-* `expo generate-module [new module directory]`
+
+- `expo generate-module [new module directory]`
   - optional `[new module directory]` parameter lets you specify module name (e.g. `expo generate-module expo-test-module` would create `expo-test-module`. If ommited, the script will prompt you about it.
   - optional `--template <template directory>` will try to use provided `<template directory>` in universal module creation.
 
@@ -100,6 +110,6 @@ Inside of package.json, set the repository and bugs URLs to the Expo repository.
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms"
 }
 ```

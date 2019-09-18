@@ -1,5 +1,13 @@
 # Migrating [Universal Modules][universal-modules] to TypeScript
 
+- [Change Import](#change-import)
+- [Testing](#testing)
+  - [Add the tests to CI](#add-the-tests-to-ci)
+- [Move native `dependencies` to `peerDependencies`](#move-native--dependencies--to--peerdependencies-)
+- [Add module scripts](#add-module-scripts)
+- [Generate a `tsconfig.json` file with `expo-module-scripts`](#generate-a--tsconfigjson--file-with--expo-module-scripts-)
+- [Various Other Changes](#various-other-changes)
+
 ## Change Import
 
 To optimize our libraries for _dead code elimination_ we should migrate our exports to be imported as such:
