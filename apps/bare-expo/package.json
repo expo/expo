@@ -12,6 +12,8 @@
     "test:web:debug": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
     "test:web": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
     "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.json",
+    "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
+    "edit:ios": "open -a Xcode ./ios/BareExpo.xcworkspace",
     "web": "expo start --web",
     "start": "react-native start --reset-cache",
     "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
