@@ -1,4 +1,4 @@
-package expo.modules.branch.vendored;
+package io.branch.rnbranch;
 
 import java.util.HashMap;
 import java.util.Iterator;
