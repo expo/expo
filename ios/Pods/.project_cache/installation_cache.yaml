@@ -4431,6 +4431,8 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
+      - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
+      - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
     SPECS:
       - EXMediaLibrary (7.0.0)
