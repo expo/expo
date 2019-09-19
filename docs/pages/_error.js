@@ -125,7 +125,7 @@ export default class Error extends React.Component {
 
     if (this.state.redirectPath) {
       return (
-        <>
+        <React.Fragment>
           <h1>🕵️‍♀️️</h1>
           <p style={styles.description}>
             Hold tight, we are redirecting you to where we think this URL was intended to take you!
@@ -133,11 +133,11 @@ export default class Error extends React.Component {
           <p style={styles.link}>
             <a href={this.state.redirectPath}>Click here to possibly go there more quickly!</a>
           </p>
-        </>
+        </React.Fragment>
       );
     } else if (this.state.redirectFailed) {
       return (
-        <>
+        <React.Fragment>
           <h1>🏳️</h1>
           <p style={styles.description}>
             We took an educated guess and tried to direct you to the right page, but it seems that
@@ -146,11 +146,11 @@ export default class Error extends React.Component {
           <p style={styles.link}>
             <a href="/">Go to the Expo documentation, you can try searching there</a>
           </p>
-        </>
+        </React.Fragment>
       );
     } else if (this.state.notFound) {
       return (
-        <>
+        <React.Fragment>
           <h1>🤯</h1>
           <p style={styles.description}>
             <strong style={{ fontWeight: 'bold' }}>Uh oh, we couldn't find this page!</strong> We've
@@ -160,7 +160,7 @@ export default class Error extends React.Component {
           <p style={styles.link}>
             <a href="/">Go to the Expo documentation, you can try searching there</a>
           </p>
-        </>
+        </React.Fragment>
       );
     } else {
       // Render nothing statically
