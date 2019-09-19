@@ -145,7 +145,7 @@ commands:
       - run:
           name: Decrypt secrets
           command: |
-            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+            if [[ ${EXPO_GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
               echo 'git-crypt key not present in environment' && exit 0
             fi
             git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
