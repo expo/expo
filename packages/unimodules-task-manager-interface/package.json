@@ -1,6 +1,6 @@
 {
   "name": "unimodules-task-manager-interface",
-  "version": "4.0.0-rc.0",
+  "version": "4.0.0",
   "description": "Universal module interface package for TaskManager",
   "keywords": [
     "unimodules",
@@ -22,5 +22,5 @@
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }
