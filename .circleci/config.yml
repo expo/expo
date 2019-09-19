@@ -509,18 +509,20 @@ jobs:
       - save_cache:
           key: client-ios-simulator-{{ .Revision }}
           paths:
-            - ~/expo/ios/simulator-build
+            - ~/project/ios/simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
 
   client_ios_simulator_release:
-    executor: js
+    executor: mac
     steps:
+      - install_nix
       - setup
       - update_submodules
+      - git_lfs_pull
       - decrypt_secrets_if_possible
       - yarn_restore_and_install:
-          working_directory: ~/expo/tools/expotools
+          working_directory: ~/project/tools/expotools
       - restore_cache:
           key: client-ios-simulator-{{ .Revision }}
       - run: expotools client-build --platform ios --release
