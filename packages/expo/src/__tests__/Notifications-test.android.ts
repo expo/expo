@@ -8,7 +8,7 @@ jest.mock('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter', () => {
 });
 jest.useFakeTimers();
 
-const mockedScheduledNotifIOS = {
+const mockScheduledNotification = {
   title: 'Mock notification',
   body: 'hello',
 };
@@ -58,7 +58,7 @@ it(`properly passes "options.intervalMs" when scheduling notification on android
 it(`properly throws if both "options.repeat" and "options.intervalMs" are set in scheduled notification options on android`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       intervalMs: 60000,
       repeat: 'minute',
     });
@@ -72,7 +72,7 @@ it(`properly throws if both "options.repeat" and "options.intervalMs" are set in
 it(`properly throws for negative number for "options.intervalMs" in scheduled notification options on android`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       intervalMs: -1000,
     });
   } catch (e) {
@@ -85,7 +85,7 @@ it(`properly throws for negative number for "options.intervalMs" in scheduled no
 it(`properly throws for non-integer for "options.intervalMs" in scheduled notification options on android`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       intervalMs: 0.1,
     });
   } catch (e) {

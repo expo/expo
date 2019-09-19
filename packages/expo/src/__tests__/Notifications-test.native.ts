@@ -88,7 +88,7 @@ it(`stops receiving events when removed`, () => {
   expect(callback).toHaveBeenCalledTimes(1);
 });
 
-const mockedScheduledNotifIOS = {
+const mockScheduledNotification = {
   title: 'Mock notification',
   body: 'hello',
 };
@@ -96,7 +96,7 @@ const mockedScheduledNotifIOS = {
 it(`properly schedules notification without options`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS);
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification);
 
   expect(NativeModules.ExponentNotifications.scheduleLocalNotification).toHaveBeenCalledTimes(1);
 });
@@ -104,7 +104,7 @@ it(`properly schedules notification without options`, async () => {
 it(`properly schedules notification when options are correct (time passed as date obj, repeated)`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
     time: new Date(),
     repeat: 'minute',
   });
@@ -120,7 +120,7 @@ it(`properly schedules notification when options are correct (time passed as dat
 it(`properly schedules notification when options are correct (time passed as number, repeated)`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
     time: new Date().getTime() + 1000,
     repeat: 'minute',
   });
@@ -136,7 +136,7 @@ it(`properly schedules notification when options are correct (time passed as num
 it(`properly schedules notification when options are correct (time passed as number, not repeated)`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
     time: new Date().getTime() + 1000,
   });
 
@@ -147,7 +147,7 @@ it(`properly detects invalid time value in scheduled notification options`, asyn
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       time: 'INVALID' as any,
     });
   } catch (e) {
@@ -160,7 +160,7 @@ a number representing Unix Epoch time in milliseconds, or a valid date object.`
   }
 
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       time: {} as any,
     });
   } catch (e) {
@@ -180,7 +180,7 @@ it(`properly warns when time value prior to now is used in scheduled notificatio
 
   const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => null);
 
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
     time: new Date().getTime() / 1000, // accidently pass seconds instead of milliseconds
   });
 
@@ -197,7 +197,7 @@ pass number of seconds since Unix Epoch instead of number of milliseconds?`
 it(`properly throws for invalid use of "options.repeat" in scheduled notification options`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       repeat: 'foobar' as any,
     });
   } catch (e) {

@@ -7,6 +7,7 @@ it(`clamps the brightness value in setSystemBrightnessAsync`, async () => {
   await Brightness.setSystemBrightnessAsync(-1);
   expect(ExpoBrightness.setSystemBrightnessAsync).toHaveBeenLastCalledWith(0);
 });
+
 it(`does nothing if setSystemBrightnessModeAsync is called with BrightnessMode.UNKNOWN`, async () => {
   await Brightness.setSystemBrightnessModeAsync(Brightness.BrightnessMode.UNKNOWN);
   expect(ExpoBrightness.setSystemBrightnessModeAsync).not.toHaveBeenCalled();

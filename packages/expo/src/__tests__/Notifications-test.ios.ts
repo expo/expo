@@ -8,7 +8,7 @@ jest.mock('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter', () => {
 });
 jest.useFakeTimers();
 
-const mockedScheduledNotifIOS = {
+const mockScheduledNotification = {
   title: 'Mock notification',
   body: 'hello',
 };
@@ -16,7 +16,7 @@ const mockedScheduledNotifIOS = {
 it(`properly schedules notification when options are correct (time passed as date obj, not repeated)`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
 
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
     time: new Date(),
   });
 
@@ -28,7 +28,7 @@ it(`properly passes time as mumber when scheduling notification`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = spy;
 
   const notifDate = new Date();
-  await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+  await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
     // we pass time as date obj, but below it should be passed as number
     time: notifDate,
   });
@@ -36,7 +36,7 @@ it(`properly passes time as mumber when scheduling notification`, async () => {
   expect(spy).toHaveBeenCalledTimes(1);
 
   expect(spy).toHaveBeenCalledWith(
-    { data: {}, ...mockedScheduledNotifIOS },
+    { data: {}, ...mockScheduledNotification },
     { time: notifDate.getTime() }
   );
 });
@@ -44,7 +44,7 @@ it(`properly passes time as mumber when scheduling notification`, async () => {
 it(`properly throws if "options.intervalMs" is used`, async () => {
   NativeModules.ExponentNotifications.scheduleLocalNotification = jest.fn();
   try {
-    await Notifications.scheduleLocalNotificationAsync(mockedScheduledNotifIOS, {
+    await Notifications.scheduleLocalNotificationAsync(mockScheduledNotification, {
       intervalMs: 60000,
     });
   } catch (e) {

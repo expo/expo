@@ -8,7 +8,7 @@ const fakeReturnValue = {
 };
 
 function applyMocks() {
-  mockProperty(ExpoWebBrowser, 'openBrowserAsync', jest.fn(async () => fakeReturnValue));
+  ExpoWebBrowser.openBrowserAsync.mockImplementation(async () => fakeReturnValue);
 }
 
 beforeEach(() => {

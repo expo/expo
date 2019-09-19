@@ -1,7 +1,7 @@
 import { NativeModulesProxy } from '@unimodules/core';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
-import ExponentFacebook from '../ExponentFacebook';
 
+import ExponentFacebook from '../ExponentFacebook';
 import * as Facebook from '../Facebook';
 
 const fakeReturnValue = { type: 'dismissed' };
