@@ -108,10 +108,6 @@ describe(`importing Expo`, () => {
     jest.resetModules();
   });
 
-  it(`intentionally fails`, () => {
-    throw new Error('intentional failure');
-  });
-
   it(`throws a clear error in bare React Native`, () => {
     const clearPropertiesInPlace = aThing => {
       const propertyNames = Object.keys(aThing);
