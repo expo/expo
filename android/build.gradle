@@ -6,6 +6,7 @@ buildscript {
     targetSdkVersion = 28
     compileSdkVersion = 28
 
+    dbFlowVersion = '4.2.4'
     buildToolsVersion = '28.0.0'
     supportLibVersion = '28.0.0'
     kotlinVersion = '1.3.21'
