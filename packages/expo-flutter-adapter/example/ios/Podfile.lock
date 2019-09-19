@@ -17,19 +17,19 @@ PODS:
   - UMSensorsInterface (3.0.0)
 
 DEPENDENCIES:
-  - EXPermissions (from `../node_modules/expo-permissions/ios`)
+  - EXPermissions (from `../../../expo-permissions/ios`)
   - expo_flutter_adapter (from `Pods/.symlinks/plugins/expo_flutter_adapter/ios`)
   - expo_permissions (from `Pods/.symlinks/plugins/expo_permissions/ios`)
   - expo_sensors (from `Pods/.symlinks/plugins/expo_sensors/ios`)
-  - EXSensors (from `../node_modules/expo-sensors/ios`)
+  - EXSensors (from `../../../expo-sensors/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios`)
-  - "UMCore (from `../node_modules/@unimodules/core/ios`)"
-  - UMPermissionsInterface (from `../node_modules/unimodules-permissions-interface/ios`)
-  - UMSensorsInterface (from `../node_modules/unimodules-sensors-interface/ios`)
+  - "UMCore (from `../../../@unimodules/core/ios`)"
+  - UMPermissionsInterface (from `../../../unimodules-permissions-interface/ios`)
+  - UMSensorsInterface (from `../../../unimodules-sensors-interface/ios`)
 
 EXTERNAL SOURCES:
   EXPermissions:
-    :path: "../node_modules/expo-permissions/ios"
+    :path: "../../../expo-permissions/ios"
   expo_flutter_adapter:
     :path: Pods/.symlinks/plugins/expo_flutter_adapter/ios
   expo_permissions:
@@ -37,15 +37,15 @@ EXTERNAL SOURCES:
   expo_sensors:
     :path: Pods/.symlinks/plugins/expo_sensors/ios
   EXSensors:
-    :path: "../node_modules/expo-sensors/ios"
+    :path: "../../../expo-sensors/ios"
   Flutter:
     :path: Pods/.symlinks/flutter/ios
   UMCore:
-    :path: "../node_modules/@unimodules/core/ios"
+    :path: "../../../@unimodules/core/ios"
   UMPermissionsInterface:
-    :path: "../node_modules/unimodules-permissions-interface/ios"
+    :path: "../../../unimodules-permissions-interface/ios"
   UMSensorsInterface:
-    :path: "../node_modules/unimodules-sensors-interface/ios"
+    :path: "../../../unimodules-sensors-interface/ios"
 
 SPEC CHECKSUMS:
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
@@ -58,6 +58,6 @@ SPEC CHECKSUMS:
   UMPermissionsInterface: 938d010c74c43fcefc9bb990633a7c5a1631267e
   UMSensorsInterface: 0ed023ce9b96f2ca6fada7bda05b7760da60b293
 
-PODFILE CHECKSUM: 4cba2060905e5e3d99dfdc32ca70aec0ec441dbb
+PODFILE CHECKSUM: 7266c692412c005dcad4010be664f9f98863c6b4
 
 COCOAPODS: 1.8.0.beta.2
