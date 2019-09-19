@@ -1,6 +1,6 @@
 {
   "name": "expo-ads-facebook",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "description": "Facebook Audience SDK integration",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,7 +38,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1-rc.0"
+    "expo-module-scripts": "~1.1.1"
   },
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }
