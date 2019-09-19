@@ -3,10 +3,10 @@
   <groupId>org.unimodules</groupId>
   <artifactId>unimodules-image-loader-interface</artifactId>
   <versioning>
-    <release>4.0.0-rc.0</release>
+    <release>4.0.0</release>
     <versions>
-      <version>4.0.0-rc.0</version>
+      <version>4.0.0</version>
     </versions>
-    <lastUpdated>20190918133705</lastUpdated>
+    <lastUpdated>20190919175639</lastUpdated>
   </versioning>
 </metadata>
