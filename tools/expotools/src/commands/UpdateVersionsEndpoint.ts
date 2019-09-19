@@ -8,17 +8,19 @@ import { Config, Versions } from '@expo/xdl';
 import * as jsondiffpatch from 'jsondiffpatch';
 import { Command } from '@expo/commander';
 
+import { STAGING_HOST, PRODUCTION_HOST } from '../Constants';
+import sleepAsync from '../utils/sleepAsync';
+
 type ActionOptions = {
   sdkVersion: string;
   deprecated?: boolean;
   releaseNoteUrl?: string;
   key?: string;
   value?: any;
-  delete?: boolean;
-  production: boolean;
+  delete: boolean;
+  deleteSdk: boolean;
+  reset: boolean;
 };
-
-const STAGING_HOST = 'staging.expo.io';
 
 async function chooseSdkVersionAsync(sdkVersions: string[]): Promise<string> {
   const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
@@ -32,6 +34,18 @@ async function chooseSdkVersionAsync(sdkVersions: string[]): Promise<string> {
   return sdkVersion;
 }
 
+async function askForCorrectnessAsync(): Promise<boolean> {
+  const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
+    {
+      type: 'confirm',
+      name: 'isCorrect',
+      message: `Does this look correct? Type \`y\` or press enter to update ${chalk.green('staging')} config.`,
+      default: true,
+    },
+  ]);
+  return isCorrect;
+}
+
 function setSdkVersionConfig(sdkVersionConfig: object, key: string, value: any): void {
   if (value === undefined) {
     console.log(`Deleting ${chalk.yellow(key)} config key ...`);
@@ -42,7 +56,61 @@ function setSdkVersionConfig(sdkVersionConfig: object, key: string, value: any):
   }
 }
 
+async function applyChangesToStagingAsync(delta: any, previousVersions: any, newVersions: any) {
+  if (!delta) {
+    console.log(chalk.yellow('There are no changes to apply in the configuration.'));
+    return;
+  }
+
+  console.log(`\nHere is the diff of changes to apply on ${chalk.green('staging')} version config:`);
+  console.log(
+    jsondiffpatch.formatters.console.format(delta!, previousVersions),
+  );
+
+  const isCorrect = await askForCorrectnessAsync();
+
+  if (isCorrect) {
+    // Save new configuration.
+    try {
+      await Versions.setVersionsAsync(newVersions);
+    } catch (error) {
+      console.error(error);
+    }
+
+    console.log(
+      chalk.green('\nSuccessfully updated staging config. You can check it out on'),
+      chalk.blue(`https://${STAGING_HOST}/--/api/v2/versions`),
+    );
+  } else {
+    console.log(chalk.yellow('Canceled'));
+  }
+}
+
+async function resetStagingConfigurationAsync() {
+  // Get current production config.
+  Config.api.host = PRODUCTION_HOST;
+  const productionVersions = await Versions.versionsAsync();
+
+  // Wait for the cache to invalidate.
+  await sleepAsync(10);
+
+  // Get current staging config.
+  Config.api.host = STAGING_HOST;
+  const stagingVersions = await Versions.versionsAsync();
+
+  // Calculate the diff between them.
+  const delta = jsondiffpatch.diff(stagingVersions, productionVersions);
+
+  // Reset changes (if any) on staging.
+  await applyChangesToStagingAsync(delta, stagingVersions, productionVersions);
+}
+
 async function action(options: ActionOptions) {
+  if (options.reset) {
+    await resetStagingConfigurationAsync();
+    return;
+  }
+
   Config.api.host = STAGING_HOST;
   const versions = await Versions.versionsAsync();
   const sdkVersions = Object.keys(versions.sdkVersions).sort(semver.rcompare);
@@ -98,43 +166,13 @@ async function action(options: ActionOptions) {
     },
   };
 
-  const delta = jsondiffpatch.diff(versions.sdkVersions[sdkVersion], sdkVersionConfig);
-
-  if (!delta) {
-    console.log(chalk.yellow('There are no changes to apply in the configuration.'));
-    return;
+  if (options.deleteSdk) {
+    delete newVersions.sdkVersions[sdkVersion];
   }
 
-  console.log(
-    `\nHere is the diff of changes to apply on SDK ${chalk.cyan(sdkVersion)} version config:`
-  );
-  console.log(jsondiffpatch.formatters.console.format(delta!, versions.sdkVersions[sdkVersion]));
+  const delta = jsondiffpatch.diff(versions.sdkVersions[sdkVersion], newVersions.sdkVersions[sdkVersion]);
 
-  const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
-    {
-      type: 'confirm',
-      name: 'isCorrect',
-      message: `Does this look correct? Type \`y\` or press enter to update ${chalk.green(
-        'staging'
-      )} config.`,
-      default: true,
-    },
-  ]);
-
-  if (isCorrect) {
-    // Save new configuration.
-    try {
-      await Versions.setVersionsAsync(newVersions);
-      console.log(
-        chalk.green('\nSuccessfully updated staging config. You can check it out on'),
-        chalk.blue(`https://${STAGING_HOST}/--/api/v2/versions`)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    console.log(chalk.yellow('Canceled'));
-  }
+  await applyChangesToStagingAsync(delta, versions.sdkVersions[sdkVersion], newVersions);
 }
 
 export default (program: Command) => {
@@ -152,6 +190,8 @@ export default (program: Command) => {
     .option('-r, --release-note-url [string]', 'URL pointing to the release blog post.')
     .option('-k, --key [string]', 'A custom, dotted key that you want to set in the configuration.')
     .option('-v, --value [any]', 'Value for the custom key to be set in the configuration.')
-    .option('--delete', 'Deletes config entry under key specified by `--key` flag.')
+    .option('--delete', 'Deletes config entry under key specified by `--key` flag.', false)
+    .option('--delete-sdk', 'Deletes configuration for SDK specified by `--sdkVersion` flag.', false)
+    .option('--reset', 'Resets changes on staging to the state from production.', false)
     .asyncAction(action);
 };
