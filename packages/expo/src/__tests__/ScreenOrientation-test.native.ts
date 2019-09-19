@@ -7,7 +7,7 @@ it(`throws when lockAsync is called with an unsupported type`, async () => {
   await expect(ScreenOrientation.lockAsync('test' as any)).rejects.toThrowError(TypeError);
 });
 
-it(`NativeModules.lockAsync is not called with known unsupported locks`, async () => {
+it(`doesn't call the lockAsync platform API with known unsupported locks`, async () => {
   await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.OTHER);
   expect(NativeModules.ExpoScreenOrientation.lockAsync).not.toHaveBeenCalled();
 });

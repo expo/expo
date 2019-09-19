@@ -2,7 +2,7 @@ import { NativeModules } from 'react-native';
 
 import * as ScreenOrientation from '../ScreenOrientation/ScreenOrientation';
 
-it(`calls NativeModules.lockPlatformAsync with only iOS properties`, async () => {
+it(`calls the lockPlatformAsync platform API with only iOS properties`, async () => {
   const androidProperties = {
     screenOrientationConstantAndroid: 1,
   };
