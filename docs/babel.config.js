@@ -2,7 +2,7 @@ module.exports = {
   presets: ['next/babel'],
   plugins: [
     [
-      'module-resolver',
+      'babel-plugin-module-resolver',
       {
         alias: {
           '~': '.',
