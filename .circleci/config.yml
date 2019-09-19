@@ -230,6 +230,17 @@ commands:
           command: 'install'
           working_directory: << parameters.working_directory >>
           max_tries: 5
+  yarn_restore_and_install:
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - restore_yarn_cache:
+          working_directory: << parameters.working_directory >>
+      - yarn_install:
+          working_directory: << parameters.working_directory >>
+      - save_yarn_cache:
+          working_directory: << parameters.working_directory >>
 
 executors:
   # We add -l to all the shell commands to make it easier to use direnv
@@ -321,11 +332,31 @@ workflows:
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
+      - client_android_apk_release_approve:
+          type: approval
+          requires:
+            - client_android
+          filters:
+            branches:
+              only:
+                - /.*sdk-\d+/
+                - /.*all-ci.*/
+      - client_android_apk_release:
+          requires:
+            - client_android_apk_release_approve
+      - client_ios_simulator_release_approve:
+          type: approval
+          requires:
+            - client_ios
+          filters:
+            branches:
+              only:
+                - /.*sdk-\d+/
+                - /.*all-ci.*/
+      - client_ios_simulator_release:
+          requires:
+            - client_ios_simulator_release_approve
 
-  #     - shell_app_ios_tests:
-  #         requires:
-  #           - shell_app_sim_base_ios
-  #           - test_suite_publish
   shell_app:
     jobs:
       - shell_app_ios_approve_build:
@@ -425,11 +456,7 @@ jobs:
     steps:
       - setup
       - guard_sdk_tests
-      - restore_yarn_cache:
-          working_directory: ~/expo/tools/expotools
-      - yarn_install:
-          working_directory: ~/expo/tools/expotools
-      - save_yarn_cache:
+      - yarn_restore_and_install:
           working_directory: ~/expo/tools/expotools
       - yarn:
           command: tsc
@@ -504,12 +531,28 @@ jobs:
       - run:
           name: Build
           command: nix run expo.procps --command fastlane ios create_simulator_build
+      - save_cache:
+          key: client-ios-simulator-{{ .Revision }}
+          paths:
+            - ~/expo/ios/simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
       - job-status-change/status
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_IOS_WEBHOOK
+
+  client_ios_simulator_release:
+    executor: js
+    steps:
+      - setup
+      - update_submodules
+      - decrypt_secrets_if_possible
+      - yarn_restore_and_install:
+          working_directory: ~/expo/tools/expotools
+      - restore_cache:
+          key: client-ios-simulator-{{ .Revision }}
+      - run: expotools client-build --platform ios --release
 
   expo_client_build:
     executor: mac
@@ -659,6 +702,18 @@ jobs:
       - slack-job-status-notification/notify:
           only_for_branches: master sdk-*
           slack_webhook: $SLACK_ANDROID_WEBHOOK
+
+  client_android_apk_release:
+    executor: js
+    steps:
+      - setup
+      - update_submodules
+      - decrypt_secrets_if_possible
+      - yarn_restore_and_install:
+          working_directory: ~/expo/tools/expotools
+      - restore_cache:
+          key: client-android-apk-{{ .Revision }}
+      - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
     executor: js

@@ -76,26 +76,13 @@
 
 ## 8. Making a simulator build
 
-**Why:**
+**Why:** To allow our users install Expo client on the simulator (which doesn't have an App Store) we need to make a build for it, upload it to S3 servers and save its url and version on the versions endpoint. These builds are then downloaded and installed by the users using `expo client:install:ios`.
 
 **How:**
 
-- From the release branch, create a simulator Release build using `fastlane ios create_simulator_build`.
-- Make sure there are no errors in fastlane command. Its design is pretty bad and it's possible you won't notice errors.
-- Install, launch and test this new simulator build.
-  ```
-  xcrun simctl install booted /path/to/your/Exponent.app
-  xcrun simctl launch booted host.exp.Exponent
-  ```
-- Set the `AWS_BUCKET` env variable to `exp-ios-simulator-apps`
-- Upload the build by running:
-  ```
-  et ios-add-simulator-build --app [Path to .app] --appVersion [version]`
-  ```
-  - `[Path to .app]` refers to the `Exponent.app` archive you created in step 1.
-  - `[version]` refers to the short iOS version string, such as `2.4.4`.
-  - You might need to [set your AWS credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html), if you haven't done so yet.
-- When you're ready to sync the versions change from step 2 to production, run `et promote-versions`.
+- Open CircleCI on the release branch and go to the `client` workflow. Once `client_ios` job is finished, approve `client_ios_simulator_release_approve` job and follow the next job `client_ios_simulator_release` which takes and uploads the artifact archive from `client_ios` job to staging.
+- Test if this simulator build works as expected. You can install and launch it using expotools command `et client-install -p ios`.
+- When you're ready to sync the versions change to production, run `et promote-versions`.
 
 ## 9. Submitting to App Store
 
