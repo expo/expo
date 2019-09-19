@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  job-status-change: expo/job-status-change@1.0.9
-  slack-job-status-notification: expo/slack-job-status-notification@1.0.4
+  job-status-change: expo/job-status-change@1.0.10
+  slack-job-status-notification: expo/slack-job-status-notification@1.0.5
 
 commands:
   halt_if_unchanged_except:
