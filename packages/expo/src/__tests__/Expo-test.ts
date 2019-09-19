@@ -75,10 +75,6 @@ const skippedExports: string[] = [
   'WebView',
 ];
 
-it(`test intentional failure`, () => {
-  throw new Error('intentional failure');
-});
-
 describe(`Expo APIs`, () => {
   const Expo = require('../Expo');
 
