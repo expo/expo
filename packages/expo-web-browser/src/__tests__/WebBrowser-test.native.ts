@@ -1,4 +1,4 @@
-import { mockProperty, unmockAllProperties } from 'jest-expo';
+import { unmockAllProperties } from 'jest-expo';
 
 import ExpoWebBrowser from '../ExpoWebBrowser';
 import * as WebBrowser from '../WebBrowser';
