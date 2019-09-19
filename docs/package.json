@@ -25,7 +25,7 @@
     "fs-extra": "^6.0.1",
     "github-slugger": "^1.2.0",
     "hotshot": "^1.0.5",
-    "next": "^8.0.0",
+    "next": "^9.0.6",
     "nprogress": "0.2.0",
     "prismjs": "^1.11.0",
     "prop-types": "15.6.2",
