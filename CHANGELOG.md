@@ -7,6 +7,24 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 📚 3rd party library updates
 
 ### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Added rich content supports for push notifications. ([#4787](https://github.com/expo/expo/pull/4787) by [@hesyifei](https://github.com/hesyifei))
+
+### 🐛 Bug fixes
+
+## 35.0.0
+
+### 📚 3rd party library updates
+
+- `react-native-maps` updated from `0.24.0` to `0.25.0`
+- `react-native-reanimated` updated from `1.1.0` to `1.2.0`
+- `react-native-screens` updated from `1.0.0-alpha.22` to `1.0.0-alpha.23`
+- `react-native-svg` updated from `9.5.1` to `9.9.2`
+- `react-native-webview` updated from `5.12.0` to `7.0.5`
+
+### 🛠 Breaking changes
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync). ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 - Google Mobile Ads now require `expo.[platform].config.googleMobileAdsAppId` configuration value present in `app.json`. The value can be found by following the guide in [this Google Support answer](https://support.google.com/admob/answer/7356431). ([#5447](https://github.com/expo/expo/pull/5447) by [@sjchmiela](https://github.com/sjchmiela))
 - Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
@@ -21,7 +39,6 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added `expo-apple-authentication` unimodule providing "Sign In with Apple" functionality. ([#5421](https://github.com/expo/expo/pull/5421) by [@matt-oakes](https://github.com/matt-oakes), [@vonovak](https://github.com/vonovak), [@bbarthec](https://github.com/bbarthec), [@esamelson](https://github.com/esamelson) and [@tsapeta](https://github.com/tsapeta))
 - Added [`react-native-shared-element`](https://github.com/IjzerenHein/react-native-shared-element) to Expo client and standalone apps. ([#5533](https://github.com/expo/expo/pull/5533) by [@brentvatne](https://github.com/brentvatne))
 - Added an option which allows displaying notifications in foreground on iOS. ([#4802](https://github.com/expo/expo/pull/4802) by [@hesyifei](https://github.com/hesyifei))
-- Added rich content supports for push notifications. ([#4787](https://github.com/expo/expo/pull/4787) by [@hesyifei](https://github.com/hesyifei))
 - Added `lazyImports` option in `babel-preset-expo` which allows lazy-initializing/inline-requiring packages. ([#4685](https://github.com/expo/expo/pull/4685) by [@hesyifei](https://github.com/hesyifei))
 - Added the possibility to get MediaLibrary assets from specific time range. ([#5166](https://github.com/expo/expo/pull/5166) by [@tsapeta](https://github.com/tsapeta))
 - Added Next.js supports with Expo for Web. ([#5275](https://github.com/expo/expo/pull/5275) by [@hesyifei](https://github.com/hesyifei))
@@ -29,6 +46,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context) to Expo client and standalone apps. ([#5446](https://github.com/expo/expo/pull/5446) by [@sjchmiela](https://github.com/sjchmiela))
 - Added supports for push notification in Expo for Web. ([#4963](https://github.com/expo/expo/pull/4963) by [@hesyifei](https://github.com/hesyifei))
 - Added `Calendar.getDefaultCalendarAsync` method on iOS. ([#5485](https://github.com/expo/expo/pull/5485) by [@lukmccall](https://github.com/lukmccall))
+- Added `react-native-appearance@0.0.8`.
 
 ### 🐛 Bug fixes
 
