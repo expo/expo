@@ -1,6 +1,6 @@
 {
   "name": "UMTaskManagerInterface",
-  "version": "4.0.0-rc.0",
+  "version": "4.0.0",
   "summary": "Universal module interface package for TaskManager",
   "description": "Universal module interface package for TaskManager",
   "license": "MIT",

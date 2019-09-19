@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '7.0.0-rc.0'
+version = '7.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -50,7 +50,7 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 8
+    versionCode 9
     versionName '1.0.0'
   }
   lintOptions {
