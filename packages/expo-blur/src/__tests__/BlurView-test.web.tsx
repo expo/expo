@@ -23,11 +23,13 @@ afterAll(() => {
   global.CSS = originalCSS;
 });
 
-it(`uses a transparent background color when filters aren't supported`, () => {
+it(`prefers filters to background color`, () => {
   const withNativeBlur = mount(<BlurView tint="light" />);
   expect(getStyleProp(withNativeBlur.find('div'), 'WebkitBackdropFilter')).toBeDefined();
   expect(getStyleProp(withNativeBlur.find('div'), 'backdropFilter')).toBeDefined();
+});
 
+it(`uses a transparent background color when filters aren't supported`, () => {
   // @ts-ignore
   global.CSS = undefined;
 
