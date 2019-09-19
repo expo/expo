@@ -1,6 +1,6 @@
 {
   "name": "EXCellular",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "summary": "Provides information about the user’s cellular service provider",
   "description": "Provides information about the user’s cellular service provider",
   "license": "MIT",

@@ -6,6 +6,9 @@ import { expectResults } from './utils/report';
 let TESTS = [
   'Basic',
   // 'Asset',
+  // 'FileSystem',
+  // 'Font',
+  'Permissions',
   'Constants',
   'Contacts',
   'Crypto',

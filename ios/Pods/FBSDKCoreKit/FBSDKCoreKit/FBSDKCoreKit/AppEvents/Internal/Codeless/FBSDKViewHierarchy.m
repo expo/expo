@@ -22,32 +22,33 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+
 #import "FBSDKCodelessMacros.h"
 #import "FBSDKCodelessPathComponent.h"
-#import "FBSDKCoreKit+Internal.h"
 
 #define MAX_VIEW_HIERARCHY_LEVEL 35
 
 typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
-  /*! Indicates that the class is subclass of UIControl */
+  /** Indicates that the class is subclass of UIControl */
   FBCodelessClassBitmaskUIControl     = 1 << 3,
-  /*! Indicates that the class is subclass of UIControl */
+  /** Indicates that the class is subclass of UIControl */
   FBCodelessClassBitmaskUIButton      = 1 << 4,
-  /*! Indicates that the class is ReactNative Button */
+  /** Indicates that the class is ReactNative Button */
   FBCodelessClassBitmaskReactNativeButton = 1 << 6,
-  /*! Indicates that the class is UITableViewCell */
+  /** Indicates that the class is UITableViewCell */
   FBCodelessClassBitmaskUITableViewCell = 1 << 7,
-  /*! Indicates that the class is UICollectionViewCell */
+  /** Indicates that the class is UICollectionViewCell */
   FBCodelessClassBitmaskUICollectionViewCell = 1 << 8,
-  /*! Indicates that the class is UILabel */
+  /** Indicates that the class is UILabel */
   FBCodelessClassBitmaskLabel = 1 << 10,
-  /*! Indicates that the class is UITextView or UITextField*/
+  /** Indicates that the class is UITextView or UITextField*/
   FBCodelessClassBitmaskInput = 1 << 11,
-  /*! Indicates that the class is UIPicker*/
+  /** Indicates that the class is UIPicker*/
   FBCodelessClassBitmaskPicker = 1 << 12,
-  /*! Indicates that the class is UISwitch*/
+  /** Indicates that the class is UISwitch*/
   FBCodelessClassBitmaskSwitch = 1 << 13,
-  /*! Indicates that the class is UIViewController*/
+  /** Indicates that the class is UIViewController*/
   FBCodelessClassBitmaskUIViewController = 1 << 17,
 };
 

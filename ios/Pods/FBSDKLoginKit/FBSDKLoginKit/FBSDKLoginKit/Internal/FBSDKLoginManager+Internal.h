@@ -20,7 +20,11 @@
 
 #import <FBSDKLoginKit/FBSDKLoginManager.h>
 
+#ifdef COCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
 #import "FBSDKCoreKit+Internal.h"
+#endif
 
 @class FBSDKAccessToken;
 @class FBSDKLoginCompletionParameters;

@@ -26,12 +26,12 @@
   },
   {
     "name": "FBSDKCoreKit",
-    "version": "~> 5.5",
+    "version": "~> 5.6.0",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
     "name": "FBSDKLoginKit",
-    "version": "~> 5.5",
+    "version": "~> 5.6.0",
     "otherPodfileFlags": ", :project_name => \"Facebook\""
   },
   {
@@ -54,12 +54,12 @@
     "name": "lottie-ios",
     "version": "~> 2.5.0"
   },
+  {		
+    "name": "JKBigInteger2",		
+    "version": "0.0.5"		
+  },
   {
     "name": "Branch",
     "version": "~> 0.28"
-  },
-  {
-    "name": "Google-Mobile-Ads-SDK",
-    "version": "~> 7.49.0"
   }
 ]

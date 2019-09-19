@@ -6,14 +6,18 @@ import { expectResults } from './utils/report';
 
 const TESTS = [
   'Basic',
+  'Asset',
   'Constants',
+  'FileSystem',
+  'Font',
+  'Permissions',
+  'Localization',
+  'SecureStore',
   'Contacts',
+  'Random',
   'Crypto',
   //   'Haptics',
-  'Localization',
   //   'SecureStore',
-  'Random',
-  //   'Permissions',
 ];
 
 // This is how long we allocate for the actual tests to be run after the test screen has mounted.

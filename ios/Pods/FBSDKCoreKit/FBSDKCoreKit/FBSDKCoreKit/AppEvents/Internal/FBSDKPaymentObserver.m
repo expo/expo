@@ -20,8 +20,9 @@
 
 #import <StoreKit/StoreKit.h>
 
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+
 #import "FBSDKAppEvents+Internal.h"
-#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKDynamicFrameworkLoader.h"
 #import "FBSDKLogger.h"
 #import "FBSDKSettings.h"

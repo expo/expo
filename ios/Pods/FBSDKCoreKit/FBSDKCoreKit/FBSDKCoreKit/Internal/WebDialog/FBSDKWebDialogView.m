@@ -139,7 +139,7 @@
   [_delegate webDialogViewDidCancel:self];
 }
 
-#pragma mark - WKWebViewDelegate
+#pragma mark - WKNavigationDelegate
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {

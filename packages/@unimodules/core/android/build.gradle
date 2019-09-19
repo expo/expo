@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'org.unimodules'
-version = '3.0.2'
+version = '4.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -51,8 +51,8 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     consumerProguardFiles 'proguard-rules.pro'
-    versionCode 8
-    versionName "3.0.2"
+    versionCode 10
+    versionName "4.0.0"
   }
   lintOptions {
     abortOnError false
