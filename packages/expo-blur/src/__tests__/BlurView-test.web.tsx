@@ -9,7 +9,7 @@ const getStyleProp = (component, prop) => StyleSheet.flatten(component.prop('sty
 // @ts-ignore
 const originalCSS = global.CSS;
 
-beforeAll(() => {
+beforeEach(() => {
   // @ts-ignore
   global.CSS = {
     supports() {
