@@ -17,28 +17,28 @@
 /* Begin PBXContainerItemProxy section */
 		1116645BDF22B60A8C9CCC08B6475D50 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 58A87A1DF4E3E597CB15A4B54052EECE /* Facebook.xcodeproj */;
+			containerPortal = E7B1163AA3D213A965AD94790928709D /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = A39E4BE75C1BA270EA144E071C27BB60;
+			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
 		};
 		13D85FF0A39DB4656C643A68DA4DAC6E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface.xcodeproj */;
+			containerPortal = 5465EFD43F33C2E3B9A719C6D046CACD /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
 		};
 		1D31EF409020CF5404715633C39A7641 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 58A87A1DF4E3E597CB15A4B54052EECE /* Facebook.xcodeproj */;
+			containerPortal = E8D4C7C20C888FCE580A77F912877409 /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = ADB556720D679EF418E52AD93F42CD25;
+			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
 		};
 		8E63E63B0C68EDD0D3CF8562CF116858 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F75862FFD78881E3999A69791CDBD1C1 /* UMCore.xcodeproj */;
+			containerPortal = FDF1340AB1D5D6085A3FA7C243A7C4C0 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
@@ -48,16 +48,17 @@
 /* Begin PBXFileReference section */
 		28F3F34C9CEF63D5474DA0A3CD7609DB /* EXFacebookAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFacebookAppDelegate.h; path = EXFacebook/EXFacebookAppDelegate.h; sourceTree = "<group>"; };
 		3278BFF48F88C73578C4E8E5C3A555EE /* EXFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXFacebook-dummy.m"; sourceTree = "<group>"; };
-		58A87A1DF4E3E597CB15A4B54052EECE /* Facebook */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Facebook; path = Facebook.xcodeproj; sourceTree = "<group>"; };
+		5465EFD43F33C2E3B9A719C6D046CACD /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
 		AE7151EC534B5A1EACB6272710D3E60D /* libEXFacebook.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXFacebook.a; path = libEXFacebook.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0CB287A995662E244B547C4AA2CA8D4 /* EXFacebook.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXFacebook.xcconfig; sourceTree = "<group>"; };
 		BC9BBE6DFD2E486D654D0F1C9A6BDDD4 /* EXFacebook.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXFacebook.h; path = EXFacebook/EXFacebook.h; sourceTree = "<group>"; };
 		CD38021DEB4BB0EB21CDE5ACE20ADE8A /* EXFacebook.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFacebook.m; path = EXFacebook/EXFacebook.m; sourceTree = "<group>"; };
-		CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
 		D0A3C59BF6754F4B355C3BB2C1243E23 /* EXFacebook-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXFacebook-prefix.pch"; sourceTree = "<group>"; };
+		E7B1163AA3D213A965AD94790928709D /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
+		E8D4C7C20C888FCE580A77F912877409 /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
 		E956FCC9F736AB8E5C256E3D40D245A5 /* EXFacebookAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXFacebookAppDelegate.m; path = EXFacebook/EXFacebookAppDelegate.m; sourceTree = "<group>"; };
 		EDEAC1E88B5E7E8380E54C338014F62C /* EXFacebook.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXFacebook.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		F75862FFD78881E3999A69791CDBD1C1 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		FDF1340AB1D5D6085A3FA7C243A7C4C0 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +72,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4ABAA7C12A852404376AEA5366CD0177 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				E7B1163AA3D213A965AD94790928709D /* FBSDKCoreKit */,
+				E8D4C7C20C888FCE580A77F912877409 /* FBSDKLoginKit */,
+				5465EFD43F33C2E3B9A719C6D046CACD /* UMConstantsInterface */,
+				FDF1340AB1D5D6085A3FA7C243A7C4C0 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		8B2CF0B49C26036E53F8530856D64E00 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -104,21 +116,11 @@
 		A9859CF56C5094511074A06DDECCCA0D = {
 			isa = PBXGroup;
 			children = (
-				D770201E4A904FECEA0F0D50432192EE /* Dependencies */,
+				4ABAA7C12A852404376AEA5366CD0177 /* Dependencies */,
 				946C2859E82A3FE0F6C33EB056310515 /* EXFacebook */,
 				F713D1D4EFDBDB2AC903D39530C09937 /* Frameworks */,
 				9CD844BE133F90471B16ED19A65A110A /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		D770201E4A904FECEA0F0D50432192EE /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				58A87A1DF4E3E597CB15A4B54052EECE /* Facebook */,
-				CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface */,
-				F75862FFD78881E3999A69791CDBD1C1 /* UMCore */,
-			);
-			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		F713D1D4EFDBDB2AC903D39530C09937 /* Frameworks */ = {
@@ -196,13 +198,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = F75862FFD78881E3999A69791CDBD1C1 /* UMCore */;
+					ProjectRef = FDF1340AB1D5D6085A3FA7C243A7C4C0 /* UMCore */;
 				},
 				{
-					ProjectRef = CFD66DABDB112998C756CC394C69D4F9 /* UMConstantsInterface */;
+					ProjectRef = 5465EFD43F33C2E3B9A719C6D046CACD /* UMConstantsInterface */;
 				},
 				{
-					ProjectRef = 58A87A1DF4E3E597CB15A4B54052EECE /* Facebook */;
+					ProjectRef = E7B1163AA3D213A965AD94790928709D /* FBSDKCoreKit */;
+				},
+				{
+					ProjectRef = E8D4C7C20C888FCE580A77F912877409 /* FBSDKLoginKit */;
 				},
 			);
 			projectRoot = "";
