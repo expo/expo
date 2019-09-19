@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXKeyValueStorage : NSObject
 
-- (instancetype)init;
+- (instancetype)initWithId:(NSString *)id;
+- (void)removeValueForKey:(NSString *)key;
 - (void)persistString:(NSString *)value forKey:(NSString *)key;
 - (NSString *)readStringForKey:(NSString *)key;
 - (void)persistObject:(NSObject *)value forKey:(NSString *)key;

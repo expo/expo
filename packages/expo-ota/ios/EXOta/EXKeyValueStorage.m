@@ -7,28 +7,39 @@
 
 #import "EXKeyValueStorage.h"
 
-@implementation EXKeyValueStorage
+@implementation EXKeyValueStorage {
+    NSString *moduleId;
+}
 
-- (instancetype)init
+- (instancetype)initWithId:(NSString *)id
 {
     return self;
 }
 
+- (void)removeValueForKey:(NSString *)key
+{
+    [NSUserDefaults.standardUserDefaults removeObjectForKey:[self keyWithId:key]];
+}
+
 - (void)persistString:(NSString *)value forKey:(NSString *)key {
-    [NSUserDefaults.standardUserDefaults setObject:value forKey:key];
+    [NSUserDefaults.standardUserDefaults setObject:value forKey:[self keyWithId:key]];
 }
 
 - (NSString *)readStringForKey:(NSString *)key {
-    return [NSUserDefaults.standardUserDefaults objectForKey:key];
+    return [NSUserDefaults.standardUserDefaults objectForKey:[self keyWithId:key]];
 }
 
 - (void)persistObject:(NSObject *)value forKey:(NSString *)key {
     [NSUserDefaults.standardUserDefaults setObject:value
-                                            forKey:key];
+                                            forKey:[self keyWithId:key]];
 }
 
 - (NSDictionary *)readObject:(NSString *)key {
-    return [NSUserDefaults.standardUserDefaults objectForKey:key];
+    return [NSUserDefaults.standardUserDefaults objectForKey:[self keyWithId:key]];
+}
+
+- (NSString *)keyWithId:(NSString *)key{
+    return [NSString stringWithFormat:@"%@-%@", moduleId, key];
 }
 
 @end

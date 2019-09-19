@@ -10,10 +10,27 @@
 
 #import <Foundation/Foundation.h>
 
-@interface EXOtaUpdater: NSObject
+NS_ASSUME_NONNULL_BEGIN
 
-- (void)downloadManifest:(NSURL *)url;
+@protocol EXManifestRequestConfig
+
+@property(nonnull, readonly) NSString *manifestUrl;
+@property(nullable, readonly) NSDictionary *manifestRequestHeaders;
+@property(nullable, readonly) NSInteger requestTimeout;
+
+@end
+
+typedef void (^EXManifestSuccessBlock)(NSDictionary* manifest);
+typedef void (^EXManifestErrorBlock)(NSError* error);
+
+@interface EXOtaUpdater: NSObject<NSURLSessionTaskDelegate>
+
+- (id)initWithConfig:(nonnull id<EXManifestRequestConfig>)config;
+
+- (void)downloadManifest:(nonnull EXManifestSuccessBlock)success error:(nonnull EXManifestErrorBlock)error;
 
 @end
 
 #endif /* EXOtaUpdater_h */
+
+NS_ASSUME_NONNULL_END
