@@ -99,7 +99,9 @@ android {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
-task generateDynamicMacros(type: Exec) {
+tasks.register("generateDynamicMacros", Exec) {
+  // Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
+  dependsOn(gradle.taskGraph)
   def configuration = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") } ? "release" : "debug"
 
   workingDir '../../tools/expotools/bin'
@@ -109,11 +111,6 @@ task generateDynamicMacros(type: Exec) {
   } else {
     commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
   }
-}
-
-// Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
-gradle.taskGraph.whenReady {
-  generateDynamicMacros.execute()
 }
 
 configurations.all {
