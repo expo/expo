@@ -138,8 +138,8 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - job-status-change/prepare
       - checkout
+      - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
       - run:
