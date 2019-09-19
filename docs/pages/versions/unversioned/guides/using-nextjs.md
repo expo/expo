@@ -10,7 +10,7 @@ title: Using Next.js with Expo for Web
 
 ### Install and configure Next.js
 
-- Follow the [Running in the Browser](../../introduction/running-in-the-browser) guide to add web support to your Expo project.
+- Follow the [Running in the Browser](../../guides/running-in-the-browser) guide to add web support to your Expo project.
 - In your project, install Next.js: `npm i next --save`. (You may also have to run `npm i @babel/plugin-proposal-decorators --save-dev` due to an incompatibility.)
 - You will also need to add `expo-cli` as one of the `devDependencies` (`npm i expo-cli --save-dev`) if you want to build the project on a service such as [ZEIT Now](https://zeit.co/now).
 - Open `app.json` and set `expo.web.use` to `"nextjs"`:
