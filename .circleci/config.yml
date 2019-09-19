@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  job-status-change: expo/job-status-change@1.0.5
+  job-status-change: expo/job-status-change@1.0.7
   slack-job-status-notification: expo/slack-job-status-notification@1.0.4
 
 commands:
@@ -138,7 +138,6 @@ commands:
       - run: echo -e "[whitelist]\nprefix = [ \"$HOME\" ]" > ~/.config/direnv/config.toml
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
-      - job-status-change/prepare
       - checkout
   decrypt_secrets_if_possible:
     steps:
