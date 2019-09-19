@@ -170,36 +170,6 @@ async function action(options: ActionOptions) {
     delete newVersions.sdkVersions[sdkVersion];
   }
 
-  console.log(
-    `\nHere is the diff of changes to apply on SDK ${chalk.cyan(sdkVersion)} version config:`
-  );
-  console.log(jsondiffpatch.formatters.console.format(delta!, versions.sdkVersions[sdkVersion]));
-
-  const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
-    {
-      type: 'confirm',
-      name: 'isCorrect',
-      message: `Does this look correct? Type \`y\` or press enter to update ${chalk.green(
-        'staging'
-      )} config.`,
-      default: true,
-    },
-  ]);
-
-  if (isCorrect) {
-    // Save new configuration.
-    try {
-      await Versions.setVersionsAsync(newVersions);
-      console.log(
-        chalk.green('\nSuccessfully updated staging config. You can check it out on'),
-        chalk.blue(`https://${STAGING_HOST}/--/api/v2/versions`)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    console.log(chalk.yellow('Canceled'));
-  }
   const delta = jsondiffpatch.diff(versions.sdkVersions[sdkVersion], newVersions.sdkVersions[sdkVersion]);
 
   await applyChangesToStagingAsync(delta, versions.sdkVersions[sdkVersion], newVersions);

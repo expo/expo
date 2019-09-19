@@ -362,10 +362,10 @@
     node-fetch "^2.6.0"
     tempy "^0.3.0"
 
-"@expo/xdl@~56.2.2-alpha.1":
-  version "56.2.2-alpha.1"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.2.2-alpha.1.tgz#59edcc85e7b398cc77f89ad4af0b920b741b9891"
-  integrity sha512-tTKjumV1YGDMZWRcuQUb9USwx9XkZZTwSTKSMEtZIrQv5Ke6yPrxUX2B4/aajP9uq87YvlGQlc6pu+OuVdJdgw==
+"@expo/xdl@~56.2.2-alpha.2":
+  version "56.2.2-alpha.2"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.2.2-alpha.2.tgz#8bd7de2b5514b11ceba1ffe30c5e35b8a56d2d92"
+  integrity sha512-zNiG9ItodeECoeNJ/jLtzhHliqHgFnaawPjk1cG+9K2VGxNJ4Wr9seXdXoxrWVatQnC3MXBih7BHSRAG8Zgsig==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.1.5-alpha.0"

@@ -48,23 +48,23 @@ async function downloadAndInstallOnAndroidAsync(clientUrl: string): Promise<void
   try {
     console.log('Checking if the are any Android devices or emulators connected...');
 
-    await Android._assertDeviceReadyAsync();
+    await Android.assertDeviceReadyAsync();
 
     console.log('Uninstalling previously installed Expo client...');
 
-    await Android._uninstallExpoAsync();
+    await Android.uninstallExpoAsync();
 
     console.log(`Downloading an APK from ${chalk.blue(clientUrl)}...`);
 
-    const apkPath = await Android._downloadApkAsync(clientUrl);
+    const apkPath = await Android.downloadApkAsync(clientUrl);
 
     console.log('Installing an APK on the connected device...');
 
-    await Android._getAdbOutputAsync(['install', apkPath]);
+    await Android.getAdbOutputAsync(['install', apkPath]);
 
     console.log('Launching application...');
 
-    await Android._getAdbOutputAsync(['shell', 'am', 'start', '-n', `host.exp.exponent/.LauncherActivity`]);
+    await Android.getAdbOutputAsync(['shell', 'am', 'start', '-n', `host.exp.exponent/.LauncherActivity`]);
 
   } catch (error) {
     console.error(chalk.red(`Unable to install Expo client: ${error.message}`));
