@@ -15,13 +15,11 @@ const { JSDOM } = require('jsdom');
 const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
 const { window } = jsdom;
 
-
-
 // @ts-ignore: We want the global type to be NodeJS.Global but we need to mock out the following DOM properties
 declare const global: {
-  document: any,
-	navigator: any,
-  window: any,
+  document: any;
+  navigator: any;
+  window: any;
 };
 
 global.window = window;

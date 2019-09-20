@@ -5,10 +5,9 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
   function flattenNodeStyles(node?: any): any {
     if (node && node.props) {
       // check for React elements in any props
-      const nextProps = Object.keys(node.props).reduce((acc, curr) => {
+      const nextProps: { [key: string]: any } = Object.keys(node.props).reduce((acc, curr) => {
         const value = node.props[curr];
         if (isValidElement(value)) {
-          // @ts-ignore
           acc[curr] = flattenNodeStyles(value);
         }
         return acc;
@@ -18,10 +17,8 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
       if (node.props.style) {
         const style = StyleSheet.flatten(node.props.style);
         if (Object.keys(style).length > 0) {
-          // @ts-ignore
           nextProps.style = style;
         } else {
-          // @ts-ignore
           delete nextProps.style;
         }
       }
@@ -40,7 +37,6 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
         }
       }
 
-      // @ts-ignore
       return cloneElement.apply(cloneElement, args);
     }
 
