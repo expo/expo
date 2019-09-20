@@ -29,6 +29,7 @@
       "config": "metro.config.js"
     },
     "ios": {
+      "userInterfaceStyle": "automatic",
       "supportsTablet": true,
       "bundleIdentifier": "host.exp.exponent",
       "publishBundlePath": "../ios/Exponent/Supporting/kernel.ios.bundle"
