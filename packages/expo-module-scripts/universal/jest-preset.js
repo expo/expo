@@ -2,7 +2,7 @@ const { withWatchPlugins } = require('jest-expo/config');
 const createJestPreset = require('../createJestPreset');
 
 console.warn(
-  'The Jest preset "expo-module-scripts/universal" is deprecated, please use "expo-module-scripts" instead'
+  'The Jest preset "expo-module-scripts/universal" is deprecated; please use the alias "expo-module-scripts" instead'
 );
 module.exports = withWatchPlugins({
   projects: [
