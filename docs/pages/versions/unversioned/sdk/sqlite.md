@@ -13,10 +13,10 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## API
 
 ```js
-import { openDatabase } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 ```
 
-### `openDatabase(name, version, description, size)`
+### `SQLite.openDatabase(name, version, description, size)`
 
 Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${FileSystem.documentDirectory}/SQLite/${name}`.
 
@@ -32,7 +32,7 @@ Returns a `Database` object, described below.
 
 ### `Database` objects
 
-`Database` objects are returned by calls to `openDatabase()`. Such an object represents a connection to a database on your device. They support one method:
+`Database` objects are returned by calls to `SQLite.openDatabase()`. Such an object represents a connection to a database on your device. They support one method:
 
 - `db.transaction(callback, error, success)`
 
