@@ -8,6 +8,29 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 > **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is currently an alpha feature and upgrading difficulty will vary between versions, but there is some information [here](../../expokit/expokit#upgrading-expokit). 
 
+## SDK 35
+
+[Blog Post](https://blog.expo.io/expo-sdk-35-is-now-available-beee0dfafbf4)
+
+#### Upgrade from SDK 33
+
+- `app.json`, change `sdkVersion` to `"35.0.0"`,
+- In package.json, change these dependencies:
+
+```json
+{
+  "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+  "expo": "^35.0.0",
+  "react": "16.8.3"
+}
+```
+
+- Delete your project’s node_modules directory and run npm install again
+
+#### Notes
+
+- There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/blob/master/CHANGELOG.md) for the full list.
+
 ## SDK 34
 
 [Blog Post](https://blog.expo.io/expo-sdk-34-is-now-available-4f7825239319)
