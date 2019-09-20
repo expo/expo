@@ -22,7 +22,7 @@
     "lint": "expo-module lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test": "jest"
+    "test": "expo-module test"
   },
   "peerDependencies": {
     "react": "16.8.3",
