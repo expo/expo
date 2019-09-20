@@ -8,6 +8,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 🛠 Breaking changes
 
+- **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`.
+
 ### 🎉 New features
 
 - Added rich content supports for push notifications. ([#4787](https://github.com/expo/expo/pull/4787) by [@hesyifei](https://github.com/hesyifei))

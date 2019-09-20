@@ -30,7 +30,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/universal"
   },
   "homepage": "https://docs.expo.io/versions/latest/sdk/amplitude/",
   "unimodulePeerDependencies": {
