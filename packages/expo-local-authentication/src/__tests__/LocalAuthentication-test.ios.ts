@@ -3,7 +3,7 @@ import * as LocalAuthentication from '../LocalAuthentication';
 
 beforeEach(() => {
   ExpoLocalAuthentication.authenticateAsync.mockReset();
-  ExpoLocalAuthentication.authenticateAsync.mockReturnValue({ success: true });
+  ExpoLocalAuthentication.authenticateAsync.mockImplementation(async () => ({ success: true }));
 });
 
 it(`uses promptMessage and fallbackLabel on iOS`, async () => {
