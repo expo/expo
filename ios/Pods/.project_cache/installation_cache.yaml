@@ -4647,14 +4647,14 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: 0da38de9a1d3b00f2207eb2377ebb6a1
     CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
-    PROJECT_NAME: FBAudienceNetwork
+    PROJECT_NAME: Facebook
     SPECS:
       - FBAudienceNetwork (5.5.0)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
     CHECKSUM: d6655a343868d4bb5c29a60859bab07c3be14a0b
-    PROJECT_NAME: FBSDKCoreKit
+    PROJECT_NAME: Facebook
     SPECS:
       - FBSDKCoreKit (5.6.0)
       - FBSDKCoreKit/Basics (5.6.0)
@@ -4663,7 +4663,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKLoginKit: 72881b173101b43cccd14b82d97d4691
     CHECKSUM: c5a623de88a6b0cda35b35582921f6cec2efcc36
-    PROJECT_NAME: FBSDKLoginKit
+    PROJECT_NAME: Facebook
     SPECS:
       - FBSDKLoginKit (5.6.0)
       - FBSDKLoginKit/Login (5.6.0)
