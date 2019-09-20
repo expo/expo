@@ -757,6 +757,10 @@ jobs:
           key: docs-site-{{ .Revision }}
           paths:
             - docs/out
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master
+          slack_webhook: $SLACK_DOCS_WEBHOOK
 
   docs_deploy:
     executor: nix
