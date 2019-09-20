@@ -1,4 +1,4 @@
-import { cloneElement, isValidElement } from 'react';
+import { ReactElement, cloneElement, isValidElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 function create(StyleSheet: { flatten: (style: any) => any }): any {
@@ -11,7 +11,7 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
           acc[curr] = flattenNodeStyles(value);
         }
         return acc;
-      }, {});
+      }, {} as { [key: string]: any });
 
       // flatten styles and avoid empty objects in snapshots
       if (node.props.style) {
@@ -37,7 +37,7 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
         }
       }
 
-      return cloneElement.apply(cloneElement, args);
+      return cloneElement.apply(cloneElement, args as any);
     }
 
     return node;

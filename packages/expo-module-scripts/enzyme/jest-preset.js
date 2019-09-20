@@ -1,6 +1,6 @@
-const withEnzyme = require('jest-expo-enzyme');
+const { withEnzyme } = require('jest-expo-enzyme');
 const { withWatchPlugins } = require('jest-expo/config');
-const withExpoModuleScripts = require('expo-module-scripts/createJestPreset');
+const withExpoModuleScripts = require('../createJestPreset');
 
 module.exports = withWatchPlugins({
   projects: [
