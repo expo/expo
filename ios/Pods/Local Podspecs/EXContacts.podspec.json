@@ -1,6 +1,6 @@
 {
   "name": "EXContacts",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Provides access to the phone's system contacts.",
   "description": "Provides access to the phone's system contacts.",
   "license": "MIT",

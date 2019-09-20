@@ -4,7 +4,7 @@ title: Using TypeScript
 
 [TypeScript](https://www.typescriptlang.org/) - "JavaScript that scales." TypeScript is a superset of JavaScript which gives you static types and powerful tooling in [Visual Studio Code](https://code.visualstudio.com/) including autocompletion and useful inline warnings for type errors.
 
-TypeScript has first-class supprot in Expo &mdash; the JavaScript portion of the Expo SDK is built using TypeScript. So let's look at how you can use it.
+TypeScript has first-class support in Expo &mdash; the JavaScript portion of the Expo SDK is built using TypeScript. So let's look at how you can use it.
 
 ## Starting from scratch: using a TypeScript template
 

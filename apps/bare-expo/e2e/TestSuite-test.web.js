@@ -3,33 +3,21 @@ import { setDefaultOptions } from 'expect-puppeteer';
 
 import config from '../jest-puppeteer.config';
 import { expectResults } from './utils/report';
-import { runTestsAsync } from './Utils';
 
 const TESTS = [
-  {
-    name: 'Sanity',
-    tests: ['Basic'],
-  },
-  {
-    name: 'Core',
-    tests: ['Asset', 'Constants', 'FileSystem', 'Font', 'Permissions'],
-  },
-  {
-    name: 'API',
-    tests: ['Localization', 'SecureStore', 'Contacts', 'Random', 'Crypto'],
-  },
-  // {
-  //   name: 'Components',
-  //   tests: [
-  //     'GLView',
-  //   ]
-  // },
-  // {
-  //   name: 'Third-Party',
-  //   tests: [
-  //     'Segment',
-  //   ]
-  // }
+  'Basic',
+  'Asset',
+  'Constants',
+  'FileSystem',
+  'Font',
+  'Permissions',
+  'Localization',
+  'SecureStore',
+  'Contacts',
+  'Random',
+  'Crypto',
+  //   'Haptics',
+  //   'SecureStore',
 ];
 
 // This is how long we allocate for the actual tests to be run after the test screen has mounted.
@@ -44,28 +32,34 @@ function matchID(id, ...props) {
   return expect(page).toMatchElement(`div[data-testid="${id}"]`, ...props);
 }
 
-// Add some extra time for page content loading (page.goto) and parsing the DOM
-runTestsAsync(TESTS, (MIN_TIME + RENDER_MOUNTING_TIMEOUT) * 1.2, async ({ testName }) => {
-  /// Pause the timeout
+describe('test-suite', () => {
+  TESTS.map(testName => {
+    it(
+      `passes ${testName}`,
+      async () => {
+        /// Pause the timeout
+        // await jestPuppeteer.debug();
 
-  await page.goto(`${config.url}/test-suite/select/${testName}`);
-  // await jestPuppeteer.debug();
-  // console.log(testName);
+        await page.goto(`${config.url}/test-suite/select/${testName}`);
 
-  // Ensure the app linked to the testing screen (give it 100ms for navigation mounting)
-  await matchID('test_suite_container', { visible: true, timeout: RENDER_MOUNTING_TIMEOUT });
-  // Wait for the final result to be rendered. This means all the tests have finished.
-  await matchID('test_suite_final_results', { visible: true, timeout: MIN_TIME });
-  // Get the DOM element matching the testID prop.
-  // This text will contain the final results (parity with native)
-  const element = await page.$(`div[data-testid="test_suite_final_results"]`);
-  // Read the text contents and parse them as JSON
-  const input = await (await element.getProperty('textContent')).jsonValue();
+        // Ensure the app linked to the testing screen (give it 100ms for navigation mounting)
+        await matchID('test_suite_container', { visible: true, timeout: RENDER_MOUNTING_TIMEOUT });
+        // Wait for the final result to be rendered. This means all the tests have finished.
+        await matchID('test_suite_final_results', { visible: true, timeout: MIN_TIME });
+        // Get the DOM element matching the testID prop.
+        // This text will contain the final results (parity with native)
+        const element = await page.$(`div[data-testid="test_suite_final_results"]`);
+        // Read the text contents and parse them as JSON
+        const input = await (await element.getProperty('textContent')).jsonValue();
 
-  console.log(input);
-  // Parse, expect, and print the results of our tests
-  expectResults({
-    testName,
-    input,
+        // Parse, expect, and print the results of our tests
+        expectResults({
+          testName,
+          input,
+        });
+      },
+      // Add some extra time for page content loading (page.goto) and parsing the DOM
+      (MIN_TIME + RENDER_MOUNTING_TIMEOUT) * 1.2
+    );
   });
 });

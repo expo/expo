@@ -231,8 +231,11 @@ const RENAMED_PAGES = {
   '/versions/latest/guides/expokit/': '/versions/latest/expokit/overview/',
   '/versions/latest/guides/publishing/': '/versions/latest/workflow/publishing/',
   '/versions/latest/guides/linking/': '/versions/latest/workflow/linking/',
-  '/versions/latest/guides/linking/': '/versions/latest/workflow/linking/',
   '/versions/latest/guides/up-and-running/': '/versions/latest/workflow/up-and-running/',
   '/versions/latest/guides/debugging/': '/versions/latest/workflow/debugging/',
   '/versions/latest/guides/logging/': '/versions/latest/workflow/logging/',
+  '/versions/latest/introduction/troubleshooting-proxies/':
+    '/versions/latest/guides/troubleshooting-proxies/',
+  '/versions/latest/introduction/running-in-the-browser/':
+    '/versions/latest/guides/running-in-the-browser/',
 };

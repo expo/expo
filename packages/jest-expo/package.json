@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "35.0.0-rc.0",
+  "version": "35.0.0",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -46,7 +46,7 @@
   "devDependencies": {
     "react": "16.8.3"
   },
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447",
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },

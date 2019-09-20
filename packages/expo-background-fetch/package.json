@@ -1,6 +1,6 @@
 {
   "name": "expo-background-fetch",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "description": "Expo universal module for BackgroundFetch API",
   "main": "build/BackgroundFetch.js",
   "types": "build/BackgroundFetch.d.ts",
@@ -37,10 +37,10 @@
     "unimodules-task-manager-interface": "*"
   },
   "dependencies": {
-    "expo-task-manager": "~7.0.0-rc.0"
+    "expo-task-manager": "~7.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1-rc.0"
+    "expo-module-scripts": "~1.1.1"
   },
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }
