@@ -13,10 +13,10 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## API
 
 ```js
-import SQLite from 'expo-sqlite';
+import { openDatabase } from 'expo-sqlite';
 ```
 
-### `SQLite.openDatabase(name, version, description, size)`
+### `openDatabase(name, version, description, size)`
 
 Open a database, creating it if it doesn't exist, and return a `Database` object. On disk, the database will be created under the app's [documents directory](../filesystem), i.e. `${FileSystem.documentDirectory}/SQLite/${name}`.
 
