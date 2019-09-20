@@ -4,9 +4,20 @@
   "license": "MIT",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "sideEffects": true,
   "files": [
     "build",
     "jest-preset.js"
+  ],
+  "keywords": [
+    "react-native",
+    "react-native-web",
+    "enzyme",
+    "jest",
+    "testing",
+    "react-test-renderer",
+    "react",
+    "universal"
   ],
   "repository": {
     "type": "git",
@@ -20,9 +31,10 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "test": "expo-module test"
+    "expo-module": "expo-module"
   },
   "peerDependencies": {
     "react": "16.8.3",

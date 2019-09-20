@@ -1,17 +1,20 @@
-import { ReactElement, cloneElement, isValidElement } from 'react';
+import { cloneElement, isValidElement } from 'react';
 import { StyleSheet } from 'react-native';
 
 function create(StyleSheet: { flatten: (style: any) => any }): any {
   function flattenNodeStyles(node?: any): any {
     if (node && node.props) {
       // check for React elements in any props
-      const nextProps: { [key: string]: any } = Object.keys(node.props).reduce((acc, curr) => {
-        const value = node.props[curr];
-        if (isValidElement(value)) {
-          acc[curr] = flattenNodeStyles(value);
-        }
-        return acc;
-      }, {} as { [key: string]: any });
+      const nextProps: { [key: string]: any } = Object.keys(node.props).reduce(
+        (acc, curr) => {
+          const value = node.props[curr];
+          if (isValidElement(value)) {
+            acc[curr] = flattenNodeStyles(value);
+          }
+          return acc;
+        },
+        {} as { [key: string]: any }
+      );
 
       // flatten styles and avoid empty objects in snapshots
       if (node.props.style) {
