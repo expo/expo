@@ -162,11 +162,15 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
-      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates', 'unimodules-react-native-adapter']
+      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates', 'unimodules-react-native-adapter', 'expo-branch']
   ])
 
   api(project(':unimodules-react-native-adapter')) {
-    exclude module: 'com.facebook.react:react-native'
+    exclude module: 'react-native'
+  }
+
+  api(project(':expo-branch')) {
+    exclude module: 'react-native'
   }
 
   // Versioned react native

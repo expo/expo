@@ -64,6 +64,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  compileOnly 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-native:+'
   api 'io.branch.sdk.android:library:3.2.0'
 }
