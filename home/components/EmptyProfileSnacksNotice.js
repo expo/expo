@@ -2,7 +2,7 @@
 
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
 import { StyledView } from './Views';

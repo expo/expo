@@ -34,32 +34,24 @@ import {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-const AppleAuthenticationButton: React.FunctionComponent<AppleAuthenticationButtonProps> = (props) => {
+const AppleAuthenticationButton: React.FunctionComponent<
+  AppleAuthenticationButtonProps
+> = props => {
   if (!ExpoAppleAuthenticationButtonSignInWhite) {
     if (__DEV__) {
-      console.warn('\'AppleAuthenticationButton\' is not available.')
+      console.warn("'AppleAuthenticationButton' is not available.");
     }
     return null;
   }
 
-  const {
-    onPress,
-    buttonStyle,
-    buttonType,
-    ...restProps
-  } = props;
+  const { onPress, buttonStyle, buttonType, ...restProps } = props;
 
   const AppleAuthenticationButtonComponent = selectButtonComponent(buttonType, buttonStyle);
 
-  return (
-    <AppleAuthenticationButtonComponent
-      onButtonPress={onPress}
-      {...restProps}
-    />
-  );
-}
+  return <AppleAuthenticationButtonComponent onButtonPress={onPress} {...restProps} />;
+};
 
-const ButtonComponents: { [type : number]: { [style: number]: React.ElementType } } = {
+const ButtonComponents: { [type: number]: { [style: number]: React.ElementType } } = {
   [AppleAuthenticationButtonType.SIGN_IN]: {
     [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonSignInWhite,
     [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonSignInWhiteOutline,
@@ -72,8 +64,11 @@ const ButtonComponents: { [type : number]: { [style: number]: React.ElementType 
   },
 };
 
-function selectButtonComponent(type: AppleAuthenticationButtonType, style: AppleAuthenticationButtonStyle): React.ElementType {
+function selectButtonComponent(
+  type: AppleAuthenticationButtonType,
+  style: AppleAuthenticationButtonStyle
+): React.ElementType {
   return ButtonComponents[type][style];
 }
 
-export default AppleAuthenticationButton
+export default AppleAuthenticationButton;
