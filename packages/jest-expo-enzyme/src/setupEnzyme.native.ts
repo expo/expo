@@ -12,7 +12,7 @@ type Global = {
   document: any;
   navigator: any;
   expect: any;
-}
+};
 
 declare const global: Global;
 

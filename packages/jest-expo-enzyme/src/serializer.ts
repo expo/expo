@@ -13,7 +13,7 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
         }
         return acc;
       }, {});
-  
+
       // flatten styles and avoid empty objects in snapshots
       if (node.props.style) {
         const style = StyleSheet.flatten(node.props.style);
@@ -25,9 +25,9 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
           delete nextProps.style;
         }
       }
-  
+
       const args = [node, nextProps];
-  
+
       // recurse over children too
       const children = node.children || node.props.children;
       if (children) {
@@ -39,21 +39,21 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
           args.push(flattenNodeStyles(children));
         }
       }
-  
+
       // @ts-ignore
       return cloneElement.apply(cloneElement, args);
     }
-  
+
     return node;
   }
-  
-return { 
+
+  return {
     test(value: any): boolean {
       return !!value && value.$$typeof === Symbol.for('react.test.json');
-    }, 
+    },
     print(value: any, serialize: (val: any) => string): string {
       return serialize(flattenNodeStyles(value));
-    }  
+    },
   };
 }
 

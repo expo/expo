@@ -46,6 +46,6 @@ export default function withEnzyme(preset: Config.ProjectConfig) {
     setupFiles: [...setupFiles, require.resolve('jest-canvas-mock')],
     setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.web.js`)],
   };
-};
+}
 
-export { withEnzyme }
+export { withEnzyme };
