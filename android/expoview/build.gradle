@@ -99,19 +99,26 @@ android {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
-tasks.register("generateDynamicMacros", Exec) {
-  // Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
-  dependsOn(gradle.taskGraph)
-  def configuration = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") } ? "release" : "debug"
+class GenerateDynamicMacrosPlugin implements Plugin<Project> {
+  @Override
+  void apply(Project target) {
+    target.exec {
+      def configuration = target.gradle.startParameter.taskNames.any {
+        it.toLowerCase().contains("release")
+      } ? "release" : "debug"
 
-  workingDir '../../tools/expotools/bin'
+      workingDir '../../tools/expotools/bin'
 
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
-  } else {
-    commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+      } else {
+        commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+      }
+    }
   }
 }
+
+apply plugin: GenerateDynamicMacrosPlugin
 
 configurations.all {
   resolutionStrategy {
