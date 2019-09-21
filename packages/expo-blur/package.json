@@ -14,6 +14,9 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
+  "jest": {
+    "preset": "expo-module-scripts/enzyme"
+  },
   "keywords": [
     "react-native",
     "expo",
