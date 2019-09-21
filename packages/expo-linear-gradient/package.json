@@ -19,6 +19,9 @@
     "expo",
     "gradient"
   ],
+  "jest": {
+    "preset": "expo-module-scripts/enzyme"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -34,8 +37,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1",
-    "jest-expo-enzyme": "~0.0.0"
+    "expo-module-scripts": "~1.1.1"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

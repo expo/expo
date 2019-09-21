@@ -74,7 +74,7 @@ You can use `withEnzyme` to add Enzyme support to an existing Jest config (**imp
 2. Import the platforms you want to test and add Enzyme support:
 
 ```js
-const withEnzyme = require('jest-expo-enzyme');
+const { withEnzyme } = require('jest-expo-enzyme');
 
 module.exports = {
   projects: [

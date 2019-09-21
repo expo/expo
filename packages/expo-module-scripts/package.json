@@ -31,11 +31,12 @@
     "@types/jest": "^24.0.11",
     "babel-preset-expo": "~7.0.0",
     "commander": "^2.19.0",
+    "find-yarn-workspace-root": "^1.2.1",
     "glob": "^7.1.3",
     "jest-expo": "~35.0.0",
+    "jest-expo-enzyme": "^0.0.0",
     "ts-jest": "~24.0.2",
-    "typescript": "^3.4.3",
-    "find-yarn-workspace-root": "^1.2.1"
+    "typescript": "^3.4.3"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

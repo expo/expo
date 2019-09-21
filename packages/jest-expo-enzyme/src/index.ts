@@ -1,11 +1,11 @@
-'use strict';
-const chalk = require('chalk');
+import chalk from 'chalk';
+import { Config } from '@jest/types';
 
-module.exports = function withEnzyme(preset = {}) {
+export default function withEnzyme(preset: Config.ProjectConfig) {
   const {
     snapshotSerializers = [],
     testEnvironmentOptions = {},
-    haste = {},
+    haste = { defaultPlatform: null },
     setupFilesAfterEnv = [],
     setupFiles = [],
   } = preset;
@@ -19,6 +19,7 @@ module.exports = function withEnzyme(preset = {}) {
     );
     console.error(message);
     process.exit(1);
+    return;
   }
 
   const isNative = ['ios', 'android'].includes(haste.defaultPlatform);
@@ -45,4 +46,6 @@ module.exports = function withEnzyme(preset = {}) {
     setupFiles: [...setupFiles, require.resolve('jest-canvas-mock')],
     setupFilesAfterEnv: [...setupFilesAfterEnv, require.resolve(`./setupEnzyme.web.js`)],
   };
-};
+}
+
+export { withEnzyme };
