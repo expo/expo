@@ -30,7 +30,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
            @"locales": preferredLocales,
            @"timezone": [currentTimeZone name],
            @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
-           @"region": region
+           @"region": UMNullIfNil(region)
            };
 }
 
