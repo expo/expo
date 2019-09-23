@@ -167,6 +167,7 @@ dependencies {
 
   api(project(':unimodules-react-native-adapter')) {
     exclude module: 'react-native'
+    api project(':ReactAndroid')
   }
 
   api(project(':expo-branch')) {
