@@ -165,12 +165,13 @@ dependencies {
       exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates', 'unimodules-react-native-adapter', 'expo-branch']
   ])
 
-  api(project(':unimodules-react-native-adapter')) {
+  debugApi(project(':unimodules-react-native-adapter'))
+  releaseApi(project(':unimodules-react-native-adapter')) {
     exclude module: 'react-native'
-    api project(':ReactAndroid')
   }
 
-  api(project(':expo-branch')) {
+  debugApi(project(':expo-branch'))
+  releaseApi(project(':expo-branch')) {
     exclude module: 'react-native'
   }
 
