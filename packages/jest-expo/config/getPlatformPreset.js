@@ -1,5 +1,5 @@
 'use strict';
-const expoPreset = require('../jest-preset');
+const expoPreset = require('../jest-expo');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
 function getModuleFileExtensions(...platforms) {

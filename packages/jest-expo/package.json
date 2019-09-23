@@ -17,7 +17,8 @@
     "src",
     "universal",
     "web",
-    "jest-preset.js"
+    "jest-preset.js",
+    "jest-expo.js"
   ],
   "bin": {
     "jest": "bin/jest.js"

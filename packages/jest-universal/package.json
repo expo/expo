@@ -1,0 +1,40 @@
+{
+  "name": "jest-universal",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "src",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/expo/expo.git",
+    "directory": "packages/jest-universal"
+  },
+  "files": [
+    "android",
+    "config",
+    "ios",
+    "node",
+    "src",
+    "web",
+    "jest-preset.js"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-universal"
+  },
+  "peerDependencies": {
+    "react": "~16.8.3",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "dependencies": {
+    "jest-expo": "^35.0.0"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-universal"
+}
