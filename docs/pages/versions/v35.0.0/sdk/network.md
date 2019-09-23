@@ -109,7 +109,7 @@ Returns a `Promise` that resolves to the `boolean` value for whether the device 
 **Examples**
 
 ```js
-await Application.isAirplaneModeEnabledAsync();
+await Network.isAirplaneModeEnabledAsync();
 // false
 ```
 
