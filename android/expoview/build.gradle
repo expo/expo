@@ -162,15 +162,38 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
-      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates', 'unimodules-react-native-adapter', 'expo-branch']
+      exclude      : [
+          'expo-bluetooth',
+          'expo-in-app-purchases',
+          'expo-updates',
+          'unimodules-react-native-adapter',
+          'expo-branch'
+      ]
   ])
 
+  // 1. React Native 0.60+ required 3rd party modules libraries to depend on it
+  //    via `api` or `implementation` configurations.
+  //    See https://github.com/unimodules/react-native-unimodules/issues/67#issuecomment-529892115
+  //        https://github.com/expo/expo/pull/5648/commits/29a3a4f29c0410c7824d004a85fa836e3db5280c
+  // 2. Just this simple change to unimodules' `build.gradle`s fixed the issue
+  //    in developers' projects, but rendered Expo client project non-buildable:
+  //    `ReactAndroid` and `com.facebook.react:react-native` were in conflict,
+  //    both trying to provide same classes.
+  //    `(Duplicate jar entry [com/facebook/debug/debugoverlay/model/DebugOverlayTag.class])`
+  // 3. Excluding `react-native` from those projects should work and it did
+  //    in debug mode on localhost and in release mode on CI. However, it didn't
+  //    on CI when building a debug APK for DeviceFarm.
+  //    `Default method desugaring of `org.unimodules.adapters.react.views.SimpleViewManagerAdapter`
+  //    failed because its super class `com.facebook.react.uimanager.SimpleViewManager` is missing`
+  //    Users on newer versions of Gradle reported similar issue.
+  //    See https://github.com/expo/expo/issues/5654).
+  // 4. Finally, excluding only in release mode made the project build properly on both
+  //    a developer's machine and on full CI.
+  debugApi(project(':expo-branch'))
   debugApi(project(':unimodules-react-native-adapter'))
   releaseApi(project(':unimodules-react-native-adapter')) {
     exclude module: 'react-native'
   }
-
-  debugApi(project(':expo-branch'))
   releaseApi(project(':expo-branch')) {
     exclude module: 'react-native'
   }
