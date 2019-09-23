@@ -172,7 +172,7 @@ const TabNavigator =
         },
       })
     : createMaterialBottomTabNavigator(TabRoutes, {
-        initialRouteName: 'ExploreStack',
+        initialRouteName: 'ProjectsStack',
         activeColor: Colors.tabIconSelected,
         inactiveColor: Colors.tabIconDefault,
         shifting: true,
