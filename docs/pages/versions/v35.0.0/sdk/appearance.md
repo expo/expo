@@ -14,7 +14,8 @@ To import this library, use:
 
 ```js
 import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance';
-```
+````
+First, you need to add (under the iOS key) `"userInterfacestyle": "automatic"`.
 
 Next you need to wrap your app root component with an `AppearanceProvider`.
 
@@ -54,3 +55,39 @@ function MyComponent() {
   }
 }
 ```
+-----
+Full example:
+```js
+import react, {Component} from 'react';
+import {Text, View} from 'react-native';
+
+//import the modules
+import {Appearance, AppearanceProvider} from 'react-native-appearance';
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      theme: Appearance.getColorScheme() // get initial color cheme
+    }
+    this.subscription = Appearance.addChangeListener(({ colorScheme }) => { //Add subscription to when the user changes themes
+    //set the theme in state so that the app re-renders for the theme
+      this.setState({theme: colorScheme})
+    })
+  }
+  render() {
+    return (
+      <AppearanceProvider>
+        <View stle={{
+        flex:1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: this.state.theme == "light" ? "white" : "black"
+        }}>
+          <Text style={{color: this.state.theme == "dark" ? "white" : "black"}}>{this.state.theme}{"\n"}Change the system theme!</Text>
+
+        </View>
+      </AppearanceProvider>
+    )
+  }
+}
