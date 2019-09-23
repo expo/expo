@@ -52,6 +52,9 @@ export declare const iosModelNames: {
     'iPhone11,4': string;
     'iPhone11,6': string;
     'iPhone11,8': string;
+    'iPhone12,1': string;
+    'iPhone12,3': string;
+    'iPhone12,5': string;
     'iPad4,1': string;
     'iPad4,2': string;
     'iPad4,3': string;
