@@ -13,7 +13,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## API
 
 ```js
-import { StoreReview } from 'expo-store-review';
+import * as StoreReview from 'expo-store-review';
 ```
 
 ### `StoreReview.requestReview()`
