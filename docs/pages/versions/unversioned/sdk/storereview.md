@@ -8,12 +8,12 @@ Provides access to the `SKStoreReviewController` API in iOS 10.3+ devices.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-store-review`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-store-review).
 
 ## API
 
 ```js
-import { StoreReview } from 'expo';
+import { StoreReview } from 'expo-store-review';
 ```
 
 ### `StoreReview.requestReview()`
