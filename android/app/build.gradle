@@ -95,6 +95,9 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
+  resolutionStrategy.dependencySubstitution {
+    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+  }
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE

@@ -124,9 +124,6 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
-  resolutionStrategy.dependencySubstitution {
-    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
-  }
 }
 
 // Import gradle helpers for unimodules.
