@@ -53,7 +53,7 @@ The bare workflow is our way of describing the workflow where you use some of th
 - [Magnetometer](../../sdk/magnetometer/)
 - [MailComposer](../../sdk/mail-composer/)
 - [MediaLibrary](../../sdk/media-library/)
-- [Network](../../network/)
+- [Network](../../sdk/network/)
 - [Pedometer](../../sdk/pedometer/)
 - [Permissions](../../sdk/permissions/)
 - [Print](../../sdk/print/)
