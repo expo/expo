@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/securestore/",
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
