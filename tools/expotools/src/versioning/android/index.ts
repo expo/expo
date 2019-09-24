@@ -6,11 +6,12 @@ import path from 'path';
 import semver from 'semver';
 import spawnAsync from '@expo/spawn-async';
 
-import { JniLibNames, JavaPackagesToRename } from './constants';
-import { getExpoRepositoryRootDir, getAndroidDir } from '../../Directories';
+import { JniLibNames, getJavaPackagesToRename } from './libraries';
+import { getExpoRepositoryRootDir, getAndroidDir, getExpotoolsDir } from '../../Directories';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 const ANDROID_DIR = getAndroidDir();
+const EXPOTOOLS_DIR = getExpotoolsDir();
 
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
@@ -242,7 +243,8 @@ async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
 
   // Update JNI methods
-  for (const javaPackage of JavaPackagesToRename) {
+  const packagesToRename = await getJavaPackagesToRename();
+  for (const javaPackage of packagesToRename) {
     const pathForPackage = javaPackage.replace(/\./g, '\\/');
     await spawnAsync(
       `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
@@ -298,7 +300,20 @@ async function renameJniLibsAsync(version: string) {
   }
 }
 
+async function buildAarAsync(version: string) {
+  return spawnAsync(
+    './android-build-aar.sh',
+    [version],
+    {
+      shell: true,
+      cwd: path.join(EXPOTOOLS_DIR, 'src/versioning/android'),
+      stdio: 'inherit',
+    }
+  );
+}
+
 export async function addVersionAsync(version: string) {
-  await updateVersionedReactNativeAsync();
-  await renameJniLibsAsync(version);
+  // await updateVersionedReactNativeAsync();
+  // await renameJniLibsAsync(version);
+  await buildAarAsync(version);
 }
