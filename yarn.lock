@@ -5020,10 +5020,10 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-detox@^14.0.2:
-  version "14.3.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-14.3.0.tgz#1e81759b2a0be5fc8bb53bbde994ada54e045123"
-  integrity sha512-tis2br/6EYI//0gignY/BuilwISkEvKMSrPgfAbG30KLxn9s1JE21wUS2j6xGseLbwaCA5zianGdUP2FSGCwjA==
+detox@^14.3.4:
+  version "14.3.4"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-14.3.4.tgz#ec8e040fe2a1e6c5c6cbce70486ac5973bfb37dc"
+  integrity sha512-P+rLrGrnJLlxcwDrk2LEt6tt36G5RKOs9DYtwlWef4KiYtVfjjijgGRsUoojXl2g2BkGK0baIm1uOZtmYllW8g==
   dependencies:
     "@babel/core" "^7.4.5"
     bunyan "^1.8.12"
