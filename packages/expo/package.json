@@ -69,7 +69,7 @@
     "expo-location": "~7.0.0",
     "expo-permissions": "~7.0.0",
     "expo-sqlite": "~7.0.0",
-    "expo-web-browser": "~7.0.0",
+    "expo-web-browser": "~7.0.1",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "lodash": "^4.6.0",

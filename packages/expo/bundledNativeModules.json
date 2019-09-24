@@ -51,7 +51,7 @@
   "expo-speech": "~7.0.0",
   "expo-sqlite": "~7.0.0",
   "expo-task-manager": "~7.0.0",
-  "expo-web-browser": "~7.0.0",
+  "expo-web-browser": "~7.0.1",
   "lottie-react-native": "~2.6.1",
   "react-native-branch": "~3.1.1",
   "react-native-gesture-handler": "~1.3.0",

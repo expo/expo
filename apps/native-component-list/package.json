@@ -62,7 +62,7 @@
     "expo-store-review": "~1.0.0",
     "expo-task-manager": "~7.0.0",
     "expo-three": "4.0.6",
-    "expo-web-browser": "~7.0.0",
+    "expo-web-browser": "~7.0.1",
     "fbemitter": "^2.1.1",
     "gl-mat4": "^1.1.4",
     "hsv2rgb": "^1.1.0",
