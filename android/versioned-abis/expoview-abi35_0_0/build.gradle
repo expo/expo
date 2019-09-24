@@ -3,9 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 
-
-def dbflow_version = "4.2.4"
-
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -141,9 +138,9 @@ dependencies {
   api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
-  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
-  compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
-  compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 }
