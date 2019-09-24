@@ -10,5 +10,5 @@ npm-debug.*
 web-build/
 web-report/
 
-# maxOS
+# macOS
 .DS_Store
