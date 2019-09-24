@@ -77,8 +77,8 @@ public class ExpoTestRunner extends AndroidJUnit4ClassRunner {
     }
   }
 
-  public ExpoTestRunner(Class<?> klass, AndroidRunnerParams runnerParams) throws InitializationError {
-    super(klass, runnerParams);
+  public ExpoTestRunner(Class<?> klass) throws InitializationError {
+    super(klass);
 
     ExpoTestFilter filter = new ExpoTestFilter();
     try {
