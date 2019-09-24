@@ -42,7 +42,7 @@
     "expo-speech": "~7.0.0",
     "expo-sqlite": "~7.0.0",
     "expo-task-manager": "~7.0.0",
-    "expo-web-browser": "~7.0.0",
+    "expo-web-browser": "~7.0.1",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
     "jasmine-core": "^2.4.1",
