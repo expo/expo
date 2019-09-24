@@ -4629,13 +4629,13 @@ CACHE_KEYS:
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: ec76219e07e31af5a99e73de2e74e92c
-    CHECKSUM: 7bc3a4006cd4c66b5cb558d07f486f9fbca476ad
+    CHECKSUM: 18924c3d2a3a1aa95d413672f058beff589c80f4
     FILES:
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
-      - EXWebBrowser (7.0.0)
+      - EXWebBrowser (7.0.1)
   Fabric:
     BUILD_SETTINGS_CHECKSUM:
       Fabric: 19535f98611a12f2233e414f8db87ff3
@@ -4647,14 +4647,14 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: 0da38de9a1d3b00f2207eb2377ebb6a1
     CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
-    PROJECT_NAME: FBAudienceNetwork
+    PROJECT_NAME: Facebook
     SPECS:
       - FBAudienceNetwork (5.5.0)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
     CHECKSUM: d6655a343868d4bb5c29a60859bab07c3be14a0b
-    PROJECT_NAME: FBSDKCoreKit
+    PROJECT_NAME: Facebook
     SPECS:
       - FBSDKCoreKit (5.6.0)
       - FBSDKCoreKit/Basics (5.6.0)
@@ -4663,7 +4663,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKLoginKit: 72881b173101b43cccd14b82d97d4691
     CHECKSUM: c5a623de88a6b0cda35b35582921f6cec2efcc36
-    PROJECT_NAME: FBSDKLoginKit
+    PROJECT_NAME: Facebook
     SPECS:
       - FBSDKLoginKit (5.6.0)
       - FBSDKLoginKit/Login (5.6.0)
