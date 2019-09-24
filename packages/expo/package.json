@@ -31,7 +31,7 @@
     "expo-module": "expo-module"
   },
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "expo-module-scripts"
   },
   "repository": {
     "type": "git",
