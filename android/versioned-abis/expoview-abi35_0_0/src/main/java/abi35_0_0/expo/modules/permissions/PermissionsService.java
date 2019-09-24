@@ -2,7 +2,7 @@ package abi35_0_0.expo.modules.permissions;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.Arrays;
 import java.util.Collections;

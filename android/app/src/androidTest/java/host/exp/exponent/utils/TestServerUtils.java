@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.Until;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.Until;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,9 +25,9 @@ import okhttp3.Response;
 import host.exp.exponent.generated.ExponentBuildConstants;
 import host.exp.exponent.kernel.ExponentUrls;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 
 public class TestServerUtils {

@@ -73,5 +73,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
 
-  api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "androidx.browser:browser:1.0.0"
 }

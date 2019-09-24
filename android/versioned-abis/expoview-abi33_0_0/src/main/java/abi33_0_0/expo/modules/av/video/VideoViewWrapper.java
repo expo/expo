@@ -2,7 +2,7 @@ package abi33_0_0.expo.modules.av.video;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.FrameLayout;
 
 import abi33_0_0.org.unimodules.core.ModuleRegistry;

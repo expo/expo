@@ -39,7 +39,7 @@ android {
     // END VERSIONS
 
     multiDexEnabled true
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -108,14 +108,14 @@ apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation 'com.android.support:multidex:1.0.1'
+  implementation 'androidx.multidex:multidex:2.0.0'
 
   // Our dependencies
-  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'androidx.appcompat:appcompat:1.0.0'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'androidx.appcompat:appcompat:1.0.0'
   implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
@@ -147,7 +147,7 @@ dependencies {
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
+  implementation "androidx.exifinterface:exifinterface:1.0.0"
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.6.0'
 

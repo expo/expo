@@ -1,6 +1,6 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;

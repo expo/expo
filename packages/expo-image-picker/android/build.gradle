@@ -74,7 +74,7 @@ dependencies {
   unimodule 'unimodules-image-loader-interface'
 
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "androidx.legacy:legacy-support-v4:1.0.0"
   api 'commons-codec:commons-codec:1.10'
   api 'commons-io:commons-io:2.6'
 }
