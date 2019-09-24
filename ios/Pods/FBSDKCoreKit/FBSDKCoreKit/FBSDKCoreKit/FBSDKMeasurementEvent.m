@@ -36,11 +36,11 @@ NSString *const FBSDKMeasurementEventNotificationName = @"com.facebook.facebook-
 NSString *const FBSDKMeasurementEventNameKey = @"event_name";
 NSString *const FBSDKMeasurementEventArgsKey = @"event_args";
 
-/* app Link Event raised by this FBSDKURL */
+/** app Link Event raised by this FBSDKURL */
 NSString *const FBSDKAppLinkParseEventName = @"al_link_parse";
 NSString *const FBSDKAppLinkNavigateInEventName = @"al_nav_in";
 
-/*! AppLink events raised in this class */
+/** AppLink events raised in this class */
 NSString *const FBSDKAppLinkNavigateOutEventName = @"al_nav_out";
 NSString *const FBSDKAppLinkNavigateBackToReferrerEventName = @"al_ref_back_out";
 

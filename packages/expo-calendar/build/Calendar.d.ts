@@ -119,6 +119,7 @@ export declare function deleteEventAsync(id: string, { futureEvents, instanceSta
 export declare function getAttendeesForEventAsync(id: string, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<Attendee[]>;
 export declare function createAttendeeAsync(eventId: string, details?: OptionalKeys<Attendee>): Promise<string>;
 export declare function updateAttendeeAsync(id: string, details?: OptionalKeys<Attendee>): Promise<string>;
+export declare function getDefaultCalendarAsync(): Promise<Calendar>;
 export declare function deleteAttendeeAsync(id: string): Promise<void>;
 export declare function getRemindersAsync(calendarIds: Array<string | null>[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
 export declare function getReminderAsync(id: string): Promise<Reminder>;

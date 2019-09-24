@@ -10,6 +10,7 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import dev.expo.payments.generated.BasePackageList;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -36,6 +37,7 @@ public class MainApplication extends Application implements ReactApplication {
           new MainReactPackage(),
           new ReanimatedPackage(),
           new RNGestureHandlerPackage(),
+          new SafeAreaContextPackage(),
           new ModuleRegistryAdapter(mModuleRegistryProvider)
       );
     }

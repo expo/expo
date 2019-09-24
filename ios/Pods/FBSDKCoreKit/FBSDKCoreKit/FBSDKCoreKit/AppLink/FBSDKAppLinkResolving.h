@@ -32,7 +32,7 @@ typedef void (^FBSDKAppLinkBlock)(FBSDKAppLink * _Nullable appLink, NSError * _N
 NS_SWIFT_NAME(AppLinkBlock);
 
 
-/*!
+/**
  Implement this protocol to provide an alternate strategy for resolving
  App Links that may include pre-fetching, caching, or querying for App Link
  data from an index provided by a service provider.

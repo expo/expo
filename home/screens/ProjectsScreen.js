@@ -15,7 +15,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Themed, withNavigationFocus, withNavigation } from 'react-navigation';
+import { withNavigationFocus, withNavigation, Themed } from 'react-navigation';
+
 import { connect } from 'react-redux';
 import semver from 'semver';
 import ScrollView from '../components/NavigationScrollView';
@@ -31,7 +32,6 @@ import NoProjectsOpen from '../components/NoProjectsOpen';
 import ProjectTools from '../components/ProjectTools';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from '../components/SmallProjectCard';
-import Store from '../redux/Store';
 import Connectivity from '../api/Connectivity';
 import getSnackId from '../utils/getSnackId';
 import { SectionLabelContainer, GenericCardBody, GenericCardContainer } from '../components/Views';

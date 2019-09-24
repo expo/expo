@@ -1,36 +1,51 @@
 {
-  expo: {
-    name: 'expo-home',
-    description: '',
-    slug: 'expo-home-dev-7a8e302a9f5cfec0199232faed98ba32b33242cf',
-    privacy: 'unlisted',
-    sdkVersion: '34.0.0',
-    version: '34.0.0',
-    orientation: 'portrait',
-    platforms: [
-      'ios',
-      'android',
+  "expo": {
+    "name": "expo-home",
+    "description": "",
+    "slug": "home",
+    "privacy": "unlisted",
+
+    // When publishing the sdkVersion needs to be set to the target sdkVersion. The Expo client will
+    // load it as UNVERSIONED, but the server uses this field to know which clients to serve the
+    // bundle to.
+    "sdkVersion": "35.0.0",
+
+    // Update this each time you publish so you're able to relate published bundles to specific
+    // commits in the repo
+    "version": "35.0.0",
+
+    "orientation": "portrait",
+    "platforms": [
+      "ios",
+      "android"
     ],
-    primaryColor: '#cccccc',
-    icon: 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png',
-    updates: {
-      checkAutomatically: 'ON_LOAD',
-      fallbackToCacheTimeout: 0,
+    "primaryColor": "#cccccc",
+    "icon": "https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png",
+    "updates": {
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     },
-    packagerOpts: {
-      config: 'metro.config.js',
+    "packagerOpts": {
+      "config": "metro.config.js"
     },
-    ios: {
-      supportsTablet: true,
-      bundleIdentifier: 'host.exp.exponent',
-      userInterfaceStyle: 'automatic',
+    "ios": {
+      "userInterfaceStyle": "automatic",
+      "supportsTablet": true,
+      "bundleIdentifier": "host.exp.exponent",
+      "publishBundlePath": "../ios/Exponent/Supporting/kernel.ios.bundle"
     },
-    android: {
-      package: 'host.exp.exponent',
+    "android": {
+      "package": "host.exp.exponent",
+      "publishBundlePath": "../android/app/src/main/assets/kernel.android.bundle"
     },
-    scheme: 'exp',
-    extra: {
-      amplitudeApiKey: '081e5ec53f869b440b225d5e40ec73f9',
+    "scheme": "exp",
+    "extra": {
+      "amplitudeApiKey": "081e5ec53f869b440b225d5e40ec73f9"
     },
-  },
+    "isKernel": true,
+    "kernel": {
+      "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
+      "androidManifestPath": "../android/app/src/main/assets/kernel-manifest.json"
+    }
+  }
 }

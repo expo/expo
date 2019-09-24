@@ -12,7 +12,7 @@ This is the list of APIs that have been audited. One aspect of this is that the 
 | Apple Authentication | Eric | Sept 2019 | Needs tests | ✅ | Needs web implementation (and possibly Android) |
 | Battery | James | August 2019 | ⚠️ | ✅ | Android implementation needs work |
 | Brightness | Eric | 2018 | Revisit test-suite | ✅ | |
-| Cellular | James | TBD | ⚠️ | | |
+| Cellular | James | September 2019 | ⚠️ | ✅ | |
 | Crypto | Evan | February 2019 | ✅ | ✅ | |
 | Device | James | August 2019 | ⚠️ | ✅ | |
 | Network | James | TBD | ⚠️ | | |

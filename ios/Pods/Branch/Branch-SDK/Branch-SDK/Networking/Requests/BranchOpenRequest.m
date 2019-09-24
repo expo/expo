@@ -14,10 +14,10 @@
 #import "NSMutableDictionary+Branch.h"
 #import "BNCEncodingUtils.h"
 #import "BNCCrashlyticsWrapper.h"
-#import "BNCFabricAnswers.h"
 #import "BNCDeviceInfo.h"
 #import "Branch.h"
 #import "BNCApplication.h"
+#import "BNCAppleReceipt.h"
 
 @interface BranchOpenRequest ()
 @property (assign, nonatomic) BOOL isInstall;
@@ -65,6 +65,8 @@
     if (preferenceHelper.limitFacebookTracking)
         params[@"limit_facebook_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;
 
+    [self safeSetValue:[NSNumber numberWithBool:[[BNCAppleReceipt instance] isTestFlight]] forKey:BRANCH_REQUEST_KEY_APPLE_TESTFLIGHT onDict:params];
+    
     NSMutableDictionary *cdDict = [[NSMutableDictionary alloc] init];
     BranchContentDiscoveryManifest *contentDiscoveryManifest = [BranchContentDiscoveryManifest getInstance];
     [cdDict bnc_safeSetObject:[contentDiscoveryManifest getManifestVersion] forKey:BRANCH_MANIFEST_VERSION_KEY];
@@ -223,12 +225,6 @@ typedef NS_ENUM(NSInteger, BNCUpdateState) {
         if (dataIsFromALinkClick && (self.isInstall || storedParamsAreEmpty)) {
             preferenceHelper.installParams = sessionData;
         }
-
-        if (dataIsFromALinkClick) {
-            NSString * eventName =
-                [@"Branch " stringByAppendingString:[[self getActionName] capitalizedString]];
-            [BNCFabricAnswers sendEventWithName:eventName andAttributes:sessionDataDict];
-        }
     }
 
     NSString *referringURL = nil;
@@ -263,15 +259,6 @@ typedef NS_ENUM(NSInteger, BNCUpdateState) {
     [cdManifest onBranchInitialised:data withUrl:referringURL];
     if ([cdManifest isCDEnabled]) {
         [[BranchContentDiscoverer getInstance] startDiscoveryTaskWithManifest:cdManifest];
-    }
-
-    // Check if there is any Branch View to show
-    NSObject *branchViewDict = data[BRANCH_RESPONSE_KEY_BRANCH_VIEW_DATA];
-    if ([branchViewDict isKindOfClass:[NSDictionary class]]) {
-        [[BranchViewHandler getInstance]
-            showBranchView:[self getActionName]
-            withBranchViewDictionary:(NSDictionary *)branchViewDict
-            andWithDelegate:nil];
     }
 
     if (self.callback) {

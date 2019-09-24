@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "34.0.0"
+  s.version = "35.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -25,15 +25,15 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'Crashlytics', '~> 3.13.4'
     ss.dependency 'FBAudienceNetwork', '5.5.0'
-    ss.dependency 'FBSDKCoreKit', '~> 5.4.1'
-    ss.dependency 'FBSDKLoginKit', '~> 5.4.1'
+    ss.dependency 'FBSDKCoreKit', '~> 5.6.0'
+    ss.dependency 'FBSDKLoginKit', '~> 5.6.0'
     ss.dependency 'Fabric', '~> 1.10.2'
     ss.dependency 'GoogleSignIn', '~> 5.0'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 2.5.0'
-    ss.dependency 'Branch', '~> 0.27.1'
-    ss.dependency 'Google-Mobile-Ads-SDK', '~> 7.49.0'
+    ss.dependency 'JKBigInteger2', '0.0.5'
+    ss.dependency 'Branch', '~> 0.28'
     ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
 
     # Universal modules required by ExpoKit so the code compiles

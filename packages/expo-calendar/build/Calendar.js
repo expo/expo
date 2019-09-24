@@ -183,6 +183,12 @@ export async function updateAttendeeAsync(id, details = {}) {
     const newDetails = { ...details, id };
     return ExpoCalendar.saveAttendeeForEventAsync(newDetails, null);
 } // Android
+export async function getDefaultCalendarAsync() {
+    if (!ExpoCalendar.getDefaultCalendarAsync) {
+        throw new UnavailabilityError('Calendar', 'getDefaultCalendarAsync');
+    }
+    return ExpoCalendar.getDefaultCalendarAsync();
+} // iOS
 export async function deleteAttendeeAsync(id) {
     if (!ExpoCalendar.deleteAttendeeAsync) {
         throw new UnavailabilityError('Calendar', 'deleteAttendeeAsync');

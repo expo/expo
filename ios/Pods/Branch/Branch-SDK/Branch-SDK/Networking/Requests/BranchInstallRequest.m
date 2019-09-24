@@ -13,6 +13,7 @@
 #import "BNCStrongMatchHelper.h"
 #import "BNCEncodingUtils.h"
 #import "BNCApplication.h"
+#import "BNCAppleReceipt.h"
 
 @implementation BranchInstallRequest
 
@@ -37,6 +38,9 @@
     [self safeSetValue:preferenceHelper.spotlightIdentifier forKey:BRANCH_REQUEST_KEY_SPOTLIGHT_IDENTIFIER onDict:params];
     [self safeSetValue:preferenceHelper.universalLinkUrl forKey:BRANCH_REQUEST_KEY_UNIVERSAL_LINK_URL onDict:params];
 
+    [self safeSetValue:[[BNCAppleReceipt instance] installReceipt] forKey:BRANCH_REQUEST_KEY_APPLE_RECEIPT onDict:params];
+    [self safeSetValue:[NSNumber numberWithBool:[[BNCAppleReceipt instance] isTestFlight]] forKey:BRANCH_REQUEST_KEY_APPLE_TESTFLIGHT onDict:params];
+    
     params[BRANCH_REQUEST_KEY_DEBUG] = @(preferenceHelper.isDebug);
 
     if (preferenceHelper.appleSearchAdNeedsSend) {

@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
-
-import { ParsedURL } from './Linking.types';
+import { LinkingStatic } from 'react-native';
+import { ParsedURL, QueryParams } from './Linking.types';
 import Linking from './LinkingModule';
 
 const { manifest } = Constants;
@@ -39,7 +39,7 @@ function _removeTrailingSlashAndQueryString(url) {
   return url.replace(/\/?\?.*$/, '');
 }
 
-function makeUrl(path: string = '', queryParams: Object = {}): string {
+function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   let scheme = 'exp';
   if (Constants.appOwnership === 'standalone') {
     scheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
@@ -146,6 +146,12 @@ async function parseInitialURLAsync(): Promise<ParsedURL> {
   return parse(initialUrl);
 }
 
+interface ExpoLinking extends LinkingStatic {
+  makeUrl: typeof makeUrl;
+  parse: typeof parse;
+  parseInitialURLAsync: typeof parseInitialURLAsync;
+}
+
 // @ts-ignore fix this...
 let newLinking = new Linking.constructor();
 
@@ -153,4 +159,4 @@ newLinking.makeUrl = makeUrl;
 newLinking.parse = parse;
 newLinking.parseInitialURLAsync = parseInitialURLAsync;
 
-export default newLinking;
+export default newLinking as ExpoLinking;

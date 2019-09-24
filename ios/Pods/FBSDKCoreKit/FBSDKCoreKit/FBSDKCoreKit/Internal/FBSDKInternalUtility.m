@@ -20,9 +20,9 @@
 
 #import <sys/time.h>
 
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 #import <mach-o/dyld.h>
 
-#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKError.h"
 #import "FBSDKSettings+Internal.h"
 #import "FBSDKSettings.h"
@@ -494,6 +494,32 @@ static NSMapTable *_transientObjects;
       }
     }
   }
+
+  // Find active key window from UIScene
+  if (@available(iOS 13.0, *)) {
+    NSSet *scenes = [[UIApplication sharedApplication] valueForKey:@"connectedScenes"];
+    for (id scene in scenes) {
+      if (window) {
+        break;
+      }
+
+      id activationState = [scene valueForKeyPath:@"activationState"];
+      BOOL isActive = activationState != nil && [activationState integerValue] == 0;
+      if (isActive) {
+        Class WindowScene = NSClassFromString(@"UIWindowScene");
+        if ([scene isKindOfClass:WindowScene]) {
+          NSArray<UIWindow *> *windows = [scene valueForKeyPath:@"windows"];
+          for (UIWindow *w in windows) {
+            if (w.isKeyWindow) {
+              window = w;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (window == nil) {
     [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
                        formatString:@"Unable to find a valid UIWindow", nil];
