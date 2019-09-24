@@ -1,5 +1,9 @@
 require 'json'
 
+install! 'cocoapods',
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true
+source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 inhibit_all_warnings!
 
@@ -9,44 +13,21 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 modules_path = '../../../node_modules'
 
 # [Custom] Use the workspace root
-require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
+require_relative "#{modules_path}/react-native-unimodules/cocoapods"
 
-# [Custom] Don't try to use the symlinked copy from the postinstall script
-# it won't work as expected. (You may get `'React/RCTLog.h' file not found` when running building)
+# [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
+# expected (you may get `'React/<File>.h' file not found` when building)
 react_native_path = '../../../react-native-lab/react-native'
+require_relative "#{react_native_path}/scripts/autolink-ios"
 
 target 'BareExpo' do
-  # [Custom] Add FBSDKCoreKit for Expo - only required for expo-facebook and expo-ads-facebook which we disabled in this project to speed up the pod install
-  # pod 'FBSDKCoreKit', '~> 4.40'
+  # [Custom] Add FBSDKCoreKit for Expo - only required for expo-facebook and expo-ads-facebook which
+  # we disabled in this project to speed up the pod install pod 'FBSDKCoreKit', '~> 4.40'
 
   # Pods for BareExpo
-  # [Custom] Use the symlinked react-native module
-  pod 'React',
-      path: react_native_path,
-      subspecs: %w[
-        Core
-        CxxBridge
-        DevSupport
-        RCTActionSheet
-        RCTAnimation
-        RCTBlob
-        RCTGeolocation
-        RCTImage
-        RCTLinkingIOS
-        RCTNetwork
-        RCTSettings
-        RCTText
-        RCTVibration
-        RCTWebSocket
-      ]
+  # [Custom] Use the react-native submodule
+  use_react_native! path: react_native_path
 
-  # [Custom] Use the RN path to ensure this is being required correctly
-  pod 'yoga', path: "#{react_native_path}/ReactCommon/yoga"
-
-  pod 'DoubleConversion',
-      podspec: "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', podspec: "#{react_native_path}/third-party-podspecs/glog.podspec"
-  pod 'Folly', podspec: "#{react_native_path}/third-party-podspecs/Folly.podspec"
   # [Custom] RNGH, Reanimated, and SAC are installed as node_modules in the root of the workspace
   pod 'RNGestureHandler',
       podspec: "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
@@ -55,12 +36,8 @@ target 'BareExpo' do
 
   use_unimodules!(
     {
-      modules_paths: %w[../../../packages],
-      exclude:
-        # [Custom] Prevent the bundling of template code and stripe
-        package[
-          'excludedUnimodules'
-        ],
+      modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
+      exclude: package['excludedUnimodules'],
       flags: { inhibit_warnings: false }
     }
   )
