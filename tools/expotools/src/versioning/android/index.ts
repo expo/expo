@@ -6,11 +6,11 @@ import path from 'path';
 import semver from 'semver';
 import spawnAsync from '@expo/spawn-async';
 
-import { getExpoRepositoryRootDir, getAndroidDir, getExpotoolsDir } from '../../Directories';
+import { JniLibNames, JavaPackagesToRename } from './constants';
+import { getExpoRepositoryRootDir, getAndroidDir } from '../../Directories';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 const ANDROID_DIR = getAndroidDir();
-const EXPOTOOLS_DIR = getExpotoolsDir();
 
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
@@ -182,34 +182,9 @@ export async function removeVersionAsync(version: string) {
   }
 }
 
-const LIB_NAMES = [
-  'libfb',
-  'libfbjni',
-  'libfolly_json',
-  'libglog_init',
-  'glog',
-  'reactnativejni',
-  'reactnativejnifb',
-  'csslayout',
-  'yoga',
-  'fbgloginit',
-  'yogajni',
-  'jschelpers',
-  'packagerconnectionjnifb',
-  'privatedata',
-  'yogafastmath',
-  'fabricjscjni',
-  'jscexecutor',
-  'libjscexecutor',
-  'jsinspector',
-  'libjsinspector',
-  'fabricjni',
-  'turbomodulejsijni',
-];
-
 function renameLib(lib: string, abiVersion: string) {
-  for (let i = 0; i < LIB_NAMES.length; i++) {
-    if (lib.endsWith(LIB_NAMES[i])) {
+  for (let i = 0; i < JniLibNames.length; i++) {
+    if (lib.endsWith(JniLibNames[i])) {
       return `${lib}_abi${abiVersion}`;
     }
   }
@@ -235,15 +210,6 @@ function processLine(line: string, abiVersion: string) {
   return line;
 }
 
-async function processJavaCodeAsync(libName: string, abiVersion: string) {
-  return spawnAsync(
-    `find ${versionedReactAndroidJavaPath} -iname '*.java' -type f -print0 | ` +
-    `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
-    [],
-    { shell: true }
-  );
-}
-
 async function processMkFileAsync(filename, abiVersion) {
   let file = await fs.readFile(filename);
   let fileString = file.toString();
@@ -254,6 +220,15 @@ async function processMkFileAsync(filename, abiVersion) {
     line = processLine(line, abiVersion);
     await fs.appendFile(filename, `${line}\n`);
   }
+}
+
+async function processJavaCodeAsync(libName: string, abiVersion: string) {
+  return spawnAsync(
+    `find ${versionedReactAndroidJavaPath} -iname '*.java' -type f -print0 | ` +
+    `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
+    [],
+    { shell: true }
+  );
 }
 
 async function updateVersionedReactNativeAsync() {
@@ -267,13 +242,8 @@ async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
 
   // Update JNI methods
-  const packagesToRename = await fs.readFile(
-    path.join(EXPOTOOLS_DIR, 'src/versioning/android/android-packages-to-rename.txt'),
-    'utf8'
-  );
-  for (const line of packagesToRename.split('\n')) {
-    if (!line) continue;
-    const pathForPackage = line.replace(/\./g, '\\/');
+  for (const javaPackage of JavaPackagesToRename) {
+    const pathForPackage = javaPackage.replace(/\./g, '\\/');
     await spawnAsync(
       `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
       `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
@@ -292,8 +262,8 @@ async function renameJniLibsAsync(version: string) {
   await Promise.all(filenames.map(filename => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in Java code
-  for (let i = 0; i < LIB_NAMES.length; i++) {
-    let libName = LIB_NAMES[i];
+  for (let i = 0; i < JniLibNames.length; i++) {
+    let libName = JniLibNames[i];
     await processJavaCodeAsync(libName, abiVersion);
   }
 
