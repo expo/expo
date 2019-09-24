@@ -103,7 +103,7 @@ Allows for the framework to automatically delay beginning of transitions across 
 
 ### `<Transition.In>`
 
-Allows to specify how views that get mounted durion animation transition get animated. In addition to the above parameters you can specify the type of animation using `type` prop. The possible values are: `fade`, `scale`, `slide-top`, `slide-bottom`, `slide-left`, `slide-right`.
+Allows to specify how views that get mounted during animation transition get animated. In addition to the above parameters you can specify the type of animation using `type` prop. The possible values are: `fade`, `scale`, `slide-top`, `slide-bottom`, `slide-left`, `slide-right`.
 
 ### `<Transition.Out>`
 
@@ -657,6 +657,25 @@ Returns an accumulated value of the given node. This node stores a sum of all ev
 ### `diffClamp`
 
 Works the same way as with the original `Animated` library.
+
+---
+### `proc`
+
+Returns a callable function node that can be used to define expressions that can be called from other nodes. 
+
+Example:
+
+```js
+// Global constant
+const myProc = proc((a, b) => multiply(a,b));
+
+// In your component
+const style = { width: proc(10, 10 )};
+```
+
+A proc node should be declared as a global constant in your code and not recreated from inside components.
+
+It is not possible to reference nodes that are not passed as parameters.
 
 ---
 ### `interpolate`

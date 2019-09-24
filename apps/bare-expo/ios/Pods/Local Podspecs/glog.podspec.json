@@ -31,6 +31,7 @@
   ],
   "exclude_files": "src/windows/**/*",
   "libraries": "stdc++",
+  "compiler_flags": "-Wno-shorten-64-to-32",
   "pod_target_xcconfig": {
     "USE_HEADERMAP": "NO",
     "HEADER_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/src"
