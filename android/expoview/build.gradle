@@ -38,8 +38,6 @@ uploadArchives {
 }
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-def dbflow_version = "4.2.4"
-
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
@@ -101,22 +99,26 @@ android {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
-task generateDynamicMacros(type: Exec) {
-  def configuration = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") } ? "release" : "debug"
+class GenerateDynamicMacrosPlugin implements Plugin<Project> {
+  @Override
+  void apply(Project target) {
+    target.exec {
+      def configuration = target.gradle.startParameter.taskNames.any {
+        it.toLowerCase().contains("release")
+      } ? "release" : "debug"
 
-  workingDir '../../tools/expotools/bin'
+      workingDir '../../tools/expotools/bin'
 
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
-  } else {
-    commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+      } else {
+        commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+      }
+    }
   }
 }
 
-// Automatically generate dynamic macros once the task graph is ready. It ensures this task to be executed before all other tasks.
-gradle.taskGraph.whenReady {
-  generateDynamicMacros.execute()
-}
+apply plugin: GenerateDynamicMacrosPlugin
 
 configurations.all {
   resolutionStrategy {
@@ -160,7 +162,11 @@ dependencies {
       modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
-      exclude      : ['expo-bluetooth', 'expo-in-app-purchases', 'expo-updates']
+      exclude      : [
+          'expo-bluetooth',
+          'expo-in-app-purchases',
+          'expo-updates',
+      ]
   ])
 
   // Versioned react native
@@ -197,8 +203,8 @@ dependencies {
 
   // Our dependencies
   api "com.android.support:appcompat-v7:${safeExtGet("supportLibVersion", "28.0.0")}"
-  api('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-    transitive = true
+  api('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
+    transitive = true;
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
@@ -249,9 +255,9 @@ dependencies {
   api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
-  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
-  compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
-  compile "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
+  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 }

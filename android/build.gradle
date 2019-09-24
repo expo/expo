@@ -6,6 +6,7 @@ buildscript {
     targetSdkVersion = 28
     compileSdkVersion = 28
 
+    dbFlowVersion = '4.2.4'
     buildToolsVersion = '28.0.0'
     supportLibVersion = '28.0.0'
     kotlinVersion = '1.3.21'
@@ -17,7 +18,7 @@ buildscript {
     maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.5.0'
     classpath 'com.google.gms:google-services:3.2.1'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
 

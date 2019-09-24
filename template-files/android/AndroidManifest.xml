@@ -204,13 +204,13 @@
 		<activity
 			android:exported="true"
 			android:launchMode="singleTask"
-			android:name="abiabi35_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+			android:name="abi35_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
 			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 					<category android:name="android.intent.category.DEFAULT" />
 					<category android:name="android.intent.category.BROWSABLE" />
-					<data android:scheme="abiabi35_0_0.expo.modules.payments.stripe" />
+					<data android:scheme="abi35_0_0.expo.modules.payments.stripe" />
 			</intent-filter>
 		</activity>
 		<!-- END_SDK_abi35_0_0 -->
