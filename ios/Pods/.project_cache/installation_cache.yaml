@@ -4629,13 +4629,13 @@ CACHE_KEYS:
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: ec76219e07e31af5a99e73de2e74e92c
-    CHECKSUM: 7bc3a4006cd4c66b5cb558d07f486f9fbca476ad
+    CHECKSUM: 18924c3d2a3a1aa95d413672f058beff589c80f4
     FILES:
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
-      - EXWebBrowser (7.0.0)
+      - EXWebBrowser (7.0.1)
   Fabric:
     BUILD_SETTINGS_CHECKSUM:
       Fabric: 19535f98611a12f2233e414f8db87ff3
