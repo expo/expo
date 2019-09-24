@@ -1,13 +1,16 @@
-import path from 'path';
-import fs from 'fs-extra';
 import chalk from 'chalk';
-import semver from 'semver';
+import fs from 'fs-extra';
 import glob from 'glob-promise';
+import inquirer from 'inquirer';
+import path from 'path';
+import semver from 'semver';
+import spawnAsync from '@expo/spawn-async';
 
-import { getExpoRepositoryRootDir, getAndroidDir } from '../../Directories';
+import { getExpoRepositoryRootDir, getAndroidDir, getExpotoolsDir } from '../../Directories';
 
 const EXPO_DIR = getExpoRepositoryRootDir();
 const ANDROID_DIR = getAndroidDir();
+const EXPOTOOLS_DIR = getExpotoolsDir();
 
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
@@ -23,6 +26,12 @@ const sdkVersionsPath = path.join(ANDROID_DIR, 'sdkVersions.json');
 const rnActivityPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
 const expoviewConstantsPath = path.join(expoviewPath, 'src/main/java/host/exp/exponent/Constants.java');
 const testSuiteTestsPath = path.join(appPath, 'src/androidTest/java/host/exp/exponent/TestSuiteTests.java');
+const reactAndroidPath = path.join(ANDROID_DIR, 'ReactAndroid');
+const reactCommonPath = path.join(ANDROID_DIR, 'ReactCommon');
+const versionedReactAndroidPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactAndroid');
+const versionedReactAndroidJniPath = path.join(versionedReactAndroidPath, 'src/main');
+const versionedReactAndroidJavaPath = path.join(versionedReactAndroidJniPath, 'java');
+const versionedReactCommonPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactCommon');
 
 async function transformFileAsync(filePath: string, regexp: RegExp, replacement: string = '') {
   const fileContent = await fs.readFile(filePath, 'utf8');
@@ -171,4 +180,155 @@ export async function removeVersionAsync(version: string) {
       chalk.yellow(`Please review all of these references and remove them manually if possible!\n`),
     );
   }
+}
+
+const LIB_NAMES = [
+  'libfb',
+  'libfbjni',
+  'libfolly_json',
+  'libglog_init',
+  'glog',
+  'reactnativejni',
+  'reactnativejnifb',
+  'csslayout',
+  'yoga',
+  'fbgloginit',
+  'yogajni',
+  'jschelpers',
+  'packagerconnectionjnifb',
+  'privatedata',
+  'yogafastmath',
+  'fabricjscjni',
+  'jscexecutor',
+  'libjscexecutor',
+  'jsinspector',
+  'libjsinspector',
+  'fabricjni',
+  'turbomodulejsijni',
+];
+
+function renameLib(lib: string, abiVersion: string) {
+  for (let i = 0; i < LIB_NAMES.length; i++) {
+    if (lib.endsWith(LIB_NAMES[i])) {
+      return `${lib}_abi${abiVersion}`;
+    }
+  }
+
+  return lib;
+}
+
+function processLine(line: string, abiVersion: string) {
+  if (
+    line.startsWith('LOCAL_MODULE') ||
+    line.startsWith('LOCAL_SHARED_LIBRARIES') ||
+    line.startsWith('LOCAL_STATIC_LIBRARIES')
+  ) {
+    let splitLine = line.split(':=');
+    let libs = splitLine[1].split(' ');
+    for (let i = 0; i < libs.length; i++) {
+      libs[i] = renameLib(libs[i], abiVersion);
+    }
+    splitLine[1] = libs.join(' ');
+    line = splitLine.join(':=');
+  }
+
+  return line;
+}
+
+async function processJavaCodeAsync(libName: string, abiVersion: string) {
+  return spawnAsync(
+    `find ${versionedReactAndroidJavaPath} -iname '*.java' -type f -print0 | ` +
+    `xargs -0 sed -i '' 's/"${libName}"/"${libName}_abi${abiVersion}"/g'`,
+    [],
+    { shell: true }
+  );
+}
+
+async function processMkFileAsync(filename, abiVersion) {
+  let file = await fs.readFile(filename);
+  let fileString = file.toString();
+  await fs.truncate(filename, 0);
+  let lines = fileString.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    line = processLine(line, abiVersion);
+    await fs.appendFile(filename, `${line}\n`);
+  }
+}
+
+async function updateVersionedReactNativeAsync() {
+  await fs.remove(versionedReactAndroidPath);
+  await fs.remove(versionedReactCommonPath);
+  await fs.copy(reactAndroidPath, versionedReactAndroidPath);
+  await fs.copy(reactCommonPath, versionedReactCommonPath);
+}
+
+async function renameJniLibsAsync(version: string) {
+  const abiVersion = version.replace(/\./g, '_');
+
+  // Update JNI methods
+  const packagesToRename = await fs.readFile(
+    path.join(EXPOTOOLS_DIR, 'src/versioning/android/android-packages-to-rename.txt'),
+    'utf8'
+  );
+  for (const line of packagesToRename.split('\n')) {
+    if (!line) continue;
+    const pathForPackage = line.replace(/\./g, '\\/');
+    await spawnAsync(
+      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
+      `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
+      `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
+      [],
+      { shell: true }
+    );
+  }
+
+  // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
+  let [reactCommonMkFiles, reactAndroidMkFiles] = await Promise.all([
+    glob(path.join(versionedReactCommonPath, '**/*.mk')),
+    glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
+  ]);
+  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles];
+  await Promise.all(filenames.map(filename => processMkFileAsync(filename, abiVersion)));
+
+  // Rename references to JNI libs in Java code
+  for (let i = 0; i < LIB_NAMES.length; i++) {
+    let libName = LIB_NAMES[i];
+    await processJavaCodeAsync(libName, abiVersion);
+  }
+
+  // 'fbjni' is loaded without the 'lib' prefix in com.facebook.jni.Prerequisites
+  await processJavaCodeAsync('fbjni', abiVersion);
+  await processJavaCodeAsync('fb', abiVersion);
+
+  console.log('\n\nThese are the JNI lib names we modified:');
+  await spawnAsync(
+    `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "_abi${abiVersion}"`,
+    [],
+    { shell: true, stdio: 'inherit' }
+  );
+
+  console.log('\n\nAnd here are all instances of loadLibrary:');
+  await spawnAsync(
+    `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "loadLibrary"`,
+    [],
+    { shell: true, stdio: 'inherit' }
+  );
+
+  const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
+    {
+      type: 'confirm',
+      name: 'isCorrect',
+      message: 'Does all that look correct?',
+      default: false,
+    },
+  ]);
+  if (!isCorrect) {
+    throw new Error('Fix JNI libs');
+  }
+}
+
+export async function addVersionAsync(version: string) {
+  await updateVersionedReactNativeAsync();
+  await renameJniLibsAsync(version);
 }
