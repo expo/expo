@@ -3989,7 +3989,7 @@ CACHE_KEYS:
   EXAV:
     BUILD_SETTINGS_CHECKSUM:
       EXAV: 729b001c34791a21d317ef2d2e0121f4
-    CHECKSUM: 723090dd2e9665861cc8af4a4c288ab046901515
+    CHECKSUM: 97912c6002e7d7934843f50c9080f1d7f8b99a4f
     FILES:
       - "../../packages/expo-av/ios/EXAV/EXAudioSessionManager.h"
       - "../../packages/expo-av/ios/EXAV/EXAudioSessionManager.m"
@@ -4007,7 +4007,7 @@ CACHE_KEYS:
       - "../../packages/expo-av/ios/EXAV/Video/EXVideoView.m"
     PROJECT_NAME: EXAV
     SPECS:
-      - EXAV (7.0.0)
+      - EXAV (7.0.1)
   EXBackgroundFetch:
     BUILD_SETTINGS_CHECKSUM:
       EXBackgroundFetch: 72579ef98df0175dcc1b6517321fe261
@@ -4629,13 +4629,13 @@ CACHE_KEYS:
   EXWebBrowser:
     BUILD_SETTINGS_CHECKSUM:
       EXWebBrowser: ec76219e07e31af5a99e73de2e74e92c
-    CHECKSUM: 7bc3a4006cd4c66b5cb558d07f486f9fbca476ad
+    CHECKSUM: 18924c3d2a3a1aa95d413672f058beff589c80f4
     FILES:
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.h"
       - "../../packages/expo-web-browser/ios/EXWebBrowser/EXWebBrowser.m"
     PROJECT_NAME: EXWebBrowser
     SPECS:
-      - EXWebBrowser (7.0.0)
+      - EXWebBrowser (7.0.1)
   Fabric:
     BUILD_SETTINGS_CHECKSUM:
       Fabric: 19535f98611a12f2233e414f8db87ff3

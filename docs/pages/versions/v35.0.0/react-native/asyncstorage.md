@@ -3,13 +3,11 @@ id: asyncstorage
 title: AsyncStorage
 ---
 
-> **Deprecated.** Use [react-native-community/react-native-async-storage](https://github.com/react-native-community/react-native-async-storage) instead.
-
 `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value storage system that is global to the app. It should be used instead of LocalStorage.
 
 It is recommended that you use an abstraction on top of `AsyncStorage` instead of `AsyncStorage` directly for anything more than light usage since it operates globally.
 
-On iOS, `AsyncStorage` is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, `AsyncStorage` will use either [RocksDB](http://rocksdb.org/) or SQLite based on what is available.
+On iOS, `AsyncStorage` is backed by native code that stores small values in a serialized dictionary and larger values in separate files. On Android, `AsyncStorage` will use SQLite based on what is available.
 
 The `AsyncStorage` JavaScript code is a simple facade that provides a clear JavaScript API, real `Error` objects, and simple non-multi functions. Each method in the API returns a `Promise` object.
 
@@ -339,6 +337,8 @@ Batch operation to merge in existing and new values for a given set of keys. Thi
 Example:
 
 ```javascript
+import { AsyncStorage } from 'react-native';
+
 // first user, initial values
 let UID234_object = {
   name: 'Chris',

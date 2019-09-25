@@ -36,7 +36,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/location/",
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",

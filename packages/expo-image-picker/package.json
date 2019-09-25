@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/imagepicker/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/ios"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"

@@ -323,8 +323,6 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ### `"ios"`
 
-**Standalone Apps Only**. iOS standalone app specific configuration
-
 ```javascript
 {
   "ios": {
@@ -509,7 +507,12 @@ Configuration for how and when the app should request OTA JavaScript updates
         Image size and aspect ratio are up to you.
         Must be a .png.
       */
-      "tabletImage": STRING
+      "tabletImage": STRING,
+
+      /*
+        Supported user interface styles. If left blank, "light" will be used. Use "automatic" if you would like to support either "light" or "dark" depending on iOS settings.
+      */
+      "userInterfaceStyle": "automatic" | "light" | "dark"
     }
   }
 }

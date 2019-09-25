@@ -87,6 +87,7 @@ jarjar-rules.txt
 /fastlane/Preview.html
 /fastlane/Deployment
 /Preview.html
+/gc_keys.json
 
 # CI
 /android/logcat.txt
