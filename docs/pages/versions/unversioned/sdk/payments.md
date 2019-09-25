@@ -208,7 +208,7 @@ const token = await stripe.createTokenWithCardAsync(params);
 
 ## Payment request with card form [Android, iOS]
 
-Launch `Add Card` view to to accept payment.
+Launch `Add Card` view to accept payment.
 
 **options (iOS only)** — An object with the following keys:
 
