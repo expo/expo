@@ -47,6 +47,8 @@ target 'BareExpo' do
   pod 'RNGestureHandler', :podspec => "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
   pod 'RNReanimated', :podspec => "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
   pod 'react-native-safe-area-context', :podspec => "#{modules_path}/react-native-safe-area-context"
+  pod 'react-native-appearance', :path => "#{modules_path}/react-native-appearance"
+  pod 'react-native-netinfo', :path => "#{modules_path}/@react-native-community/netinfo"
 
   use_unimodules!({
     # [Custom] Use the packages directory for unimodules

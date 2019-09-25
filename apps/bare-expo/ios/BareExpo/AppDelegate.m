@@ -24,7 +24,11 @@
 {
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"BareExpo" initialProperties:nil];
+  NSString * appName = [[[NSProcessInfo processInfo] environment] objectForKey:@"APP_NAME"];
+  if (appName == nil) {
+    appName = @"BareExpo";
+  }
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:appName initialProperties:nil];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -48,9 +52,17 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
 #ifdef DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  NSString *jsBundleURLForBundleRoot = [[[NSProcessInfo processInfo] environment] objectForKey:@"BUNDLE_URL"];
+  if (jsBundleURLForBundleRoot == nil) {
+    jsBundleURLForBundleRoot = @"index";
+  }
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:jsBundleURLForBundleRoot fallbackResource:nil];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  NSString *jsBundlePath = [[[NSProcessInfo processInfo] environment] objectForKey:@"BUNDLE_PATH"];
+  if (jsBundlePath == nil) {
+    jsBundlePath = @"main";
+  }
+  return [[NSBundle mainBundle] URLForResource:jsBundlePath withExtension:@"jsbundle"];
 #endif
 }
 

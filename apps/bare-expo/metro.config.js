@@ -1,2 +1,9 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
-module.exports = createMetroConfiguration(__dirname);
+const { mergeConfig } = require('metro-config');
+
+const standaloneNCLConfig = require('../standalone-ncl/metro.config');
+const bareConfig = createMetroConfiguration(__dirname);
+
+const mergedConfig = mergeConfig(standaloneNCLConfig, bareConfig);
+
+module.exports = mergedConfig;

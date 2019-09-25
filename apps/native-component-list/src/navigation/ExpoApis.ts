@@ -15,10 +15,8 @@ import Device from '../screens/DeviceScreen';
 import DocumentPicker from '../screens/DocumentPickerScreen';
 import Events from '../screens/EventsScreen';
 import FacebookLogin from '../screens/FacebookLoginScreen';
-import FaceDetector from '../screens/FaceDetectorScreen';
 import FileSystem from '../screens/FileSystemScreen';
 import Font from '../screens/FontScreen';
-import Geocoding from '../screens/GeocodingScreen';
 import Google from '../screens/GoogleScreen';
 import ImageManipulator from '../screens/ImageManipulatorScreen';
 import ImagePicker from '../screens/ImagePickerScreen';
@@ -65,6 +63,8 @@ const MediaLibraryScreens = optionalRequire(() =>
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
 const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
+const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
+const Geocoding = optionalRequire(() => require('../screens/GeocodingScreen'));
 
 const optionalScreens: {
   [key: string]: React.ComponentType | undefined;
