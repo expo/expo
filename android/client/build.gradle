@@ -32,11 +32,8 @@ android {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    // ADD VERSIONS HERE
-    // BEGIN VERSIONS
     versionCode 117
     versionName '2.12.2'
-    // END VERSIONS
 
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -95,11 +92,9 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   resolutionStrategy.dependencySubstitution {
     substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
   }
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -175,21 +170,10 @@ dependencies {
   testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
-  /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:35.0.0@aar') {
-    transitive = true
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-  }
-  END UNCOMMENT WHEN DISTRIBUTING */
-
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-
   // BEGIN_SDK_UNVERSIONED
   implementation(project(path: ':expoview'))
   // END_SDK_UNVERSIONED
 
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
 
@@ -210,46 +194,14 @@ dependencies {
   // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
   implementation 'com.amplitude:android-sdk:2.9.2'
 
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-  /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
-  api 'com.facebook.react:react-native:33.0.0'
-  END UNCOMMENT WHEN DISTRIBUTING */
-
-  // WHEN_DETACHING_REMOVE_FROM_HERE
-  /* UNCOMMENT WHEN DISTRIBUTING
-  addMavenUnimodulesDependencies([
-      modulesPaths : [
-        '../enabled-modules'
-      ],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-        'expo-module-template',
-        'expo-bluetooth',
-        'expo-in-app-purchases',
-        'expo-payments-stripe',
-        'expo-updates'
-      ]
-  ])
-  END UNCOMMENT WHEN DISTRIBUTING */
-  // WHEN_DETACHING_REMOVE_TO_HERE
-
   addUnimodulesDependencies([
-      modulesPaths : [
-        '../../node_modules'
-      ],
+      modulesPaths : ['../../packages'],
       configuration: 'api',
       target       : 'react-native',
       exclude      : [
-        // You can exclude unneeded modules here, eg.
-        // 'unimodules-face-detector-interface',
-        // 'expo-face-detector'
-
-        // Adding a name here will also remove the package
-        // from auto-generated BasePackageList.java
+          'expo-bluetooth',
+          'expo-in-app-purchases',
+          'expo-updates',
       ]
   ])
 }
