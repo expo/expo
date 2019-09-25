@@ -46,11 +46,12 @@ async function _findUnimodules(pkgDir: string): Promise<Package[]> {
       const buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
 
       const name = unimoduleJson.name;
+      const subdirectory = unimoduleJson.android && unimoduleJson.android.subdirectory || 'android';
       const group = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m)[1];
 
       unimodules.push({
         name,
-        sourceDir: path.join(unimodulePath, 'android'),
+        sourceDir: path.join(unimodulePath, subdirectory),
         buildDirRelative: `${group.replace(/\./g, '/')}/${name}`,
       });
     }

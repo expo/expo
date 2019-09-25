@@ -7,11 +7,12 @@ import semver from 'semver';
 import spawnAsync from '@expo/spawn-async';
 
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
-import { getExpoRepositoryRootDir, getAndroidDir, getExpotoolsDir } from '../../Directories';
+import * as Directories from '../../Directories';
+import { getListOfPackagesAsync } from '../../Packages';
 
-const EXPO_DIR = getExpoRepositoryRootDir();
-const ANDROID_DIR = getAndroidDir();
-const EXPOTOOLS_DIR = getExpotoolsDir();
+const EXPO_DIR = Directories.getExpoRepositoryRootDir();
+const ANDROID_DIR = Directories.getAndroidDir();
+const EXPOTOOLS_DIR = Directories.getExpotoolsDir();
 
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
@@ -300,10 +301,27 @@ async function renameJniLibsAsync(version: string) {
   }
 }
 
-async function buildAarAsync(version: string) {
+async function copyUnimodulesAsync(version: string) {
+  const packages = await getListOfPackagesAsync();
+  for (const pkg of packages) {
+    if (
+      pkg.isUnimodule &&
+      pkg.isSupportedOnPlatform('android') &&
+      pkg.isIncludedInExpoClientOnPlatform('android') &&
+      pkg.isVersionableOnPlatform('android')
+    ) {
+      await runShellScriptWithArgsAsync(
+        './android-copy-unimodule.sh',
+        [version, path.join(pkg.path, pkg.androidSubdirectory)]
+      );
+    }
+  }
+}
+
+async function runShellScriptWithArgsAsync(script: string, args: string[]) {
   return spawnAsync(
-    './android-build-aar.sh',
-    [version],
+    script,
+    args,
     {
       shell: true,
       cwd: path.join(EXPOTOOLS_DIR, 'src/versioning/android'),
@@ -315,5 +333,7 @@ async function buildAarAsync(version: string) {
 export async function addVersionAsync(version: string) {
   // await updateVersionedReactNativeAsync();
   // await renameJniLibsAsync(version);
-  await buildAarAsync(version);
+  // await runShellScriptWithVersionAsync('./android-build-aar.sh', [version]);
+  // await runShellScriptWithArgsAsync('./android-copy-expoview.sh', [version]);
+  await copyUnimodulesAsync(version);
 }
