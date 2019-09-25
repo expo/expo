@@ -1,6 +1,6 @@
 package abi35_0_0.expo.modules.imagemanipulator.arguments;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import abi35_0_0.org.unimodules.core.arguments.ReadableArguments;
 

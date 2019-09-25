@@ -70,5 +70,5 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-image-loader-interface'
 
-  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "androidx.annotation:annotation:1.0.0"
 }

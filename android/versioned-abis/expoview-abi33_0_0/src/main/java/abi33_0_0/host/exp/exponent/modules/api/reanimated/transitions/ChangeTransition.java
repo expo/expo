@@ -3,13 +3,13 @@ package abi33_0_0.host.exp.exponent.modules.api.reanimated.transitions;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.transition.ChangeBounds;
-import android.support.transition.ChangeTransform;
-import android.support.transition.Transition;
-import android.support.transition.TransitionPropagation;
-import android.support.transition.TransitionValues;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.transition.ChangeBounds;
+import androidx.transition.ChangeTransform;
+import androidx.transition.Transition;
+import androidx.transition.TransitionPropagation;
+import androidx.transition.TransitionValues;
 import android.view.ViewGroup;
 
 final class ChangeTransition extends Transition {

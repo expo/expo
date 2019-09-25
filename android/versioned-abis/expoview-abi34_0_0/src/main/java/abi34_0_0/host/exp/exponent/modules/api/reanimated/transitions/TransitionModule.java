@@ -1,6 +1,6 @@
 package abi34_0_0.host.exp.exponent.modules.api.reanimated.transitions;
 
-import android.support.transition.TransitionManager;
+import androidx.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
 

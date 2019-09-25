@@ -1,6 +1,6 @@
 package abi35_0_0.expo.modules.imagemanipulator.arguments;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Map;

@@ -2,7 +2,7 @@ package abi35_0_0.expo.modules.payments.stripe;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import abi35_0_0.host.exp.expoview.BuildConfig;
