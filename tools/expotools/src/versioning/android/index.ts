@@ -356,10 +356,19 @@ async function cleanUpAsync(version: string) {
     await fs.remove(file);
   }
 
+  const versionedExponentPackagePath = path.join(
+    versionedAbiSrcPath,
+    'host/exp/exponent/ExponentPackage.java'
+  );
   await transformFileAsync(
-    path.join(versionedAbiSrcPath, 'host/exp/exponent/ExponentPackage.java'),
-    new RegExp('nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));'),
-    '// nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));'
+    versionedExponentPackagePath,
+    new RegExp('// WHEN_VERSIONING_REMOVE_FROM_HERE', 'g'),
+    '/* WHEN_VERSIONING_REMOVE_FROM_HERE'
+  );
+  await transformFileAsync(
+    versionedExponentPackagePath,
+    new RegExp('// WHEN_VERSIONING_REMOVE_TO_HERE', 'g'),
+    'WHEN_VERSIONING_REMOVE_TO_HERE */'
   );
 
   await transformFileAsync(
@@ -372,6 +381,14 @@ async function cleanUpAsync(version: string) {
     path.join(versionedAbiSrcPath, 'expo/modules/payments/stripe/PayFlow.java'),
     new RegExp('// ADD BUILDCONFIG IMPORT HERE'),
     `import ${abiName}.host.exp.expoview.BuildConfig;`
+  );
+
+  // replace abixx_x_x...R with abixx_x_x.host.exp.expoview.R
+  await spawnAsync(
+    `find ${versionedAbiSrcPath} -iname '*.java' -type f -print0 | ` +
+    `xargs -0 sed -i '' 's/import ${abiName}\.[^;]*\.R;/import ${abiName}.host.exp.expoview.R;/g'`,
+    [],
+    { shell: true }
   );
 }
 
