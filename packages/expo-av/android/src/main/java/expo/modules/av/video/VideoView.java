@@ -3,7 +3,7 @@ package expo.modules.av.video;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.Surface;

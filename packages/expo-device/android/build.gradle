@@ -71,5 +71,5 @@ dependencies {
   unimodule "unimodules-permissions-interface"
 
   api 'com.facebook.device.yearclass:yearclass:2.1.0'
-  api "com.android.support:support-v4:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "androidx.legacy:legacy-support-v4:1.0.0"
 }
