@@ -73,5 +73,5 @@ dependencies {
   api 'com.google.firebase:firebase-core:16.0.1'
   api 'com.stripe:stripe-android:8.1.0'
   api 'com.github.tipsi:CreditCardEntry:1.5.0'
-  api "com.android.support:design:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.google.android.material:material:1.0.0"
 }

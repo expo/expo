@@ -7,7 +7,7 @@
 package com.facebook.react.views.checkbox;
 
 import android.content.Context;
-import android.support.v7.widget.TintContextWrapper;
+import androidx.appcompat.widget.TintContextWrapper;
 import android.widget.CompoundButton;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.SimpleViewManager;

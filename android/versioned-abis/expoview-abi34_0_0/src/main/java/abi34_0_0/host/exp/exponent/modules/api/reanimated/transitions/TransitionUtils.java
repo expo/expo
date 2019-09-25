@@ -1,11 +1,11 @@
 package abi34_0_0.host.exp.exponent.modules.api.reanimated.transitions;
 
-import android.support.transition.Fade;
-import android.support.transition.SidePropagation;
-import android.support.transition.Slide;
-import android.support.transition.Transition;
-import android.support.transition.TransitionSet;
-import android.support.transition.Visibility;
+import androidx.transition.Fade;
+import androidx.transition.SidePropagation;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionSet;
+import androidx.transition.Visibility;
 import android.view.Gravity;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;

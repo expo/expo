@@ -1,6 +1,6 @@
 package abi35_0_0.expo.modules.payments.stripe;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package expo.modules.av.player;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.widget.MediaController;
 
 public class PlayerDataControl implements MediaController.MediaPlayerControl {
