@@ -1,4 +1,6 @@
+<!-- Banner Image -->
 [![Expo](/style/header.png)](https://expo.io)
+
 
 <p align="center">
  
@@ -21,17 +23,23 @@
 </a>
     <br>
     <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
-    <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&color=33CC12&&icon=circleci">
+    <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&icon=circleci">
   </a>
   
 </p>
 
 <p align="center">
-    Check out our documentation <a aria-label="expo documentation" href="https://docs.expo.io">https://docs.expo.io</a> to learn more about developing with Expo.
-  <br />
-
+  <a aria-label="try expo with snack" href="https://snack.expo.io"><b>Try Expo in the Browser</b></a>
+ |
+  <a aria-label="expo documentation" href="https://docs.expo.io">Read the Documentation 📚</a>
 </p>
 
+<p align="right">
+  <a href="https://blog.expo.io" aria-label="Follow Expo on Medium">
+    <img alt="Medium: exposition" src="https://img.shields.io/badge/Learn%20more%20on%20our%20blog-lightgray.svg?style=flat-square" target="_blank" />
+  </a>
+</p>
+  
 ---
 
 - [🗺 Project Layout](#-project-layout)
