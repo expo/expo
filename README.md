@@ -41,6 +41,7 @@
   
 ---
 
+- [📚 Documentation](#-documentation)
 - [🗺 Project Layout](#-project-layout)
 - [👏 Contributing](#-contributing)
 - [❓ FAQ](#-faq)
@@ -50,6 +51,14 @@
 Expo is an open-source platform for making universal native apps that run on Android, iOS, and the web. It includes a universal runtime and libraries that let you build native apps by writing React and JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, and more. The [Expo CLI](https://github.com/expo/expo-cli) repository contains the Expo development tools.
 
 [Click here to view the Expo Community Guidelines](https://expo.io/guidelines). Thank you for helping keep the Expo community open and welcoming!
+
+## 📚 Documentation
+
+<p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.io">in our official docs!</a></p>
+
+- [Getting Started](https://docs.expo.io/versions/latest/)
+- [API Reference](https://docs.expo.io/versions/latest/sdk/overview/)
+- [Using Custom Native Modules](https://docs.expo.io/versions/latest/bare/exploring-bare-workflow/)
 
 ## 🗺 Project Layout
 
