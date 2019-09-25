@@ -318,6 +318,63 @@ async function copyUnimodulesAsync(version: string) {
   }
 }
 
+async function cleanUpAsync(version: string) {
+  const abiVersion = version.replace(/\./g, '_');
+  const abiName = `abi${abiVersion}`;
+
+  const versionedAbiSrcPath = path.join(
+    versionedExpoviewAbiPath(abiName),
+    'src/main/java',
+    abiName
+  );
+
+  let filesToDelete: string[] = [];
+
+  // delete PrintDocumentAdapter*Callback.java
+  // their package is `android.print` and therefore they are not changed by the versioning script
+  // so we will have duplicate classes
+  const printCallbackFiles = await glob(path.join(
+    versionedAbiSrcPath,
+    'expo/modules/print/*Callback.java'
+  ));
+  for (const file of printCallbackFiles) {
+    const contents = await fs.readFile(file, 'utf8');
+    if (!contents.includes(`package ${abiName}`)) {
+      filesToDelete.push(file);
+    } else {
+      console.log(`Skipping deleting ${file} because appears to have been versioned`);
+    }
+  }
+
+  // delete versioned loader providers since we don't need them
+  filesToDelete.push(path.join(versionedAbiSrcPath, 'expo/loaders'));
+
+  console.log('Deleting the following files and directories:');
+  console.log(filesToDelete);
+
+  for (const file of filesToDelete) {
+    await fs.remove(file);
+  }
+
+  await transformFileAsync(
+    path.join(versionedAbiSrcPath, 'host/exp/exponent/ExponentPackage.java'),
+    new RegExp('nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));'),
+    '// nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));'
+  );
+
+  await transformFileAsync(
+    path.join(versionedAbiSrcPath, 'host/exp/exponent/VersionedUtils.java'),
+    new RegExp('// DO NOT EDIT THIS COMMENT - used by versioning scripts[^,]+,[^,]+,'),
+    'null, null,'
+  );
+
+  await transformFileAsync(
+    path.join(versionedAbiSrcPath, 'expo/modules/payments/stripe/PayFlow.java'),
+    new RegExp('// ADD BUILDCONFIG IMPORT HERE'),
+    `import ${abiName}.host.exp.expoview.BuildConfig;`
+  );
+}
+
 async function runShellScriptWithArgsAsync(script: string, args: string[]) {
   return spawnAsync(
     script,
@@ -335,5 +392,5 @@ export async function addVersionAsync(version: string) {
   // await renameJniLibsAsync(version);
   // await runShellScriptWithVersionAsync('./android-build-aar.sh', [version]);
   // await runShellScriptWithArgsAsync('./android-copy-expoview.sh', [version]);
-  await copyUnimodulesAsync(version);
+  await cleanUpAsync(version);
 }
