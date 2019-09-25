@@ -390,6 +390,16 @@ async function cleanUpAsync(version: string) {
     [],
     { shell: true }
   );
+
+  // add new versioned maven to build.gradle
+  await transformFileAsync(
+    buildGradlePath,
+    new RegExp('// For old expoviews to work'),
+    `// For old expoviews to work
+    maven {
+      url "$rootDir/versioned-abis/expoview-${abiName}/maven"
+    }`
+  );
 }
 
 async function runShellScriptWithArgsAsync(script: string, args: string[]) {
@@ -409,5 +419,6 @@ export async function addVersionAsync(version: string) {
   // await renameJniLibsAsync(version);
   // await runShellScriptWithVersionAsync('./android-build-aar.sh', [version]);
   // await runShellScriptWithArgsAsync('./android-copy-expoview.sh', [version]);
+  // await copyUnimodulesAsync(version);
   await cleanUpAsync(version);
 }
