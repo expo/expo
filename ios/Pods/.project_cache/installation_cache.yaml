@@ -4753,7 +4753,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       Google-Maps-iOS-Utils: e4bb1811d431d1252150bdfeaa6fdcce
     CHECKSUM: c32891ff472eaaa1fca032beedafa1a013af7875
-    PROJECT_NAME: Google-Maps-iOS-Utils
+    PROJECT_NAME: Google
     SPECS:
       - Google-Maps-iOS-Utils (2.1.0)
       - Google-Maps-iOS-Utils/Clustering (2.1.0)
@@ -4800,7 +4800,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       GoogleMaps: b52b5d3d53d602b6bb43907915bf192e
     CHECKSUM: cfee83da305b9aaeccf92c24ac79df11c3003492
-    PROJECT_NAME: GoogleMaps
+    PROJECT_NAME: Google
     SPECS:
       - GoogleMaps (3.3.0)
       - GoogleMaps/Base (3.3.0)
@@ -4817,7 +4817,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: 5544c0f345c9d1c58441641b76aaf3c5
     CHECKSUM: a62edd0516721d2a3db1259a5681b91f9b41c06a
-    PROJECT_NAME: GoogleSignIn
+    PROJECT_NAME: Google
     SPECS:
       - GoogleSignIn (5.0.0)
   GoogleToolboxForMac:

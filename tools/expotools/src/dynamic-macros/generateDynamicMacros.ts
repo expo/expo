@@ -23,7 +23,7 @@ async function getTemplateSubstitutionsFromSecrets() {
   }
 }
 
-async function getTemplateSubstitutions() {
+async function getTemplateSubstitutionsAsync() {
   const defaultKeys = await getTemplateSubstitutionsFromSecrets();
 
   try {
@@ -69,7 +69,7 @@ function getMacrosGeneratorForPlatform(platform) {
 async function generateDynamicMacrosAsync(args) {
   try {
     const { platform } = args;
-    const templateSubstitutions = await getTemplateSubstitutions();
+    const templateSubstitutions = await getTemplateSubstitutionsAsync();
 
     const macros = await generateMacrosAsync(platform, args.configuration);
     const macrosGenerator = getMacrosGeneratorForPlatform(platform);
@@ -157,4 +157,4 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   await Promise.all(promises);
 }
 
-export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutions };
+export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutionsAsync };

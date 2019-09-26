@@ -1036,8 +1036,8 @@ glog:
   UUID: 86F597DC3D8F3D7A34EC5A5C413F7255
 Google-Maps-iOS-Utils:
   LABEL: Google-Maps-iOS-Utils
-  PROJECT_PATH: Google-Maps-iOS-Utils.xcodeproj
-  UUID: 1A622F006CCB28DCB3730A6D10AAB7C2
+  PROJECT_PATH: Google.xcodeproj
+  UUID: E996C968BEE09D1E9C04F2F899A068EE
 Google-Mobile-Ads-SDK:
   LABEL: Google-Mobile-Ads-SDK
   PROJECT_PATH: Google-Mobile-Ads-SDK.xcodeproj
@@ -1060,16 +1060,16 @@ GoogleDataTransportCCTSupport:
   UUID: 11C41BD6B3D59337B4AE45F453918096
 GoogleMaps:
   LABEL: GoogleMaps
-  PROJECT_PATH: GoogleMaps.xcodeproj
-  UUID: BF08434370CEBD287CA17CA7862D7C59
+  PROJECT_PATH: Google.xcodeproj
+  UUID: FDCE00E6D4344314F672D3412BF72DF0
 GoogleMobileVision:
   LABEL: GoogleMobileVision
   PROJECT_PATH: GoogleMobileVision.xcodeproj
   UUID: 2708175A425F1F6674D0854CB8EA85C4
 GoogleSignIn:
   LABEL: GoogleSignIn
-  PROJECT_PATH: GoogleSignIn.xcodeproj
-  UUID: 70D52585A9FA4EEA343010638ADABC11
+  PROJECT_PATH: Google.xcodeproj
+  UUID: 51697D0E5BD27B303ECE793CD85908D2
 GoogleToolboxForMac:
   LABEL: GoogleToolboxForMac
   PROJECT_PATH: GoogleToolboxForMac.xcodeproj
