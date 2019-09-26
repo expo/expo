@@ -13,6 +13,7 @@ import { getListOfPackagesAsync } from '../../Packages';
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 const EXPOTOOLS_DIR = Directories.getExpotoolsDir();
+const SCRIPT_DIR = path.join(EXPOTOOLS_DIR, 'src/versioning/android');
 
 const appPath = path.join(ANDROID_DIR, 'app');
 const expoviewPath = path.join(ANDROID_DIR, 'expoview');
@@ -212,7 +213,7 @@ function processLine(line: string, abiVersion: string) {
   return line;
 }
 
-async function processMkFileAsync(filename, abiVersion) {
+async function processMkFileAsync(filename: string, abiVersion: string) {
   let file = await fs.readFile(filename);
   let fileString = file.toString();
   await fs.truncate(filename, 0);
@@ -310,10 +311,15 @@ async function copyUnimodulesAsync(version: string) {
       pkg.isIncludedInExpoClientOnPlatform('android') &&
       pkg.isVersionableOnPlatform('android')
     ) {
-      await runShellScriptWithArgsAsync(
+      await spawnAsync(
         './android-copy-unimodule.sh',
-        [version, path.join(pkg.path, pkg.androidSubdirectory)]
+        [version, path.join(pkg.path, pkg.androidSubdirectory)],
+        {
+          shell: true,
+          cwd: SCRIPT_DIR,
+        }
       );
+      console.log(`   ✅  Created versioned ${pkg.packageName}`)
     }
   }
 }
@@ -392,7 +398,7 @@ async function cleanUpAsync(version: string) {
     if (!contents.includes(`package ${abiName}`)) {
       filesToDelete.push(file);
     } else {
-      console.log(`Skipping deleting ${file} because appears to have been versioned`);
+      console.log(`Skipping deleting ${file} because it appears to have been versioned`);
     }
   }
 
@@ -406,6 +412,7 @@ async function cleanUpAsync(version: string) {
     await fs.remove(file);
   }
 
+  // misc fixes for versioned code
   const versionedExponentPackagePath = path.join(
     versionedAbiSrcPath,
     'host/exp/exponent/ExponentPackage.java'
@@ -452,24 +459,47 @@ async function cleanUpAsync(version: string) {
   );
 }
 
-async function runShellScriptWithArgsAsync(script: string, args: string[]) {
-  return spawnAsync(
-    script,
-    args,
+export async function addVersionAsync(version: string) {
+  console.log(' 🛠   1/7: Updating android/versioned-react-native...');
+  await updateVersionedReactNativeAsync();
+  console.log(' ✅  1/7: Finished');
+
+  console.log(' 🛠   2/7: Renaming JNI libs in android/versioned-react-native...');
+  await renameJniLibsAsync(version);
+  console.log(' ✅  2/7: Finished');
+
+  console.log(' 🛠   3/7: Building versioned ReactAndroid AAR...');
+  await spawnAsync(
+    './android-build-aar.sh',
+    [version],
     {
       shell: true,
-      cwd: path.join(EXPOTOOLS_DIR, 'src/versioning/android'),
+      cwd: SCRIPT_DIR,
       stdio: 'inherit',
     }
   );
-}
+  console.log(' ✅  3/7: Finished');
 
-export async function addVersionAsync(version: string) {
-  // await updateVersionedReactNativeAsync();
-  // await renameJniLibsAsync(version);
-  // await runShellScriptWithVersionAsync('./android-build-aar.sh', [version]);
-  // await runShellScriptWithArgsAsync('./android-copy-expoview.sh', [version]);
-  // await copyUnimodulesAsync(version);
+  console.log(' 🛠   4/7: Creating versioned expoview package...');
+  await spawnAsync(
+    './android-copy-expoview.sh',
+    [version],
+    {
+      shell: true,
+      cwd: SCRIPT_DIR,
+    }
+  );
+  console.log(' ✅  4/7: Finished');
+
+  console.log(' 🛠   5/7: Creating versioned unimodule packages...');
+  await copyUnimodulesAsync(version);
+  console.log(' ✅  5/7: Finished');
+
+  console.log(' 🛠   6/7: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  // await cleanUpAsync(version);
+  console.log(' ✅  6/7: Finished');
+
+  console.log(' 🛠   7/7: Misc cleanup...');
+  await cleanUpAsync(version);
+  console.log(' ✅  7/7: Finished');
 }
