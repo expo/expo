@@ -113,7 +113,9 @@ export default class App extends React.Component {
         {Platform.OS === 'android' ? <Text>Purchase Token: {record.purchaseToken}</Text> : null}
         {Platform.OS === 'android' ? <Text>Package Name: {record.packageName}</Text> : null}
         {Platform.OS === 'ios' ? <Text>Original Order ID: {record.originalOrderId}</Text> : null}
-        {Platform.OS === 'ios' ? <Text>Original Purchase Time: {record.originalPurchaseTime}</Text> : null}
+        {Platform.OS === 'ios' ? (
+          <Text>Original Purchase Time: {record.originalPurchaseTime}</Text>
+        ) : null}
       </View>
     );
   }

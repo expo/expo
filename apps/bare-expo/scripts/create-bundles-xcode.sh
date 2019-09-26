@@ -57,4 +57,4 @@ createBundle()
 
 createBundle "standalone-ncl"
 createBundle "bare-expo"
-
+createBundle "expo-payments"
