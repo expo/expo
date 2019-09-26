@@ -318,6 +318,56 @@ async function copyUnimodulesAsync(version: string) {
   }
 }
 
+async function addVersionedActivitesToManifests(version: string) {
+  const abiVersion = version.replace(/\./g, '_');
+  const abiName = `abi${abiVersion}`;
+  const majorVersion = semver.major(version);
+
+  const versionedAndroidManifestPath = path.join(
+    versionedExpoviewAbiPath(abiName),
+    'src/main/AndroidManifest.xml'
+  );
+
+  await transformFileAsync(
+    versionedAndroidManifestPath,
+    new RegExp('<!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->'),
+    `<activity
+      android:name="${abiName}.expo.modules.appauth.AppAuthBrowserActivity"
+      android:exported="false"
+      android:launchMode="singleTask"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>`
+  );
+
+  await transformFileAsync(
+    templateManifestPath,
+    new RegExp('<!-- ADD DEV SETTINGS HERE -->'),
+    `<!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_${majorVersion} -->
+    <activity android:name="${abiName}.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_${majorVersion} -->`
+  );
+
+  await transformFileAsync(
+    templateManifestPath,
+    new RegExp('<!-- Versioned Activity for Stripe -->'),
+    `<!-- Versioned Activity for Stripe -->
+    <!-- BEGIN_SDK_${majorVersion} -->
+		<activity
+			android:exported="true"
+			android:launchMode="singleTask"
+			android:name="${abiName}.expo.modules.payments.stripe.RedirectUriReceiver"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+					<category android:name="android.intent.category.DEFAULT" />
+					<category android:name="android.intent.category.BROWSABLE" />
+					<data android:scheme="${abiName}.expo.modules.payments.stripe" />
+			</intent-filter>
+		</activity>
+		<!-- END_SDK_${majorVersion} -->`
+  );
+}
+
 async function cleanUpAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
   const abiName = `abi${abiVersion}`;
@@ -420,5 +470,6 @@ export async function addVersionAsync(version: string) {
   // await runShellScriptWithVersionAsync('./android-build-aar.sh', [version]);
   // await runShellScriptWithArgsAsync('./android-copy-expoview.sh', [version]);
   // await copyUnimodulesAsync(version);
-  await cleanUpAsync(version);
+  await addVersionedActivitesToManifests(version);
+  // await cleanUpAsync(version);
 }

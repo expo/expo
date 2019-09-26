@@ -117,7 +117,4 @@ sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ \/\/ BEGIN_SDK_$MAJOR_ABI_V
 BACK_BUTTON_HANDLER_CLASS='com.facebook.react.modules.core.DefaultHardwareBackBtnHandler'
 find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/ADD_NEW_SDKS_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ $ABI_VERSION\.$BACK_BUTTON_HANDLER_CLASS,$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_SDKS_HERE/"
 
-# Update AndroidManifest
-sed -i '' "/ADD DEV SETTINGS HERE \-\-\>/$SED_APPEND_COMMAND\ \ \ \ \<!-- BEGIN_SDK_$MAJOR_ABI_VERSION --\>$NEWLINE\ \ \ \ \<activity android:name=\"$ABI_VERSION.com.facebook.react.devsupport.DevSettingsActivity\"\/\>$NEWLINE\ \ \ \ \<!-- END_SDK_$MAJOR_ABI_VERSION --\>$NEWLINE" $EXPO_ROOT_DIR/template-files/android/AndroidManifest.xml
 popd
-./add-stripe-activity-to-manifest.sh $EXPO_ROOT_DIR/template-files/android/AndroidManifest.xml $ABI_VERSION_NUMBER

@@ -102,6 +102,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->
     </application>
 
 </manifest>
