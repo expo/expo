@@ -12,7 +12,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 [Blog Post](https://blog.expo.io/expo-sdk-35-is-now-available-beee0dfafbf4)
 
-#### Upgrade from SDK 33
+#### Upgrade from SDK 34
 
 - `app.json`, change `sdkVersion` to `"35.0.0"`,
 - In package.json, change these dependencies:
