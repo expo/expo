@@ -209,8 +209,7 @@ Configuration for loading and splash screen for standalone apps.
 
     /*
       Determines how the "image" will be displayed in the splash loading screen.
-      Must be one of "cover" or "contain", defaults to `contain`.
-      Valid values: "cover", "contain"
+      Valid values: "cover", "contain", or "native". Defaults to "contain".
     */
     "resizeMode": STRING,
 
