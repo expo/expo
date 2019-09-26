@@ -30,6 +30,7 @@ awk '
   // { if (removing == 0) stopRemoving = 0 }
 ' expoview/src/main/AndroidManifest.xml > $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
 sed -i '' "s/host.exp.expoview/$ABI_VERSION.host.exp.expoview/g" $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
+sed -i '' "s/versioned.host.exp.exponent/$ABI_VERSION.host.exp.exponent/g" $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
 
 # Add the new expoview-abiXX_X_X subproject to root project
 NEWLINE='\
