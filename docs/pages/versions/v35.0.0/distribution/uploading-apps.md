@@ -13,6 +13,12 @@ To learn how to build native binaries, see [Building Standalone Apps](../buildin
 
 ## 2. Start the upload
 
+> Note: The `expo upload:ios` command is temporarily unavailable due to changes in Xcode 11. Until this is resolved, please use the following steps to upload to the Apple App Store:
+> - Download your standalone app build that resulted from running `expo build:ios`
+> - Create an application password on https://appleid.apple.com/ (requires two-factor authentication)
+> - Upload the standalone app by running `xcrun altool --upload-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`
+> If you encounter any issues, please refer to [this thread](https://github.com/expo/expo-cli/issues/927).
+
 To upload the previously built standalone app to the appropriate app store, you simply run `expo upload:android` or `expo upload:ios`. However, you have a few options for choosing which app binary you want to upload (remember to choose one at the time):
 - `--latest` - chosen by default, uploads the latest build for the given platform found on the Expo servers
 - `--id <id>` - uploads a build with the given ID
