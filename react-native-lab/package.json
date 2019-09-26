@@ -1,0 +1,9 @@
+{
+  "name": "react-native-lab",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "react-native": "0.59.10"
+  }
+}
