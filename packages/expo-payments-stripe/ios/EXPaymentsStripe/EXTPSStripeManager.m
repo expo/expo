@@ -51,14 +51,6 @@ NSString * const TPSPaymentNetworkVisa = @"visa";
   NSError *applePayStripeError;
   
   NSMutableArray *paymentSummaryItems;
-
-    UMPromiseResolveBlock promiseResolver;
-    UMPromiseRejectBlock promiseRejector;
-
-    BOOL requestIsCompleted;
-
-    void (^applePayCompletion)(PKPaymentAuthorizationStatus);
-    NSError *applePayStripeError;
 }
 
 - (instancetype)init {
