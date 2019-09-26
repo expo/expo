@@ -33,6 +33,7 @@ const EXPOVIEW_PKG = {
   buildDirRelative: path.join('host', 'exp', 'exponent', 'expoview'),
 };
 
+// TODO(eric): use Packages for this instead
 async function _findUnimodules(pkgDir: string): Promise<Package[]> {
   const unimodules: Package[] = [];
 
@@ -46,12 +47,11 @@ async function _findUnimodules(pkgDir: string): Promise<Package[]> {
       const buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
 
       const name = unimoduleJson.name;
-      const subdirectory = unimoduleJson.android && unimoduleJson.android.subdirectory || 'android';
       const group = buildGradle.match(/^group ?= ?'([\w.]+)'\n/m)[1];
 
       unimodules.push({
         name,
-        sourceDir: path.join(unimodulePath, subdirectory),
+        sourceDir: path.join(unimodulePath, 'android'),
         buildDirRelative: `${group.replace(/\./g, '/')}/${name}`,
       });
     }
