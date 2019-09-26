@@ -27,10 +27,12 @@ export const JniLibNames = [
   'turbomodulejsijni',
 ];
 
+// this list is used in the shell scripts as well as directly by expotools
+// we read it in here to keep the source of truth in one place
 export const getJavaPackagesToRename = async () => {
   const packagesToRename = await fs.readFile(
     path.join(getExpotoolsDir(), 'src/versioning/android/android-packages-to-rename.txt'),
     'utf8'
   );
-  return packagesToRename.split('\n').filter(p => p);
+  return packagesToRename.split('\n').filter((p: string) => !!p);
 }
