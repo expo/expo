@@ -7,8 +7,8 @@
 //
 
 #import <GoogleMobileVision/GoogleMobileVision.h>
-#import <EXCore/EXExportedModule.h>
-#import <EXCore/EXModuleRegistryConsumer.h>
+#import <UMCore/UMExportedModule.h>
+#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXFaceDetectorModule : EXExportedModule <EXModuleRegistryConsumer>
+@interface EXFaceDetectorModule : UMExportedModule <UMModuleRegistryConsumer>
 @end

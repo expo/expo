@@ -1,16 +1,27 @@
 import { Asset } from 'expo-asset';
-import { Constants } from 'expo-constants';
-import { Platform } from 'expo-core';
-import invariant from 'invariant';
+import Constants from 'expo-constants';
+import { Platform } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 const isWeb = Platform.OS === 'web';
+const isInClient = !isWeb && Constants.appOwnership === 'expo';
+const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
 const loaded = {};
 const loadPromises = {};
+function fontFamilyNeedsScoping(name) {
+    return ((isInClient || isInIOSStandalone) &&
+        !Constants.systemFonts.includes(name) &&
+        name !== 'System' &&
+        !name.includes(Constants.sessionId));
+}
+/**
+ * Used to transform font family names to the scoped name. This does not need to
+ * be called in standalone or bare apps but it will return unscoped font family
+ * names if it is called in those contexts.
+ * note(brentvatne): at some point we may want to warn if this is called
+ * outside of a managed app.
+ */
 export function processFontFamily(name) {
-    if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
-        return name;
-    }
-    if (name.includes(Constants.sessionId)) {
+    if (!name || !fontFamilyNeedsScoping(name)) {
         return name;
     }
     if (!isLoaded(name)) {
@@ -54,7 +65,9 @@ export async function loadAsync(nameOrMap, source) {
     // promise. If we're here, we haven't created the promise yet. To ensure we create only one
     // promise in the program, we need to create the promise synchronously without yielding the event
     // loop from this point.
-    invariant(source, `No source from which to load font "${name}"`);
+    if (!source) {
+        throw new Error(`No source from which to load font "${name}"`);
+    }
     const asset = _getAssetForSource(source);
     loadPromises[name] = (async () => {
         try {
@@ -68,14 +81,18 @@ export async function loadAsync(nameOrMap, source) {
     await loadPromises[name];
 }
 function _getAssetForSource(source) {
+    if (source instanceof Asset) {
+        return source;
+    }
     if (!isWeb && typeof source === 'string') {
-        // TODO(nikki): need to implement Asset.fromUri(...)
-        // asset = Asset.fromUri(uriOrModuleOrAsset);
-        throw new Error('Loading fonts from remote URIs is temporarily not supported. Please download the font file and load it using require. See: https://docs.expo.io/versions/latest/guides/using-custom-fonts.html#downloading-the-font');
+        return Asset.fromURI(source);
     }
     if (isWeb || typeof source === 'number') {
         return Asset.fromModule(source);
     }
+    // @ts-ignore Error: Type 'string' is not assignable to type 'Asset'
+    // We can't have a string here, we would have thrown an error if !isWeb
+    // or returned Asset.fromModule if isWeb.
     return source;
 }
 async function _loadSingleFontAsync(name, asset) {
@@ -86,21 +103,29 @@ async function _loadSingleFontAsync(name, asset) {
     await ExpoFontLoader.loadAsync(_getNativeFontName(name), asset.localUri);
 }
 function _getNativeFontName(name) {
-    if (isWeb) {
+    if (fontFamilyNeedsScoping(name)) {
+        return `${Constants.sessionId}-${name}`;
+    }
+    else {
         return name;
     }
-    return `${Constants.sessionId}-${name}`;
 }
-// @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
-Object.defineProperty(exports, 'Font', {
-    get() {
-        console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
-        return {
-            processFontFamily,
-            isLoaded,
-            isLoading,
-            loadAsync,
-        };
-    }
-});
+if (module && module.exports) {
+    let wasImportWarningShown = false;
+    // @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
+    Object.defineProperty(exports, 'Font', {
+        get() {
+            if (!wasImportWarningShown) {
+                console.warn(`The syntax "import { Font } from 'expo-font'" is deprecated. Use "import * as Font from 'expo-font'" or import named exports instead. Support for the old syntax will be removed in SDK 33.`);
+                wasImportWarningShown = true;
+            }
+            return {
+                processFontFamily,
+                isLoaded,
+                isLoading,
+                loadAsync,
+            };
+        },
+    });
+}
 //# sourceMappingURL=Font.js.map

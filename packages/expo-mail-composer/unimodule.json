@@ -1,0 +1,4 @@
+{
+  "name": "expo-mail-composer",
+  "platforms": ["ios", "android"]
+}

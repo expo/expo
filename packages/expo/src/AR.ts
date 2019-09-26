@@ -1,4 +1,4 @@
-import { Constants } from 'expo-constants';
+import Constants from 'expo-constants';
 import * as React from 'react';
 import {
   Dimensions,
@@ -78,19 +78,34 @@ export type FaceGeometry = {
   triangleIndices: number[];
 };
 
-export type Anchor = {
+export type BaseAnchor = {
   type: AnchorType;
   transform: Matrix;
   id: string;
-  center?: Vector3;
-  extent?: { width: number; length: number };
+};
+
+export type PlaneAnchor = BaseAnchor & {
+  type: AnchorType.Plane;
+  center: Vector3;
+  extent: { width: number; length: number };
+};
+
+export type ImageAnchor = BaseAnchor & {
+  type: AnchorType.Image;
   image?: {
     name: string | null;
     size: Size;
   };
+};
+
+export type FaceAnchor = BaseAnchor & {
+  type: AnchorType.Face;
+  isTracked: boolean;
   geometry?: FaceGeometry;
   blendShapes?: { [shape in BlendShape]?: number };
 };
+
+export type Anchor = BaseAnchor | PlaneAnchor | ImageAnchor | FaceAnchor;
 
 export type HitTest = {
   type: number;
@@ -101,7 +116,7 @@ export type HitTest = {
 };
 
 export type HitTestResults = {
-  hitTest: HitTest;
+  hitTest: HitTest[];
 };
 
 export type DetectionImage = {
@@ -256,7 +271,7 @@ export enum PlaneDetection {
    */
   Horizontal = 'horizontal',
   /**
-   * Plane detection determines horizontal planes in the scene
+   * Plane detection determines vertical planes in the scene
    */
   Vertical = 'vertical',
 }
@@ -400,12 +415,15 @@ const AvailabilityErrorMessages = {
 };
 
 export function isAvailable(): boolean {
+  // Device has A9 chip
+  const hasA9Chip = Constants.deviceYearClass && Constants.deviceYearClass > 2014;
+
   if (
     !Constants.isDevice || // Prevent Simulators
     // @ts-ignore
     Platform.isTVOS ||
     Platform.OS !== 'ios' || // Device is iOS
-    Constants.deviceYearClass < 2015 || // Device has A9 chip
+    !hasA9Chip ||
     !ExponentAR.isSupported || // ARKit is included in the build
     !ExponentAR.startAsync // Older SDK versions (27 and lower) that are fully compatible
   ) {
@@ -420,7 +438,7 @@ export function getUnavailabilityReason(): string {
     return AvailabilityErrorMessages.Simulator;
   } else if (Platform.OS !== 'ios') {
     return `${AvailabilityErrorMessages.ARKitOnlyOnIOS} ${Platform.OS} device`;
-  } else if (Constants.deviceYearClass < 2015) {
+  } else if (Constants.deviceYearClass == null || Constants.deviceYearClass < 2015) {
     return `${AvailabilityErrorMessages.ANineChip} ${Constants.deviceYearClass} device`;
   }
   return 'Unknown Reason';
@@ -654,3 +672,51 @@ export function isFrontCameraAvailable(): boolean {
 export function isRearCameraAvailable(): boolean {
   return isConfigurationAvailable(TrackingConfiguration.World);
 }
+
+/* Legacy constants */
+
+/**
+ * A deprecated alias for `PlaneDetection`
+ * July 8, 2019
+ */
+export const PlaneDetectionTypes = PlaneDetection;
+/**
+ * A deprecated alias for `WorldAlignment`
+ * July 8, 2019
+ */
+export const WorldAlignmentTypes = WorldAlignment;
+/**
+ * A deprecated alias for `EventType`
+ * July 8, 2019
+ */
+export const EventTypes = EventType;
+/**
+ * A deprecated alias for `AnchorType`
+ * July 8, 2019
+ */
+export const AnchorTypes = AnchorType;
+/**
+ * A deprecated alias for `AnchorEventType`
+ * July 8, 2019
+ */
+export const AnchorEventTypes = AnchorEventType;
+/**
+ * A deprecated alias for `FrameAttribute`
+ * July 8, 2019
+ */
+export const FrameAttributes = FrameAttribute;
+/**
+ * A deprecated alias for `TrackingState`
+ * July 8, 2019
+ */
+export const TrackingStates = TrackingState;
+/**
+ * A deprecated alias for `TrackingStateReason`
+ * July 8, 2019
+ */
+export const TrackingStateReasons = TrackingStateReason;
+/**
+ * A deprecated alias for `TrackingConfiguration`
+ * July 8, 2019
+ */
+export const TrackingConfigurations = TrackingConfiguration;

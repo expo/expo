@@ -17,6 +17,7 @@
 #import "AIRMapCircle.h"
 #import <QuartzCore/QuartzCore.h>
 #import "AIRMapUrlTile.h"
+#import "AIRMapWMSTile.h"
 #import "AIRMapLocalTile.h"
 #import "AIRMapOverlay.h"
 
@@ -49,6 +50,7 @@ const NSInteger AIRMapMaxZoomLevel = 20;
     UIView *_legalLabel;
     CLLocationManager *_locationManager;
     BOOL _initialRegionSet;
+    BOOL _initialCameraSet;
 
     // Array to manually track RN subviews
     //
@@ -85,6 +87,7 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 
         self.minZoomLevel = 0;
         self.maxZoomLevel = AIRMapMaxZoomLevel;
+        self.compassOffset = CGPointMake(0, 0);
     }
     return self;
 }
@@ -120,6 +123,9 @@ const NSInteger AIRMapMaxZoomLevel = 20;
         [self addOverlay:(id<MKOverlay>)subview];
     } else if ([subview isKindOfClass:[AIRMapUrlTile class]]) {
         ((AIRMapUrlTile *)subview).map = self;
+        [self addOverlay:(id<MKOverlay>)subview];
+    }else if ([subview isKindOfClass:[AIRMapWMSTile class]]) {
+        ((AIRMapWMSTile *)subview).map = self;
         [self addOverlay:(id<MKOverlay>)subview];
     } else if ([subview isKindOfClass:[AIRMapLocalTile class]]) {
         ((AIRMapLocalTile *)subview).map = self;
@@ -173,6 +179,71 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 }
 #pragma clang diagnostic pop
 
+#pragma mark Utils
+
+- (NSArray*) markers {
+    NSPredicate *filterMarkers = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        AIRMapMarker *marker = (AIRMapMarker *)evaluatedObject;
+        return [marker isKindOfClass:[AIRMapMarker class]];
+    }];
+    NSArray *filteredMarkers = [self.annotations filteredArrayUsingPredicate:filterMarkers];
+    return filteredMarkers;
+}
+
+- (AIRMapMarker*) markerForCallout:(AIRMapCallout*)callout {
+    AIRMapMarker* marker = nil;
+    NSArray* markers = [self markers];
+    for (AIRMapMarker* mrk in markers) {
+        if (mrk.calloutView == callout) {
+            marker = mrk;
+            break;
+        }
+    }
+    return marker;
+}
+
+- (CGRect) frameForMarker:(AIRMapMarker*) mrkAnn {
+    MKAnnotationView* mrkView = [self viewForAnnotation: mrkAnn];
+    CGRect mrkFrame = mrkView.frame;
+    return mrkFrame;
+}
+
+- (NSDictionary*) getMarkersFramesWithOnlyVisible:(BOOL)onlyVisible {
+    NSMutableDictionary* markersFrames = [NSMutableDictionary new];
+    for (AIRMapMarker* mrkAnn in self.markers) {
+        CGRect frame = [self frameForMarker:mrkAnn];
+        CGPoint point = [self convertCoordinate:mrkAnn.coordinate toPointToView:self];
+        NSDictionary* frameDict = @{
+                                    @"x": @(frame.origin.x),
+                                    @"y": @(frame.origin.y),
+                                    @"width": @(frame.size.width),
+                                    @"height": @(frame.size.height)
+                                    };
+        NSDictionary* pointDict = @{
+                                   @"x": @(point.x),
+                                   @"y": @(point.y)
+                                  };
+        NSString* k = mrkAnn.identifier;
+        BOOL isVisible = CGRectIntersectsRect(self.bounds, frame);
+        if (k != nil && (!onlyVisible || isVisible)) {
+            [markersFrames setObject:@{ @"frame": frameDict, @"point": pointDict } forKey:k];
+        }
+    }
+    return markersFrames;
+}
+
+- (AIRMapMarker*) markerAtPoint:(CGPoint)point {
+    AIRMapMarker* mrk = nil;
+    for (AIRMapMarker* mrkAnn in self.markers) {
+        CGRect frame = [self frameForMarker:mrkAnn];
+        if (CGRectContainsPoint(frame, point)) {
+            mrk = mrkAnn;
+            break;
+        }
+    }
+    return mrk;
+}
+
 #pragma mark Overrides for Callout behavior
 
 // override UIGestureRecognizer's delegate method so we can prevent MKMapView's recognizer from firing
@@ -184,12 +255,44 @@ const NSInteger AIRMapMaxZoomLevel = 20;
         return [super gestureRecognizer:gestureRecognizer shouldReceiveTouch:touch];
 }
 
+
 // Allow touches to be sent to our calloutview.
 // See this for some discussion of why we need to override this: https://github.com/nfarina/calloutview/pull/9
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
 
-    UIView *calloutMaybe = [self.calloutView hitTest:[self.calloutView convertPoint:point fromView:self] withEvent:event];
-    if (calloutMaybe) return calloutMaybe;
+    CGPoint touchPoint = [self.calloutView convertPoint:point fromView:self];
+    UIView *touchedView = [self.calloutView hitTest:touchPoint withEvent:event];
+    
+    if (touchedView) {
+        UIWindow* win = [[[UIApplication sharedApplication] windows] firstObject];
+        AIRMapCalloutSubview* calloutSubview = nil;
+        AIRMapCallout* callout = nil;
+        AIRMapMarker* marker = nil;
+        
+        UIView* tmp = touchedView;
+        while (tmp && tmp != win && tmp != self.calloutView) {
+            if ([tmp respondsToSelector:@selector(onPress)]) {
+                calloutSubview = (AIRMapCalloutSubview*) tmp;
+            }
+            if ([tmp isKindOfClass:[AIRMapCallout class]]) {
+                callout = (AIRMapCallout*) tmp;
+                break;
+            }
+            tmp = tmp.superview;
+        }
+        
+        if (callout) {
+            marker = [self markerForCallout:callout];
+            if (marker) {
+                CGPoint touchPointReal = [marker.calloutView convertPoint:point fromView:self];
+                if (![callout isPointInside:touchPointReal]) {
+                    return [super hitTest:point withEvent:event];
+                }
+            }
+        }
+        
+        return calloutSubview ? calloutSubview : touchedView;
+    }
 
     return [super hitTest:point withEvent:event];
 }
@@ -222,6 +325,25 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 }
 
 #pragma mark Accessors
+
+- (NSArray *)getMapBoundaries
+{
+    MKMapRect mapRect = self.visibleMapRect;
+    
+    CLLocationCoordinate2D northEast = MKCoordinateForMapPoint(MKMapPointMake(MKMapRectGetMaxX(mapRect), mapRect.origin.y));
+    CLLocationCoordinate2D southWest = MKCoordinateForMapPoint(MKMapPointMake(mapRect.origin.x, MKMapRectGetMaxY(mapRect)));
+
+    return @[
+        @[
+            [NSNumber numberWithDouble:northEast.longitude],
+            [NSNumber numberWithDouble:northEast.latitude]
+        ],
+        @[
+            [NSNumber numberWithDouble:southWest.longitude],
+            [NSNumber numberWithDouble:southWest.latitude]
+        ]
+    ];
+}
 
 - (void)setShowsUserLocation:(BOOL)showsUserLocation
 {
@@ -273,6 +395,19 @@ const NSInteger AIRMapMaxZoomLevel = 20;
     if (!_initialRegionSet) {
         _initialRegionSet = YES;
         [self setRegion:initialRegion animated:NO];
+    }
+}
+
+- (void)setCamera:(MKMapCamera*)camera animated:(BOOL)animated
+{
+    [super setCamera:camera animated:animated];
+}
+
+
+- (void)setInitialCamera:(MKMapCamera*)initialCamera {
+    if (!_initialCameraSet) {
+        _initialCameraSet = YES;
+        [self setCamera:initialCamera animated:NO];
     }
 }
 
@@ -502,6 +637,15 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 - (void)layoutSubviews {
     [super layoutSubviews];
     [self cacheViewIfNeeded];
+    NSUInteger index = [[self subviews] indexOfObjectPassingTest:^BOOL(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *str = NSStringFromClass([obj class]);
+        return [str containsString:@"MKCompassView"];
+    }];
+    if (index != NSNotFound) {
+        UIView* compassButton;
+        compassButton = [self.subviews objectAtIndex:index];
+        compassButton.frame = CGRectMake(compassButton.frame.origin.x + _compassOffset.x, compassButton.frame.origin.y + _compassOffset.y, compassButton.frame.size.width, compassButton.frame.size.height);
+    }
 }
 
 @end

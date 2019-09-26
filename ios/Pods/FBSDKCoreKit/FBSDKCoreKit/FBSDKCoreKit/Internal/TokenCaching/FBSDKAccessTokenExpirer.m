@@ -52,16 +52,16 @@
   if (accessToken == nil || accessToken.isExpired) {
     return;
   }
-  _timer = [NSTimer scheduledTimerWithTimeInterval:[accessToken.expirationDate timeIntervalSinceNow] target:self selector:@selector(_timerDidFire) userInfo:nil repeats:NO];
+  _timer = [NSTimer scheduledTimerWithTimeInterval:accessToken.expirationDate.timeIntervalSinceNow target:self selector:@selector(_timerDidFire) userInfo:nil repeats:NO];
 }
 
 - (void)_timerDidFire
 {
   FBSDKAccessToken *accessToken = FBSDKAccessToken.currentAccessToken;
   NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-  [FBSDKInternalUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeNewKey];
-  [FBSDKInternalUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeOldKey];
-  userInfo[FBSDKAccessTokenDidExpire] = @YES;
+  [FBSDKBasicUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeNewKey];
+  [FBSDKBasicUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeOldKey];
+  userInfo[FBSDKAccessTokenDidExpireKey] = @YES;
 
   [[NSNotificationCenter defaultCenter] postNotificationName:FBSDKAccessTokenDidChangeNotification
                                                       object:[FBSDKAccessToken class]

@@ -2,7 +2,7 @@
 
 const fs = require('fs-extra');
 const glob = require('glob-promise');
-const escapeRegExp = require('lodash.escaperegexp');
+const escapeRegExp = require('lodash/escapeRegExp');
 const nullthrows = require('nullthrows').default;
 const path = require('path');
 const shell = require('shelljs');

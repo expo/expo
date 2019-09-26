@@ -4,6 +4,8 @@
 //  Created by Nick Italiano on 10/24/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMapCircleManager.h"
 #import "AIRGoogleMapCircle.h"
 #import <React/RCTBridge.h>
@@ -31,3 +33,5 @@ RCT_EXPORT_VIEW_PROPERTY(fillColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(zIndex, int)
 
 @end
+
+#endif

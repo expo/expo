@@ -3,7 +3,7 @@ apply plugin: 'java'
 dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
   compile group: 'com.github.javaparser', name: 'javaparser-core', version: '3.3.4'
-  compile group: 'commons-io', name: 'commons-io', version: '2.5'
+  compile group: 'commons-io', name: 'commons-io', version: '2.6'
   compile group: 'org.json', name: 'json', version: '20170516'
 }
 

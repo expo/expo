@@ -1,11 +1,11 @@
 {
   "name": "ABI31_0_0EXFaceDetector",
-  "version": "1.0.2",
-  "summary": "Expo Face Detector standalone universal module",
-  "description": "Expo Face Detector standalone universal module",
+  "version": "5.0.0",
+  "summary": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
+  "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/facedetector/",
   "platforms": {
     "ios": "10.0"
   },
@@ -22,11 +22,14 @@
     "ABI31_0_0EXFaceDetectorInterface": [
 
     ],
-    "GoogleMobileVision/FaceDetector": [
-      "~> 1.1.0"
+    "Firebase/Core": [
+
     ],
-    "GoogleMobileVision/MVDataOutput": [
-      "~> 1.1.0"
+    "Firebase/MLVision": [
+
+    ],
+    "Firebase/MLVisionFaceModel": [
+
     ]
   }
 }

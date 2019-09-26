@@ -4,28 +4,25 @@
 #import "EXKernel.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXEnvironment.h"
+#import "EXAppLoader.h"
 
 static NSString * const scopedIdentifierSeparator = @":";
 
 @interface EXUserNotificationManager ()
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, EXPendingNotification *> *pendingNotifications;
+@property (nonatomic, strong) EXPendingNotification *pendingNotification;
 
 @end
 
 @implementation EXUserNotificationManager
 
-- (instancetype)init
-{
-  if (self = [super init]) {
-    _pendingNotifications = [NSMutableDictionary new];
-  }
-  return self;
-}
-
 - (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId
 {
-  return _pendingNotifications[experienceId];
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return _pendingNotification;
+  }
+
+  return nil;
 }
 
 # pragma mark - EXNotificationsIdentifiersManager
@@ -53,16 +50,32 @@ static NSString * const scopedIdentifierSeparator = @":";
 {
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotificationResponse:response identifiersManager:self];
   if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
-    _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
+    _pendingNotification = pendingNotification;
   }
   completionHandler();
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
-  // With UIUserNotifications framework, notifications were only shown while the app wasn't active.
-  // Let's stick to this behavior.
-  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+  BOOL shouldDisplayInForeground = NO;
+
+  EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
+  if (visibleApp) {
+    NSDictionary *visibleAppManifest = visibleApp.appLoader.manifest;
+    if (visibleAppManifest && visibleAppManifest[@"notification"] && visibleAppManifest[@"notification"][@"iosDisplayInForeground"]) {
+      // If user specifically set `notification.iosDisplayInForeground` in `app.json`.
+      shouldDisplayInForeground = [visibleAppManifest[@"notification"][@"iosDisplayInForeground"] boolValue];
+    }
+  }
+
+  NSDictionary *userInfo = notification.request.content.userInfo;
+  if (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_displayInForeground"]) {
+    // If user specifically set `_displayInForeground` in the notification, it always override `notification.iosDisplayInForeground` in `app.json`.
+    shouldDisplayInForeground = [userInfo[@"body"][@"_displayInForeground"] boolValue];
+  }
+
+  // Notifications were only shown while the app wasn't active or if the user specifies to do so.
+  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive || shouldDisplayInForeground) {
     completionHandler(
                       UNNotificationPresentationOptionAlert +
                       UNNotificationPresentationOptionSound +
@@ -74,7 +87,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
   EXPendingNotification *pendingNotification = [[EXPendingNotification alloc] initWithNotification:notification];
   if (![[EXKernel sharedInstance] sendNotification:pendingNotification] && [EXEnvironment sharedEnvironment].isDetached) {
-    _pendingNotifications[pendingNotification.experienceId] = pendingNotification;
+    _pendingNotification = pendingNotification;
   }
 
   completionHandler(UNNotificationPresentationOptionNone);

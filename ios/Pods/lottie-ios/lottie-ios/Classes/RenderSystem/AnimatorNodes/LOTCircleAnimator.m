@@ -40,7 +40,7 @@ const CGFloat kLOTEllipseControlPointPercentage = 0.55228;
 - (void)performLocalUpdate {
   // Unfortunately we HAVE to manually build out the ellipse.
   // Every Apple method constructs from the 3 o-clock position
-  // After effects contrsucts from the Noon position.
+  // After effects constructs from the Noon position.
   // After effects does clockwise, but also has a flag for reversed.
   CGPoint center = [_centerInterpolator pointValueForFrame:self.currentFrame];
   CGPoint size = [_sizeInterpolator pointValueForFrame:self.currentFrame];

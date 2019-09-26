@@ -1,10 +1,13 @@
-
 package expo.modules.filesystem;
 
+import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.util.Base64;
 import android.util.Log;
 
@@ -12,8 +15,14 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
+import org.unimodules.interfaces.filesystem.Permission;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,21 +34,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.CookieHandler;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import expo.core.ExportedModule;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.Promise;
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.filesystem.FilePermissionModuleInterface;
-import expo.interfaces.filesystem.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -57,15 +60,15 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
-public class FileSystemModule extends ExportedModule implements ModuleRegistryConsumer {
+public class FileSystemModule extends ExportedModule {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "Exponent.downloadProgress";
-  private static final String SHELL_APP_EMBEDDED_MANIFEST_PATH = "shell-app-manifest.json";
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
 
   private ModuleRegistry mModuleRegistry;
+  private OkHttpClient mClient;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
@@ -81,7 +84,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -96,37 +99,20 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     constants.put("documentDirectory", Uri.fromFile(getContext().getFilesDir()).toString() + "/");
     constants.put("cacheDirectory", Uri.fromFile(getContext().getCacheDir()).toString() + "/");
     constants.put("bundleDirectory", "asset:///");
-    constants.put("bundledAssets", getBundledAssets());
 
     return constants;
   }
 
-  private List<String> getBundledAssets() {
-//    // Fastpath, only standalone apps support bundled assets.
-//    if (!ConstantsModule.getAppOwnership(mExperienceProperties).equals("standalone")) {
-//      return null;
-//    }
-    try {
-      InputStream inputStream = getContext().getAssets().open(SHELL_APP_EMBEDDED_MANIFEST_PATH);
-      String jsonString = IOUtils.toString(inputStream);
-      JSONObject manifest = new JSONObject(jsonString);
-      JSONArray bundledAssetsJSON = manifest.getJSONArray("bundledAssets");
-      if (bundledAssetsJSON == null) {
-        return null;
-      }
-      List<String> result = new ArrayList<>();
-      for (int i = 0; i < bundledAssetsJSON.length(); i++) {
-        result.add(bundledAssetsJSON.getString(i));
-      }
-      return result;
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      return null;
-    }
-  }
-
   private File uriToFile(Uri uri) {
     return new File(uri.getPath());
+  }
+
+  private void checkIfFileDirExists(Uri uri) throws IOException {
+    File file = uriToFile(uri);
+    File dir = file.getParentFile();
+    if (!dir.exists()) {
+      throw new IOException("Directory for " + file.getPath() + " doesn't exist.");
+    }
   }
 
   private EnumSet<Permission> permissionsForPath(String path) {
@@ -198,8 +184,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         Bundle result = new Bundle();
         try {
           InputStream is = "content".equals(uri.getScheme()) ?
-                  getContext().getContentResolver().openInputStream(uri) :
-                  openAssetInputStream(uri);
+              getContext().getContentResolver().openInputStream(uri) :
+              openAssetInputStream(uri);
           if (is == null) {
             throw new FileNotFoundException();
           }
@@ -214,13 +200,13 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             result.putString("md5", String.valueOf(Hex.encodeHex(md5bytes)));
           }
           promise.resolve(result);
-        } catch (FileNotFoundException e)  {
+        } catch (FileNotFoundException e) {
           result.putBoolean("exists", false);
           result.putBoolean("isDirectory", false);
           promise.resolve(result);
         }
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -237,7 +223,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       // TODO:Bacon: Add more encoding types to match iOS
       String encoding = "utf8";
       if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
-        encoding = ((String)options.get("encoding")).toLowerCase();
+        encoding = ((String) options.get("encoding")).toLowerCase();
       }
       String contents;
       if (encoding.equalsIgnoreCase("base64")) {
@@ -251,8 +237,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         }
 
         if (options.containsKey("length") && options.containsKey("position")) {
-          int length = ((Number)options.get("length")).intValue();
-          int position = ((Number)options.get("position")).intValue();
+          int length = ((Number) options.get("length")).intValue();
+          int position = ((Number) options.get("position")).intValue();
           byte[] buffer = new byte[length];
           inputStream.skip(position);
           int bytesRead = inputStream.read(buffer, 0, length);
@@ -286,7 +272,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
 
         String encoding = "utf8";
         if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
-          encoding = ((String)options.get("encoding")).toLowerCase();
+          encoding = ((String) options.get("encoding")).toLowerCase();
         }
 
         FileOutputStream out = new FileOutputStream(uriToFile(uri));
@@ -301,7 +287,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         out.close();
         promise.resolve(null);
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -325,11 +311,11 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             promise.resolve(null);
           } else {
             promise.reject("E_FILE_NOT_FOUND",
-                    "File '" + uri + "' could not be deleted because it could not be found");
+                "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -360,10 +346,10 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
           promise.resolve(null);
         } else {
           promise.reject("E_FILE_NOT_MOVED",
-                  "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+              "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
       } else {
-        throw new IOException("Unsupported scheme for location '" + fromUri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -408,7 +394,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         IOUtils.copy(in, out);
         promise.resolve(null);
       } else {
-        throw new IOException("Unsupported scheme for location '" + fromUri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -423,17 +409,17 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       ensurePermission(uri, Permission.WRITE);
       if ("file".equals(uri.getScheme())) {
         File file = uriToFile(uri);
-        boolean success = options.containsKey("intermediates") && (Boolean) options.get("intermediates") ?
-                file.mkdirs() :
-                file.mkdir();
-        if (success) {
+        boolean previouslyCreated = file.isDirectory();
+        boolean setIntermediates = options.containsKey("intermediates") && (Boolean) options.get("intermediates");
+        boolean success = setIntermediates ? file.mkdirs() : file.mkdir();
+        if (success || (setIntermediates && previouslyCreated)) {
           promise.resolve(null);
         } else {
           promise.reject("E_DIRECTORY_NOT_CREATED",
-                  "Directory '" + uri + "' could not be created.");
+              "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -457,10 +443,10 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
           promise.resolve(result);
         } else {
           promise.reject("E_DIRECTORY_NOT_READ",
-                  "Directory '" + uri + "' could not be read.");
+              "Directory '" + uri + "' could not be read.");
         }
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -473,9 +459,36 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     try {
       final Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.WRITE);
-      if ("file".equals(uri.getScheme())) {
-        Request request = new Request.Builder().url(url).build();
-        getOkHttpClientBuilder().build().newCall(request).enqueue(new Callback() {
+      checkIfFileDirExists(uri);
+
+      if (!url.contains(":")) {
+        Context context = getContext();
+        Resources resources = context.getResources();
+        String packageName = context.getPackageName();
+        int resourceId = resources.getIdentifier(url, "raw", packageName);
+
+        BufferedSource bufferedSource = Okio.buffer(Okio.source(context.getResources().openRawResource(resourceId)));
+        File file = uriToFile(uri);
+        file.delete();
+        BufferedSink sink = Okio.buffer(Okio.sink(file));
+        sink.writeAll(bufferedSource);
+        sink.close();
+
+        Bundle result = new Bundle();
+        result.putString("uri", Uri.fromFile(file).toString());
+        if (options != null && options.containsKey("md5") && (Boolean) options.get("md5")) {
+          result.putString("md5", md5(file));
+        }
+        promise.resolve(result);
+      } else if ("file".equals(uri.getScheme())) {
+        Request.Builder requestBuilder = new Request.Builder().url(url);
+        if (options != null && options.containsKey(HEADER_KEY)) {
+          final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
+          for (String key : headers.keySet()) {
+            requestBuilder.addHeader(key, headers.get(key).toString());
+          }
+        }
+        getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
             Log.e(TAG, e.getMessage());
@@ -501,7 +514,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
           }
         });
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -510,11 +523,78 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
   }
 
   @ExpoMethod
+  public void getTotalDiskCapacityAsync(Promise promise) {
+    try {
+      StatFs root = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long blockCount = root.getBlockCountLong();
+      long blockSize = root.getBlockSizeLong();
+      BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
+      //cast down to avoid overflow
+      Double capacityDouble = Math.max(capacity.doubleValue(), Math.pow(2, 53) - 1);
+      promise.resolve(capacityDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getFreeDiskStorageAsync(Promise promise) {
+    try {
+      StatFs external = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long availableBlocks = external.getAvailableBlocksLong();
+      long blockSize = external.getBlockSizeLong();
+
+      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
+      Double storageDouble = Math.max(storage.doubleValue(), Math.pow(2, 53) - 1);
+      //cast down to avoid overflow
+      if (storage.longValue() > Math.pow(2, 53) - 1) {
+        storageDouble = Math.pow(2, 53) - 1;
+      }
+      promise.resolve(storageDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getContentUriAsync(String uri, Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(uri);
+      ensurePermission(fileUri, Permission.WRITE);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileDirExists(fileUri);
+      if ("file".equals(fileUri.getScheme())) {
+        File file = uriToFile(fileUri);
+        Bundle result = new Bundle();
+        result.putString("uri", contentUriFromFile(file).toString());
+        promise.resolve(result);
+      } else {
+        promise.reject("E_DIRECTORY_NOT_READ", "No readable files with the uri: " + uri + ". Please use other uri.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  private Uri contentUriFromFile(File file) {
+    try {
+      Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
+      return FileSystemFileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+
+  @ExpoMethod
   public void downloadResumableStartAsync(String url, final String fileUriStr, final String uuid, final Map<String, Object> options, final String resumeData, final Promise promise) {
     try {
       final Uri fileUri = Uri.parse(fileUriStr);
+      checkIfFileDirExists(fileUri);
       if (!("file".equals(fileUri.getScheme()))) {
-        throw new IOException("Unsupported scheme for location '" + fileUri +  "'.");
+        throw new IOException("Unsupported scheme for location '" + fileUri + "'.");
       }
 
       final boolean isResume = resumeData != null;
@@ -522,13 +602,14 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       final ProgressListener progressListener = new ProgressListener() {
         long mLastUpdate = -1;
 
-        @Override public void update(long bytesRead, long contentLength, boolean done) {
+        @Override
+        public void update(long bytesRead, long contentLength, boolean done) {
           EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
           if (eventEmitter != null) {
             Bundle downloadProgress = new Bundle();
             Bundle downloadProgressData = new Bundle();
-            long totalBytesWritten = isResume ? bytesRead + Long.parseLong(resumeData):bytesRead;
-            long totalBytesExpectedToWrite = isResume ? contentLength + Long.parseLong(resumeData):contentLength;
+            long totalBytesWritten = isResume ? bytesRead + Long.parseLong(resumeData) : bytesRead;
+            long totalBytesExpectedToWrite = isResume ? contentLength + Long.parseLong(resumeData) : contentLength;
             long currentTime = System.currentTimeMillis();
 
             // Throttle events. Sending too many events will block the JS event loop.
@@ -547,16 +628,17 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       };
 
       OkHttpClient client =
-              getOkHttpClientBuilder()
-                      .addNetworkInterceptor(new Interceptor() {
-                        @Override public Response intercept(Chain chain) throws IOException {
-                          Response originalResponse = chain.proceed(chain.request());
-                          return originalResponse.newBuilder()
-                                  .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                                  .build();
-                        }
-                      })
+          getOkHttpClient().newBuilder()
+              .addNetworkInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                  Response originalResponse = chain.proceed(chain.request());
+                  return originalResponse.newBuilder()
+                      .body(new ProgressResponseBody(originalResponse.body(), progressListener))
                       .build();
+                }
+              })
+              .build();
 
       Request.Builder requestBuilder = new Request.Builder();
       if (isResume) {
@@ -565,7 +647,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
 
       if (options != null && options.containsKey(HEADER_KEY)) {
         final Map<String, Object> headers = (Map<String, Object>) options.get(HEADER_KEY);
-        for (String key: headers.keySet()) {
+        for (String key : headers.keySet()) {
           requestBuilder.addHeader(key, headers.get(key).toString());
         }
       }
@@ -696,8 +778,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       // multiple values for the same header
       if (responseHeaders.get(headerName) != null) {
         responseHeaders.putString(
-                headerName,
-                responseHeaders.getString(headerName) + ", " + headers.value(i));
+            headerName,
+            responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
@@ -731,15 +813,18 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       this.progressListener = progressListener;
     }
 
-    @Override public MediaType contentType() {
+    @Override
+    public MediaType contentType() {
       return responseBody.contentType();
     }
 
-    @Override public long contentLength() {
+    @Override
+    public long contentLength() {
       return responseBody.contentLength();
     }
 
-    @Override public BufferedSource source() {
+    @Override
+    public BufferedSource source() {
       if (bufferedSource == null) {
         bufferedSource = Okio.buffer(source(responseBody.source()));
       }
@@ -750,7 +835,8 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
       return new ForwardingSource(source) {
         long totalBytesRead = 0L;
 
-        @Override public long read(Buffer sink, long byteCount) throws IOException {
+        @Override
+        public long read(Buffer sink, long byteCount) throws IOException {
           long bytesRead = super.read(sink, byteCount);
           // read() returns the number of bytes read, or -1 if this source is exhausted.
           totalBytesRead += bytesRead != -1 ? bytesRead : 0;
@@ -765,13 +851,21 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
     void update(long bytesRead, long contentLength, boolean done);
   }
 
-  private OkHttpClient.Builder getOkHttpClientBuilder() {
-    CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    if (cookieHandler != null) {
-      builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+  private synchronized OkHttpClient getOkHttpClient() {
+    if (mClient == null) {
+      OkHttpClient.Builder builder =
+          new OkHttpClient.Builder()
+              .connectTimeout(60, TimeUnit.SECONDS)
+              .readTimeout(60, TimeUnit.SECONDS)
+              .writeTimeout(60, TimeUnit.SECONDS);
+
+      CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
+      if (cookieHandler != null) {
+        builder.cookieJar(new JavaNetCookieJar(cookieHandler));
+      }
+      mClient = builder.build();
     }
-    return builder;
+    return mClient;
   }
 
   private String md5(File file) throws IOException {

@@ -21,15 +21,19 @@
 #import <FBSDKCoreKit/FBSDKConstants.h>
 
 //immutable
+NS_SWIFT_NAME(ErrorRecoveryConfiguration)
 @interface FBSDKErrorRecoveryConfiguration : NSObject<NSCopying, NSSecureCoding>
 
 @property (nonatomic, readonly) NSString *localizedRecoveryDescription;
 @property (nonatomic, readonly) NSArray *localizedRecoveryOptionDescriptions;
-@property (nonatomic, readonly) FBSDKGraphRequestErrorCategory errorCategory;
+@property (nonatomic, readonly) FBSDKGraphRequestError errorCategory;
 @property (nonatomic, readonly) NSString *recoveryActionName;
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithRecoveryDescription:(NSString *)description
                          optionDescriptions:(NSArray *)optionDescriptions
-                                   category:(FBSDKGraphRequestErrorCategory)category
+                                   category:(FBSDKGraphRequestError)category
                          recoveryActionName:(NSString *)recoveryActionName NS_DESIGNATED_INITIALIZER;
 @end

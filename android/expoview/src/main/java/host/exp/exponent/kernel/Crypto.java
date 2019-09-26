@@ -24,11 +24,11 @@ import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
+import okhttp3.CacheControl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @Singleton
 public class Crypto {

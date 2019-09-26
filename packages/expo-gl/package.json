@@ -1,8 +1,20 @@
 {
   "name": "expo-gl",
-  "version": "1.1.0",
-  "description": "Expo GL standalone universal module",
-  "main": "index.js",
+  "version": "7.0.0",
+  "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:snapshots": "jest --updateSnapshot",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -10,16 +22,34 @@
     "glview",
     "webgl"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-gl"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://docs.expo.io/versions/latest/sdk/gl-view/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "jest": {
+    "preset": "expo-module-scripts/ios"
+  },
+  "unimodulePeerDependencies": {
+    "unimodules-camera-interface": "*",
+    "@unimodules/core": "*",
+    "unimodules-file-system-interface": "*",
+    "expo-gl-cpp": "~5.0.0"
+  },
   "dependencies": {
-    "expo-core": "~1.2.0",
-    "expo-camera-interface": "~1.1.0",
-    "expo-file-system-interface": "~1.1.0",
-    "expo-gl-cpp": "~1.1.0"
+    "expo-gl-cpp": "~7.0.0",
+    "prop-types": "^15.6.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0"
-  }
+    "babel-preset-expo": "~7.0.0",
+    "expo-module-scripts": "~1.1.1",
+    "react-test-renderer": "~16.8.3"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

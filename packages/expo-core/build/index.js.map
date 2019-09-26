@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,2BAA2B,CAAC","sourcesContent":["export * from 'expo-react-native-adapter';\n"]}

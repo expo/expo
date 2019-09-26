@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,qBAAqB,CAAC;AACpC,OAAO,EAAE,OAAO,EAAE,MAAM,qBAAqB,CAAC","sourcesContent":["export * from 'react-native-branch';\nexport { default } from 'react-native-branch';\n"]}

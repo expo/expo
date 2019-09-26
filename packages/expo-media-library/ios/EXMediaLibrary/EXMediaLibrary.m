@@ -1,13 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXMediaLibrary/EXMediaLibrary.h>
-#import <EXPermissions/EXCameraRollRequester.h>
-#import <EXCore/EXDefines.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
-#import <EXPermissions/EXPermissions.h>
 #import <Photos/Photos.h>
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <EXCore/EXEventEmitterService.h>
+
+#import <EXMediaLibrary/EXMediaLibrary.h>
+
+#import <UMCore/UMDefines.h>
+#import <UMCore/UMUtilities.h>
+#import <UMCore/UMEventEmitterService.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -19,23 +21,22 @@ NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 
 @interface EXMediaLibrary ()
 
-@property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
-@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
-@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 
 @end
 
 @implementation EXMediaLibrary
 
-EX_EXPORT_MODULE(ExponentMediaLibrary);
+UM_EXPORT_MODULE(ExponentMediaLibrary);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -60,7 +61,6 @@ EX_EXPORT_MODULE(ExponentMediaLibrary);
                },
            @"SortBy": @{
                @"default": @"default",
-               @"id": @"id",
                @"creationTime": @"creationTime",
                @"modificationTime": @"modificationTime",
                @"mediaType": @"mediaType",
@@ -77,10 +77,30 @@ EX_EXPORT_MODULE(ExponentMediaLibrary);
   return @[EXMediaLibraryDidChangeEvent];
 }
 
-EX_EXPORT_METHOD_AS(createAssetAsync,
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissions:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS_MODULE", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  [_permissionsManager askForPermission:@"cameraRoll" withResult:resolve withRejecter:reject];
+}
+
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissions:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS_MODULE", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  resolve([_permissionsManager getPermissionsForResource:@"cameraRoll"]);
+}
+
+UM_EXPORT_METHOD_AS(createAssetAsync,
                     createAssetFromLocalUri:(nonnull NSString *)localUri
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -93,13 +113,13 @@ EX_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  NSURL *assetUrl = [NSURL URLWithString:localUri];
+  NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
   
   if (assetUrl == nil) {
     reject(@"E_INVALID_URI", @"Provided localUri is not a valid URI", nil);
     return;
   }
-  if (!([_fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
+  if (!([_fileSystem permissionsForURI:assetUrl] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }
@@ -123,11 +143,11 @@ EX_EXPORT_METHOD_AS(createAssetAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
+UM_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
                     addAssets:(NSArray<NSString *> *)assetIds
                     toAlbum:(nonnull NSString *)albumId
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -142,11 +162,11 @@ EX_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(removeAssetsFromAlbumAsync,
+UM_EXPORT_METHOD_AS(removeAssetsFromAlbumAsync,
                     removeAssets:(NSArray<NSString *> *)assetIds
                     fromAlbum:(nonnull NSString *)albumId
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -170,10 +190,10 @@ EX_EXPORT_METHOD_AS(removeAssetsFromAlbumAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(deleteAssetsAsync,
+UM_EXPORT_METHOD_AS(deleteAssetsAsync,
                     deleteAssets:(NSArray<NSString *>*)assetIds
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -192,27 +212,38 @@ EX_EXPORT_METHOD_AS(deleteAssetsAsync,
   }];
 }
 
-EX_EXPORT_METHOD_AS(getAlbumsAsync,
-                    getAlbums:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getAlbumsAsync,
+                    getAlbumsWithOptions:(NSDictionary *)options
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
   }
+
+  NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
   
-  PHFetchOptions *options = [PHFetchOptions new];
-  options.includeHiddenAssets = NO;
-  options.includeAllBurstAssets = NO;
+  PHFetchOptions *fetchOptions = [PHFetchOptions new];
+  fetchOptions.includeHiddenAssets = NO;
+  fetchOptions.includeAllBurstAssets = NO;
   
-  PHFetchResult *fetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:options];
-  NSArray<NSDictionary *> *albums = [EXMediaLibrary _exportCollections:fetchResult];
+  PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
+  [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult]];
+
+  if ([options[@"includeSmartAlbums"] boolValue]) {
+    PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
+    [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
+                                             subtype:PHAssetCollectionSubtypeAlbumRegular
+                                             options:fetchOptions];
+    [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult]];
+  }
   
   resolve(albums);
 }
 
-EX_EXPORT_METHOD_AS(getMomentsAsync,
-                    getMoments:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getMomentsAsync,
+                    getMoments:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -228,24 +259,24 @@ EX_EXPORT_METHOD_AS(getMomentsAsync,
   resolve(albums);
 }
 
-EX_EXPORT_METHOD_AS(getAlbumAsync,
+UM_EXPORT_METHOD_AS(getAlbumAsync,
                     getAlbumWithTitle:(nonnull NSString *)title
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
   }
   
   PHAssetCollection *collection = [EXMediaLibrary _getAlbumWithTitle:title];
-  resolve(EXNullIfNil([EXMediaLibrary _exportCollection:collection]));
+  resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
 }
 
-EX_EXPORT_METHOD_AS(createAlbumAsync,
+UM_EXPORT_METHOD_AS(createAlbumAsync,
                     createAlbumWithTitle:(nonnull NSString *)title
                     withAssetId:(NSString *)assetId
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -256,13 +287,13 @@ EX_EXPORT_METHOD_AS(createAlbumAsync,
       if (assetId) {
         [EXMediaLibrary _addAssets:@[assetId] toAlbum:collection.localIdentifier withCallback:^(BOOL success, NSError *error) {
           if (success) {
-            resolve(EXNullIfNil([EXMediaLibrary _exportCollection:collection]));
+            resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
           } else {
             reject(@"E_ALBUM_CANT_ADD_ASSET", @"Unable to add asset to the new album", error);
           }
         }];
       } else {
-        resolve(EXNullIfNil([EXMediaLibrary _exportCollection:collection]));
+        resolve(UMNullIfNil([EXMediaLibrary _exportCollection:collection]));
       }
     } else {
       reject(@"E_ALBUM_CREATE_FAILED", @"Could not create album", error);
@@ -271,11 +302,11 @@ EX_EXPORT_METHOD_AS(createAlbumAsync,
 }
 
   
-EX_EXPORT_METHOD_AS(deleteAlbumsAsync,
+UM_EXPORT_METHOD_AS(deleteAlbumsAsync,
                     deleteAlbums:(nonnull NSArray<NSString *>*)albumIds
                     assetRemove:(NSNumber *)assetRemove
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
 
   PHFetchResult *collections = [EXMediaLibrary _getAlbumsById:albumIds];
@@ -296,10 +327,10 @@ EX_EXPORT_METHOD_AS(deleteAlbumsAsync,
   }];
 }
   
-EX_EXPORT_METHOD_AS(getAssetInfoAsync,
+UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                     getAssetInfo:(nonnull NSString *)assetId
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -327,10 +358,10 @@ EX_EXPORT_METHOD_AS(getAssetInfoAsync,
   }
 }
 
-EX_EXPORT_METHOD_AS(getAssetsAsync,
+UM_EXPORT_METHOD_AS(getAssetsAsync,
                     getAssetsWithOptions:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   if (![self _checkPermissions:reject]) {
     return;
@@ -347,6 +378,8 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   NSArray<NSString *> *mediaType = options[@"mediaType"];
   NSArray *sortBy = options[@"sortBy"];
   NSString *albumId = options[@"album"];
+  NSDate *createdAfter = [UMUtilities NSDate:options[@"createdAfter"]];
+  NSDate *createdBefore = [UMUtilities NSDate:options[@"createdBefore"]];
   
   PHAssetCollection *collection;
   PHAsset *cursor;
@@ -380,6 +413,16 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   
   if (sortBy && sortBy.count > 0) {
     fetchOptions.sortDescriptors = [EXMediaLibrary _prepareSortDescriptors:sortBy];
+  }
+
+  if (createdAfter) {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"creationDate > %@", createdAfter];
+    [predicates addObject:predicate];
+  }
+
+  if (createdBefore) {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"creationDate < %@", createdBefore];
+    [predicates addObject:predicate];
   }
   
   if (predicates.count > 0) {
@@ -746,7 +789,6 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   }
   
   NSDictionary *conversionDict = @{
-                                   @"id": @"localIdentifier",
                                    @"creationTime": @"creationDate",
                                    @"modificationTime": @"modificationDate",
                                    @"mediaType": @"mediaType",
@@ -824,7 +866,7 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   if ([config isKindOfClass:[NSArray class]]) {
     NSArray *sortArray = (NSArray *)config;
     NSString *key = [EXMediaLibrary _convertSortByKey:sortArray[0]];
-    BOOL ascending = sortArray[1] > 0;
+    BOOL ascending = [(NSNumber *)sortArray[1] boolValue];
     
     if (key) {
       return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
@@ -848,8 +890,15 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   return sortDescriptors;
 }
 
++ (NSURL *)_normalizeAssetURLFromUri:(NSString *)uri
+{
+  if ([uri hasPrefix:@"/"]) {
+    return [NSURL URLWithString:[@"file://" stringByAppendingString:uri]];
+  }
+  return [NSURL URLWithString:uri];
+}
 
-- (BOOL)_checkPermissions:(EXPromiseRejectBlock)reject
+- (BOOL)_checkPermissions:(UMPromiseRejectBlock)reject
 {
   NSDictionary *cameraRollPermissions = [_permissionsManager getPermissionsForResource:@"cameraRoll"];
   if (![cameraRollPermissions[@"status"] isEqualToString:@"granted"]) {

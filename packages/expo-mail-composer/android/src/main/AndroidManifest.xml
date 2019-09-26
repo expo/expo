@@ -1,0 +1,17 @@
+<manifest package="expo.modules.mailcomposer"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
+        <provider
+            android:name=".MailComposerFileProvider"
+            android:authorities="${applicationId}.MailComposerFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/mail_composer_provider_paths"/>
+        </provider>
+    </application>
+</manifest>
+  

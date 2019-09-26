@@ -20,11 +20,10 @@
 
 @class FBSDKAccessToken;
 
+NS_SWIFT_NAME(AccessTokenCaching)
 @protocol FBSDKAccessTokenCaching<NSObject>
 
-- (FBSDKAccessToken *)fetchAccessToken;
-
-- (void)cacheAccessToken:(FBSDKAccessToken *)token;
+@property (nonatomic, copy) FBSDKAccessToken *accessToken;
 
 - (void)clearCache;
 

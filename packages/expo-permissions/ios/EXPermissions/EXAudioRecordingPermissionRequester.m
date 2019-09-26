@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXPermissions/EXAudioRecordingPermissionRequester.h>
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -20,7 +20,7 @@
 
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!microphoneUsageDescription) {
-    EXFatal(EXErrorWithMessage(@"This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add one of these keys to your bundle's Info.plist."));
+    UMFatal(UMErrorWithMessage(@"This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add one of these keys to your bundle's Info.plist."));
     systemStatus = AVAudioSessionRecordPermissionDenied;
   } else {
     systemStatus = [[AVAudioSession sharedInstance] recordPermission];
@@ -43,7 +43,7 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     resolve([[self class] permissions]);

@@ -1,9 +1,9 @@
-#import <EXCore/EXEventEmitterService.h>
+#import <UMCore/UMEventEmitterService.h>
 #import <EXAdsAdMob/EXAdsDFPBannerView.h>
 
 @implementation EXAdsDFPBannerView {
   DFPBannerView *_bannerView;
-  id<EXEventEmitterService> _eventEmitter;
+  id<UMEventEmitterService> _eventEmitter;
 }
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize {
@@ -27,7 +27,7 @@
 }
 
 - (void)loadBanner {
-  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError) {
+  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError && _additionalRequestParams) {
     GADAdSize size = [self getAdSizeFromString:_bannerSize];
     _bannerView = [[DFPBannerView alloc] initWithAdSize:size];
     [_bannerView setAppEventDelegate:self];
@@ -50,18 +50,20 @@
         request.testDevices = @[_testDeviceID];
       }
     }
-    
+    GADExtras *extras = [[GADExtras alloc] init];
+    extras.additionalParameters = _additionalRequestParams;
+    [request registerAdNetworkExtras:extras];
     [_bannerView loadRequest:request];
   }
 }
 
-- (void)setOnSizeChange:(EXDirectEventBlock)block
+- (void)setOnSizeChange:(UMDirectEventBlock)block
 {
   _onSizeChange = block;
   [self loadBanner];
 }
 
-- (void)setOnDidFailToReceiveAdWithError:(EXDirectEventBlock)block
+- (void)setOnDidFailToReceiveAdWithError:(UMDirectEventBlock)block
 {
   _onDidFailToReceiveAdWithError = block;
   [self loadBanner];
@@ -93,6 +95,18 @@
     [self loadBanner];
   }
 }
+
+- (void)setAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+{
+  if (![additionalRequestParams isEqual:_additionalRequestParams]) {
+    _additionalRequestParams = additionalRequestParams;
+    if (_bannerView) {
+      [_bannerView removeFromSuperview];
+    }
+    [self loadBanner];
+  }
+}
+
 - (void)setTestDeviceID:(NSString *)testDeviceID {
   if (![testDeviceID isEqual:_testDeviceID]) {
     _testDeviceID = testDeviceID;

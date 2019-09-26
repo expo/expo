@@ -13,9 +13,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import expolib_v1.okhttp3.MediaType;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExponentUrls;

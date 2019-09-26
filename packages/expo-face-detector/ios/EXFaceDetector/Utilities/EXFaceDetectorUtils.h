@@ -10,29 +10,24 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <GoogleMVDataOutput/GoogleMVDataOutput.h>
+#import <Firebase/Firebase.h>
 
-typedef NS_ENUM(NSInteger, EXFaceDetectionMode) {
-  EXFaceDetectionFastMode = GMVDetectorFaceFastMode,
-  EXFaceDetectionAccurateMode = GMVDetectorFaceAccurateMode
-};
-
-typedef NS_ENUM(NSInteger, EXFaceDetectionLandmarks) {
-  EXFaceDetectAllLandmarks = GMVDetectorFaceLandmarkAll,
-  EXFaceDetectNoLandmarks = GMVDetectorFaceLandmarkNone
-};
-
-typedef NS_ENUM(NSInteger, EXFaceDetectionClassifications) {
-  EXFaceRunAllClassifications = GMVDetectorFaceClassificationAll,
-  EXFaceRunNoClassifications = GMVDetectorFaceClassificationNone
-};
+typedef float (^EXFaceDetectionAngleTransformBlock)(float);
 
 @interface EXFaceDetectorUtils : NSObject
 
 + (NSDictionary *)constantsToExport;
 
-+ (AVCaptureVideoOrientation)videoOrientationForDeviceOrientation:(UIDeviceOrientation)orientation;
++ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions *)second;
 
-+ (CGAffineTransform)transformFromDeviceOutput:(GMVDataOutput *)dataOutput toInterfaceVideoOrientation:(AVCaptureVideoOrientation)interfaceVideoOrientation;
++ (FIRVisionFaceDetectorOptions *)mapOptions:(NSDictionary*)options;
+
++ (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions* )options withValues:(NSDictionary *)values;
+
++ (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform;
+
++ (int)toCGImageOrientation:(UIImageOrientation)imageOrientation;
+
++ (NSDictionary*)defaultFaceDetectorOptions;
 
 @end

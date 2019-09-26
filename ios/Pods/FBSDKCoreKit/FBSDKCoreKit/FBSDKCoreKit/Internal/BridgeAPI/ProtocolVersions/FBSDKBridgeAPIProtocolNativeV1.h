@@ -18,8 +18,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <FBSDKCoreKit/FBSDKMacros.h>
-
 #import "FBSDKBridgeAPIProtocol.h"
 
 typedef struct
@@ -28,7 +26,7 @@ typedef struct
   __unsafe_unretained NSString *methodArgs;
   __unsafe_unretained NSString *methodVersion;
 } FBSDKBridgeAPIProtocolNativeV1OutputKeysStruct;
-FBSDK_EXTERN const FBSDKBridgeAPIProtocolNativeV1OutputKeysStruct FBSDKBridgeAPIProtocolNativeV1OutputKeys;
+FOUNDATION_EXPORT const FBSDKBridgeAPIProtocolNativeV1OutputKeysStruct FBSDKBridgeAPIProtocolNativeV1OutputKeys;
 
 typedef struct
 {
@@ -37,23 +35,27 @@ typedef struct
   __unsafe_unretained NSString *appName;
   __unsafe_unretained NSString *sdkVersion;
 } FBSDKBridgeAPIProtocolNativeV1BridgeParameterOutputKeysStruct;
-FBSDK_EXTERN const FBSDKBridgeAPIProtocolNativeV1BridgeParameterOutputKeysStruct FBSDKBridgeAPIProtocolNativeV1BridgeParameterOutputKeys;
+FOUNDATION_EXPORT const FBSDKBridgeAPIProtocolNativeV1BridgeParameterOutputKeysStruct FBSDKBridgeAPIProtocolNativeV1BridgeParameterOutputKeys;
 
 typedef struct
 {
   __unsafe_unretained NSString *bridgeArgs;
   __unsafe_unretained NSString *methodResults;
 } FBSDKBridgeAPIProtocolNativeV1InputKeysStruct;
-FBSDK_EXTERN const FBSDKBridgeAPIProtocolNativeV1InputKeysStruct FBSDKBridgeAPIProtocolNativeV1InputKeys;
+FOUNDATION_EXPORT const FBSDKBridgeAPIProtocolNativeV1InputKeysStruct FBSDKBridgeAPIProtocolNativeV1InputKeys;
 
 typedef struct
 {
   __unsafe_unretained NSString *actionID;
   __unsafe_unretained NSString *error;
 } FBSDKBridgeAPIProtocolNativeV1BridgeParameterInputKeysStruct;
-FBSDK_EXTERN const FBSDKBridgeAPIProtocolNativeV1BridgeParameterInputKeysStruct FBSDKBridgeAPIProtocolNativeV1BridgeParameterInputKeys;
+FOUNDATION_EXPORT const FBSDKBridgeAPIProtocolNativeV1BridgeParameterInputKeysStruct FBSDKBridgeAPIProtocolNativeV1BridgeParameterInputKeys;
 
+NS_SWIFT_NAME(BridgeAPIProtocolNativeV1)
 @interface FBSDKBridgeAPIProtocolNativeV1 : NSObject <FBSDKBridgeAPIProtocol>
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithAppScheme:(NSString *)appScheme;
 - (instancetype)initWithAppScheme:(NSString *)appScheme
@@ -64,7 +66,7 @@ NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, copy, readonly) NSString *appScheme;
 @property (nonatomic, assign, readonly) NSUInteger dataLengthThreshold;
-@property (nonatomic, assign, readonly) BOOL includeAppIcon;
+@property (nonatomic, assign, readonly, getter=shouldIncludeAppIcon) BOOL includeAppIcon;
 @property (nonatomic, strong, readonly) UIPasteboard *pasteboard;
 
 @end

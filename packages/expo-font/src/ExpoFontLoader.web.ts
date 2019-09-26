@@ -1,3 +1,5 @@
+import FontObserver from 'fontfaceobserver';
+
 export default {
   get name(): string {
     return 'ExpoFontLoader';
@@ -8,10 +10,10 @@ export default {
     if (!canInjectStyle) {
       throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
     }
-    
+
     const style = _createWebStyle(fontFamilyName, resource);
     document.head!.appendChild(style);
-    return Promise.resolve();
+    return new FontObserver(fontFamilyName).load();
   },
 };
 

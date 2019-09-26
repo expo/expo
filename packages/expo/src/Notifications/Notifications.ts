@@ -1,72 +1,27 @@
+import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import warning from 'fbjs/lib/warning';
 import invariant from 'invariant';
-import { AsyncStorage, DeviceEventEmitter, Platform } from 'react-native';
+import { AsyncStorage, Platform } from 'react-native';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
-
-type Notification = {
-  origin: 'selected' | 'received';
-  data: any;
-  remote: boolean;
-  isMultiple: boolean;
-};
-
-type LocalNotification = {
-  title: string;
-  // How should we deal with body being required on iOS but not on Android?
-  body?: string;
-  data?: any;
-  ios?: {
-    sound?: boolean;
-  };
-  android?: {
-    channelId?: string;
-    icon?: string;
-    color?: string;
-    sticky?: boolean;
-    link?: string;
-    // DEPRECATED:
-    sound?: boolean;
-    vibrate?: boolean | number[];
-    priority: string;
-  };
-};
-
-type Channel = {
-  name: string;
-  description?: string;
-  priority?: string;
-  sound?: boolean;
-  vibrate?: boolean | number[];
-  badge?: boolean;
-};
-
-type ActionType = {
-  actionId: string;
-  buttonTitle: string;
-  isDestructive?: boolean;
-  isAuthenticationRequired?: boolean;
-  textInput?: {
-    submitButtonTitle: string;
-    placeholder: string;
-  };
-};
-
-// Android assigns unique number to each notification natively.
-// Since that's not supported on iOS, we generate an unique string.
-type LocalNotificationId = string | number;
-
+import {
+  Notification,
+  LocalNotification,
+  Channel,
+  ActionType,
+  LocalNotificationId,
+} from './Notifications.types';
 let _emitter;
 let _initialNotification;
 
 function _maybeInitEmitter() {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+    RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
   }
 }
 
-function _emitNotification(notification) {
+export function emitNotification(notification) {
   if (typeof notification === 'string') {
     notification = JSON.parse(notification);
   }
@@ -104,6 +59,7 @@ function _processNotification(notification) {
 
     if (notification.ios) {
       notification = Object.assign(notification, notification.ios);
+      notification.data._displayInForeground = notification.ios._displayInForeground;
       delete notification.ios;
     }
   }
@@ -158,7 +114,6 @@ if (Platform.OS === 'android') {
   AsyncStorage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
     try {
       let keys = await AsyncStorage.getAllKeys();
-      let result = null;
       if (keys && keys.length) {
         let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
         await AsyncStorage.multiRemove(filteredKeys);
@@ -184,31 +139,33 @@ export default {
   },
 
   // User passes set of actions titles.
-  createCategoryIOSAsync(categoryId: string, actions: ActionType[]): Promise<void> {
-    if (Platform.OS === 'android') {
-      console.warn('createCategoryAsync(...) has no effect on Android');
-      return Promise.resolve();
-    }
+  createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
   },
 
-  deleteCategoryIOSAsync(categoryId: string): Promise<void> {
-    if (Platform.OS === 'android') {
-      console.warn('deleteCategoryAsync(...) has no effect on Android');
-      return Promise.resolve();
-    }
+  deleteCategoryAsync(categoryId: string): Promise<void> {
     return ExponentNotifications.deleteCategoryAsync(categoryId);
   },
 
   /* Re-export */
   getExpoPushTokenAsync(): Promise<string> {
+    if (!ExponentNotifications.getExponentPushTokenAsync) {
+      throw new UnavailabilityError('Expo.Notifications', 'getExpoPushTokenAsync');
+    }
+    if (!Constants.isDevice) {
+      throw new Error(`Must be on a physical device to get an Expo Push Token`);
+    }
     return ExponentNotifications.getExponentPushTokenAsync();
   },
 
   getDevicePushTokenAsync: (config: {
     gcmSenderId?: string;
-  }): Promise<{ type: string; data: string }> =>
-    ExponentNotifications.getDevicePushTokenAsync(config || {}),
+  }): Promise<{ type: string; data: string }> => {
+    if (!ExponentNotifications.getDevicePushTokenAsync) {
+      throw new UnavailabilityError('Expo.Notifications', 'getDevicePushTokenAsync');
+    }
+    return ExponentNotifications.getDevicePushTokenAsync(config || {});
+  },
 
   createChannelAndroidAsync(id: string, channel: Channel): Promise<void> {
     if (Platform.OS !== 'android') {
@@ -224,8 +181,8 @@ export default {
   },
 
   deleteChannelAndroidAsync(id: string): Promise<void> {
-    if (Platform.OS === 'ios') {
-      console.warn('deleteChannelAndroidAsync(...) has no effect on iOS');
+    if (Platform.OS !== 'android') {
+      console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
       return Promise.resolve();
     }
     // This codepath will never be triggered in SDK 28 and above
@@ -243,8 +200,8 @@ export default {
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
 
-    if (Platform.OS === 'ios') {
-      return ExponentNotifications.presentLocalNotification(nativeNotification);
+    if (Platform.OS !== 'android') {
+      return await ExponentNotifications.presentLocalNotification(nativeNotification);
     } else {
       let _channel;
       if (nativeNotification.channelId) {
@@ -309,23 +266,16 @@ export default {
 
       // If someone passes in a value that is too small, say, by an order of 1000 (it's common to
       // accidently pass seconds instead of ms), display a warning.
-      warning(
-        timeAsDateObj.getTime() >= now,
-        `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
-      );
-
-      // If iOS, pass time as milliseconds
-      if (Platform.OS === 'ios') {
-        options = {
-          ...options,
-          time: timeAsDateObj.getTime(),
-        };
-      } else {
-        options = {
-          ...options,
-          time: timeAsDateObj,
-        };
+      if (timeAsDateObj.getTime() < now) {
+        console.warn(
+          `Provided value for "time" is before the current date. Did you possibly pass number of seconds since Unix Epoch instead of number of milliseconds?`
+        );
       }
+
+      options = {
+        ...options,
+        time: timeAsDateObj.getTime(),
+      };
     }
 
     if (options.intervalMs != null && options.repeat != null) {
@@ -354,10 +304,15 @@ export default {
       }
     }
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS !== 'android') {
       if (options.repeat) {
-        console.warn('Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.');
-        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(nativeNotification, options);
+        console.warn(
+          'Ability to schedule an automatically repeated notification is deprecated on iOS and will be removed in the next SDK release.'
+        );
+        return ExponentNotifications.legacyScheduleLocalRepeatingNotification(
+          nativeNotification,
+          options
+        );
       }
 
       return ExponentNotifications.scheduleLocalNotification(nativeNotification, options);
@@ -390,24 +345,25 @@ export default {
 
   /* Dismiss currently shown notification with ID (Android only) */
   async dismissNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
-    if (Platform.OS === 'android') {
-      return ExponentNotifications.dismissNotification(notificationId);
-    } else {
-      throw new Error('Dismissing notifications is not supported on iOS');
+    if (!ExponentNotifications.dismissNotification) {
+      throw new UnavailabilityError('Expo.Notifications', 'dismissNotification');
     }
+    return await ExponentNotifications.dismissNotification(notificationId);
   },
 
   /* Dismiss all currently shown notifications (Android only) */
   async dismissAllNotificationsAsync(): Promise<void> {
-    if (Platform.OS === 'android') {
-      return ExponentNotifications.dismissAllNotifications();
-    } else {
-      throw new Error('Dismissing notifications is not supported on iOS');
+    if (!ExponentNotifications.dismissAllNotifications) {
+      throw new UnavailabilityError('Expo.Notifications', 'dismissAllNotifications');
     }
+    return await ExponentNotifications.dismissAllNotifications();
   },
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
+    if (Platform.OS === 'android' && typeof notificationId === 'string') {
+      return ExponentNotifications.cancelScheduledNotificationWithStringIdAsync(notificationId);
+    }
     return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
@@ -417,14 +373,14 @@ export default {
   },
 
   /* Primary public api */
-  addListener(listener: Function): EventSubscription {
+  addListener(listener: (notification: Notification) => unknown): EventSubscription {
     _maybeInitEmitter();
 
     if (_initialNotification) {
       const initialNotification = _initialNotification;
       _initialNotification = null;
       setTimeout(() => {
-        _emitNotification(initialNotification);
+        emitNotification(initialNotification);
       }, 0);
     }
 
@@ -440,8 +396,57 @@ export default {
 
   async setBadgeNumberAsync(number: number): Promise<void> {
     if (!ExponentNotifications.setBadgeNumberAsync) {
-      return;
+      throw new UnavailabilityError('Expo.Notifications', 'setBadgeNumberAsync');
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
   },
+
+  async scheduleNotificationWithCalendarAsync(
+    notification: LocalNotification,
+    options: {
+      year?: number;
+      month?: number;
+      hour?: number;
+      day?: number;
+      minute?: number;
+      second?: number;
+      weekDay?: number;
+      repeat?: boolean;
+    } = {}
+  ): Promise<string> {
+    const areOptionsValid: boolean =
+      (options.month == null || isInRangeInclusive(options.month, 1, 12)) &&
+      (options.day == null || isInRangeInclusive(options.day, 1, 31)) &&
+      (options.hour == null || isInRangeInclusive(options.hour, 0, 23)) &&
+      (options.minute == null || isInRangeInclusive(options.minute, 0, 59)) &&
+      (options.second == null || isInRangeInclusive(options.second, 0, 59)) &&
+      (options.weekDay == null || isInRangeInclusive(options.weekDay, 1, 7)) &&
+      (options.weekDay == null || options.day == null);
+
+    if (!areOptionsValid) {
+      throw new CodedError(
+        'WRONG_OPTIONS',
+        'Options in scheduleNotificationWithCalendarAsync call were incorrect!'
+      );
+    }
+
+    return ExponentNotifications.scheduleNotificationWithCalendar(notification, options);
+  },
+
+  async scheduleNotificationWithTimerAsync(
+    notification: LocalNotification,
+    options: {
+      interval: number;
+      repeat?: boolean;
+    }
+  ): Promise<string> {
+    if (options.interval < 1) {
+      throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
+    }
+    return ExponentNotifications.scheduleNotificationWithTimer(notification, options);
+  },
 };
+
+function isInRangeInclusive(variable: number, min: number, max: number): boolean {
+  return variable >= min && variable <= max;
+}

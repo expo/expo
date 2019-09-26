@@ -76,9 +76,6 @@ NSURL* /* _Nonnull */ BNCURLForBranchDirectory(void);
 - (NSInteger)getCreditCount;
 - (NSInteger)getCreditCountForBucket:(NSString *)bucket;
 
-- (void)updateBranchViewCount:(NSString *)branchViewID;
-- (NSInteger)getBranchViewCount:(NSString *)branchViewID;
-
 - (void)setRequestMetadataKey:(NSString *)key value:(NSObject *)value;
 - (NSMutableDictionary *)requestMetadataDictionary;
 
@@ -94,5 +91,6 @@ NSURL* /* _Nonnull */ BNCURLForBranchDirectory(void);
 
 - (NSMutableString*) sanitizedMutableBaseURL:(NSString*)baseUrl;
 - (void) synchronize;  //  Flushes preference queue to persistence.
++ (void) clearAll;
 
 @end

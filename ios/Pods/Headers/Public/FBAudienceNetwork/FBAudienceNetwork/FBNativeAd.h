@@ -1,1 +1,0 @@
-../../../../FBAudienceNetwork/FBAudienceNetwork.framework/Headers/FBNativeAd.h

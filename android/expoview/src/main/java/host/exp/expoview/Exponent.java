@@ -19,6 +19,8 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
+import com.raizlabs.android.dbflow.config.DatabaseConfig;
+import com.raizlabs.android.dbflow.config.FlowConfig;
 import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.apache.commons.io.IOUtils;
@@ -45,15 +47,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import expo.core.interfaces.Package;
-import expolib_v1.okhttp3.CacheControl;
-import expolib_v1.okhttp3.Call;
-import expolib_v1.okhttp3.Callback;
-import expolib_v1.okhttp3.Request;
-import expolib_v1.okhttp3.Response;
+import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
+
+import host.exp.exponent.notifications.ActionDatabase;
+import host.exp.exponent.notifications.managers.SchedulersDatabase;
+import host.exp.exponent.storage.ExponentDB;
+import okhttp3.CacheControl;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
@@ -78,6 +87,7 @@ public class Exponent {
 
   private static final String TAG = Exponent.class.getSimpleName();
   private static final String PACKAGER_RUNNING = "running";
+  private static final Pattern ABIVERSION_PATTERN = Pattern.compile("\\d+\\.\\d+\\.\\d+|UNVERSIONED");
 
   private static Exponent sInstance;
 
@@ -171,8 +181,18 @@ public class Exponent {
     Analytics.initializeAmplitude(context, application);
 
     // TODO: profile this
-    FlowManager.init(context);
-
+    FlowManager.init(FlowConfig.builder(context)
+        .addDatabaseConfig(DatabaseConfig.builder(SchedulersDatabase.class)
+            .databaseName(SchedulersDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ActionDatabase.class)
+            .databaseName(ActionDatabase.NAME)
+            .build())
+        .addDatabaseConfig(DatabaseConfig.builder(ExponentDB.class)
+            .databaseName(ExponentDB.NAME)
+            .build())
+        .build()
+    );
 
     if (ExpoViewBuildConfig.DEBUG) {
       Stetho.initializeWithDefaults(context);
@@ -255,6 +275,7 @@ public class Exponent {
     public List<Package> expoPackages;
     public ExponentPackageDelegate exponentPackageDelegate;
     public JSONObject manifest;
+    public List<SingletonModule> singletonModules;
   }
 
 
@@ -479,6 +500,24 @@ public class Exponent {
     return sourceFile.exists();
   }
 
+  // As OTAs piles up, the JS bundles will consume quite an amount of storage space
+  // App developers, if find needed, can purge all the existing cache
+  public boolean clearAllJSBundleCache(final String abiVersion) throws IOException {
+    final File filesDir = mContext.getFilesDir();
+    final File directory = new File(filesDir, abiVersion);
+    if (!ABIVERSION_PATTERN.matcher(abiVersion).matches()) {
+      return false;
+    }
+    if (!directory.getCanonicalPath().startsWith(filesDir.getCanonicalPath())) {
+      return false;
+    }
+    if (directory.exists()) {
+      return directory.delete();
+    } else {
+      return false;
+    }
+  }
+
   private void printSourceFile(String path) {
     EXL.d(KernelConstants.BUNDLE_TAG, "Printing bundle:");
     InputStream inputStream = null;
@@ -535,66 +574,35 @@ public class Exponent {
                                             RNObject builder) {
     if (!debuggerHost.isEmpty() && !mainModuleName.isEmpty()) {
       try {
-        if (ABIVersion.toNumber(sdkVersion) < 20) {
-          RNObject fieldObject;
-          fieldObject = new RNObject("com.facebook.react.devsupport.DevServerHelper");
-          fieldObject.loadVersion(builder.version());
-          if (!hasDeclaredField(fieldObject.rnClass(), "DEVICE_LOCALHOST")) {
-            fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
-            fieldObject.loadVersion(builder.version());
-          }
+        RNObject fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
+        fieldObject.loadVersion(builder.version());
 
-          Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
-          deviceField.setAccessible(true);
-          deviceField.set(null, debuggerHost);
+        String debuggerHostHostname = getHostname(debuggerHost);
+        int debuggerHostPort = getPort(debuggerHost);
 
-          Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
-          genymotionField.setAccessible(true);
-          genymotionField.set(null, debuggerHost);
+        Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
+        deviceField.setAccessible(true);
+        deviceField.set(null, debuggerHostHostname);
 
-          Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
-          emulatorField.setAccessible(true);
-          emulatorField.set(null, debuggerHost);
+        Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
+        genymotionField.setAccessible(true);
+        genymotionField.set(null, debuggerHostHostname);
 
-          builder.callRecursive("setUseDeveloperSupport", true)
-              .callRecursive("setJSMainModuleName", mainModuleName);
-        } else {
-          RNObject fieldObject = new RNObject("com.facebook.react.modules.systeminfo.AndroidInfoHelpers");
-          fieldObject.loadVersion(builder.version());
+        Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
+        emulatorField.setAccessible(true);
+        emulatorField.set(null, debuggerHostHostname);
 
-          String debuggerHostHostname = getHostname(debuggerHost);
-          int debuggerHostPort = getPort(debuggerHost);
+        Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
+        debugServerHostPortField.setAccessible(true);
+        debugServerHostPortField.set(null, debuggerHostPort);
 
-          Field deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST");
-          deviceField.setAccessible(true);
-          deviceField.set(null, debuggerHostHostname);
+        Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
+        inspectorProxyPortField.setAccessible(true);
+        inspectorProxyPortField.set(null, debuggerHostPort);
 
-          Field genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST");
-          genymotionField.setAccessible(true);
-          genymotionField.set(null, debuggerHostHostname);
-
-          Field emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST");
-          emulatorField.setAccessible(true);
-          emulatorField.set(null, debuggerHostHostname);
-
-          Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-          debugServerHostPortField.setAccessible(true);
-          debugServerHostPortField.set(null, debuggerHostPort);
-
-          Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-          inspectorProxyPortField.setAccessible(true);
-          inspectorProxyPortField.set(null, debuggerHostPort);
-
-          builder.callRecursive("setUseDeveloperSupport", true);
-          if (ABIVersion.toNumber(sdkVersion) < 22) {
-            builder.callRecursive("setJSMainModuleName", mainModuleName);
-          } else {
-            builder.callRecursive("setJSMainModulePath", mainModuleName);
-          }
-        }
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (NoSuchFieldException e) {
+        builder.callRecursive("setUseDeveloperSupport", true);
+        builder.callRecursive("setJSMainModulePath", mainModuleName);
+      } catch (IllegalAccessException | NoSuchFieldException e) {
         e.printStackTrace();
       }
     }
@@ -652,11 +660,6 @@ public class Exponent {
     boolean isInForeground();
     ExponentPackageDelegate getExponentPackageDelegate();
     void handleUnreadNotifications(JSONArray unreadNotifications);
-  }
-
-  private static int currentActivityId = 0;
-  public static int getActivityId() {
-    return currentActivityId++;
   }
 
   public boolean shouldRequestDrawOverOtherAppsPermission() {

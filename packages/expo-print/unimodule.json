@@ -1,0 +1,4 @@
+{
+  "name": "expo-print",
+  "platforms": ["ios", "android"]
+}

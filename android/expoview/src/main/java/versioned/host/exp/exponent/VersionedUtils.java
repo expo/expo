@@ -20,7 +20,8 @@ public class VersionedUtils {
                 instanceManagerBuilderProperties.manifest,
                 // When distributing change the following two arguments to nulls
                 instanceManagerBuilderProperties.expoPackages,
-                instanceManagerBuilderProperties.exponentPackageDelegate))
+                instanceManagerBuilderProperties.exponentPackageDelegate,
+                instanceManagerBuilderProperties.singletonModules))
         .setInitialLifecycleState(LifecycleState.RESUMED);
 
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {

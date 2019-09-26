@@ -1,42 +1,58 @@
-import { AppLoading, Asset, Constants, Font } from 'expo';
+import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
+import Constants from 'expo-constants';
+import * as Font from 'expo-font';
 import React from 'react';
-import { ActivityIndicator, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import url from 'url';
+import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
+import { Appearance } from 'react-native-appearance';
+import { Assets as StackAssets } from 'react-navigation-stack';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Assets as StackAssets } from 'react-navigation-stack';
+import url from 'url';
 
-import jwtDecode from 'jwt-decode';
+import './menu/MenuView';
+
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
-import LocalStorage from './storage/LocalStorage';
-import MenuView from './menu/MenuView';
 import Store from './redux/Store';
-
+import LocalStorage from './storage/LocalStorage';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
-import getViewerUsernameAsync from './utils/getViewerUsernameAsync';
-
-function cacheImages(images) {
-  return images.map(image => Asset.fromModule(image).downloadAsync());
-}
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
 
+@connect(data => App.getDataProps(data))
 export default class App extends React.Component {
+  static getDataProps(data) {
+    let { settings } = data;
+
+    return {
+      preferredAppearance: settings.preferredAppearance,
+    };
+  }
+
   state = {
     isReady: false,
+    colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
     this._initializeStateAsync();
-    addListenerWithNativeCallback(
-      'ExponentKernel.getIsValidHomeManifestToOpen',
-      this._getIsValidHomeManifestToOpen
-    );
+    this._addProjectHistoryListener();
   }
+
+  _addProjectHistoryListener = () => {
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+      let { manifestUrl, manifest, manifestString } = event;
+      if (!manifest && manifestString) {
+        manifest = JSON.parse(manifestString);
+      }
+      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
+    });
+  };
 
   _isExpoHost = host => {
     return (
@@ -63,42 +79,10 @@ export default class App extends React.Component {
     return !this._isExpoHost(host);
   };
 
-  _getIsValidHomeManifestToOpen = async event => {
-    const { manifest, manifestUrl } = event;
-    let isValid = false;
-    if (!Constants.isDevice) {
-      // simulator has no restriction
-      isValid = true;
-    } else if (this._isThirdPartyHosted(manifestUrl)) {
-      // TODO(quin): figure out a long term solution for this
-      // allow self hosted applications to be loaded into the client
-      isValid = true;
-    } else if (manifest) {
-      if (manifest.developer && manifest.developer.tool) {
-        isValid = true;
-      } else if (manifest.slug === 'snack') {
-        isValid = true;
-      } else if (manifest.id) {
-        try {
-          let manifestAuthorComponents = manifest.id.split('/');
-          let manifestAuthor = manifestAuthorComponents[0].substring(1);
-
-          let username = await getViewerUsernameAsync();
-
-          if (username && manifestAuthor && manifestAuthor === username) {
-            isValid = true;
-          }
-        } catch (_) {}
-      }
-    }
-    return { isValid };
-  };
-
   _initializeStateAsync = async () => {
     try {
       Store.dispatch(SettingsActions.loadSettings());
       Store.dispatch(HistoryActions.loadHistory());
-      await LocalStorage.migrateNuxStateToNativeAsync();
       const storedSession = await LocalStorage.getSessionAsync();
 
       if (storedSession) {
@@ -114,7 +98,7 @@ export default class App extends React.Component {
       // ..
     } finally {
       this.setState({ isReady: true }, async () => {
-        if (Platform.OS == 'ios') {
+        if (Platform.OS === 'ios') {
           // if expo client is opened via deep linking, we'll get the url here
           const initialUrl = await Linking.getInitialURL();
           if (initialUrl) {
@@ -130,13 +114,21 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
+    let { preferredAppearance, colorScheme } = this.props;
+    let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+    if (theme === 'no-preference') {
+      theme = 'light';
+    }
+
     return (
       <View style={styles.container}>
         <ActionSheetProvider>
-          <Navigation />
+          <Navigation theme={theme} />
         </ActionSheetProvider>
 
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && (
+          <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
+        )}
         {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
       </View>
     );
@@ -150,7 +142,14 @@ const styles = StyleSheet.create({
   },
   statusBarUnderlay: {
     height: Constants.statusBarHeight,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    ...Platform.select({
+      ios: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+      },
+      android: {
+        backgroundColor: 'rgba(0,0,0,0.2)',
+      },
+    }),
     position: 'absolute',
     top: 0,
     left: 0,

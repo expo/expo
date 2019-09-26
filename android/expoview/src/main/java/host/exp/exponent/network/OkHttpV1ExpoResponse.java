@@ -5,16 +5,16 @@ import java.io.InputStream;
 
 public class OkHttpV1ExpoResponse implements ExpoResponse {
 
-  expolib_v1.okhttp3.Response mOkHttpResponse;
+  okhttp3.Response mOkHttpResponse;
 
-  public OkHttpV1ExpoResponse(expolib_v1.okhttp3.Response response) {
+  public OkHttpV1ExpoResponse(okhttp3.Response response) {
     mOkHttpResponse = response;
   }
 
   class OkHttpV1ExpoBody implements ExpoBody {
-    expolib_v1.okhttp3.ResponseBody mResponseBody;
+    okhttp3.ResponseBody mResponseBody;
 
-    public OkHttpV1ExpoBody(expolib_v1.okhttp3.ResponseBody responseBody) {
+    public OkHttpV1ExpoBody(okhttp3.ResponseBody responseBody) {
       mResponseBody = responseBody;
     }
 
@@ -35,9 +35,9 @@ public class OkHttpV1ExpoResponse implements ExpoResponse {
   }
 
   public class OkHttpV1ExpoHeaders implements ExpoHeaders {
-    expolib_v1.okhttp3.Headers mHeaders;
+    okhttp3.Headers mHeaders;
 
-    public OkHttpV1ExpoHeaders(expolib_v1.okhttp3.Headers headers) {
+    public OkHttpV1ExpoHeaders(okhttp3.Headers headers) {
       mHeaders = headers;
     }
 

@@ -29,18 +29,26 @@
 #import "FBSDKSettings+Internal.h"
 
 // constants
-static NSString *const kGetHTTPMethod = @"GET";
-static NSString *const kPostHTTPMethod = @"POST";
+FBSDKHTTPMethod FBSDKHTTPMethodGET = @"GET";
+FBSDKHTTPMethod FBSDKHTTPMethodPOST = @"POST";
+FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
 @interface FBSDKGraphRequest()
 @property (nonatomic, assign) FBSDKGraphRequestFlags flags;
+@property (nonatomic, copy, readwrite) FBSDKHTTPMethod HTTPMethod;
 @end
 
 @implementation FBSDKGraphRequest
 
-- (instancetype)init NS_UNAVAILABLE
-{
-  assert(0);
+@synthesize HTTPMethod;
+
+- (instancetype)initWithGraphPath:(NSString *)graphPath {
+  return [self initWithGraphPath:graphPath parameters:@{}];
+}
+
+- (instancetype)initWithGraphPath:(NSString *)graphPath
+                       HTTPMethod:(FBSDKHTTPMethod)method {
+  return [self initWithGraphPath:graphPath parameters:@{} HTTPMethod:method];
 }
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
@@ -52,12 +60,12 @@ static NSString *const kPostHTTPMethod = @"POST";
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
-                       HTTPMethod:(NSString *)HTTPMethod {
+                       HTTPMethod:(FBSDKHTTPMethod)method {
   return [self initWithGraphPath:graphPath
                       parameters:parameters
                      tokenString:[FBSDKAccessToken currentAccessToken].tokenString
                          version:nil
-                      HTTPMethod:HTTPMethod];
+                      HTTPMethod:method];
 }
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
@@ -66,20 +74,20 @@ static NSString *const kPostHTTPMethod = @"POST";
   return [self initWithGraphPath:graphPath
                       parameters:parameters
                      tokenString:[FBSDKAccessToken currentAccessToken].tokenString
-                      HTTPMethod:nil
+                      HTTPMethod:FBSDKHTTPMethodGET
                            flags:flags];
 }
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
                       tokenString:(NSString *)tokenString
-                       HTTPMethod:(NSString *)HTTPMethod
+                       HTTPMethod:(FBSDKHTTPMethod)method
                             flags:(FBSDKGraphRequestFlags)flags {
   if ((self = [self initWithGraphPath:graphPath
                            parameters:parameters
                           tokenString:tokenString
                               version:[FBSDKSettings graphAPIVersion]
-                           HTTPMethod:HTTPMethod])) {
+                           HTTPMethod:method])) {
     self.flags |= flags;
   }
   return self;
@@ -89,14 +97,14 @@ static NSString *const kPostHTTPMethod = @"POST";
                        parameters:(NSDictionary *)parameters
                       tokenString:(NSString *)tokenString
                           version:(NSString *)version
-                       HTTPMethod:(NSString *)HTTPMethod {
+                       HTTPMethod:(FBSDKHTTPMethod)method {
   if ((self = [super init])) {
-    _tokenString = [tokenString copy];
+    _tokenString = tokenString ? [tokenString copy] : nil;
     _version = version ? [version copy] : [FBSDKSettings graphAPIVersion];
     _graphPath = [graphPath copy];
-    _HTTPMethod = HTTPMethod ? [HTTPMethod copy] : kGetHTTPMethod;
-    _parameters = [[NSMutableDictionary alloc] initWithDictionary:parameters];
-    if ([FBSDKSettings isGraphErrorRecoveryDisabled]) {
+    self.HTTPMethod = method.length > 0 ? [method copy] : FBSDKHTTPMethodGET;
+    _parameters = parameters ?: @{};
+    if (!FBSDKSettings.isGraphErrorRecoveryEnabled) {
       _flags = FBSDKGraphRequestFlagDisableErrorRecovery;
     }
   }
@@ -139,7 +147,7 @@ static NSString *const kPostHTTPMethod = @"POST";
 
 + (NSString *)serializeURL:(NSString *)baseUrl
                     params:(NSDictionary *)params {
-  return [self serializeURL:baseUrl params:params httpMethod:kGetHTTPMethod];
+  return [self serializeURL:baseUrl params:params httpMethod:FBSDKHTTPMethodGET];
 }
 
 + (NSString *)serializeURL:(NSString *)baseUrl
@@ -158,15 +166,16 @@ static NSString *const kPostHTTPMethod = @"POST";
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSURL *parsedURL = [NSURL URLWithString:[baseUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
 #pragma clang pop
-  if ([httpMethod isEqualToString:kPostHTTPMethod] && !forBatch) {
+
+  if ([httpMethod isEqualToString:FBSDKHTTPMethodPOST] && !forBatch) {
     return baseUrl;
   }
 
   NSString *queryPrefix = parsedURL.query ? @"&" : @"?";
 
-  NSString *query = [FBSDKInternalUtility queryStringWithDictionary:params error:NULL invalidObjectHandler:^id(id object, BOOL *stop) {
+  NSString *query = [FBSDKBasicUtility queryStringWithDictionary:params error:NULL invalidObjectHandler:^id(id object, BOOL *stop) {
     if ([self isAttachment:object]) {
-      if ([httpMethod isEqualToString:kGetHTTPMethod]) {
+      if ([httpMethod isEqualToString:FBSDKHTTPMethodGET]) {
         [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors logEntry:@"can not use GET to upload a file"];
       }
       return nil;
@@ -181,14 +190,14 @@ static NSString *const kPostHTTPMethod = @"POST";
   NSString *debugValue = [FBSDKSettings graphAPIDebugParamValue];
   if (debugValue) {
     NSMutableDictionary *mutableParams = [NSMutableDictionary dictionaryWithDictionary:params];
-    [mutableParams setObject:debugValue forKey:@"debug"];
+    mutableParams[@"debug"] = debugValue;
     return mutableParams;
   }
 
   return params;
 }
 
-- (FBSDKGraphRequestConnection *)startWithCompletionHandler:(FBSDKGraphRequestHandler)handler
+- (FBSDKGraphRequestConnection *)startWithCompletionHandler:(FBSDKGraphRequestBlock)handler
 {
   FBSDKGraphRequestConnection *connection = [[FBSDKGraphRequestConnection alloc] init];
   [connection addRequest:self completionHandler:handler];
@@ -209,7 +218,7 @@ static NSString *const kPostHTTPMethod = @"POST";
   if (self.HTTPMethod) {
     [result appendFormat:@", HTTPMethod: %@", self.HTTPMethod];
   }
-  [result appendFormat:@", parameters: %@>", [self.parameters description]];
+  [result appendFormat:@", parameters: %@>", self.parameters.description];
   return result;
 }
 

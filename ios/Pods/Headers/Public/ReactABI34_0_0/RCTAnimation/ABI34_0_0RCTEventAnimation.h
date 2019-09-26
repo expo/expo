@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI34_0_0/Libraries/NativeAnimation/Drivers/ABI34_0_0RCTEventAnimation.h

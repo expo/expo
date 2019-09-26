@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/Expo/Core/Api/Screens/ABI30_0_0RNSScreen.h

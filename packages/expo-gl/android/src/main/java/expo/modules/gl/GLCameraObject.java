@@ -2,18 +2,69 @@ package expo.modules.gl;
 
 import android.graphics.SurfaceTexture;
 
+import org.unimodules.interfaces.camera.CameraViewInterface;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import expo.interfaces.camera.ExpoCameraViewInterface;
-
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
-import static android.opengl.GLES30.*;
-import static expo.modules.gl.cpp.EXGL.*;
+import static android.opengl.GLES30.GL_ACTIVE_TEXTURE;
+import static android.opengl.GLES30.GL_ARRAY_BUFFER;
+import static android.opengl.GLES30.GL_CLAMP_TO_EDGE;
+import static android.opengl.GLES30.GL_COLOR_ATTACHMENT0;
+import static android.opengl.GLES30.GL_CURRENT_PROGRAM;
+import static android.opengl.GLES30.GL_DRAW_FRAMEBUFFER;
+import static android.opengl.GLES30.GL_DRAW_FRAMEBUFFER_BINDING;
+import static android.opengl.GLES30.GL_FLOAT;
+import static android.opengl.GLES30.GL_FRAGMENT_SHADER;
+import static android.opengl.GLES30.GL_LINEAR;
+import static android.opengl.GLES30.GL_RGBA;
+import static android.opengl.GLES30.GL_STATIC_DRAW;
+import static android.opengl.GLES30.GL_TEXTURE0;
+import static android.opengl.GLES30.GL_TEXTURE_2D;
+import static android.opengl.GLES30.GL_TEXTURE_BINDING_2D;
+import static android.opengl.GLES30.GL_TEXTURE_MAG_FILTER;
+import static android.opengl.GLES30.GL_TEXTURE_MIN_FILTER;
+import static android.opengl.GLES30.GL_TEXTURE_WRAP_S;
+import static android.opengl.GLES30.GL_TEXTURE_WRAP_T;
+import static android.opengl.GLES30.GL_TRIANGLES;
+import static android.opengl.GLES30.GL_UNSIGNED_BYTE;
+import static android.opengl.GLES30.GL_VERTEX_ARRAY_BINDING;
+import static android.opengl.GLES30.GL_VERTEX_SHADER;
+import static android.opengl.GLES30.GL_VIEWPORT;
+import static android.opengl.GLES30.glAttachShader;
+import static android.opengl.GLES30.glBindBuffer;
+import static android.opengl.GLES30.glBindFramebuffer;
+import static android.opengl.GLES30.glBindTexture;
+import static android.opengl.GLES30.glBindVertexArray;
+import static android.opengl.GLES30.glBufferData;
+import static android.opengl.GLES30.glCompileShader;
+import static android.opengl.GLES30.glCreateProgram;
+import static android.opengl.GLES30.glCreateShader;
+import static android.opengl.GLES30.glDrawArrays;
+import static android.opengl.GLES30.glEnableVertexAttribArray;
+import static android.opengl.GLES30.glFramebufferTexture2D;
+import static android.opengl.GLES30.glGenBuffers;
+import static android.opengl.GLES30.glGenFramebuffers;
+import static android.opengl.GLES30.glGenTextures;
+import static android.opengl.GLES30.glGenVertexArrays;
+import static android.opengl.GLES30.glGetAttribLocation;
+import static android.opengl.GLES30.glGetIntegerv;
+import static android.opengl.GLES30.glGetUniformLocation;
+import static android.opengl.GLES30.glLinkProgram;
+import static android.opengl.GLES30.glShaderSource;
+import static android.opengl.GLES30.glTexImage2D;
+import static android.opengl.GLES30.glTexParameteri;
+import static android.opengl.GLES30.glUniform1i;
+import static android.opengl.GLES30.glUniformMatrix4fv;
+import static android.opengl.GLES30.glUseProgram;
+import static android.opengl.GLES30.glVertexAttribPointer;
+import static android.opengl.GLES30.glViewport;
+import static expo.modules.gl.cpp.EXGL.EXGLContextMapObject;
 
 public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAvailableListener {
-  private ExpoCameraViewInterface mCameraView;
+  private CameraViewInterface mCameraView;
   private GLContext mGLContext;
   private int mProgram;
   private int mFramebuffer;
@@ -56,7 +107,7 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
       + "}";
 
   // Must be constructed on GL thread!
-  GLCameraObject(final GLContext glContext, final ExpoCameraViewInterface cameraView) {
+  GLCameraObject(final GLContext glContext, final CameraViewInterface cameraView) {
     super(glContext.getContextId());
 
     mGLContext = glContext;
@@ -182,25 +233,29 @@ public class GLCameraObject extends GLObject implements SurfaceTexture.OnFrameAv
           mCameraSurfaceTexture.setDefaultBufferSize(previewWidth, previewHeight);
         }
 
-        // update external texture and get transformation matrix
-        mCameraSurfaceTexture.updateTexImage();
-        mCameraSurfaceTexture.getTransformMatrix(transformMatrix);
+        try {
+          // update external texture and get transformation matrix
+          mCameraSurfaceTexture.updateTexImage();
+          mCameraSurfaceTexture.getTransformMatrix(transformMatrix);
 
-        // set uniforms
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExtTexture);
-        glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
-        glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
+          // set uniforms
+          glBindTexture(GL_TEXTURE_EXTERNAL_OES, mExtTexture);
+          glUniform1i(textureLocation, prevActiveTexture[0] - GL_TEXTURE0);
+          glUniformMatrix4fv(transformLocation, 1, false, transformMatrix, 0);
 
-        // change viewport to fit the texture and draw
-        glViewport(0, 0, mTextureWidth, mTextureHeight);
-        glDrawArrays(GL_TRIANGLES, 0, textureCoords.length / 2);
+          // change viewport to fit the texture and draw
+          glViewport(0, 0, mTextureWidth, mTextureHeight);
+          glDrawArrays(GL_TRIANGLES, 0, textureCoords.length / 2);
 
-        // restore previous state
-        glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-        glBindTexture(GL_TEXTURE_2D, prevTexture[0]);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFramebuffer[0]);
-        glBindVertexArray(prevVertexArray[0]);
-        glUseProgram(prevPrograms[0]);
+          // restore previous state
+          glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+          glBindTexture(GL_TEXTURE_2D, prevTexture[0]);
+          glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prevFramebuffer[0]);
+          glBindVertexArray(prevVertexArray[0]);
+          glUseProgram(prevPrograms[0]);
+        } catch (IllegalStateException e) {
+          // nothing, just prevents crashes
+        }
       }
     });
   }

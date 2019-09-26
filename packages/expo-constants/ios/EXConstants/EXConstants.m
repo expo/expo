@@ -1,29 +1,31 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXConstants/EXConstants.h>
-#import <EXConstantsInterface/EXConstantsInterface.h>
+#import <UMConstantsInterface/UMConstantsInterface.h>
 
-#import <UIKit/UIWebView.h>
+#import <WebKit/WKWebView.h>
 
-@interface EXConstants ()
+@interface EXConstants () {
+  WKWebView *webView;
+}
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
-@property (nonatomic, weak) id<EXConstantsInterface> constantsService;
+@property (nonatomic, weak) id<UMConstantsInterface> constantsService;
 
 @end
 
 @implementation EXConstants
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
   return @"ExponentConstants";
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
+  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -31,19 +33,32 @@ EX_REGISTER_MODULE();
   return [_constantsService constants];
 }
 
-EX_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
-                    getWebViewUserAgentWithResolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
+                    getWebViewUserAgentWithResolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   __weak EXConstants *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     __strong EXConstants *strongSelf = weakSelf;
     if (strongSelf) {
       if (!strongSelf.webViewUserAgent) {
-        UIWebView *webView = [[UIWebView alloc] init];
-        strongSelf.webViewUserAgent = [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+        // We need to retain the webview because it runs an async task.
+        strongSelf->webView = [[WKWebView alloc] init];
+
+        [strongSelf->webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+          if (error) {
+            reject(@"ERR_CONSTANTS", error.localizedDescription, error);
+            return;
+          }
+          
+          strongSelf.webViewUserAgent = [NSString stringWithFormat:@"%@", result];
+          resolve(UMNullIfNil(strongSelf.webViewUserAgent));
+          // Destroy the webview now that it's task is complete.
+          strongSelf->webView = nil;
+        }];
+      } else {
+        resolve(UMNullIfNil(strongSelf.webViewUserAgent));
       }
-      resolve(strongSelf.webViewUserAgent);
     }
   });
 }

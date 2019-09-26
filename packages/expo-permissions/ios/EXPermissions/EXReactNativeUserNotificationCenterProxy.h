@@ -3,9 +3,9 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import <EXCore/EXInternalModule.h>
-#import <EXPermissionsInterface/EXUserNotificationCenterProxyInterface.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h>
 
-@interface EXReactNativeUserNotificationCenterProxy : NSObject <EXInternalModule, EXUserNotificationCenterProxyInterface>
+@interface EXReactNativeUserNotificationCenterProxy : NSObject <UMInternalModule, UMUserNotificationCenterProxyInterface>
 
 @end

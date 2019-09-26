@@ -5,9 +5,6 @@ const glob = require('glob-promise');
 const readline = require('readline');
 const shell = require('shelljs');
 const yesno = require('yesno');
-const spawnAsync = require('@exponent/spawn-async');
-const path = require('path');
-const { Modules } = require('xdl');
 
 const LIB_NAMES = [
   'libfb',
@@ -25,7 +22,13 @@ const LIB_NAMES = [
   'packagerconnectionjnifb',
   'privatedata',
   'yogafastmath',
-  'fabricjscjni'
+  'fabricjscjni',
+  'jscexecutor',
+  'libjscexecutor',
+  'jsinspector',
+  'libjsinspector',
+  'fabricjni',
+  'turbomodulejsijni',
 ];
 
 function renameLib(lib, abiVersion) {
@@ -68,9 +71,9 @@ async function processMkFileAsync(filename, abiVersion) {
   await fs.truncate(filename, 0);
   let lines = fileString.split('\n');
   for (let i = 0; i < lines.length; i++) {
-     let line = lines[i];
-     line = processLine(line, abiVersion);
-     await fs.appendFile(filename, `${line}\n`);
+    let line = lines[i];
+    line = processLine(line, abiVersion);
+    await fs.appendFile(filename, `${line}\n`);
   }
 }
 
@@ -84,17 +87,17 @@ exports.renameJNILibsAsync = async function renameJNILibsAsync(abiVersion) {
   lineReader.on('line', line => {
     let pathForPackage = line.replace(/\./g, '\\/');
     let reactCommonPath = '../android/versioned-react-native/ReactCommon';
-    let reactAndroidJNIPath = '../android/versioned-react-native/ReactAndroid/src/main/jni';
+    let reactAndroidJNIPath = '../android/versioned-react-native/ReactAndroid/src/main';
     shell.exec(
-      `find ${reactCommonPath} ${reactAndroidJNIPath} -type f -print0 | ` +
-        `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\\/${pathForPackage}/g'`
+      `find ${reactCommonPath} ${reactAndroidJNIPath} -type f \\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
+        `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`
     );
   });
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
   let [reactCommonMkFiles, reactAndroidMkFiles] = await Promise.all([
     glob('../android/versioned-react-native/ReactCommon/**/*.mk'),
-    glob('../android/versioned-react-native/ReactAndroid/src/main/jni/**/*.mk'),
+    glob('../android/versioned-react-native/ReactAndroid/src/main/**/*.mk'),
   ]);
   let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles];
   await Promise.all(filenames.map(filename => processMkFileAsync(filename, abiVersion)));
@@ -136,159 +139,3 @@ function yesnoPromise(question) {
     });
   });
 }
-
-async function regexFileAsync(filename, regex, replace) {
-  let file = await fs.readFile(filename);
-  let fileString = file.toString();
-  await fs.writeFile(filename, fileString.replace(regex, replace));
-}
-
-let savedFiles = {};
-async function stashFileAsync(filename) {
-  let file = await fs.readFile(filename);
-  savedFiles[filename] = file.toString();
-}
-
-async function restoreFileAsync(filename) {
-  await fs.writeFile(filename, savedFiles[filename]);
-}
-
-async function spawnAsyncPrintCommand(command, args = [], other) {
-  console.log(`Running ${command} ${args.join(' ')}`);
-  await spawnAsync(command, args, other);
-}
-
-exports.updateExpoViewAsync = async function updateExpoViewAsync(sdkVersion) {
-  let androidRoot = path.join(process.cwd(), '..', 'android');
-  let appBuildGradle = path.join(androidRoot, 'app', 'build.gradle');
-  let expoViewBuildGradle = path.join(androidRoot, 'expoview', 'build.gradle');
-  const constantsJava = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/Constants.java');
-  const multipleVersionReactNativeActivity = path.join(androidRoot, 'expoview/src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java');
-
-  // Modify permanently
-  await regexFileAsync(expoViewBuildGradle, /version = '[\d\.]+'/, `version = '${sdkVersion}'`);
-  await regexFileAsync(
-    expoViewBuildGradle,
-    /api 'com.facebook.react:react-native:[\d\.]+'/,
-    `api 'com.facebook.react:react-native:${sdkVersion}'`
-  );
-  await regexFileAsync(
-    path.join(androidRoot, 'ReactAndroid', 'release.gradle'),
-    /version = '[\d\.]+'/,
-    `version = '${sdkVersion}'`
-  );
-  await regexFileAsync(
-    path.join(androidRoot, 'app', 'build.gradle'),
-    /host.exp.exponent:expoview:[\d\.]+/,
-    `host.exp.exponent:expoview:${sdkVersion}`
-  );
-
-  // getDetachableModulesForPlatform was breaking on face detector
-  const detachableUniversalModules = Modules.getAllNativeForExpoClientOnPlatform('android');
-
-  await stashFileAsync(expoViewBuildGradle);
-  await stashFileAsync(multipleVersionReactNativeActivity);
-  await stashFileAsync(constantsJava);
-  // Modify temporarily
-  await regexFileAsync(constantsJava, /TEMPORARY_ABI_VERSION\s*=\s*null/, `TEMPORARY_ABI_VERSION = "${sdkVersion}"`);
-  await regexFileAsync(
-    constantsJava,
-    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
-  );
-  await regexFileAsync(
-    constantsJava,
-    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
-  );
-  await regexFileAsync(appBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
-  await regexFileAsync(appBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
-  await regexFileAsync(expoViewBuildGradle, '/* UNCOMMENT WHEN DISTRIBUTING', '');
-  await regexFileAsync(expoViewBuildGradle, 'END UNCOMMENT WHEN DISTRIBUTING */', '');
-  await regexFileAsync(
-    expoViewBuildGradle,
-    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
-  );
-  await regexFileAsync(
-    expoViewBuildGradle,
-    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
-  );
-  await regexFileAsync(
-    multipleVersionReactNativeActivity,
-    `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
-    '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
-  );
-  await regexFileAsync(
-    multipleVersionReactNativeActivity,
-    `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
-    'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
-  );
-
-  // Clear maven local so that we don't end up with multiple versions
-  await spawnAsyncPrintCommand('rm', [
-    '-rf',
-    path.join(process.env.HOME, '/.m2/repository/host/exp/exponent/expoview'),
-    ...detachableUniversalModules.map(({ libName }) =>
-      path.join(process.env.HOME, `/.m2/repository/host/exp/exponent/${libName}`)
-    ),
-  ]);
-  await spawnAsyncPrintCommand('rm', [
-    '-rf',
-    path.join(process.env.HOME, '/.m2/repository/com/facebook/react'),
-  ]);
-
-  // Build RN and exponent view
-  const archivesToUpload = [
-    'ReactAndroid',
-    ...detachableUniversalModules.map(({ libName }) => libName),
-    'expoview',
-  ];
-
-  for (const archiveName of archivesToUpload) {
-    await spawnAsyncPrintCommand('./gradlew', [`:${archiveName}:uploadArchives`], {
-      cwd: androidRoot,
-    });
-  }
-
-  await restoreFileAsync(constantsJava);
-  await restoreFileAsync(expoViewBuildGradle);
-  await restoreFileAsync(multipleVersionReactNativeActivity);
-
-  await spawnAsyncPrintCommand('rm', [
-    '-rf',
-    path.join(androidRoot, 'maven/host/exp/exponent/expoview'),
-    ...detachableUniversalModules.map(({ libName }) =>
-      path.join(androidRoot, `maven/host/exp/exponent/${libName}`)
-    ),
-  ]);
-  await spawnAsyncPrintCommand('cp', [
-    '-r',
-    path.join(process.env.HOME, '/.m2/repository/host/exp/exponent/expoview'),
-    path.join(androidRoot, 'maven/host/exp/exponent'),
-  ]);
-
-  for (const { libName } of detachableUniversalModules) {
-    await spawnAsyncPrintCommand('cp', [
-      '-r',
-      path.join(process.env.HOME, `/.m2/repository/host/exp/exponent/${libName}`),
-      path.join(androidRoot, 'maven/host/exp/exponent/'),
-    ]);
-  }
-
-  await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'maven/com/facebook/react')]);
-  await spawnAsyncPrintCommand('cp', [
-    '-r',
-    path.join(process.env.HOME, '/.m2/repository/com/facebook/react'),
-    path.join(androidRoot, 'maven/com/facebook'),
-  ]);
-
-  // Copy JSC
-  await spawnAsyncPrintCommand('rm', ['-rf', path.join(androidRoot, 'maven/org/webkit/')]);
-  await spawnAsyncPrintCommand('cp', [
-    '-r',
-    path.join(androidRoot, '../node_modules/jsc-android/dist/org/webkit'),
-    path.join(androidRoot, 'maven/org/webkit/'),
-  ]);
-};

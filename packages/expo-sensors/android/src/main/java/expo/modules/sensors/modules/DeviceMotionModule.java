@@ -17,22 +17,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.sensors.SensorService;
-import expo.interfaces.sensors.SensorServiceSubscription;
-import expo.interfaces.sensors.services.AccelerometerService;
-import expo.interfaces.sensors.services.GravitySensorService;
-import expo.interfaces.sensors.services.GyroscopeService;
-import expo.interfaces.sensors.services.LinearAccelerationSensorService;
-import expo.interfaces.sensors.services.RotationVectorSensorService;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.sensors.SensorService;
+import org.unimodules.interfaces.sensors.SensorServiceSubscription;
+import org.unimodules.interfaces.sensors.services.AccelerometerService;
+import org.unimodules.interfaces.sensors.services.GravitySensorService;
+import org.unimodules.interfaces.sensors.services.GyroscopeService;
+import org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService;
+import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
 
-public class DeviceMotionModule extends ExportedModule implements SensorEventListener2, ModuleRegistryConsumer {
+public class DeviceMotionModule extends ExportedModule implements SensorEventListener2 {
   private long mLastUpdate = 0;
   private int mUpdateInterval = 100;
   private float[] mRotationMatrix = new float[9];
@@ -107,8 +106,23 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     });
   }
 
+  @ExpoMethod
+  public void isAvailableAsync(Promise promise) {
+    SensorManager mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+    ArrayList<Integer> sensorTypes = new ArrayList<>(Arrays.asList(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY));
+
+    for (Integer type : sensorTypes) {
+      if (mSensorManager.getDefaultSensor(type) == null) {
+        promise.resolve(false);
+        return;
+      }
+    }
+
+    promise.resolve(true);
+  }
+
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mUiManager = moduleRegistry.getModule(UIManager.class);
     mModuleRegistry = moduleRegistry;

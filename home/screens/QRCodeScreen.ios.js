@@ -1,19 +1,12 @@
 /* @flow */
 
-import React from 'react';
-import {
-  Linking,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Camera } from 'expo';
+import { Camera } from 'expo-camera';
 import { throttle } from 'lodash';
-import isIPhoneX from '../utils/isIPhoneX';
+import React from 'react';
+import { Linking, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import Layout from '../constants/Layout';
+import isIPhoneX from '../utils/isIPhoneX';
 
 export default class BarCodeScreen extends React.Component {
   static navigationOptions = {
@@ -43,10 +36,7 @@ export default class BarCodeScreen extends React.Component {
     return (
       <View style={styles.container}>
         {this.state.scannerIsVisible ? (
-          <Camera
-            onBarCodeRead={this._handleBarCodeRead}
-            style={StyleSheet.absoluteFill}
-          />
+          <Camera onBarCodeScanned={this._handleBarCodeScanned} style={StyleSheet.absoluteFill} />
         ) : null}
 
         <View style={styles.topOverlay} />
@@ -75,7 +65,7 @@ export default class BarCodeScreen extends React.Component {
     );
   }
 
-  _handleBarCodeRead = throttle(({ data: url }) => {
+  _handleBarCodeScanned = throttle(({ data: url }) => {
     this.setState({ scannerIsVisible: false }, () => {
       if (this._isMounted) {
         this._openUrl(url);
@@ -109,7 +99,7 @@ const BOX_SIZE = Layout.window.width - BOX_MARGIN * 2;
 const BOX_TOP = Layout.window.height / 2 - BOX_SIZE / 2;
 const BOX_BOTTOM = BOX_TOP + BOX_SIZE;
 const BOX_LEFT = BOX_MARGIN;
-const BOX_RIGHT = Layout.window.width - BOX_MARGIN;
+const BOX_RIGHT = Layout.window.width - BOX_LEFT;
 
 const overlayBaseStyle = {
   position: 'absolute',
@@ -192,7 +182,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    left: 0,
   },
   headerText: {
     color: '#fff',

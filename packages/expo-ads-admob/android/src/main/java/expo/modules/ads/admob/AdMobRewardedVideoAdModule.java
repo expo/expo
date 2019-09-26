@@ -4,24 +4,23 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class AdMobRewardedVideoAdModule extends ExportedModule implements RewardedVideoAdListener,
-    ModuleRegistryConsumer {
+public class AdMobRewardedVideoAdModule extends ExportedModule implements RewardedVideoAdListener {
   private RewardedVideoAd mRewardedVideoAd;
   private String mAdUnitID;
   private String mTestDeviceID;
@@ -62,7 +61,7 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
   }
@@ -136,10 +135,10 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
   }
 
   @ExpoMethod
-  public void requestAd(final Promise promise) {
+  public void requestAd(final ReadableArguments additionalRequestParams, final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(
             mActivityProvider.getCurrentActivity());
 
@@ -150,9 +149,11 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
         } else {
           mRequestAdPromise = promise;
 
-          AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+          AdRequest.Builder adRequestBuilder =
+              new AdRequest.Builder()
+                  .addNetworkExtrasBundle(AdMobAdapter.class, additionalRequestParams.toBundle());
 
-          if (mTestDeviceID != null){
+          if (mTestDeviceID != null) {
             if (mTestDeviceID.equals("EMULATOR")) {
               adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
             } else {
@@ -171,7 +172,7 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
   public void showAd(final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         if (mRewardedVideoAd != null && mRewardedVideoAd.isLoaded()) {
           mShowAdPromise = promise;
           mRewardedVideoAd.show();
@@ -186,7 +187,7 @@ public class AdMobRewardedVideoAdModule extends ExportedModule implements Reward
   public void getIsReady(final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
-      public void run () {
+      public void run() {
         promise.resolve(mRewardedVideoAd != null && mRewardedVideoAd.isLoaded());
       }
     });

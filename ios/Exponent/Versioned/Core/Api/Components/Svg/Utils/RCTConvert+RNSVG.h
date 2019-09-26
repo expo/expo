@@ -29,6 +29,6 @@
 + (RNSVGPathParser *)RNSVGCGPath:(NSString *)d;
 + (CGRect)RNSVGCGRect:(id)json offset:(NSUInteger)offset;
 + (CGColorRef)RNSVGCGColor:(id)json offset:(NSUInteger)offset;
-+ (CGGradientRef)RNSVGCGGradient:(id)json offset:(NSUInteger)offset;
++ (CGGradientRef)RNSVGCGGradient:(id)json;
 
 @end

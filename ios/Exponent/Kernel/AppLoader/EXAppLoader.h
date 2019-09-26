@@ -35,6 +35,7 @@ typedef enum EXAppLoaderStatus {
 
 @property (nonatomic, readonly) NSURL *manifestUrl;
 @property (nonatomic, readonly) NSDictionary * _Nullable manifest; // possibly optimistic
+@property (nonatomic, readonly) NSDictionary * _Nullable cachedManifest; // we definitely have this manifest and its bundle on the device
 @property (nonatomic, readonly) NSData * _Nullable bundle;
 @property (nonatomic, readonly) EXAppLoaderStatus status;
 

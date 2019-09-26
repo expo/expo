@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/TileLayerViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -67,8 +63,8 @@
     // Create a new GMSTileLayer with the new floor choice.
     GMSTileURLConstructor urls = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
       NSString *url = [NSString
-          stringWithFormat:@"https://www.gstatic.com/io2010maps/tiles/9/L%zd_%tu_%tu_%tu.png",
-                           floor, zoom, x, y];
+          stringWithFormat:@"https://www.gstatic.com/io2010maps/tiles/9/L%ld_%lu_%lu_%lu.png",
+                           (long)floor, (unsigned long)zoom, (unsigned long)x, (unsigned long)y];
       return [NSURL URLWithString:url];
     };
     _tileLayer = [GMSURLTileLayer tileLayerWithURLConstructor:urls];

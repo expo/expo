@@ -84,6 +84,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
+
+  // When foregrounding the app record we want to add it to the history to handle the edge case
+  // where a user opened a project, then went to home and cleared history, then went back to a
+  // the already open project.
+  [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
+
 }
 
 - (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion
@@ -147,17 +153,17 @@ NS_ASSUME_NONNULL_BEGIN
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;
+
+  // Unregister visible app record so all modules get destroyed.
+  [[[EXKernel sharedInstance] appRegistry] unregisterAppWithRecord:visibleApp];
+
+  // Create new app record.
   [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
 }
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest
 {
   [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
-}
-
-- (void)getIsValidHomeManifestToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl completion:(void (^)(BOOL isValid))completion
-{
-  [[self _getHomeAppManager] getIsValidHomeManifestToOpen:manifest manifestUrl:(NSURL *) manifestUrl completion:completion];
 }
 
 - (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
@@ -217,11 +223,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (viewControllerToHide) {
           // backgrounds and then dismisses all modals that are presented by the app
           [viewControllerToHide backgroundControllers];
-          [viewControllerToHide dismissViewControllerAnimated:NO completion:^{
-            [viewControllerToHide willMoveToParentViewController:nil];
-            [viewControllerToHide.view removeFromSuperview];
-            [viewControllerToHide didMoveToParentViewController:nil];
-          }];
+          [viewControllerToHide dismissViewControllerAnimated:NO completion:nil];
+          [viewControllerToHide willMoveToParentViewController:nil];
+          [viewControllerToHide.view removeFromSuperview];
+          [viewControllerToHide didMoveToParentViewController:nil];
         }
         if (viewControllerToShow) {
           [viewControllerToShow didMoveToParentViewController:strongSelf];

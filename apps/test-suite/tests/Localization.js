@@ -1,5 +1,5 @@
-import { Localization } from 'expo';
-import { Localization as DangerZoneLocalization } from 'expo/DangerZone';
+import * as Localization from 'expo-localization';
+import { Platform } from 'react-native';
 import i18n from 'i18n-js';
 
 const en = {
@@ -31,7 +31,6 @@ export function test(t) {
       function validateStringArray(result) {
         t.expect(result).toBeDefined();
         t.expect(Array.isArray(result)).toBe(true);
-        t.expect(result.length > 0).toBe(true);
       }
 
       const {
@@ -39,14 +38,15 @@ export function test(t) {
         locales,
         timezone,
         isoCurrencyCodes,
-        country,
+        region,
         isRTL,
       } = await Localization.getLocalizationAsync();
 
       validateString(locale);
       validateString(timezone);
-      validateString(country);
-
+      if (Platform.OS === 'ios') {
+        validateString(region);
+      }
       validateStringArray(isoCurrencyCodes);
       validateStringArray(locales);
       t.expect(locales[0]).toBe(Localization.locale);
@@ -55,13 +55,15 @@ export function test(t) {
   });
 
   t.describe(`Localization defines constants`, () => {
-    t.it('Gets the current device country', async () => {
-      const result = Localization.country;
+    if (Platform.OS === 'ios') {
+      t.it('Gets the current device country', async () => {
+        const result = Localization.region;
 
-      t.expect(result).toBeDefined();
-      t.expect(typeof result).toBe('string');
-      t.expect(result.length > 0).toBe(true);
-    });
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('string');
+        t.expect(result.length > 0).toBe(true);
+      });
+    }
     t.it('Gets the current locale', async () => {
       const result = Localization.locale;
 
@@ -81,20 +83,21 @@ export function test(t) {
       const result = Localization.isoCurrencyCodes;
       t.expect(result).toBeDefined();
       t.expect(Array.isArray(result)).toBe(true);
-      t.expect(result.length > 0).toBe(true);
       for (let iso of result) {
         t.expect(typeof iso).toBe('string');
         t.expect(iso.length > 0).toBe(true);
       }
     });
-    t.it('Gets the current timzezone', async () => {
-      const result = Localization.timezone;
-      t.expect(result).toBeDefined();
-      t.expect(typeof result).toBe('string');
-      t.expect(result.length > 0).toBe(true);
-      // Format: expect something like America/Los_Angeles or America/Chihuahua
-      t.expect(result.split('/').length > 1).toBe(true);
-    });
+    if (Platform.OS !== 'web') {
+      t.it('Gets the current timezone', async () => {
+        const result = Localization.timezone;
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('string');
+        t.expect(result.length > 0).toBe(true);
+        // Format: expect something like America/Los_Angeles or America/Chihuahua
+        t.expect(result.split('/').length > 1).toBe(true);
+      });
+    }
 
     t.it('Gets the current layout direction (ltr only)', async () => {
       const result = Localization.isRTL;
@@ -118,39 +121,6 @@ export function test(t) {
       const translation = i18n.translations[expoPredictedLangTag];
 
       t.expect(translation[target]).toBe(i18n.t(target));
-    });
-  });
-
-  t.describe(`DangerZone.Localization`, () => {
-    const currentWarn = console.warn;
-
-    t.beforeEach(() => {
-      console.warn = currentWarn;
-    });
-
-    [
-      ['getCurrentDeviceCountryAsync', 'country'],
-      ['getCurrentLocaleAsync', 'locale'],
-      ['getCurrentTimeZoneAsync', 'timezone'],
-      ['getPreferredLocalesAsync', 'locales'],
-      ['getISOCurrencyCodesAsync', 'isoCurrencyCodes'],
-    ].forEach(obj => {
-      const [deprecated, replacement] = obj;
-
-      t.it(`${deprecated} is deprecated`, async () => {
-        const target = `Expo.DangerZone.Localization.${deprecated}() is deprecated. Use \`Expo.Localization.${replacement}\` instead.`;
-
-        let warning = null;
-        console.warn = (...props) => {
-          warning = props[0];
-          console.warn = currentWarn;
-        };
-
-        const value = await DangerZoneLocalization[deprecated]();
-
-        t.expect(warning).toBe(target);
-        t.expect(`${value}`.replace('_', '-')).toBe(`${Localization[replacement]}`);
-      });
     });
   });
 }

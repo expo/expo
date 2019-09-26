@@ -1,11 +1,11 @@
 {
   "name": "EXLocation",
-  "version": "1.1.0",
-  "summary": "Expo Location standalone universal module",
-  "description": "Expo Location standalone universal module",
+  "version": "7.0.0",
+  "summary": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
+  "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "license": "MIT",
   "authors": "650 Industries, Inc.",
-  "homepage": "https://docs.expo.io/",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/location/",
   "platforms": {
     "ios": "10.0"
   },
@@ -16,10 +16,13 @@
   "preserve_paths": "EXLocation/**/*.{h,m}",
   "requires_arc": true,
   "dependencies": {
-    "EXCore": [
+    "UMCore": [
 
     ],
-    "EXPermissionsInterface": [
+    "UMPermissionsInterface": [
+
+    ],
+    "UMTaskManagerInterface": [
 
     ]
   }

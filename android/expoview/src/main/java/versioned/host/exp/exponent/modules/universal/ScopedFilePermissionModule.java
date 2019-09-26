@@ -6,14 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.filesystem.FilePermissionModule;
-import expo.interfaces.filesystem.Permission;
+import org.unimodules.interfaces.filesystem.Permission;
 import host.exp.exponent.utils.ScopedContext;
 
-public class ScopedFilePermissionModule extends FilePermissionModule implements ModuleRegistryConsumer {
+public class ScopedFilePermissionModule extends FilePermissionModule {
   private ScopedContext mScopedContext;
   private ModuleRegistry mModuleRegistry;
 
@@ -48,7 +47,7 @@ public class ScopedFilePermissionModule extends FilePermissionModule implements 
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

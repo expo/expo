@@ -1,9 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXPrint/EXPrint.h>
-#import <EXPrint/EXPrintPDFRenderTask.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXFileSystemInterface/EXFileSystemInterface.h>
+#import <EXPrint/EXWKPDFRenderer.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMFileSystemInterface/UMFileSystemInterface.h>
 
 NSString *const EXPrintOrientationPortrait = @"portrait";
 NSString *const EXPrintOrientationLandscape = @"landscape";
@@ -12,13 +12,13 @@ NSString *const EXPrintOrientationLandscape = @"landscape";
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UIPrinter *> *printers;
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXPrint
 
-EX_EXPORT_MODULE(ExponentPrint);
+UM_EXPORT_MODULE(ExponentPrint);
 
 - (instancetype)init
 {
@@ -28,7 +28,7 @@ EX_EXPORT_MODULE(ExponentPrint);
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -53,14 +53,14 @@ EX_EXPORT_MODULE(ExponentPrint);
            };
 }
 
-EX_EXPORT_METHOD_AS(print,
+UM_EXPORT_METHOD_AS(print,
                     print:(NSDictionary *)options
-                    resolver:(EXPromiseResolveBlock)resolve
-                    rejecter:(EXPromiseRejectBlock)reject)
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
   [self _getPrintingDataForOptions:options callback:^(NSData *printingData, NSDictionary *errorDetails) {
     if (errorDetails != nil) {
-      reject(errorDetails[@"code"], errorDetails[@"message"], EXErrorWithMessage(errorDetails[@"message"]));
+      reject(errorDetails[@"code"], errorDetails[@"message"], UMErrorWithMessage(errorDetails[@"message"]));
       return;
     }
     
@@ -79,7 +79,7 @@ EX_EXPORT_METHOD_AS(print,
           printInteractionController.printFormatter = formatter;
         } else {
           NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-          reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
+          reject(@"E_HTML_INVALID", message, UMErrorWithMessage(message));
           return;
         }
       } else {
@@ -134,8 +134,8 @@ EX_EXPORT_METHOD_AS(print,
   }];
 }
 
-EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
-                  rejecter:(EXPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(UMPromiseResolveBlock)resolve
+                  rejecter:(UMPromiseRejectBlock)reject)
 {
   UIPrinterPickerController *printPicker = [UIPrinterPickerController printerPickerControllerWithInitiallySelectedPrinter:nil];
   
@@ -168,10 +168,10 @@ EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
   }
 }
 
-EX_EXPORT_METHOD_AS(printToFileAsync,
+UM_EXPORT_METHOD_AS(printToFileAsync,
                     printToFileWithOptions:(nonnull NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   NSString *format = options[@"format"];
   
@@ -180,35 +180,40 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
   
-  EXPrintPDFRenderTask *renderTask = [EXPrintPDFRenderTask new];
-  
-  [renderTask renderWithOptions:options completionHandler:^(NSData *pdfData) {
-    if (pdfData != nil) {
-      NSString *filePath = [self _generatePath];
-      if (!filePath) {
-        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
-        return;
-      }
-      NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
-      
-      NSError *error;
-      BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&error];
-      
-      if (!success) {
-        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
-        return;
-      }
-      
-      NSMutableDictionary *result = [@{ @"uri": uri, @"numberOfPages": @(renderTask.numberOfPages) } mutableCopy];
-      
-      if (options[@"base64"] != nil && [options[@"base64"] boolValue]) {
-        result[@"base64"] = [pdfData base64EncodedStringWithOptions:0];
-      }
-      
-      resolve(result);
-    } else {
-      reject(@"E_PRINT_PDF_NOT_RENDERED", @"Error occurred while printing to PDF.", nil);
+  __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
+
+  NSString *htmlString = options[@"html"] ?: @"";
+  CGSize paperSize = [self _paperSizeFromOptions:options];
+
+  [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
+    renderTask = nil;
+    if (error) {
+      reject(@"E_PRINT_PDF_NOT_RENDERED", @"Error occurred while printing to PDF.", error);
+      return;
     }
+
+    NSString *filePath = [self _generatePath];
+    if (!filePath) {
+      reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
+      return;
+    }
+    NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
+
+    NSError *writeError;
+    BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
+
+    if (!success) {
+      reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
+      return;
+    }
+
+    NSMutableDictionary *result = [@{ @"uri": uri, @"numberOfPages": @(pagesCount) } mutableCopy];
+
+    if (options[@"base64"] != nil && [options[@"base64"] boolValue]) {
+      result[@"base64"] = [pdfData base64EncodedStringWithOptions:0];
+    }
+
+    resolve(result);
   }];
 }
 
@@ -216,7 +221,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
 - (UIViewController *)printInteractionControllerParentViewController:(UIPrintInteractionController *)printInteractionController
 {
-  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  id<UMUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -224,7 +229,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
 - (UIViewController *)printerPickerControllerParentViewController:(UIPrinterPickerController *)printerPickerController
 {
-  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  id<UMUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -259,7 +264,11 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   printInfo.orientation = [self _getPrintOrientationFromOption:options[@"orientation"]];
   
   printInteractionController.printInfo = printInfo;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // deprecated in iOS 10
   printInteractionController.showsPageRange = YES;
+#pragma clang diagnostic pop
   printInteractionController.showsNumberOfCopies = YES;
   printInteractionController.showsPaperSelectionForLoadedPapers = YES;
   
@@ -286,9 +295,11 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   }
   
   if (options[@"html"]) {
-    __block EXPrintPDFRenderTask *renderTask = [EXPrintPDFRenderTask new];
-    
-    [renderTask renderWithOptions:options completionHandler:^(NSData *pdfData) {
+    __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
+
+    NSString *htmlString = options[@"html"] ?: @"";
+    CGSize paperSize = [self _paperSizeFromOptions:options];
+    [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
       } else {
@@ -313,9 +324,34 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   return UIPrintInfoOrientationPortrait;
 }
 
+#define kLetterPaperSize CGSizeMake(612, 792)
+
+- (CGSize)_paperSizeFromOptions:(NSDictionary *)options
+{
+  // defaults to pixel size for A4 paper format with 72 PPI
+  CGSize paperSize = CGSizeMake(kLetterPaperSize.width, kLetterPaperSize.height);
+
+  if (options[@"width"]) {
+    paperSize.width = [options[@"width"] floatValue];
+  }
+
+  if (options[@"height"]) {
+    paperSize.height = [options[@"height"] floatValue];
+  }
+
+  if ([options[@"orientation"] isEqualToString:@"landscape"]) {
+    // Make height the lesser dimension if the orientation is landscape.
+    CGFloat biggerValue = fmax(paperSize.width, paperSize.height);
+    CGFloat smallerValue = fmin(paperSize.width, paperSize.height);
+    paperSize = CGSizeMake(biggerValue, smallerValue);
+  }
+
+  return paperSize;
+}
+
 - (NSString *)_generatePath
 {
-  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem) {
     return nil;
   }

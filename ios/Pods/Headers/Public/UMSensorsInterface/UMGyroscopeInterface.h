@@ -1,0 +1,1 @@
+../../../../../packages/unimodules-sensors-interface/ios/UMSensorsInterface/UMGyroscopeInterface.h

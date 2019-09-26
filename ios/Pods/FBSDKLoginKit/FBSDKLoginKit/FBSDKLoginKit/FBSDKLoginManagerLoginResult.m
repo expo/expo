@@ -18,15 +18,14 @@
 
 #import "FBSDKLoginManagerLoginResult+Internal.h"
 
+#ifdef COCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
 #import "FBSDKCoreKit+Internal.h"
+#endif
 
 @implementation FBSDKLoginManagerLoginResult {
   NSMutableDictionary *_mutableLoggingExtras;
-}
-
-- (instancetype)init NS_UNAVAILABLE
-{
-  assert(0);
 }
 
 - (instancetype)initWithToken:(FBSDKAccessToken *)token
@@ -35,7 +34,7 @@
           declinedPermissions:(NSSet *)declinedPermissions {
   if ((self = [super init])) {
     _mutableLoggingExtras = [NSMutableDictionary dictionary];
-    _token = [token copy];
+    _token = token ? [token copy] : nil;
     _isCancelled = isCancelled;
     _grantedPermissions = [grantedPermissions copy];
     _declinedPermissions = [declinedPermissions copy];
@@ -45,7 +44,7 @@
 
 - (void)addLoggingExtra:(id)object forKey:(id<NSCopying>)key
 {
-  [FBSDKInternalUtility dictionary:_mutableLoggingExtras setObject:object forKey:key];
+  [FBSDKBasicUtility dictionary:_mutableLoggingExtras setObject:object forKey:key];
 }
 
 - (NSDictionary *)loggingExtras

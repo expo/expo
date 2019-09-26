@@ -26,6 +26,11 @@ fastlane ios test
 fastlane ios create_simulator_build
 ```
 
+### ios create_expo_client_build
+```
+fastlane ios create_expo_client_build
+```
+
 ### ios release
 ```
 fastlane ios release
@@ -38,6 +43,11 @@ fastlane ios release
 ### android start
 ```
 fastlane android start
+```
+
+### android devicefarm
+```
+fastlane android devicefarm
 ```
 
 ### android build

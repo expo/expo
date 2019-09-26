@@ -57,6 +57,7 @@ RCT_EXPORT_VIEW_PROPERTY(sourceName, NSString);
 RCT_EXPORT_VIEW_PROPERTY(progress, CGFloat);
 RCT_EXPORT_VIEW_PROPERTY(loop, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(speed, CGFloat);
+RCT_EXPORT_VIEW_PROPERTY(onAnimationFinish, RCTBubblingEventBlock);
 
 RCT_EXPORT_METHOD(play:(nonnull NSNumber *)reactTag
                   fromFrame:(nonnull NSNumber *) startFrame
@@ -68,10 +69,15 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber *)reactTag
       RCTLogError(@"Invalid view returned from registry, expecting LottieContainerView, got: %@", view);
     } else {
       EXContainerView *lottieView = (EXContainerView *)view;
+      LOTAnimationCompletionBlock callback = ^(BOOL animationFinished){
+        if (lottieView.onAnimationFinish) {
+          lottieView.onAnimationFinish(@{@"isCancelled": animationFinished ? @NO : @YES});
+        }
+      };
       if ([startFrame intValue] != -1 && [endFrame intValue] != -1) {
-        [lottieView playFromFrame:startFrame toFrame:endFrame];
+        [lottieView playFromFrame:startFrame toFrame:endFrame withCompletion:callback];
       } else {
-        [lottieView play];
+        [lottieView play:callback];
       }
     }
   }];

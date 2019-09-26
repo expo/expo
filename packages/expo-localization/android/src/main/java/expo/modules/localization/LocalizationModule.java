@@ -1,6 +1,5 @@
 package expo.modules.localization;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.os.LocaleList;
 import android.text.TextUtils;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -16,50 +16,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ActivityProvider;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.os.Build.VERSION_CODES.N;
 import static java.util.Currency.getAvailableCurrencies;
 
-public class LocalizationModule extends ExportedModule implements ModuleRegistryConsumer {
-
-    private ModuleRegistry mModuleRegistry;
+public class LocalizationModule extends ExportedModule {
+    private WeakReference<Context> mContextRef;
 
     public LocalizationModule(Context context) {
         super(context);
+        mContextRef = new WeakReference<>(context);
     }
 
     private final Context getApplicationContext() {
-        Activity activity = getCurrentActivity();
-        if (activity != null) {
-            return activity.getApplicationContext();
-        }
-        return null;
-    }
-
-    private Activity getCurrentActivity() {
-        if (mModuleRegistry != null) {
-            ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-            return activityProvider.getCurrentActivity();
-        }
-        return null;
+        Context context = mContextRef.get();
+        return context != null ? context.getApplicationContext() : null;
     }
 
     @Override
     public String getName() {
         return "ExpoLocalization";
-    }
-
-    @Override
-    public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-        mModuleRegistry = moduleRegistry;
     }
 
     @Override
@@ -78,21 +59,28 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         promise.resolve(getBundledConstants());
     }
 
+    // TODO: Bacon: add set language
+
     private Bundle getBundledConstants() {
         Bundle constants = new Bundle();
 
         ArrayList<Locale> locales = getLocales();
         ArrayList<String> localeNames = getLocaleNames(locales);
         Boolean isRTL = TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
-
+        
+        String locale = localeNames.get(0);
         constants.putBoolean("isRTL", isRTL);
-        constants.putString("locale", localeNames.get(0));
+        constants.putString("locale", locale);
         constants.putStringArrayList("locales", localeNames);
-        constants.putString("timezone", TimeZone.getDefault().getID());
+        constants.putString("timezone", getTimezone());
         constants.putStringArrayList("isoCurrencyCodes", getISOCurrencyCodes());
-        constants.putString("country", locales.get(0).getCountry());
 
         return constants;
+    }
+
+    private String getTimezone() {
+        // https://stackoverflow.com/a/11061352/4047926
+        return TimeZone.getDefault().getID();
     }
 
     private ArrayList<String> getISOCurrencyCodes() {
@@ -108,51 +96,27 @@ public class LocalizationModule extends ExportedModule implements ModuleRegistry
         ArrayList<Locale> locales = new ArrayList<>();
 
         Context context = getApplicationContext();
-        if (context != null) {
-            Configuration configuration = context.getResources().getConfiguration();
-            if (SDK_INT >= N) {
-                LocaleList localeList = configuration.getLocales();
-                for (int i = 0; i < localeList.size(); i++) {
-                    locales.add(localeList.get(i));
-                }
-            } else {
-                locales.add(configuration.locale);
-            }
+        if (context == null) {
+            return null;
         }
-
-
+        Configuration configuration = context.getResources().getConfiguration();
+        if (SDK_INT > N) {
+            LocaleList localeList = configuration.getLocales();
+            for (int i = 0; i < localeList.size(); i++) {
+                locales.add(localeList.get(i));
+            }
+        } else {
+            locales.add(configuration.locale);
+        }
         return locales;
     }
 
     private ArrayList<String> getLocaleNames(ArrayList<Locale> locales) {
-        ArrayList<String> localeNames = new ArrayList<>();
-        for (int i = 0; i < locales.size(); i++) localeNames.add(toLocaleTag(locales.get(i)));
-        return localeNames;
-    }
-
-    private String toLocaleTag(Locale locale) {
-        String localeTag;
-
-        if (SDK_INT >= LOLLIPOP) {
-            localeTag = locale.toLanguageTag();
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(locale.getLanguage());
-            if (locale.getCountry() != null) {
-                builder.append("-");
-                builder.append(locale.getCountry());
-            }
-            localeTag = builder.toString();
+        ArrayList<String> languages = new ArrayList<>();
+        for (Locale locale : locales) {
+            // https://stackoverflow.com/a/46652446/4047926
+            languages.add(locale.toLanguageTag());
         }
-
-        if (localeTag.matches("^(iw|in|ji).*")) {
-            localeTag = localeTag
-                    .replace("iw", "he")
-                    .replace("in", "id")
-                    .replace("ji", "yi");
-        }
-
-        return localeTag;
+        return languages;
     }
-
 }

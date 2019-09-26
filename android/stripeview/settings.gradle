@@ -1,3 +1,0 @@
-include ':stripeview'
-include ':ReactAndroid'
-project(':ReactAndroid').projectDir = new File(rootDir, '../ReactAndroid')

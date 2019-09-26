@@ -21,7 +21,6 @@ For scripts that need to run as part of the npm lifecycle, you'd invoke the comm
 ```json
 {
   "scripts": {
-    "postinstall": "expo-module postinstall",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
   }
@@ -52,7 +51,7 @@ If we were to use just Babel with the TypeScript plugin for the `build` command,
 
 ### lint
 
-This is not yet implemented. We need to see in practice how using ESLint with a TypeScript plugin would work for us compared to TSLint.
+This runs ESLint over the source JS and TypeScript files.
 
 ### clean
 

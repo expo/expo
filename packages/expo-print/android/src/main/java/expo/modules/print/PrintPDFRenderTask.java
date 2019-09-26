@@ -2,7 +2,6 @@ package expo.modules.print;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.print.PageRange;
 import android.print.PrintAttributes;
@@ -17,8 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.services.UIManager;
 
 public class PrintPDFRenderTask {
   private static final int PIXELS_PER_INCH = 72;
@@ -83,11 +82,11 @@ public class PrintPDFRenderTask {
       int width = DEFAULT_MEDIA_WIDTH;
       int height = DEFAULT_MEDIA_HEIGHT;
 
-      if (mOptions.containsKey("width")) {
-        width = (Integer)mOptions.get("width");
+      if (mOptions.containsKey("width") && mOptions.get("width") != null) {
+        width = ((Number) mOptions.get("width")).intValue();
       }
-      if (mOptions.containsKey("height")) {
-        height = (Integer)mOptions.get("height");
+      if (mOptions.containsKey("height") && mOptions.get("height") != null) {
+        height = ((Number) mOptions.get("height")).intValue();
       }
 
       PrintAttributes.MediaSize mediaSize = new PrintAttributes.MediaSize(

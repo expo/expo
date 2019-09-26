@@ -5,6 +5,8 @@
 //  Created by Gil Birman on 9/1/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import <UIKit/UIKit.h>
 #import <React/RCTComponent.h>
 #import <React/RCTBridge.h>
@@ -19,6 +21,8 @@
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, assign) MKCoordinateRegion initialRegion;
 @property (nonatomic, assign) MKCoordinateRegion region;
+@property (nonatomic, assign) GMSCameraPosition *cameraProp;   // Because the base class already has a "camera" prop.
+@property (nonatomic, assign) GMSCameraPosition *initialCamera;
 @property (nonatomic, assign) NSString *customMapStyleString;
 @property (nonatomic, assign) UIEdgeInsets mapPadding;
 @property (nonatomic, assign) NSString *paddingAdjustmentBehaviorString;
@@ -26,6 +30,7 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onKmlReady;
 @property (nonatomic, copy) RCTBubblingEventBlock onPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onLongPress;
+@property (nonatomic, copy) RCTBubblingEventBlock onPanDrag;
 @property (nonatomic, copy) RCTBubblingEventBlock onUserLocationChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onMarkerPress;
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
@@ -48,6 +53,7 @@
 @property (nonatomic, assign) BOOL zoomEnabled;
 @property (nonatomic, assign) BOOL rotateEnabled;
 @property (nonatomic, assign) BOOL pitchEnabled;
+@property (nonatomic, assign) BOOL zoomTapEnabled;
 @property (nonatomic, assign) BOOL showsUserLocation;
 @property (nonatomic, assign) BOOL showsMyLocationButton;
 @property (nonatomic, assign) BOOL showsIndoors;
@@ -63,8 +69,13 @@
 - (void)didChangeCameraPosition:(GMSCameraPosition *)position;
 - (void)idleAtCameraPosition:(GMSCameraPosition *)position;
 - (void)didTapPOIWithPlaceID:(NSString *)placeID name:(NSString *) name location:(CLLocationCoordinate2D) location;
+- (NSArray *)getMapBoundaries;
 
 + (MKCoordinateRegion)makeGMSCameraPositionFromMap:(GMSMapView *)map andGMSCameraPosition:(GMSCameraPosition *)position;
 + (GMSCameraPosition*)makeGMSCameraPositionFromMap:(GMSMapView *)map andMKCoordinateRegion:(MKCoordinateRegion)region;
 
+- (NSDictionary*) getMarkersFramesWithOnlyVisible:(BOOL)onlyVisible;
+
 @end
+
+#endif

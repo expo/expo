@@ -1,9 +1,8 @@
-/* @flow */
-
+// @flow
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   LayoutAnimation,
-  NativeModules,
   StyleSheet,
   Text,
   TextInput,
@@ -11,12 +10,12 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { withNavigation, withNavigationFocus } from 'react-navigation';
+import { withNavigation, withNavigationFocus, ThemeContext } from 'react-navigation';
 
+import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
-
-const { ExponentKernel } = NativeModules;
+import * as Kernel from '../kernel/Kernel';
+import { StyledView } from './Views';
 
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
@@ -29,23 +28,29 @@ const SearchIcon = () => (
 
 @withNavigation
 class PlaceholderButtonSearchBar extends React.Component {
+  static contextType = ThemeContext;
+
   render() {
     return (
       <View style={styles.container}>
         <TouchableWithoutFeedback
           hitSlop={{ top: 10, left: 10, bottom: 5, right: 10 }}
           onPress={this._handlePress}>
-          <View style={styles.searchContainer}>
+          <StyledView
+            style={styles.searchContainer}
+            lightBackgroundColor="#f2f2f2"
+            darkBackgroundColor={Colors.dark.cardBackground}>
             <View pointerEvents="none" style={{ flex: 1 }}>
               <TextInput
                 editable={false}
                 placeholder="Find a project or enter a URL..."
+                placeholderTextColor={this.context === 'dark' ? '#646464' : '#ccc'}
                 placeholderStyle={styles.searchInputPlaceholderText}
                 style={styles.searchInput}
               />
             </View>
             <SearchIcon />
-          </View>
+          </StyledView>
         </TouchableWithoutFeedback>
       </View>
     );
@@ -59,6 +64,7 @@ class PlaceholderButtonSearchBar extends React.Component {
 @withNavigation
 @withNavigationFocus
 export default class SearchBar extends React.Component {
+  static contextType = ThemeContext;
   static PlaceholderButton = PlaceholderButtonSearchBar;
 
   _textInput: TextInput;
@@ -80,7 +86,10 @@ export default class SearchBar extends React.Component {
 
     return (
       <View style={styles.container}>
-        <View style={[styles.searchContainer, { width: inputWidth }]}>
+        <StyledView
+          style={[styles.searchContainer, { width: inputWidth }]}
+          lightBackgroundColor="#f2f2f2"
+          darkBackgroundColor={Colors.dark.cardBackground}>
           <TextInput
             autoFocus
             ref={view => {
@@ -93,13 +102,13 @@ export default class SearchBar extends React.Component {
             autoCorrect={false}
             returnKeyType="search"
             placeholder="Find a project or enter a URL..."
+            placeholderTextColor={this.context === 'dark' ? '#646464' : '#ccc'}
             placeholderStyle={styles.searchInputPlaceholderText}
             onSubmitEditing={this._handleSubmit}
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: this.context === 'dark' ? '#fff' : '#000' }]}
           />
-
           <SearchIcon />
-        </View>
+        </StyledView>
 
         <View
           key={showCancelButton ? 'visible-cancel-button' : 'layout-only-cancel-button'}
@@ -128,8 +137,8 @@ export default class SearchBar extends React.Component {
 
   _handleSubmit = () => {
     let { text } = this.state;
-    if (ExponentKernel && (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm')) {
-      ExponentKernel.addDevMenu();
+    if (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm') {
+      Kernel.addDevMenu();
     } else {
       this._textInput.blur();
     }
@@ -166,7 +175,6 @@ export default class SearchBar extends React.Component {
       });
     });
   };
-
 }
 
 const styles = StyleSheet.create({
@@ -190,7 +198,6 @@ const styles = StyleSheet.create({
   searchContainer: {
     height: 30,
     width: SearchContainerWidth,
-    backgroundColor: '#f2f2f2',
     borderRadius: 6,
     marginHorizontal: SearchContainerHorizontalMargin,
     marginTop: 10,

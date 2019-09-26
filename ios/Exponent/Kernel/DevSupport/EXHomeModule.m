@@ -4,6 +4,7 @@
 #import "EXHomeModule.h"
 #import "EXSession.h"
 #import "EXUnversioned.h"
+#import "EXProvisioningProfile.h"
 
 #import <React/RCTEventDispatcher.h>
 
@@ -26,7 +27,7 @@
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
-    _sdkVersions = params[@"supportedSdkVersions"];
+    _sdkVersions = params[@"constants"][@"supportedExpoSdks"];
     _delegate = kernelServiceInstance;
   }
   return self;
@@ -39,7 +40,8 @@
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"sdkVersions": _sdkVersions };
+  return @{ @"sdkVersions": _sdkVersions,
+            @"IOSClientReleaseType": [EXProvisioningProfile clientReleaseTypeToString: [EXProvisioningProfile clientReleaseType]] };
 }
 
 #pragma mark - RCTEventEmitter methods
@@ -65,14 +67,14 @@
 {
   NSString *qualifiedEventName = [NSString stringWithFormat:@"ExponentKernel.%@", eventName];
   NSMutableDictionary *qualifiedEventBody = (eventBody) ? [eventBody mutableCopy] : [NSMutableDictionary dictionary];
-
+  
   if (success && failure) {
     NSString *eventId = [[NSUUID UUID] UUIDString];
     [_eventSuccessBlocks setObject:success forKey:eventId];
     [_eventFailureBlocks setObject:failure forKey:eventId];
     [qualifiedEventBody setObject:eventId forKey:@"eventId"];
   }
-
+  
   [self sendEventWithName:qualifiedEventName body:qualifiedEventBody];
 }
 

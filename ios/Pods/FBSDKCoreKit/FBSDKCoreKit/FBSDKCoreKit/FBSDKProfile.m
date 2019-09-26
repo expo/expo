@@ -18,9 +18,18 @@
 
 #import "FBSDKProfile+Internal.h"
 
-#import "FBSDKCoreKit+Internal.h"
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSNotificationName const FBSDKProfileDidChangeNotification = @"com.facebook.sdk.FBSDKProfile.FBSDKProfileDidChangeNotification";;
+
+#else
 
 NSString *const FBSDKProfileDidChangeNotification = @"com.facebook.sdk.FBSDKProfile.FBSDKProfileDidChangeNotification";;
+
+#endif
+
 NSString *const FBSDKProfileChangeOldKey = @"FBSDKProfileOld";
 NSString *const FBSDKProfileChangeNewKey = @"FBSDKProfileNew";
 static NSString *const FBSDKProfileUserDefaultsKey = @"com.facebook.sdk.FBSDKProfile.currentProfile";
@@ -38,11 +47,6 @@ static FBSDKProfile *g_currentProfile;
 #define FBSDKPROFILE_STALE_IN_SECONDS (60 * 60 * 24)
 
 @implementation FBSDKProfile
-
-- (instancetype)init NS_UNAVAILABLE
-{
-  assert(0);
-}
 
 - (instancetype)initWithUserID:(NSString *)userID
                      firstName:(NSString *)firstName
@@ -75,8 +79,8 @@ static FBSDKProfile *g_currentProfile;
     [[self class] cacheProfile:profile];
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
 
-    [FBSDKInternalUtility dictionary:userInfo setObject:profile forKey:FBSDKProfileChangeNewKey];
-    [FBSDKInternalUtility dictionary:userInfo setObject:g_currentProfile forKey:FBSDKProfileChangeOldKey];
+    [FBSDKBasicUtility dictionary:userInfo setObject:profile forKey:FBSDKProfileChangeNewKey];
+    [FBSDKBasicUtility dictionary:userInfo setObject:g_currentProfile forKey:FBSDKProfileChangeOldKey];
     g_currentProfile = profile;
     [[NSNotificationCenter defaultCenter] postNotificationName:FBSDKProfileDidChangeNotification
                                                         object:[self class]
@@ -86,28 +90,22 @@ static FBSDKProfile *g_currentProfile;
 
 - (NSURL *)imageURLForPictureMode:(FBSDKProfilePictureMode)mode size:(CGSize)size
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  NSString *path = [self imagePathForPictureMode:mode size:size];
-#pragma clang diagnostic pop
-  return [FBSDKInternalUtility facebookURLWithHostPrefix:@"graph"
-                                                    path:path
-                                         queryParameters:nil
-                                                   error:NULL];
-}
-
-- (NSString *)imagePathForPictureMode:(FBSDKProfilePictureMode)mode size:(CGSize)size
-{
   NSString *type;
   switch (mode) {
     case FBSDKProfilePictureModeNormal: type = @"normal"; break;
     case FBSDKProfilePictureModeSquare: type = @"square"; break;
   }
-  return [NSString stringWithFormat:@"%@/picture?type=%@&width=%d&height=%d",
+
+  NSString *path = [NSString stringWithFormat:@"%@/picture?type=%@&width=%d&height=%d",
           _userID,
           type,
           (int) roundf(size.width),
           (int) roundf(size.height)];
+
+  return [FBSDKInternalUtility facebookURLWithHostPrefix:@"graph"
+                                                    path:path
+                                         queryParameters:@{}
+                                                   error:NULL];
 }
 
 + (void)enableUpdatesOnAccessTokenChange:(BOOL)enable
@@ -122,7 +120,7 @@ static FBSDKProfile *g_currentProfile;
   }
 }
 
-+ (void)loadCurrentProfileWithCompletion:(void (^)(FBSDKProfile *, NSError *))completion
++ (void)loadCurrentProfileWithCompletion:(FBSDKProfileBlock)completion
 {
   [self loadProfileWithToken:[FBSDKAccessToken currentAccessToken] completion:completion];
 }
@@ -140,13 +138,13 @@ static FBSDKProfile *g_currentProfile;
 - (NSUInteger)hash
 {
   NSUInteger subhashes[] = {
-    [self.userID hash],
-    [self.firstName hash],
-    [self.middleName hash],
-    [self.lastName hash],
-    [self.name hash],
-    [self.linkURL hash],
-    [self.refreshDate hash]
+    self.userID.hash,
+    self.firstName.hash,
+    self.middleName.hash,
+    self.lastName.hash,
+    self.name.hash,
+    self.linkURL.hash,
+    self.refreshDate.hash
   };
   return [FBSDKMath hashWithIntegerArray:subhashes count:sizeof(subhashes) / sizeof(subhashes[0])];
 }
@@ -179,7 +177,7 @@ static FBSDKProfile *g_currentProfile;
   return YES;
 }
 
-- (id)initWithCoder:(NSCoder *)decoder
+- (instancetype)initWithCoder:(NSCoder *)decoder
 {
   NSString *userID = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKPROFILE_USERID_KEY];
   NSString *firstName = [decoder decodeObjectOfClass:[NSString class] forKey:FBSDKPROFILE_FIRSTNAME_KEY];
@@ -210,7 +208,7 @@ static FBSDKProfile *g_currentProfile;
 
 #pragma mark - Private
 
-+ (void)loadProfileWithToken:(FBSDKAccessToken *)token completion:(void (^)(FBSDKProfile *, NSError *))completion
++ (void)loadProfileWithToken:(FBSDKAccessToken *)token completion:(FBSDKProfileBlock)completion
 {
   static FBSDKGraphRequestConnection *executingRequestConnection = nil;
 
@@ -262,7 +260,7 @@ static FBSDKProfile *g_currentProfile;
 
 @implementation FBSDKProfile(Internal)
 
-+ (void)cacheProfile:(FBSDKProfile *) profile
++ (void)cacheProfile:(FBSDKProfile *)profile
 {
   NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
   if (profile) {

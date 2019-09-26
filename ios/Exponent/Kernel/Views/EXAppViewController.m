@@ -118,6 +118,15 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
     return;
   }
+
+  // we don't ever want to show any Expo UI in a production standalone app, so hard crash
+  if ([EXEnvironment sharedEnvironment].isDetached && ![_appRecord.appManager enablesDeveloperTools]) {
+    NSException *e = [NSException exceptionWithName:@"ExpoFatalError"
+                                             reason:[NSString stringWithFormat:@"Expo encountered a fatal error: %@", [error localizedDescription]]
+                                           userInfo:@{NSUnderlyingErrorKey: error}];
+    @throw e;
+  }
+
   NSString *domain = (error && error.domain) ? error.domain : @"";
   BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
 
@@ -179,6 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       self->_loadingView.manifest = manifest;
+      [self _overrideUserInterfaceStyle];
       [self _enforceDesiredDeviceOrientation];
       [self _rebuildBridge];
     });
@@ -219,12 +229,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
-  [self _whenManifestIsValidToOpen:manifest manifestUrl:appLoader.manifestUrl performBlock:^{
-    if ([EXKernel sharedInstance].browserController) {
-      [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
-    }
-    [self _rebuildBridgeWithLoadingViewManifest:manifest];
-  }];
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
+  }
+  [self _rebuildBridgeWithLoadingViewManifest:manifest];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
@@ -236,12 +244,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
-  [self _whenManifestIsValidToOpen:manifest manifestUrl:appLoader.manifestUrl performBlock:^{
-    [self _rebuildBridgeWithLoadingViewManifest:manifest];
-    if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
-      [self->_appRecord.appManager appLoaderFinished];
-    }
-  }];
+  [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
+    [self->_appRecord.appManager appLoaderFinished];
+  }
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error
@@ -332,6 +338,14 @@ NS_ASSUME_NONNULL_BEGIN
   [self _enforceDesiredDeviceOrientation];
 }
 
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
+      || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
+    [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
+  }
+}
+
 - (void)_enforceDesiredDeviceOrientation
 {
   RCTAssertMainQueue();
@@ -339,10 +353,13 @@ NS_ASSUME_NONNULL_BEGIN
   UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
   UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
   switch (mask) {
-    case UIInterfaceOrientationMaskPortrait:
+    case UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown:
       if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
         newOrientation = UIInterfaceOrientationPortrait;
       }
+      break;
+    case UIInterfaceOrientationMaskPortrait:
+      newOrientation = UIInterfaceOrientationPortrait;
       break;
     case UIInterfaceOrientationMaskPortraitUpsideDown:
       newOrientation = UIInterfaceOrientationPortraitUpsideDown;
@@ -370,6 +387,26 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
   }
   [UIViewController attemptRotationToDeviceOrientation];
+}
+
+#pragma mark - user interface style
+
+- (void)_overrideUserInterfaceStyle
+{
+  if (@available(iOS 13.0, *)) {
+    NSString *userInterfaceStyle = _appRecord.appLoader.manifest[@"ios"][@"userInterfaceStyle"];
+    self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
+  }
+}
+
+- (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
+  if ([userInterfaceStyleString isEqualToString:@"dark"]) {
+    return UIUserInterfaceStyleDark;
+  }
+  if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
+    return UIUserInterfaceStyleUnspecified;
+  }
+  return UIUserInterfaceStyleLight;
 }
 
 #pragma mark - Internal
@@ -422,9 +459,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
-  if (error.code == kEXErrorCodeAppForbidden) {
-    return NO;
-  }
   if (![_appRecord.appManager enablesDeveloperTools]) {
     BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
     if (shouldRecover) {
@@ -445,26 +479,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (_tmrAutoReloadDebounce) {
     [_tmrAutoReloadDebounce invalidate];
     _tmrAutoReloadDebounce = nil;
-  }
-}
-
-// this is deprecated in favor of the server side check
-// TODO(eric): remove
-- (void)_whenManifestIsValidToOpen:(NSDictionary *)manifest manifestUrl:(NSURL *) manifestUrl performBlock:(void (^)(void))block
-{
-  if (self.appRecord.appManager.requiresValidManifests && [EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController getIsValidHomeManifestToOpen:manifest manifestUrl:manifestUrl completion:^(BOOL isValid) {
-      if (isValid) {
-        block();
-      } else {
-        [self appLoader:self->_appRecord.appLoader didFailWithError:[NSError errorWithDomain:EXNetworkErrorDomain
-                                                                                        code:kEXErrorCodeAppForbidden
-                                                                                    userInfo:@{ NSLocalizedDescriptionKey: @"Expo Client can only be used to view your own projects. To view this project, please ensure you are signed in to the same Expo account that created it." }]];
-      }
-    }];
-  } else {
-    // no browser present, everything is valid
-    block();
   }
 }
 

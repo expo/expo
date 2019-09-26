@@ -1,13 +1,13 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXModuleRegistryDelegate.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMModuleRegistryDelegate.h>
 
-@interface EXScopedModuleRegistryDelegate : NSObject <EXModuleRegistryDelegate>
+@interface EXScopedModuleRegistryDelegate : NSObject <UMModuleRegistryDelegate>
 
 - (instancetype)initWithParams:(NSDictionary *)params;
 
-- (id<EXInternalModule>)pickInternalModuleImplementingInterface:(Protocol *)interface fromAmongModules:(NSArray<id<EXInternalModule>> *)internalModules;
+- (id<UMInternalModule>)pickInternalModuleImplementingInterface:(Protocol *)interface fromAmongModules:(NSArray<id<UMInternalModule>> *)internalModules;
 
 @end

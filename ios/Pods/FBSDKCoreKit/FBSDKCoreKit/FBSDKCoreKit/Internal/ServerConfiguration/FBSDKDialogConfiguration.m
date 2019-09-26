@@ -18,8 +18,6 @@
 
 #import "FBSDKDialogConfiguration.h"
 
-#import "FBSDKMacros.h"
-
 #define FBSDK_DIALOG_CONFIGURATION_APP_VERSIONS_KEY @"appVersions"
 #define FBSDK_DIALOG_CONFIGURATION_NAME_KEY @"name"
 #define FBSDK_DIALOG_CONFIGURATION_URL_KEY @"url"
@@ -36,12 +34,6 @@
     _appVersions = [appVersions copy];
   }
   return self;
-}
-
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithName:URL:appVersions:);
-  return [self initWithName:nil URL:nil appVersions:nil];
 }
 
 #pragma mark NSCoding

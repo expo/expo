@@ -16,12 +16,12 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXCamera/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXFileSystemInterface'
-  s.dependency 'EXImageLoaderInterface'
-  s.dependency 'EXPermissionsInterface'
-  s.dependency 'EXFaceDetectorInterface'
-  s.dependency 'EXBarCodeScannerInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMFileSystemInterface'
+  s.dependency 'UMImageLoaderInterface'
+  s.dependency 'UMPermissionsInterface'
+  s.dependency 'UMFaceDetectorInterface'
+  s.dependency 'UMBarCodeScannerInterface'
 end
 
   

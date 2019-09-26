@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI29_0_0/EXSensorsInterface/ABI29_0_0EXSensorsInterface/ABI29_0_0EXMagnetometerUncalibratedInterface.h

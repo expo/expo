@@ -1,8 +1,19 @@
 {
   "name": "expo-local-authentication",
-  "version": "1.1.0",
-  "description": "Expo module to authenticate device owner",
-  "main": "index.js",
+  "version": "7.0.0",
+  "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
+  "main": "build/LocalAuthentication.js",
+  "types": "build/LocalAuthentication.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -12,17 +23,29 @@
     "faceID",
     "fingerprint"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-local-authentication"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "peerDependencies": {
-    "expo-constants-interface": "~1.1.0"
+  "homepage": "https://docs.expo.io/versions/latest/sdk/local-authentication/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-constants-interface": "*"
   },
   "dependencies": {
-    "expo-core": "~1.2.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "flow-bin": "^0.77.0"
-  }
+    "expo-module-scripts": "~1.1.1"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

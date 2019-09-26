@@ -10,19 +10,19 @@ import android.view.TextureView;
 
 import java.util.List;
 
-import expo.core.ModuleRegistry;
-import expo.interfaces.barcodescanner.BarCodeScanner;
-import expo.interfaces.barcodescanner.BarCodeScannerProvider;
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
   private final ModuleRegistry mModuleRegistry;
   private int mCameraType;
   private SurfaceTexture mSurfaceTexture;
-  private boolean mIsStarting;
-  private boolean mIsStopping;
-  private boolean mIsChanging;
+  private volatile boolean mIsStarting;
+  private volatile boolean mIsStopping;
+  private volatile boolean mIsChanging;
   private BarCodeScannerView mBarCodeScannerView;
   private Camera mCamera;
 
@@ -122,6 +122,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         mCamera.startPreview();
         // send previews to `onPreviewFrame`
         mCamera.setPreviewCallback(this);
+        mBarCodeScannerView.layoutViewFinder();
       } catch (NullPointerException e) {
         e.printStackTrace();
       } catch (Exception e) {
@@ -199,9 +200,10 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
         int width = size.width;
         int height = size.height;
 
+        int properRotation = ExpoBarCodeScanner.getInstance().getRotation();
 
         final BarCodeScannerResult result = mBarCodeScanner.scan(mImageData, width,
-            height, ExpoBarCodeScanner.getInstance().getActualDeviceOrientation());
+            height, properRotation);
 
         if (result != null) {
           new Handler(Looper.getMainLooper()).post(new Runnable() {

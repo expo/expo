@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoIntentLauncher.js","sourceRoot":"","sources":["../src/ExpoIntentLauncher.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,kBAAkB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoIntentLauncher || {};\n"]}

@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppAuth/EXAppAuth+JSON.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilities.h>
 
 @implementation EXAppAuth (JSON)
 
@@ -19,13 +19,13 @@
 + (NSDictionary *)tokenResponseNativeToJSON:(OIDTokenResponse *)input
 {
   if (!input) return nil;
-  
+
   return @{
-           @"accessToken": nullIfEmpty([input accessToken]),
-           @"accessTokenExpirationDate": EXNullIfNil([[self class] dateNativeToJSON:[input accessTokenExpirationDate]]),
-           @"additionalParameters": EXNullIfNil([input additionalParameters]),
-           @"idToken": nullIfEmpty([input idToken]),
-           @"tokenType": nullIfEmpty([input tokenType]),
+           @"accessToken": UMNullIfNil([input accessToken]),
+           @"accessTokenExpirationDate": UMNullIfNil([[self class] dateNativeToJSON:[input accessTokenExpirationDate]]),
+           @"additionalParameters": UMNullIfNil([input additionalParameters]),
+           @"idToken": UMNullIfNil([input idToken]),
+           @"tokenType": UMNullIfNil([input tokenType]),
            };
 }
 

@@ -1,7 +1,9 @@
 package expo.modules.medialibrary;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,19 +19,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.ExpoMethod;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.interfaces.permissions.Permissions;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -41,13 +44,12 @@ import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_CREATION_T
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_DEFAULT;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_DURATION;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_HEIGHT;
-import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_ID;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MEDIA_TYPE;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MODIFICATION_TIME;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_WIDTH;
 
 
-public class MediaLibraryModule extends ExportedModule implements ModuleRegistryConsumer {
+public class MediaLibraryModule extends ExportedModule {
 
   private MediaStoreContentObserver mImagesObserver = null;
   private MediaStoreContentObserver mVideosObserver = null;
@@ -80,7 +82,6 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
         put("SortBy", Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
             put("default", SORT_BY_DEFAULT);
-            put("id", SORT_BY_ID);
             put("creationTime", SORT_BY_CREATION_TIME);
             put("modificationTime", SORT_BY_MODIFICATION_TIME);
             put("mediaType", SORT_BY_MEDIA_TYPE);
@@ -95,8 +96,49 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+  }
+
+  // TODO(@tsapeta): refactor together with expo-permissions
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
+
+    if (permissionsModule == null) {
+      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
+      return;
+    }
+    String[] permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+    permissionsModule.askForPermissions(permissions, new Permissions.PermissionsRequestListener() {
+      @Override
+      public void onPermissionsResult(int[] results) {
+        boolean isGranted = results[0] == PackageManager.PERMISSION_GRANTED;
+        Bundle response = new Bundle();
+
+        response.putString("status", isGranted ? "granted" : "denied");
+        response.putBoolean("granted", isGranted);
+        promise.resolve(response);
+      }
+    });
+  }
+
+  // TODO(@tsapeta): refactor together with expo-permissions
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
+
+    if (permissionsModule == null) {
+      promise.reject(ERROR_NO_PERMISSIONS_MODULE, ERROR_NO_PERMISSIONS_MODULE_MESSAGE);
+      return;
+    }
+    boolean isGranted = !isMissingPermissions();
+    Bundle response = new Bundle();
+
+    response.putString("status", isGranted ? "granted" : "denied");
+    response.putBoolean("granted", isGranted);
+    promise.resolve(response);
   }
 
   @ExpoMethod
@@ -157,7 +199,7 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
 
 
   @ExpoMethod
-  public void getAlbumsAsync(Promise promise) {
+  public void getAlbumsAsync(Map<String, Object> options /* unused on android atm */, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
@@ -309,6 +351,4 @@ public class MediaLibraryModule extends ExportedModule implements ModuleRegistry
       return countCursor.getInt(0);
     }
   }
-
-
 }

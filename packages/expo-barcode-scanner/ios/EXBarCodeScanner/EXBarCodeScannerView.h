@@ -2,16 +2,16 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXAppLifecycleListener.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMAppLifecycleListener.h>
 #import <EXBarCodeScanner/EXBarCodeScannerView.h>
 
-@interface EXBarCodeScannerView : UIView <EXAppLifecycleListener>
+@interface EXBarCodeScannerView : UIView <UMAppLifecycleListener>
 
 @property (nonatomic, assign) NSInteger presetCamera;
 @property (nonatomic, strong) NSArray *barCodeTypes;
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
 - (void)onReady;
 - (void)onMountingError:(NSDictionary *)event;
 - (void)onBarCodeScanned:(NSDictionary *)event;

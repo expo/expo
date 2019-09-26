@@ -4,7 +4,7 @@ package expo.modules.google.signin;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -16,7 +16,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.Map;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 public class Serialization {
 
@@ -49,7 +49,6 @@ public class Serialization {
         user.putString("photoURL", photoUrl != null ? photoUrl.toString() : null);
         user.putString("serverAuthCode", acct.getServerAuthCode());
         user.putBundle("auth", auth);
-        user.putString("serverAuthCode", acct.getServerAuthCode());
          // TODO: Bacon: If google ever surfaces this value, we should add it for parity with iOS
         user.putString("domain", null);
 

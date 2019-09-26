@@ -8,9 +8,9 @@ import android.hardware.Sensor;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.InternalModule;
 
-public class GyroscopeService extends SubscribableSensorService implements InternalModule, expo.interfaces.sensors.services.GyroscopeService {
+public class GyroscopeService extends SubscribableSensorService implements InternalModule, org.unimodules.interfaces.sensors.services.GyroscopeService {
   public GyroscopeService(Context context) {
     super(context);
   }
@@ -23,6 +23,6 @@ public class GyroscopeService extends SubscribableSensorService implements Inter
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(expo.interfaces.sensors.services.GyroscopeService.class);
+    return Collections.<Class>singletonList(org.unimodules.interfaces.sensors.services.GyroscopeService.class);
   }
 }

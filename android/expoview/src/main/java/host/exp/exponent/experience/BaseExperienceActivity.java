@@ -135,20 +135,14 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   public void onBackPressed() {
     if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("onBackPressed");
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      moveTaskToBack(true);
     } else {
-      invokeDefaultOnBackPressed();
+      moveTaskToBack(true);
     }
   }
 
   @Override
   public void invokeDefaultOnBackPressed() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      moveTaskToBack(true);
-    } else {
-      super.invokeDefaultOnBackPressed();
-    }
+    moveTaskToBack(true);
   }
 
   @Override
@@ -194,6 +188,12 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
         if (!isFatal) {
           return;
+        }
+
+        // we don't ever want to show any Expo UI in a production standalone app
+        // so hard crash in this case
+        if (Constants.isStandaloneApp() && !isDebugModeEnabled()) {
+          throw new RuntimeException("Expo encountered a fatal error: " + errorMessage.developerErrorMessage());
         }
 
         if (!isDebugModeEnabled()) {

@@ -1,14 +1,57 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXScopedBridgeModule.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTConvert.h>
 
-@protocol EXScreenOrientationScopedModuleDelegate
+#import "EXScopedEventEmitter.h"
 
-- (void)screenOrientationModule:(id)scopedOrientationModule
-didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
+typedef NS_ENUM(NSInteger, EXOrientation) {
+    EXOrientationPortrait,
+    EXOrientationPortraitUp,
+    EXOrientationPortraitDown,
+    EXOrientationLandscape,
+    EXOrientationLandscapeLeft,
+    EXOrientationLandscapeRight,
+    EXOrientationUnknown
+};
+
+typedef NS_ENUM(NSInteger, EXOrientationLock) {
+  EXOrientationDefaultLock,
+  EXOrientationAllLock,
+  EXOrientationPortraitLock,
+  EXOrientationPortraitUpLock,
+  EXOrientationPortraitDownLock,
+  EXOrientationLandscapeLock,
+  EXOrientationLandscapeLeftLock,
+  EXOrientationLandscapeRightLock,
+  EXOrientationOtherLock,
+  EXOrientationAllButUpsideDownLock // deprecated
+};
+
+@interface RCTConvert (OrientationLock)
+
++ (EXOrientationLock)EXOrientationLock:(nullable id)json;
 
 @end
 
-@interface EXScreenOrientation : EXScopedBridgeModule
+@protocol EXScreenOrientationScopedModuleDelegate
 
+- (void)screenOrientationModule:(nonnull id)scopedOrientationModule
+didChangeSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientationsForVisibleApp;
+
+- (void)removeOrientationChangeListener:(nonnull NSString *)experienceId;
+
+- (void)addOrientationChangeListener:(nonnull NSString *)experienceId subscriberModule:(nonnull id)subscriberModule;
+
+- (nullable UITraitCollection *)getTraitCollection;
+
+@end
+
+@interface EXScreenOrientation : EXScopedEventEmitter <RCTBridgeModule>
+
+- (void)handleScreenOrientationChange:(nullable UITraitCollection *)traitCollection;
+
++ (nonnull NSDictionary *)getStringToOrientationLockJSDict;
 @end

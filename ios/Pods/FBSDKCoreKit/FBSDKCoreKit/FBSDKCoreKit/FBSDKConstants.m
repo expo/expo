@@ -18,7 +18,34 @@
 
 #import "FBSDKConstants.h"
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSErrorDomain const FBSDKErrorDomain = @"com.facebook.sdk.core";
+
+#else
+
 NSString *const FBSDKErrorDomain = @"com.facebook.sdk.core";
+
+#endif
+
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSErrorUserInfoKey const FBSDKErrorArgumentCollectionKey = @"com.facebook.sdk:FBSDKErrorArgumentCollectionKey";
+NSErrorUserInfoKey const FBSDKErrorArgumentNameKey = @"com.facebook.sdk:FBSDKErrorArgumentNameKey";
+NSErrorUserInfoKey const FBSDKErrorArgumentValueKey = @"com.facebook.sdk:FBSDKErrorArgumentValueKey";
+NSErrorUserInfoKey const FBSDKErrorDeveloperMessageKey = @"com.facebook.sdk:FBSDKErrorDeveloperMessageKey";
+NSErrorUserInfoKey const FBSDKErrorLocalizedDescriptionKey = @"com.facebook.sdk:FBSDKErrorLocalizedDescriptionKey";
+NSErrorUserInfoKey const FBSDKErrorLocalizedTitleKey = @"com.facebook.sdk:FBSDKErrorLocalizedErrorTitleKey";
+
+NSErrorUserInfoKey const FBSDKGraphRequestErrorKey = @"com.facebook.sdk:FBSDKGraphRequestErrorKey";
+NSErrorUserInfoKey const FBSDKGraphRequestErrorCategoryKey = @"com.facebook.sdk:FBSDKGraphRequestErrorCategoryKey";
+NSErrorUserInfoKey const FBSDKGraphRequestErrorGraphErrorCodeKey = @"com.facebook.sdk:FBSDKGraphRequestErrorGraphErrorCodeKey";
+NSErrorUserInfoKey const FBSDKGraphRequestErrorGraphErrorSubcodeKey = @"com.facebook.sdk:FBSDKGraphRequestErrorGraphErrorSubcodeKey";
+NSErrorUserInfoKey const FBSDKGraphRequestErrorHTTPStatusCodeKey = @"com.facebook.sdk:FBSDKGraphRequestErrorHTTPStatusCodeKey";
+NSErrorUserInfoKey const FBSDKGraphRequestErrorParsedJSONResponseKey = @"com.facebook.sdk:FBSDKGraphRequestErrorParsedJSONResponseKey";
+
+#else
 
 NSString *const FBSDKErrorArgumentCollectionKey = @"com.facebook.sdk:FBSDKErrorArgumentCollectionKey";
 NSString *const FBSDKErrorArgumentNameKey = @"com.facebook.sdk:FBSDKErrorArgumentNameKey";
@@ -27,8 +54,11 @@ NSString *const FBSDKErrorDeveloperMessageKey = @"com.facebook.sdk:FBSDKErrorDev
 NSString *const FBSDKErrorLocalizedDescriptionKey = @"com.facebook.sdk:FBSDKErrorLocalizedDescriptionKey";
 NSString *const FBSDKErrorLocalizedTitleKey = @"com.facebook.sdk:FBSDKErrorLocalizedErrorTitleKey";
 
+NSString *const FBSDKGraphRequestErrorKey = @"com.facebook.sdk:FBSDKGraphRequestErrorCategoryKey";
 NSString *const FBSDKGraphRequestErrorCategoryKey = @"com.facebook.sdk:FBSDKGraphRequestErrorCategoryKey";
-NSString *const FBSDKGraphRequestErrorGraphErrorCode = @"com.facebook.sdk:FBSDKGraphRequestErrorGraphErrorCode";
-NSString *const FBSDKGraphRequestErrorGraphErrorSubcode = @"com.facebook.sdk:FBSDKGraphRequestErrorGraphErrorSubcode";
+NSString *const FBSDKGraphRequestErrorGraphErrorCodeKey = @"com.facebook.sdk:FBSDKGraphRequestErrorGraphErrorCodeKey";
+NSString *const FBSDKGraphRequestErrorGraphErrorSubcodeKey = @"com.facebook.sdk:FBSDKGraphRequestErrorGraphErrorSubcodeKey";
 NSString *const FBSDKGraphRequestErrorHTTPStatusCodeKey = @"com.facebook.sdk:FBSDKGraphRequestErrorHTTPStatusCodeKey";
 NSString *const FBSDKGraphRequestErrorParsedJSONResponseKey = @"com.facebook.sdk:FBSDKGraphRequestErrorParsedJSONResponseKey";
+
+#endif

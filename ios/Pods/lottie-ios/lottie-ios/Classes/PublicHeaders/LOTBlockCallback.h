@@ -11,7 +11,7 @@
 #import "LOTValueDelegate.h"
 
 /*!
- @brief A block that is used to change a Color value at keytime, the block is called continuously for a keypath while the aniamtion plays.
+ @brief A block that is used to change a Color value at keytime, the block is called continuously for a keypath while the animation plays.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyFrame When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyFrame When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -30,7 +30,7 @@ typedef CGColorRef _Nonnull (^LOTColorValueCallbackBlock)(CGFloat currentFrame,
                                                           CGColorRef _Nullable interpolatedColor);
 
 /*!
- @brief A block that is used to change a Number value at keytime, the block is called continuously for a keypath while the aniamtion plays.
+ @brief A block that is used to change a Number value at keytime, the block is called continuously for a keypath while the animation plays.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyFrame When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyFrame When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -48,7 +48,7 @@ typedef CGFloat (^LOTNumberValueCallbackBlock)(CGFloat currentFrame,
                                                CGFloat endValue,
                                                CGFloat interpolatedValue);
 /*!
- @brief A block that is used to change a Point value at keytime, the block is called continuously for a keypath while the aniamtion plays.
+ @brief A block that is used to change a Point value at keytime, the block is called continuously for a keypath while the animation plays.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyFrame When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyFrame When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -67,7 +67,7 @@ typedef CGPoint (^LOTPointValueCallbackBlock)(CGFloat currentFrame,
                                               CGPoint interpolatedPoint);
 
 /*!
- @brief A block that is used to change a Size value at keytime, the block is called continuously for a keypath while the aniamtion plays.
+ @brief A block that is used to change a Size value at keytime, the block is called continuously for a keypath while the animation plays.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyFrame When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyFrame When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.
@@ -86,7 +86,7 @@ typedef CGSize (^LOTSizeValueCallbackBlock)(CGFloat currentFrame,
                                             CGSize interpolatedSize);
 
 /*!
- @brief A block that is used to change a Path value at keytime, the block is called continuously for a keypath while the aniamtion plays.
+ @brief A block that is used to change a Path value at keytime, the block is called continuously for a keypath while the animation plays.
  @param currentFrame The current frame of the animation in the parent compositions time space.
  @param startKeyFrame When the block is called, startFrame is the most recent keyframe for the keypath in relation to the current time.
  @param endKeyFrame When the block is called, endFrame is the next keyframe for the keypath in relation to the current time.

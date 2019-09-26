@@ -18,7 +18,8 @@
 
 #import "FBSDKErrorConfiguration.h"
 
-#import "FBSDKCoreKit+Internal.h"
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+
 #import "FBSDKErrorRecoveryConfiguration.h"
 
 static NSString *const kErrorCategoryOther = @"other";
@@ -30,12 +31,6 @@ static NSString *const kErrorCategoryLogin = @"login";
 @implementation FBSDKErrorConfiguration
 {
   NSMutableDictionary *_configurationDictionary;
-}
-
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithDictionary:);
-  return [self initWithDictionary:nil];
 }
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary
@@ -93,7 +88,7 @@ static NSString *const kErrorCategoryLogin = @"login";
                                                     _configurationDictionary[code][@"*"] ?:
                                                     _configurationDictionary[@"*"][subcode] ?:
                                                     _configurationDictionary[@"*"][@"*"]);
-  if (configuration.errorCategory == FBSDKGraphRequestErrorCategoryRecoverable &&
+  if (configuration.errorCategory == FBSDKGraphRequestErrorRecoverable &&
       [FBSDKSettings clientToken] &&
       [request.parameters[@"access_token"] hasSuffix:[FBSDKSettings clientToken]]) {
     // do not attempt to recovery client tokens.
@@ -106,14 +101,14 @@ static NSString *const kErrorCategoryLogin = @"login";
 {
   for (NSDictionary *dictionary in array) {
     [dictionary enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *stop) {
-      FBSDKGraphRequestErrorCategory category;
+      FBSDKGraphRequestError category;
       NSString *action = dictionary[@"name"];
       if ([action isEqualToString:kErrorCategoryOther]) {
-        category = FBSDKGraphRequestErrorCategoryOther;
+        category = FBSDKGraphRequestErrorOther;
       } else if ([action isEqualToString:kErrorCategoryTransient]) {
-        category = FBSDKGraphRequestErrorCategoryTransient;
+        category = FBSDKGraphRequestErrorTransient;
       } else {
-        category = FBSDKGraphRequestErrorCategoryRecoverable;
+        category = FBSDKGraphRequestErrorRecoverable;
       }
       NSString *suggestion = dictionary[@"recovery_message"];
       NSArray *options = dictionary[@"recovery_options"];
@@ -129,18 +124,18 @@ static NSString *const kErrorCategoryLogin = @"login";
         NSArray *subcodes = codeSubcodesDictionary[@"subcodes"];
         if (subcodes.count > 0) {
           for (NSNumber *subcodeNumber in subcodes) {
-            currentSubcodes[[subcodeNumber stringValue]] = [[FBSDKErrorRecoveryConfiguration alloc]
-                                                            initWithRecoveryDescription:suggestion
-                                                            optionDescriptions:options
-                                                            category:category
-                                                            recoveryActionName:action];
-          }
-        } else {
-          currentSubcodes[@"*"] = [[FBSDKErrorRecoveryConfiguration alloc]
+            currentSubcodes[subcodeNumber.stringValue] = [[FBSDKErrorRecoveryConfiguration alloc]
                                                           initWithRecoveryDescription:suggestion
                                                           optionDescriptions:options
                                                           category:category
                                                           recoveryActionName:action];
+          }
+        } else {
+          currentSubcodes[@"*"] = [[FBSDKErrorRecoveryConfiguration alloc]
+                                   initWithRecoveryDescription:suggestion
+                                   optionDescriptions:options
+                                   category:category
+                                   recoveryActionName:action];
         }
       }
     }];
@@ -156,7 +151,9 @@ static NSString *const kErrorCategoryLogin = @"login";
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
-  NSDictionary *configurationDictionary = [decoder decodeObjectOfClass:[NSDictionary class] forKey:FBSDKERRORCONFIGURATION_DICTIONARY_KEY];
+  NSSet *classes = [[NSSet alloc] initWithObjects:[NSDictionary class], [FBSDKErrorRecoveryConfiguration class], nil];
+  NSDictionary *configurationDictionary = [decoder decodeObjectOfClasses:classes
+                                                                  forKey:FBSDKERRORCONFIGURATION_DICTIONARY_KEY];
   return [self initWithDictionary:configurationDictionary];
 }
 

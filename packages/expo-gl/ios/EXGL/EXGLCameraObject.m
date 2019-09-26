@@ -5,14 +5,14 @@
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
 
-#import <EXCameraInterface/EXCameraInterface.h>
+#import <UMCameraInterface/UMCameraInterface.h>
 
 #import <EXGL/EXGLCameraObject.h>
 #import <EXGL/EXGLContext.h>
 
 @interface EXGLCameraObject () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property (nonatomic, strong) id<EXCameraInterface> camera;
+@property (nonatomic, strong) id<UMCameraInterface> camera;
 @property (nonatomic, strong) EAGLContext *eaglCtx;
 @property (nonatomic, strong) AVCaptureVideoDataOutput *cameraOutput;
 @property (nonatomic, assign) CVOpenGLESTextureCacheRef cameraTextureCache;
@@ -21,7 +21,7 @@
 
 @implementation EXGLCameraObject
 
-- (instancetype)initWithContext:(EXGLContext *)glContext andCamera:(id<EXCameraInterface>)camera
+- (instancetype)initWithContext:(EXGLContext *)glContext andCamera:(id<UMCameraInterface>)camera
 {
   UEXGLContextId exglCtxId = [glContext contextId];
 

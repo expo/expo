@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/UMFontInterface/ABI33_0_0UMFontInterface/ABI33_0_0UMFontProcessorInterface.h

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/UMReactNativeAdapter/ABI33_0_0UMReactNativeAdapter/Services/ABI33_0_0UMReactLogHandler.h

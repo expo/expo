@@ -5,11 +5,14 @@
 //  Created by Gil Birman on 9/2/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import <GoogleMaps/GoogleMaps.h>
 #import <React/RCTBridge.h>
 #import "AIRGMSMarker.h"
 #import "AIRGoogleMap.h"
 #import "AIRGoogleMapCallout.h"
+#import "AIRGoogleMapCalloutSubview.h"
 
 @interface AIRGoogleMapMarker : UIView
 
@@ -24,6 +27,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onDragEnd;
 @property (nonatomic, copy) NSString *imageSrc;
+@property (nonatomic, copy) NSString *iconSrc;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *subtitle;
 @property (nonatomic, strong) UIColor *pinColor;
@@ -41,7 +45,11 @@
 - (UIView *)markerInfoContents;
 - (UIView *)markerInfoWindow;
 - (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker;
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker point:(CGPoint)point frame:(CGRect)frame;
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker subview:(AIRGoogleMapCalloutSubview*)subview point:(CGPoint)point frame:(CGRect)frame;
 - (void)didBeginDraggingMarker:(AIRGMSMarker *)marker;
 - (void)didEndDraggingMarker:(AIRGMSMarker *)marker;
 - (void)didDragMarker:(AIRGMSMarker *)marker;
 @end
+
+#endif

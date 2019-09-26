@@ -1,0 +1,4 @@
+{
+  "name": "expo-app-auth",
+  "platforms": ["ios", "android"]
+}

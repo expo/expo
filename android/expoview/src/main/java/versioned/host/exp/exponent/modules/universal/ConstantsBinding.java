@@ -4,17 +4,18 @@ package versioned.host.exp.exponent.modules.universal;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-
 import javax.inject.Inject;
 
-import expo.interfaces.constants.ConstantsInterface;
+import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.constants.ConstantsService;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -65,20 +66,34 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
+    constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
+    constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
+    constants.put("supportedExpoSdks", Constants.SDK_VERSIONS_LIST);
 
-    if (mExperienceProperties != null) {
-      constants.put("appOwnership", getAppOwnership());
-      constants.putAll(mExperienceProperties);
-    }
+    String appOwnership = getAppOwnership();
+
+    constants.put("appOwnership", appOwnership);
+    constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
     Map<String, Object> androidPlatform = new HashMap<>();
 
-    androidPlatform.put("versionCode", Constants.ANDROID_VERSION_CODE);
+    Integer versionCode = appOwnership.equals("expo") ? null : Constants.ANDROID_VERSION_CODE;
+    androidPlatform.put("versionCode", versionCode);
+
     platform.put("android", androidPlatform);
     constants.put("platform", platform);
+    constants.put("isDetached", Constants.isStandaloneApp());
 
     return constants;
+  }
+
+  public String getAppId() {
+    try {
+      return mManifest.getString("id");
+    } catch (JSONException e) {
+      return null;
+    }
   }
 
   public String getAppOwnership() {

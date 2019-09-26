@@ -23,8 +23,6 @@ NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
 
-const NSUInteger kEXErrorCodeAppForbidden = 424242;
-
 @interface EXKernel () <EXKernelAppRegistryDelegate>
 
 @end
@@ -166,12 +164,18 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
 
 - (BOOL)sendNotification:(EXPendingNotification *)notification
 {
-  EXKernelAppRecord *destinationApp = [_appRegistry newestRecordWithExperienceId:notification.experienceId];
+  EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithExperienceId:notification.experienceId];
+
+  // This allows home app record to receive notification events as well.
+  if (!destinationApp && [_appRegistry.homeAppRecord.experienceId isEqualToString:notification.experienceId]) {
+    destinationApp = _appRegistry.homeAppRecord;
+  }
+
   if (destinationApp) {
     // send the body to the already-open experience
-    [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
+    BOOL success = [self _dispatchJSEvent:@"Exponent.notification" body:notification.properties toApp:destinationApp];
     [self _moveAppToVisible:destinationApp];
-    return YES;
+    return success;
   } else {
     // no app is currently running for this experience id.
     // if we're Expo Client, we can query Home for a past experience in the user's history, and route the notification there.
@@ -211,10 +215,14 @@ const NSUInteger kEXErrorCodeAppForbidden = 424242;
   }
 }
 
-- (void)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
+- (BOOL)_dispatchJSEvent:(NSString *)eventName body:(NSDictionary *)eventBody toApp:(EXKernelAppRecord *)appRecord
 {
+  if (!appRecord.appManager.reactBridge) {
+    return NO;
+  }
   [appRecord.appManager.reactBridge enqueueJSCall:@"RCTDeviceEventEmitter.emit"
                                              args:eventBody ? @[eventName, eventBody] : @[eventName]];
+  return YES;
 }
 
 #pragma mark - App props

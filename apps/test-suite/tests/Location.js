@@ -2,14 +2,36 @@
 
 import { Platform } from 'react-native';
 
-import { Location, Permissions, Constants } from 'expo';
+import * as TaskManager from 'expo-task-manager';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
 import * as TestUtils from '../TestUtils';
+
+const BACKGROUND_LOCATION_TASK = 'background-location-updates';
+const GEOFENCING_TASK = 'geofencing-task';
 
 export const name = 'Location';
 
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
+
+  function testLocationShape(location) {
+    t.expect(typeof location === 'object').toBe(true);
+
+    const { coords, timestamp } = location;
+    const { latitude, longitude, altitude, accuracy, altitudeAccuracy, heading, speed } = coords;
+
+    t.expect(typeof latitude === 'number').toBe(true);
+    t.expect(typeof longitude === 'number').toBe(true);
+    t.expect(typeof altitude === 'number').toBe(true);
+    t.expect(typeof accuracy === 'number').toBe(true);
+    t.expect(Platform.OS !== 'ios' || typeof altitudeAccuracy === 'number').toBe(true);
+    t.expect(typeof heading === 'number').toBe(true);
+    t.expect(typeof speed === 'number').toBe(true);
+    t.expect(typeof timestamp === 'number').toBe(true);
+  }
 
   t.describe('Location', () => {
     t.describe('Location.getProviderStatusAsync()', () => {
@@ -49,6 +71,30 @@ export async function test(t) {
         );
       }
     });
+
+    t.describe('Location.enableNetworkProviderAsync()', () => {
+      // To properly test this, you need to change device's location mode to "Device only" in system settings.
+      // In this mode, network provider is off.
+
+      t.it(
+        'asks user to enable network provider or just resolves on iOS',
+        async () => {
+          try {
+            await Location.enableNetworkProviderAsync();
+
+            if (Platform.OS === 'android') {
+              const result = await Location.getProviderStatusAsync();
+              t.expect(result.networkAvailable).toBe(true);
+            }
+          } catch (error) {
+            // User has denied the dialog.
+            t.expect(error.code).toBe('E_LOCATION_SETTINGS_UNSATISFIED');
+          }
+        },
+        20000
+      );
+    });
+
     describeWithPermissions('Location.getCurrentPositionAsync()', () => {
       // Manual interaction:
       //   1. Just try
@@ -68,18 +114,8 @@ export async function test(t) {
             return Permissions.askAsync(Permissions.LOCATION);
           });
           if (status === 'granted') {
-            const {
-              coords: { latitude, longitude, altitude, accuracy, altitudeAccuracy, heading, speed },
-              timestamp,
-            } = await Location.getCurrentPositionAsync(options);
-            t.expect(typeof latitude === 'number').toBe(true);
-            t.expect(typeof longitude === 'number').toBe(true);
-            t.expect(typeof altitude === 'number').toBe(true);
-            t.expect(typeof accuracy === 'number').toBe(true);
-            t.expect(Platform.OS !== 'ios' || typeof altitudeAccuracy === 'number').toBe(true);
-            t.expect(typeof heading === 'number').toBe(true);
-            t.expect(typeof speed === 'number').toBe(true);
-            t.expect(typeof timestamp === 'number').toBe(true);
+            const location = await Location.getCurrentPositionAsync(options);
+            testLocationShape(location);
           } else {
             let error;
             try {
@@ -106,19 +142,19 @@ export async function test(t) {
       t.it(
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled',
-        testShapeOrUnauthorized({ enableHighAccuracy: false }),
+        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced }),
         timeout
       );
       t.it(
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled (when trying again immediately)',
-        testShapeOrUnauthorized({ enableHighAccuracy: false }),
+        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced }),
         timeout
       );
       t.it(
         'gets a result of the correct shape (with high accuracy), or ' +
           'throws error if no permission or disabled (when trying again immediately)',
-        testShapeOrUnauthorized({ enableHighAccuracy: true }),
+        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Highest }),
         timeout
       );
 
@@ -127,7 +163,7 @@ export async function test(t) {
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await testShapeOrUnauthorized({ enableHighAccuracy: false })();
+          await testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced })();
         },
         timeout + second
       );
@@ -137,10 +173,57 @@ export async function test(t) {
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await testShapeOrUnauthorized({ enableHighAccuracy: true })();
+          await testShapeOrUnauthorized({ accuracy: Location.Accuracy.Highest })();
         },
         timeout + second
       );
+
+      t.it(
+        'resolves when called simultaneously',
+        async () => {
+          await Promise.all([
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }),
+            Location.getCurrentPositionAsync(),
+          ]);
+        },
+        timeout
+      );
+
+      t.it('resolves when watchPositionAsync is running', async () => {
+        const subscriber = await Location.watchPositionAsync({}, () => {});
+        await Location.getCurrentPositionAsync();
+        subscriber.remove();
+      });
+    });
+
+    describeWithPermissions('Location.watchPositionAsync()', () => {
+      t.it('gets a result of the correct shape', async () => {
+        await new Promise(async (resolve, reject) => {
+          const subscriber = await Location.watchPositionAsync({}, location => {
+            testLocationShape(location);
+            subscriber.remove();
+            resolve();
+          });
+        });
+      });
+
+      t.it('can be called simultaneously', async () => {
+        const spies = [1, 2, 3].map(number => t.jasmine.createSpy(`watchPosition${number}`));
+
+        const subscribers = await Promise.all(
+          spies.map(spy => Location.watchPositionAsync({}, spy))
+        );
+
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            spies.forEach(spy => t.expect(spy).toHaveBeenCalled());
+            resolve();
+          }, 1000);
+        });
+
+        subscribers.forEach(subscriber => subscriber.remove());
+      });
     });
 
     describeWithPermissions('Location.getHeadingAsync()', () => {
@@ -239,5 +322,141 @@ export async function test(t) {
         t.expect(error instanceof TypeError).toBe(true);
       });
     });
+
+    t.describe('Location.hasServicesEnabledAsync()', () => {
+      t.it('checks if location services are enabled', async () => {
+        const result = await Location.hasServicesEnabledAsync();
+        t.expect(result).toBe(true);
+      });
+    });
+
+    describeWithPermissions('Location - background location updates', () => {
+      async function expectTaskAccuracyToBe(accuracy) {
+        const locationTask = await TaskManager.getTaskOptionsAsync(BACKGROUND_LOCATION_TASK);
+
+        t.expect(locationTask).toBeDefined();
+        t.expect(locationTask.accuracy).toBe(accuracy);
+      }
+
+      t.it('starts location updates', async () => {
+        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      });
+
+      t.it('has started location updates', async () => {
+        const started = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+        t.expect(started).toBe(true);
+      });
+
+      t.it('defaults to balanced accuracy', async () => {
+        await expectTaskAccuracyToBe(Location.Accuracy.Balanced);
+      });
+
+      t.it('can update existing task', async () => {
+        const newAccuracy = Location.Accuracy.Highest;
+        await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+          accuracy: newAccuracy,
+        });
+        expectTaskAccuracyToBe(newAccuracy);
+      });
+
+      t.it('stops location updates', async () => {
+        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      });
+
+      t.it('has stopped location updates', async () => {
+        const started = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+        t.expect(started).toBe(false);
+      });
+    });
+
+    describeWithPermissions('Location - geofencing', () => {
+      const regions = [
+        {
+          identifier: 'Kraków, Poland',
+          radius: 8000,
+          latitude: 50.0468548,
+          longitude: 19.9348341,
+          notifyOnEntry: true,
+          notifyOnExit: true,
+        },
+        {
+          identifier: 'Apple',
+          radius: 1000,
+          latitude: 37.3270145,
+          longitude: -122.0310273,
+          notifyOnEntry: true,
+          notifyOnExit: true,
+        },
+      ];
+
+      async function expectTaskRegionsToBeLike(regions) {
+        const geofencingTask = await TaskManager.getTaskOptionsAsync(GEOFENCING_TASK);
+
+        t.expect(geofencingTask).toBeDefined();
+        t.expect(geofencingTask.regions).toBeDefined();
+        t.expect(geofencingTask.regions.length).toBe(regions.length);
+
+        for (let i = 0; i < regions.length; i++) {
+          t.expect(geofencingTask.regions[i].identifier).toBe(regions[i].identifier);
+          t.expect(geofencingTask.regions[i].radius).toBe(regions[i].radius);
+          t.expect(geofencingTask.regions[i].latitude).toBe(regions[i].latitude);
+          t.expect(geofencingTask.regions[i].longitude).toBe(regions[i].longitude);
+        }
+      }
+
+      t.it('starts geofencing', async () => {
+        await Location.startGeofencingAsync(GEOFENCING_TASK, regions);
+      });
+
+      t.it('has started geofencing', async () => {
+        const started = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+        t.expect(started).toBe(true);
+      });
+
+      t.it('is monitoring correct regions', async () => {
+        expectTaskRegionsToBeLike(regions);
+      });
+
+      t.it('can update geofencing regions', async () => {
+        const newRegions = regions.slice(1);
+        await Location.startGeofencingAsync(GEOFENCING_TASK, newRegions);
+        expectTaskRegionsToBeLike(newRegions);
+      });
+
+      t.it('stops geofencing', async () => {
+        await Location.stopGeofencingAsync(GEOFENCING_TASK);
+      });
+
+      t.it('has stopped geofencing', async () => {
+        const started = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);
+        t.expect(started).toBe(false);
+      });
+
+      t.it('throws when starting geofencing with incorrect regions', async () => {
+        await (async () => {
+          let error;
+          try {
+            await Location.startGeofencingAsync(GEOFENCING_TASK, []);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error instanceof Error).toBe(true);
+        })();
+
+        await (async () => {
+          let error;
+          try {
+            await Location.startGeofencingAsync(GEOFENCING_TASK, [{ longitude: 'not a number' }]);
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error instanceof TypeError).toBe(true);
+        })();
+      });
+    });
   });
 }
+
+// Define empty tasks, otherwise tasks might automatically unregister themselves if no task is defined.
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK, () => {});
+TaskManager.defineTask(GEOFENCING_TASK, () => {});

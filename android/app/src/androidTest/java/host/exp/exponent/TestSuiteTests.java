@@ -6,11 +6,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.rule.GrantPermissionRule;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.Until;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.Espresso;
+import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.Until;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -38,10 +39,10 @@ import host.exp.exponent.utils.TestConfig;
 import host.exp.exponent.utils.TestContacts;
 import host.exp.exponent.utils.TestReporterRule;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static host.exp.exponent.utils.ExponentMatchers.withTestId;
 
 @RunWith(ExpoTestRunner.class)
@@ -90,17 +91,19 @@ public class TestSuiteTests extends BaseTestClass {
     return !ExponentBuildConstants.TEST_APP_URI.equals("");
   }
 
-  private void runTestSuiteTest(String testSuiteUri, boolean shouldAddDeepLink) {
+  private void runTestSuiteTest(String testSuiteUriString, boolean shouldAddDeepLink) {
+    Uri testSuiteUri = Uri.parse(testSuiteUriString);
+
     ensureContactsAdded();
 
     if (shouldAddDeepLink) {
       String deepLink = TestConfig.get().toString();
-      testSuiteUri = testSuiteUri + "/--/" + deepLink;
+      testSuiteUri = Uri.withAppendedPath(testSuiteUri, "/--/" + deepLink);
     }
 
     // Launch the app
     Context context = InstrumentationRegistry.getContext();
-    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(testSuiteUri));
+    Intent intent = new Intent(Intent.ACTION_VIEW, testSuiteUri);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
 
@@ -115,7 +118,12 @@ public class TestSuiteTests extends BaseTestClass {
       JSONObject object = new JSONObject(result);
 
       int numFailed = object.getInt("failed");
-      testReporterRule.logTestInfo(object.getString("results"));
+      if (object.has("results")) {
+        testReporterRule.logTestInfo(object.getString("results"));
+      }
+      if (object.has("failures")) {
+        testReporterRule.logTestInfo(object.getString("failures"));
+      }
 
       if (numFailed > 0) {
         throw new AssertionError(numFailed + " JS test(s) failed");
@@ -131,8 +139,12 @@ public class TestSuiteTests extends BaseTestClass {
   public RuleChain chain = RuleChain.outerRule(testReporterRule).around(new RetryTestRule(2));
 
   @Rule
-  public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS, Manifest.permission.ACCESS_COARSE_LOCATION
-      , Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_CONTACTS);
+  public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
+      Manifest.permission.SYSTEM_ALERT_WINDOW, Manifest.permission.READ_CONTACTS,
+      Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+      Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+      Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR
+  );
 
   @Test
   @ExpoTestSuiteTest
@@ -146,49 +158,16 @@ public class TestSuiteTests extends BaseTestClass {
     runTestSuiteTest(ExponentBuildConstants.TEST_APP_URI, true);
   }
 
+  @Ignore
   @Test
   @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("31.0.0")
-  public void sdk31TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-31-0-0", false);
-  }
-
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("30.0.0")
-  public void sdk30TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-30-0-0", false);
-  }
-
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("28.0.0")
-  public void sdk28TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-28-0-0", false);
-  }
-
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("27.0.0")
-  public void sdk27TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-27-0-0", false);
-  }
-
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("26.0.0")
-  public void sdk26TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-26-0-0", false);
-  }
-
-  @Test
-  @ExpoTestSuiteTest
-  @ExpoSdkVersionTest("25.0.0")
-  public void sdk25TestSuite() {
-    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-25-0-0", false);
+  @ExpoSdkVersionTest("33.0.0")
+  public void sdk33TestSuite() {
+    runTestSuiteTest("exp://exp.host/@exponent_ci_bot/test-suite-sdk-33-0-0", false);
   }
 
   @Test
   @ExpoAlwaysPassThroughFilter
-  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {}
+  public void junitIsSillyAndWillFailIfThereIsntOneTestRunPerFile() {
+  }
 }

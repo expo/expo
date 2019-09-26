@@ -7,7 +7,9 @@
 @interface EXSensorManager ()
 
 @property (nonatomic, strong) CMMotionManager *manager;
+@property (nonatomic, strong) CMAltimeter *altimeter;
 @property (nonatomic, strong) NSMutableDictionary *accelerometerHandlers;
+@property (nonatomic, strong) NSMutableDictionary *barometerHandlers;
 @property (nonatomic, strong) NSMutableDictionary *deviceMotionHandlers;
 @property (nonatomic, strong) NSMutableDictionary *gyroscopeHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerHandlers;
@@ -21,6 +23,7 @@
 {
   if (self = [super init]) {
     _accelerometerHandlers = [[NSMutableDictionary alloc] init];
+    _barometerHandlers = [[NSMutableDictionary alloc] init];
     _deviceMotionHandlers = [[NSMutableDictionary alloc] init];
     _gyroscopeHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerHandlers = [[NSMutableDictionary alloc] init];
@@ -37,12 +40,22 @@
   return _manager;
 }
 
+- (CMAltimeter *)altimeter
+{
+  if (!_altimeter) {
+    _altimeter = [[CMAltimeter alloc] init];
+  }
+  return _altimeter;
+}
+
+
 - (void)dealloc
 {
   [self.manager stopAccelerometerUpdates];
   [self.manager stopDeviceMotionUpdates];
   [self.manager stopGyroUpdates];
   [self.manager stopMagnetometerUpdates];
+  [self.altimeter stopRelativeAltitudeUpdates];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:experienceId
@@ -261,6 +274,64 @@
                  });
      }
    }];
+}
+
+- (void)sensorModuleDidSubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock
+{
+  if ([self isBarometerAvailable]) {
+    _barometerHandlers[experienceId] = handlerBlock;
+  }
+  
+  __weak EXSensorManager *weakSelf = self;
+  [[self altimeter] startRelativeAltitudeUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAltitudeData * _Nullable data, NSError * _Nullable error) {
+    __strong EXSensorManager *strongSelf = weakSelf;
+    if (strongSelf && data) {
+      for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
+        handler(@{
+                  @"pressure": @([data.pressure intValue] * 10), // conversion from kPa to hPa
+                  @"relativeAltitude": data.relativeAltitude,
+                  });
+      }
+    }
+  }];
+}
+
+- (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId
+{
+  [_barometerHandlers removeObjectForKey:experienceId];
+  if (_barometerHandlers.count == 0) {
+    [_altimeter stopRelativeAltitudeUpdates];
+  }
+}
+
+- (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs
+{
+  // Do nothing
+}
+
+- (BOOL)isBarometerAvailable
+{
+  return [CMAltimeter isRelativeAltitudeAvailable];
+}
+
+- (BOOL)isAccelerometerAvailable {
+  return [self.manager isAccelerometerAvailable];
+}
+
+- (BOOL)isDeviceMotionAvailable {
+  return [self.manager isDeviceMotionAvailable];
+}
+
+- (BOOL)isGyroAvailable {
+  return [self.manager isGyroAvailable];
+}
+
+- (BOOL)isMagnetometerAvailable {
+  return [self.manager isMagnetometerAvailable];
+}
+
+- (BOOL)isMagnetometerUncalibratedAvailable {
+  return [self.manager isMagnetometerAvailable];
 }
 
 @end
