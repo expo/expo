@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>host.exp.exponent</groupId>
   <artifactId>expo-av</artifactId>
-  <version>7.0.0</version>
+  <version>7.0.1</version>
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
@@ -35,6 +35,12 @@
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp-urlconnection</artifactId>
       <version>3.10.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.android.support</groupId>
+      <artifactId>support-annotations</artifactId>
+      <version>28.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
