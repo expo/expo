@@ -275,14 +275,14 @@ async function renameJniLibsAsync(version: string) {
   await processJavaCodeAsync('fbjni', abiVersion);
   await processJavaCodeAsync('fb', abiVersion);
 
-  console.log('\n\nThese are the JNI lib names we modified:');
+  console.log('\nThese are the JNI lib names we modified:');
   await spawnAsync(
     `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "_abi${abiVersion}"`,
     [],
     { shell: true, stdio: 'inherit' }
   );
 
-  console.log('\n\nAnd here are all instances of loadLibrary:');
+  console.log('\nAnd here are all instances of loadLibrary:');
   await spawnAsync(
     `find ${versionedReactAndroidJavaPath} -name "*.java" | xargs grep -i "loadLibrary"`,
     [],
@@ -462,11 +462,11 @@ async function cleanUpAsync(version: string) {
 export async function addVersionAsync(version: string) {
   console.log(' 🛠   1/7: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync();
-  console.log(' ✅  1/7: Finished');
+  console.log(' ✅  1/7: Finished\n\n');
 
   console.log(' 🛠   2/7: Renaming JNI libs in android/versioned-react-native...');
   await renameJniLibsAsync(version);
-  console.log(' ✅  2/7: Finished');
+  console.log(' ✅  2/7: Finished\n\n');
 
   console.log(' 🛠   3/7: Building versioned ReactAndroid AAR...');
   await spawnAsync(
@@ -478,7 +478,7 @@ export async function addVersionAsync(version: string) {
       stdio: 'inherit',
     }
   );
-  console.log(' ✅  3/7: Finished');
+  console.log(' ✅  3/7: Finished\n\n');
 
   console.log(' 🛠   4/7: Creating versioned expoview package...');
   await spawnAsync(
@@ -489,15 +489,15 @@ export async function addVersionAsync(version: string) {
       cwd: SCRIPT_DIR,
     }
   );
-  console.log(' ✅  4/7: Finished');
+  console.log(' ✅  4/7: Finished\n\n');
 
   console.log(' 🛠   5/7: Creating versioned unimodule packages...');
   await copyUnimodulesAsync(version);
-  console.log(' ✅  5/7: Finished');
+  console.log(' ✅  5/7: Finished\n\n');
 
   console.log(' 🛠   6/7: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  6/7: Finished');
+  console.log(' ✅  6/7: Finished\n\n');
 
   console.log(' 🛠   7/7: Misc cleanup...');
   await cleanUpAsync(version);
