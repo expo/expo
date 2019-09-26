@@ -80,17 +80,6 @@ android {
   }
 }
 
-devicefarm {
-  projectName System.getenv("DEVICEFARM_PROJECT_NAME")
-  devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
-  executionTimeoutMinutes 40
-  authentication {
-
-    accessKey System.getenv("AWS_ACCESS_KEY_ID")
-    secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
-  }
-}
-
 configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
@@ -98,17 +87,23 @@ configurations.all {
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   resolutionStrategy.dependencySubstitution {
     substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+    substitute module("com.facebook.react:react-native:33.0.0") with project(":ReactAndroid")
+    substitute module("host.exp.exponent:expoview:35.0.0@aar") with project(":expoview")
   }
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
-// WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-/* UNCOMMENT WHEN DISTRIBUTING
-apply from: 'expo.gradle'
-END UNCOMMENT WHEN DISTRIBUTING */
-// WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+//apply from: 'expo.gradle'
 
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+
+repositories {
+
+  // For detach
+  maven {
+    url "$rootDir/../node_modules/expokit/maven"
+  }
+}
 
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -175,48 +170,15 @@ dependencies {
   testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
   testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
-  /* UNCOMMENT WHEN DISTRIBUTING
   implementation('host.exp.exponent:expoview:35.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
   }
-  END UNCOMMENT WHEN DISTRIBUTING */
 
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-
-  // BEGIN_SDK_UNVERSIONED
-  implementation(project(path: ':expoview'))
-  // END_SDK_UNVERSIONED
-
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-
-  // ADD_NEW_SDKS_HERE
-
-
-  // BEGIN_SDK_35
-  implementation(project(':expoview-abi35_0_0'))
-  // END_SDK_35
-
-  // BEGIN_SDK_34
-  implementation(project(':expoview-abi34_0_0'))
-  // END_SDK_34
-
-  // BEGIN_SDK_33
-  implementation(project(':expoview-abi33_0_0'))
-  // END_SDK_33
-
-  // This is not needed in shell apps, the Amplitude module will include this dep if installed
-  // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
-  implementation 'com.amplitude:android-sdk:2.9.2'
-
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-  /* UNCOMMENT WHEN DISTRIBUTING
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
   api 'com.facebook.react:react-native:33.0.0'
-  END UNCOMMENT WHEN DISTRIBUTING */
+
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
   /* UNCOMMENT WHEN DISTRIBUTING

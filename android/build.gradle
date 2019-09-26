@@ -31,30 +31,8 @@ buildscript {
 
 allprojects {
   repositories {
-    // For non-detach
     maven {
-      url "$rootDir/maven"
-    }
-    // For old expoviews to work
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi33_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi34_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi35_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/maven"
-    }
-    // For detach
-    maven {
-      url "$rootDir/../node_modules/expokit/maven"
-    }
-    maven {
-      // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-      url "$rootDir/maven-test"
+      url "$rootDir/../react-native-lab/node_modules/react-native/android"
     }
     google()
     jcenter()

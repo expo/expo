@@ -53,6 +53,24 @@ android {
   }
 }
 
+repositories {
+  // For old expoviews to work
+  maven {
+    url "$rootDir/versioned-abis/expoview-abi33_0_0/maven"
+  }
+  maven {
+    url "$rootDir/versioned-abis/expoview-abi34_0_0/maven"
+  }
+  maven {
+    url "$rootDir/versioned-abis/expoview-abi35_0_0/maven"
+  }
+  maven {
+    url "$rootDir/versioned-abis/maven"
+  }
+  maven {
+    url "$rootDir/maven"
+  }
+}
 
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])

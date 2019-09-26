@@ -108,6 +108,30 @@ configurations.all {
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
+repositories {
+  maven {
+    url "$rootDir/maven"
+  }
+  // For old expoviews to work
+  maven {
+    url "$rootDir/versioned-abis/expoview-abi33_0_0/maven"
+  }
+  maven {
+    url "$rootDir/versioned-abis/expoview-abi34_0_0/maven"
+  }
+  maven {
+    url "$rootDir/versioned-abis/expoview-abi35_0_0/maven"
+  }
+  maven {
+    url "$rootDir/versioned-abis/maven"
+  }
+
+  maven {
+    // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
+    url "$rootDir/maven-test"
+  }
+}
+
 dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'com.android.support:multidex:1.0.3'

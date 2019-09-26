@@ -1,4 +1,4 @@
-include ':app', ':client'
+include ':app', ':bare', ':client'
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
