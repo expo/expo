@@ -16,7 +16,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import expo.modules.ota.EmbeddedResponse;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -166,12 +165,12 @@ public class ExponentHttpClient {
 
   public String getHardCodedResponse(final String uri) {
     try {
-      for (EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
+      for (Constants.EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
         String normalizedUri = normalizeUri(uri);
 
-        if (normalizedUri.equals(normalizeUri(embeddedResponse.getUrl()))) {
+        if (normalizedUri.equals(normalizeUri(embeddedResponse.url))) {
 
-          String strippedAssetsPath = embeddedResponse.getResponseFilePath();
+          String strippedAssetsPath = embeddedResponse.responseFilePath;
           if (strippedAssetsPath.startsWith("assets://")) {
             strippedAssetsPath = strippedAssetsPath.substring("assets://".length());
           }
@@ -189,20 +188,20 @@ public class ExponentHttpClient {
 
   private void tryHardCodedResponse(final String uri, final Call call, final SafeCallback callback, final Response initialResponse, final IOException initialException) {
     try {
-      for (EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
+      for (Constants.EmbeddedResponse embeddedResponse : Constants.EMBEDDED_RESPONSES) {
         String normalizedUri = normalizeUri(uri);
         // We only want to use embedded responses once. After they are used they will be added
         // to the OkHttp cache and we should use the version from that cache. We don't want a situation
         // where we have version 1 of a manifest saved as the embedded response, get version 2 saved
         // to the OkHttp cache, cache gets evicted, and we regress to version 1. Want to only use
         // monotonically increasing manifest versions.
-        if (normalizedUri.equals(normalizeUri(embeddedResponse.getUrl()))) {
+        if (normalizedUri.equals(normalizeUri(embeddedResponse.url))) {
           Response response = new Response.Builder()
               .request(call.request())
               .protocol(Protocol.HTTP_1_1)
               .code(200)
               .message("OK")
-              .body(responseBodyForFile(embeddedResponse.getResponseFilePath(), MediaType.parse(embeddedResponse.getMediaType())))
+              .body(responseBodyForFile(embeddedResponse.responseFilePath, MediaType.parse(embeddedResponse.mediaType)))
               .build();
           callback.onCachedResponse(new OkHttpV1ExpoResponse(response), true);
           logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri);

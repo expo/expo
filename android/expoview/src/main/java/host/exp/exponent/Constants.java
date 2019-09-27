@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import expo.modules.ota.EmbeddedResponse;
 import host.exp.exponent.analytics.EXL;
 
 public class Constants {
@@ -25,7 +24,7 @@ public class Constants {
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
     public boolean ARE_REMOTE_UPDATES_ENABLED;
-    public List<EmbeddedResponse> EMBEDDED_RESPONSES;
+    public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
     // no longer used, but we need to leave this here so that people's old detached apps don't break
@@ -131,6 +130,18 @@ public class Constants {
 
   public static boolean isStandaloneApp() {
     return INITIAL_URL != null;
+  }
+
+  public static class EmbeddedResponse {
+    public final String url;
+    public final String responseFilePath;
+    public final String mediaType;
+
+    public EmbeddedResponse(final String url, final String responseFilePath, final String mediaType) {
+      this.url = url;
+      this.responseFilePath = responseFilePath;
+      this.mediaType = mediaType;
+    }
   }
 
   public static String getVersionName(Context context) {
