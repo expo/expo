@@ -1,6 +1,6 @@
 {
   "name": "expo-battery",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "main": "build/Battery.js",
   "types": "build/Battery.d.ts",
@@ -35,5 +35,5 @@
   "peerDependencies": {
     "@unimodules/core": "~1.0.0"
   },
-  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
+  "gitHead": "3f0c35582264db3b56998c33a466af02c56f00cd"
 }

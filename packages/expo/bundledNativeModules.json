@@ -78,7 +78,7 @@
   "react-native-safe-area-context": "~0.3.6",
   "react-native-shared-element": "~0.5.1",
   "expo-application": "~1.0.0",
-  "expo-battery": "~1.0.0",
+  "expo-battery": "~1.0.1",
   "expo-cellular": "~1.0.0",
   "expo-device": "~1.0.0",
   "expo-network": "~1.0.0",
