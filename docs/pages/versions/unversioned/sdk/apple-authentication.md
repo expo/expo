@@ -27,7 +27,7 @@ You can do limited testing of this library on the iOS simulator. However, not al
 
 ## API
 
-```ts
+```js
 import * as AppleAuthentication from 'expo-apple-authentication';
 ```
 
