@@ -2,7 +2,14 @@ import omit from 'lodash/omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { findNodeHandle, Image, NativeComponent, StyleSheet, View, ViewPropTypes } from 'react-native';
+import {
+  findNodeHandle,
+  Image,
+  NativeComponent,
+  StyleSheet,
+  View,
+  ViewPropTypes,
+} from 'react-native';
 
 import {
   assertStatusValuesInBounds,
@@ -38,7 +45,7 @@ export {
   ReadyForDisplayEvent,
   ResizeMode,
   VideoState,
-}
+};
 
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
@@ -403,7 +410,14 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     // Replace selected native props
     // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: NativeProps = {
-      ...omit(this.props, 'source', 'onPlaybackStatusUpdate', 'usePoster', 'posterSource', ...Object.keys(status)),
+      ...omit(
+        this.props,
+        'source',
+        'onPlaybackStatusUpdate',
+        'usePoster',
+        'posterSource',
+        ...Object.keys(status)
+      ),
       style: StyleSheet.flatten([_STYLES.base, this.props.style]),
       source,
       resizeMode: nativeResizeMode,

@@ -30,9 +30,10 @@ This document will guide you through the process of releasing a new version of E
 
     **Why:** So that developers who used `expo-cli` to download Expo client to their devices can download the update.
 
-    **How:** This is probably a subject to change, but at the moment:
-      - go to `universe/tools`
-      - run `gulp add-android-apk --app {path to tested APK} --appVersion {appVersion}`
+    **How:**
+    - Open CircleCI on the release branch and go to the `client` workflow. Once `client_android` job is finished, approve `client_android_apk_release_approve` job and follow the next job `client_android_apk_release` which takes and uploads the artifact archive from `client_android` job to staging.
+    - Test if this APK works as expected. Connect Android device to your computer or open up an emulator and then run expotools command `et client-install -p android` to install and launch an APK.
+    - When you're ready to sync the versions change to production, run `et promote-versions`.
 
 5. **Submit the application to Play Store**
 

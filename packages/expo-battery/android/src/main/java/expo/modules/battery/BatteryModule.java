@@ -75,19 +75,25 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
   static protected void onBatteryStateChange(BatteryState batteryState) {
     Bundle result = new Bundle();
     result.putInt("batteryState", batteryState.getValue());
-    mEventEmitter.emit(BATTERY_CHARGED_EVENT_NAME, result);
+    if (mEventEmitter != null) {
+      mEventEmitter.emit(BATTERY_CHARGED_EVENT_NAME, result);
+    }
   }
 
   static protected void onLowPowerModeChange(boolean lowPowerMode) {
     Bundle result = new Bundle();
     result.putBoolean("lowPowerMode", lowPowerMode);
-    mEventEmitter.emit(POWERMODE_EVENT_NAME, result);
+    if (mEventEmitter != null) {
+      mEventEmitter.emit(POWERMODE_EVENT_NAME, result);
+    }
   }
 
   static protected void onBatteryLevelChange(float BatteryLevel) {
     Bundle result = new Bundle();
     result.putFloat("batteryLevel", BatteryLevel);
-    mEventEmitter.emit(BATTERY_LEVEL_EVENT_NAME, result);
+    if (mEventEmitter != null) {
+      mEventEmitter.emit(BATTERY_LEVEL_EVENT_NAME, result);
+    }
   }
 
   static protected BatteryState batteryStatusNativeToJS(int status) {

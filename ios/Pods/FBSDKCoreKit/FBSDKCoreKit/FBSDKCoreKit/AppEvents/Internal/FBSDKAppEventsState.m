@@ -18,7 +18,7 @@
 
 #import "FBSDKAppEventsState.h"
 
-#import "FBSDKBasicUtility+Internal.h"
+#import "FBSDKBasicUtility.h"
 #import "FBSDKRestrictiveDataFilterManager.h"
 
 #define FBSDK_APPEVENTSTATE_ISIMPLICIT_KEY @"isImplicit"

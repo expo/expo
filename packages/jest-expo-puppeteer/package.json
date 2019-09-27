@@ -39,10 +39,10 @@
     "serve": "^11.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.1",
+    "expo-module-scripts": "~1.1.1",
     "react": "16.8.3"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a",
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },

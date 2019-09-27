@@ -7,17 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0950EA690F96705097C7F08AFB5C449F /* EXOtaUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = F98FC11D56642318B3551A73AE93F963 /* EXOtaUpdater.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0A14591905DD2BF3E1C7802CB758D89F /* EXOta-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B032DABA086163B2D2825F28FD8383C8 /* EXOta-dummy.m */; };
-		0B80302E0AAC6600FF278AD2B5872D16 /* EXKeyValueStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = F046A32553520543A72EB28F7D40A34E /* EXKeyValueStorage.m */; };
-		4634E988D772104F544229F2B1D82C13 /* EXOtaModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EF39FEC300B25EA79F7529DE33487FA3 /* EXOtaModule.m */; };
-		4A046C299B65E67CF47DDD9F412A35CB /* EXOtaUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = 099DDF158B1E45FE4DE9903A3F0D5951 /* EXOtaUpdater.m */; };
-		7DF02CAA6E1348E6A903A462DEBDC748 /* EXOtaModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 637217AE9E87B5010A64B1E3F69226ED /* EXOtaModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9DCCCCA605A87D2B1D95CB694A55C654 /* EXKeyValueStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DAE79B69E6030F5BAD43326CC9B8689 /* EXKeyValueStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2704E00B2ECCECF9296567EE4A97D7CA /* EXOtaModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A096B03CAAF77A38FB8B0E3FD90CCCFF /* EXOtaModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		37B5B1D3FF89ABFF1E7C11DE32360FE3 /* EXOtaModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B2846B27356C41003EE71F733CACC92D /* EXOtaModule.m */; };
+		40B0B76CF68B61971565BE0296BCD505 /* EXKeyValueStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 8FBF2389A666FD91A101131211147D0E /* EXKeyValueStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4CD24922F32AE4D681D7C0043AF913E0 /* EXOtaUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = E4ED4C06A9ADFF0EADF947A767B3A3FE /* EXOtaUpdater.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		51C7616884A63D7ED38752F79A3DB4F6 /* EXOtaPersistance.m in Sources */ = {isa = PBXBuildFile; fileRef = EE68A621221D4729F4B8DDCEC50CAF8B /* EXOtaPersistance.m */; };
+		6AA0E768D254D5048B44718AAC426143 /* EXExpoManifestRequestConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 54B29732B0C3E0737D88EFE0BFB7445C /* EXExpoManifestRequestConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		80970B5738B4CA8EAA22C044B48DAD53 /* EXOtaUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = 52E578F9A813540E7FD3DD2C37371FAF /* EXOtaUpdater.m */; };
+		A7EBD20AE331F0B7796FA6B8F1A893A0 /* EXOta.h in Headers */ = {isa = PBXBuildFile; fileRef = CCABCEBD3CE4AF7A972EC0E8B1D29FC6 /* EXOta.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B3F6C6DD21B0EB1D5AD2E63F0B185C2B /* EXOta.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B4AC3ED1976DD8F6CFC00A476F6D02 /* EXOta.m */; };
+		D525762E5C7ECC827BF9433E96E1085C /* EXOtaPersistance.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D48DCEECD43532E10B6BEA78FF058CA /* EXOtaPersistance.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DAC8285ED737C86F8E3A2A34D6D449FC /* EXOta-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DD501B4F027E00201246865E5BA82DBD /* EXOta-dummy.m */; };
+		ED295CA56CCAEAD45EE87A0858EFC633 /* EXExpoManifestRequestConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = CE67FCAB75E0B4423223F31F52E6FF8B /* EXExpoManifestRequestConfig.m */; };
+		FB83485215DC034EF76B8DE3FC1C3B01 /* EXKeyValueStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 81AC7803C8E6C5A541C24D1B1D7E2053 /* EXKeyValueStorage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		75BB76AFE92682A14D33A519AAD29F84 /* PBXContainerItemProxy */ = {
+		5D7DE4BB0EAD18AD14EBD7E276EF0214 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7799C7F7AB2F80C52CCFE3C372525F6F /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -27,22 +33,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		099DDF158B1E45FE4DE9903A3F0D5951 /* EXOtaUpdater.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaUpdater.m; path = EXOta/EXOtaUpdater.m; sourceTree = "<group>"; };
-		17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXOta.xcconfig; sourceTree = "<group>"; };
 		42901338C01ACFBACD664E8B98D88A12 /* libEXOta.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXOta.a; path = libEXOta.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		637217AE9E87B5010A64B1E3F69226ED /* EXOtaModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaModule.h; path = EXOta/EXOtaModule.h; sourceTree = "<group>"; };
-		6DAA2BE1058E9D2973FDA0F7C4103DBB /* EXOta.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXOta.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		52E578F9A813540E7FD3DD2C37371FAF /* EXOtaUpdater.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaUpdater.m; path = EXOta/EXOtaUpdater.m; sourceTree = "<group>"; };
+		54B29732B0C3E0737D88EFE0BFB7445C /* EXExpoManifestRequestConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXExpoManifestRequestConfig.h; path = EXOta/EXExpoManifestRequestConfig.h; sourceTree = "<group>"; };
+		54C421928129607A234434232C31C506 /* EXOta.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXOta.xcconfig; sourceTree = "<group>"; };
 		7799C7F7AB2F80C52CCFE3C372525F6F /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		9DAE79B69E6030F5BAD43326CC9B8689 /* EXKeyValueStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXKeyValueStorage.h; path = EXOta/EXKeyValueStorage.h; sourceTree = "<group>"; };
-		B032DABA086163B2D2825F28FD8383C8 /* EXOta-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXOta-dummy.m"; sourceTree = "<group>"; };
-		DFFBF0B81621F22FAF2AA8B7976AFAC4 /* EXOta-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXOta-prefix.pch"; sourceTree = "<group>"; };
-		EF39FEC300B25EA79F7529DE33487FA3 /* EXOtaModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaModule.m; path = EXOta/EXOtaModule.m; sourceTree = "<group>"; };
-		F046A32553520543A72EB28F7D40A34E /* EXKeyValueStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXKeyValueStorage.m; path = EXOta/EXKeyValueStorage.m; sourceTree = "<group>"; };
-		F98FC11D56642318B3551A73AE93F963 /* EXOtaUpdater.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaUpdater.h; path = EXOta/EXOtaUpdater.h; sourceTree = "<group>"; };
+		81AC7803C8E6C5A541C24D1B1D7E2053 /* EXKeyValueStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXKeyValueStorage.m; path = EXOta/EXKeyValueStorage.m; sourceTree = "<group>"; };
+		884317EFD63DD221F8623B777539FB7C /* EXOta-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXOta-prefix.pch"; sourceTree = "<group>"; };
+		89B4AC3ED1976DD8F6CFC00A476F6D02 /* EXOta.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOta.m; path = EXOta/EXOta.m; sourceTree = "<group>"; };
+		8D48DCEECD43532E10B6BEA78FF058CA /* EXOtaPersistance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaPersistance.h; path = EXOta/EXOtaPersistance.h; sourceTree = "<group>"; };
+		8FBF2389A666FD91A101131211147D0E /* EXKeyValueStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXKeyValueStorage.h; path = EXOta/EXKeyValueStorage.h; sourceTree = "<group>"; };
+		A096B03CAAF77A38FB8B0E3FD90CCCFF /* EXOtaModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaModule.h; path = EXOta/EXOtaModule.h; sourceTree = "<group>"; };
+		B2846B27356C41003EE71F733CACC92D /* EXOtaModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaModule.m; path = EXOta/EXOtaModule.m; sourceTree = "<group>"; };
+		CCABCEBD3CE4AF7A972EC0E8B1D29FC6 /* EXOta.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOta.h; path = EXOta/EXOta.h; sourceTree = "<group>"; };
+		CE67FCAB75E0B4423223F31F52E6FF8B /* EXExpoManifestRequestConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXExpoManifestRequestConfig.m; path = EXOta/EXExpoManifestRequestConfig.m; sourceTree = "<group>"; };
+		DD501B4F027E00201246865E5BA82DBD /* EXOta-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXOta-dummy.m"; sourceTree = "<group>"; };
+		E1858D8447948AD18286395BDA6A9514 /* EXOta.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXOta.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		E4ED4C06A9ADFF0EADF947A767B3A3FE /* EXOtaUpdater.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaUpdater.h; path = EXOta/EXOtaUpdater.h; sourceTree = "<group>"; };
+		EE68A621221D4729F4B8DDCEC50CAF8B /* EXOtaPersistance.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaPersistance.m; path = EXOta/EXOtaPersistance.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		3DC505833F9F2AB52DF35BF920580AFB /* Frameworks */ = {
+		1256C600FDE66F45F638CFDE4FE28981 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -67,26 +79,43 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		77375786F06B777DFD86A2FADF767B85 /* EXOta */ = {
+		887A3FA60144C9912AB0DE7750E044D2 /* EXOta */ = {
 			isa = PBXGroup;
 			children = (
-				9DAE79B69E6030F5BAD43326CC9B8689 /* EXKeyValueStorage.h */,
-				F046A32553520543A72EB28F7D40A34E /* EXKeyValueStorage.m */,
-				637217AE9E87B5010A64B1E3F69226ED /* EXOtaModule.h */,
-				EF39FEC300B25EA79F7529DE33487FA3 /* EXOtaModule.m */,
-				F98FC11D56642318B3551A73AE93F963 /* EXOtaUpdater.h */,
-				099DDF158B1E45FE4DE9903A3F0D5951 /* EXOtaUpdater.m */,
-				849A8C29E1D794E7B284114E805C7A84 /* Pod */,
-				EF5F5B683DF72749933D45864CEF0178 /* Support Files */,
+				54B29732B0C3E0737D88EFE0BFB7445C /* EXExpoManifestRequestConfig.h */,
+				CE67FCAB75E0B4423223F31F52E6FF8B /* EXExpoManifestRequestConfig.m */,
+				8FBF2389A666FD91A101131211147D0E /* EXKeyValueStorage.h */,
+				81AC7803C8E6C5A541C24D1B1D7E2053 /* EXKeyValueStorage.m */,
+				CCABCEBD3CE4AF7A972EC0E8B1D29FC6 /* EXOta.h */,
+				89B4AC3ED1976DD8F6CFC00A476F6D02 /* EXOta.m */,
+				A096B03CAAF77A38FB8B0E3FD90CCCFF /* EXOtaModule.h */,
+				B2846B27356C41003EE71F733CACC92D /* EXOtaModule.m */,
+				8D48DCEECD43532E10B6BEA78FF058CA /* EXOtaPersistance.h */,
+				EE68A621221D4729F4B8DDCEC50CAF8B /* EXOtaPersistance.m */,
+				E4ED4C06A9ADFF0EADF947A767B3A3FE /* EXOtaUpdater.h */,
+				52E578F9A813540E7FD3DD2C37371FAF /* EXOtaUpdater.m */,
+				E8D3F5C237E5054CBCBF974E8F22EDE3 /* Pod */,
+				AE528951A0290787D9AF92C4896F3163 /* Support Files */,
 			);
 			name = EXOta;
 			path = "../../packages/expo-ota/ios";
 			sourceTree = "<group>";
 		};
-		849A8C29E1D794E7B284114E805C7A84 /* Pod */ = {
+		AE528951A0290787D9AF92C4896F3163 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				6DAA2BE1058E9D2973FDA0F7C4103DBB /* EXOta.podspec */,
+				54C421928129607A234434232C31C506 /* EXOta.xcconfig */,
+				DD501B4F027E00201246865E5BA82DBD /* EXOta-dummy.m */,
+				884317EFD63DD221F8623B777539FB7C /* EXOta-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXOta";
+			sourceTree = "<group>";
+		};
+		E8D3F5C237E5054CBCBF974E8F22EDE3 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				E1858D8447948AD18286395BDA6A9514 /* EXOta.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -95,21 +124,10 @@
 			isa = PBXGroup;
 			children = (
 				20D42FC4A313C22E4BFC5982A0806281 /* Dependencies */,
-				77375786F06B777DFD86A2FADF767B85 /* EXOta */,
+				887A3FA60144C9912AB0DE7750E044D2 /* EXOta */,
 				2D250F21126D2CDAF335FFA6E4D813AA /* Frameworks */,
 				F03E3210E9A6B05D3FCD1D280E7386AC /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		EF5F5B683DF72749933D45864CEF0178 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */,
-				B032DABA086163B2D2825F28FD8383C8 /* EXOta-dummy.m */,
-				DFFBF0B81621F22FAF2AA8B7976AFAC4 /* EXOta-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXOta";
 			sourceTree = "<group>";
 		};
 		F03E3210E9A6B05D3FCD1D280E7386AC /* Products */ = {
@@ -123,13 +141,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		4A52FAA2D63C405A1DB0397A8EBDF60D /* Headers */ = {
+		6E4A98C285EF6137F7F896975F6BE9AC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9DCCCCA605A87D2B1D95CB694A55C654 /* EXKeyValueStorage.h in Headers */,
-				7DF02CAA6E1348E6A903A462DEBDC748 /* EXOtaModule.h in Headers */,
-				0950EA690F96705097C7F08AFB5C449F /* EXOtaUpdater.h in Headers */,
+				6AA0E768D254D5048B44718AAC426143 /* EXExpoManifestRequestConfig.h in Headers */,
+				40B0B76CF68B61971565BE0296BCD505 /* EXKeyValueStorage.h in Headers */,
+				A7EBD20AE331F0B7796FA6B8F1A893A0 /* EXOta.h in Headers */,
+				2704E00B2ECCECF9296567EE4A97D7CA /* EXOtaModule.h in Headers */,
+				D525762E5C7ECC827BF9433E96E1085C /* EXOtaPersistance.h in Headers */,
+				4CD24922F32AE4D681D7C0043AF913E0 /* EXOtaUpdater.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,16 +159,16 @@
 /* Begin PBXNativeTarget section */
 		0EFFE1CC81989F6A8BAED5E4079EBEA9 /* EXOta */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1676E090CBBA777892AC1A63A5D7F388 /* Build configuration list for PBXNativeTarget "EXOta" */;
+			buildConfigurationList = 392F34C867E7DA7DE53CBCAACC54297E /* Build configuration list for PBXNativeTarget "EXOta" */;
 			buildPhases = (
-				4A52FAA2D63C405A1DB0397A8EBDF60D /* Headers */,
-				D4F4320DBA474551B10BE5F7BF34931D /* Sources */,
-				3DC505833F9F2AB52DF35BF920580AFB /* Frameworks */,
+				6E4A98C285EF6137F7F896975F6BE9AC /* Headers */,
+				1C8444803E8BFD1FC4D8D1A8DF1E1BBE /* Sources */,
+				1256C600FDE66F45F638CFDE4FE28981 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				20B269FCF87A053AB396BE97515D1472 /* PBXTargetDependency */,
+				0B949B1643A15E569E9098FAC3D22759 /* PBXTargetDependency */,
 			);
 			name = EXOta;
 			productName = EXOta;
@@ -186,24 +207,27 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D4F4320DBA474551B10BE5F7BF34931D /* Sources */ = {
+		1C8444803E8BFD1FC4D8D1A8DF1E1BBE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B80302E0AAC6600FF278AD2B5872D16 /* EXKeyValueStorage.m in Sources */,
-				0A14591905DD2BF3E1C7802CB758D89F /* EXOta-dummy.m in Sources */,
-				4634E988D772104F544229F2B1D82C13 /* EXOtaModule.m in Sources */,
-				4A046C299B65E67CF47DDD9F412A35CB /* EXOtaUpdater.m in Sources */,
+				ED295CA56CCAEAD45EE87A0858EFC633 /* EXExpoManifestRequestConfig.m in Sources */,
+				FB83485215DC034EF76B8DE3FC1C3B01 /* EXKeyValueStorage.m in Sources */,
+				DAC8285ED737C86F8E3A2A34D6D449FC /* EXOta-dummy.m in Sources */,
+				B3F6C6DD21B0EB1D5AD2E63F0B185C2B /* EXOta.m in Sources */,
+				37B5B1D3FF89ABFF1E7C11DE32360FE3 /* EXOtaModule.m in Sources */,
+				51C7616884A63D7ED38752F79A3DB4F6 /* EXOtaPersistance.m in Sources */,
+				80970B5738B4CA8EAA22C044B48DAD53 /* EXOtaUpdater.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		20B269FCF87A053AB396BE97515D1472 /* PBXTargetDependency */ = {
+		0B949B1643A15E569E9098FAC3D22759 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 75BB76AFE92682A14D33A519AAD29F84 /* PBXContainerItemProxy */;
+			targetProxy = 5D7DE4BB0EAD18AD14EBD7E276EF0214 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -268,9 +292,9 @@
 			};
 			name = Release;
 		};
-		79B69282155B10B3D0044B59E8C20419 /* Release */ = {
+		7EC70DFD9325B04EE1278A16CF754FC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */;
+			baseConfigurationReference = 54C421928129607A234434232C31C506 /* EXOta.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -289,9 +313,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		CBE09E4ADCCD06A0AAFDC0A4F20EF639 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -357,9 +380,9 @@
 			};
 			name = Debug;
 		};
-		E5058B0E139AEE1D99EE4B17E42E661C /* Debug */ = {
+		CBF26BC7380F7837A333D8FDEEC2C5A5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 17754CE3053327AD0FE88AA1C83D51D2 /* EXOta.xcconfig */;
+			baseConfigurationReference = 54C421928129607A234434232C31C506 /* EXOta.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -378,17 +401,18 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1676E090CBBA777892AC1A63A5D7F388 /* Build configuration list for PBXNativeTarget "EXOta" */ = {
+		392F34C867E7DA7DE53CBCAACC54297E /* Build configuration list for PBXNativeTarget "EXOta" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E5058B0E139AEE1D99EE4B17E42E661C /* Debug */,
-				79B69282155B10B3D0044B59E8C20419 /* Release */,
+				7EC70DFD9325B04EE1278A16CF754FC4 /* Debug */,
+				CBF26BC7380F7837A333D8FDEEC2C5A5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

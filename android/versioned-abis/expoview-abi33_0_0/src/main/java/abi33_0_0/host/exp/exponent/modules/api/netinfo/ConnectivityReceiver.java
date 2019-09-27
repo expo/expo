@@ -11,7 +11,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.net.ConnectivityManagerCompat;
+import androidx.core.net.ConnectivityManagerCompat;
 import android.telephony.TelephonyManager;
 
 import abi33_0_0.com.facebook.react.bridge.Promise;

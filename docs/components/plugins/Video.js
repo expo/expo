@@ -26,6 +26,10 @@ function mobileAndTabletCheck() {
 const isMobileOrTablet = mobileAndTabletCheck();
 
 export default class Video extends React.Component {
+  static defaultProps = {
+    loop: true,
+  };
+
   state = {
     forceShowControls: false,
   };
@@ -94,7 +98,7 @@ export default class Video extends React.Component {
                     : this.props.controls
                 }
                 playsinline
-                loop
+                loop={this.props.loop}
               />
               {isMobileOrTablet ? null : (
                 <div

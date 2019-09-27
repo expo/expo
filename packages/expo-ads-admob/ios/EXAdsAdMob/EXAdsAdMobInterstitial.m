@@ -134,7 +134,7 @@ UM_EXPORT_METHOD_AS(dismissAd,
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
     UIViewController *presentedViewController = self.utilities.currentViewController;
-    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
+    if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) hasPrefix:@"GAD"]) {
       [presentedViewController dismissViewControllerAnimated:true completion:^{
         resolve(nil);
         UM_ENSURE_STRONGIFY(self);

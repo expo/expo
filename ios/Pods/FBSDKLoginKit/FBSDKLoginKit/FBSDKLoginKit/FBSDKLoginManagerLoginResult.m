@@ -18,7 +18,11 @@
 
 #import "FBSDKLoginManagerLoginResult+Internal.h"
 
+#ifdef COCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
 #import "FBSDKCoreKit+Internal.h"
+#endif
 
 @implementation FBSDKLoginManagerLoginResult {
   NSMutableDictionary *_mutableLoggingExtras;

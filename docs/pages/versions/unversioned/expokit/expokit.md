@@ -174,6 +174,14 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - Go to `android/app/build.gradle` (same file) and replace `api 'com.facebook.react:react-native:[OLD SDK VERSION]'` with `api 'com.facebook.react:react-native:[NEW SDK VERSION]'`.
 - Go to `android/app/build.gradle` (same file) and upgrade JSC version by replcaing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
 
+If upgrading from SDK34:
+1. Remove or comment out the following three lines in android/app/build.gradle as they are no longer used:
+```
+ annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+ implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
+ implementation "com.raizlabs.android:DBFlow:2.2.1"
+ ```
+
 If upgrading from SDK32 or below:
 
 1. If you haven't already done so when upgrading your iOS project, install `react-native-unimodules@^0.5.0` in your project (`yarn add -D react-native-unimodules@^0.5.0` or `npm install --save-dev react-native-unimodules@^0.5.0` if you prefer npm over Yarn).

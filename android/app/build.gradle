@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.26.1'
+    classpath 'io.fabric.tools:gradle:1.31.0'
   }
 }
 apply plugin: 'com.android.application'
@@ -39,7 +39,7 @@ android {
     // END VERSIONS
 
     multiDexEnabled true
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -95,6 +95,11 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  resolutionStrategy.dependencySubstitution {
+    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+  }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -108,14 +113,14 @@ apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation 'com.android.support:multidex:1.0.1'
+  implementation 'androidx.multidex:multidex:2.0.0'
 
   // Our dependencies
-  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'androidx.appcompat:appcompat:1.0.0'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'androidx.appcompat:appcompat:1.0.0'
   implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
@@ -147,7 +152,7 @@ dependencies {
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
+  implementation "androidx.exifinterface:exifinterface:1.0.0"
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.6.0'
 
@@ -156,19 +161,24 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
   // Testing
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-  androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
+  androidTestImplementation 'androidx.test:runner:1.1.0'
+  androidTestImplementation "androidx.annotation:annotation:1.0.0"
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
-  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
+  androidTestImplementation 'junit:junit:4.12'
+  androidTestImplementation 'org.mockito:mockito-core:1.10.19'
+  testImplementation 'org.robolectric:robolectric:3.8'
+  androidTestImplementation 'androidx.test:runner:1.1.0'
+  androidTestImplementation 'androidx.test:rules:1.2.0'
+
+  testImplementation 'androidx.test:runner:1.1.0'
+  testImplementation 'androidx.test:rules:1.2.0'
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'
-  testImplementation 'org.robolectric:robolectric:3.8'
-  testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
-  testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
   implementation('host.exp.exponent:expoview:35.0.0@aar') {

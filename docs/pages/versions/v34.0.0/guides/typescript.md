@@ -2,21 +2,30 @@
 title: Using TypeScript
 ---
 
-[TypeScript](https://www.typescriptlang.org/) - "JavaScript that scales." TypeScript is a superset of JavaScript which gives you static types and powerful tooling in [Visual Studio Code](https://code.visualstudio.com/).
+[TypeScript](https://www.typescriptlang.org/) - "JavaScript that scales." TypeScript is a superset of JavaScript which gives you static types and powerful tooling in [Visual Studio Code](https://code.visualstudio.com/) including autocompletion and useful inline warnings for type errors.
 
-We are currently in the process of updating our entire SDK to use TypeScript and we will provide first class support in the very near future. For the moment, support is provided through the Expo user community maintained Expo SDK type definitions, which you can contribute to [here](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/expo) if you encounter any deficiencies. Now let's walk through how to set up TypeScript on a blank Expo app initialized through `expo-cli`. If you'd rather just jump right ahead to the finished result, you can clone [this repository](https://github.com/expo/typescript-starter-example).
+TypeScript has first-class support in Expo &mdash; the JavaScript portion of the Expo SDK is built using TypeScript. So let's look at how you can use it.
 
-## Installation
+## Starting from scratch: using a TypeScript template
 
-We need to install three packages: the `typescript` compiler, the `expo` type definition and the `react-native` type definition.
+The easiest way to get started is to initialize your new project using a TypeScript template. When you run `expo init` choose one of the templates with TypeScript in the name and then run `yarn tsc` or `npx tsc` to typecheck the project.
 
-```
-npm install --save-dev typescript@^3.3.0 @types/expo@^32.0.0 @types/react-native@^0.57.0
-```
+When you create new source files in your project you should use the `.ts` extension or the `.tsx` if the file includes React components.
 
-## Configuration
+## Integrating TypeScript in your existing project
 
-Create a file in the root of your project called `tsconfig.json` and put this in it:
+- Initialize a new project using a TypeScript template as described above.
+- Copy over `tsconfig.json` to your project
+- Install the appropriate package versions specified in the new projects `package.json` for `@types/react`, `@types/react-native`, and `typescript`
+- Rename files to convert them to TypeScript. For example, you would rename `App.js` to `App.tsx`. We use the `.tsx` extension because the file includes React components (using JSX). If the file did not include any React components, we should use the `.ts` file extension.
+
+## Code editor integration
+
+Visual Studio Code itself is written in TypeScript and has fantastic support for it out of the box. Other editors may require editional setup, consult the documentation for your editor as needed.
+
+## Confguring the TypeScript compiler
+
+`tsconfig.json` contains a variety of options that allow you to customize the behavior of the TypeScript compiler. For example, by default we enable `"noEmit"`, which tells the compiler only to typecheck and not to actually output the compiled JavaScript files (Metro, the React Native packager, takes care of that for us).
 
 ```json
 {
@@ -31,12 +40,19 @@ Create a file in the root of your project called `tsconfig.json` and put this in
 }
 ```
 
-For information on these properties, see the [tsconfig.json documentation](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+The default configuration is forgiving and makes it easier to adopt TypeScript. If you'd like to opt-in to more strict type checking, you can add `"strict": true` to the `compilerOptions`. We recommend enabling this to minimize the chance of introducing runtime errors.
 
-## Rename your files
+Certain language features may require additional configuration, for example if you'd like to use decorators you will need to add the `experimentalDecorators` option. For more information on the available properties see the [TypeScript compiler options documentation](https://www.typescriptlang.org/docs/handbook/compiler-options.html) documentation.
 
-Let's rename `App.js` to `App.tsx`. We use the `.tsx` extension because the file includes React components (using JSX). If the file did not include any React components, we should use the `.ts` file extension.
 
-## You are now using TypeScript
+## Learning how to use TypeScript
 
-Now everything is ready and you can run `expo start` and open the app. If you open the project in Visual Studio Code and start working on it, you will see that suddenly the editor is much more helpful than before - autocompletion and suggestions, useful warnings when you making a typo, annoying warnings when you think you're doing something correctly but actually you're not, etc. Enjoy, and read the [TypeScript Handbook](https://www.typescriptlang.org/docs/home.html) to continue your journey to learning TypeScript.
+A good place to start learning TypeScript is the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/basic-types.html).
+
+### TypeScript and React components
+
+We recommend reading over and referring to the [React TypeScript CheatSheet](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet) to learn how to type your React components in a variety of common situations.
+
+#### Advanced types
+
+If you would like to go deeper and learn how to create more expressive and powerful types, we recommend the [Advanced Static Types in TypeScript course](https://egghead.io/courses/advanced-static-types-in-typescript) (this requires an egghead.io subscription).

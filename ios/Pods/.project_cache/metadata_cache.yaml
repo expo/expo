@@ -1182,10 +1182,6 @@ UMTaskManagerInterface:
   LABEL: UMTaskManagerInterface
   PROJECT_PATH: UMTaskManagerInterface.xcodeproj
   UUID: A565C99DEFBAFA44A1B5C3B49ADD8A84
-UMUpdatesInterface:
-  LABEL: UMUpdatesInterface
-  PROJECT_PATH: UMUpdatesInterface.xcodeproj
-  UUID: D13FCFBCE0B7576252B4C832586F65EF
 yoga:
   LABEL: yoga
   PROJECT_PATH: yoga.xcodeproj

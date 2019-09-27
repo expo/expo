@@ -34,7 +34,7 @@ FOUNDATION_EXPORT NSString *const FBSDKAppLinkRefererUrl;
                               webURL:(NSURL *)webURL
                     isBackToReferrer:(BOOL)isBackToReferrer;
 
-/*! return if this AppLink is to go back to referrer. */
+/** return if this AppLink is to go back to referrer. */
 @property (nonatomic, assign, readonly, getter=isBackToReferrer) BOOL backToReferrer;
 
 @end

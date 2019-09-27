@@ -44,9 +44,12 @@ ABI35_0_0RCT_EXPORT_MODULE();
   return dispatch_get_main_queue();
 }
 
-ABI35_0_0RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getPreferences)
+- (NSDictionary *)constantsToExport
 {
-  return @{ @"colorScheme": ABI35_0_0RNCColorSchemePreference(nil)};
+    return @{
+        @"initialPreferences":
+            @{ @"colorScheme": ABI35_0_0RNCColorSchemePreference(nil) }
+    };
 }
 
 - (void)appearanceChanged:(NSNotification *)notification

@@ -1,4 +1,3 @@
-/* eslint-env jasmine, jest */
 import { mount } from 'enzyme';
 import React from 'react';
 import { LinearGradient } from '..';
@@ -12,7 +11,8 @@ it(`renders a complex gradient`, () => {
       locations={[0.5, 1]}
     />
   );
-  // console.log('component:', component.debug({ verbose: true }));
-  expect(component.find('ViewManagerAdapter_ExpoLinearGradient').prop('proxiedProperties')).toMatchSnapshot();
-});
 
+  expect(
+    component.find('ViewManagerAdapter_ExpoLinearGradient').prop('proxiedProperties')
+  ).toMatchSnapshot();
+});
