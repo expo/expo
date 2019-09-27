@@ -10,21 +10,17 @@ install! 'cocoapods',
 
 target 'Exponent' do
   # Expo Client dependencies
-  pod 'Amplitude-iOS', '~> 4.6', :inhibit_warnings => true
-  pod 'Analytics', '~> 3.7', :inhibit_warnings => true
-  pod 'AppAuth', '~> 1.2', :inhibit_warnings => true
   pod 'CocoaLumberjack', '~> 3.5.3', :inhibit_warnings => true
-  pod 'Crashlytics', '~> 3.13.4', :inhibit_warnings => true
-  pod 'FBAudienceNetwork', '5.5.0', :inhibit_warnings => true, :project_name => "Facebook"
-  pod 'FBSDKCoreKit', '~> 5.6.0', :inhibit_warnings => true, :project_name => "Facebook"
-  pod 'FBSDKLoginKit', '~> 5.6.0', :inhibit_warnings => true, :project_name => "Facebook"
   pod 'Fabric', '~> 1.10.2', :inhibit_warnings => true
-  pod 'GoogleSignIn', '~> 5.0', :inhibit_warnings => true, :project_name => "Google"
-  pod 'GoogleMaps', '~> 3.3', :inhibit_warnings => true, :project_name => "Google"
-  pod 'Google-Maps-iOS-Utils', '~> 2.1.0', :inhibit_warnings => true, :project_name => "Google"
+
+  # Client & ExpoKit
+  pod 'Crashlytics', '~> 3.13.4', :inhibit_warnings => true
+
+  # ExpoKit dependencies
+  pod 'GoogleMaps', '~> 3.3', :inhibit_warnings => true
+  pod 'Google-Maps-iOS-Utils', '~> 2.1.0', :inhibit_warnings => true
   pod 'lottie-ios', '~> 2.5.0', :inhibit_warnings => true
   pod 'JKBigInteger2', '0.0.5', :inhibit_warnings => true
-  pod 'Branch', '~> 0.28', :inhibit_warnings => true
 
   # Unimodules
   use_unimodules!({

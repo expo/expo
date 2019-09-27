@@ -3816,10 +3816,10 @@ CACHE_KEYS:
   Amplitude-iOS:
     BUILD_SETTINGS_CHECKSUM:
       Amplitude-iOS: 23d52fb77c25cb250bd876a075157383
-    CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
+    CHECKSUM: ac1715ae68104b7a51723209ad574f60ab22ae5f
     PROJECT_NAME: Amplitude-iOS
     SPECS:
-      - Amplitude-iOS (4.7.1)
+      - Amplitude-iOS (4.6.0)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
       Analytics: 700a4af424803b95e9baeef13029741a
@@ -3896,7 +3896,7 @@ CACHE_KEYS:
   EXAdsFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsFacebook: 58f4dc86c2af0e186948afa45deacdc8
-    CHECKSUM: 4c88cf76a780a326b701bac3b8535eb3faeaf7e5
+    CHECKSUM: 5d54983c1200eb5b8ef44858a3827add306f6321
     FILES:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXAdIconViewManager.m"
@@ -3924,7 +3924,7 @@ CACHE_KEYS:
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude: e07b672cc08225365406ce2773f0783f
-    CHECKSUM: 0b7aa6400553e48c7c141f5d7611f4c85cb8521d
+    CHECKSUM: 990d7dbe8fe771bd60f80e280718a534000f3b9a
     FILES:
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
@@ -3934,7 +3934,7 @@ CACHE_KEYS:
   EXAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       EXAppAuth: 5c9c6bb55b88f36cae5552f3139c1fc2
-    CHECKSUM: ce2eb785609a39d70b37e2071ee36b9f50c6e285
+    CHECKSUM: f133ab0dea7aa4504fd3ab1f37625e902f9d990f
     FILES:
       - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.h"
       - "../../packages/expo-app-auth/ios/EXAppAuth/EXAppAuth+JSON.m"
@@ -4065,7 +4065,7 @@ CACHE_KEYS:
   EXBranch:
     BUILD_SETTINGS_CHECKSUM:
       EXBranch: 27e6433d3e6ab5b244b6a927e948dff9
-    CHECKSUM: b4b57a74caa8a1c97bb4b8870ba61257acf35781
+    CHECKSUM: 208240bc7b68bd1a5ec5684c94bb299c030b6e71
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
@@ -4199,7 +4199,7 @@ CACHE_KEYS:
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook: abea3ef79476e083995184af2c4950a7
-    CHECKSUM: 70a53dc6456a2cb21586148e488404f2825885db
+    CHECKSUM: 165670d591c87e48aa31faf73eedab5eaae5c7ef
     FILES:
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
@@ -4311,7 +4311,7 @@ CACHE_KEYS:
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn: 342980489192cfc4ccbdc9e1f28a5124
-    CHECKSUM: 72d4b6da1676bf39ff6d928589bbc82236e75fed
+    CHECKSUM: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
     FILES:
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.m"
@@ -4517,7 +4517,7 @@ CACHE_KEYS:
   EXSegment:
     BUILD_SETTINGS_CHECKSUM:
       EXSegment: 92a54a4528d9c79b590ba0e446f9db14
-    CHECKSUM: d6fca2b870ebcc44cbfd33776688e41b3f48c3d9
+    CHECKSUM: 4e56b4e62e245060b7b8fccaca389026e482ec90
     FILES:
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.h"
       - "../../packages/expo-analytics-segment/ios/EXSegment/EXSegment.m"
@@ -4649,14 +4649,14 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBAudienceNetwork: 0da38de9a1d3b00f2207eb2377ebb6a1
     CHECKSUM: 1ea26a004014ee6700dce1b7beb5e853887f498e
-    PROJECT_NAME: Facebook
+    PROJECT_NAME: FBAudienceNetwork
     SPECS:
       - FBAudienceNetwork (5.5.0)
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 8839cba0d3ab6225156ccac843866f8c
     CHECKSUM: d6655a343868d4bb5c29a60859bab07c3be14a0b
-    PROJECT_NAME: Facebook
+    PROJECT_NAME: FBSDKCoreKit
     SPECS:
       - FBSDKCoreKit (5.6.0)
       - FBSDKCoreKit/Basics (5.6.0)
@@ -4665,7 +4665,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKLoginKit: 72881b173101b43cccd14b82d97d4691
     CHECKSUM: c5a623de88a6b0cda35b35582921f6cec2efcc36
-    PROJECT_NAME: Facebook
+    PROJECT_NAME: FBSDKLoginKit
     SPECS:
       - FBSDKLoginKit (5.6.0)
       - FBSDKLoginKit/Login (5.6.0)
@@ -4753,7 +4753,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       Google-Maps-iOS-Utils: e4bb1811d431d1252150bdfeaa6fdcce
     CHECKSUM: c32891ff472eaaa1fca032beedafa1a013af7875
-    PROJECT_NAME: Google
+    PROJECT_NAME: Google-Maps-iOS-Utils
     SPECS:
       - Google-Maps-iOS-Utils (2.1.0)
       - Google-Maps-iOS-Utils/Clustering (2.1.0)
@@ -4800,7 +4800,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       GoogleMaps: b52b5d3d53d602b6bb43907915bf192e
     CHECKSUM: cfee83da305b9aaeccf92c24ac79df11c3003492
-    PROJECT_NAME: Google
+    PROJECT_NAME: GoogleMaps
     SPECS:
       - GoogleMaps (3.3.0)
       - GoogleMaps/Base (3.3.0)
@@ -4817,7 +4817,7 @@ CACHE_KEYS:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: 5544c0f345c9d1c58441641b76aaf3c5
     CHECKSUM: a62edd0516721d2a3db1259a5681b91f9b41c06a
-    PROJECT_NAME: Google
+    PROJECT_NAME: GoogleSignIn
     SPECS:
       - GoogleSignIn (5.0.0)
   GoogleToolboxForMac:
@@ -4884,8 +4884,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 87126328340af0aa5af6b38ee95f5645
-      Release: 87126328340af0aa5af6b38ee95f5645
+      Debug: 3f18b865b1eca65552a18501edf880f6
+      Release: 3f18b865b1eca65552a18501edf880f6
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: 1aeb8b1ccac3cd876fdb52df41d00242

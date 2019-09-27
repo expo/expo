@@ -1,17 +1,5 @@
 [
   {
-    "name": "Amplitude-iOS",
-    "version": "~> 4.6"
-  },
-  {
-    "name": "Analytics",
-    "version": "~> 3.7"
-  },
-  {
-    "name": "AppAuth",
-    "version": "~> 1.2"
-  },
-  {
     "name": "CocoaLumberjack",
     "version": "~> 3.5.3"
   },
@@ -20,27 +8,8 @@
     "version": "~> 3.13.4"
   },
   {
-    "name": "FBAudienceNetwork",
-    "version": "5.5.0",
-    "otherPodfileFlags": ", :project_name => \"Facebook\""
-  },
-  {
-    "name": "FBSDKCoreKit",
-    "version": "~> 5.6.0",
-    "otherPodfileFlags": ", :project_name => \"Facebook\""
-  },
-  {
-    "name": "FBSDKLoginKit",
-    "version": "~> 5.6.0",
-    "otherPodfileFlags": ", :project_name => \"Facebook\""
-  },
-  {
     "name": "Fabric",
     "version": "~> 1.10.2"
-  },
-  {
-    "name": "GoogleSignIn",
-    "version": "~> 5.0"
   },
   {
     "name": "GoogleMaps",
@@ -54,12 +23,8 @@
     "name": "lottie-ios",
     "version": "~> 2.5.0"
   },
-  {		
-    "name": "JKBigInteger2",		
-    "version": "0.0.5"		
-  },
   {
-    "name": "Branch",
-    "version": "~> 0.28"
+    "name": "JKBigInteger2",
+    "version": "0.0.5"
   }
 ]

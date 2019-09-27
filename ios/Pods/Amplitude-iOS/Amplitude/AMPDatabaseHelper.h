@@ -9,6 +9,7 @@
 @interface AMPDatabaseHelper : NSObject
 
 @property (nonatomic, strong, readonly) NSString *databasePath;
+@property (nonatomic, assign) BOOL callResetListenerOnDatabaseReset;
 
 + (AMPDatabaseHelper*)getDatabaseHelper;
 + (AMPDatabaseHelper*)getDatabaseHelper:(NSString*) instanceName;
@@ -36,5 +37,7 @@
 - (BOOL)insertOrReplaceKeyLongValue:(NSString*) key value:(NSNumber*) value;
 - (NSString*)getValue:(NSString*) key;
 - (NSNumber*)getLongValue:(NSString*) key;
+
+- (void)setDatabaseResetListener: (void (^)(void)) listener;
 
 @end

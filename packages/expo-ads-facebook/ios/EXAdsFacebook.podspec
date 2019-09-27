@@ -17,8 +17,5 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'UMCore'
-  s.dependency 'FBAudienceNetwork'
-
+  s.dependency 'FBAudienceNetwork', '5.5.0'
 end
-
-  
