@@ -1,26 +1,28 @@
 require_relative './PodfileHelpers.rb'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+require_relative '../packages/react-native-unimodules/cocoapods.rb'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 
 install! 'cocoapods',
-         :generate_multiple_pod_projects => true,
-         :incremental_installation => true
+         :generate_multiple_pod_projects => true#,
+        #  :incremental_installation => true
+
+inhibit_all_warnings!
 
 target 'Exponent' do
   # Expo Client dependencies
-  pod 'CocoaLumberjack', '~> 3.5.3', :inhibit_warnings => true
-  pod 'Fabric', '~> 1.10.2', :inhibit_warnings => true
+  pod 'CocoaLumberjack', '~> 3.5.3'
+  pod 'Fabric', '~> 1.10.2'
 
   # Client & ExpoKit
-  pod 'Crashlytics', '~> 3.13.4', :inhibit_warnings => true
+  pod 'Crashlytics', '~> 3.13.4'
 
   # ExpoKit dependencies
-  pod 'GoogleMaps', '~> 3.3', :inhibit_warnings => true
-  pod 'Google-Maps-iOS-Utils', '~> 2.1.0', :inhibit_warnings => true
-  pod 'lottie-ios', '~> 2.5.0', :inhibit_warnings => true
-  pod 'JKBigInteger2', '0.0.5', :inhibit_warnings => true
+  pod 'GoogleMaps', '~> 3.3'
+  pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
+  pod 'lottie-ios', '~> 2.5.0'
+  pod 'JKBigInteger2', '0.0.5'
 
   # Unimodules
   use_unimodules!({
@@ -31,13 +33,15 @@ target 'Exponent' do
       'expo-in-app-purchases',
       'expo-payments-stripe',
       'expo-updates',
-    ]
+    ],
+    flags: {
+      :inhibit_warnings => false
+    }
   })
 
   # Unversioned React Native
   pod 'React',
     :path => "../react-native-lab/react-native",
-    :inhibit_warnings => true,
     :subspecs => [
       "Core",
       "ART",
@@ -54,17 +58,13 @@ target 'Exponent' do
       "CxxBridge"
     ]
   pod 'yoga',
-    :path => "../react-native-lab/react-native/ReactCommon/yoga",
-    :inhibit_warnings => true
+    :path => "../react-native-lab/react-native/ReactCommon/yoga"
   pod 'DoubleConversion',
-    :podspec => "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec",
-    :inhibit_warnings => true
+    :podspec => "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   pod 'Folly',
-    :podspec => "../react-native-lab/react-native/third-party-podspecs/Folly.podspec",
-    :inhibit_warnings => true
+    :podspec => "../react-native-lab/react-native/third-party-podspecs/Folly.podspec"
   pod 'glog',
-    :podspec => "../react-native-lab/react-native/third-party-podspecs/glog.podspec",
-    :inhibit_warnings => true
+    :podspec => "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
 
   # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
   # and install ReactABIXX_0_0 pods with all versioned unimodules.

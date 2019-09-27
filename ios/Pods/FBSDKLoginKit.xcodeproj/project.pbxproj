@@ -7,41 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		05578E2B0336245E27D2B4C8F5075281 /* FBSDKLoginError.m in Sources */ = {isa = PBXBuildFile; fileRef = C8F6FA05479C1698AEB377C7C970B83E /* FBSDKLoginError.m */; };
 		117D66A8D749F806D00E0A93C16C8857 /* FBSDKLoginKit+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F7A23F9999810FFC90AD25ECBBBDB6F5 /* FBSDKLoginKit+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		166B6E13F073A124CF9356A5BF654508 /* FBSDKLoginKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 0D63CDFB789BA54604AEC9350D2FACA5 /* FBSDKLoginKit.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1F1EB8ABEF796477E4898405FEB0E922 /* FBSDKLoginManagerLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ED9C2FEDA0833C48F606887850EF43D /* FBSDKLoginManagerLogger.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1F8001332C42E80477D152B0E92517A7 /* FBSDKLoginUtility.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C77F84A785B06C8637D6C585D7315B2 /* FBSDKLoginUtility.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		238EA706FF2C84DE6940613E93CBE08E /* FBSDKLoginManagerLoginResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B11589691264254BAA20DD55F4BF83 /* FBSDKLoginManagerLoginResult.m */; };
-		26E2A435E381E019D4A2D7D3BA572580 /* FBSDKDeviceLoginManagerResult.m in Sources */ = {isa = PBXBuildFile; fileRef = FC561D041F1218A53A704E986855307D /* FBSDKDeviceLoginManagerResult.m */; };
-		2A4F11E2D553C9659D2CAACC438B9E32 /* FBSDKDeviceLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B31D9D6D0A278907D49019B3A78B351 /* FBSDKDeviceLoginManager.m */; };
+		21E078E0A6C8FA99E93D62AC855DA10E /* FBSDKDeviceLoginManagerResult.m in Sources */ = {isa = PBXBuildFile; fileRef = FC561D041F1218A53A704E986855307D /* FBSDKDeviceLoginManagerResult.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2B96E31D7280939AF1962C650E39776C /* FBSDKLoginConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = 20C75C836031DEFE046C0CED7B599298 /* FBSDKLoginConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		352EF21441106158527BDC11FC2B4E4A /* FBSDKLoginManagerLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E47DFFF21D6CF18BCD98C22891011BB /* FBSDKLoginManagerLogger.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		39F57EF5AAC241C9F5835B6DA81FD1EB /* FBSDKDeviceLoginCodeInfo+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D45C199E0C42F85EB7A3690F0043D318 /* FBSDKDeviceLoginCodeInfo+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3F819BB22111566E7FA5C9001F4A7346 /* FBSDKLoginCompletion+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = D49617EAA08B40AC00F2F443AE46D8A2 /* FBSDKLoginCompletion+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		464855979514FEC5EBD4DF3B8C83D49E /* FBSDKLoginError.h in Headers */ = {isa = PBXBuildFile; fileRef = 41DBED9DC32B4D99441203B8738203E0 /* FBSDKLoginError.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		62BB9A73419A19F1A03A2163182652D9 /* FBSDKTooltipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90EA0B6D1C86ACF3109FD1490300EB5F /* FBSDKTooltipView.m */; };
+		497BB55DF4CC38EF9FA840A4E6234506 /* FBSDKLoginButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 017768B6FA3A38586A22DC82385E4141 /* FBSDKLoginButton.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		618FA6B09D86C83A359CA39812A4FBCA /* FBSDKLoginKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BBB6CE7AECF2D0A15CAF99D9B44823F /* FBSDKLoginKit-dummy.m */; };
+		69B68C69908A5EC7CCBE57354CE282CA /* FBSDKLoginCompletion.m in Sources */ = {isa = PBXBuildFile; fileRef = 99E8D00C570C4F75E5E8001F4C8C4A3C /* FBSDKLoginCompletion.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6C9BD36205E7AB6A7E08A2B4A415D6ED /* _FBSDKLoginRecoveryAttempter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DDC54B980D7844646F5726B57EE70D2 /* _FBSDKLoginRecoveryAttempter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6FCD1AC3343A3247575349C9CBF112C0 /* FBSDKDeviceLoginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = CCA7C8496D8377559C2642BCBF93C680 /* FBSDKDeviceLoginManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7350D3E6B9DFF626E3B78655A5D23322 /* FBSDKLoginCompletion.m in Sources */ = {isa = PBXBuildFile; fileRef = 99E8D00C570C4F75E5E8001F4C8C4A3C /* FBSDKLoginCompletion.m */; };
-		7D791D3CA5D210F74819A98DACDA41B3 /* FBSDKDeviceLoginCodeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4C05EDCF06C50D2C9D2B6CE6537EE /* FBSDKDeviceLoginCodeInfo.m */; };
-		86DDD2034EEEDDD40D4546809BBDC95E /* FBSDKLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DD74CC48AE6AB36AD00C719F20DF11E /* FBSDKLoginManager.m */; };
+		7669BF403A63A052FC625CD9F3FC4655 /* FBSDKDeviceLoginCodeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CF4C05EDCF06C50D2C9D2B6CE6537EE /* FBSDKDeviceLoginCodeInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8041BB281FBCF24BFFACAA1A7E077D90 /* FBSDKLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DD74CC48AE6AB36AD00C719F20DF11E /* FBSDKLoginManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		924232954B898701AE4CC7929A06A364 /* FBSDKLoginTooltipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBF989863A7393137687722DAD96D25 /* FBSDKLoginTooltipView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9724575770F5BCF7E5B1C2193863ED0C /* FBSDKTooltipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 90EA0B6D1C86ACF3109FD1490300EB5F /* FBSDKTooltipView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9ADC403058FE4CE046328EDDD89173CD /* FBSDKDeviceLoginCodeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = DA834DF6DA6E398DD34DE92F3B2357A1 /* FBSDKDeviceLoginCodeInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9EDF748D26C92095FE9A6B6A8C7B17E8 /* FBSDKLoginTooltipView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CFE3D2BCF6DF563F9B5DD435917361F /* FBSDKLoginTooltipView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A0FBB81FD6472D30C31C9F43C26814AB /* FBSDKLoginManagerLoginResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B11589691264254BAA20DD55F4BF83 /* FBSDKLoginManagerLoginResult.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A1C4FB1C37ACA1D59C2C5F4D35174E4B /* FBSDKLoginManagerLoginResult+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 589291276E52411CD28F78412C1D81D0 /* FBSDKLoginManagerLoginResult+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A9F146C82D86BFFC4F8925E13A0BA310 /* _FBSDKLoginRecoveryAttempter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DDC54B980D7844646F5726B57EE70D2 /* _FBSDKLoginRecoveryAttempter.m */; };
+		A6B646C79CF171509AED42C9B68F4A2A /* FBSDKLoginUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 10F4A12E97597A340F3B20CD7442B2F5 /* FBSDKLoginUtility.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ACCE8ABBD56F524888E9110BB0C5EDD9 /* FBSDKDeviceLoginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B31D9D6D0A278907D49019B3A78B351 /* FBSDKDeviceLoginManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		ACE39760472BA4495E54E46F72160C5C /* FBSDKDeviceLoginManagerResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 868A43FFF8760FDA5CA6AAA0BA28B87B /* FBSDKDeviceLoginManagerResult.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B1E7E283D80C3B1B3EBA3B94E72B4E7B /* FBSDKLoginManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F394669E64FF8C30E35FAA7086917867 /* FBSDKLoginManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B3E1276530945BFEFC863D95B414A8FB /* _FBSDKLoginRecoveryAttempter.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3CC986D71D610E7262B428B91961B9 /* _FBSDKLoginRecoveryAttempter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		B5123DADE6E43C38B2970FAE3FF5B2F6 /* FBSDKLoginManagerLoginResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 070E8AC20CEF313DB6541541EEED4D6A /* FBSDKLoginManagerLoginResult.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C4D1183D6620B28A4290F4C55BC180AE /* FBSDKLoginButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 017768B6FA3A38586A22DC82385E4141 /* FBSDKLoginButton.m */; };
 		C839136AA06CB6259A31F8A218764DCB /* FBSDKLoginButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 7ECA61295BA0CF3FFAC530D7CD443A81 /* FBSDKLoginButton.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D41B0FEBEBA0680FA0CD9FFCEAF3EB7A /* FBSDKLoginUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 10F4A12E97597A340F3B20CD7442B2F5 /* FBSDKLoginUtility.m */; };
-		D81F0564C87C95912870B6F12FC26156 /* FBSDKLoginKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BBB6CE7AECF2D0A15CAF99D9B44823F /* FBSDKLoginKit-dummy.m */; };
-		E1982FF16C343DC47CB8489A02834409 /* FBSDKLoginManagerLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8ED9C2FEDA0833C48F606887850EF43D /* FBSDKLoginManagerLogger.m */; };
 		E5C8F40BCBF4B86605AA8874C317ED1B /* FBSDKDeviceLoginManagerResult+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = BB092F89F2CCDB04FEFB9A0F52F72938 /* FBSDKDeviceLoginManagerResult+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		EC30B468C5082302C8179166D2D882A8 /* FBSDKTooltipView.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B686AD89657E73CCA57079AF6F8F9 /* FBSDKTooltipView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EDF53509E837C894B71804E3036C0C04 /* FBSDKLoginTooltipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBF989863A7393137687722DAD96D25 /* FBSDKLoginTooltipView.m */; };
+		F1BF094DA2E50D97860840C3A30E102E /* FBSDKLoginError.m in Sources */ = {isa = PBXBuildFile; fileRef = C8F6FA05479C1698AEB377C7C970B83E /* FBSDKLoginError.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F5AB1C37A41ADE4DB04E3FE61BAD76A2 /* FBSDKLoginCompletion.h in Headers */ = {isa = PBXBuildFile; fileRef = 647119B8443E149A6ECF1B9A7C123708 /* FBSDKLoginCompletion.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FA49FEAB1C139EC86A45C086619DA23F /* FBSDKLoginConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A37220F2FC40E61A82D90E5144867 /* FBSDKLoginConstants.m */; };
+		F90FBE07C04610A3ACAC5525528C7145 /* FBSDKLoginConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1A37220F2FC40E61A82D90E5144867 /* FBSDKLoginConstants.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FE364DDA1C67EEC77B72B8A00E147BCE /* FBSDKLoginManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = EE01EC0F5EE210926389FF2566124960 /* FBSDKLoginManager+Internal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -244,7 +244,7 @@
 			buildConfigurationList = E5B28D39CAAB133F7E4395E12BBE68EF /* Build configuration list for PBXNativeTarget "FBSDKLoginKit" */;
 			buildPhases = (
 				08C9E8990C6F8D17192206A3319DDF60 /* Headers */,
-				C58790F01E09511D90935CCB9BA7228D /* Sources */,
+				F81FF7476973E1D6467DAB1A061FAA37 /* Sources */,
 				3987D42353BDF33CB75424502D5C1E08 /* Frameworks */,
 			);
 			buildRules = (
@@ -289,25 +289,25 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C58790F01E09511D90935CCB9BA7228D /* Sources */ = {
+		F81FF7476973E1D6467DAB1A061FAA37 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A9F146C82D86BFFC4F8925E13A0BA310 /* _FBSDKLoginRecoveryAttempter.m in Sources */,
-				7D791D3CA5D210F74819A98DACDA41B3 /* FBSDKDeviceLoginCodeInfo.m in Sources */,
-				2A4F11E2D553C9659D2CAACC438B9E32 /* FBSDKDeviceLoginManager.m in Sources */,
-				26E2A435E381E019D4A2D7D3BA572580 /* FBSDKDeviceLoginManagerResult.m in Sources */,
-				C4D1183D6620B28A4290F4C55BC180AE /* FBSDKLoginButton.m in Sources */,
-				7350D3E6B9DFF626E3B78655A5D23322 /* FBSDKLoginCompletion.m in Sources */,
-				FA49FEAB1C139EC86A45C086619DA23F /* FBSDKLoginConstants.m in Sources */,
-				05578E2B0336245E27D2B4C8F5075281 /* FBSDKLoginError.m in Sources */,
-				D81F0564C87C95912870B6F12FC26156 /* FBSDKLoginKit-dummy.m in Sources */,
-				86DDD2034EEEDDD40D4546809BBDC95E /* FBSDKLoginManager.m in Sources */,
-				E1982FF16C343DC47CB8489A02834409 /* FBSDKLoginManagerLogger.m in Sources */,
-				238EA706FF2C84DE6940613E93CBE08E /* FBSDKLoginManagerLoginResult.m in Sources */,
-				EDF53509E837C894B71804E3036C0C04 /* FBSDKLoginTooltipView.m in Sources */,
-				D41B0FEBEBA0680FA0CD9FFCEAF3EB7A /* FBSDKLoginUtility.m in Sources */,
-				62BB9A73419A19F1A03A2163182652D9 /* FBSDKTooltipView.m in Sources */,
+				6C9BD36205E7AB6A7E08A2B4A415D6ED /* _FBSDKLoginRecoveryAttempter.m in Sources */,
+				7669BF403A63A052FC625CD9F3FC4655 /* FBSDKDeviceLoginCodeInfo.m in Sources */,
+				ACCE8ABBD56F524888E9110BB0C5EDD9 /* FBSDKDeviceLoginManager.m in Sources */,
+				21E078E0A6C8FA99E93D62AC855DA10E /* FBSDKDeviceLoginManagerResult.m in Sources */,
+				497BB55DF4CC38EF9FA840A4E6234506 /* FBSDKLoginButton.m in Sources */,
+				69B68C69908A5EC7CCBE57354CE282CA /* FBSDKLoginCompletion.m in Sources */,
+				F90FBE07C04610A3ACAC5525528C7145 /* FBSDKLoginConstants.m in Sources */,
+				F1BF094DA2E50D97860840C3A30E102E /* FBSDKLoginError.m in Sources */,
+				618FA6B09D86C83A359CA39812A4FBCA /* FBSDKLoginKit-dummy.m in Sources */,
+				8041BB281FBCF24BFFACAA1A7E077D90 /* FBSDKLoginManager.m in Sources */,
+				1F1EB8ABEF796477E4898405FEB0E922 /* FBSDKLoginManagerLogger.m in Sources */,
+				A0FBB81FD6472D30C31C9F43C26814AB /* FBSDKLoginManagerLoginResult.m in Sources */,
+				924232954B898701AE4CC7929A06A364 /* FBSDKLoginTooltipView.m in Sources */,
+				A6B646C79CF171509AED42C9B68F4A2A /* FBSDKLoginUtility.m in Sources */,
+				9724575770F5BCF7E5B1C2193863ED0C /* FBSDKTooltipView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
