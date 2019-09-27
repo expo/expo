@@ -5,8 +5,8 @@ source 'https://cdn.cocoapods.org/'
 platform :ios, '10.0'
 
 install! 'cocoapods',
-         :generate_multiple_pod_projects => true#,
-        #  :incremental_installation => true
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true
 
 inhibit_all_warnings!
 
@@ -15,7 +15,7 @@ target 'Exponent' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'Fabric', '~> 1.10.2'
 
-  # Client & ExpoKit
+  # Client & ExpoKit dependencies
   pod 'Crashlytics', '~> 3.13.4'
 
   # ExpoKit dependencies
