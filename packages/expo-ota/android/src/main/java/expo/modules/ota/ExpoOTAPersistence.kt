@@ -2,8 +2,6 @@ package expo.modules.ota
 
 import android.content.Context
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.HashMap
 
 const val KEY_BUNDLE_PATH = "bundlePath"
 const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"

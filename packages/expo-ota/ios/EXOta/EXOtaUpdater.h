@@ -11,12 +11,12 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+ 
 @protocol EXManifestRequestConfig
 
 @property(nonnull, readonly) NSString *manifestUrl;
 @property(nullable, readonly) NSDictionary *manifestRequestHeaders;
-@property(nullable, readonly) NSInteger requestTimeout;
+@property(readonly) NSInteger requestTimeout;
 
 @end
 

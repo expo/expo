@@ -50,11 +50,6 @@ class BundleLoader(val context: Context, val httpClient: OkHttpClient) {
         return sourceFile.exists()
     }
 
-    fun removeFile(path: String) {
-        val file = File(path)
-        file.delete()
-    }
-
     private fun handleResponse(params: BundleLoadParams, success: (String) -> Unit, error: (Exception?) -> Unit): (Response, BundleDownloader.ResponseSource) -> Unit =
             { response: Response, source: BundleDownloader.ResponseSource ->
                 when (source) {
