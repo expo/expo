@@ -21,6 +21,14 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
 - (NSDictionary *)constantsToExport
 {
   NSArray<NSString *> *preferredLocales = [NSLocale preferredLanguages];
+  if (preferredLocales == nil) {
+    NSString *currentLocale = [[NSLocale currentLocale] localeIdentifier];
+    if (currentLocale == nil) {
+      currentLocale = @"en_US";
+    }
+    preferredLocales = @[currentLocale];
+  }
+  
   NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
   NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
   
