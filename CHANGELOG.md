@@ -13,10 +13,12 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🎉 New features
 
 - Added rich content supports for push notifications. ([#4787](https://github.com/expo/expo/pull/4787) by [@hesyifei](https://github.com/hesyifei))
+- Added `MediaLibrary.saveToAssetsAsync` function that can work without `CAMERA_ROLL` permission. ([#5678](https://github.com/expo/expo/pull/5678) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 - Fixed crash when `BarCodeScanner` was mounted more than 128 times. ([#5719](https://github.com/expo/expo/pull/5719) by [@geovannimp](https://github.com/geovannimp))
+- Fixed URI parsing in `expo-video-thumbnails`. ([#5711](https://github.com/expo/expo/pull/5711) by [@lukmccall](https://github.com/lukmccall))
 
 ## 35.0.0
 
@@ -29,6 +31,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `react-native-webview` updated from `5.12.0` to `7.0.5`
 
 ### 🛠 Breaking changes
+
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync). ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 - Google Mobile Ads now require `expo.[platform].config.googleMobileAdsAppId` configuration value present in `app.json`. The value can be found by following the guide in [this Google Support answer](https://support.google.com/admob/answer/7356431). ([#5447](https://github.com/expo/expo/pull/5447) by [@sjchmiela](https://github.com/sjchmiela))
 - Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
