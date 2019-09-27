@@ -198,6 +198,13 @@ export async function createAssetAsync(localUri: string): Promise<Asset> {
   return asset;
 }
 
+export async function saveToLibraryAsync(localUri: string): Promise<void> {
+  if (!MediaLibrary.saveToLibraryAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'saveToLibraryAsync');
+  }
+  return await MediaLibrary.saveToLibraryAsync(localUri);
+}
+
 export async function addAssetsToAlbumAsync(
   assets: Array<AssetRef> | AssetRef,
   album: AlbumRef,

@@ -51,6 +51,14 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 An object representing an [asset](#asset).
 
+### `MediaLibrary.saveToLibraryAsync(localUri)`
+
+Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+
+#### Arguments
+
+- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+
 ### `MediaLibrary.getAssetsAsync(options)`
 
 Fetches a page of assets matching the provided criteria.
