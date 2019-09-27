@@ -24,7 +24,7 @@
 {
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-  NSString * appName = [[[NSProcessInfo processInfo] environment] objectForKey:@"APP_NAME"];
+  NSString * appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"EXPO_APP_NAME"];
   if (appName == nil) {
     appName = @"BareExpo";
   }
@@ -52,17 +52,13 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge {
 #ifdef DEBUG
-  NSString *jsBundleURLForBundleRoot = [[[NSProcessInfo processInfo] environment] objectForKey:@"BUNDLE_URL"];
+  NSString *jsBundleURLForBundleRoot = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"EXPO_BUNDLE_URL"];
   if (jsBundleURLForBundleRoot == nil) {
     jsBundleURLForBundleRoot = @"index";
   }
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:jsBundleURLForBundleRoot fallbackResource:nil];
 #else
-  NSString *jsBundlePath = [[[NSProcessInfo processInfo] environment] objectForKey:@"BUNDLE_PATH"];
-  if (jsBundlePath == nil) {
-    jsBundlePath = @"main";
-  }
-  return [[NSBundle mainBundle] URLForResource:jsBundlePath withExtension:@"jsbundle"];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 

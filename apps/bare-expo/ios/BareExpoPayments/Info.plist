@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>bare-expo</string>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,6 +45,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>EXPO_APP_NAME</key>
+	<string>ExpoPayments</string>
+	<key>EXPO_BUNDLE_URL</key>
+	<string>../expo-payments/index.bundle</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -75,7 +79,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow bare-expo to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow bare-expo to access your device&apos;s accelerometer</string>
+	<string>Allow bare-expo to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give bare-expo periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -84,8 +88,6 @@
 	<string>Allow bare-expo to access your reminders</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>EXPO_APP_NAME</key>
-	<string>BareExpo</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -98,7 +100,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>EXPO_BUNDLE_URL</key>
-	<string>index.bundle</string>
 </dict>
 </plist>

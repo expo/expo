@@ -395,8 +395,7 @@ EXTERNAL SOURCES:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-image-picker/ios"
   EXInAppPurchases:
-    :path: !ruby/object:Pathname
-    path: "../../../packages/expo-in-app-purchases/ios"
+    :path: "../../../packages/expo-in-app-purchases/ios"
   EXKeepAwake:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-keep-awake/ios"
@@ -581,6 +580,6 @@ SPEC CHECKSUMS:
   UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: d239e16cf4f9c09a4098b068e92cf29bf820675c
+PODFILE CHECKSUM: 0b6e62f1c630091879b31e20fb86a71bb59158f1
 
 COCOAPODS: 1.8.0.beta.1

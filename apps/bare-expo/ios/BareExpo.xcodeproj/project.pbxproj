@@ -8,11 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* BareExpoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* BareExpoTests.m */; };
-		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		6EACD0A8207D4B44E882DAB9 /* libPods-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 88C45DD943C52814593043BC /* libPods-BareExpo.a */; };
+		2C73A266F674E00F842956ED /* libPods-BareExpoAbstract-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E092FCEFCDEC2943D891CA /* libPods-BareExpoAbstract-BareExpo.a */; };
+		300160DC83F8D07CDCC52D5C /* libPods-BareExpoAbstract-BareExpoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 06C92CBB99E15906FFD143C3 /* libPods-BareExpoAbstract-BareExpoCore.a */; };
+		84C5A99762F329932166DB3D /* libPods-BareExpoAbstract-BareExpoNCL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E0366186B70BD3714C31653A /* libPods-BareExpoAbstract-BareExpoNCL.a */; };
+		B2A27011233E1C1A0072B4B4 /* libBareExpoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A27005233E1B840072B4B4 /* libBareExpoCore.a */; };
+		B2A27014233E1CCD0072B4B4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B2A27012233E1CCD0072B4B4 /* AppDelegate.m */; };
+		B2A2702E233E1E5D0072B4B4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B2A2702D233E1E5D0072B4B4 /* main.m */; };
+		B2A27032233E1E7E0072B4B4 /* libBareExpoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A27005233E1B840072B4B4 /* libBareExpoCore.a */; };
+		B2A27035233E1E840072B4B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
+		B2A2704F233E1F3B0072B4B4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B2A2704E233E1F3B0072B4B4 /* main.m */; };
+		B2A27053233E1FAC0072B4B4 /* libBareExpoCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A27005233E1B840072B4B4 /* libBareExpoCore.a */; };
+		B2A27054233E1FB00072B4B4 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
+		B2A2705D233E22B90072B4B4 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
+		B2A2705E233E22BC0072B4B4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		B2A2705F233E22C00072B4B4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		B2A27060233E22C30072B4B4 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
+		C9555084CF72F12E20732000 /* libPods-BareExpoAbstract-BareExpoPayments.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 74424B9E1C7BC534A3D43873 /* libPods-BareExpoAbstract-BareExpoPayments.a */; };
 		CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
 		E1653C7C414D0CD8F87150FE /* libPods-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 028439B18A901F7A2CF09BB9 /* libPods-BareExpoTests.a */; };
 /* End PBXBuildFile section */
@@ -25,7 +39,40 @@
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = BareExpo;
 		};
+		B2A2700F233E1C110072B4B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B2A27004233E1B840072B4B4;
+			remoteInfo = BareExpoCore;
+		};
+		B2A27033233E1E7E0072B4B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B2A27004233E1B840072B4B4;
+			remoteInfo = BareExpoCore;
+		};
+		B2A27057233E1FC50072B4B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B2A27004233E1B840072B4B4;
+			remoteInfo = BareExpoCore;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B2A27003233E1B840072B4B4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -33,19 +80,37 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* BareExpoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BareExpoTests.m; sourceTree = "<group>"; };
 		028439B18A901F7A2CF09BB9 /* libPods-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		06C92CBB99E15906FFD143C3 /* libPods-BareExpoAbstract-BareExpoCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoAbstract-BareExpoCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		087B6B189EE57B1EC106A0A3 /* Pods-BareExpoAbstract-BareExpoNCL.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpoNCL.release.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpoNCL/Pods-BareExpoAbstract-BareExpoNCL.release.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* BareExpo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BareExpo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BareExpo/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BareExpo/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BareExpo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BareExpo/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BareExpo/main.m; sourceTree = "<group>"; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		43A80C52425022684B693A26 /* Pods-BareExpoAbstract-BareExpoPayments.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpoPayments.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpoPayments/Pods-BareExpoAbstract-BareExpoPayments.debug.xcconfig"; sourceTree = "<group>"; };
 		4ADC22B6EC034901305B8CDC /* Pods-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpo.debug.xcconfig"; path = "Target Support Files/Pods-BareExpo/Pods-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
+		537D26CFCBA6B64D84CD5726 /* Pods-BareExpoAbstract-BareExpoNCL.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpoNCL.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpoNCL/Pods-BareExpoAbstract-BareExpoNCL.debug.xcconfig"; sourceTree = "<group>"; };
 		70419E2A27811C660476A295 /* Pods-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpo.release.xcconfig"; path = "Target Support Files/Pods-BareExpo/Pods-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
+		74424B9E1C7BC534A3D43873 /* libPods-BareExpoAbstract-BareExpoPayments.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoAbstract-BareExpoPayments.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EF74F8A2123893DE8D71406 /* Pods-BareExpoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoTests.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoTests/Pods-BareExpoTests.debug.xcconfig"; sourceTree = "<group>"; };
-		88C45DD943C52814593043BC /* libPods-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		88840ECF8B1AD3CFCC1B3F49 /* Pods-BareExpoAbstract-BareExpoCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpoCore.release.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpoCore/Pods-BareExpoAbstract-BareExpoCore.release.xcconfig"; sourceTree = "<group>"; };
+		B2A27005233E1B840072B4B4 /* libBareExpoCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBareExpoCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2A27012233E1CCD0072B4B4 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B2A27013233E1CCD0072B4B4 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B2A27019233E1E5C0072B4B4 /* bare-expo-ncl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bare-expo-ncl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2A2702C233E1E5D0072B4B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B2A2702D233E1E5D0072B4B4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B2A2703A233E1F390072B4B4 /* bare-expo-payments.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bare-expo-payments.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2A2704D233E1F3B0072B4B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B2A2704E233E1F3B0072B4B4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB22CC772648352AFAFC3DC7 /* Pods-BareExpoAbstract-BareExpoPayments.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpoPayments.release.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpoPayments/Pods-BareExpoAbstract-BareExpoPayments.release.xcconfig"; sourceTree = "<group>"; };
+		C8E092FCEFCDEC2943D891CA /* libPods-BareExpoAbstract-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoAbstract-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD6B041223091F4B002044FF /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		D778806F64CF81E11B72A840 /* Pods-BareExpoAbstract-BareExpo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpo.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpo/Pods-BareExpoAbstract-BareExpo.debug.xcconfig"; sourceTree = "<group>"; };
+		DA3B830B8B56E6346E3A8F69 /* Pods-BareExpoAbstract-BareExpo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpo.release.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpo/Pods-BareExpoAbstract-BareExpo.release.xcconfig"; sourceTree = "<group>"; };
+		DD73D8B5AA80C3E2F089F3D8 /* Pods-BareExpoAbstract-BareExpoCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoAbstract-BareExpoCore.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoAbstract-BareExpoCore/Pods-BareExpoAbstract-BareExpoCore.debug.xcconfig"; sourceTree = "<group>"; };
+		E0366186B70BD3714C31653A /* libPods-BareExpoAbstract-BareExpoNCL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoAbstract-BareExpoNCL.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4628F702B77F544CEDC686D /* Pods-BareExpoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoTests.release.xcconfig"; path = "Target Support Files/Pods-BareExpoTests/Pods-BareExpoTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -64,8 +129,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2A27011233E1C1A0072B4B4 /* libBareExpoCore.a in Frameworks */,
 				CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */,
-				6EACD0A8207D4B44E882DAB9 /* libPods-BareExpo.a in Frameworks */,
+				2C73A266F674E00F842956ED /* libPods-BareExpoAbstract-BareExpo.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27002233E1B840072B4B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				300160DC83F8D07CDCC52D5C /* libPods-BareExpoAbstract-BareExpoCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27016233E1E5C0072B4B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A27032233E1E7E0072B4B4 /* libBareExpoCore.a in Frameworks */,
+				B2A27035233E1E840072B4B4 /* StoreKit.framework in Frameworks */,
+				84C5A99762F329932166DB3D /* libPods-BareExpoAbstract-BareExpoNCL.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27037233E1F390072B4B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A27054233E1FB00072B4B4 /* StoreKit.framework in Frameworks */,
+				B2A27053233E1FAC0072B4B4 /* libBareExpoCore.a in Frameworks */,
+				C9555084CF72F12E20732000 /* libPods-BareExpoAbstract-BareExpoPayments.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,8 +187,6 @@
 			isa = PBXGroup;
 			children = (
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
@@ -110,6 +202,14 @@
 				70419E2A27811C660476A295 /* Pods-BareExpo.release.xcconfig */,
 				7EF74F8A2123893DE8D71406 /* Pods-BareExpoTests.debug.xcconfig */,
 				E4628F702B77F544CEDC686D /* Pods-BareExpoTests.release.xcconfig */,
+				D778806F64CF81E11B72A840 /* Pods-BareExpoAbstract-BareExpo.debug.xcconfig */,
+				DA3B830B8B56E6346E3A8F69 /* Pods-BareExpoAbstract-BareExpo.release.xcconfig */,
+				DD73D8B5AA80C3E2F089F3D8 /* Pods-BareExpoAbstract-BareExpoCore.debug.xcconfig */,
+				88840ECF8B1AD3CFCC1B3F49 /* Pods-BareExpoAbstract-BareExpoCore.release.xcconfig */,
+				537D26CFCBA6B64D84CD5726 /* Pods-BareExpoAbstract-BareExpoNCL.debug.xcconfig */,
+				087B6B189EE57B1EC106A0A3 /* Pods-BareExpoAbstract-BareExpoNCL.release.xcconfig */,
+				43A80C52425022684B693A26 /* Pods-BareExpoAbstract-BareExpoPayments.debug.xcconfig */,
+				BB22CC772648352AFAFC3DC7 /* Pods-BareExpoAbstract-BareExpoPayments.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -121,8 +221,11 @@
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
-				88C45DD943C52814593043BC /* libPods-BareExpo.a */,
 				028439B18A901F7A2CF09BB9 /* libPods-BareExpoTests.a */,
+				C8E092FCEFCDEC2943D891CA /* libPods-BareExpoAbstract-BareExpo.a */,
+				06C92CBB99E15906FFD143C3 /* libPods-BareExpoAbstract-BareExpoCore.a */,
+				E0366186B70BD3714C31653A /* libPods-BareExpoAbstract-BareExpoNCL.a */,
+				74424B9E1C7BC534A3D43873 /* libPods-BareExpoAbstract-BareExpoPayments.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -137,7 +240,10 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				B2A27006233E1B840072B4B4 /* BareExpoCore */,
 				13B07FAE1A68108700A75B9A /* BareExpo */,
+				B2A2701A233E1E5C0072B4B4 /* BareExpoNCL */,
+				B2A2703B233E1F390072B4B4 /* BareExpoPayments */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* BareExpoTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -154,8 +260,38 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* BareExpo.app */,
 				00E356EE1AD99517003FC87E /* BareExpoTests.xctest */,
+				B2A27005233E1B840072B4B4 /* libBareExpoCore.a */,
+				B2A27019233E1E5C0072B4B4 /* bare-expo-ncl.app */,
+				B2A2703A233E1F390072B4B4 /* bare-expo-payments.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B2A27006233E1B840072B4B4 /* BareExpoCore */ = {
+			isa = PBXGroup;
+			children = (
+				B2A27013233E1CCD0072B4B4 /* AppDelegate.h */,
+				B2A27012233E1CCD0072B4B4 /* AppDelegate.m */,
+			);
+			path = BareExpoCore;
+			sourceTree = "<group>";
+		};
+		B2A2701A233E1E5C0072B4B4 /* BareExpoNCL */ = {
+			isa = PBXGroup;
+			children = (
+				B2A2702C233E1E5D0072B4B4 /* Info.plist */,
+				B2A2702D233E1E5D0072B4B4 /* main.m */,
+			);
+			path = BareExpoNCL;
+			sourceTree = "<group>";
+		};
+		B2A2703B233E1F390072B4B4 /* BareExpoPayments */ = {
+			isa = PBXGroup;
+			children = (
+				B2A2704D233E1F3B0072B4B4 /* Info.plist */,
+				B2A2704E233E1F3B0072B4B4 /* main.m */,
+			);
+			path = BareExpoPayments;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -186,19 +322,82 @@
 			buildPhases = (
 				4B0225741A3EE6614741CF8A /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
-				B220F231233B555600FCCA5F /* Start Packager */,
+				B220F231233B555600FCCA5F /* Start Packager  */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
-				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images  */,
 				22AF50DAB13A4D4BE18573C5 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B2A27010233E1C110072B4B4 /* PBXTargetDependency */,
 			);
 			name = BareExpo;
 			productName = "Hello World";
 			productReference = 13B07F961A680F5B00A75B9A /* BareExpo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B2A27004233E1B840072B4B4 /* BareExpoCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B2A2700D233E1B850072B4B4 /* Build configuration list for PBXNativeTarget "BareExpoCore" */;
+			buildPhases = (
+				7438AA0C46AFD7F36EA7240A /* [CP] Check Pods Manifest.lock */,
+				B2A27001233E1B840072B4B4 /* Sources */,
+				B2A27002233E1B840072B4B4 /* Frameworks */,
+				B2A27003233E1B840072B4B4 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BareExpoCore;
+			productName = BareExpoCore;
+			productReference = B2A27005233E1B840072B4B4 /* libBareExpoCore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B2A27018233E1E5C0072B4B4 /* BareExpoNCL */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B2A2702F233E1E5D0072B4B4 /* Build configuration list for PBXNativeTarget "BareExpoNCL" */;
+			buildPhases = (
+				3D404BF81E82927734DACD12 /* [CP] Check Pods Manifest.lock */,
+				B2A27015233E1E5C0072B4B4 /* Sources */,
+				B2A27059233E22630072B4B4 /* Start Packager */,
+				B2A27016233E1E5C0072B4B4 /* Frameworks */,
+				B2A27017233E1E5C0072B4B4 /* Resources */,
+				B2A2705B233E22A20072B4B4 /* Bundle React Native code and images  */,
+				572A540D89E2F6B2D6567ECD /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B2A27034233E1E7E0072B4B4 /* PBXTargetDependency */,
+			);
+			name = BareExpoNCL;
+			productName = BareExpoNCL;
+			productReference = B2A27019233E1E5C0072B4B4 /* bare-expo-ncl.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B2A27039233E1F390072B4B4 /* BareExpoPayments */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B2A27050233E1F3B0072B4B4 /* Build configuration list for PBXNativeTarget "BareExpoPayments" */;
+			buildPhases = (
+				32EE6FF4E0DF7FA6A2DAC6A3 /* [CP] Check Pods Manifest.lock */,
+				B2A27036233E1F390072B4B4 /* Sources */,
+				B2A2705A233E22880072B4B4 /* Start Packager */,
+				B2A27037233E1F390072B4B4 /* Frameworks */,
+				B2A27038233E1F390072B4B4 /* Resources */,
+				B2A2705C233E22AC0072B4B4 /* Bundle React Native code and images  */,
+				764B4B2361CDB40CF20B988A /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B2A27058233E1FC50072B4B4 /* PBXTargetDependency */,
+			);
+			name = BareExpoPayments;
+			productName = BareExpoPayments;
+			productReference = B2A2703A233E1F390072B4B4 /* bare-expo-payments.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -217,6 +416,21 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = C8D8QTF339;
 					};
+					B2A27004233E1B840072B4B4 = {
+						CreatedOnToolsVersion = 11.0;
+						DevelopmentTeam = C8D8QTF339;
+						ProvisioningStyle = Automatic;
+					};
+					B2A27018233E1E5C0072B4B4 = {
+						CreatedOnToolsVersion = 11.0;
+						DevelopmentTeam = C8D8QTF339;
+						ProvisioningStyle = Automatic;
+					};
+					B2A27039233E1F390072B4B4 = {
+						CreatedOnToolsVersion = 11.0;
+						DevelopmentTeam = C8D8QTF339;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "BareExpo" */;
@@ -234,6 +448,9 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* BareExpo */,
+				B2A27018233E1E5C0072B4B4 /* BareExpoNCL */,
+				B2A27039233E1F390072B4B4 /* BareExpoPayments */,
+				B2A27004233E1B840072B4B4 /* BareExpoCore */,
 				00E356ED1AD99517003FC87E /* BareExpoTests */,
 			);
 		};
@@ -256,22 +473,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B2A27017233E1E5C0072B4B4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A2705E233E22BC0072B4B4 /* Images.xcassets in Resources */,
+				B2A2705D233E22B90072B4B4 /* LaunchScreen.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27038233E1F390072B4B4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A27060233E22C30072B4B4 /* LaunchScreen.xib in Resources */,
+				B2A2705F233E22C00072B4B4 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
+		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images  */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Bundle React Native code and images";
+			name = "Bundle React Native code and images ";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "../scripts/create-bundles-xcode.sh\n";
+			shellScript = "../scripts/create-bundles-xcode.sh $EXPO_BUNDLE_FOLDER\n";
 		};
 		22AF50DAB13A4D4BE18573C5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -279,7 +514,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-BareExpo/Pods-BareExpo-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-BareExpoAbstract-BareExpo/Pods-BareExpoAbstract-BareExpo-resources.sh",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
 				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
@@ -296,7 +531,51 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BareExpo/Pods-BareExpo-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BareExpoAbstract-BareExpo/Pods-BareExpoAbstract-BareExpo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		32EE6FF4E0DF7FA6A2DAC6A3 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BareExpoAbstract-BareExpoPayments-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3D404BF81E82927734DACD12 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BareExpoAbstract-BareExpoNCL-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		4B0225741A3EE6614741CF8A /* [CP] Check Pods Manifest.lock */ = {
@@ -314,14 +593,106 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-BareExpo-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-BareExpoAbstract-BareExpo-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B220F231233B555600FCCA5F /* Start Packager */ = {
+		572A540D89E2F6B2D6567ECD /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BareExpoAbstract-BareExpoNCL/Pods-BareExpoAbstract-BareExpoNCL-resources.sh",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/api.amplitude.com.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BareExpoAbstract-BareExpoNCL/Pods-BareExpoAbstract-BareExpoNCL-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7438AA0C46AFD7F36EA7240A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BareExpoAbstract-BareExpoCore-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		764B4B2361CDB40CF20B988A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-BareExpoAbstract-BareExpoPayments/Pods-BareExpoAbstract-BareExpoPayments-resources.sh",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaCA.der",
+				"${PODS_ROOT}/Amplitude-iOS/Amplitude/ComodoRsaDomainValidationCA.der",
+				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/api.amplitude.com.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoCaLimitedRsaCertificationAuthority.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ComodoRsaDomainValidationCA.der",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BareExpoAbstract-BareExpoPayments/Pods-BareExpoAbstract-BareExpoPayments-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B220F231233B555600FCCA5F /* Start Packager  */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager ";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$CONFIGURATION\" = *Debug* ]]; then \n  export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\" \n  if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n    if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then   \n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n        echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n        exit 2\n    fi\n    else\n        open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n    fi  \n  fi\nfi\n";
+		};
+		B2A27059233E22630072B4B4 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -338,6 +709,60 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [[ \"$CONFIGURATION\" = *Debug* ]]; then \n  export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\" \n  if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n    if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then   \n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n        echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n        exit 2\n    fi\n    else\n        open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n    fi  \n  fi\nfi\n";
+		};
+		B2A2705A233E22880072B4B4 /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$CONFIGURATION\" = *Debug* ]]; then \n  export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\" \n  if [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n    if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then   \n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n        echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n        exit 2\n    fi\n    else\n        open \"$SRCROOT/../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n    fi  \n  fi\nfi\n";
+		};
+		B2A2705B233E22A20072B4B4 /* Bundle React Native code and images  */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle React Native code and images ";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "../scripts/create-bundles-xcode.sh $EXPO_BUNDLE_FOLDER\n";
+		};
+		B2A2705C233E22AC0072B4B4 /* Bundle React Native code and images  */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Bundle React Native code and images ";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "../scripts/create-bundles-xcode.sh $EXPO_BUNDLE_FOLDER\n";
 		};
 		D90D519FB328D3546E8F15C1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -376,8 +801,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27001233E1B840072B4B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A27014233E1CCD0072B4B4 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27015233E1E5C0072B4B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A2702E233E1E5D0072B4B4 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B2A27036233E1F390072B4B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2A2704F233E1F3B0072B4B4 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +836,21 @@
 			isa = PBXTargetDependency;
 			target = 13B07F861A680F5B00A75B9A /* BareExpo */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
+		};
+		B2A27010233E1C110072B4B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B2A27004233E1B840072B4B4 /* BareExpoCore */;
+			targetProxy = B2A2700F233E1C110072B4B4 /* PBXContainerItemProxy */;
+		};
+		B2A27034233E1E7E0072B4B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B2A27004233E1B840072B4B4 /* BareExpoCore */;
+			targetProxy = B2A27033233E1E7E0072B4B4 /* PBXContainerItemProxy */;
+		};
+		B2A27058233E1FC50072B4B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B2A27004233E1B840072B4B4 /* BareExpoCore */;
+			targetProxy = B2A27057233E1FC50072B4B4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -449,13 +912,14 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4ADC22B6EC034901305B8CDC /* Pods-BareExpo.debug.xcconfig */;
+			baseConfigurationReference = D778806F64CF81E11B72A840 /* Pods-BareExpoAbstract-BareExpo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = BareExpo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -470,13 +934,14 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 70419E2A27811C660476A295 /* Pods-BareExpo.release.xcconfig */;
+			baseConfigurationReference = DA3B830B8B56E6346E3A8F69 /* Pods-BareExpoAbstract-BareExpo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = BareExpo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -520,6 +985,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				EXPO_BUNDLE_FOLDER = "bare-expo";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -535,7 +1001,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -573,6 +1039,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXPO_BUNDLE_FOLDER = "bare-expo";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -581,10 +1048,172 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B2A2700B233E1B840072B4B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD73D8B5AA80C3E2F089F3D8 /* Pods-BareExpoAbstract-BareExpoCore.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C8D8QTF339;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B2A2700C233E1B840072B4B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 88840ECF8B1AD3CFCC1B3F49 /* Pods-BareExpoAbstract-BareExpoCore.release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = C8D8QTF339;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B2A27030233E1E5D0072B4B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 537D26CFCBA6B64D84CD5726 /* Pods-BareExpoAbstract-BareExpoNCL.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C8D8QTF339;
+				EXPO_BUNDLE_FOLDER = "standalone-ncl";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BareExpoNCL/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_NAME = "bare-expo-ncl";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B2A27031233E1E5D0072B4B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 087B6B189EE57B1EC106A0A3 /* Pods-BareExpoAbstract-BareExpoNCL.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = C8D8QTF339;
+				EXPO_BUNDLE_FOLDER = "standalone-ncl";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BareExpoNCL/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_NAME = "bare-expo-ncl";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B2A27051233E1F3B0072B4B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 43A80C52425022684B693A26 /* Pods-BareExpoAbstract-BareExpoPayments.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C8D8QTF339;
+				EXPO_BUNDLE_FOLDER = "expo-payments";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BareExpoPayments/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_NAME = "bare-expo-payments";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B2A27052233E1F3B0072B4B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BB22CC772648352AFAFC3DC7 /* Pods-BareExpoAbstract-BareExpoPayments.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = C8D8QTF339;
+				EXPO_BUNDLE_FOLDER = "expo-payments";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BareExpoPayments/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_NAME = "bare-expo-payments";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -614,6 +1243,33 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B2A2700D233E1B850072B4B4 /* Build configuration list for PBXNativeTarget "BareExpoCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2A2700B233E1B840072B4B4 /* Debug */,
+				B2A2700C233E1B840072B4B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B2A2702F233E1E5D0072B4B4 /* Build configuration list for PBXNativeTarget "BareExpoNCL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2A27030233E1E5D0072B4B4 /* Debug */,
+				B2A27031233E1E5D0072B4B4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B2A27050233E1F3B0072B4B4 /* Build configuration list for PBXNativeTarget "BareExpoPayments" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2A27051233E1F3B0072B4B4 /* Debug */,
+				B2A27052233E1F3B0072B4B4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

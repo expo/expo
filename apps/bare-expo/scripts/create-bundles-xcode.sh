@@ -43,18 +43,13 @@ case "$CONFIGURATION" in
     ;;
 esac
 
-createBundle()
-{
-    BUNDLE_PROJECT_FOLDER=$1
-    cd "$EXPO_APPS_PATH/bare-expo/" && node "$CLI_PATH" bundle \
-        --platform ios \
-        --entry-file "$EXPO_APPS_PATH/$BUNDLE_PROJECT_FOLDER/index.js" \
-        --dev false \
-        --reset-cache \
-        --bundle-output "$DEST/$BUNDLE_PROJECT_FOLDER.jsbundle" \
-        --assets-dest "$DEST" 
-}
 
-createBundle "standalone-ncl"
-createBundle "bare-expo"
-createBundle "expo-payments"
+BUNDLE_PROJECT_FOLDER=$1
+cd "$EXPO_APPS_PATH/bare-expo/" && node "$CLI_PATH" bundle \
+    --platform ios \
+    --entry-file "$EXPO_APPS_PATH/$BUNDLE_PROJECT_FOLDER/index.js" \
+    --dev false \
+    --reset-cache \
+    --bundle-output "$DEST/main.jsbundle" \
+    --assets-dest "$DEST" 
+
