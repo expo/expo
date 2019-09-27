@@ -63,7 +63,7 @@ public class VideoThumbnailsModule extends ExportedModule {
             Map headers = mVideoOptions.getMap(KEY_HEADERS, new HashMap<String, String>());
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             if (URLUtil.isFileUrl(mSourceFilename)) {
-                retriever.setDataSource(mSourceFilename.replace("file://", ""));
+                retriever.setDataSource(Uri.decode(mSourceFilename).replace("file://", ""));
             } else {
                 retriever.setDataSource(mSourceFilename, headers);
             }
@@ -83,7 +83,7 @@ public class VideoThumbnailsModule extends ExportedModule {
 
     @ExpoMethod
     public void getThumbnail(String sourceFilename, final ReadableArguments videoOptions, final Promise promise) {
-        if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(sourceFilename.replace("file://", ""))) {
+        if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
             promise.reject(ERROR_TAG, "Can't read file");
             return;
         }
