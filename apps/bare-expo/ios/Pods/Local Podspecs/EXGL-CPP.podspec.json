@@ -1,6 +1,6 @@
 {
   "name": "EXGL-CPP",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "description": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "license": "MIT",

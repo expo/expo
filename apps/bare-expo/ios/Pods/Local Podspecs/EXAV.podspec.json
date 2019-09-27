@@ -1,6 +1,6 @@
 {
   "name": "EXAV",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.1",
   "summary": "Expo universal module for Audio and Video playback",
   "description": "Expo universal module for Audio and Video playback",
   "license": "MIT",
