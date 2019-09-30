@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Usage: ./android-copy-native-modules 4.0.0 copies native modules to abi4_0_0.host.exp.exponent
+# Requires $EXPO_ROOT_DIR to be defined in the environment.
 
 ABI_VERSION=`echo $1 | sed 's/\./_/g'`
 ABI_VERSION="abi$ABI_VERSION"
 VERSIONED_ABI_PATH=versioned-abis/expoview-$ABI_VERSION
+TOOLS_DIR=`pwd`
 
-pushd ../android
+pushd $EXPO_ROOT_DIR/android
 
 mkdir -p $VERSIONED_ABI_PATH/src/main/java
 
@@ -28,6 +30,7 @@ awk '
   // { if (removing == 0) stopRemoving = 0 }
 ' expoview/src/main/AndroidManifest.xml > $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
 sed -i '' "s/host.exp.expoview/$ABI_VERSION.host.exp.expoview/g" $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
+sed -i '' "s/versioned.host.exp.exponent/$ABI_VERSION.host.exp.exponent/g" $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml
 
 # Add the new expoview-abiXX_X_X subproject to root project
 NEWLINE='\
@@ -44,11 +47,22 @@ find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -inam
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import static versioned\.host\.exp\.exponent/import static $ABI_VERSION\.host\.exp\.exponent/g"
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import static expo\./import static $ABI_VERSION\.expo\./g"
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/package versioned\.host\.exp\.exponent/package $ABI_VERSION\.host\.exp\.exponent/g"
+
+while read PACKAGE
+do
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
+done < $TOOLS_DIR/android-packages-to-keep.txt
+
 # Rename references to react native
 while read PACKAGE
 do
   find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import $PACKAGE/import $ABI_VERSION.$PACKAGE/g"
   find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import static $PACKAGE/import static $ABI_VERSION.$PACKAGE/g"
-done < ../tools/android-packages-to-rename.txt
+done < $TOOLS_DIR/android-packages-to-rename.txt
+
+while read PACKAGE
+do
+  find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(<]\)temporarydonotversion.$PACKAGE/\1$PACKAGE/g"
+done < $TOOLS_DIR/android-packages-to-keep.txt
 
 popd
