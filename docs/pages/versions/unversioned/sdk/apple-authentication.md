@@ -132,6 +132,7 @@ function YourComponent() {
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
       buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={5}
+      style={{ width: 200, height: 44 }} // You must choose default size
       onPress={() => {
         try {
           const credential = await AppleAuthentication.signInAsync({
