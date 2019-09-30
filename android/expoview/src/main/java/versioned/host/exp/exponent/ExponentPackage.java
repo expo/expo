@@ -28,7 +28,9 @@ import java.util.Set;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceId;
+// WHEN_VERSIONING_REMOVE_FROM_HERE
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
+// WHEN_VERSIONING_REMOVE_TO_HERE
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.api.ErrorRecoveryModule;
 import versioned.host.exp.exponent.modules.api.KeyboardModule;
@@ -157,8 +159,9 @@ public class ExponentPackage implements ReactPackage {
     ));
 
     if (mIsKernel) {
-      // Never need this in versioned code. Comment this out if this is in an abi package
+      // WHEN_VERSIONING_REMOVE_FROM_HERE
       nativeModules.add((NativeModule) ExponentKernelModuleProvider.newInstance(reactContext));
+      // WHEN_VERSIONING_REMOVE_TO_HERE
     }
 
     if (isVerified) {

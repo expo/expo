@@ -14,6 +14,9 @@ import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.Map;
 
+// DO NOT EDIT THIS COMMENT - used by versioning scripts
+// ADD BUILDCONFIG IMPORT HERE
+
 public abstract class PayFlow {
 
   protected final @NonNull Fun0<Activity> activityProvider;
