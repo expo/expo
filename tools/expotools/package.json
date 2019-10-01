@@ -76,6 +76,6 @@
     "xcode": "^2.0.0"
   },
   "devDependencies": {
-    "typescript": "^3.1.6"
+    "typescript": "^3.6.3"
   }
 }
