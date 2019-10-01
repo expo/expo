@@ -8,7 +8,7 @@ def blue(message)
   return "\e[34m#{message}\e[0m"
 end
 
-def eval_versioned_scripts(file_name, message: '', context: nil)
+def eval_versioned_scripts!(file_name, message: '', context: nil)
   project_directory = Pod::Config.instance.project_root
   project_root_directory = Pathname.new(File.dirname(project_directory))
 
@@ -25,12 +25,12 @@ def eval_versioned_scripts(file_name, message: '', context: nil)
   }
 end
 
-def use_versioned_abis
-  eval_versioned_scripts 'dependencies.rb',
+def use_versioned_abis!
+  eval_versioned_scripts! 'dependencies.rb',
     message: 'Using versioned dependencies from'
 end
 
-def run_versioned_postinstalls(pod_name, target_installation_result)
-  eval_versioned_scripts 'postinstalls.rb',
+def run_versioned_postinstalls!(pod_name, target_installation_result)
+  eval_versioned_scripts! 'postinstalls.rb',
     context: binding
 end
