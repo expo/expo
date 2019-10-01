@@ -711,7 +711,7 @@ PODS:
     - ReactABI35_0_0
   - ABI35_0_0UMSensorsInterface (3.0.0)
   - ABI35_0_0UMTaskManagerInterface (3.0.0)
-  - Amplitude-iOS (4.6.0)
+  - Amplitude-iOS (4.7.1)
   - Analytics (3.7.0)
   - AppAuth (1.2.0):
     - AppAuth/Core (= 1.2.0)
@@ -735,7 +735,7 @@ PODS:
     - FBAudienceNetwork (= 5.5.0)
     - UMCore
   - EXAmplitude (7.0.0):
-    - Amplitude-iOS (= 4.6.0)
+    - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
     - UMCore
   - EXAppAuth (7.0.0):
@@ -2409,7 +2409,7 @@ SPEC CHECKSUMS:
   ABI35_0_0UMReactNativeAdapter: 36698f984063848ff13f9cde67b9adbc97bdb6dd
   ABI35_0_0UMSensorsInterface: 265d8bca372b5055f5e7ae4953acfb625d811d18
   ABI35_0_0UMTaskManagerInterface: 5745765bc2634ccc1d7aef8ee5752757109521f6
-  Amplitude-iOS: ac1715ae68104b7a51723209ad574f60ab22ae5f
+  Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
@@ -2419,7 +2419,7 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   EXAdsAdMob: 8d73d7b6bedebd53990f388dc1bd382599a78e43
   EXAdsFacebook: 5d54983c1200eb5b8ef44858a3827add306f6321
-  EXAmplitude: 990d7dbe8fe771bd60f80e280718a534000f3b9a
+  EXAmplitude: 69201cb81956823fd24697fe077f51fc5f10a88b
   EXAppAuth: f133ab0dea7aa4504fd3ab1f37625e902f9d990f
   EXAppleAuthentication: 73447420d5b740854610befc0eb6558261e694ad
   EXApplication: af8850de5a2f8df18e94d05281a628e823699485

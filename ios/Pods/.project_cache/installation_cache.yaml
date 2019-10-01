@@ -3816,10 +3816,10 @@ CACHE_KEYS:
   Amplitude-iOS:
     BUILD_SETTINGS_CHECKSUM:
       Amplitude-iOS: 23d52fb77c25cb250bd876a075157383
-    CHECKSUM: ac1715ae68104b7a51723209ad574f60ab22ae5f
+    CHECKSUM: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
     PROJECT_NAME: Amplitude-iOS
     SPECS:
-      - Amplitude-iOS (4.6.0)
+      - Amplitude-iOS (4.7.1)
   Analytics:
     BUILD_SETTINGS_CHECKSUM:
       Analytics: 700a4af424803b95e9baeef13029741a
@@ -3924,7 +3924,7 @@ CACHE_KEYS:
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude: e07b672cc08225365406ce2773f0783f
-    CHECKSUM: 990d7dbe8fe771bd60f80e280718a534000f3b9a
+    CHECKSUM: 69201cb81956823fd24697fe077f51fc5f10a88b
     FILES:
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.h"
       - "../../packages/expo-analytics-amplitude/ios/EXAmplitude/EXAmplitude.m"
