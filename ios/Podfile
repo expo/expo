@@ -1,4 +1,4 @@
-require_relative './PodfileHelpers.rb'
+require_relative './podfile_helpers.rb'
 require_relative '../packages/react-native-unimodules/cocoapods.rb'
 
 source 'https://cdn.cocoapods.org/'
