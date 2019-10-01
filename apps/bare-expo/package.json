@@ -105,6 +105,6 @@
     "expo-yarn-workspaces": "^1.2.0",
     "jest-expo": "~35.0.0",
     "jest-expo-puppeteer": "~0.0.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.6.3"
   }
 }

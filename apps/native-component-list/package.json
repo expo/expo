@@ -114,6 +114,6 @@
     "babel-preset-expo": "~7.0.0",
     "expo-module-scripts": "~1.1.1",
     "expo-yarn-workspaces": "^1.2.0",
-    "typescript": "^3.4.2"
+    "typescript": "^3.6.3"
   }
 }
