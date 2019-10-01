@@ -16788,7 +16788,6 @@
 					"ABI35_0_0HAVE_GOOGLE_MAPS=1",
 					"ABI35_0_0HAVE_GOOGLE_MAPS_UTILS=1",
 				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_CFLAGS = (
 					"-DkNeverRequested=ReactABI35_0_0kNeverRequested",
@@ -17010,7 +17009,6 @@
 					"ABI35_0_0HAVE_GOOGLE_MAPS=1",
 					"ABI35_0_0HAVE_GOOGLE_MAPS_UTILS=1",
 				);
-				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				OTHER_CFLAGS = (
 					"-DkNeverRequested=ReactABI35_0_0kNeverRequested",

@@ -8,10 +8,6 @@
     "version": "~> 3.13.4"
   },
   {
-    "name": "Fabric",
-    "version": "~> 1.10.2"
-  },
-  {
     "name": "GoogleMaps",
     "version": "~> 3.3"
   },
