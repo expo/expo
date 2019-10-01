@@ -10,7 +10,6 @@
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXUserNotificationsDispatcher.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <GoogleMaps/GoogleMaps.h>
@@ -104,7 +103,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
-  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationsDispatcher sharedInstance];
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];

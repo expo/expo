@@ -5,9 +5,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Sets up EXUserNotificationManager as UNNotificationCenter.delegate
+
 @interface EXNotificationsAppDelegate : UMSingletonModule <UIApplicationDelegate>
-
-
 
 @end
 

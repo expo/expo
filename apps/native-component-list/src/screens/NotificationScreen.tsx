@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Platform, ScrollView } from 'react-native';
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
@@ -10,8 +10,8 @@ import registerForPushNotificationsAsync from '../api/registerForPushNotificatio
 export default class NotificationScreen extends React.Component {
   constructor(props) {
     super(props);
-    Notifications.addOnUserInteractionListener('notificationScreen', console.log);
-    Notifications.addOnForegroundNotificationListener('notificationScreen', console.log);
+    // Notifications.addOnUserInteractionListener('notificationScreen', console.log);
+    // Notifications.addOnForegroundNotificationListener('notificationScreen', console.log);
   }
   static navigationOptions = {
     title: 'Notifications',

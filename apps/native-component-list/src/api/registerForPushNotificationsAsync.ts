@@ -1,4 +1,4 @@
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 
 import Constants from 'expo-constants';
 
@@ -76,20 +76,20 @@ export default async function registerForPushNotificationsAsync(type: string) {
   // Log it so we can easily copy it if we need to work with it
   console.log(`Got this device's push token: ${token}`);
 
-  await Notifications.createCategoryAsync('welcome', [
-    {
-      actionId: 'tada',
-      buttonTitle: '🎉',
-      isDestructive: false,
-      isAuthenticationRequired: false,
-    },
-    {
-      actionId: 'heart_eyes',
-      buttonTitle: '😍',
-      isDestructive: false,
-      isAuthenticationRequired: true,
-    },
-  ]);
+  // await Notifications.createCategoryAsync('welcome', [
+  //   {
+  //     actionId: 'tada',
+  //     buttonTitle: '🎉',
+  //     isDestructive: false,
+  //     isAuthenticationRequired: false,
+  //   },
+  //   {
+  //     actionId: 'heart_eyes',
+  //     buttonTitle: '😍',
+  //     isDestructive: false,
+  //     isAuthenticationRequired: true,
+  //   },
+  // ]);
 
   // POST the token to the Expo push server
   const response = await fetch(PUSH_ENDPOINT, {
@@ -113,6 +113,7 @@ export default async function registerForPushNotificationsAsync(type: string) {
       console.warn(`API error sending push notification:`, error);
     }
   }
+  console.log(result);
 
   const receipts = result.data;
   if (receipts) {

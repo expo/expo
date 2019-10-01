@@ -1,5 +1,5 @@
 import React from 'react';
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import { Alert, Platform } from 'react-native';
 import { EventSubscription } from 'fbemitter';
 import ComponentListScreen from './ComponentListScreen';

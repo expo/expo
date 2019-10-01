@@ -1,18 +1,15 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import "EXNotifications.h"
-#import "EXUserNotificationCenter.h"
-#import "UMEventEmitterService.h"
-#import <EXNotifications/EXScoper.h>
-#import <EXNotifications/EXAppIdProvider.h>
-#import <EXNotifications/EXMessageUnscoper.h>
-#import <EXNotifications/EXThreadSafeTokenDispatcher.h>
-#import <EXNotifications/EXNotificationConverter.h>
+#import <EXNotifications/EXNotifications.h>
+#import <EXNotifications/EXUserNotificationCenter.h>
+#import <UMCore/UMEventEmitterService.h>
+#import <EXNotifications/UMNotificationTokenManager.h>
+#import <EXNotifications/EXUserNotificationsManager.h>
+#import <EXNotifications/EXNotifications+Serialization.h>
 
 @interface EXNotifications ()
 
 @property (strong, atomic) id<EXUserNotificationCenterProxy> userNotificationCenter;
-@property (strong) NSString *appId;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 
@@ -42,11 +39,8 @@ UM_REGISTER_MODULE();
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _appId = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppIdProvider)] getAppId];
+  [((id<UMNotificationsManager>)[_moduleRegistry getSingletonModuleForName:@"NotificationsManager"]) addNotificationsConsumer:self];
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  
-  [[EXThreadSafePostOffice sharedInstance]
-   registerModuleAndGetPendingDeliveriesWithAppId:self.appId mailbox:self];
 }
 
 UM_EXPORT_METHOD_AS(presentLocalNotification,
@@ -61,12 +55,13 @@ UM_EXPORT_METHOD_AS(presentLocalNotification,
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
   
   NSMutableDictionary *userInfo =  [content.userInfo mutableCopy];
-  [userInfo setObject:@(YES) forKey:@"canInForeground"];
+  [userInfo setObject:@(YES) forKey:@"showInForeground"];
   content.userInfo = userInfo;
-  
+
+  UNTimeIntervalNotificationTrigger *notificationTrigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:10 repeats:NO];
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
                                                                         content:content
-                                                                        trigger:nil];
+                                                                        trigger:notificationTrigger];
   
   [self.userNotificationCenter addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
     if (error) {
@@ -152,9 +147,7 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
   [_userNotificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([request.content.userInfo[@"appId"] isEqualToString:self.appId]) {
-        [requestsToCancelIdentifiers addObject:request.identifier];
-      }
+      [requestsToCancelIdentifiers addObject:request.identifier];
     }
     [userNotificationCenter removePendingNotificationRequestsWithIdentifiers:requestsToCancelIdentifiers];
     resolve(nil);
@@ -192,7 +185,11 @@ UM_EXPORT_METHOD_AS(registerForPushNotificationsAsync,
                    registerForPushNotificationsAsync:(UMPromiseResolveBlock)resolve
                                             rejecter:(UMPromiseRejectBlock)reject)
 {
-  [[EXThreadSafeTokenDispatcher sharedInstance] registerForPushTokenWithAppId:_appId onTokenChangeListener:self];
+  id tokenManager = [_moduleRegistry getSingletonModuleForName:@"NotificationTokenManager"];
+  [tokenManager addListener:self];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+  });
   resolve(nil);
 }
 
@@ -209,10 +206,10 @@ UM_EXPORT_METHOD_AS(createCategoryAsync,
     [actionsArray addObject:[self parseNotificationActionFromParams:actionParams]];
   }
   
-  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:[self internalIdForIdentifier:categoryId]
-                                                                               actions:actionsArray
-                                                                     intentIdentifiers:@[]
-                                                                               options:UNNotificationCategoryOptionNone];
+  UNNotificationCategory *newCategory = [UNNotificationCategory categoryWithIdentifier:categoryId
+            actions:actionsArray
+  intentIdentifiers:@[]
+            options:UNNotificationCategoryOptionNone];
   
   __weak id<EXUserNotificationCenterProxy> userNotificationCenter = _userNotificationCenter;
   [_userNotificationCenter getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
@@ -234,12 +231,11 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSString *internalCategoryId = [self internalIdForIdentifier:categoryId];
   __weak id<EXUserNotificationCenterProxy> userNotificationCenter = _userNotificationCenter;
   [_userNotificationCenter getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableSet<UNNotificationCategory *> *newCategories = [categories mutableCopy];
     for (UNNotificationCategory *category in newCategories) {
-      if ([category.identifier isEqualToString:internalCategoryId]) {
+      if ([category.identifier isEqualToString:categoryId]) {
         [newCategories removeObject:category];
         break;
       }
@@ -253,19 +249,31 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 
 - (UNMutableNotificationContent *)_localNotificationFromPayload:(NSDictionary *)payload
 {
-  NSMutableDictionary *mutablePayload = [payload mutableCopy];
-  [mutablePayload setObject:self.appId forKey:@"appId"];
-  
-  if (mutablePayload[@"categoryId"]) {
-    mutablePayload[@"categoryId"] = [self internalIdForIdentifier:mutablePayload[@"categoryId"]];
-  }
-  
-  return [EXNotificationConverter convertToNotificationContent:mutablePayload];
-}
+  UNMutableNotificationContent *content = [UNMutableNotificationContent new];
 
-- (NSString *)internalIdForIdentifier:(NSString *)identifier {
-  id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  return [scoper getScopedString:identifier];
+  NSString *uniqueId = [[NSUUID new] UUIDString];
+
+  content.title = payload[@"title"];
+  content.body = payload[@"body"];
+
+  if ([payload[@"sound"] boolValue]) {
+    content.sound = [UNNotificationSound defaultSound];
+  }
+
+  if ([payload[@"count"] isKindOfClass:[NSNumber class]]) {
+    content.badge = (NSNumber *)payload[@"count"];
+  }
+
+  if ([payload[@"categoryId"] isKindOfClass:[NSString class]]) {
+    content.categoryIdentifier = payload[@"categoryId"];
+  }
+
+  content.userInfo = @{
+                       @"body": payload[@"data"],
+                       @"id": uniqueId,
+                       };
+
+  return content;
 }
 
 - (UNCalendarNotificationTrigger *)calendarTriggerFrom:(NSDictionary *)options
@@ -288,7 +296,7 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 
 - (UNNotificationAction *)parseNotificationActionFromParams:(NSDictionary *)params
 {
-  NSString *actionId = [self internalIdForIdentifier:params[@"actionId"]];
+  NSString *actionId = params[@"actionId"];
   NSString *buttonTitle = params[@"buttonTitle"];
   
   UNNotificationActionOptions options = UNNotificationActionOptionNone;
@@ -313,23 +321,13 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
   return [UNNotificationAction actionWithIdentifier:actionId title:buttonTitle options:options];
 }
 
-- (void)dealloc
-{
-  [[EXThreadSafePostOffice sharedInstance] unregisterModuleWithAppId:_appId];
-  [[EXThreadSafeTokenDispatcher sharedInstance] unregisterWithAppId:_appId];
-}
-
 - (void)onForegroundNotification:(NSDictionary *)notification
 {
-  id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  notification = [EXMessageUnscoper getUnscopedMessage:notification scoper:scoper];
   [_eventEmitter sendEventWithName:@"Exponent.onForegroundNotification" body:notification];
 }
 
 - (void)onUserInteraction:(NSDictionary *)userInteraction
 {
-  id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  userInteraction = [EXMessageUnscoper getUnscopedMessage:userInteraction scoper:scoper];
   [_eventEmitter sendEventWithName:@"Exponent.onUserInteraction" body:userInteraction];
 }
 
@@ -341,8 +339,43 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 - (void)startObserving {}
 - (void)stopObserving {}
 
-- (void)onTokenChange:(NSString *)token {
-  [_eventEmitter sendEventWithName:@"Exponent.onTokenChange" body:@{@"token":token}];
+- (void)onNewToken:(NSData *)deviceToken {
+  const char *data = [deviceToken bytes];
+  NSMutableString *token = [NSMutableString string];
+
+  for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+    [token appendFormat:@"%02.2hhX", data[i]];
+  }
+
+  [_eventEmitter sendEventWithName:@"Exponent.onTokenChange" body:@{@"token":[token copy]}];
+}
+
+- (void)onFailedToRegisterWithError:(NSError *)error {
+  [_eventEmitter sendEventWithName:@"Exponent.onTokenChange" body:@{@"error":[error debugDescription], @"token": [NSNull null]}];
+}
+
+- (NSArray *)consumeNotificationEvents:(NSArray *)events {
+  for (id event in events) {
+    if ([event isKindOfClass:[UNNotification class]]) {
+      UNNotification *notification = event;
+      [self onForegroundNotification:[self eventFromNotificationContent:notification.request.content]];
+    } else if ([event isKindOfClass:[UNNotificationResponse class]]) {
+      UNNotificationResponse *response = event;
+      [self onUserInteraction:[self eventFromNotificationResponse:response]];
+    }
+  }
+  return [NSArray new];
+}
+
+- (BOOL)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+  [self onUserInteraction:[self eventFromNotificationResponse:response]];
+  completionHandler();
+  return YES;
+}
+
+- (BOOL)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+  // Let's let the manager do the job.
+  return NO;
 }
 
 @end

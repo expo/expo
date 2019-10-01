@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _setUpUserInterfaceForApplication:application withLaunchOptions:launchOptions];
   }
 
- [super application:application didFinishLaunchingWithOptions:launchOptions];
+  [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
 }

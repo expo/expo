@@ -1,30 +1,26 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import "EXNotificationsAppDelegate.h"
-#import <EXNotifications/EXUserNotificationManager.h>
-#import <EXNotifications/EXThreadSafeTokenDispatcher.h>
+#import <EXNotifications/EXNotificationsAppDelegate.h>
+#import <EXNotifications/EXUserNotificationsManager.h>
+#import <UMCore/UMDefines.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 @implementation EXNotificationsAppDelegate
 
-UM_REGISTER_SINGLETON_MODULE(EXNotificationAppDelegate)
+UM_REGISTER_SINGLETON_MODULE(NotificationsAppDelegate)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
 {
-  if ([UNUserNotificationCenter currentNotificationCenter].delegate == nil) {
-    [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationManager sharedInstance];
+  id<UNUserNotificationCenterDelegate> ourDelegate = (id<UNUserNotificationCenterDelegate>) [UMModuleRegistryProvider getSingletonModuleForClass:[EXUserNotificationsManager class]];
+  id<UNUserNotificationCenterDelegate> setDelegate = [UNUserNotificationCenter currentNotificationCenter].delegate;
+
+  if (!setDelegate) {
+    [UNUserNotificationCenter currentNotificationCenter].delegate = ourDelegate;
+  } else if (setDelegate != ourDelegate) {
+    UMLogWarn(@"Notification delegate is not expo-notifications delegate. expo-notifications may not work properly. Expected: %@, received: %@", ourDelegate, setDelegate);
   }
-  
+
   return false;
-}
-
-- (void)application:(UIApplication *)app
-didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
-  [[EXThreadSafeTokenDispatcher sharedInstance] onNewToken:devToken];
-}
-
-- (void)application:(UIApplication *)app
-didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
-  
 }
 
 @end
