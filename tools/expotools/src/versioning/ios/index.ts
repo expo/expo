@@ -562,37 +562,6 @@ end
 }
 
 /**
- * TODO(@tsapeta): This function can be removed once we drop SDK35,
- * this is the last SDK that has versioned templates in template-files folder.
- */
-async function removePodfileDepsAsync(templatesPath, versionedPodNames) {
-  // we only generate deps/postinstalls for React right now
-  if (versionedPodNames['React']) {
-    let versionedPodName = versionedPodNames['React'];
-    const depFilename = path.join(
-      templatesPath,
-      'versioned-react-native',
-      'dependencies',
-      `${versionedPodName}.rb`
-    );
-    const postinstallFilename = path.join(
-      templatesPath,
-      'versioned-react-native',
-      'postinstalls',
-      `${versionedPodName}.rb`
-    );
-    let filesToRemove = [depFilename, postinstallFilename];
-    filesToRemove.forEach(fileToRemove => {
-      try {
-        fs.accessSync(fileToRemove, fs.F_OK);
-        fs.removeSync(fileToRemove);
-      } catch (e) {}
-    });
-  }
-  return;
-}
-
-/**
 * @param transformConfig function that takes a config dict and returns a new config dict.
 */
 async function modifyVersionConfigAsync(configPath, transformConfig) {
@@ -955,10 +924,6 @@ export async function removeVersionAsync(
   // remove dep from main podfile
   console.log(
     `Removing ${chalk.green(versionedPodNames.React)} dependency from root Podfile...`
-  );
-  await removePodfileDepsAsync(
-    `${rootPath}/template-files/ios`,
-    versionedPodNames
   );
 
   // remove from sdkVersions.json
