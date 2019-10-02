@@ -1470,6 +1470,7 @@ DEPENDENCIES:
   - ABI35_0_0UMReactNativeAdapter (from `./versioned-react-native/ABI35_0_0/UMReactNativeAdapter`)
   - ABI35_0_0UMSensorsInterface (from `./versioned-react-native/ABI35_0_0/UMSensorsInterface`)
   - ABI35_0_0UMTaskManagerInterface (from `./versioned-react-native/ABI35_0_0/UMTaskManagerInterface`)
+  - Amplitude-iOS
   - CocoaLumberjack (~> 3.5.3)
   - Crashlytics (~> 3.13.4)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -2524,6 +2525,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: bc630ddecb8ba45b4b95797df6536b208af15576
+PODFILE CHECKSUM: d5be2109c491b24a39532c8df58c65045c5a6cba
 
 COCOAPODS: 1.8.0.beta.1

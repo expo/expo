@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
     ss.preserve_paths = "ios/Exponent/**/*.{h,m}"
     ss.exclude_files = "ios/Exponent/Supporting/**", "ios/Exponent/Versioned/Optional/**/*.{h,m}"
 
+    ss.dependency 'Amplitude-iOS', '~> 4.7.1'
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'Crashlytics', '~> 3.13.4'
     ss.dependency 'GoogleMaps', '~> 3.3'

@@ -12,6 +12,7 @@ inhibit_all_warnings!
 
 target 'Exponent' do
   # Expo Client dependencies
+  pod 'Amplitude-iOS'
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'Crashlytics', '~> 3.13.4'
   pod 'Fabric', '~> 1.10.2'

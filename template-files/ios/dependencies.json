@@ -1,5 +1,9 @@
 [
   {
+    "name": "Amplitude-iOS",
+    "version": "~> 4.7.1"
+  },
+  {
     "name": "CocoaLumberjack",
     "version": "~> 3.5.3"
   },
