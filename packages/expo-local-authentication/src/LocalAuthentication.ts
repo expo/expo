@@ -33,7 +33,7 @@ export async function isEnrolledAsync(): Promise<boolean> {
 }
 
 export async function authenticateAsync(
-  options: AuthOptions = { promptMessage: 'Authenticate' }
+  options: AuthOptions = {}
 ): Promise<LocalAuthenticationResult> {
   if (!ExpoLocalAuthentication.authenticateAsync) {
     throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
@@ -48,9 +48,12 @@ export async function authenticateAsync(
   }
 
   if (Platform.OS === 'ios') {
+    if (!options.promptMessage) {
+      options.promptMessage = 'Authenticate';
+    }
     invariant(
-      typeof options.promptMessage === 'string' && options.promptMessage.length,
-      'LocalAuthentication.authenticateAsync must be called with a non-empty `options.promptMessage` string on iOS'
+      typeof options.promptMessage === 'string',
+      'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a string.'
     );
 
     const result = await ExpoLocalAuthentication.authenticateAsync(options);
