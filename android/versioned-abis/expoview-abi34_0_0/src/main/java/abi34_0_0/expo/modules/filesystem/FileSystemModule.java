@@ -508,6 +508,7 @@ public class FileSystemModule extends ExportedModule {
             }
             result.putInt("status", response.code());
             result.putBundle("headers", translateHeaders(response.headers()));
+            response.close();
             promise.resolve(result);
           }
         });
