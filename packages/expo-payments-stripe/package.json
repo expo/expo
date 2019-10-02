@@ -1,22 +1,38 @@
 {
   "name": "@ferriswheel/expo-payments-stripe",
-  "version": "1.1.7",
+  "version": "1.1.10",
   "description": "Expo Payments Module - Ferriswheel Fork",
   "main": "index.js",
   "files": [
     "android/",
     "ios/",
     "src/",
-    "index.js"
+    "index.js",
+    "unimodule.json"
   ],
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "payments-stripe",
+    "payments",
+    "stripe"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-payments-stripe"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "dependencies": {
-    "expo-core": "~1.2.0"
-  }
+  "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "~1.1.1"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

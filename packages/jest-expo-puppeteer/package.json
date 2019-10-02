@@ -1,0 +1,50 @@
+{
+  "name": "jest-expo-puppeteer",
+  "version": "0.0.0",
+  "license": "MIT",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/*",
+    "jest-preset.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/expo/expo.git",
+    "directory": "packages/jest-expo-puppeteer"
+  },
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "author": "Expo <support@expo.io>",
+  "contributors": [
+    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@expo/babel-preset-cli": "^0.2.0",
+    "@expo/config": "^2.1.4",
+    "@expo/xdl": "^56.2.1",
+    "@types/getenv": "^0.7.0",
+    "babel-jest": "^24.7.1",
+    "getenv": "^0.7.0",
+    "jest": "^24.7.1",
+    "jest-puppeteer": "^4.3.0",
+    "puppeteer": "^1.19.0",
+    "serve": "^11.1.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "~1.1.1",
+    "react": "16.8.3"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo-puppeteer"
+}

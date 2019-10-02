@@ -4,11 +4,11 @@
 #import "EXViewController.h"
 #import "ExpoKit.h"
 
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 
 @implementation EXUtilService
 
-EX_REGISTER_SINGLETON_MODULE(Util)
+UM_REGISTER_SINGLETON_MODULE(Util)
 
 - (UIViewController *)currentViewController
 {

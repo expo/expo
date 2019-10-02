@@ -86,37 +86,65 @@
 - (void)updateContainer
 {
   _needUpdate = NO;
-  BOOL activeScreenChanged = NO;
+  BOOL activeScreenRemoved = NO;
   // remove screens that are no longer active
   NSMutableSet *orphaned = [NSMutableSet setWithSet:_activeScreens];
   for (RNSScreenView *screen in _reactSubviews) {
     if (!screen.active && [_activeScreens containsObject:screen]) {
-      activeScreenChanged = YES;
+      activeScreenRemoved = YES;
       [self detachScreen:screen];
     }
     [orphaned removeObject:screen];
   }
   for (RNSScreenView *screen in orphaned) {
-    activeScreenChanged = YES;
+    activeScreenRemoved = YES;
     [self detachScreen:screen];
   }
 
-  // add new screens in order they are placed in subviews array
+  // detect if new screen is going to be activated
+  BOOL activeScreenAdded = NO;
   for (RNSScreenView *screen in _reactSubviews) {
     if (screen.active && ![_activeScreens containsObject:screen]) {
-      activeScreenChanged = YES;
-      [self attachScreen:screen];
-    } else if (screen.active) {
-      // if the view was already there we move it to "front" so that it is in the right
-      // order accoring to the subviews array
-      [_controller.view bringSubviewToFront:screen.controller.view];
+      activeScreenAdded = YES;
     }
   }
 
-  if (activeScreenChanged) {
+  // if we are adding new active screen, we perform remounting of all already marked as active
+  // this is done to mimick the effect UINavigationController has when willMoveToWindow:nil is
+  // triggered before the animation starts
+  if (activeScreenAdded) {
+    for (RNSScreenView *screen in _reactSubviews) {
+      if (screen.active && [_activeScreens containsObject:screen]) {
+        [self detachScreen:screen];
+        // disable interactions for the duration of transition
+        screen.userInteractionEnabled = NO;
+      }
+    }
+
+    // add new screens in order they are placed in subviews array
+    for (RNSScreenView *screen in _reactSubviews) {
+      if (screen.active) {
+        [self attachScreen:screen];
+      }
+    }
+  }
+
+  // if we are down to one active screen it means the transitioning is over and we want to notify
+  // the transition has finished
+  if ((activeScreenRemoved || activeScreenAdded) && _activeScreens.count == 1) {
+    RNSScreenView *singleActiveScreen = [_activeScreens anyObject];
+    // restore interactions
+    singleActiveScreen.userInteractionEnabled = YES;
+    [singleActiveScreen notifyFinishTransitioning];
+  }
+
+  if ((activeScreenRemoved || activeScreenAdded) && _controller.presentedViewController == nil) {
     // if user has reachability enabled (one hand use) and the window is slided down the below
     // method will force it to slide back up as it is expected to happen with UINavController when
     // we push or pop views.
+    // We only do that if `presentedViewController` is nil, as otherwise it'd mean that modal has
+    // been presented on top of recently changed controller in which case the below method would
+    // dismiss such a modal (e.g., permission modal or alert)
     [_controller dismissViewControllerAnimated:NO completion:nil];
   }
 }

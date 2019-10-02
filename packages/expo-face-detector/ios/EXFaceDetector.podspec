@@ -16,11 +16,11 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXFaceDetector/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXFaceDetectorInterface'
-  s.dependency 'GoogleMobileVision/FaceDetector', '~> 1.1.0'
-  s.dependency 'GoogleMobileVision/MVDataOutput', '~> 1.1.0'
-
+  s.dependency 'UMCore'
+  s.dependency 'UMFaceDetectorInterface'
+  s.dependency 'Firebase/Core', "6.7.0"
+  s.dependency 'Firebase/MLVision', "6.7.0"
+  s.dependency 'Firebase/MLVisionFaceModel', "6.7.0"
+  s.dependency 'FirebaseMLVision', "0.17.0"
+  s.dependency 'FirebaseMLCommon', "0.17.0"
 end
-
-  

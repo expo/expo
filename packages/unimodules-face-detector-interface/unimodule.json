@@ -1,0 +1,4 @@
+{
+  "name": "unimodules-face-detector-interface",
+  "platforms": ["ios", "android"]
+}

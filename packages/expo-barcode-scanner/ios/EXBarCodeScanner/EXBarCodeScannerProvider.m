@@ -5,14 +5,14 @@
 
 @implementation EXBarCodeScannerProvider
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXBarCodeScannerProviderInterface)];
+  return @[@protocol(UMBarCodeScannerProviderInterface)];
 }
 
-- (id<EXBarCodeScannerInterface>)createBarCodeScanner
+- (id<UMBarCodeScannerInterface>)createBarCodeScanner
 {
   return [EXBarCodeScanner new];
 }

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/EXSQLite/ABI35_0_0EXSQLite/ABI35_0_0EXSQLite.h

@@ -336,29 +336,6 @@
   #define GTM_NSSTRINGIFY(x) GTM_NSSTRINGIFY_INNER(x)
 #endif
 
-// Macro to allow fast enumeration when building for 10.5 or later, and
-// reliance on NSEnumerator for 10.4.  Remember, NSDictionary w/ FastEnumeration
-// does keys, so pick the right thing, nothing is done on the FastEnumeration
-// side to be sure you're getting what you wanted.
-#ifndef GTM_FOREACH_OBJECT
-  #if TARGET_OS_IPHONE || !(MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5)
-    #define GTM_FOREACH_ENUMEREE(element, enumeration) \
-      for (element in enumeration)
-    #define GTM_FOREACH_OBJECT(element, collection) \
-      for (element in collection)
-    #define GTM_FOREACH_KEY(element, collection) \
-      for (element in collection)
-  #else
-    #define GTM_FOREACH_ENUMEREE(element, enumeration) \
-      for (NSEnumerator *_ ## element ## _enum = enumeration; \
-           (element = [_ ## element ## _enum nextObject]) != nil; )
-    #define GTM_FOREACH_OBJECT(element, collection) \
-      GTM_FOREACH_ENUMEREE(element, [collection objectEnumerator])
-    #define GTM_FOREACH_KEY(element, collection) \
-      GTM_FOREACH_ENUMEREE(element, [collection keyEnumerator])
-  #endif
-#endif
-
 // ============================================================================
 
 // GTM_SEL_STRING is for specifying selector (usually property) names to KVC

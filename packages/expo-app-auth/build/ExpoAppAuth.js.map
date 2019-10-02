@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoAppAuth.js","sourceRoot":"","sources":["../src/ExpoAppAuth.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AAEtD,eAAe,kBAAkB,CAAC,WAAW,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\n\nexport default NativeModulesProxy.ExpoAppAuth || {};\n"]}

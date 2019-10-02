@@ -2,8 +2,8 @@
 
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
-#import <EXBarCodeScannerInterface/EXBarCodeScannerInterface.h>
-#import <EXCore/EXDefines.h>
+#import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
+#import <UMCore/UMDefines.h>
 
 @interface EXBarCodeScanner() <AVCaptureMetadataOutputObjectsDelegate>
 
@@ -41,7 +41,11 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
         NSMutableDictionary<NSString *, id> *nextSettings = [[NSMutableDictionary alloc] initWithDictionary:_settings];
         nextSettings[EX_BARCODE_TYPES_KEY] = value;
         _settings = nextSettings;
-        [self maybeStartBarCodeScanning];
+        UM_WEAKIFY(self);
+        [self _runBlockIfQueueIsPresent:^{
+          UM_ENSURE_STRONGIFY(self);
+          [self maybeStartBarCodeScanning];
+        }];
       }
     }
   }
@@ -53,9 +57,9 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     return;
   }
   _barCodesScanning = newBarCodeScanning;
-  EX_WEAKIFY(self);
+  UM_WEAKIFY(self);
   [self _runBlockIfQueueIsPresent:^{
-    EX_ENSURE_STRONGIFY(self);
+    UM_ENSURE_STRONGIFY(self);
     if ([self isScanningBarCodes]) {
       if (self.metadataOutput) {
         [self _setConnectionsEnabled:true];
@@ -160,7 +164,7 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     if([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
       AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
-        if ([metadata.type isEqualToString:barcodeType]) {
+        if (codeMetadata.stringValue && [codeMetadata.type isEqualToString:barcodeType]) {
           
           NSDictionary *event = @{
                                   @"type" : codeMetadata.type,

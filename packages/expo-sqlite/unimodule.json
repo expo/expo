@@ -1,0 +1,4 @@
+{
+  "name": "expo-sqlite",
+  "platforms": ["ios", "android"]
+}

@@ -4,7 +4,7 @@
 
 @implementation EXAdsAdMobDFPManager
 
-EX_EXPORT_MODULE(ExpoPublisherBannerView);
+UM_EXPORT_MODULE(ExpoPublisherBannerView);
 
 - (NSString *)viewName
 {
@@ -30,19 +30,24 @@ EX_EXPORT_MODULE(ExpoPublisherBannerView);
   return [[EXAdsDFPBannerView alloc] init];
 }
 
-EX_VIEW_PROPERTY(bannerSize, NSString *, EXAdsDFPBannerView)
+UM_VIEW_PROPERTY(bannerSize, NSString *, EXAdsDFPBannerView)
 {
   [view setBannerSize:value];
 }
 
-EX_VIEW_PROPERTY(adUnitID, NSString *, EXAdsDFPBannerView)
+UM_VIEW_PROPERTY(adUnitID, NSString *, EXAdsDFPBannerView)
 {
   [view setAdUnitID:value];
 }
 
-EX_VIEW_PROPERTY(testDeviceID, NSString *, EXAdsDFPBannerView)
+UM_VIEW_PROPERTY(testDeviceID, NSString *, EXAdsDFPBannerView)
 {
   [view setTestDeviceID:value];
+}
+
+UM_VIEW_PROPERTY(additionalRequestParams, NSDictionary *, EXAdsDFPBannerView)
+{
+  [view setAdditionalRequestParams:value];
 }
 
 @end

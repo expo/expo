@@ -5,13 +5,13 @@
 
 @implementation EXFaceDetectorManagerProvider
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXFaceDetectorManagerProvider)];
+  return @[@protocol(UMFaceDetectorManagerProvider)];
 }
 
-- (id<EXFaceDetectorManager>)createFaceDetectorManager {
+- (id<UMFaceDetectorManager>)createFaceDetectorManager {
   return [[EXFaceDetectorManager alloc] init];
 }
 

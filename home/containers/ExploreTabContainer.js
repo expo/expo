@@ -17,8 +17,6 @@ const PublicAppsQuery = gql`
         packageUsername
         description
         lastPublishedTime
-        isLikedByMe
-        likeCount
       }
     }
   }

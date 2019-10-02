@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXFont/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXFontInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMFontInterface'
 
 end
 

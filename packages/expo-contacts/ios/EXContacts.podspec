@@ -16,9 +16,9 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXContacts/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'EXCore'
-  s.dependency 'EXFileSystemInterface'
-  s.dependency 'EXPermissionsInterface'
+  s.dependency 'UMCore'
+  s.dependency 'UMFileSystemInterface'
+  s.dependency 'UMPermissionsInterface'
 
 end
 

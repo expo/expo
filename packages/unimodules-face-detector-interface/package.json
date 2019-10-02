@@ -1,0 +1,24 @@
+{
+  "name": "unimodules-face-detector-interface",
+  "version": "4.0.0",
+  "description": "An interface package for Face Detector",
+  "main": "index.js",
+  "keywords": [
+    "unimodules",
+    "face-detector",
+    "face",
+    "detection"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/unimodules-face-detector-interface"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-face-detector-interface",
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
+}

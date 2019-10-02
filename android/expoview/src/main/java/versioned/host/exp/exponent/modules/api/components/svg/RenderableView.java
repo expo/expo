@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+@SuppressWarnings({"WeakerAccess", "RedundantSuppression"})
 abstract public class RenderableView extends VirtualView {
 
     RenderableView(ReactContext reactContext) {
@@ -56,10 +57,17 @@ abstract public class RenderableView extends VirtualView {
     private static final int FILL_RULE_EVENODD = 0;
     static final int FILL_RULE_NONZERO = 1;
 
+    // vectorEffect
+    private static final int VECTOR_EFFECT_DEFAULT = 0;
+    private static final int VECTOR_EFFECT_NON_SCALING_STROKE = 1;
+    //static final int VECTOR_EFFECT_INHERIT = 2;
+    //static final int VECTOR_EFFECT_URI = 3;
+
     /*
     Used in mergeProperties, keep public
     */
 
+    public int vectorEffect = VECTOR_EFFECT_DEFAULT;
     public @Nullable ReadableArray stroke;
     public @Nullable SVGLength[] strokeDasharray;
 
@@ -78,13 +86,18 @@ abstract public class RenderableView extends VirtualView {
     /*
     End merged properties
     */
-
-    @Nullable ArrayList<String> mLastMergedList;
-    @Nullable ArrayList<Object> mOriginProperties;
-    @Nullable ArrayList<String> mPropList;
-    @Nullable ArrayList<String> mAttributeList;
+    private @Nullable ArrayList<String> mLastMergedList;
+    private @Nullable ArrayList<Object> mOriginProperties;
+    private @Nullable ArrayList<String> mPropList;
+    private @Nullable ArrayList<String> mAttributeList;
 
     private static final Pattern regex = Pattern.compile("[0-9.-]+");
+
+    @ReactProp(name = "vectorEffect")
+    public void setVectorEffect(int vectorEffect) {
+        this.vectorEffect = vectorEffect;
+        invalidate();
+    }
 
     @ReactProp(name = "fill")
     public void setFill(@Nullable Dynamic fill) {
@@ -102,7 +115,7 @@ abstract public class RenderableView extends VirtualView {
             Matcher m = regex.matcher(fill.asString());
             int i = 0;
             while (m.find()) {
-                Double parsed = Double.parseDouble(m.group());
+                double parsed = Double.parseDouble(m.group());
                 arr.pushDouble(i++ < 3 ? parsed / 255 : parsed);
             }
             this.fill = arr;
@@ -126,7 +139,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "fillRule " + this.fillRule + " unrecognized");
+                        "fillRule " + fillRule + " unrecognized");
         }
 
         invalidate();
@@ -147,7 +160,7 @@ abstract public class RenderableView extends VirtualView {
             arr.pushInt(0);
             Matcher m = regex.matcher(strokeColors.asString());
             while (m.find()) {
-                Double parsed = Double.parseDouble(m.group());
+                double parsed = Double.parseDouble(m.group());
                 arr.pushDouble(parsed);
             }
             stroke = arr;
@@ -167,7 +180,7 @@ abstract public class RenderableView extends VirtualView {
             int fromSize = strokeDasharray.size();
             this.strokeDasharray = new SVGLength[fromSize];
             for (int i = 0; i < fromSize; i++) {
-                this.strokeDasharray[i] = new SVGLength(strokeDasharray.getString(i));
+                this.strokeDasharray[i] = SVGLength.from(strokeDasharray.getDynamic(i));
             }
         } else {
             this.strokeDasharray = null;
@@ -183,7 +196,7 @@ abstract public class RenderableView extends VirtualView {
 
     @ReactProp(name = "strokeWidth")
     public void setStrokeWidth(Dynamic strokeWidth) {
-        this.strokeWidth = getLengthFromDynamic(strokeWidth);
+        this.strokeWidth = SVGLength.from(strokeWidth);
         invalidate();
     }
 
@@ -207,7 +220,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "strokeLinecap " + this.strokeLinecap + " unrecognized");
+                        "strokeLinecap " + strokeLinecap + " unrecognized");
         }
         invalidate();
     }
@@ -226,7 +239,7 @@ abstract public class RenderableView extends VirtualView {
                 break;
             default:
                 throw new JSApplicationIllegalArgumentException(
-                        "strokeLinejoin " + this.strokeLinejoin + " unrecognized");
+                        "strokeLinejoin " + strokeLinejoin + " unrecognized");
         }
         invalidate();
     }
@@ -248,10 +261,12 @@ abstract public class RenderableView extends VirtualView {
     }
 
     void render(Canvas canvas, Paint paint, float opacity) {
+        MaskView mask = null;
         if (mMask != null) {
             SvgView root = getSvgView();
-            MaskView mask = (MaskView) root.getDefinedMask(mMask);
-
+            mask = (MaskView) root.getDefinedMask(mMask);
+        }
+        if (mask != null) {
             Rect clipBounds = canvas.getClipBounds();
             int height = clipBounds.height();
             int width = clipBounds.width();
@@ -320,16 +335,23 @@ abstract public class RenderableView extends VirtualView {
                 mPath = getPath(canvas, paint);
                 mPath.setFillType(fillRule);
             }
+            boolean nonScalingStroke = vectorEffect == VECTOR_EFFECT_NON_SCALING_STROKE;
             Path path = mPath;
+            if (nonScalingStroke) {
+                Path scaled = new Path();
+                //noinspection deprecation
+                mPath.transform(mCTM, scaled);
+                canvas.setMatrix(null);
+                path = scaled;
+            }
 
-            RectF clientRect = new RectF();
-            path.computeBounds(clientRect, true);
-            mBox = new RectF(clientRect);
+            if (computePaths || path != mPath) {
+                mBox = new RectF();
+                path.computeBounds(mBox, true);
+            }
 
-            // We create the canvas ourselves, thus we can depend on getMatrix
-            @SuppressWarnings("deprecation")
-            Matrix svgToViewMatrix = new Matrix(canvas.getMatrix());
-            svgToViewMatrix.mapRect(clientRect);
+            RectF clientRect = new RectF(mBox);
+            mCTM.mapRect(clientRect);
             this.setClientRect(clientRect);
 
             clip(canvas, paint);
@@ -401,12 +423,19 @@ abstract public class RenderableView extends VirtualView {
         int colorType = colors.getInt(0);
         switch (colorType) {
             case 0:
-                // solid color
-                paint.setARGB(
-                        (int) (colors.size() > 4 ? colors.getDouble(4) * opacity * 255 : opacity * 255),
-                        (int) (colors.getDouble(1) * 255),
-                        (int) (colors.getDouble(2) * 255),
-                        (int) (colors.getDouble(3) * 255));
+                if (colors.size() == 2) {
+                    int color = colors.getInt(1);
+                    int alpha = color >>> 24;
+                    int combined = Math.round((float)alpha * opacity);
+                    paint.setColor(combined << 24 | (color & 0x00ffffff));
+                } else {
+                    // solid color
+                    paint.setARGB(
+                            (int) (colors.size() > 4 ? colors.getDouble(4) * opacity * 255 : opacity * 255),
+                            (int) (colors.getDouble(1) * 255),
+                            (int) (colors.getDouble(2) * 255),
+                            (int) (colors.getDouble(3) * 255));
+                }
                 break;
             case 1: {
                 Brush brush = getSvgView().getDefinedBrush(colors.getString(1));
@@ -434,7 +463,7 @@ abstract public class RenderableView extends VirtualView {
 
         float[] dst = new float[2];
         mInvMatrix.mapPoints(dst, src);
-        mInvTransform.mapPoints(dst, src);
+        mInvTransform.mapPoints(dst);
         int x = Math.round(dst[0]);
         int y = Math.round(dst[1]);
 

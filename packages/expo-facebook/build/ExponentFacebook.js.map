@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentFacebook.js","sourceRoot":"","sources":["../src/ExponentFacebook.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,gBAAgB,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExponentFacebook;\n"]}

@@ -1,0 +1,4 @@
+{
+  "name": "unimodules-file-system-interface",
+  "platforms": ["ios", "android"]
+}

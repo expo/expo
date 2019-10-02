@@ -18,16 +18,29 @@
 
 #import "FBSDKMeasurementEvent_Internal.h"
 
+#import "FBSDKLogger.h"
+#import "FBSDKSettings.h"
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+NSNotificationName const FBSDKMeasurementEventNotification = @"com.facebook.facebook-objc-sdk.measurement_event";
+
+#else
+
+NSString *const FBSDKMeasurementEventNotification = @"com.facebook.facebook-objc-sdk.measurement_event";
+
+#endif
+
 NSString *const FBSDKMeasurementEventNotificationName = @"com.facebook.facebook-objc-sdk.measurement_event";
 
 NSString *const FBSDKMeasurementEventNameKey = @"event_name";
 NSString *const FBSDKMeasurementEventArgsKey = @"event_args";
 
-/* app Link Event raised by this FBSDKURL */
+/** app Link Event raised by this FBSDKURL */
 NSString *const FBSDKAppLinkParseEventName = @"al_link_parse";
 NSString *const FBSDKAppLinkNavigateInEventName = @"al_nav_in";
 
-/*! AppLink events raised in this class */
+/** AppLink events raised in this class */
 NSString *const FBSDKAppLinkNavigateOutEventName = @"al_nav_out";
 NSString *const FBSDKAppLinkNavigateBackToReferrerEventName = @"al_ref_back_out";
 
@@ -38,15 +51,16 @@ NSString *const FBSDKAppLinkNavigateBackToReferrerEventName = @"al_ref_back_out"
 
 - (void)postNotification {
     if (!_name) {
-      NSLog(@"Warning: Missing event name when logging FBSDK measurement event. \n"
-            " Ignoring this event in logging.");
+        [FBSDKLogger
+         singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
+         logEntry:@"Warning: Missing event name when logging FBSDK measurement event.\nIgnoring this event in logging."];
         return;
     }
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
     NSDictionary<NSString *, id> *userInfo = @{FBSDKMeasurementEventNameKey : _name,
                                                FBSDKMeasurementEventArgsKey : _args};
 
-    [center postNotificationName:FBSDKMeasurementEventNotificationName
+    [center postNotificationName:FBSDKMeasurementEventNotification
                           object:self
                         userInfo:userInfo];
 }

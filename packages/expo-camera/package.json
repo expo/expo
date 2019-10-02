@@ -1,24 +1,52 @@
 {
   "name": "expo-camera",
-  "version": "1.2.0",
-  "description": "Expo Camera standalone universal module",
-  "main": "index.js",
+  "version": "7.0.0",
+  "description": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
     "camera"
   ],
-  "homepage": "https://docs.expo.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-camera"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/camera/",
+  "jest": {
+    "preset": "expo-module-scripts/ios"
+  },
+  "unimodulePeerDependencies": {
+    "@unimodules/core": "*",
+    "unimodules-camera-interface": "*",
+    "unimodules-barcode-scanner-interface": "*",
+    "unimodules-file-system-interface": "*",
+    "unimodules-face-detector-interface": "*",
+    "unimodules-permissions-interface": "*"
+  },
   "dependencies": {
-    "expo-core": "~1.2.0",
-    "expo-camera-interface": "~1.1.0",
-    "expo-barcode-scanner-interface": "~1.1.0",
-    "expo-file-system-interface": "~1.1.0",
-    "expo-face-detector-interface": "~1.1.0",
-    "expo-permissions-interface": "~1.2.0",
-    "lodash.mapvalues": "^4.6.0",
+    "lodash": "^4.6.0",
     "prop-types": "^15.6.0"
-  }
+  },
+  "devDependencies": {
+    "expo-module-scripts": "~1.1.1"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

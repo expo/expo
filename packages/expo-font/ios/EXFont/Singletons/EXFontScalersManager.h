@@ -1,8 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXCore/EXSingletonModule.h>
-#import <EXFontInterface/EXFontScalersManagerInterface.h>
+#import <UMCore/UMSingletonModule.h>
+#import <UMFontInterface/UMFontScalersManagerInterface.h>
 
-@interface EXFontScalersManager : EXSingletonModule <EXFontScalersManagerInterface>
+@interface EXFontScalersManager : UMSingletonModule <UMFontScalersManagerInterface>
 
 @end

@@ -9,7 +9,7 @@
   return self = [super init];
 }
 
-- (id<EXInternalModule>)pickInternalModuleImplementingInterface:(Protocol *)interface fromAmongModules:(NSArray<id<EXInternalModule>> *)internalModules
+- (id<UMInternalModule>)pickInternalModuleImplementingInterface:(Protocol *)interface fromAmongModules:(NSArray<id<UMInternalModule>> *)internalModules
 {
   // In ExpoKit we know all the overlapping classes -- the only ones are added
   // in EXScopedModuleRegistryAdapter at the last moment before conflict resolution,

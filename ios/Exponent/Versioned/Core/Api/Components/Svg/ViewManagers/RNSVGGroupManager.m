@@ -21,4 +21,28 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(font, NSDictionary)
 
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, id, RNSVGGroup)
+{
+    if ([json isKindOfClass:[NSString class]]) {
+        NSString *stringValue = (NSString *)json;
+        view.font = @{ @"fontSize": stringValue };
+    } else {
+        NSNumber* number = (NSNumber*)json;
+        double num = [number doubleValue];
+        view.font = @{@"fontSize": [NSNumber numberWithDouble:num] };
+    }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, id, RNSVGGroup)
+{
+    if ([json isKindOfClass:[NSString class]]) {
+        NSString *stringValue = (NSString *)json;
+        view.font = @{ @"fontWeight": stringValue };
+    } else {
+        NSNumber* number = (NSNumber*)json;
+        double num = [number doubleValue];
+        view.font = @{@"fontWeight": [NSNumber numberWithDouble:num] };
+    }
+}
+
 @end

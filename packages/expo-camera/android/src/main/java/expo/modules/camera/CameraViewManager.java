@@ -9,14 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import expo.core.ViewManager;
-import expo.core.interfaces.ExpoProp;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.core.ViewManager;
+import org.unimodules.core.interfaces.ExpoProp;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 
-public class CameraViewManager extends ViewManager<ExpoCameraView> implements ModuleRegistryConsumer {
+public class CameraViewManager extends ViewManager<ExpoCameraView> {
   public enum Events {
     EVENT_CAMERA_READY("onCameraReady"),
     EVENT_ON_MOUNT_ERROR("onMountError"),
@@ -41,7 +40,7 @@ public class CameraViewManager extends ViewManager<ExpoCameraView> implements Mo
   private ModuleRegistry mModuleRegistry;
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

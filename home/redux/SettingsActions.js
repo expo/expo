@@ -1,15 +1,14 @@
-import { NativeModules } from 'react-native';
+import * as Kernel from '../kernel/Kernel';
 import LocalStorage from '../storage/LocalStorage';
-const { ExponentKernel } = NativeModules;
 
 export default {
   loadSettings() {
-    return async (dispatch) => {
+    return async dispatch => {
       const settings = await LocalStorage.getSettingsAsync();
 
       if (settings && settings.legacyMenuGesture) {
         try {
-          await ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(true);
+          await Kernel.setLegacyMenuBehaviorEnabledAsync(true);
         } catch (_) {}
       }
 
@@ -21,11 +20,11 @@ export default {
   },
 
   setIsLegacyMenuBehaviorEnabled(useLegacyGesture) {
-    return async (dispatch) => {
+    return async dispatch => {
       let finalGestureSetting = useLegacyGesture;
       try {
         await Promise.all([
-          ExponentKernel.setIsLegacyMenuBehaviorEnabledAsync(useLegacyGesture),
+          Kernel.setLegacyMenuBehaviorEnabledAsync(useLegacyGesture),
           LocalStorage.updateSettingsAsync({
             legacyMenuGesture: useLegacyGesture,
           }),
@@ -39,6 +38,25 @@ export default {
         type: 'setIsLegacyMenuBehaviorEnabled',
         payload: { legacyMenuGesture: finalGestureSetting },
       });
+    };
+  },
+
+  setPreferredAppearance(preferredAppearance) {
+    return async dispatch => {
+      try {
+        await Promise.all([
+          LocalStorage.updateSettingsAsync({
+            preferredAppearance,
+          }),
+        ]);
+
+        return dispatch({
+          type: 'setPreferredAppearance',
+          payload: { preferredAppearance },
+        });
+      } catch (e) {
+        alert('Oops, something went wrong and we were unable to change the preferred appearance');
+      }
     };
   },
 };

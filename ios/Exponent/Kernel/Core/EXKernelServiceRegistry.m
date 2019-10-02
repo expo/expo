@@ -1,11 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXBranchManager.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXFileSystemManager.h"
-#import "EXGoogleAuthManager.h"
 #import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -13,27 +10,24 @@
 #import "EXRemoteNotificationManager.h"
 #import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
-#import "EXAudioSessionManager.h"
 #import "EXUpdatesManager.h"
 #import "EXUserNotificationManager.h"
+#import "EXUserNotificationCenter.h"
 
-#import <EXCore/EXModuleRegistryProvider.h>
+#import <UMCore/UMModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
-@property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
-@property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
-@property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
-@property (nonatomic, strong) EXAudioSessionManager *audioSessionManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
+@property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -44,29 +38,18 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
-    [self branchManager];
     [self cachedResourceManager];
     [self errorRecoveryManager];
     [self remoteNotificationManager];
     [self linkingManager];
     [self homeModuleManager];
     [self screenOrientationManager];
-    [self googleAuthManager];
     [self sensorManager];
-    [self fileSystemManager];
-    [self audioSessionManager];
     [self updatesManager];
     [self notificationsManager];
+    [self notificationCenter];
   }
   return self;
-}
-
-- (EXBranchManager *)branchManager
-{
-  if (!_branchManager) {
-    _branchManager = [[EXBranchManager alloc] init];
-  }
-  return _branchManager;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -80,7 +63,7 @@
 - (EXRemoteNotificationManager *)remoteNotificationManager
 {
   if (!_remoteNotificationManager) {
-    _remoteNotificationManager = [[EXRemoteNotificationManager alloc] init];
+    _remoteNotificationManager = [[EXRemoteNotificationManager alloc] initWithUserNotificationCenter:[self notificationCenter]];
   }
   return _remoteNotificationManager;
 }
@@ -91,22 +74,6 @@
     _errorRecoveryManager = [[EXErrorRecoveryManager alloc] init];
   }
   return _errorRecoveryManager;
-}
-
-- (EXFileSystemManager *)fileSystemManager
-{
-  if (!_fileSystemManager) {
-    _fileSystemManager = [[EXFileSystemManager alloc] init];
-  }
-  return _fileSystemManager;
-}
-
-- (EXGoogleAuthManager *)googleAuthManager
-{
-  if (!_googleAuthManager) {
-    _googleAuthManager = [[EXGoogleAuthManager alloc] init];
-  }
-  return _googleAuthManager;
 }
 
 - (EXKernelLinkingManager *)linkingManager
@@ -141,14 +108,6 @@
   return _sensorManager;
 }
 
-- (EXAudioSessionManager *)audioSessionManager
-{
-  if (!_audioSessionManager) {
-    _audioSessionManager = [[EXAudioSessionManager alloc] init];
-  }
-  return _audioSessionManager;
-}
-
 - (EXUpdatesManager *)updatesManager
 {
   if (!_updatesManager) {
@@ -165,6 +124,14 @@
   return _notificationsManager;
 }
 
+- (EXUserNotificationCenter *)notificationCenter
+{
+  if (!_notificationCenter) {
+    _notificationCenter = [[EXUserNotificationCenter alloc] init];
+  }
+  return _notificationCenter;
+}
+
 - (NSDictionary *)allServices
 {
   if (!_allServices) {
@@ -173,24 +140,21 @@
     // EXVersionManagers pass these modules to scoped modules as an initializer argument
     //
     // New modules should access singleton modules via the module registry.
-    // New singleton modules should register themselves in EXModuleRegistryProvider's set
+    // New singleton modules should register themselves in UMModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
-                                  self.branchManager,
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
-                                  self.fileSystemManager,
-                                  self.googleAuthManager,
                                   self.homeModuleManager,
                                   self.linkingManager,
                                   self.remoteNotificationManager,
                                   self.screenOrientationManager,
                                   self.sensorManager,
                                   self.updatesManager,
-                                  self.audioSessionManager,
-                                  self.notificationsManager
+                                  self.notificationsManager,
+                                  self.notificationCenter
                                   ];
-    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
+    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;

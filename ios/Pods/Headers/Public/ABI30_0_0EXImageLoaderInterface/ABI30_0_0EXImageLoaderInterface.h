@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI30_0_0/EXImageLoaderInterface/ABI30_0_0EXImageLoaderInterface/ABI30_0_0EXImageLoaderInterface.h

@@ -25,7 +25,7 @@
 
 - (instancetype)init
 {
-  return [super initWithService:[[NSBundle mainBundle] bundleIdentifier] accessGroup:nil];
+  return [super initWithService:[NSBundle mainBundle].bundleIdentifier accessGroup:nil];
 }
 
 - (instancetype)initWithService:(NSString *)service accessGroup:(NSString *)accessGroup
@@ -41,7 +41,7 @@
   query[(__bridge id)[FBSDKDynamicFrameworkLoader loadkSecAttrGeneric]] = key;
 
 #if !TARGET_IPHONE_SIMULATOR
-  [FBSDKInternalUtility dictionary:query setObject:self.accessGroup forKey:[FBSDKDynamicFrameworkLoader loadkSecAttrAccessGroup]];
+  [FBSDKBasicUtility dictionary:query setObject:self.accessGroup forKey:[FBSDKDynamicFrameworkLoader loadkSecAttrAccessGroup]];
 #endif
 
   return query;

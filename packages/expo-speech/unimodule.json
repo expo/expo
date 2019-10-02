@@ -1,0 +1,4 @@
+{
+  "name": "expo-speech",
+  "platforms": ["ios", "android"]
+}

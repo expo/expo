@@ -1,0 +1,110 @@
+{
+  "name": "bare-expo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall",
+    "android": "export NODE_ENV=\"development\" && ./scripts/start-emulator.sh",
+    "android:clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
+    "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
+    "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
+    "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
+    "test:web:debug": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
+    "test:web": "EXPO_WEB_E2E_ENV=development jest -c e2e/jest.config.web.json",
+    "test:web:prod": "EXPO_WEB_E2E_ENV=production jest -c e2e/jest.config.web.json",
+    "edit:android": "open -a /Applications/Android\\ Studio.app ./android",
+    "edit:ios": "open -a Xcode ./ios/BareExpo.xcworkspace",
+    "web": "expo start --web",
+    "start": "react-native start --reset-cache",
+    "clear-metro": "watchman watch-del-all && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
+    "clear-ios-build": "rm -rf ios/build/; kill $(lsof -t -i:8081)",
+    "test": "jest",
+    "detox:clean": "detox clean-framework-cache && detox build-framework-cache",
+    "android:detox:build:debug": "detox build -c android.emu.debug",
+    "android:detox:build:release": "detox build -c android.emu.release",
+    "android:detox:test:debug": "detox test -c android.emu.debug --loglevel warn",
+    "android:detox:test:release": "watchman watch-del-all; detox test -c android.emu.release -l verbose --cleanup",
+    "ios:detox:build:debug": "detox build -c ios.sim.debug",
+    "ios:detox:build:release": "detox build -c ios.sim.release",
+    "ios:detox:test:debug": "detox test -c ios.sim.debug --loglevel warn",
+    "ios:detox:test:release": "watchman watch-del-all; detox test -c ios.sim.release -l verbose --cleanup",
+    "open": "./scripts/deep-link.sh test-suite",
+    "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
+    "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@react-navigation/web": "2.0.0-alpha.0",
+    "expo": "~35.0.0",
+    "expo-yarn-workspaces": "^1.2.0",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
+    "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0",
+    "react-native-reanimated": "~1.1.0",
+    "react-native-safe-area-context": "0.3.6",
+    "react-native-unimodules": "~0.6.0",
+    "react-native-web": "^0.11.4",
+    "react-navigation": "4.1.0-alpha.0",
+    "test-suite": "*"
+  },
+  "excludedUnimodules": [
+    "expo-task-manager",
+    "unimodules-task-manager-interface",
+    "expo-background-fetch",
+    "expo-location",
+    "expo-branch",
+    "expo-camera",
+    "expo-face-detector",
+    "unimodules-face-detector-interface",
+    "expo-payments-stripe",
+    "expo-facebook",
+    "expo-ads-facebook",
+    "expo-ads-admob",
+    "expo-video-thumbnails",
+    "expo-module-template",
+    "expo-in-app-purchases",
+    "expo-apple-authentication"
+  ],
+  "detox": {
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/BareExpo.app",
+        "build": "./scripts/build-detox-ios.sh Debug",
+        "type": "ios.simulator",
+        "name": "iPhone Xs"
+      },
+      "ios.sim.release": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/BareExpo.app",
+        "build": "./scripts/build-detox-ios.sh Release YES",
+        "type": "ios.simulator",
+        "name": "iPhone Xs"
+      },
+      "android.emu.debug": {
+        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
+        "type": "android.emulator",
+        "name": "bare-expo"
+      },
+      "android.emu.release": {
+        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
+        "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
+        "type": "android.emulator",
+        "name": "bare-expo"
+      }
+    },
+    "runner-config": "./e2e/jest.config.json",
+    "test-runner": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@types/react": "^16.8.23",
+    "@types/react-native": "^0.57.65",
+    "babel-preset-expo": "~7.0.0",
+    "detox": "^14.3.4",
+    "expo-yarn-workspaces": "^1.2.0",
+    "jest-expo": "~35.0.0",
+    "jest-expo-puppeteer": "~0.0.0",
+    "typescript": "^3.4.5"
+  }
+}

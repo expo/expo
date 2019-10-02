@@ -5,7 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,8 +170,6 @@ public class PermissionsHelper {
         return R.string.perm_fine_location;
       case android.Manifest.permission.ACCESS_COARSE_LOCATION:
         return R.string.perm_coarse_location;
-      case android.Manifest.permission.READ_SMS:
-        return R.string.perm_read_sms;
       default:
         return -1;
     }
@@ -188,7 +186,7 @@ public class PermissionsHelper {
     @Override
     public void onClick(DialogInterface dialog, int which) {
       mPermissionsAskedCount -= 1;
-      switch (which){
+      switch (which) {
         case DialogInterface.BUTTON_POSITIVE:
           mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(mPermission, mExperienceId);
           break;

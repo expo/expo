@@ -4,20 +4,22 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
 import org.json.JSONObject;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
 
 import java.util.List;
 import java.util.Map;
 
-import expo.adapters.react.ReactModuleRegistryProvider;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.InternalModule;
-import expo.core.interfaces.ModuleRegistryConsumer;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
+import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
+import versioned.host.exp.exponent.modules.universal.SecureStoreModuleBinding;
 
 public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   public DetachedModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
@@ -42,11 +44,23 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
     moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext, experienceId, manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)));
 
+    // Overriding expo-file-system FileSystemModule
+    moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
+
+    // Add SpongyCastle integration
+    try {
+      // If this doesn't throw an exception, we can instantiate the binding.
+      Class.forName("expo.modules.securestore.SecureStoreModule");
+      moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
+    } catch (ClassNotFoundException e) {
+      // do nothing, if there's no SecureStoreModule we don't need to override it
+    }
+
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.
     for (NativeModule otherModule : otherModules) {
-      if (otherModule instanceof ModuleRegistryConsumer) {
-        moduleRegistry.addRegistryConsumer((ModuleRegistryConsumer) otherModule);
+      if (otherModule instanceof RegistryLifecycleListener) {
+        moduleRegistry.registerExtraListener((RegistryLifecycleListener) otherModule);
       }
     }
 

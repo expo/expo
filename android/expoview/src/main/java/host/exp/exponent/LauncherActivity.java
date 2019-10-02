@@ -9,7 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import javax.inject.Inject;
 
@@ -54,18 +54,16 @@ public class LauncherActivity extends Activity {
       @Override
       public void run() {
         try {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
-            ActivityManager.RecentTaskInfo.class.getDeclaredField("numActivities");
+          // Crash with NoSuchFieldException instead of hard crashing at task.getTaskInfo().numActivities
+          ActivityManager.RecentTaskInfo.class.getDeclaredField("numActivities");
 
-            for (ActivityManager.AppTask task : mKernel.getTasks()) {
-              if (task.getTaskInfo().id == getTaskId()) {
-                if (task.getTaskInfo().numActivities == 1) {
-                  finishAndRemoveTask();
-                  return;
-                } else {
-                  break;
-                }
+          for (ActivityManager.AppTask task : mKernel.getTasks()) {
+            if (task.getTaskInfo().id == getTaskId()) {
+              if (task.getTaskInfo().numActivities == 1) {
+                finishAndRemoveTask();
+                return;
+              } else {
+                break;
               }
             }
           }

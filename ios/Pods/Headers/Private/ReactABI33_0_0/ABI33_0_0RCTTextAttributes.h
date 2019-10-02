@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI33_0_0/Libraries/Text/ABI33_0_0RCTTextAttributes.h

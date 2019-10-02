@@ -5,6 +5,7 @@ package host.exp.exponent.kernel;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.RemoteInput;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,10 +15,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v4.content.pm.ShortcutInfoCompat;
-import android.support.v4.content.pm.ShortcutManagerCompat;
-import android.support.v4.graphics.drawable.IconCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,7 +56,10 @@ import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.HomeActivity;
+import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
+import host.exp.exponent.notifications.ExponentNotificationManager;
+import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -69,7 +73,7 @@ import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.JSONBundleConverter;
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
 import versioned.host.exp.exponent.ReadableObjectUtils;
@@ -251,14 +255,10 @@ public class Kernel extends KernelInterface {
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-      intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-    } else {
-      intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    }
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
   }
 
   private Exponent.BundleListener kernelBundleListener() {
@@ -276,7 +276,7 @@ public class Kernel extends KernelInterface {
                 .setApplication(mApplicationContext)
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
+                .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -413,27 +413,18 @@ public class Kernel extends KernelInterface {
   }
 
   private void openHomeActivity() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
+    ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.AppTask task : manager.getAppTasks()) {
+      Intent baseIntent = task.getTaskInfo().baseIntent;
 
-        if (HomeActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-          task.moveToFront();
-          return;
-        }
+      if (HomeActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+        task.moveToFront();
+        return;
       }
     }
 
     Intent intent = new Intent(mActivityContext, HomeActivity.class);
     Kernel.addIntentDocumentFlags(intent);
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // Don't want to end up in state where we have
-      // ExperienceActivity - HomeActivity - ExperienceActivity
-      // Want HomeActivity to be the root activity if it exists
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    }
 
     mActivityContext.startActivity(intent);
   }
@@ -441,27 +432,18 @@ public class Kernel extends KernelInterface {
   private void openShellAppActivity(boolean forceCache) {
     try {
       Class activityClass = Class.forName("host.exp.exponent.MainActivity");
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.AppTask task : manager.getAppTasks()) {
-          Intent baseIntent = task.getTaskInfo().baseIntent;
+      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+      for (ActivityManager.AppTask task : manager.getAppTasks()) {
+        Intent baseIntent = task.getTaskInfo().baseIntent;
 
-          if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
-            moveTaskToFront(task.getTaskInfo().id);
-            return;
-          }
+        if (activityClass.getName().equals(baseIntent.getComponent().getClassName())) {
+          moveTaskToFront(task.getTaskInfo().id);
+          return;
         }
       }
 
       Intent intent = new Intent(mActivityContext, activityClass);
       Kernel.addIntentDocumentFlags(intent);
-
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-        // Don't want to end up in state where we have
-        // ExperienceActivity - HomeActivity - ExperienceActivity
-        // Want HomeActivity to be the root activity if it exists
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-      }
 
       if (forceCache) {
         intent.putExtra(KernelConstants.LOAD_FROM_CACHE_KEY, true);
@@ -503,7 +485,21 @@ public class Kernel extends KernelInterface {
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
       String notificationManifestUrl = bundle.getString(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY);
       if (notificationManifestUrl != null) {
-        openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, ExponentNotification.fromJSONObjectString(notificationObject)));
+        ExponentNotification exponentNotification = ExponentNotification.fromJSONObjectString(notificationObject);
+        if (exponentNotification != null) {
+          // Add action type
+          if (bundle.containsKey(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)) {
+            exponentNotification.setActionType(bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY));
+            ExponentNotificationManager manager = new ExponentNotificationManager(mContext);
+            manager.cancel(exponentNotification.experienceId, exponentNotification.notificationId);
+          }
+          // Add remote input
+          Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+          if (remoteInput != null) {
+            exponentNotification.setInputText(remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY));
+          }
+        }
+        openExperience(new KernelConstants.ExperienceOptions(notificationManifestUrl, intentUri == null ? notificationManifestUrl : intentUri, notification, exponentNotification));
         return;
       }
 
@@ -536,15 +532,13 @@ public class Kernel extends KernelInterface {
   }
 
   private void openDevActivity(Activity activity) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        Intent baseIntent = task.getTaskInfo().baseIntent;
+    ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.AppTask task : manager.getAppTasks()) {
+      Intent baseIntent = task.getTaskInfo().baseIntent;
 
-        if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-          task.moveToFront();
-          return;
-        }
+      if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
+        task.moveToFront();
+        return;
       }
     }
 
@@ -633,7 +627,7 @@ public class Kernel extends KernelInterface {
       return;
     }
 
-    if (manifestUrl.equals(Constants.INITIAL_URL)) {
+    if (Constants.isStandaloneApp()) {
       openShellAppActivity(forceCache);
       return;
     }
@@ -777,6 +771,10 @@ public class Kernel extends KernelInterface {
       return sInstance.getBundleUrl();
     }
 
+    if (HeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
+      return HeadlessAppLoader.getBundleUrlForActivityId(activityId);
+    }
+
     for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
       if (task.activityId == activityId) {
         return task.bundleUrl;
@@ -914,22 +912,13 @@ public class Kernel extends KernelInterface {
    */
 
   public List<ActivityManager.AppTask> getTasks() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
-      return manager.getAppTasks();
-    } else {
-      EXL.e(TAG, "Got to getTasks on pre-Lollipop device");
-      return null;
-    }
+    ActivityManager manager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+    return manager.getAppTasks();
   }
 
   // Get list of tasks in our format.
   public List<ActivityManager.AppTask> getExperienceActivityTasks() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return getTasks();
-    } else {
-      return null;
-    }
+    return getTasks();
   }
 
   // Sometimes LauncherActivity.finish() doesn't close the activity and task. Not sure why exactly.
@@ -939,53 +928,47 @@ public class Kernel extends KernelInterface {
   // the ExperienceActivity. killOrphanedLauncherActivities solves this but would be nice to figure out
   // the root cause.
   private void killOrphanedLauncherActivities() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      try {
-        // Crash with NoSuchFieldException instead of hard crashing at taskInfo.numActivities
-        ActivityManager.RecentTaskInfo.class.getDeclaredField("numActivities");
+    try {
+      // Crash with NoSuchFieldException instead of hard crashing at taskInfo.numActivities
+      ActivityManager.RecentTaskInfo.class.getDeclaredField("numActivities");
 
-        for (ActivityManager.AppTask task : getTasks()) {
-          ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
-          if (taskInfo.numActivities == 0 && taskInfo.baseIntent.getAction().equals(Intent.ACTION_MAIN)) {
+      for (ActivityManager.AppTask task : getTasks()) {
+        ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
+        if (taskInfo.numActivities == 0 && taskInfo.baseIntent.getAction().equals(Intent.ACTION_MAIN)) {
+          task.finishAndRemoveTask();
+          return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          if (taskInfo.numActivities == 1 && taskInfo.topActivity.getClassName().equals(LauncherActivity.class.getName())) {
             task.finishAndRemoveTask();
             return;
           }
-
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (taskInfo.numActivities == 1 && taskInfo.topActivity.getClassName().equals(LauncherActivity.class.getName())) {
-              task.finishAndRemoveTask();
-              return;
-            }
-          }
         }
-      } catch (NoSuchFieldException e) {
-        // Don't EXL here because this isn't actually a problem
-        Log.e(TAG, e.toString());
-      } catch (Throwable e) {
-        EXL.e(TAG, e);
       }
+    } catch (NoSuchFieldException e) {
+      // Don't EXL here because this isn't actually a problem
+      Log.e(TAG, e.toString());
+    } catch (Throwable e) {
+      EXL.e(TAG, e);
     }
   }
 
   public void moveTaskToFront(int taskId) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      for (ActivityManager.AppTask task : getTasks()) {
-        if (task.getTaskInfo().id == taskId) {
-          // If we have the task in memory, tell the ExperienceActivity to check for new options.
-          // Otherwise options will be added in initialProps when the Experience starts.
-          ExperienceActivityTask exponentTask = experienceActivityTaskForTaskId(taskId);
-          if (exponentTask != null) {
-            ExperienceActivity experienceActivity = exponentTask.experienceActivity.get();
-            if (experienceActivity != null) {
-              experienceActivity.shouldCheckOptions();
-            }
+    for (ActivityManager.AppTask task : getTasks()) {
+      if (task.getTaskInfo().id == taskId) {
+        // If we have the task in memory, tell the ExperienceActivity to check for new options.
+        // Otherwise options will be added in initialProps when the Experience starts.
+        ExperienceActivityTask exponentTask = experienceActivityTaskForTaskId(taskId);
+        if (exponentTask != null) {
+          ExperienceActivity experienceActivity = exponentTask.experienceActivity.get();
+          if (experienceActivity != null) {
+            experienceActivity.shouldCheckOptions();
           }
-
-          task.moveToFront();
         }
+
+        task.moveToFront();
       }
-    } else {
-      EXL.e(TAG, "Got to moveTaskToFront on pre-Lollipop device");
     }
   }
 
@@ -995,13 +978,11 @@ public class Kernel extends KernelInterface {
       removeExperienceActivityTask(exponentTask.manifestUrl);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      // Kill the current task.
-      ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-      for (ActivityManager.AppTask task : manager.getAppTasks()) {
-        if (task.getTaskInfo().id == activity.getTaskId()) {
-          task.finishAndRemoveTask();
-        }
+    // Kill the current task.
+    ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+    for (ActivityManager.AppTask task : manager.getAppTasks()) {
+      if (task.getTaskInfo().id == activity.getTaskId()) {
+        task.finishAndRemoveTask();
       }
     }
   }
@@ -1012,42 +993,35 @@ public class Kernel extends KernelInterface {
       return false;
     }
 
-    // Pre Lollipop we always just open a new activity.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      // TODO: make debug mode work here
-      openOptimisticExperienceActivity(manifestUrl);
-      openManifestUrl(manifestUrl, null, false, forceCache);
-    } else {
-      ExperienceActivity activity = null;
-      for (final ExperienceActivityTask experienceActivityTask : sManifestUrlToExperienceActivityTask.values()) {
-        if (manifestUrl.equals(experienceActivityTask.manifestUrl)) {
-          final ExperienceActivity weakActivity = experienceActivityTask.experienceActivity == null ? null : experienceActivityTask.experienceActivity.get();
-          activity = weakActivity;
-          if (activity == null) {
-            // No activity, just force a reload
-            break;
-          }
+    ExperienceActivity activity = null;
+    for (final ExperienceActivityTask experienceActivityTask : sManifestUrlToExperienceActivityTask.values()) {
+      if (manifestUrl.equals(experienceActivityTask.manifestUrl)) {
+        final ExperienceActivity weakActivity = experienceActivityTask.experienceActivity == null ? null : experienceActivityTask.experienceActivity.get();
+        activity = weakActivity;
+        if (activity == null) {
+          // No activity, just force a reload
+          break;
+        }
 
-          if (weakActivity.isLoading()) {
-            // Already loading. Don't need to do anything.
-            return true;
-          } else {
-            Exponent.getInstance().runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                weakActivity.showLoadingScreen(null);
-              }
-            });
-            break;
-          }
+        if (weakActivity.isLoading()) {
+          // Already loading. Don't need to do anything.
+          return true;
+        } else {
+          Exponent.getInstance().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              weakActivity.showLoadingScreen(null);
+            }
+          });
+          break;
         }
       }
-
-      if (activity != null) {
-        killActivityStack(activity);
-      }
-      openManifestUrl(manifestUrl, null, true, forceCache);
     }
+
+    if (activity != null) {
+      killActivityStack(activity);
+    }
+    openManifestUrl(manifestUrl, null, true, forceCache);
 
     return true;
   }

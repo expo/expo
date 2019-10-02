@@ -44,25 +44,25 @@ class LinearGradientView extends DefinitionView {
 
     @ReactProp(name = "x1")
     public void setX1(Dynamic x1) {
-        mX1 = getLengthFromDynamic(x1);
+        mX1 = SVGLength.from(x1);
         invalidate();
     }
 
     @ReactProp(name = "y1")
     public void setY1(Dynamic y1) {
-        mY1 = getLengthFromDynamic(y1);
+        mY1 = SVGLength.from(y1);
         invalidate();
     }
 
     @ReactProp(name = "x2")
     public void setX2(Dynamic x2) {
-        mX2 = getLengthFromDynamic(x2);
+        mX2 = SVGLength.from(x2);
         invalidate();
     }
 
     @ReactProp(name = "y2")
     public void setY2(Dynamic y2) {
-        mY2 = getLengthFromDynamic(y2);
+        mY2 = SVGLength.from(y2);
         invalidate();
     }
 

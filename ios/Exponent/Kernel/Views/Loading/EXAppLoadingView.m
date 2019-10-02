@@ -47,7 +47,10 @@
   _loadingView.frame = self.bounds;
   _vBackgroundImage.frame = self.bounds;
   
-  CGFloat progressHeight = ([self _isIPhoneX]) ? 48.0f : 36.0f;
+  CGFloat progressHeight = 36.0f;
+  if (@available(iOS 11.0, *)) {
+    progressHeight += self.safeAreaInsets.bottom;
+  }
   _vProgress.frame = CGRectMake(0, self.bounds.size.height - progressHeight, self.bounds.size.width, progressHeight);
   if (!_usesSplashFromNSBundle && !_manifest && _vCancel) {
     CGFloat vCancelY = CGRectGetMidY(self.bounds) - 64.0f;
@@ -77,13 +80,13 @@
     // Display the launch screen behind the React view so that the React view appears to seamlessly load
     NSArray *views;
     @try {
-      views = [[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil];
+      NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+      views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
     } @catch (NSException *_) {
       DDLogWarn(@"Expo LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
     }
     if (views) {
       self.loadingView = views.firstObject;
-      self.loadingView.layer.zPosition = 1000;
       self.loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
       [self addSubview:self.loadingView];
       
@@ -150,7 +153,7 @@
     backgroundImageResizeMode = ([splash[@"resizeMode"] isEqualToString:@"cover"]) ? RCTResizeModeCover : RCTResizeModeContain;
     
     NSString *imageUrl;
-    if (splash[@"tabletImageUrl"]) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad && splash[@"tabletImageUrl"]) {
       imageUrl = splash[@"tabletImageUrl"];
     } else if (splash[@"imageUrl"]) {
       imageUrl = splash[@"imageUrl"];
@@ -199,14 +202,6 @@
       self->_vCancel.hidden = YES;
     }
   });
-}
-
-- (BOOL)_isIPhoneX
-{
-  return (
-    [[EXConstantsService deviceModel] isEqualToString:@"iPhone X"] // doesn't work on sim
-    || [UIScreen mainScreen].nativeBounds.size.height == 2436.0f
-  );
 }
 
 #pragma mark - delegate

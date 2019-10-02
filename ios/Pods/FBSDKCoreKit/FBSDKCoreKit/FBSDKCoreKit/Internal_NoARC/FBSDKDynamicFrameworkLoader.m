@@ -55,7 +55,7 @@ static void *fbsdkdfl_load_library_once(const char *path)
 static void *fbsdkdfl_load_framework_once(NSString *framework)
 {
   NSString *path = [NSString stringWithFormat:g_frameworkPathTemplate, framework, framework];
-  return fbsdkdfl_load_library_once([path fileSystemRepresentation]);
+  return fbsdkdfl_load_library_once(path.fileSystemRepresentation);
 }
 
 // Implements the callback for dispatch_once() that loads the handle for specified framework name
@@ -182,14 +182,6 @@ _fbsdkdfl_handle_get_impl_(Security)
 + (CFTypeRef)loadkSecClass
 {
   _fbsdkdfl_Security_get_and_return_k(kSecClass);
-}
-
-#pragma mark - Object Lifecycle
-
-- (instancetype)init
-{
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
 }
 
 @end
@@ -378,6 +370,18 @@ Class fbsdkdfl_SFSafariViewControllerClass(void)
 Class fbsdkdfl_SFAuthenticationSessionClass(void)
 {
   _fbsdkdfl_SafariServices_get_c(SFAuthenticationSession);
+  return c;
+}
+
+#pragma mark - Authentication Services
+_fbsdkdfl_load_framework_once_impl_(AuthenticationServices)
+_fbsdkdfl_handle_get_impl_(AuthenticationServices)
+
+#define _fbsdkdfl_AuthenticationServices_get_c(SYMBOL) _fbsdkdfl_symbol_get_c(AuthenticationServices, SYMBOL);
+
+Class fbsdkdfl_ASWebAuthenticationSessionClass(void)
+{
+  _fbsdkdfl_AuthenticationServices_get_c(ASWebAuthenticationSession);
   return c;
 }
 

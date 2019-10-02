@@ -18,8 +18,6 @@
 
 #import "FBSDKGraphRequestDataAttachment.h"
 
-#import "FBSDKMacros.h"
-
 @implementation FBSDKGraphRequestDataAttachment
 
 - (instancetype)initWithData:(NSData *)data filename:(NSString *)filename contentType:(NSString *)contentType
@@ -30,12 +28,6 @@
     _contentType = [contentType copy];
   }
   return self;
-}
-
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithData:filename:contentType:);
-  return [self initWithData:nil filename:nil contentType:nil];
 }
 
 @end

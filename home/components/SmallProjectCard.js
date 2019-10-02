@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   Image,
-  Keyboard,
   Linking,
   Platform,
   Share,
@@ -12,22 +11,23 @@ import {
   TouchableHighlight,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import UrlUtils from '../utils/UrlUtils';
-import FadeIn from '@expo/react-native-fade-in-image';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { StyledText } from './Text';
+import { StyledButton, StyledView } from './Views';
+import { Ionicons } from './Icons';
 
 @withNavigation
 export default class SmallProjectCard extends React.PureComponent {
   render() {
     let {
       hideUsername,
-      likeCount,
       projectName,
+      platform,
       projectUrl,
       username,
       privacy,
@@ -36,23 +36,23 @@ export default class SmallProjectCard extends React.PureComponent {
     } = this.props;
 
     const isUnlisted = privacy === 'unlisted';
-    const renderLikes = typeof likeCount === 'number' && !isUnlisted;
 
     return (
-      <TouchableNativeFeedbackSafe
+      <StyledButton
         onLongPress={this._handleLongPressProject}
         onPress={this._handlePressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7"
-        style={[styles.container, this.props.fullWidthBorder && styles.bottomBorder]}>
+        style={[styles.container, this.props.fullWidthBorder && styles.border]}>
         <View style={styles.iconContainer}>{this._maybeRenderIcon()}</View>
 
-        <View style={[styles.infoContainer, !this.props.fullWidthBorder && styles.bottomBorder]}>
+        <StyledView style={[styles.infoContainer, !this.props.fullWidthBorder && styles.border]}>
           <View style={styles.projectNameContainer}>
-            <View style={{ flex: 1, flexGrow: 4 }}>
-              <Text style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+            <View style={{ flex: 1, flexDirection: 'row', flexGrow: 4 }}>
+              {platform ? <PlatformIcon platform={platform} /> : null}
+              <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
                 {projectName}
-              </Text>
+              </StyledText>
             </View>
             {releaseChannel && releaseChannel !== 'default' ? (
               <View style={{ flex: 1, flexGrow: 2 }}>
@@ -68,10 +68,7 @@ export default class SmallProjectCard extends React.PureComponent {
           <View style={styles.projectExtraInfoContainer}>
             <Text
               onPress={username ? this._handlePressUsername : null}
-              style={[
-                styles.projectExtraInfoText,
-                (renderLikes || isUnlisted) && { flexShrink: 4 },
-              ]}
+              style={[styles.projectExtraInfoText, isUnlisted && { flexShrink: 4 }]}
               ellipsizeMode="tail"
               numberOfLines={1}>
               {hideUsername ? slug : username || projectUrl}
@@ -79,26 +76,21 @@ export default class SmallProjectCard extends React.PureComponent {
 
             {isUnlisted && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.bullet} />
+                <StyledView
+                  style={styles.bullet}
+                  lightBackgroundColor="rgba(36, 44, 58, 0.2)"
+                  darkBackgroundColor="#ccc"
+                />
                 <View style={styles.unlistedIconContainer}>
-                  <Ionicons name="ios-eye-off" size={15} color="rgba(36, 44, 58, 0.3)" />
+                  <Ionicons name="ios-eye-off" size={15} lightColor="rgba(36, 44, 58, 0.3)" />
                 </View>
 
                 <Text style={styles.unlistedText}>Unlisted</Text>
               </View>
             )}
-
-            {renderLikes && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={styles.bullet} />
-                <Text onPress={() => {}} numberOfLines={1} style={styles.projectExtraInfoText}>
-                  {likeCount} {likeCount === 1 ? 'like' : 'likes'}
-                </Text>
-              </View>
-            )}
           </View>
-        </View>
-      </TouchableNativeFeedbackSafe>
+        </StyledView>
+      </StyledButton>
     );
   }
 
@@ -138,23 +130,43 @@ export default class SmallProjectCard extends React.PureComponent {
   };
 }
 
-// note(brentvatne): we need to know this value so we can set the width of
-// extra info container so it properly sizes the url / likes, otherwise it
-// just overflows. I think this is a yoga bug
+function PlatformIcon({ platform }) {
+  let icon = null;
+  if (platform === 'native') {
+    icon = Platform.select({
+      android: (
+        <Ionicons name="logo-android" size={17} lightColor="#000" style={{ marginTop: 1 }} />
+      ),
+      ios: <Ionicons name="logo-apple" size={17} lightColor="#000" style={{ marginTop: 0.5 }} />,
+      default: (
+        <Ionicons
+          name="md-tablet-portrait"
+          lightColor="#000"
+          size={15}
+          style={{ marginTop: 1.5 }}
+        />
+      ),
+    });
+  } else if (platform === 'web') {
+    icon = <Ionicons name="ios-globe" size={15} lightColor="#000" style={{ marginTop: 2 }} />;
+  }
+
+  return <View style={styles.platformIconContainer}>{icon}</View>;
+}
+
+// note(brentvatne): we need to know this value so we can set the width of extra info container so
+// it properly sizes the url, otherwise it just overflows. I think this is a yoga bug
 const IconPaddingLeft = 15;
 const IconPaddingRight = 10;
 const IconWidth = 40;
 
 const styles = StyleSheet.create({
-  bottomBorder: {
-    flexGrow: 1,
-    borderBottomColor: Colors.separator,
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-  },
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     flex: 1,
+  },
+  border: {
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   iconContainer: {
     paddingLeft: IconPaddingLeft,
@@ -178,6 +190,7 @@ const styles = StyleSheet.create({
     }),
   },
   infoContainer: {
+    backgroundColor: 'transparent',
     paddingTop: 13,
     flexDirection: 'column',
     alignSelf: 'stretch',
@@ -189,7 +202,6 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   projectNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {
@@ -200,6 +212,9 @@ const styles = StyleSheet.create({
         marginTop: 1,
       },
     }),
+  },
+  platformIconContainer: {
+    width: 17,
   },
   releaseChannelContainer: {
     alignSelf: 'flex-end',
@@ -223,14 +238,13 @@ const styles = StyleSheet.create({
     width: Layout.window.width - IconPaddingRight - IconPaddingLeft - IconWidth - 10,
   },
   projectExtraInfoText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
   bullet: {
     width: 3.5,
     height: 3.5,
     borderRadius: 3.5 / 2,
-    backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
   },
   unlistedIconContainer: {
@@ -238,7 +252,7 @@ const styles = StyleSheet.create({
   },
   unlistedText: {
     marginLeft: 3,
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
 });

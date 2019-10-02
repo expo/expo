@@ -1,0 +1,525 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09E667E700CC4E0254DAA7E46F609B13 /* RNBranchConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = DBB2BF01E805C56C97F5C00C6C8DA16F /* RNBranchConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0BEEA0AB06F9D66E05034EA647FAFC7B /* RNBranchAgingItem.m in Sources */ = {isa = PBXBuildFile; fileRef = FA6A9D3461CD1AE5A96BBE541B28A52F /* RNBranchAgingItem.m */; };
+		2C44327C6D014EA37FF4B87DB58BB1B3 /* RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 9729D5D62A3C9607EE96E49A3F2EBBB0 /* RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		304DFD7EE9A35BE1E613A2048AC2B13D /* BranchEvent+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 81C05E23E960B471B95FFC7B6226D5B7 /* BranchEvent+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4612D5B177DBAEA0672BB758BEFB3053 /* RNBranchConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D42CB636F23F96DC516419F4D632504 /* RNBranchConfig.m */; };
+		53DC55DDFECA81CD92359C02125EFBA7 /* BranchUniversalObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E0FB833E9BD6DD7DC712F0F39748A59 /* BranchUniversalObject+RNBranch.m */; };
+		56817BD70B4713C713C324F0B6F364C4 /* NSObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E55ABD9ED31B161BF98A576BC6F929E /* NSObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5B3C1FBF33F8A97EE7D36AEB6F666048 /* BranchContentMetadata+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 01B9D32BAB494FCE1CE4E1F0694D9122 /* BranchContentMetadata+RNBranch.m */; };
+		60390B7373AB158846A316BDC2C0A9DD /* BranchLinkProperties+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 6584CF72648D44FCFA65880A47AA5D23 /* BranchLinkProperties+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6691202412B6F2EA449704202A646611 /* BranchEvent+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 512154A0695F09F9B0E0EBB3D5651466 /* BranchEvent+RNBranch.m */; };
+		67442A9F7EC129C692FA9C818D5D1C22 /* RNBranchEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = E33712F92C58CB291D906D242996D372 /* RNBranchEventEmitter.m */; };
+		73BEFF02E2DCDB1C8C9831948FC10BD7 /* EXBranchManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 908755CA7C8F47B14AAFA56A38D2B79E /* EXBranchManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		82D3C91DD37804E02C7D5FF344B26CB2 /* RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6345215CFB3D3A970BD623793D25CAA9 /* RNBranch.m */; };
+		8C7A3D9CA26939B46FAEB42E8FC178C0 /* EXBranch-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = B890FE839F0B399F50691B2B57667CF8 /* EXBranch-dummy.m */; };
+		8E8ABDD222F25CBFEF55E56736AB30F6 /* RNBranchProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 48184CD52B1C8D5AE54BB103E639FAA6 /* RNBranchProperty.m */; };
+		8E92F2CD2D23A1D5CFCAEAC4E8745A04 /* EXBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BA0D9F628DE97D0DF3F1809560B5AB4A /* EXBranchManager.m */; };
+		9D39BD1FC96F54266A78326DA343EA33 /* RNBranchProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 368FC648E8A0AE12DE49E81410F8A5D2 /* RNBranchProperty.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B282BFD8B4E969F7CB788242A3ED4768 /* RNBranchAgingDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 702F78A6EA9A0A5C7FE444B271E5E795 /* RNBranchAgingDictionary.m */; };
+		BA63E53BD226249EF078DC065BD6B844 /* BranchUniversalObject+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = A76FF2AF71E2AFCFAE46BC5D377E8635 /* BranchUniversalObject+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BFAB2EEFB82D6F2EE60EC14C7DEAAB84 /* RNBranchEventEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 789C78961C06C55AA0AABE90AF291AAE /* RNBranchEventEmitter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C1D9D7E2F760F3F70C79B5D27CE6E408 /* BranchLinkProperties+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE5F49879CC883640954234D483FC04 /* BranchLinkProperties+RNBranch.m */; };
+		F0FD2A188FA0D6CB02B999916C7C8150 /* BranchContentMetadata+RNBranch.h in Headers */ = {isa = PBXBuildFile; fileRef = 944CD6F1B29C9B4CE55B9ADABCC893B9 /* BranchContentMetadata+RNBranch.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F3E3066D4A6D5A6C39713F3E94A9D098 /* RNBranchAgingDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BC99467A9554D99947C90214B44425C /* RNBranchAgingDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FA21838512640674BD094549F4F1EF03 /* RNBranchAgingItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 65AFEF91EB77A208D78A23DE999C6CED /* RNBranchAgingItem.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FE9E2FE83A43960C0B73CD61385B3065 /* NSObject+RNBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DC14B989AA998A3EB55D524A88DB4F /* NSObject+RNBranch.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2E31EF1020B32CF8D0F54B6F6A5CA9B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		943164786C2AAB9022423F91DFEDA22A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0003D6D5C38B8E601F0EE08C6194C4BF /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
+			remoteInfo = React;
+		};
+		E7878EC0DBF8CA3D7F474C832416D85E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DE01B7F0C4285AEF008819075D695F90 /* Branch.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
+			remoteInfo = Branch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0003D6D5C38B8E601F0EE08C6194C4BF /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
+		01B9D32BAB494FCE1CE4E1F0694D9122 /* BranchContentMetadata+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchContentMetadata+RNBranch.m"; sourceTree = "<group>"; };
+		041215CB37DCA753C342F14AC3B3602F /* EXBranch.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBranch.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		1BB1D26B4A57A26666E4D1814A5A0EAE /* EXBranch.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBranch.xcconfig; sourceTree = "<group>"; };
+		2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		368FC648E8A0AE12DE49E81410F8A5D2 /* RNBranchProperty.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchProperty.h; sourceTree = "<group>"; };
+		3E07E6EA483FD21E23F1AC4F8C1FA16F /* EXBranch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBranch-prefix.pch"; sourceTree = "<group>"; };
+		48184CD52B1C8D5AE54BB103E639FAA6 /* RNBranchProperty.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranchProperty.m; sourceTree = "<group>"; };
+		4E55ABD9ED31B161BF98A576BC6F929E /* NSObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NSObject+RNBranch.h"; sourceTree = "<group>"; };
+		512154A0695F09F9B0E0EBB3D5651466 /* BranchEvent+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchEvent+RNBranch.m"; sourceTree = "<group>"; };
+		5BC99467A9554D99947C90214B44425C /* RNBranchAgingDictionary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchAgingDictionary.h; sourceTree = "<group>"; };
+		5D42CB636F23F96DC516419F4D632504 /* RNBranchConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranchConfig.m; sourceTree = "<group>"; };
+		6345215CFB3D3A970BD623793D25CAA9 /* RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranch.m; sourceTree = "<group>"; };
+		640F407A54DF90C1E49FB4A1B3695C6B /* libEXBranch.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBranch.a; path = libEXBranch.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6584CF72648D44FCFA65880A47AA5D23 /* BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
+		65AFEF91EB77A208D78A23DE999C6CED /* RNBranchAgingItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchAgingItem.h; sourceTree = "<group>"; };
+		702F78A6EA9A0A5C7FE444B271E5E795 /* RNBranchAgingDictionary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranchAgingDictionary.m; sourceTree = "<group>"; };
+		75DC14B989AA998A3EB55D524A88DB4F /* NSObject+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "NSObject+RNBranch.m"; sourceTree = "<group>"; };
+		789C78961C06C55AA0AABE90AF291AAE /* RNBranchEventEmitter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchEventEmitter.h; sourceTree = "<group>"; };
+		81C05E23E960B471B95FFC7B6226D5B7 /* BranchEvent+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchEvent+RNBranch.h"; sourceTree = "<group>"; };
+		8E0FB833E9BD6DD7DC712F0F39748A59 /* BranchUniversalObject+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchUniversalObject+RNBranch.m"; sourceTree = "<group>"; };
+		908755CA7C8F47B14AAFA56A38D2B79E /* EXBranchManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBranchManager.h; path = EXBranch/EXBranchManager.h; sourceTree = "<group>"; };
+		944CD6F1B29C9B4CE55B9ADABCC893B9 /* BranchContentMetadata+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchContentMetadata+RNBranch.h"; sourceTree = "<group>"; };
+		9729D5D62A3C9607EE96E49A3F2EBBB0 /* RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranch.h; sourceTree = "<group>"; };
+		A76FF2AF71E2AFCFAE46BC5D377E8635 /* BranchUniversalObject+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BranchUniversalObject+RNBranch.h"; sourceTree = "<group>"; };
+		ACE5F49879CC883640954234D483FC04 /* BranchLinkProperties+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "BranchLinkProperties+RNBranch.m"; sourceTree = "<group>"; };
+		B890FE839F0B399F50691B2B57667CF8 /* EXBranch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBranch-dummy.m"; sourceTree = "<group>"; };
+		BA0D9F628DE97D0DF3F1809560B5AB4A /* EXBranchManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBranchManager.m; path = EXBranch/EXBranchManager.m; sourceTree = "<group>"; };
+		DBB2BF01E805C56C97F5C00C6C8DA16F /* RNBranchConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = RNBranchConfig.h; sourceTree = "<group>"; };
+		DE01B7F0C4285AEF008819075D695F90 /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
+		E33712F92C58CB291D906D242996D372 /* RNBranchEventEmitter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranchEventEmitter.m; sourceTree = "<group>"; };
+		FA6A9D3461CD1AE5A96BBE541B28A52F /* RNBranchAgingItem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RNBranchAgingItem.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0C31E644B50509E759D0DDC72B125336 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1955B9CC3F3BDD8FB37786AC3D439ED7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2145AC9676827F04D848DB1290C565A6 /* RNBranch */ = {
+			isa = PBXGroup;
+			children = (
+				944CD6F1B29C9B4CE55B9ADABCC893B9 /* BranchContentMetadata+RNBranch.h */,
+				01B9D32BAB494FCE1CE4E1F0694D9122 /* BranchContentMetadata+RNBranch.m */,
+				81C05E23E960B471B95FFC7B6226D5B7 /* BranchEvent+RNBranch.h */,
+				512154A0695F09F9B0E0EBB3D5651466 /* BranchEvent+RNBranch.m */,
+				6584CF72648D44FCFA65880A47AA5D23 /* BranchLinkProperties+RNBranch.h */,
+				ACE5F49879CC883640954234D483FC04 /* BranchLinkProperties+RNBranch.m */,
+				A76FF2AF71E2AFCFAE46BC5D377E8635 /* BranchUniversalObject+RNBranch.h */,
+				8E0FB833E9BD6DD7DC712F0F39748A59 /* BranchUniversalObject+RNBranch.m */,
+				4E55ABD9ED31B161BF98A576BC6F929E /* NSObject+RNBranch.h */,
+				75DC14B989AA998A3EB55D524A88DB4F /* NSObject+RNBranch.m */,
+				9729D5D62A3C9607EE96E49A3F2EBBB0 /* RNBranch.h */,
+				6345215CFB3D3A970BD623793D25CAA9 /* RNBranch.m */,
+				5BC99467A9554D99947C90214B44425C /* RNBranchAgingDictionary.h */,
+				702F78A6EA9A0A5C7FE444B271E5E795 /* RNBranchAgingDictionary.m */,
+				65AFEF91EB77A208D78A23DE999C6CED /* RNBranchAgingItem.h */,
+				FA6A9D3461CD1AE5A96BBE541B28A52F /* RNBranchAgingItem.m */,
+				DBB2BF01E805C56C97F5C00C6C8DA16F /* RNBranchConfig.h */,
+				5D42CB636F23F96DC516419F4D632504 /* RNBranchConfig.m */,
+				789C78961C06C55AA0AABE90AF291AAE /* RNBranchEventEmitter.h */,
+				E33712F92C58CB291D906D242996D372 /* RNBranchEventEmitter.m */,
+				368FC648E8A0AE12DE49E81410F8A5D2 /* RNBranchProperty.h */,
+				48184CD52B1C8D5AE54BB103E639FAA6 /* RNBranchProperty.m */,
+			);
+			name = RNBranch;
+			path = EXBranch/RNBranch;
+			sourceTree = "<group>";
+		};
+		28304B38E6147AA006408C5E2C348887 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				041215CB37DCA753C342F14AC3B3602F /* EXBranch.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		8A2E3531E7D7164D05ACD9AA3F7296CB /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				DE01B7F0C4285AEF008819075D695F90 /* Branch */,
+				0003D6D5C38B8E601F0EE08C6194C4BF /* React */,
+				2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		9BA92EED010C29DCDEC51A76FE7BA0A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				640F407A54DF90C1E49FB4A1B3695C6B /* libEXBranch.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CFFDF30012B92F5E1475E6E25F674ECA /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1BB1D26B4A57A26666E4D1814A5A0EAE /* EXBranch.xcconfig */,
+				B890FE839F0B399F50691B2B57667CF8 /* EXBranch-dummy.m */,
+				3E07E6EA483FD21E23F1AC4F8C1FA16F /* EXBranch-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXBranch";
+			sourceTree = "<group>";
+		};
+		EE7274805A294F47B3D75963205AF803 /* EXBranch */ = {
+			isa = PBXGroup;
+			children = (
+				908755CA7C8F47B14AAFA56A38D2B79E /* EXBranchManager.h */,
+				BA0D9F628DE97D0DF3F1809560B5AB4A /* EXBranchManager.m */,
+				28304B38E6147AA006408C5E2C348887 /* Pod */,
+				2145AC9676827F04D848DB1290C565A6 /* RNBranch */,
+				CFFDF30012B92F5E1475E6E25F674ECA /* Support Files */,
+			);
+			name = EXBranch;
+			path = "../../packages/expo-branch/ios";
+			sourceTree = "<group>";
+		};
+		F5A3F95194B10BF869014EC01A852E04 = {
+			isa = PBXGroup;
+			children = (
+				8A2E3531E7D7164D05ACD9AA3F7296CB /* Dependencies */,
+				EE7274805A294F47B3D75963205AF803 /* EXBranch */,
+				1955B9CC3F3BDD8FB37786AC3D439ED7 /* Frameworks */,
+				9BA92EED010C29DCDEC51A76FE7BA0A6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		65E7CDFC69D073AC9CDC16DDC3832187 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0FD2A188FA0D6CB02B999916C7C8150 /* BranchContentMetadata+RNBranch.h in Headers */,
+				304DFD7EE9A35BE1E613A2048AC2B13D /* BranchEvent+RNBranch.h in Headers */,
+				60390B7373AB158846A316BDC2C0A9DD /* BranchLinkProperties+RNBranch.h in Headers */,
+				BA63E53BD226249EF078DC065BD6B844 /* BranchUniversalObject+RNBranch.h in Headers */,
+				73BEFF02E2DCDB1C8C9831948FC10BD7 /* EXBranchManager.h in Headers */,
+				56817BD70B4713C713C324F0B6F364C4 /* NSObject+RNBranch.h in Headers */,
+				2C44327C6D014EA37FF4B87DB58BB1B3 /* RNBranch.h in Headers */,
+				F3E3066D4A6D5A6C39713F3E94A9D098 /* RNBranchAgingDictionary.h in Headers */,
+				FA21838512640674BD094549F4F1EF03 /* RNBranchAgingItem.h in Headers */,
+				09E667E700CC4E0254DAA7E46F609B13 /* RNBranchConfig.h in Headers */,
+				BFAB2EEFB82D6F2EE60EC14C7DEAAB84 /* RNBranchEventEmitter.h in Headers */,
+				9D39BD1FC96F54266A78326DA343EA33 /* RNBranchProperty.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		6B47FA6D658B6D4521D692AE24630902 /* EXBranch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2ADEE8F16177995F4C07B8DF2E245485 /* Build configuration list for PBXNativeTarget "EXBranch" */;
+			buildPhases = (
+				65E7CDFC69D073AC9CDC16DDC3832187 /* Headers */,
+				F1C0B76E985F75253DD8DBF7881B9DAA /* Sources */,
+				0C31E644B50509E759D0DDC72B125336 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8E4E3CC0C0C50A1F560DEB2DD571CE4B /* PBXTargetDependency */,
+				57707D6BD36530BCE953F1C80016B6B6 /* PBXTargetDependency */,
+				5C840DA16558E1E4E8492057D6D2C0DC /* PBXTargetDependency */,
+			);
+			name = EXBranch;
+			productName = EXBranch;
+			productReference = 640F407A54DF90C1E49FB4A1B3695C6B /* libEXBranch.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		172A37E697549B55DFE9A366AD0FBA79 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = E901A317E44A39EB3160CB734483361C /* Build configuration list for PBXProject "EXBranch" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F5A3F95194B10BF869014EC01A852E04;
+			productRefGroup = 9BA92EED010C29DCDEC51A76FE7BA0A6 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 2915286AEB5B5F82F28DE26EF32CFDA2 /* UMCore */;
+				},
+				{
+					ProjectRef = 0003D6D5C38B8E601F0EE08C6194C4BF /* React */;
+				},
+				{
+					ProjectRef = DE01B7F0C4285AEF008819075D695F90 /* Branch */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				6B47FA6D658B6D4521D692AE24630902 /* EXBranch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F1C0B76E985F75253DD8DBF7881B9DAA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B3C1FBF33F8A97EE7D36AEB6F666048 /* BranchContentMetadata+RNBranch.m in Sources */,
+				6691202412B6F2EA449704202A646611 /* BranchEvent+RNBranch.m in Sources */,
+				C1D9D7E2F760F3F70C79B5D27CE6E408 /* BranchLinkProperties+RNBranch.m in Sources */,
+				53DC55DDFECA81CD92359C02125EFBA7 /* BranchUniversalObject+RNBranch.m in Sources */,
+				8C7A3D9CA26939B46FAEB42E8FC178C0 /* EXBranch-dummy.m in Sources */,
+				8E92F2CD2D23A1D5CFCAEAC4E8745A04 /* EXBranchManager.m in Sources */,
+				FE9E2FE83A43960C0B73CD61385B3065 /* NSObject+RNBranch.m in Sources */,
+				82D3C91DD37804E02C7D5FF344B26CB2 /* RNBranch.m in Sources */,
+				B282BFD8B4E969F7CB788242A3ED4768 /* RNBranchAgingDictionary.m in Sources */,
+				0BEEA0AB06F9D66E05034EA647FAFC7B /* RNBranchAgingItem.m in Sources */,
+				4612D5B177DBAEA0672BB758BEFB3053 /* RNBranchConfig.m in Sources */,
+				67442A9F7EC129C692FA9C818D5D1C22 /* RNBranchEventEmitter.m in Sources */,
+				8E8ABDD222F25CBFEF55E56736AB30F6 /* RNBranchProperty.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		57707D6BD36530BCE953F1C80016B6B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = 943164786C2AAB9022423F91DFEDA22A /* PBXContainerItemProxy */;
+		};
+		5C840DA16558E1E4E8492057D6D2C0DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 2E31EF1020B32CF8D0F54B6F6A5CA9B2 /* PBXContainerItemProxy */;
+		};
+		8E4E3CC0C0C50A1F560DEB2DD571CE4B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Branch;
+			targetProxy = E7878EC0DBF8CA3D7F474C832416D85E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		17DCC8DE2535FC5F32995A3D5F9AC346 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BB1D26B4A57A26666E4D1814A5A0EAE /* EXBranch.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBranch/EXBranch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBranch;
+				PRODUCT_NAME = EXBranch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1C953CCCD44E091E8BAB66E7631F0807 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		229E807A69E64EDBB923FB5B09FB46B7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		FA2AD4D4E613C4860FE8E43B45FF9F0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BB1D26B4A57A26666E4D1814A5A0EAE /* EXBranch.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBranch/EXBranch-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBranch;
+				PRODUCT_NAME = EXBranch;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2ADEE8F16177995F4C07B8DF2E245485 /* Build configuration list for PBXNativeTarget "EXBranch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17DCC8DE2535FC5F32995A3D5F9AC346 /* Debug */,
+				FA2AD4D4E613C4860FE8E43B45FF9F0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E901A317E44A39EB3160CB734483361C /* Build configuration list for PBXProject "EXBranch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C953CCCD44E091E8BAB66E7631F0807 /* Debug */,
+				229E807A69E64EDBB923FB5B09FB46B7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 172A37E697549B55DFE9A366AD0FBA79 /* Project object */;
+}

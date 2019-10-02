@@ -1,6 +1,4 @@
-import { NativeModulesProxy } from 'expo-core';
+import ExponentGyroscope from './ExponentGyroscope';
 import ThreeAxisSensor from './ThreeAxisSensor';
-
-const { ExponentGyroscope } = NativeModulesProxy;
 
 export default new ThreeAxisSensor(ExponentGyroscope, 'gyroscopeDidUpdate');

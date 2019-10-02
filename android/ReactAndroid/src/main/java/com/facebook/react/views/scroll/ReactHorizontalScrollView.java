@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.scroll;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,8 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.Rect;
 import android.hardware.SensorManager;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.text.TextUtilsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.text.TextUtilsCompat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,12 +24,13 @@ import android.view.ViewConfiguration;
 import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 
-import expolib_v1.com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 
 import java.lang.reflect.Field;
@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
-@TargetApi(16)
 public class ReactHorizontalScrollView extends HorizontalScrollView implements
     ReactClippingViewGroup {
 
@@ -55,6 +54,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
+  private @Nullable String mOverflow = ViewProps.HIDDEN;
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
@@ -68,6 +68,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
+  private boolean mSnapToStart = true;
+  private boolean mSnapToEnd = true;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
   public ReactHorizontalScrollView(Context context) {
@@ -167,14 +169,35 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mSnapOffsets = snapOffsets;
   }
 
+  public void setSnapToStart(boolean snapToStart) {
+    mSnapToStart = snapToStart;
+  }
+
+  public void setSnapToEnd(boolean snapToEnd) {
+    mSnapToEnd = snapToEnd;
+  }
+
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public void setOverflow(String overflow) {
+    mOverflow = overflow;
+    invalidate();
   }
 
   @Override
   protected void onDraw(Canvas canvas) {
     getDrawingRect(mRect);
-    canvas.clipRect(mRect);
+
+    switch (mOverflow) {
+      case ViewProps.VISIBLE:
+        break;
+      default:
+        canvas.clipRect(mRect);
+        break;
+    }
+
     super.onDraw(canvas);
   }
 
@@ -261,8 +284,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   @Override
   public void fling(int velocityX) {
+
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityX (see https://issuetracker.google.com/issues/112385925). 
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction. 
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    final int correctedVelocityX = (int)(Math.abs(velocityX) * Math.signum(mOnScrollDispatchHelper.getXFlingVelocity()));
+
     if (mPagingEnabled) {
-      smoothScrollAndSnap(velocityX);
+      flingAndSnap(correctedVelocityX);
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -272,12 +305,12 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       // as there is content. See #onOverScrolled() to see the second part of this change which properly
       // aborts the scroller animation when we get to the bottom of the ScrollView content.
 
-      int scrollWindowWidth = getWidth() - getPaddingStart() - getPaddingEnd();
+      int scrollWindowWidth = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
 
       mScroller.fling(
         getScrollX(), // startX
         getScrollY(), // startY
-        velocityX, // velocityX
+        correctedVelocityX, // velocityX
         0, // velocityY
         0, // minX
         Integer.MAX_VALUE, // maxX
@@ -291,9 +324,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
       // END FB SCROLLVIEW CHANGE
     } else {
-      super.fling(velocityX);
+      super.fling(correctedVelocityX);
     }
-    handlePostTouchScrolling(velocityX, 0);
+    handlePostTouchScrolling(correctedVelocityX, 0);
   }
 
   @Override
@@ -440,7 +473,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
             // Only if we have pagingEnabled and we have not snapped to the page do we
             // need to continue checking for the scroll.  And we cause that scroll by asking for it
             mSnappingToPage = true;
-            smoothScrollAndSnap(0);
+            flingAndSnap(0);
             ViewCompat.postOnAnimationDelayed(ReactHorizontalScrollView.this,
               this,
               ReactScrollViewHelper.MOMENTUM_DELAY);
@@ -459,21 +492,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       ReactScrollViewHelper.MOMENTUM_DELAY);
   }
 
-  /**
-   * This will smooth scroll us to the nearest snap offset point
-   * It currently just looks at where the content is and slides to the nearest point.
-   * It is intended to be run after we are done scrolling, and handling any momentum scrolling.
-   */
-  private void smoothScrollAndSnap(int velocityX) {
-    if (getChildCount() <= 0) {
-      return;
-    }
-
-    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
-    int targetOffset = 0;
-    int smallerOffset = 0;
-    int largerOffset = maximumOffset;
-
+  private int predictFinalScrollPosition(int velocityX) {
     // ScrollView can *only* scroll for 250ms when using smoothScrollTo and there's
     // no way to customize the scroll duration. So, we create a temporary OverScroller
     // so we can predict where a fling would land and snap to nearby that point.
@@ -481,7 +500,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     scroller.setFriction(1.0f - mDecelerationRate);
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    int width = getWidth() - getPaddingStart() - getPaddingEnd();
+    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
+    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
     scroller.fling(
       getScrollX(), // startX
       getScrollY(), // startY
@@ -494,7 +514,76 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       width/2, // overX
       0 // overY
     );
-    targetOffset = scroller.getFinalX();
+    return scroller.getFinalX();
+  }
+
+  /**
+   * This will smooth scroll us to the nearest snap offset point
+   * It currently just looks at where the content is and slides to the nearest point.
+   * It is intended to be run after we are done scrolling, and handling any momentum scrolling.
+   */
+  private void smoothScrollAndSnap(int velocity) {
+    double interval = (double) getSnapInterval();
+    double currentOffset = (double) getScrollX();
+    double targetOffset = (double) predictFinalScrollPosition(velocity);
+
+    int previousPage = (int) Math.floor(currentOffset / interval);
+    int nextPage = (int) Math.ceil(currentOffset / interval);
+    int currentPage = (int) Math.round(currentOffset / interval);
+    int targetPage = (int) Math.round(targetOffset / interval);
+
+    if (velocity > 0 && nextPage == previousPage) {
+      nextPage ++;
+    } else if (velocity < 0 && previousPage == nextPage) {
+      previousPage --;
+    }
+
+    if (
+      // if scrolling towards next page
+      velocity > 0 &&
+      // and the middle of the page hasn't been crossed already
+      currentPage < nextPage &&
+      // and it would have been crossed after flinging
+      targetPage > previousPage
+    ) {
+      currentPage = nextPage;
+    }
+    else if (
+      // if scrolling towards previous page
+      velocity < 0 &&
+      // and the middle of the page hasn't been crossed already
+      currentPage > previousPage &&
+      // and it would have been crossed after flinging
+      targetPage < nextPage
+    ) {
+      currentPage = previousPage;
+    }
+
+    targetOffset = currentPage * interval;
+    if (targetOffset != currentOffset) {
+      mActivelyScrolling = true;
+      smoothScrollTo((int) targetOffset, getScrollY());
+    }
+  }
+
+  private void flingAndSnap(int velocityX) {
+    if (getChildCount() <= 0) {
+      return;
+    }
+
+    // pagingEnabled only allows snapping one interval at a time
+    if (mSnapInterval == 0 && mSnapOffsets == null) {
+      smoothScrollAndSnap(velocityX);
+      return;
+    }
+
+    int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
+    int targetOffset = predictFinalScrollPosition(velocityX);
+    int smallerOffset = 0;
+    int largerOffset = maximumOffset;
+    int firstOffset = 0;
+    int lastOffset = maximumOffset;
+    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
 
     // offsets are from the right edge in RTL layouts
     boolean isRTL = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_RTL;
@@ -505,6 +594,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     // get the nearest snap points to the target offset
     if (mSnapOffsets != null) {
+      firstOffset = mSnapOffsets.get(0);
+      lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
+
       for (int i = 0; i < mSnapOffsets.size(); i ++) {
         int offset = mSnapOffsets.get(i);
 
@@ -524,7 +616,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       double interval = (double) getSnapInterval();
       double ratio = (double) targetOffset / interval;
       smallerOffset = (int) (Math.floor(ratio) * interval);
-      largerOffset = (int) (Math.ceil(ratio) * interval);
+      largerOffset = Math.min((int) (Math.ceil(ratio) * interval), maximumOffset);
     }
 
     // Calculate the nearest offset
@@ -532,10 +624,35 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       ? smallerOffset
       : largerOffset;
 
-    // Chose the correct snap offset based on velocity
-    if (velocityX > 0) {
+    // if scrolling after the last snap offset and snapping to the
+    // end of the list is disabled, then we allow free scrolling
+    int currentOffset = getScrollX();
+    if (isRTL) {
+      currentOffset = maximumOffset - currentOffset;
+    }
+    if (!mSnapToEnd && targetOffset >= lastOffset) {
+      if (currentOffset >= lastOffset) {
+        // free scrolling
+      } else {
+        // snap to end
+        targetOffset = lastOffset;
+      }
+    } else if (!mSnapToStart && targetOffset <= firstOffset) {
+      if (currentOffset <= firstOffset) {
+        // free scrolling
+      } else {
+        // snap to beginning
+        targetOffset = firstOffset;
+      }
+    } else if (velocityX > 0) {
+      // when snapping velocity can feel sluggish for slow swipes
+      velocityX += (int) ((largerOffset - targetOffset) * 10.0);
+
       targetOffset = largerOffset;
     } else if (velocityX < 0) {
+      // when snapping velocity can feel sluggish for slow swipes
+      velocityX -= (int) ((targetOffset - smallerOffset) * 10.0);
+
       targetOffset = smallerOffset;
     } else {
       targetOffset = nearestOffset;

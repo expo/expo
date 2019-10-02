@@ -1,1 +1,0 @@
-# expo-face-detector-interface

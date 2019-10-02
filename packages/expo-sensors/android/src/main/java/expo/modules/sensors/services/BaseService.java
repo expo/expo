@@ -4,12 +4,12 @@ package expo.modules.sensors.services;
 
 import android.content.Context;
 
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.UIManager;
 
-/* package */ abstract class BaseService implements ModuleRegistryConsumer, LifecycleEventListener {
+/* package */ abstract class BaseService implements LifecycleEventListener, RegistryLifecycleListener {
   private Context mContext;
   private ModuleRegistry mModuleRegistry;
   private boolean mIsForegrounded = false;
@@ -23,17 +23,20 @@ import expo.core.interfaces.services.UIManager;
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    // Unregister from old UIManager
-    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
-    }
-
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
 
     // Register to new UIManager
     if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+    }
+  }
+
+  @Override
+  public void onDestroy() {
+    // Unregister from old UIManager
+    if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
+      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
     }
   }
 

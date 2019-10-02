@@ -5,17 +5,17 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import expo.core.interfaces.InternalModule;
-import expo.interfaces.barcodescanner.BarCodeScanner;
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import expo.modules.barcodescanner.scanners.ExpoBarCodeScanner;
 import expo.modules.barcodescanner.scanners.GMVBarCodeScanner;
 import expo.modules.barcodescanner.scanners.ZxingBarCodeScanner;
 
-public class BarCodeScannerProvider implements InternalModule, expo.interfaces.barcodescanner.BarCodeScannerProvider {
+public class BarCodeScannerProvider implements InternalModule, org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider {
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.singletonList((Class) expo.interfaces.barcodescanner.BarCodeScannerProvider.class);
+    return Collections.singletonList((Class) org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider.class);
   }
 
   @Override

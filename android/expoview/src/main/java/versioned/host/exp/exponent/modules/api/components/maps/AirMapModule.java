@@ -19,6 +19,7 @@ import com.facebook.react.uimanager.UIBlock;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
@@ -141,6 +142,43 @@ public class AirMapModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void getCamera(final int tag, final Promise promise) {
+    final ReactApplicationContext context = getReactApplicationContext();
+
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock()
+    {
+      @Override
+      public void execute(NativeViewHierarchyManager nvhm)
+      {
+        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        if (view == null) {
+          promise.reject("AirMapView not found");
+          return;
+        }
+        if (view.map == null) {
+          promise.reject("AirMapView.map is not valid");
+          return;
+        }
+
+        CameraPosition position = view.map.getCameraPosition();
+
+        WritableMap centerJson = new WritableNativeMap();
+        centerJson.putDouble("latitude", position.target.latitude);
+        centerJson.putDouble("longitude", position.target.longitude);
+
+        WritableMap cameraJson = new WritableNativeMap();
+        cameraJson.putMap("center", centerJson);
+        cameraJson.putDouble("heading", (double)position.bearing);
+        cameraJson.putDouble("zoom", (double)position.zoom);
+        cameraJson.putDouble("pitch", (double)position.tilt);
+
+        promise.resolve(cameraJson);
+      }
+    });
+  }
+
+  @ReactMethod
   public void pointForCoordinate(final int tag, ReadableMap coordinate, final Promise promise) {
     final ReactApplicationContext context = getReactApplicationContext();
     final double density = (double) context.getResources().getDisplayMetrics().density;
@@ -212,6 +250,45 @@ public class AirMapModule extends ReactContextBaseJavaModule {
         coordJson.putDouble("longitude", coord.longitude);
 
         promise.resolve(coordJson);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getMapBoundaries(final int tag, final Promise promise) {
+    final ReactApplicationContext context = getReactApplicationContext();
+
+    UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.addUIBlock(new UIBlock()
+    {
+      @Override
+      public void execute(NativeViewHierarchyManager nvhm)
+      {
+        AirMapView view = (AirMapView) nvhm.resolveView(tag);
+        if (view == null) {
+          promise.reject("AirMapView not found");
+          return;
+        }
+        if (view.map == null) {
+          promise.reject("AirMapView.map is not valid");
+          return;
+        }
+
+        double[][] boundaries = view.getMapBoundaries();
+
+        WritableMap coordinates = new WritableNativeMap();
+        WritableMap northEastHash = new WritableNativeMap();
+        WritableMap southWestHash = new WritableNativeMap();
+
+        northEastHash.putDouble("longitude", boundaries[0][0]);
+        northEastHash.putDouble("latitude", boundaries[0][1]);
+        southWestHash.putDouble("longitude", boundaries[1][0]);
+        southWestHash.putDouble("latitude", boundaries[1][1]);
+
+        coordinates.putMap("northEast", northEastHash);
+        coordinates.putMap("southWest", southWestHash);
+
+        promise.resolve(coordinates);
       }
     });
   }

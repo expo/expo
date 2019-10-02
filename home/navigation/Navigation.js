@@ -1,18 +1,19 @@
 /* @flow */
 
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import {
-  createAppContainer,
-  createStackNavigator,
-  createSwitchNavigator,
-  createBottomTabNavigator,
-} from 'react-navigation';
+import { Platform, StyleSheet } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
+
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
-import { Constants } from 'expo';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
+import DiagnosticsScreen from '../screens/DiagnosticsScreen';
+import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
+import GeofencingScreen from '../screens/GeofencingScreen';
+import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -22,6 +23,7 @@ import QRCodeScreen from '../screens/QRCodeScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
 import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import Environment from '../utils/Environment';
 
 import Colors from '../constants/Colors';
 import defaultNavigationOptions from './defaultNavigationOptions';
@@ -33,14 +35,11 @@ const ProjectsStack = createStackNavigator(
   },
   {
     initialRouteName: 'Projects',
-    navigationOptions: {
-      tabBarIcon: ({ focused }) => renderIcon(Entypo, 'grid', 24, focused),
+    navigationOptions: ({ theme }) => ({
+      tabBarIcon: ({ focused }) => renderIcon(Entypo, 'grid', 24, focused, theme),
       tabBarLabel: 'Projects',
-    },
+    }),
     defaultNavigationOptions,
-    cardStyle: {
-      backgroundColor: Colors.greyBackground,
-    },
   }
 );
 
@@ -75,8 +74,8 @@ const ExploreStack = createStackNavigator(
   {
     initialRouteName: 'ExploreAndSearch',
     defaultNavigationOptions,
-    navigationOptions: {
-      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, focused),
+    navigationOptions: ({ theme }) => ({
+      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-search', 24, focused, theme),
       tabBarLabel: 'Explore',
       tabBarOnPress: ({ navigation, defaultHandler }) => {
         if (!navigation.isFocused()) {
@@ -92,10 +91,7 @@ const ExploreStack = createStackNavigator(
           navigation.emit('refocus');
         }
       },
-    },
-    cardStyle: {
-      backgroundColor: Colors.greyBackground,
-    },
+    }),
   }
 );
 
@@ -109,51 +105,87 @@ const ProfileStack = createStackNavigator(
   {
     initialRouteName: 'Profile',
     defaultNavigationOptions,
-    navigationOptions: {
-      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused),
+    navigationOptions: ({ theme }) => ({
+      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-person', 26, focused, theme),
       tabBarLabel: 'Profile',
-    },
-    cardStyle: {
-      backgroundColor: Colors.greyBackground,
-    },
+    }),
   }
 );
 
-const TabRoutes =
-  Platform.OS === 'android' || !Constants.isDevice
-    ? {
-        ProjectsStack,
-        ExploreStack,
-        ProfileStack,
-      }
-    : {
-        ProjectsStack,
-        ProfileStack,
-      };
+const DiagnosticsStack = createStackNavigator(
+  {
+    Diagnostics: DiagnosticsScreen,
+    Audio: AudioDiagnosticsScreen,
+    Location: LocationDiagnosticsScreen,
+    Geofencing: GeofencingScreen,
+  },
+  {
+    initialRouteName: 'Diagnostics',
+    defaultNavigationOptions,
+    navigationOptions: ({ theme }) => ({
+      tabBarIcon: ({ focused }) => renderIcon(Ionicons, 'ios-git-branch', 26, focused, theme),
+      tabBarLabel: 'Diagnostics',
+    }),
+  }
+);
 
+let TabRoutes;
+
+if (Platform.OS === 'android') {
+  TabRoutes = {
+    ProjectsStack,
+    ExploreStack,
+    ProfileStack,
+  };
+} else {
+  if (Environment.IsIOSRestrictedBuild) {
+    TabRoutes = {
+      ProjectsStack,
+      DiagnosticsStack,
+      ProfileStack,
+    };
+  } else {
+    TabRoutes = {
+      ProjectsStack,
+      ExploreStack,
+      DiagnosticsStack,
+      ProfileStack,
+    };
+  }
+}
 const TabNavigator =
   Platform.OS === 'ios'
     ? createBottomTabNavigator(TabRoutes, {
-        initialRouteName: 'ProfileStack',
+        initialRouteName: Environment.IsIOSRestrictedBuild ? 'ProfileStack' : 'ProjectsStack',
         navigationOptions: {
           header: null,
         },
         tabBarOptions: {
+          activeTintColor: {
+            light: Colors.light.tintColor,
+            dark: Colors.light.tintColor,
+          },
           style: {
             backgroundColor: Colors.tabBar,
-            borderTopColor: '#f2f2f2',
+            borderTopColor: 'rgba(46, 59, 76, 0.10)',
           },
         },
       })
     : createMaterialBottomTabNavigator(TabRoutes, {
         initialRouteName: 'ProjectsStack',
-        activeTintColor: Colors.tabIconSelected,
-        inactiveTintColor: Colors.tabIconDefault,
+        activeColor: Colors.tabIconSelected,
+        inactiveColor: Colors.tabIconDefault,
+        shifting: true,
         navigationOptions: {
           header: null,
         },
-        barStyle: {
+        barStyleLight: {
           backgroundColor: '#fff',
+        },
+        barStyleDark: {
+          backgroundColor: Colors.dark.cardBackground,
+          borderTopWidth: StyleSheet.hairlineWidth * 2,
+          borderTopColor: Colors.dark.cardSeparator,
         },
       });
 
@@ -173,14 +205,20 @@ const RootStack = createStackNavigator(
 
 export default createAppContainer(RootStack);
 
-function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSelected: boolean) {
-  let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
+function renderIcon(
+  IconComponent: any,
+  iconName: string,
+  iconSize: number,
+  isSelected: boolean,
+  theme: 'light' | 'dark'
+) {
+  let color = isSelected ? Colors[theme].tabIconSelected : Colors[theme].tabIconDefault;
 
   return <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />;
 }
 
 const styles = StyleSheet.create({
   icon: {
-    marginBottom: Platform.OS === 'ios' ? -2 : 0,
+    marginBottom: Platform.OS === 'ios' ? -3 : 0,
   },
 });

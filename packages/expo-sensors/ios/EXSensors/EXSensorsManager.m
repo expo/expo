@@ -6,7 +6,9 @@
 @interface EXSensorsManager ()
 
 @property (nonatomic, strong) CMMotionManager *manager;
+@property (nonatomic, strong) CMAltimeter *altimeter;
 @property (nonatomic, strong) NSMutableDictionary *accelerometerHandlers;
+@property (nonatomic, strong) NSMutableDictionary *barometerHandlers;
 @property (nonatomic, strong) NSMutableDictionary *deviceMotionHandlers;
 @property (nonatomic, strong) NSMutableDictionary *gyroscopeHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerHandlers;
@@ -16,17 +18,18 @@
 
 @implementation EXSensorsManager
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXAccelerometerInterface), @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
+  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
 }
 
 - (instancetype)init
 {
   if (self = [super init]) {
     _accelerometerHandlers = [[NSMutableDictionary alloc] init];
+    _barometerHandlers = [[NSMutableDictionary alloc] init];
     _deviceMotionHandlers = [[NSMutableDictionary alloc] init];
     _gyroscopeHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerHandlers = [[NSMutableDictionary alloc] init];
@@ -43,12 +46,21 @@ EX_REGISTER_MODULE();
   return _manager;
 }
 
+- (CMAltimeter *)altimeter
+{
+  if (!_altimeter) {
+    _altimeter = [[CMAltimeter alloc] init];
+  }
+  return _altimeter;
+}
+
 - (void)dealloc
 {
   [[self manager] stopAccelerometerUpdates];
   [[self manager] stopDeviceMotionUpdates];
   [[self manager] stopGyroUpdates];
   [[self manager] stopMagnetometerUpdates];
+  [self.altimeter stopRelativeAltitudeUpdates];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule
@@ -88,6 +100,49 @@ EX_REGISTER_MODULE();
   [[self manager] setAccelerometerUpdateInterval:intervalMs];
 }
 
+- (BOOL)isAccelerometerAvailable
+{
+  return [[self manager] isAccelerometerAvailable];
+}
+
+- (void)sensorModuleDidSubscribeForBarometerUpdates:(id)scopedSensorModule
+                                        withHandler:(void (^)(NSDictionary *event))handlerBlock
+{
+  if ([self isBarometerAvailable]) {
+    _barometerHandlers[scopedSensorModule] = handlerBlock;
+  }
+  __weak EXSensorsManager *weakSelf = self;
+  [[self altimeter] startRelativeAltitudeUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMAltitudeData * _Nullable data, NSError * _Nullable error) {
+    __strong EXSensorsManager *strongSelf = weakSelf;
+    if (strongSelf && data) {
+      for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
+        handler(@{
+                  @"pressure": @([data.pressure intValue] * 10), // conversion from kPa to hPa
+                  @"relativeAltitude": data.relativeAltitude,
+                  });
+      }
+    }
+  }];
+}
+
+- (void)sensorModuleDidUnsubscribeForBarometerUpdates:(id)scopedSensorModule
+{
+  [_barometerHandlers removeObjectForKey:scopedSensorModule];
+  if (_barometerHandlers.count == 0) {
+    [[self altimeter] stopRelativeAltitudeUpdates];
+  }
+}
+
+- (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs
+{
+  // Do nothing
+}
+
+- (BOOL)isBarometerAvailable
+{
+  return [CMAltimeter isRelativeAltitudeAvailable];
+}
+
 - (void)sensorModuleDidSubscribeForDeviceMotionUpdates:(id)scopedSensorModule
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
@@ -112,6 +167,11 @@ EX_REGISTER_MODULE();
   [[self manager] setDeviceMotionUpdateInterval:intervalMs];
 }
 
+- (BOOL)isDeviceMotionAvailable
+{
+  return [[self manager] isDeviceMotionAvailable];
+}
+
 - (void)sensorModuleDidSubscribeForGyroscopeUpdates:(id)scopedSensorModule
                                         withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
@@ -125,6 +185,7 @@ EX_REGISTER_MODULE();
       __strong EXSensorsManager *strongSelf = weakSelf;
       if (strongSelf) {
         for (void (^handler)(NSDictionary *) in strongSelf.gyroscopeHandlers.allValues) {
+          // https://docs-assets.developer.apple.com/published/96e9d46b41/ab00c9d5-4f3d-475b-8020-95066068a18d.png
           handler(@{
                     @"x": [NSNumber numberWithDouble:data.rotationRate.x],
                     @"y": [NSNumber numberWithDouble:data.rotationRate.y],
@@ -149,6 +210,11 @@ EX_REGISTER_MODULE();
   [[self manager] setGyroUpdateInterval:intervalMs];
 }
 
+- (BOOL)isGyroAvailable
+{
+  return [[self manager] isGyroAvailable];
+}
+
 - (void)sensorModuleDidSubscribeForMagnetometerUpdates:(id)scopedSensorModule
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
@@ -171,6 +237,11 @@ EX_REGISTER_MODULE();
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs
 {
   [[self manager] setDeviceMotionUpdateInterval:intervalMs];
+}
+
+- (BOOL)isMagnetometerAvailable
+{
+  return [self isDeviceMotionAvailable];
 }
 
 - (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdates:(id)scopedSensorModule
@@ -208,6 +279,11 @@ EX_REGISTER_MODULE();
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs
 {
   [[self manager] setMagnetometerUpdateInterval:intervalMs];
+}
+
+- (BOOL)isMagnetometerUncalibratedAvailable
+{
+  return [[self manager] isMagnetometerAvailable];
 }
 
 - (float)getGravity

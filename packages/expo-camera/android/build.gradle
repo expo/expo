@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.0'
   }
 }
 
@@ -13,7 +13,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.2.0'
+version = '7.0.0'
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
 
 //Upload android library to maven with javadoc and android sources
 configurations {
@@ -41,16 +45,20 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion 26
+  compileSdkVersion safeExtGet("compileSdkVersion", 28)
 
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 26
-    versionCode 10
-    versionName "1.2.0"
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    versionCode 23
+    versionName "7.0.0"
   }
   lintOptions {
     abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
   }
 }
 
@@ -61,17 +69,17 @@ repositories {
   }
 }
 
-apply from: project(":expo-core").file("../expo-core.gradle")
+apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 
 dependencies {
-  expendency 'expo-core'
-  expendency 'expo-barcode-scanner-interface'
-  expendency 'expo-face-detector-interface'
-  expendency 'expo-permissions-interface'
-  expendency 'expo-file-system-interface'
-  expendency 'expo-image-loader-interface'
-  expendency 'expo-camera-interface'
-  implementation 'com.google.android.gms:play-services-vision:15.0.2'
-  implementation 'com.android.support:exifinterface:26.1.0'
-  implementation 'com.google.android:cameraview:1.0.0'
+  unimodule 'unimodules-core'
+  unimodule 'unimodules-barcode-scanner-interface'
+  unimodule 'unimodules-face-detector-interface'
+  unimodule 'unimodules-permissions-interface'
+  unimodule 'unimodules-file-system-interface'
+  unimodule 'unimodules-image-loader-interface'
+  unimodule 'unimodules-camera-interface'
+  api 'com.google.android.gms:play-services-vision:15.0.2'
+  api "androidx.exifinterface:exifinterface:1.0.0"
+  api 'com.google.android:cameraview:1.0.0'
 }

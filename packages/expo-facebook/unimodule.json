@@ -1,0 +1,4 @@
+{
+  "name": "expo-facebook",
+  "platforms": ["ios", "android"]
+}

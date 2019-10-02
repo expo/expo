@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import host.exp.exponent.Constants;
-import expolib_v1.okhttp3.Request;
+import okhttp3.Request;
 
 public class ExponentUrls {
 

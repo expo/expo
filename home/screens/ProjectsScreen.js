@@ -2,6 +2,7 @@
  * @flow
  */
 
+import Constants from 'expo-constants';
 import React from 'react';
 import {
   AppState,
@@ -9,19 +10,19 @@ import {
   Clipboard,
   Platform,
   RefreshControl,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ScrollView, withNavigationFocus, withNavigation } from 'react-navigation';
-import { Constants } from 'expo';
-import { connect } from 'react-redux';
-import _ from 'lodash';
+import { withNavigationFocus, withNavigation, Themed } from 'react-navigation';
 
+import { connect } from 'react-redux';
+import semver from 'semver';
+import ScrollView from '../components/NavigationScrollView';
+import ApiV2HttpClient from '../api/ApiV2HttpClient';
+import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
-import Alerts from '../constants/Alerts';
 import Colors from '../constants/Colors';
 import DevIndicator from '../components/DevIndicator';
 import HistoryActions from '../redux/HistoryActions';
@@ -31,16 +32,17 @@ import NoProjectsOpen from '../components/NoProjectsOpen';
 import ProjectTools from '../components/ProjectTools';
 import SharedStyles from '../constants/SharedStyles';
 import SmallProjectCard from '../components/SmallProjectCard';
-import Store from '../redux/Store';
 import Connectivity from '../api/Connectivity';
 import getSnackId from '../utils/getSnackId';
-import { isAuthenticated, authenticatedFetch } from '../api/helpers';
+import { SectionLabelContainer, GenericCardBody, GenericCardContainer } from '../components/Views';
+import { SectionLabelText } from '../components/Text';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
-const IS_RESTRICTED = Constants.isDevice && Platform.OS === 'ios';
+const IS_RESTRICTED = Environment.IsIOSRestrictedBuild;
 const PROJECT_UPDATE_INTERVAL = 10000;
-const USE_STAGING = false;
+
+const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
 @withNavigationFocus
 @withNavigation
@@ -86,17 +88,13 @@ export default class ProjectsScreen extends React.Component {
     Connectivity.addListener(this._updateConnectivity);
     this._startPollingForProjects();
 
+    // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
+    // find a way to move this listener up to the root of the app in order to ensure
+    // that it has been registered regardless of whether we have been on the project
+    // screen in the home app
     addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
       this.props.navigation.showModal('QRCode');
       return { success: true };
-    });
-
-    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
-      let { manifestUrl, manifest, manifestString } = event;
-      if (!manifest && manifestString) {
-        manifest = JSON.parse(manifestString);
-      }
-      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
     });
   }
 
@@ -118,48 +116,46 @@ export default class ProjectsScreen extends React.Component {
               onRefresh={this._handleRefreshAsync}
             />
           }
-          key={
-            /* note(brent): sticky headers break re-rendering scrollview */
-            /* contents on sdk17, remove this in sdk18 */
-            Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'
-          }
+          key={Platform.OS === 'ios' ? this.props.allHistory.count() : 'scroll-view'}
           stickyHeaderIndices={Platform.OS === 'ios' ? [0, 2, 4] : []}
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
-          <View style={SharedStyles.sectionLabelContainer}>
-            <Text style={SharedStyles.sectionLabelText}>
-              {IS_RESTRICTED || Platform.OS === 'android' ? 'TOOLS' : 'CLIPBOARD'}
-            </Text>
-          </View>
+          <SectionLabelContainer>
+            <SectionLabelText>
+              {Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR'
+                ? 'CLIPBOARD'
+                : 'TOOLS'}
+            </SectionLabelText>
+          </SectionLabelContainer>
           {this._renderProjectTools()}
 
-          <View style={SharedStyles.sectionLabelContainer}>
+          <SectionLabelContainer>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <DevIndicator
                 style={{ marginRight: 7 }}
                 isActive={projects && projects.length}
                 isNetworkAvailable={this.state.isNetworkAvailable}
               />
-              <Text style={SharedStyles.sectionLabelText}>RECENTLY IN DEVELOPMENT</Text>
+              <SectionLabelText>RECENTLY IN DEVELOPMENT</SectionLabelText>
             </View>
             <TouchableOpacity onPress={this._handlePressHelpProjects} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>HELP</Text>
             </TouchableOpacity>
-          </View>
+          </SectionLabelContainer>
           {this._renderProjects()}
 
-          <View style={SharedStyles.sectionLabelContainer}>
-            <Text style={SharedStyles.sectionLabelText}>RECENTLY OPENED</Text>
+          <SectionLabelContainer>
+            <SectionLabelText>RECENTLY OPENED</SectionLabelText>
             <TouchableOpacity onPress={this._handlePressClearHistory} style={styles.clearButton}>
               <Text style={styles.clearButtonText}>CLEAR</Text>
             </TouchableOpacity>
-          </View>
+          </SectionLabelContainer>
 
           {this._renderRecentHistory()}
           {this._renderConstants()}
         </ScrollView>
 
-        <StatusBar barStyle="default" />
+        <Themed.StatusBar />
       </View>
     );
   }
@@ -203,14 +199,10 @@ export default class ProjectsScreen extends React.Component {
 
   _fetchProjectsAsync = async () => {
     try {
-      let BASE_URL = USE_STAGING ? 'https://staging.expo.io' : 'https://exp.host';
-      let fetchStrategy = isAuthenticated() ? authenticatedFetch : fetch;
-      let response = await fetchStrategy(
-        `${BASE_URL}/--/api/v2/development-sessions?deviceId=${getSnackId()}`
-      );
-      let result = await response.json();
-      let rawProjects = (result.data || []).reverse();
-      let projects = _.uniqBy(rawProjects, p => p.url);
+      let api = new ApiV2HttpClient();
+      let projects = await api.getAsync('development-sessions', {
+        deviceId: getSnackId(),
+      });
       this.setState({ projects });
     } catch (e) {
       // this doesn't really matter, we will try again later
@@ -243,7 +235,7 @@ export default class ProjectsScreen extends React.Component {
       );
     }
 
-    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same WiFi network as your mobile device. Lastly, ensure that you are using the latest version of exp or XDE. Pull to refresh to update.`;
+    let baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.`;
     let message = Platform.select({
       ios: Constants.isDevice
         ? baseMessage
@@ -277,13 +269,13 @@ export default class ProjectsScreen extends React.Component {
 
   _renderEmptyRecentHistory = () => {
     return (
-      <View style={SharedStyles.genericCardContainer} key="empty-history">
-        <View style={SharedStyles.genericCardBody}>
+      <GenericCardContainer key="empty-history">
+        <GenericCardBody>
           <Text style={[SharedStyles.faintText, { textAlign: 'center' }]}>
             You haven't opened any projects recently.
           </Text>
-        </View>
-      </View>
+        </GenericCardBody>
+      </GenericCardContainer>
     );
   };
 
@@ -307,6 +299,7 @@ export default class ProjectsScreen extends React.Component {
           (project.manifest && project.manifest.releaseChannel) ||
           extractReleaseChannel(project.manifestUrl)
         }
+        platform={project.platform}
         projectName={project.manifest && project.manifest.name}
         username={
           project.manifestUrl.includes('exp://exp.host')
@@ -327,6 +320,13 @@ export default class ProjectsScreen extends React.Component {
         </Text>
         <Text style={styles.expoVersionText} onPress={this._copyClientVersionToClipboard}>
           Client version: {Constants.expoVersion}
+        </Text>
+        <Text style={styles.supportSdksText}>
+          Supported SDK
+          {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
+          {SupportedExpoSdks.map(semver.major)
+            .sort((a, b) => a - b)
+            .join(', ')}
         </Text>
       </View>
     );
@@ -358,6 +358,7 @@ export default class ProjectsScreen extends React.Component {
                   : require('../assets/snack.png')
               }
               projectName={project.description}
+              platform={project.platform}
               key={project.url}
               projectUrl={project.url}
               iconBorderStyle={{
@@ -378,7 +379,6 @@ export default class ProjectsScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   inDevelopmentContainer: {
     marginBottom: 15,
@@ -393,12 +393,11 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   clearButton: {
-    position: 'absolute',
-    right: Platform.OS === 'android' ? 15 : 0,
-    top: Platform.OS === 'android' ? 12 : 0,
+    alignItems: 'flex-end',
+    flex: 1,
   },
   clearButtonText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 11,
     letterSpacing: 0.92,
     ...Platform.select({
@@ -421,6 +420,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   expoVersionText: {
+    color: 'rgba(0,0,0,0.3)',
+    fontSize: 11,
+    marginBottom: 5,
+  },
+  supportSdksText: {
     color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
   },

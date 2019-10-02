@@ -5,17 +5,13 @@
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
-#import "EXFacebook.h"
-#import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXBranchManager.h"
 
 #import <Crashlytics/Crashlytics.h>
-#import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <GoogleMaps/GoogleMaps.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotification = @"kEXAppDidRegisterForRemoteNotificationsNotification";
@@ -93,11 +89,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 
   RCTSetFatalHandler(handleFatalReactError);
 
-  if ([EXFacebook facebookAppIdFromNSBundle]) {
-    [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
-  }
-
   // init analytics
   [EXAnalytics sharedInstance];
 
@@ -112,11 +103,10 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
     }
   }
 
-  [UNUserNotificationCenter currentNotificationCenter].delegate = [EXKernel sharedInstance].serviceRegistry.notificationsManager;
+  [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) [EXKernel sharedInstance].serviceRegistry.notificationsManager;
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
-  [[EXKernel sharedInstance].serviceRegistry.branchManager application:application didFinishLaunchingWithOptions:launchOptions];
   _launchOptions = launchOptions;
 }
 
@@ -160,40 +150,11 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if ([[EXKernel sharedInstance].serviceRegistry.googleAuthManager
-       application:application openURL:url sourceApplication:sourceApplication annotation:annotation]) {
-    return YES;
-  }
-
-  if ([EXFacebook facebookAppIdFromNSBundle]) {
-    if ([[FBSDKApplicationDelegate sharedInstance] application:application
-                                                       openURL:url
-                                             sourceApplication:sourceApplication
-                                                    annotation:annotation]) {
-      return YES;
-    }
-  }
-
-  if ([[EXKernel sharedInstance].serviceRegistry.branchManager
-       application:application
-       openURL:url
-       sourceApplication:sourceApplication
-       annotation:annotation]) {
-    return YES;
-  }
-
   return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-  if ([[EXKernel sharedInstance].serviceRegistry.branchManager
-       application:application
-       continueUserActivity:userActivity
-       restorationHandler:restorationHandler]) {
-    return YES;
-  }
-  
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
     if ([EXEnvironment sharedEnvironment].isDetached) {
@@ -212,7 +173,7 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
         [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
         return YES;
       } else {
-        [application openURL:webpageURL];
+        [application openURL:webpageURL options:@{} completionHandler:nil];
         return YES;
       }
     }

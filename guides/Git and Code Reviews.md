@@ -1,5 +1,22 @@
 # Git and Code Reviews at Expo
 
+- [Git](#git)
+  - [“master” is green](#-master--is-green)
+  - [Develop on feature branches](#develop-on-feature-branches)
+  - [One idea = one commit](#one-idea---one-commit)
+  - [Rebasing: a linear history](#rebasing--a-linear-history)
+  - [Pull and rebase often](#pull-and-rebase-often)
+  - [Commit often](#commit-often)
+  - [Squash before pushing](#squash-before-pushing)
+  - [Code behind feature flags](#code-behind-feature-flags)
+  - [Communicate with test plans](#communicate-with-test-plans)
+- [Code Reviews](#code-reviews)
+  - [Code reviews for the Expo team](#code-reviews-for-the-expo-team)
+    - [Communicate with code reviews](#communicate-with-code-reviews)
+    - [Choose one or two reviewers to clarify responsibility](#choose-one-or-two-reviewers-to-clarify-responsibility)
+    - [Merge if you are the person responsible for the commit](#merge-if-you-are-the-person-responsible-for-the-commit)
+  - [Code reviews for external contributions](#code-reviews-for-external-contributions)
+
 # Git
 
 Expo’s code is stored in Git repositories, including the Expo client repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
@@ -57,7 +74,7 @@ Test plans are often effective at communicating the effects of your change. Writ
 
 Test plans communicate the scope of your change and what to look for when reviewing your code or modifying your code in the future. Someone who is working on the same code may look through the commit history to understand your code better, and test plans help them understand what to look out for when they make their own changes. Similarly, a test plan helps calibrate your code reviewer’s confidence.
 
-----------
+---
 
 # Code Reviews
 
@@ -85,6 +102,6 @@ We couple responsibility with merging so the person responsible for code is pres
 
 ## Code reviews for external contributions
 
-All pull requests must be reviewed and potentially merged by someone on the Expo team. The best way to get your PR reviewed is to make it easy to review and accept. See [the contribution guide](../.github/CONTRIBUTING.md) for our expectations of contributions.
+All pull requests must be reviewed and potentially merged by someone on the Expo team. The best way to get your PR reviewed is to make it easy to review and accept. See [the contribution guide](../CONTRIBUTING.md) for our expectations of contributions.
 
 A maintainable PR is simple to understand and often small in scope. It is robust and unlikely to break if another part of the system is modified. It keeps related code close together and avoids prematurely separating concerns. It follows the coding standards implied by the codebase and Expo coding guidelines. It strikes a balance with enough code to provide a feature in a generalizable way.

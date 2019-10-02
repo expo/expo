@@ -2,6 +2,9 @@ package expo.modules.barcodescanner.scanners;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -11,11 +14,12 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import expo.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.interfaces.barcodescanner.BarCodeScannerSettings;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.modules.barcodescanner.utils.FrameFactory;
 
 public class GMVBarCodeScanner extends ExpoBarCodeScanner {
@@ -34,7 +38,7 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
   @Override
   public BarCodeScannerResult scan(byte[] data, int width, int height, int rotation) {
     try {
-      List<BarCodeScannerResult> results = scan(FrameFactory.buildFrame(data, width, height, rotation).getFrame());
+      List<BarCodeScannerResult> results = scan(FrameFactory.buildFrame(data, width, height, rotation));
       return results.size() > 0 ? results.get(0) : null;
     } catch (Exception e) {
       // Sometimes data has different size than width and height would suggest:
@@ -49,17 +53,28 @@ public class GMVBarCodeScanner extends ExpoBarCodeScanner {
 
   @Override
   public List<BarCodeScannerResult> scanMultiple(Bitmap bitmap) {
-    return scan(FrameFactory.buildFrame(bitmap).getFrame());
+    return scan(FrameFactory.buildFrame(bitmap));
   }
 
-  private List<BarCodeScannerResult> scan(Frame frame) {
+  private List<BarCodeScannerResult> scan(expo.modules.barcodescanner.utils.Frame frame) {
+
     try {
-      SparseArray<Barcode> result = mBarcodeDetector.detect(frame);
+      SparseArray<Barcode> result = mBarcodeDetector.detect(frame.getFrame());
       List<BarCodeScannerResult> results = new ArrayList<>();
 
+      int width = frame.getDimensions().getWidth();
+      int height = frame.getDimensions().getHeight();
+
       for (int i = 0; i < result.size(); i++) {
+
         Barcode barcode = result.get(result.keyAt(i));
-        results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue));
+        List<Integer> cornerPoints = new ArrayList<>();
+        for (Point point : barcode.cornerPoints) {
+          Integer x =  Integer.valueOf(point.x);
+          Integer y = Integer.valueOf(point.y);
+          cornerPoints.addAll(Arrays.asList(x,y));
+        }
+        results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, height, width));
       }
 
       return results;

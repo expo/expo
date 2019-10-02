@@ -1,0 +1,4 @@
+{
+  "name": "expo-contacts",
+  "platforms": ["ios", "android"]
+}

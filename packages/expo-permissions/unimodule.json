@@ -1,0 +1,4 @@
+{
+  "name": "expo-permissions",
+  "platforms": ["ios", "android"]
+}

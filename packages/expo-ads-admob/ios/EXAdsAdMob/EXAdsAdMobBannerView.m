@@ -1,5 +1,5 @@
 #import <EXAdsAdMob/EXAdsAdMobBannerView.h>
-#import <EXCore/EXEventEmitterService.h>
+#import <UMCore/UMEventEmitterService.h>
 
 @implementation EXAdsAdMobBannerView {
   GADBannerView *_bannerView;
@@ -26,7 +26,7 @@
 }
 
 - (void)loadBanner {
-  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError) {
+  if (_adUnitID && _bannerSize && _onSizeChange && _onDidFailToReceiveAdWithError && _additionalRequestParams) {
     GADAdSize size = [self getAdSizeFromString:_bannerSize];
     _bannerView = [[GADBannerView alloc] initWithAdSize:size];
     if (!CGRectEqualToRect(self.bounds, _bannerView.bounds)) {
@@ -48,17 +48,20 @@
         request.testDevices = @[_testDeviceID];
       }
     }
+    GADExtras *extras = [[GADExtras alloc] init];
+    extras.additionalParameters = _additionalRequestParams;
+    [request registerAdNetworkExtras:extras];
     [_bannerView loadRequest:request];
   }
 }
 
-- (void)setOnSizeChange:(EXDirectEventBlock)block
+- (void)setOnSizeChange:(UMDirectEventBlock)block
 {
   _onSizeChange = block;
   [self loadBanner];
 }
 
-- (void)setOnDidFailToReceiveAdWithError:(EXDirectEventBlock)block
+- (void)setOnDidFailToReceiveAdWithError:(UMDirectEventBlock)block
 {
   _onDidFailToReceiveAdWithError = block;
   [self loadBanner];
@@ -77,6 +80,17 @@
 - (void)setAdUnitID:(NSString *)adUnitID {
   if (![adUnitID isEqual:_adUnitID]) {
     _adUnitID = adUnitID;
+    if (_bannerView) {
+      [_bannerView removeFromSuperview];
+    }
+    [self loadBanner];
+  }
+}
+
+- (void)setAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+{
+  if (![additionalRequestParams isEqual:_additionalRequestParams]) {
+    _additionalRequestParams = additionalRequestParams;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
     }

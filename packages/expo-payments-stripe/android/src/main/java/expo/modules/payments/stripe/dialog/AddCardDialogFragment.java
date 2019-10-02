@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -20,7 +20,7 @@ import com.devmarvel.creditcardentry.fields.SecurityCodeText;
 import com.devmarvel.creditcardentry.library.CreditCard;
 import com.devmarvel.creditcardentry.library.CreditCardForm;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 import expo.modules.payments.stripe.R;
 import expo.modules.payments.stripe.StripeModule;
 import expo.modules.payments.stripe.util.CardFlipAnimator;

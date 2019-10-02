@@ -5,16 +5,18 @@ import android.content.Context;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.core.BasePackage;
-import expo.core.ExportedModule;
-import expo.core.interfaces.InternalModule;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.interfaces.InternalModule;
 import expo.modules.sensors.modules.AccelerometerModule;
+import expo.modules.sensors.modules.BarometerModule;
 import expo.modules.sensors.modules.DeviceMotionModule;
 import expo.modules.sensors.modules.GyroscopeModule;
 import expo.modules.sensors.modules.MagnetometerModule;
 import expo.modules.sensors.modules.MagnetometerUncalibratedModule;
 import expo.modules.sensors.modules.PedometerModule;
 import expo.modules.sensors.services.AccelerometerService;
+import expo.modules.sensors.services.BarometerService;
 import expo.modules.sensors.services.GravitySensorService;
 import expo.modules.sensors.services.GyroscopeService;
 import expo.modules.sensors.services.LinearAccelerationSensorService;
@@ -29,6 +31,7 @@ public class SensorsPackage extends BasePackage {
   public List<InternalModule> createInternalModules(Context context) {
     return Arrays.<InternalModule>asList(
             new AccelerometerService(context),
+            new BarometerService(context),
             new GravitySensorService(context),
             new GyroscopeService(context),
             new LinearAccelerationSensorService(context),
@@ -43,6 +46,7 @@ public class SensorsPackage extends BasePackage {
   public List<ExportedModule> createExportedModules(Context context) {
     return Arrays.<ExportedModule>asList(
             new AccelerometerModule(context),
+            new BarometerModule(context),
             new GyroscopeModule(context),
             new DeviceMotionModule(context),
             new MagnetometerModule(context),

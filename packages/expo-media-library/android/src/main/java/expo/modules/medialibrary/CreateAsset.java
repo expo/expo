@@ -10,7 +10,7 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.io.IOException;
 
-import expo.core.Promise;
+import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;
@@ -25,8 +25,15 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
 
   CreateAsset(Context context, String uri, Promise promise) {
     mContext = context;
-    mUri = Uri.parse(uri);
+    mUri = normalizeAssetUri(uri);
     mPromise = promise;
+  }
+
+  private Uri normalizeAssetUri(String uri) {
+    if (uri.startsWith("/")) {
+      return Uri.fromFile(new File(uri));
+    }
+    return Uri.parse(uri);
   }
 
   private File createAssetFile() throws IOException {

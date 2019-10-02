@@ -15,11 +15,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import expolib_v1.okhttp3.CookieJar;
-import expolib_v1.okhttp3.OkHttpClient;
+import okhttp3.CookieJar;
+import okhttp3.OkHttpClient;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.expoview.Exponent;
+import host.exp.exponent.ABIVersion;
 
 @DoNotStrip
 public class ReactNativeStaticHelpers {
@@ -105,7 +106,7 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
-  public static OkHttpClient getOkHttpClient(Class callingClass) {
+  public static Object getOkHttpClient(Class callingClass) {
     String version = RNObject.versionForClassname(callingClass.getName());
     Object cookieJar = new RNObject("com.facebook.react.modules.network.ReactCookieJarContainer").loadVersion(version).construct().get();
 
@@ -133,6 +134,6 @@ public class ReactNativeStaticHelpers {
       // just fall back to previous client
       EXL.e(TAG, "Falling back to default OkHttpClient builder: " + e.getMessage());
     }
-    return OkHttpClientProvider.enableTls12OnPreLollipop(client).build();
+    return client.build();
   }
 }

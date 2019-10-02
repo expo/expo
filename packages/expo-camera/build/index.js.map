@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,IAAI,MAAM,EAAE,MAAM,UAAU,CAAC;AAC7C,OAAO,EAAE,SAAS,EAAE,MAAM,UAAU,CAAC","sourcesContent":["export { default as Camera } from './Camera';\nexport { Constants } from './Camera';\n"]}

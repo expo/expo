@@ -8,9 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +23,7 @@ import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.unimodules.core.interfaces.Package;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +34,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
-import expo.core.interfaces.Package;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
@@ -55,8 +54,10 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
+import versioned.host.exp.exponent.ExponentPackage;
 
 import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
+import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
@@ -146,7 +147,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     mLayout.addView(mContainer);
     mLoadingView = new LoadingView(this);
     if (!Constants.isStandaloneApp() || Constants.SHOW_LOADING_VIEW_IN_SHELL_APP) {
-      mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
+      mContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.splashBackground));
       mLayout.addView(mLoadingView);
     }
 
@@ -190,6 +191,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   }
 
   protected void updateLoadingProgress(String status, Integer done, Integer total) {
+    if (!mIsLoading) {
+      showLoadingScreen(mManifest);
+    }
     mLoadingView.updateProgress(status, done, total);
   }
 
@@ -278,9 +282,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
         if (didDoubleTapR) {
           // The loading screen is hidden by versioned code when reloading JS so we can't show it
           // on older sdks.
-          if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("26.0.0")) {
-            showLoadingScreen(mManifest);
-          }
+          showLoadingScreen(mManifest);
           devSupportManager.call("handleReloadJS");
           return true;
         }
@@ -395,7 +397,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     }
   }
 
-  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri, final RNObject mLinkingPackage,
+  public RNObject startReactInstance(final Exponent.StartReactInstanceDelegate delegate, final String mIntentUri,
                                      final String mSDKVersion, final ExponentNotification mNotification, final boolean mIsShellApp,
                                      final List<? extends Object> extraNativeModules, final List<Package> extraExpoPackages, DevBundleDownloadProgressListener progressListener) {
 
@@ -409,17 +411,18 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     Map<String, Object> experienceProperties = MapBuilder.<String, Object>of(
         MANIFEST_URL_KEY, mManifestUrl,
         LINKING_URI_KEY, linkingUri,
-        INTENT_URI_KEY, mIntentUri
+        INTENT_URI_KEY, mIntentUri,
+        IS_HEADLESS_KEY, false
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
     instanceManagerBuilderProperties.application = getApplication();
     instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.linkingPackage = mLinkingPackage;
     instanceManagerBuilderProperties.experienceProperties = experienceProperties;
     instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
     instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
     instanceManagerBuilderProperties.manifest = mManifest;
+    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(getApplicationContext(), mManifest, extraExpoPackages);
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
@@ -435,23 +438,13 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
 
-      if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("20.0.0")) {
-        RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
-        devLoadingView.callRecursive("setDevLoadingEnabled", false);
+      RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
+      devLoadingView.callRecursive("setDevLoadingEnabled", false);
 
-        RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
-            .loadVersion(mSDKVersion)
-            .construct(progressListener);
-        builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
-      }
-
-      // checkForReactViews() is normally called in dev mode by devBundleDownloadListener.onSuccess()
-      // so that AppLoading will continue to show the splash screen correctly. However, the
-      // onSuccess() method is not called by RN for SDK 25 and below, so we need to check for react views here
-      // TODO: remove once SDK 25 is phased out
-      if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("26.0.0")) {
-        checkForReactViews();
-      }
+      RNObject devBundleDownloadListener = new RNObject("host.exp.exponent.ExponentDevBundleDownloadListener")
+          .loadVersion(mSDKVersion)
+          .construct(progressListener);
+      builder.callRecursive("setDevBundleDownloadListener", devBundleDownloadListener.get());
     } else {
       checkForReactViews();
     }
@@ -461,11 +454,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (mNotification != null) {
       bundle.putString("notification", mNotification.body); // Deprecated
       try {
-        if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("10.0.0")) {
-          exponentProps.put("notification", mNotification.body);
-        } else {
-          exponentProps.put("notification", mNotification.toJSONObject("selected"));
-        }
+        exponentProps.put("notification", mNotification.toJSONObject("selected"));
       } catch (JSONException e) {
         e.printStackTrace();
       }
@@ -610,10 +599,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     if (Constants.SHELL_APP_SCHEME != null) {
       return Constants.SHELL_APP_SCHEME + "://";
     } else {
-      if (ABIVersion.toNumber(mSDKVersion) < ABIVersion.toNumber("27.0.0")) {
-        // keep old behavior on old projects to not introduce breaking changes
-        return mManifestUrl + "/+";
-      }
       Uri uri = Uri.parse(mManifestUrl);
       String host = uri.getHost();
       if (host != null && (host.equals("exp.host") || host.equals("expo.io") || host.equals("exp.direct") || host.equals("expo.test") ||

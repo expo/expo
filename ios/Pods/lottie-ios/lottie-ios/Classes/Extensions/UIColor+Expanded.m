@@ -1,11 +1,9 @@
-// From http://github.com/ars/uicolor-utilities
-
 #import "UIColor+Expanded.h"
 
 /*
  
  Thanks to Poltras, Millenomi, Eridius, Nownot, WhatAHam, jberry,
- and everyone else who helped out but whose name is inadvertantly omitted
+ and everyone else who helped out but whose name is inadvertently omitted
  
  */
 
@@ -169,7 +167,7 @@ static NSMutableDictionary *colorNameCache = nil;
 #pragma mark Arithmetic operations
 
 - (UIColor *)LOT_colorByLuminanceMapping {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -182,7 +180,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByMultiplyingByRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -194,7 +192,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByAddingRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -206,7 +204,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByLighteningToRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -218,7 +216,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByDarkeningToRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -246,7 +244,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByMultiplyingByColor:(UIColor *)color {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -255,7 +253,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByAddingColor:(UIColor *)color {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -264,7 +262,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByLighteningToColor:(UIColor *)color {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -273,7 +271,7 @@ static NSMutableDictionary *colorNameCache = nil;
 }
 
 - (UIColor *)LOT_colorByDarkeningToColor:(UIColor *)color {
-	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmatic operations");
+	NSAssert(self.canProvideRGBComponents, @"Must be a RGB color to use arithmetic operations");
   
 	CGFloat r,g,b,a;
 	if (![self LOT_red:&r green:&g blue:&b alpha:&a]) return nil;
@@ -369,6 +367,11 @@ static NSMutableDictionary *colorNameCache = nil;
 // Lookup a color using css 3/svg color name
 + (UIColor *)LOT_colorWithName:(NSString *)cssColorName {
 	UIColor *color;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorNameCache = [[NSMutableDictionary alloc] init];
+    });
+    
 	@synchronized(colorNameCache) {
 		// Look for the color in the cache
 		color = [colorNameCache objectForKey:cssColorName];
@@ -399,12 +402,6 @@ static NSMutableDictionary *colorNameCache = nil;
   float b = fromComponents[2] + ((toComponents[2] - fromComponents[2]) * amount);
   float a = fromComponents[3] + ((toComponents[3] - fromComponents[3]) * amount);
   return [UIColor colorWithRed:r green:g blue:b alpha:a];
-}
-
-#pragma mark UIColor_Expanded initialization
-
-+ (void)load {
-	colorNameCache = [[NSMutableDictionary alloc] init];
 }
 
 @end

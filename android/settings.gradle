@@ -1,4 +1,7 @@
-include ':app', ':expoview'
+include ':app'
+
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+include ':expoview'
 project(':expoview').projectDir = new File(rootDir, 'expoview')
 include ':tools'
 include ':ReactAndroid'
@@ -6,60 +9,33 @@ project(':ReactAndroid').projectDir = new File(rootDir, 'ReactAndroid')
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
-    "abi31_0_0",
-    "abi30_0_0",
-    "abi29_0_0",
-    "abi28_0_0",
-    "abi27_0_0",
-    "abi26_0_0",
-    "abi25_0_0",
+    "abi35_0_0",
+    "abi34_0_0",
+    "abi33_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
-// Universal modules
+// Import gradle helpers for unimodules.
+apply from: '../node_modules/react-native-unimodules/gradle.groovy'
 
-def modulesDir = new File(rootDir, "../packages")
-
-def includeUniversalModule = { name ->
-  include ":$name"
-  project(":$name").projectDir = new File(modulesDir, "$name/android")
-}
-
+// Include unimodules.
+includeUnimodulesProjects(
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 [
-  'expo-app-auth',
-  'expo-ads-admob',
-  'expo-analytics-segment',
-  'expo-barcode-scanner',
-  'expo-barcode-scanner-interface',
-  'expo-camera',
-  'expo-camera-interface',
-  'expo-constants',
-  'expo-constants-interface',
-  'expo-contacts',
-  'expo-core',
-  'expo-errors',
-  'expo-face-detector',
-  'expo-face-detector-interface',
-  'expo-file-system',
-  'expo-file-system-interface',
-  'expo-font',
-  'expo-font-interface',
-  'expo-gl',
-  'expo-gl-cpp',
-  'expo-google-sign-in',
-  'expo-image-loader-interface',
-  'expo-local-authentication',
-  'expo-location',
-  'expo-localization',
-  'expo-media-library',
-  'expo-payments-stripe',
-  'expo-permissions',
-  'expo-permissions-interface',
-  'expo-print',
-  'expo-react-native-adapter',
-  'expo-sensors',
-  'expo-sensors-interface',
-  'expo-sms',
-].forEach({ moduleName -> includeUniversalModule(moduleName) })
+    modulesPaths: ['../../packages'],
+    target: 'react-native',
+    exclude: [
+        'expo-module-template',
+// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `et android-build-packages`
+// section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
+        'expo-bluetooth',
+        'expo-in-app-purchases',
+        'expo-updates',
+// FLAG_END_REMOVE__UPDATE_EXPOKIT
+    ]
+]
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
+)

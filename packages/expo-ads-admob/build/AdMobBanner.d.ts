@@ -1,5 +1,5 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
+import * as React from 'react';
 import { View } from 'react-native';
 declare type PropsType = React.ComponentProps<typeof View> & {
     /**
@@ -25,6 +25,20 @@ declare type PropsType = React.ComponentProps<typeof View> & {
      */
     testDeviceID?: string;
     /**
+     * Additional request params added to underlying request for the ad.
+     */
+    additionalRequestParams?: {
+        [key: string]: string;
+    };
+    /**
+     * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
+     * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
+     * https://developers.google.com/admob/ios/eu-consent#forward_consent_to_the_google_mobile_ads_sdk
+     * and
+     * https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
+     */
+    servePersonalizedAds?: boolean;
+    /**
      * AdMob iOS library events
      */
     onAdViewDidReceiveAd?: () => void;
@@ -42,53 +56,64 @@ declare type StateType = {
 };
 export default class AdMobBanner extends React.Component<PropsType, StateType> {
     static propTypes: {
-        hitSlop: PropTypes.Validator<import("react-native").Insets | undefined>;
-        onLayout: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined>;
-        pointerEvents: PropTypes.Validator<"box-none" | "none" | "box-only" | "auto" | undefined>;
-        removeClippedSubviews: PropTypes.Validator<boolean | undefined>;
-        style: PropTypes.Validator<import("react-native").StyleProp<import("react-native").ViewStyle>>;
-        testID: PropTypes.Validator<string | undefined>;
-        collapsable: PropTypes.Validator<boolean | undefined>;
-        needsOffscreenAlphaCompositing: PropTypes.Validator<boolean | undefined>;
-        renderToHardwareTextureAndroid: PropTypes.Validator<boolean | undefined>;
-        accessibilityViewIsModal: PropTypes.Validator<boolean | undefined>;
-        accessibilityActions: PropTypes.Validator<string[] | undefined>;
-        onAccessibilityAction: PropTypes.Validator<(() => void) | undefined>;
-        shouldRasterizeIOS: PropTypes.Validator<boolean | undefined>;
-        onStartShouldSetResponder: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined>;
-        onMoveShouldSetResponder: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined>;
-        onResponderEnd: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onResponderGrant: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onResponderReject: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onResponderMove: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onResponderRelease: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onResponderStart: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onResponderTerminationRequest: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined>;
-        onResponderTerminate: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onStartShouldSetResponderCapture: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined>;
-        onMoveShouldSetResponderCapture: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined>;
-        onTouchStart: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onTouchMove: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onTouchEnd: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onTouchCancel: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        onTouchEndCapture: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined>;
-        accessible: PropTypes.Validator<boolean | undefined>;
-        accessibilityLabel: PropTypes.Validator<string | undefined>;
-        accessibilityRole: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined>;
-        accessibilityStates: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined>;
-        accessibilityHint: PropTypes.Validator<string | undefined>;
-        accessibilityComponentType: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined>;
-        accessibilityLiveRegion: PropTypes.Validator<"none" | "polite" | "assertive" | undefined>;
-        importantForAccessibility: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined>;
-        accessibilityElementsHidden: PropTypes.Validator<boolean | undefined>;
-        accessibilityTraits: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined>;
-        onAccessibilityTap: PropTypes.Validator<(() => void) | undefined>;
-        onMagicTap: PropTypes.Validator<(() => void) | undefined>;
-        accessibilityIgnoresInvertColors: PropTypes.Validator<boolean | undefined>;
+        hitSlop?: PropTypes.Validator<import("react-native").Insets | undefined> | undefined;
+        onLayout?: PropTypes.Validator<((event: import("react-native").LayoutChangeEvent) => void) | undefined> | undefined;
+        pointerEvents?: PropTypes.Validator<"box-none" | "none" | "box-only" | "auto" | undefined> | undefined;
+        removeClippedSubviews?: PropTypes.Validator<boolean | undefined> | undefined;
+        style?: PropTypes.Validator<import("react-native").StyleProp<import("react-native").ViewStyle>> | undefined;
+        testID?: PropTypes.Validator<string | undefined> | undefined;
+        nativeID?: PropTypes.Validator<string | undefined> | undefined;
+        collapsable?: PropTypes.Validator<boolean | undefined> | undefined;
+        needsOffscreenAlphaCompositing?: PropTypes.Validator<boolean | undefined> | undefined;
+        renderToHardwareTextureAndroid?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
+        shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
+        isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
+        hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
+        tvParallaxProperties?: PropTypes.Validator<import("react-native").TVParallaxProperties | undefined> | undefined;
+        tvParallaxShiftDistanceX?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxShiftDistanceY?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxTiltAngle?: PropTypes.Validator<number | undefined> | undefined;
+        tvParallaxMagnification?: PropTypes.Validator<number | undefined> | undefined;
+        onStartShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
+        onMoveShouldSetResponder?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
+        onResponderEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onResponderGrant?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onResponderReject?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onResponderMove?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onResponderRelease?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onResponderStart?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onResponderTerminationRequest?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
+        onResponderTerminate?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onStartShouldSetResponderCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
+        onMoveShouldSetResponderCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => boolean) | undefined> | undefined;
+        onTouchStart?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onTouchMove?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onTouchEnd?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onTouchCancel?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
+        accessible?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityRole?: PropTypes.Validator<"button" | "header" | "link" | "menu" | "menuitem" | "summary" | "image" | "switch" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | "alert" | "checkbox" | "combobox" | "menubar" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
+        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
+        accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
+        accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
+        accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
+        importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
+        accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
+        onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
+        accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
         bannerSize: PropTypes.Requireable<string>;
         adUnitID: PropTypes.Requireable<string>;
         testDeviceID: PropTypes.Requireable<string>;
+        servePersonalizedAds: PropTypes.Requireable<boolean>;
         onAdViewDidReceiveAd: PropTypes.Requireable<(...args: any[]) => any>;
+        additionalRequestParams: PropTypes.Requireable<object>;
         onDidFailToReceiveAdWithError: PropTypes.Requireable<(...args: any[]) => any>;
         onAdViewWillPresentScreen: PropTypes.Requireable<(...args: any[]) => any>;
         onAdViewWillDismissScreen: PropTypes.Requireable<(...args: any[]) => any>;

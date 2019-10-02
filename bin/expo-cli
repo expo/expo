@@ -1,0 +1,2 @@
+#! /usr/bin/env bash
+exec yarn run expo-cli "$@"

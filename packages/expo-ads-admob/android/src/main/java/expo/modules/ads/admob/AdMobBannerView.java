@@ -2,22 +2,24 @@ package expo.modules.ads.admob;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
-import expo.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class AdMobBannerView extends FrameLayout {
   private String testDeviceID = null;
 
   private EventEmitter mEventEmitter;
   private String mSizeString;
+  private Bundle mAdditionalRequestParams;
 
   public AdMobBannerView(@NonNull Context context, EventEmitter eventEmitter) {
     super(context);
@@ -123,14 +125,23 @@ public class AdMobBannerView extends FrameLayout {
     loadAd(newAdView);
   }
 
+  public void setAdditionalRequestParams(final Bundle additionalRequestParams) {
+    if (!additionalRequestParams.equals(mAdditionalRequestParams)) {
+      mAdditionalRequestParams = additionalRequestParams;
+      loadAd((AdView) getChildAt(0));
+    }
+  }
+
   public void setPropTestDeviceID(final String testDeviceID) {
     this.testDeviceID = testDeviceID;
   }
 
   private void loadAd(final AdView adView) {
-    if (adView.getAdSize() != null && adView.getAdUnitId() != null) {
-      AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-      if (testDeviceID != null){
+    if (adView.getAdSize() != null && adView.getAdUnitId() != null && mAdditionalRequestParams != null) {
+      AdRequest.Builder adRequestBuilder =
+          new AdRequest.Builder()
+              .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams);
+      if (testDeviceID != null) {
         if (testDeviceID.equals("EMULATOR")) {
           adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         } else {

@@ -1,0 +1,4 @@
+{
+  "name": "expo-keep-awake",
+  "platforms": ["ios", "android"]
+}

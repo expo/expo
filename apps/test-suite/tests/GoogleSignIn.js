@@ -1,7 +1,6 @@
-'use strict';
-import { GoogleSignIn } from 'expo-google-sign-in';
-import { Localization } from 'expo-localization';
-import { Platform } from 'expo-core';
+import * as Localization from 'expo-localization';
+import * as GoogleSignIn from 'expo-google-sign-in';
+import { Platform } from '@unimodules/core';
 import { Image } from 'react-native';
 export const name = 'GoogleSignIn';
 /*
@@ -12,10 +11,12 @@ const accountName = 'bacon@expo.io'; // undefined;
 const config = {
   language: Localization.locale,
   /*
-    [iOS]: Only this clientId works in the Expo Client. 
+    [iOS]: Only this clientId works in the Expo Client.
   */
   clientId: '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
 };
+
+GoogleSignIn.allowInClient();
 
 const longerTimeout = 10000;
 export async function test({
@@ -70,7 +71,7 @@ export async function test({
       if (type === 'cancel') {
         expect(user).toBe(null);
       } else if (type === 'success') {
-        expect(user instanceof GoogleSignIn.User).toBe(true);
+        expect(user instanceof GoogleSignIn.GoogleUser).toBe(true);
       }
 
       if (expectedResult) {
@@ -84,7 +85,7 @@ export async function test({
     async function ensureAuthenticationAsync() {
       // const isSignedIn = await GoogleSignIn.isSignedInAsync();
       const user = await GoogleSignIn.signInSilentlyAsync();
-      if (user instanceof GoogleSignIn.User) {
+      if (user instanceof GoogleSignIn.GoogleUser) {
         return user;
       }
       // Give the UI some time to animate.
@@ -122,8 +123,8 @@ export async function test({
        */
       it(`Reauthenticate account`, async () => {
         await ensureAuthenticationAsync();
-        const accountName = GoogleSignIn.currentUser.email;
-        await signInWithConfigAsync({ accountName });
+        const user = await GoogleSignIn.getCurrentUserAsync();
+        await signInWithConfigAsync({ accountName: user.email });
       });
 
       it(`Reauthenticate account that has been disconnected ${accountName}`, async () => {
@@ -136,7 +137,7 @@ export async function test({
       /*
        * Cannot test on iOS
        * Expect: You should see no change from the default sign-in.
-       * 
+       *
        * > Maybe one day Google with throw an error if an account doesn't exist, we would want to test that.
        */
       it(`Attempt to sign-in with an account that doesn't exist.`, async () => {
@@ -151,9 +152,9 @@ export async function test({
 
       if (Platform.OS === 'ios') {
         /*
-        * Cannot test
-        * Expect: You should see the language be french. If your default language is french, then change the language prop to something else. ex: en-US
-        */
+         * Cannot test
+         * Expect: You should see the language be french. If your default language is french, then change the language prop to something else. ex: en-US
+         */
         it(`Sign-in with a different language.`, async () => {
           await signInWithConfigAsync({ language: 'fr' });
         });
@@ -161,10 +162,10 @@ export async function test({
     });
 
     describe('GoogleSignIn user', () => {
-      it('GoogleSignIn.currentUser & getCurrentUserAsync() returns a user when signed-in, and null when signed-out', async () => {
+      it('GoogleSignIn.getCurrentUser() & getCurrentUserAsync() returns a user when signed-in, and null when signed-out', async () => {
         await GoogleSignIn.signOutAsync();
-        expect(GoogleSignIn.currentUser).toBeDefined();
-        expect(GoogleSignIn.currentUser).toBe(null);
+        expect(GoogleSignIn.getCurrentUser()).toBeDefined();
+        expect(GoogleSignIn.getCurrentUser()).toBe(null);
 
         const invalidUser = await GoogleSignIn.getCurrentUserAsync();
         expect(invalidUser).toBeDefined();
@@ -172,12 +173,12 @@ export async function test({
 
         await ensureAuthenticationAsync();
 
-        expect(GoogleSignIn.currentUser).toBeDefined();
-        expect(GoogleSignIn.currentUser instanceof GoogleSignIn.User).toBe(true);
+        expect(GoogleSignIn.getCurrentUser()).toBeDefined();
+        expect(GoogleSignIn.getCurrentUser() instanceof GoogleSignIn.GoogleUser).toBe(true);
 
         const validUser = await GoogleSignIn.getCurrentUserAsync();
         expect(validUser).toBeDefined();
-        expect(validUser instanceof GoogleSignIn.User).toBe(true);
+        expect(validUser instanceof GoogleSignIn.GoogleUser).toBe(true);
       });
 
       it('GoogleSignIn.getCurrentUserAsync() returns a user when signed-in, and null when signed-out', async () => {
@@ -188,21 +189,21 @@ export async function test({
         await ensureAuthenticationAsync();
         const validUser = await GoogleSignIn.getCurrentUserAsync();
         expect(validUser).toBeDefined();
-        expect(validUser instanceof GoogleSignIn.User).toBe(true);
+        expect(validUser instanceof GoogleSignIn.GoogleUser).toBe(true);
       });
 
-      xit(`GoogleSignIn.currentUser.refreshAuth()`, async () => {
+      xit(`GoogleSignIn.getCurrentUser().refreshAuth()`, async () => {
         await ensureAuthenticationAsync();
 
-        const { auth } = GoogleSignIn.currentUser;
+        const { auth } = GoogleSignIn.getCurrentUser();
         console.log({ auth });
-        const nextAuth = await GoogleSignIn.currentUser.refreshAuth();
+        const nextAuth = await GoogleSignIn.getCurrentUser().refreshAuth();
         console.log({ nextAuth });
       });
 
-      xit(`GoogleSignIn.currentUser.clearCache()`, async () => {
+      xit(`GoogleSignIn.getCurrentUser().clearCache()`, async () => {
         await ensureAuthenticationAsync();
-        const nextAuth = await GoogleSignIn.currentUser.clearCache();
+        const nextAuth = await GoogleSignIn.getCurrentUser().clearCache();
         console.log({ nextAuth });
       });
     });
@@ -214,7 +215,7 @@ export async function test({
         expect(user).toBe(null);
         await ensureAuthenticationAsync();
         let user = await GoogleSignIn.signInSilentlyAsync();
-        expect(user instanceof GoogleSignIn.User).toBe(true);
+        expect(user instanceof GoogleSignIn.GoogleUser).toBe(true);
       });
     });
 
@@ -242,9 +243,9 @@ export async function test({
         });
 
         /*
-       * This function can sometimes be wrong if you go too far away from 128. 
-       * Google will also not return an image passed the max original image size.
-       */
+         * This function can sometimes be wrong if you go too far away from 128.
+         * Google will also not return an image passed the max original image size.
+         */
         const customImageSize = 64;
         it(`custom image size is \`${customImageSize}\``, async () => {
           await ensureAuthenticationAsync();

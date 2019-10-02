@@ -7,16 +7,15 @@ import android.hardware.SensorEventListener2;
 import android.os.Bundle;
 import android.util.Log;
 
-import expo.core.ExportedModule;
-import expo.core.ModuleRegistry;
-import expo.core.interfaces.LifecycleEventListener;
-import expo.core.interfaces.ModuleRegistryConsumer;
-import expo.core.interfaces.services.EventEmitter;
-import expo.core.interfaces.services.UIManager;
-import expo.interfaces.sensors.SensorService;
-import expo.interfaces.sensors.SensorServiceSubscription;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.LifecycleEventListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.sensors.SensorService;
+import org.unimodules.interfaces.sensors.SensorServiceSubscription;
 
-public abstract class BaseSensorModule extends ExportedModule implements SensorEventListener2, ModuleRegistryConsumer, LifecycleEventListener {
+public abstract class BaseSensorModule extends ExportedModule implements SensorEventListener2, LifecycleEventListener {
   private SensorServiceSubscription mSensorServiceSubscription;
   private ModuleRegistry mModuleRegistry;
   private boolean mIsObserving = false;
@@ -34,7 +33,7 @@ public abstract class BaseSensorModule extends ExportedModule implements SensorE
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     // Unregister from old UIManager
     if (mModuleRegistry != null && mModuleRegistry.getModule(UIManager.class) != null) {
       mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);

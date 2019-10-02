@@ -1,0 +1,4 @@
+{
+  "name": "expo-haptics",
+  "platforms": ["ios", "android"]
+}

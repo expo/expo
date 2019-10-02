@@ -1,0 +1,1 @@
+../../../../../packages/@unimodules/core/ios/UMCore/Protocols/UMEventEmitterService.h

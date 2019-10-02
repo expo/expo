@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXPermissions/EXCameraPermissionRequester.h>
-#import <EXCore/EXDefines.h>
+#import <UMCore/UMDefines.h>
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -21,7 +21,7 @@
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!(cameraUsageDescription && microphoneUsageDescription)) {
-    EXFatal(EXErrorWithMessage(@"This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these keys to your bundle's Info.plist."));
+    UMFatal(UMErrorWithMessage(@"This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these keys to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
     systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
@@ -44,7 +44,7 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   __weak EXCameraPermissionRequester *weakSelf = self;
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {

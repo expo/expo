@@ -5,6 +5,8 @@
 //  Created by Gil Birman on 9/2/16.
 //
 
+#ifdef HAVE_GOOGLE_MAPS
+
 #import "AIRGoogleMapMarker.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import <React/RCTImageLoader.h>
@@ -115,9 +117,9 @@ CGRect unionRect(CGRect a, CGRect b) {
 
 - (void)redraw {
   if (!_realMarker.iconView) return;
-
+  
   BOOL oldValue = _realMarker.tracksViewChanges;
-
+  
   if (oldValue == YES)
   {
     // Immediate refresh, like right now. Not waiting for next frame.
@@ -147,13 +149,52 @@ CGRect unionRect(CGRect a, CGRect b) {
   return nil;
 }
 
-- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker {
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker point:(CGPoint)point frame:(CGRect)frame {
   if (self.calloutView && self.calloutView.onPress) {
-    id event = @{@"action": @"marker-overlay-press",
-                 @"id": self.identifier ?: @"unknown",
-                 };
+      //todo: why not 'callout-press' ?
+    id event = @{
+               @"action": @"marker-overlay-press",
+               @"id": self.identifier ?: @"unknown",
+               @"point": @{
+                   @"x": @(point.x),
+                   @"y": @(point.y),
+                   },
+               @"frame": @{
+                   @"x": @(frame.origin.x),
+                   @"y": @(frame.origin.y),
+                   @"width": @(frame.size.width),
+                   @"height": @(frame.size.height),
+                   }
+               };
     self.calloutView.onPress(event);
   }
+}
+
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker {
+    [self didTapInfoWindowOfMarker:marker point:CGPointMake(-1, -1) frame:CGRectZero];
+}
+
+- (void)didTapInfoWindowOfMarker:(AIRGMSMarker *)marker subview:(AIRGoogleMapCalloutSubview*)subview point:(CGPoint)point frame:(CGRect)frame {
+    if (subview && subview.onPress) {
+        //todo: why not 'callout-inside-press' ?
+        id event = @{
+                   @"action": @"marker-inside-overlay-press",
+                   @"id": self.identifier ?: @"unknown",
+                   @"point": @{
+                       @"x": @(point.x),
+                       @"y": @(point.y),
+                       },
+                   @"frame": @{
+                       @"x": @(frame.origin.x),
+                       @"y": @(frame.origin.y),
+                       @"width": @(frame.size.width),
+                       @"height": @(frame.size.height),
+                       }
+                   };
+        subview.onPress(event);
+    } else {
+        [self didTapInfoWindowOfMarker:marker point:point frame:frame];
+    }
 }
 
 - (void)didBeginDraggingMarker:(AIRGMSMarker *)marker {
@@ -223,7 +264,7 @@ CGRect unionRect(CGRect a, CGRect b) {
   }
 
   if (!_iconImageView) {
-    // prevent glitch with marker (cf. https://github.com/airbnb/react-native-maps/issues/738)
+    // prevent glitch with marker (cf. https://github.com/react-native-community/react-native-maps/issues/738)
     UIImageView *empyImageView = [[UIImageView alloc] init];
     _iconImageView = empyImageView;
     [self iconViewInsertSubview:_iconImageView atIndex:0];
@@ -274,6 +315,34 @@ CGRect unionRect(CGRect a, CGRect b) {
                                                                    [self iconViewInsertSubview:imageView atIndex:0];
                                                                  });
                                                                }];
+}
+
+- (void)setIconSrc:(NSString *)iconSrc
+{
+  _iconSrc = iconSrc;
+
+  if (_reloadImageCancellationBlock) {
+    _reloadImageCancellationBlock();
+    _reloadImageCancellationBlock = nil;
+  }
+
+  _reloadImageCancellationBlock =
+  [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_iconSrc]
+                                          size:self.bounds.size
+                                         scale:RCTScreenScale()
+                                       clipped:YES
+                                    resizeMode:RCTResizeModeCenter
+                                 progressBlock:nil
+                              partialLoadBlock:nil
+                               completionBlock:^(NSError *error, UIImage *image) {
+                                 if (error) {
+                                   // TODO(lmr): do something with the error?
+                                   NSLog(@"%@", error);
+                                 }
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                   _realMarker.icon = image;
+                                 });
+                               }];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -339,3 +408,5 @@ CGRect unionRect(CGRect a, CGRect b) {
 }
 
 @end
+
+#endif

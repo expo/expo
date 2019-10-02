@@ -8,11 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <GoogleMobileVision/GoogleMobileVision.h>
-#import <GoogleMVDataOutput/GoogleMVDataOutput.h>
-#import <EXFaceDetectorInterface/EXFaceDetectorManager.h>
+#import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 
-@interface EXFaceDetectorManager : NSObject <EXFaceDetectorManager>
+@interface EXFaceDetectorManager : NSObject <UMFaceDetectorManager>
 
 - (void)setOnFacesDetected:(void (^)(NSArray<NSDictionary *> *))onFacesDetected;
 
@@ -20,6 +18,7 @@
 - (void)updateSettings:(NSDictionary *)settings;
 
 - (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
+- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL)mirrored;
 - (void)stopFaceDetection;
 
 @end

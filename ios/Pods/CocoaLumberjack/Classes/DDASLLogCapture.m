@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2016, Deusty, LLC
+// Copyright (c) 2010-2019, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -20,7 +20,7 @@
     #define DD_LEGACY_MACROS 0
 #endif
 
-#import "DDLog.h"
+#if !TARGET_OS_WATCH
 
 #include <asl.h>
 #include <notify.h>
@@ -30,39 +30,7 @@
 static BOOL _cancel = YES;
 static DDLogLevel _captureLevel = DDLogLevelVerbose;
 
-#ifdef __IPHONE_8_0
-    #define DDASL_IOS_PIVOT_VERSION __IPHONE_8_0
-#endif
-#ifdef __MAC_10_10
-    #define DDASL_OSX_PIVOT_VERSION __MAC_10_10
-#endif
-
 @implementation DDASLLogCapture
-
-static aslmsg (*dd_asl_next)(aslresponse obj);
-static void (*dd_asl_release)(aslresponse obj);
-
-+ (void)initialize
-{
-    #if (defined(DDASL_IOS_PIVOT_VERSION) && __IPHONE_OS_VERSION_MAX_ALLOWED >= DDASL_IOS_PIVOT_VERSION) || (defined(DDASL_OSX_PIVOT_VERSION) && __MAC_OS_X_VERSION_MAX_ALLOWED >= DDASL_OSX_PIVOT_VERSION)
-        #if __IPHONE_OS_VERSION_MIN_REQUIRED < DDASL_IOS_PIVOT_VERSION || __MAC_OS_X_VERSION_MIN_REQUIRED < DDASL_OSX_PIVOT_VERSION
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-                // Building on falsely advertised SDK, targeting deprecated API
-                dd_asl_next    = &aslresponse_next;
-                dd_asl_release = &aslresponse_free;
-            #pragma GCC diagnostic pop
-        #else
-            // Building on lastest, correct SDK, targeting latest API
-            dd_asl_next    = &asl_next;
-            dd_asl_release = &asl_release;
-        #endif
-    #else
-        // Building on old SDKs, targeting deprecated API
-        dd_asl_next    = &aslresponse_next;
-        dd_asl_release = &aslresponse_free;
-    #endif
-}
 
 + (void)start {
     // Ignore subsequent calls
@@ -99,10 +67,10 @@ static void (*dd_asl_release)(aslresponse obj);
     // Don't retrieve logs from our own DDASLLogger
     asl_set_query(query, kDDASLKeyDDLog, kDDASLDDLogValue, ASL_QUERY_OP_NOT_EQUAL);
     
-#if !TARGET_OS_IPHONE || TARGET_SIMULATOR
+#if !TARGET_OS_IPHONE || (defined(TARGET_SIMULATOR) && TARGET_SIMULATOR)
     int processId = [[NSProcessInfo processInfo] processIdentifier];
     char pid[16];
-    sprintf(pid, "%d", processId);
+    snprintf(pid, sizeof(pid), "%d", processId);
     asl_set_query(query, ASL_KEY_PID, pid, ASL_QUERY_OP_EQUAL | ASL_QUERY_OP_NUMERIC);
 #endif
 }
@@ -112,7 +80,7 @@ static void (*dd_asl_release)(aslresponse obj);
     if ( messageCString == NULL )
         return;
 
-    int flag;
+    DDLogFlag flag;
     BOOL async;
 
     const char* levelCString = asl_get(msg, ASL_KEY_LEVEL);
@@ -149,7 +117,7 @@ static void (*dd_asl_release)(aslresponse obj);
                                                                flag:flag
                                                             context:0
                                                                file:@"DDASLLogCapture"
-                                                           function:0
+                                                           function:nil
                                                                line:0
                                                                 tag:nil
                                                             options:0
@@ -171,7 +139,7 @@ static void (*dd_asl_release)(aslresponse obj);
             .tv_sec = 0
         };
         gettimeofday(&timeval, NULL);
-        unsigned long long startTime = timeval.tv_sec;
+        unsigned long long startTime = (unsigned long long)timeval.tv_sec;
         __block unsigned long long lastSeenID = 0;
 
         /*
@@ -207,14 +175,14 @@ static void (*dd_asl_release)(aslresponse obj);
                 aslmsg msg;
                 aslresponse response = asl_search(NULL, query);
                 
-                while ((msg = dd_asl_next(response)))
+                while ((msg = asl_next(response)))
                 {
                     [self aslMessageReceived:msg];
 
                     // Keep track of which messages we've seen.
-                    lastSeenID = atoll(asl_get(msg, ASL_KEY_MSG_ID));
+                    lastSeenID = (unsigned long long)atoll(asl_get(msg, ASL_KEY_MSG_ID));
                 }
-                dd_asl_release(response);
+                asl_release(response);
                 asl_free(query);
 
                 if (_cancel) {
@@ -228,3 +196,5 @@ static void (*dd_asl_release)(aslresponse obj);
 }
 
 @end
+
+#endif

@@ -27,10 +27,11 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
-import expo.core.ModuleRegistry;
-import expo.core.Promise;
-import expo.core.interfaces.JavaScriptContextProvider;
-import expo.core.interfaces.services.UIManager;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.JavaScriptContextProvider;
+import org.unimodules.core.interfaces.RuntimeEnvironmentInterface;
+import org.unimodules.core.interfaces.services.UIManager;
 import expo.modules.gl.utils.FileSystemUtils;
 
 import static android.opengl.GLES30.*;
@@ -69,7 +70,7 @@ public class GLContext {
     mEventQueue.add(r);
   }
 
-  public void initialize(final Context context, SurfaceTexture surfaceTexture, final Runnable runnable) {
+  public void initialize(SurfaceTexture surfaceTexture, final Runnable completionCallback) {
     if (mGLThread != null) {
       return;
     }
@@ -82,17 +83,18 @@ public class GLContext {
     ModuleRegistry moduleRegistry = mManager.getModuleRegistry();
     final UIManager uiManager = moduleRegistry.getModule(UIManager.class);
     final JavaScriptContextProvider jsContextProvider = moduleRegistry.getModule(JavaScriptContextProvider.class);
+    final RuntimeEnvironmentInterface environment = moduleRegistry.getModule(RuntimeEnvironmentInterface.class);
 
     uiManager.runOnClientCodeQueueThread(new Runnable() {
       @Override
       public void run() {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
-          mEXGLCtxId = EXGLContextCreate(jsContextRef);
+          mEXGLCtxId = shouldUseContextCreateV2(environment) ? EXGLContextCreateV2(jsContextRef) : EXGLContextCreate(jsContextRef);
         }
         EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
-        runnable.run();
+        completionCallback.run();
       }
     });
   }
@@ -346,10 +348,6 @@ public class GLContext {
       deinitEGL();
     }
 
-    public void setSurfaceTexture(SurfaceTexture surfaceTexture) {
-      mSurfaceTexture = surfaceTexture;
-    }
-
     private EGLContext createGLContext(int contextVersion, EGLConfig eglConfig) {
       int[] attribs = {EGL_CONTEXT_CLIENT_VERSION, contextVersion, EGL10.EGL_NONE};
       return mEGL.eglCreateContext(mEGLDisplay, eglConfig, EGL10.EGL_NO_CONTEXT, attribs);
@@ -444,5 +442,18 @@ public class GLContext {
       return ((Double) value).intValue();
     }
     return (Integer) value;
+  }
+
+  private boolean shouldUseContextCreateV2(RuntimeEnvironmentInterface environment) {
+    // As of react-native@0.59.0, JavaScriptContext ref is no longer pointing to a JSC context object,
+    // but to JSCRuntime object implementing JSI interface.
+    // That means, we need to use different EXGLContextCreate (v2) method that knows how to
+    // pick the correct JSC context object. See `EXGL.cpp` from `expo-gl-cpp` for more details.
+
+    if (environment == null || !environment.platformName().equals("React Native")) {
+      return false;
+    }
+    RuntimeEnvironmentInterface.PlatformVersion platformVersion = environment.platformVersion();
+    return platformVersion.major() >= 0 && platformVersion.minor() >= 59;
   }
 }

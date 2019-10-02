@@ -3,16 +3,18 @@
 package host.exp.exponent;
 
 import android.os.Debug;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.core.CrashlyticsListener;
+import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.soloader.SoLoader;
 
 import javax.inject.Inject;
 
+import expo.loaders.provider.AppLoaderProvider;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
@@ -23,6 +25,7 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
+import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.Exponent;
@@ -35,7 +38,6 @@ public abstract class ExpoApplication extends MultiDexApplication {
   // Override me!
   public abstract String gcmSenderId();
   public abstract boolean isDebug();
-  public abstract boolean shouldUseInternetKernel();
 
   private static final String TAG = ExpoApplication.class.getSimpleName();
 
@@ -57,6 +59,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
       KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
     }
 
+    AppLoaderProvider.registerLoader("react-native-experience", HeadlessAppLoader.class);
     KernelProvider.setFactory(new KernelProvider.KernelFactory() {
       @Override
       public KernelInterface create() {
@@ -104,6 +107,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
     }
 
     BranchManager.initialize(this);
+    AudienceNetworkAds.initialize(this);
 
     try {
       // Remove the badge count on weird launchers
@@ -124,5 +128,11 @@ public abstract class ExpoApplication extends MultiDexApplication {
 
     // Add exception handler. This is used by the entire process, so only need to add it here.
     Thread.setDefaultUncaughtExceptionHandler(new ExponentUncaughtExceptionHandler(getApplicationContext()));
+  }
+
+  // we're leaving this stub in here so that if people don't modify their MainApplication to
+  // remove the override of shouldUseInternetKernel() their project will still build without errors
+  public boolean shouldUseInternetKernel() {
+    return !isDebug();
   }
 }

@@ -6,6 +6,7 @@ export default {
   test(value: any): boolean {
     return (
       value &&
+      value instanceof Object &&
       value.hasOwnProperty('tag') &&
       value.hasOwnProperty('key') &&
       value.hasOwnProperty('type')

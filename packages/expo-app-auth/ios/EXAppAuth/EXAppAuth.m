@@ -2,64 +2,51 @@
 
 #import <EXAppAuth/EXAppAuth.h>
 #import <AppAuth/AppAuth.h>
-#import <EXCore/EXUtilitiesInterface.h>
-#import <EXCore/EXUtilities.h>
+#import <UMCore/UMUtilitiesInterface.h>
+#import <UMCore/UMUtilities.h>
 #import <EXAppAuth/EXAppAuth+JSON.h>
+#import <EXAppAuth/EXAppAuthSessionsManager.h>
 
 static NSString *const EXAppAuthError = @"ERR_APP_AUTH";
 
-@interface EXAppAuth() {
-  id<OIDExternalUserAgentSession> session;
-}
+@interface EXAppAuth ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
+@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, weak) id<EXAppAuthSessionsManagerInterface> sessionsManager;
 
 @end
 
 @implementation EXAppAuth
 
-static EXAppAuth *shared = nil;
-
-+ (nonnull instancetype)instance {
-  return shared;
-}
-
-- (id)init {
-  self = [super init];
-  if (self != nil) {
-    shared = self;
-  }
-  return self;
-}
-
 #pragma mark - Expo
 
-EX_EXPORT_MODULE(ExpoAppAuth);
+UM_EXPORT_MODULE(ExpoAppAuth);
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _sessionsManager = [moduleRegistry getSingletonModuleForName:@"AppAuthSessionsManager"];
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
 - (NSDictionary *)constantsToExport
 {
   return @{
-           @"OAuthRedirect": [self _getOAuthRedirect],
-           @"URLSchemes": [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]
+           @"OAuthRedirect": UMNullIfNil([self _getOAuthRedirect]),
+           @"URLSchemes": UMNullIfNil([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]),
            };
 }
 
-EX_EXPORT_METHOD_AS(executeAsync,
+UM_EXPORT_METHOD_AS(executeAsync,
                     executeAsync:(NSDictionary *)options
-                    resolve:(EXPromiseResolveBlock)resolve
-                    reject:(EXPromiseRejectBlock)reject)
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
 {
   BOOL isRefresh = [options[@"isRefresh"] boolValue];
   NSDictionary *serviceConfiguration = options[@"serviceConfiguration"];
@@ -97,20 +84,20 @@ EX_EXPORT_METHOD_AS(executeAsync,
   NSURL *authorizationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"authorizationEndpoint"]];
   NSURL *tokenEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"tokenEndpoint"]];
   NSURL *registrationEndpoint = [NSURL URLWithString:[serviceConfiguration objectForKey:@"registrationEndpoint"]];
-  
+
   OIDServiceConfiguration *configuration =
   [[OIDServiceConfiguration alloc]
    initWithAuthorizationEndpoint:authorizationEndpoint
    tokenEndpoint:tokenEndpoint
    registrationEndpoint:registrationEndpoint];
-  
+
   return configuration;
 }
 
 - (void)_authorizeWithConfiguration:(OIDServiceConfiguration *)configuration
                             options:(NSDictionary *)options
-                            resolve:(EXPromiseResolveBlock)resolve
-                             reject:(EXPromiseRejectBlock)reject
+                            resolve:(UMPromiseResolveBlock)resolve
+                             reject:(UMPromiseRejectBlock)reject
 {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
@@ -123,28 +110,34 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                              redirectURL:redirectURL
                                             responseType:OIDResponseTypeCode
                                     additionalParameters:additionalParameters];
-  
-  [EXUtilities performSynchronouslyOnMainThread:^{
-    __weak typeof(self) weakSelf = self;
-    
+
+  [UMUtilities performSynchronouslyOnMainThread:^{
+    __block id<OIDExternalUserAgentSession> session;
+    __weak id<EXAppAuthSessionsManagerInterface> sessionsManager = self->_sessionsManager;
     OIDAuthStateAuthorizationCallback callback = ^(OIDAuthState *_Nullable authState, NSError *_Nullable error) {
-      typeof(self) strongSelf = weakSelf;
-      if (strongSelf != nil) {
-        // Destroy the current session
-        strongSelf->session = nil;
-      }
+      [sessionsManager unregisterSession:session];
       if (authState) {
         NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:authState.lastTokenResponse request:options];
         resolve(tokenResponse);
       } else {
-        rejectWithError(reject, error);
+        EXrejectWithError(reject, error);
       }
     };
-    
-    UIViewController *presentingViewController = self->_utilities.currentViewController;
-    self->session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
-                                                   presentingViewController:presentingViewController
-                                                                   callback:callback];
+
+    // On iOS < 11 presenting authorization request on currentViewController
+    // resulted in freezed SFSafariViewController.
+    // See issue https://github.com/google/GTMAppAuth/issues/6
+    // See pull request https://github.com/openid/AppAuth-iOS/pull/73
+    UIViewController *presentingViewController;
+    if (@available(iOS 11.0, *)) {
+      presentingViewController = self->_utilities.currentViewController;
+    } else {
+      presentingViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    }
+    session = [OIDAuthState authStateByPresentingAuthorizationRequest:request
+                                             presentingViewController:presentingViewController
+                                                             callback:callback];
+    [self->_sessionsManager registerSession:session];
   }];
 }
 
@@ -152,26 +145,26 @@ EX_EXPORT_METHOD_AS(executeAsync,
 {
   NSDictionary *tokenResponse = [EXAppAuth tokenResponseNativeToJSON:input];
   NSMutableDictionary *output = [NSMutableDictionary dictionaryWithDictionary:tokenResponse];
-  
+
   NSString *refreshToken;
   if (!input.refreshToken) {
     refreshToken = request[@"refreshToken"];
   } else {
-    refreshToken = input.accessToken;
+    refreshToken = input.refreshToken;
   }
-  
-  [output setValue:@"refreshToken" forKey:nullIfEmpty(refreshToken)];
-  
+
+  [output setValue:UMNullIfNil(refreshToken) forKey:@"refreshToken"];
+
   return output;
 }
 
 - (void)_refreshWithConfiguration:(OIDServiceConfiguration *)configuration
                           options:(NSDictionary *)options
-                          resolve:(EXPromiseResolveBlock)resolve
-                           reject:(EXPromiseRejectBlock)reject {
+                          resolve:(UMPromiseResolveBlock)resolve
+                           reject:(UMPromiseRejectBlock)reject {
   NSArray *scopes = options[@"scopes"];
   NSDictionary *additionalParameters = options[@"additionalParameters"];
-  
+
   OIDTokenRequest *tokenRefreshRequest =
   [[OIDTokenRequest alloc] initWithConfiguration:configuration
                                        grantType:@"refresh_token"
@@ -183,13 +176,13 @@ EX_EXPORT_METHOD_AS(executeAsync,
                                     refreshToken:options[@"refreshToken"]
                                     codeVerifier:nil
                             additionalParameters:additionalParameters];
-  
+
   OIDTokenCallback callback = ^(OIDTokenResponse *_Nullable response, NSError *_Nullable error) {
     if (response) {
       NSDictionary *tokenResponse = [EXAppAuth _tokenResponseNativeToJSON:response request:options];
       resolve(tokenResponse);
     } else {
-      rejectWithError(reject, error);
+      EXrejectWithError(reject, error);
     }
   };
   [OIDAuthorizationService performTokenRequest:tokenRefreshRequest
@@ -198,35 +191,29 @@ EX_EXPORT_METHOD_AS(executeAsync,
 
 - (OIDDiscoveryCallback)_getCallback:(NSDictionary *)options
                            isRefresh:(BOOL)isRefresh
-                            resolver:(EXPromiseResolveBlock)resolve
-                            rejecter:(EXPromiseRejectBlock)reject
+                            resolver:(UMPromiseResolveBlock)resolve
+                            rejecter:(UMPromiseRejectBlock)reject
 {
   return ^(OIDServiceConfiguration *_Nullable configuration, NSError *_Nullable error) {
     if (configuration) {
       if (isRefresh) [self _refreshWithConfiguration:configuration options:options resolve:resolve reject:reject];
       else [self _authorizeWithConfiguration:configuration options:options resolve:resolve reject:reject];
     } else {
-      rejectWithError(reject, error);
+      EXrejectWithError(reject, error);
     }
   };
 }
 
-#pragma mark - Public
-
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
-  return [session resumeExternalUserAgentFlowWithURL:url];
-}
-
 #pragma mark - Static
 
-void rejectWithError(EXPromiseRejectBlock reject, NSError *error) {
+// EX prefix for versioning to work smoothly
+void EXrejectWithError(UMPromiseRejectBlock reject, NSError *error) {
   NSString *errorMessage = [NSString stringWithFormat:@"%@: %@", EXAppAuthError, error.localizedDescription];
   if (error.localizedFailureReason != nil && ![error.localizedFailureReason isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Reason: %@", errorMessage, error.localizedFailureReason];
   if (error.localizedRecoverySuggestion != nil && ![error.localizedRecoverySuggestion isEqualToString:@""]) errorMessage = [NSString stringWithFormat:@"%@, Try: %@", errorMessage, error.localizedRecoverySuggestion];
-  
-  NSString *errorCode = [NSString stringWithFormat:@"%ld", error.code];
+
+  NSString *errorCode = [NSString stringWithFormat:@"%ld", (long) error.code];
   reject(errorCode, errorMessage, error);
 }
 
 @end
-
