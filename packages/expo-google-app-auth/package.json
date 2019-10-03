@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.1.1",
-    "babel-preset-expo": "~7.0.0"
+    "babel-preset-expo": "~7.1.0"
   },
   "dependencies": {
     "expo-app-auth": "~7.0.0",

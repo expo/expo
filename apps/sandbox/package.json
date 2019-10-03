@@ -15,7 +15,7 @@
     "react-native": "0.59.8"
   },
   "devDependencies": {
-    "babel-preset-expo": "~7.0.0",
+    "babel-preset-expo": "~7.1.0",
     "expo-yarn-workspaces": "^1.0.0"
   },
   "private": true
