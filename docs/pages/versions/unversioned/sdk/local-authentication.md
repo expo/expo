@@ -49,7 +49,7 @@ Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the 
 #### Arguments
 
 - **options (_object_)** -- An object of options.
-  - **promptMessage (_string_)** -- A message that is shown alongside the TouchID or FaceID prompt. Defaults to `Authenticate`. (**iOS only**)
+  - **promptMessage (_string_)** -- A message that is shown alongside the TouchID or FaceID prompt. (**iOS only**)
   - **fallbackLabel (_string_)** -- Allows to customize the default `Use Passcode` label shown after several failed authentication attempts. Setting this option to an empty string disables fallback to device passcode. (**iOS only**)
 
 #### Returns

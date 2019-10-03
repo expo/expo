@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
-  s.dependency 'FBSDKCoreKit', '~> 5.6.0'
-  s.dependency 'FBSDKLoginKit', '~> 5.6.0'
+
+  s.dependency 'FBSDKCoreKit', '~> 5.5'
+  s.dependency 'FBSDKLoginKit', '~> 5.5'
 end

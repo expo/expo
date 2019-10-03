@@ -47,7 +47,7 @@ export default class Profile extends React.Component {
 
   _isMounted: boolean;
 
-  componentDidMount() {
+  componentWillMount() {
     this._isMounted = true;
   }
 

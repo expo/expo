@@ -17,5 +17,8 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'UMCore'
-  s.dependency 'AppAuth', '~> 1.2'
+  s.dependency 'AppAuth'
+  
 end
+
+  
