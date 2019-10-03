@@ -95,8 +95,7 @@ function countMismatchedWorkspaceDependencies(workspacesInfo) {
 }
 
 if (module === require.main) {
-  let passed = checkWorkspaceDependencies();
-  if (!passed) {
+  if (!checkWorkspaceDependencies()) {
     process.exit(1);
   }
 }
