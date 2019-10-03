@@ -7268,7 +7268,7 @@ CACHE_KEYS:
   UMReactNativeAdapter:
     BUILD_SETTINGS_CHECKSUM:
       UMReactNativeAdapter: ac34031908920d6124c02e0624a30ebe
-    CHECKSUM: 93c2f520a1cdb6ef3058a7b6a95275a804e0923b
+    CHECKSUM: 73625f2e528296fff63a24308821f58f0becc345
     FILES:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.h"
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/Services/UMReactFontManager.m"
@@ -7289,7 +7289,7 @@ CACHE_KEYS:
       - "../../packages/@unimodules/react-native-adapter/ios/UMReactNativeAdapter/UMViewManagerAdapter/UMViewManagerAdapter.m"
     PROJECT_NAME: UMReactNativeAdapter
     SPECS:
-      - UMReactNativeAdapter (4.0.0)
+      - UMReactNativeAdapter (5.0.0-rc.0)
   UMSensorsInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMSensorsInterface: 89828297516fcbd4e5a6281d8707c364

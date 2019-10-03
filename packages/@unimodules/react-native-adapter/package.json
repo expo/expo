@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/react-native-adapter",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "description": "The adapter to use universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
