@@ -16,19 +16,14 @@ export default class BarCodeScreen extends React.Component {
     scannerIsVisible: false,
   };
 
-  _hasOpenedUrl: boolean;
-  _isMounted: boolean;
-
-  componentWillMount() {
-    this._hasOpenedUrl = false;
-
-    setTimeout(() => {
-      this.setState({ scannerIsVisible: true });
-    }, 800);
-  }
+  _hasOpenedUrl = false;
+  _isMounted = false;
 
   componentDidMount() {
     this._isMounted = true;
+    setTimeout(() => {
+      this.setState({ scannerIsVisible: true });
+    }, 800);
   }
 
   componentWillUnmount() {
