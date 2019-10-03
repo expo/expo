@@ -8,48 +8,48 @@
 
 /* Begin PBXBuildFile section */
 		037E12E9ABA820BDD1E81E42FF593DC4 /* GDTTargets.h in Headers */ = {isa = PBXBuildFile; fileRef = FBFC80AF0CAA3A195C975DCF2C69186E /* GDTTargets.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0F0E95CD9FD4D7AD513C593C6168B6EF /* GDTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 626D9B72EFB7D05C4D4CCDD23957C1BE /* GDTPlatform.m */; };
-		1207B438911DC0F73195BEDDCE390A19 /* GDTDataFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = B05C666F5CA9B609AEB19CDD3149A389 /* GDTDataFuture.m */; };
+		126390AE81FFA75A3E46B96B39704F52 /* GDTReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B021706A01BB0C3E49BBD7C299F9D0 /* GDTReachability.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		12B5B4D716BBCF3FA19D7EFA6CA0812D /* GDTUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = A1F4502F644F834A7BF090194B104E51 /* GDTUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1416AADDCCE0B7A3FCCF95C41790C24A /* GDTConsoleLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2794F42B23D4AD48BE364D13C1A0D678 /* GDTConsoleLogger.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		149B569F1597810074F91E6901281AA0 /* GDTReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = AE633BBE40720081B1BEA67DC3924E41 /* GDTReachability.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1619200930CCDFBD77745C4FD62101EA /* GDTTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = 67343B2A6F47DBAD1CC4F23E8857DE8E /* GDTTransport.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1CD2774A4678BF0C1ADBC1C574E02C43 /* GDTEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 728E25992FE6C101A263534652582E83 /* GDTEvent.m */; };
+		16B2A96D37B17F2FCAB5094EE8DDD102 /* GDTStoredEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB016BC0A8CADE2DD605F65C7F6A604 /* GDTStoredEvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		194DA66FFDB35C612EB4BBFD9675A455 /* GDTEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 728E25992FE6C101A263534652582E83 /* GDTEvent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1D83488C6CCB43303ABE15A5EC1F769D /* GoogleDataTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = 646A1D26276D01EFAB33774C92F86D86 /* GoogleDataTransport.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1E7D7E9EE49813EF73FC60FCCBA5FF94 /* GDTClock.m in Sources */ = {isa = PBXBuildFile; fileRef = AADB6A175797DBCDA24C17D227C1F5AD /* GDTClock.m */; };
 		2095802CE1D8BA10BF51B1A2987D3093 /* GDTDataFuture.h in Headers */ = {isa = PBXBuildFile; fileRef = 979AE700814CD9FCB38612C0681B1153 /* GDTDataFuture.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		25C789FFE29AE08A56111FA024912369 /* GDTTransformer_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 7503FF290CF9CC61DD6BD7F3CFA2440B /* GDTTransformer_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2CB83729E62EBF640663F189134CC675 /* GDTStoredEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = D7CD6F7D48E72E4C78B3C62A190FBC1D /* GDTStoredEvent.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		360D77B0010CE910B693C5C5018EFB5B /* GDTUploadPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = A02870D005310A4764C83DEEEBEA5B6E /* GDTUploadPackage.m */; };
 		3E9A3A9D4F2836BCC462AFB891A7E0AD /* GDTReachability_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AFD5B2C0E815A8026A2978922FCCD4B /* GDTReachability_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		42B41F99B2D7A28A9C6865D75B153BF1 /* GDTDataFuture.m in Sources */ = {isa = PBXBuildFile; fileRef = B05C666F5CA9B609AEB19CDD3149A389 /* GDTDataFuture.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4459225BC07DF8D73F810E29ACE1170F /* GDTPlatform.m in Sources */ = {isa = PBXBuildFile; fileRef = 626D9B72EFB7D05C4D4CCDD23957C1BE /* GDTPlatform.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		481E8A925B2CB4CFAC73434A12AB3777 /* GDTAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 959CD788BBF4011787C8F6AA2D8BF362 /* GDTAssert.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		49DF52C772BEFE89E1028CB17745BD3E /* GDTUploadCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A424616771D1DEE315E8018F502ECC /* GDTUploadCoordinator.m */; };
+		4A5B0C3CEE03BE2D450086E1335081B7 /* GDTUploadCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 94A424616771D1DEE315E8018F502ECC /* GDTUploadCoordinator.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4DF616F4537E5E1827CEDE643204E42C /* GoogleDataTransport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 396FFB8C113D2E4690006F3081CE1CE9 /* GoogleDataTransport-dummy.m */; };
 		4E6E41A3525C382851370C41BB50A69A /* GDTPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 80635C70E0CBA99C5D74DAD58C225E37 /* GDTPlatform.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5BD3FCA3212582ED58FDBA560452D488 /* GDTUploadPackage_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 8DD00473C538BD9695472EA06215A306 /* GDTUploadPackage_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6894D07A642F8A4F135BD54B06FAC008 /* GDTConsoleLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 2794F42B23D4AD48BE364D13C1A0D678 /* GDTConsoleLogger.m */; };
+		6E4188F562DFA6907E9406F50459A870 /* GDTStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23AFFB289E726B4DE368BD761F4CC /* GDTStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7409FC53E82F29038D836FF1DEE1730E /* GDTRegistrar.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE82AE22CC5824C4D423C0B79DF6F36 /* GDTRegistrar.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7B21910BCC3FA9B0C0C40AE40BBFACE9 /* GDTRegistrar_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 172A3D79C49DC725BE989047B8C0EDD6 /* GDTRegistrar_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8260C549C4F9B0904E733857E5979AAD /* GDTTransport_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F85D372A1F548733E2623A39B834F6 /* GDTTransport_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		866AC6B6EA586A3FAF9602B3A02F38FE /* GDTTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 19D1081442C0CAFE55CEF082465CCDFA /* GDTTransformer.m */; };
-		8A8187BDFAE10E088FF3FF9B530882E1 /* GDTReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 56B021706A01BB0C3E49BBD7C299F9D0 /* GDTReachability.m */; };
-		8FCB291A0DF16B1B8962A07BAC0E28A4 /* GDTStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23AFFB289E726B4DE368BD761F4CC /* GDTStorage.m */; };
+		842E2AB1A389B58E4A618A03431A631F /* GDTClock.m in Sources */ = {isa = PBXBuildFile; fileRef = AADB6A175797DBCDA24C17D227C1F5AD /* GDTClock.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		913627B2CDA91A8CBE7B4D2AC743765C /* GDTEventDataObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B8525C7341826039CFC3D406B6C85D56 /* GDTEventDataObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		94B0BACCCC204A410E5D220C0F483552 /* GoogleDataTransport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 396FFB8C113D2E4690006F3081CE1CE9 /* GoogleDataTransport-dummy.m */; };
-		9A7D1305CED18424A84B90672247CAE3 /* GDTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 820AD97DF18C8667DD972E0F4F1E9374 /* GDTAssert.m */; };
+		957E2F20AC6F6BF5CB0EA456D97ECBE1 /* GDTAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 820AD97DF18C8667DD972E0F4F1E9374 /* GDTAssert.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9E3A50FBC16918DD473337CC0F611FE7 /* GDTUploadPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D6704BFB940C30F840321C43D3BC478 /* GDTUploadPackage.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A19316B4891F70B3CEE4FA955B19F1E5 /* GDTEvent_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4908C5680BF3DEB6A2CCE881C68D27EB /* GDTEvent_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A57B37F79A76606C96EA3CB62A599B8D /* GDTRegistrar.h in Headers */ = {isa = PBXBuildFile; fileRef = 618B188774363B28E9FD60712A5C2028 /* GDTRegistrar.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A9640958D24275DB10A0C765E3FCD8E8 /* GDTLifecycle.m in Sources */ = {isa = PBXBuildFile; fileRef = E84BC6FF178FEB2FEF5875AF6AC48FA1 /* GDTLifecycle.m */; };
+		A8AE1AC1BF7E02222C9BAA48C0FD097B /* GDTLifecycle.m in Sources */ = {isa = PBXBuildFile; fileRef = E84BC6FF178FEB2FEF5875AF6AC48FA1 /* GDTLifecycle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A98729A7B80C409FE51875F91FA26735 /* GDTTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 19D1081442C0CAFE55CEF082465CCDFA /* GDTTransformer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		ADF74DE8DCAA6D5832B074A583B5A3B7 /* GDTPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 614ED62CE13E22AC84DCA2BD2E3AD53C /* GDTPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AFA4FFFCDDBEF6A76982EF2E0FF40CFC /* GDTStoredEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB016BC0A8CADE2DD605F65C7F6A604 /* GDTStoredEvent.m */; };
 		B0AE95A45600598E5C068F343DE27EE0 /* GDTStorage_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2B398CCA584B0F56F2B4183C7DC1EA32 /* GDTStorage_Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BC45F7E672F6428E60864B6F9B9EE723 /* GDTStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BA23604B47CD28FE7D499FA7CDA59AB /* GDTStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BF15CEFAA206C98FF2F5D57F951DDAEB /* GDTClock.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DF461AC0D813DA6145398188FB4B79F /* GDTClock.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C4F9779FEDFEC36794654901208BB210 /* GDTTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 12170BEEF17D6A40B9678F3E848EF297 /* GDTTransport.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C86F3BEDEF67BD11A28FB45B3D8581AE /* GDTConsoleLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D2842D389512F72E96C4179AF6E549D /* GDTConsoleLogger.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CAFB22438DAB65AFE3C16972B9BADB9C /* GDTLifecycle.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B06563B30EA83DD54B60F8847E4D1D4 /* GDTLifecycle.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CB99EE2C95573912FB867649A40DB5D1 /* GDTTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 12170BEEF17D6A40B9678F3E848EF297 /* GDTTransport.m */; };
 		CD85E2489BF03E1B833614F0FEE61B6A /* GDTTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 87AF66537E35D99641F3826B8B80F3F7 /* GDTTransformer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D41B0092B1F9B7926732043A73C0B4BE /* GDTRegistrar.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE82AE22CC5824C4D423C0B79DF6F36 /* GDTRegistrar.m */; };
 		ECF33CB51906C8CF35343FD8489A0192 /* GDTEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 35E14D3D8E4C5F7900754D6839811FD2 /* GDTEvent.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		EE85FD9FCF463AD9E211341CD06F7EE8 /* GDTEventTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = EFD9A5DE08654ED024EDF9B5FA6B62DA /* GDTEventTransformer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F830FDDAB17A78D50DE23B45C66B521A /* GDTUploadPackage.m in Sources */ = {isa = PBXBuildFile; fileRef = A02870D005310A4764C83DEEEBEA5B6E /* GDTUploadPackage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FB3C60DD41B87534AB7AAB1DD3D02774 /* GDTUploadCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 019FE7BAD8611959D195209C2E204E66 /* GDTUploadCoordinator.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -245,7 +245,7 @@
 			buildConfigurationList = E2809D068FF3398AA1C8238FA747FBE7 /* Build configuration list for PBXNativeTarget "GoogleDataTransport" */;
 			buildPhases = (
 				EE7D859EE5A34DAD5979B648518C9F4E /* Headers */,
-				8512769917233192A613D821FD9A723D /* Sources */,
+				EC8B828AF8C89ECD0C54B99CE40AFFE2 /* Sources */,
 				F8FB07B8DD7C2D02B57691E42A59F488 /* Frameworks */,
 			);
 			buildRules = (
@@ -284,26 +284,26 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8512769917233192A613D821FD9A723D /* Sources */ = {
+		EC8B828AF8C89ECD0C54B99CE40AFFE2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A7D1305CED18424A84B90672247CAE3 /* GDTAssert.m in Sources */,
-				1E7D7E9EE49813EF73FC60FCCBA5FF94 /* GDTClock.m in Sources */,
-				6894D07A642F8A4F135BD54B06FAC008 /* GDTConsoleLogger.m in Sources */,
-				1207B438911DC0F73195BEDDCE390A19 /* GDTDataFuture.m in Sources */,
-				1CD2774A4678BF0C1ADBC1C574E02C43 /* GDTEvent.m in Sources */,
-				A9640958D24275DB10A0C765E3FCD8E8 /* GDTLifecycle.m in Sources */,
-				0F0E95CD9FD4D7AD513C593C6168B6EF /* GDTPlatform.m in Sources */,
-				8A8187BDFAE10E088FF3FF9B530882E1 /* GDTReachability.m in Sources */,
-				D41B0092B1F9B7926732043A73C0B4BE /* GDTRegistrar.m in Sources */,
-				8FCB291A0DF16B1B8962A07BAC0E28A4 /* GDTStorage.m in Sources */,
-				AFA4FFFCDDBEF6A76982EF2E0FF40CFC /* GDTStoredEvent.m in Sources */,
-				866AC6B6EA586A3FAF9602B3A02F38FE /* GDTTransformer.m in Sources */,
-				CB99EE2C95573912FB867649A40DB5D1 /* GDTTransport.m in Sources */,
-				49DF52C772BEFE89E1028CB17745BD3E /* GDTUploadCoordinator.m in Sources */,
-				360D77B0010CE910B693C5C5018EFB5B /* GDTUploadPackage.m in Sources */,
-				94B0BACCCC204A410E5D220C0F483552 /* GoogleDataTransport-dummy.m in Sources */,
+				957E2F20AC6F6BF5CB0EA456D97ECBE1 /* GDTAssert.m in Sources */,
+				842E2AB1A389B58E4A618A03431A631F /* GDTClock.m in Sources */,
+				1416AADDCCE0B7A3FCCF95C41790C24A /* GDTConsoleLogger.m in Sources */,
+				42B41F99B2D7A28A9C6865D75B153BF1 /* GDTDataFuture.m in Sources */,
+				194DA66FFDB35C612EB4BBFD9675A455 /* GDTEvent.m in Sources */,
+				A8AE1AC1BF7E02222C9BAA48C0FD097B /* GDTLifecycle.m in Sources */,
+				4459225BC07DF8D73F810E29ACE1170F /* GDTPlatform.m in Sources */,
+				126390AE81FFA75A3E46B96B39704F52 /* GDTReachability.m in Sources */,
+				7409FC53E82F29038D836FF1DEE1730E /* GDTRegistrar.m in Sources */,
+				6E4188F562DFA6907E9406F50459A870 /* GDTStorage.m in Sources */,
+				16B2A96D37B17F2FCAB5094EE8DDD102 /* GDTStoredEvent.m in Sources */,
+				A98729A7B80C409FE51875F91FA26735 /* GDTTransformer.m in Sources */,
+				C4F9779FEDFEC36794654901208BB210 /* GDTTransport.m in Sources */,
+				4A5B0C3CEE03BE2D450086E1335081B7 /* GDTUploadCoordinator.m in Sources */,
+				F830FDDAB17A78D50DE23B45C66B521A /* GDTUploadPackage.m in Sources */,
+				4DF616F4537E5E1827CEDE643204E42C /* GoogleDataTransport-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		02B5C8158A1A101307739F0BB5E63185 /* GTMMIMEDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = BDA9B969B5EA51EC7E5188DA0AD14310 /* GTMMIMEDocument.m */; };
+		036F3E03DB19AD2161C6F5ECFD2B1476 /* GTMSessionFetcherLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = E698526963C370F23478031BDDC76EB7 /* GTMSessionFetcherLogging.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		04AFC15649869144BA746F25555066E5 /* GTMGatherInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 40F9EB851A60335B321923BF3150F24F /* GTMGatherInputStream.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1EE8D921886D127CF90B27820BC7D87A /* GTMSessionFetcherService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C3B79586E605817367DCC7F943170DF /* GTMSessionFetcherService.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		267902E686D10AF73711A5F2816A06C7 /* GTMSessionFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E6223290C89721F2A1B01C96F48F841 /* GTMSessionFetcher.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		413414B28E0D02529D3B9AB207DA0467 /* GTMSessionFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 11673A3018F0543B90A4A122E91FD554 /* GTMSessionFetcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		52E332AA53A2722899C4DD6C5BEBAB59 /* GTMSessionUploadFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C8584E4B2E6A37FFCEC9CDBD93602794 /* GTMSessionUploadFetcher.m */; };
+		4E21CF9EC3F43219E0BDC633F4287ED3 /* GTMSessionFetcher-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 43672448770EF4ADB468E49E5B72E151 /* GTMSessionFetcher-dummy.m */; };
+		52D9655B53B09C8BAA7D23785E6FA2EB /* GTMGatherInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 2337AA35EAF62B32FD89ACAF6FDFB30B /* GTMGatherInputStream.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5816A64CD1DFC6D0B961621467A7EACA /* GTMMIMEDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = BDA9B969B5EA51EC7E5188DA0AD14310 /* GTMMIMEDocument.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		854E2E309D529887E88605FCCF1108B1 /* GTMReadMonitorInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 3194FCF8CC7C5CFA26982E208FE28121 /* GTMReadMonitorInputStream.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		86C075B843A39C13CB6AD9365CCD27AF /* GTMMIMEDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 02CA1847D452C23C0C25E48238FB08AE /* GTMMIMEDocument.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		936AE0FA840AEC7BCC150B73C5F839C9 /* GTMSessionFetcherLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = EDDA77D750D3508ABD68752F5FD85D90 /* GTMSessionFetcherLogging.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9B816C19F07082C4F75DA9F05B5E11B6 /* GTMSessionFetcherService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD4B0BBF2FA053C818CB508EB052924 /* GTMSessionFetcherService.m */; };
 		9DA734B3F282FFF0A70A64D857CA3CB4 /* GTMSessionUploadFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 877722D5EEC30F3FDD1E51BD9D1B5834 /* GTMSessionUploadFetcher.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BD06691609F78CA9775AE169C990F1A4 /* GTMSessionFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E6223290C89721F2A1B01C96F48F841 /* GTMSessionFetcher.m */; };
-		BFA8E32A920E707AE14092E86A2FD617 /* GTMSessionFetcher-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 43672448770EF4ADB468E49E5B72E151 /* GTMSessionFetcher-dummy.m */; };
-		C1538BCCFEFB68ACE33302A21EFBCBCF /* GTMSessionFetcherLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = E698526963C370F23478031BDDC76EB7 /* GTMSessionFetcherLogging.m */; };
-		CBB59608FFDF25D5ECA23EF2AD70075C /* GTMGatherInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 2337AA35EAF62B32FD89ACAF6FDFB30B /* GTMGatherInputStream.m */; };
+		CDC5A996DEE66EA64CF45EED56028174 /* GTMSessionUploadFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = C8584E4B2E6A37FFCEC9CDBD93602794 /* GTMSessionUploadFetcher.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		EDAC65AE4064D8E5E7F6E8566081128C /* GTMReadMonitorInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = F0440FF1E605F8972E6EA55F905ECE1F /* GTMReadMonitorInputStream.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F3242106F917AC7B9C805155228F6CE0 /* GTMReadMonitorInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 3194FCF8CC7C5CFA26982E208FE28121 /* GTMReadMonitorInputStream.m */; };
+		F78E4CFE9B6A51012C004A8953BAD818 /* GTMSessionFetcherService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BD4B0BBF2FA053C818CB508EB052924 /* GTMSessionFetcherService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -155,7 +155,7 @@
 			buildConfigurationList = A9242759DC4383A035998BBE5197EE0C /* Build configuration list for PBXNativeTarget "GTMSessionFetcher" */;
 			buildPhases = (
 				687FE6CE24A7E77B000268E6366A95D8 /* Headers */,
-				6F006154C24F9E9C839A267BCAC41930 /* Sources */,
+				0F06AF2DEA16AE2FB8A86E2B2A31EDF3 /* Sources */,
 				E919D70860CDE6E9BA39C79B1D34B7BC /* Frameworks */,
 			);
 			buildRules = (
@@ -194,18 +194,18 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		6F006154C24F9E9C839A267BCAC41930 /* Sources */ = {
+		0F06AF2DEA16AE2FB8A86E2B2A31EDF3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CBB59608FFDF25D5ECA23EF2AD70075C /* GTMGatherInputStream.m in Sources */,
-				02B5C8158A1A101307739F0BB5E63185 /* GTMMIMEDocument.m in Sources */,
-				F3242106F917AC7B9C805155228F6CE0 /* GTMReadMonitorInputStream.m in Sources */,
-				BFA8E32A920E707AE14092E86A2FD617 /* GTMSessionFetcher-dummy.m in Sources */,
-				BD06691609F78CA9775AE169C990F1A4 /* GTMSessionFetcher.m in Sources */,
-				C1538BCCFEFB68ACE33302A21EFBCBCF /* GTMSessionFetcherLogging.m in Sources */,
-				9B816C19F07082C4F75DA9F05B5E11B6 /* GTMSessionFetcherService.m in Sources */,
-				52E332AA53A2722899C4DD6C5BEBAB59 /* GTMSessionUploadFetcher.m in Sources */,
+				52D9655B53B09C8BAA7D23785E6FA2EB /* GTMGatherInputStream.m in Sources */,
+				5816A64CD1DFC6D0B961621467A7EACA /* GTMMIMEDocument.m in Sources */,
+				854E2E309D529887E88605FCCF1108B1 /* GTMReadMonitorInputStream.m in Sources */,
+				4E21CF9EC3F43219E0BDC633F4287ED3 /* GTMSessionFetcher-dummy.m in Sources */,
+				267902E686D10AF73711A5F2816A06C7 /* GTMSessionFetcher.m in Sources */,
+				036F3E03DB19AD2161C6F5ECFD2B1476 /* GTMSessionFetcherLogging.m in Sources */,
+				F78E4CFE9B6A51012C004A8953BAD818 /* GTMSessionFetcherService.m in Sources */,
+				CDC5A996DEE66EA64CF45EED56028174 /* GTMSessionUploadFetcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
