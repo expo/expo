@@ -142,8 +142,23 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
     path.join(templateFilesPath, `${platform}-paths.json`)
   ).readAsync();
   const promises: Promise<any>[] = [];
+  const skipTemplates: Array<string> = args.skipTemplates || [];
 
   for (const [source, dest] of Object.entries(templatePaths)) {
+    if (skipTemplates.includes(source)){
+      console.log(
+        'Skipping template %s ...',
+        chalk.cyan(path.join(templateFilesPath, platform, source))
+      );
+      continue;
+    }
+
+    console.log(
+      'Rendering %s from template %s ...',
+      chalk.cyan(path.join(EXPO_DIR, dest as string, source)),
+      chalk.cyan(path.join(templateFilesPath, platform, source))
+    );
+
     promises.push(
       copyTemplateFileAsync(
         path.join(templateFilesPath, platform, source),
