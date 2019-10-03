@@ -39,19 +39,41 @@ module.exports = function(api, options = {}) {
       ],
     ],
     plugins: [
-      [
-        require.resolve('babel-plugin-module-resolver'),
-        {
-          alias: {
-            'react-native-vector-icons': '@expo/vector-icons',
-          },
-        },
-      ],
+      getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       isWeb && [require.resolve('babel-plugin-react-native-web')],
     ].filter(Boolean),
   };
 };
+
+function getAliasPlugin() {
+  let aliases = {};
+
+  if (hasModule('@expo/vector-icons')) {
+    aliases['react-native-vector-icons'] = '@expo/vector-icons';
+  }
+
+  if (Object.keys(aliases).length) {
+    return [
+      require.resolve('babel-plugin-module-resolver'),
+      {
+        alias: aliases,
+      },
+    ];
+  }
+  return null;
+}
+
+function hasModule(name) {
+  try {
+    return !!require.resolve(name);
+  } catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
+      return false;
+    }
+    throw error;
+  }
+}
 
 function isTargetWeb(caller) {
   return caller && caller.name === 'babel-loader';
