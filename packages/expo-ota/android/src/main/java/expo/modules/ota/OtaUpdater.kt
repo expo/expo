@@ -23,17 +23,17 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
 
-    private fun createRequest(config: ManifestDownloadParams): Request {
+    private fun createManifestRequest(config: ExpoOTAConfig): Request {
         val requestBuilder = Request.Builder()
-        requestBuilder.url(config.url)
-        config.headers.forEach { requestBuilder.addHeader(it.key, it.value) }
+        requestBuilder.url(config.manifestUrl)
+        config.manifestHeaders.forEach { requestBuilder.addHeader(it.key, it.value) }
         return requestBuilder.build()
     }
 
     fun downloadManifest(success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
-        if (persistence.config != null) {
-            val params = persistence.config!!.manifestConfig
-            httpClient(params).newCall(createRequest(params)).enqueue(object : Callback {
+        val config = persistence.config
+        if (config != null) {
+            manifestHttpClient(config).newCall(createManifestRequest(config)).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     error(IllegalStateException("Manifest fetching failed: ", e))
                 }
@@ -56,9 +56,9 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
     fun saveDownloadedManifestAndBundlePath(manifest: JSONObject, path: String) {
-        val previousBundle = persistence.downloadedBundlePath;
-        if(previousBundle != null) {
-            removeFile(previousBundle)
+        val previousBundle = persistence.downloadedBundlePath
+        if (previousBundle != null) {
+            removeFile(previousBundle) // TODO: Move to persistence!
         }
         persistence.downloadedManifest = manifest
         persistence.downloadedBundlePath = path
@@ -70,25 +70,59 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
     fun markDownloadedAsCurrent() {
-        persistence.makeDownloadedCurrent()
+        val outdated = persistence.outdatedBundlePath
+        if(outdated != null) {
+            removeFile(outdated)
+        }
+        persistence.makeDownloadedCurrentAndCurrentOutdated()
     }
 
-    fun removeDownloadedBundle() {
-        persistence.cleanOutdated()
+    fun removeOutdatedBundle() {
+        val outdatedBundlePath = persistence.outdatedBundlePath
+        persistence.outdatedBundlePath = null
+        if (outdatedBundlePath != null) {
+            removeFile(outdatedBundlePath)
+        }
     }
 
-    private fun httpClient(params: ManifestDownloadParams) = params.okHttpClient ?: OkHttpClient()
+    fun cleanOtherReleaseChannelsBundles() {
+        val bundlesDir = bundleDir()
+        if (bundlesDir.exists() && bundlesDir.isDirectory) {
+            bundlesDir.listFiles { directory, filename -> !validFilesSet.contains(File(directory, filename).path) }
+                    .forEach { removeFile(it.path) }
+        }
+    }
+
+    private val validFilesSet: Set<String>
+        get() {
+            val bundlePath = persistence.bundlePath
+            val downloadedBundlePath = persistence.downloadedBundlePath
+            var validFilesSet = setOf<String>()
+            if (bundlePath != null) {
+                validFilesSet = validFilesSet.plus(bundlePath)
+            }
+            if (downloadedBundlePath != null) {
+                validFilesSet =  validFilesSet.plus(downloadedBundlePath)
+            }
+            return validFilesSet
+        }
+
+    private fun manifestHttpClient(config: ExpoOTAConfig) = config.manifestHttpClient
+            ?: OkHttpClient()
 
     private fun downloadBundle(manifest: JSONObject, success: (String) -> Unit, error: (Exception?) -> Unit) {
         val bundleUrl = manifest.optString(KEY_MANIFEST_BUNDLE_URL)
         val bundleLoader = BundleLoader(context, bundleClient(persistence.config!!))
-        val bundleDir = File(context.filesDir, bundleDir(id))
-        val params = BundleLoader.BundleLoadParams(bundleUrl, bundleDir, bundleFilename(manifest))
+        val params = BundleLoader.BundleLoadParams(bundleUrl, bundleDir(), bundleFilename(manifest))
         bundleLoader.loadJsBundle(params, success, error)
     }
 
     private fun bundleFilename(manifest: JSONObject): String {
-        return "bundle_${manifest.optString("releaseChannel")}_${manifest.optString("version")}_${System.currentTimeMillis()}"
+        return "${bundleFilePrefix()}_${manifest.optString("version")}_${System.currentTimeMillis()}"
+    }
+
+    private fun bundleFilePrefix(): String {
+        return "bundle_${persistence.config?.channelIdentifier}"
     }
 
     private fun bundleClient(config: ExpoOTAConfig): OkHttpClient {
@@ -99,7 +133,7 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
         return OkHttpClient.Builder().callTimeout(2, TimeUnit.MINUTES).build()
     }
 
-    private fun bundleDir(id: String): String {
-        return "bundle-$id"
+    private fun bundleDir(): File {
+        return File(context.filesDir, "bundle-$id")
     }
 }

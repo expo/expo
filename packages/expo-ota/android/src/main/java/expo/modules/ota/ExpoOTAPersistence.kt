@@ -1,6 +1,7 @@
 package expo.modules.ota
 
 import android.content.Context
+import android.text.TextUtils
 import org.json.JSONObject
 
 const val KEY_BUNDLE_PATH = "bundlePath"
@@ -42,7 +43,9 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
     var manifest: JSONObject
         @Synchronized get() {
-            return JSONObject(storage.readString(KEY_MANIFEST, "{}"))
+            var manifestString = storage.readString(KEY_MANIFEST, "{}")
+            if(TextUtils.isEmpty(manifestString)) manifestString = "{}"
+            return JSONObject(manifestString)
         }
         @Synchronized set(value) {
             storage.writeString(KEY_MANIFEST, value.toString())
@@ -63,13 +66,9 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
         }
 
 
-    fun makeDownloadedCurrent() {
+    fun makeDownloadedCurrentAndCurrentOutdated() {
         val downloadedManifest = downloadedManifest
         val downloadedBundle = downloadedBundlePath
-        val oldOutdatedBundle = outdatedBundlePath
-        if (oldOutdatedBundle != null) {
-           removeFile(oldOutdatedBundle)
-        }
         if (downloadedManifest != null && downloadedBundle != null) {
             outdatedBundlePath = bundlePath
             manifest = downloadedManifest
@@ -81,14 +80,6 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
     fun synchronize() {
         storage.commit()
-    }
-
-    @Synchronized
-    fun cleanOutdated() {
-        if (outdatedBundlePath != null) {
-            removeFile(outdatedBundlePath!!)
-            outdatedBundlePath = null
-        }
     }
 
 }

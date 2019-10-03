@@ -2,40 +2,33 @@ package expo.modules.ota
 
 import okhttp3.OkHttpClient
 
-interface ManifestDownloadParams {
-    val headers: Map<String, String>
-    val url: String
-    val okHttpClient: OkHttpClient?
-}
-
-@Suppress("unused")
-data class ExpoManifestConfig @JvmOverloads constructor(
-        val username: String,
-        val projectName: String,
-        val releaseChannel: String = "default",
-        val expoSdkVersion: String = "34.0.0",
-        val apiVersion: Number = 1,
-        override val okHttpClient: OkHttpClient? = null) :
-        ManifestDownloadParams {
-
-    override val url = "https://exp.host/@$username/$projectName"
-    override val headers = mapOf(
-            "Accept" to "application/expo+json,application/json",
-            "Exponent-SDK-Version" to expoSdkVersion,
-            "Expo-Api-Version" to apiVersion.toString(),
-            "Expo-Release-Channel" to releaseChannel,
-            "Exponent-Platform" to "android")
-}
-
-@Suppress("unused")
-data class CustomManifestConfig(
-        override val url: String,
-        override val headers: Map<String, String>,
-        override val okHttpClient: OkHttpClient?
-) : ManifestDownloadParams
-
 data class ExpoOTAConfig @JvmOverloads constructor(
-        val manifestConfig: ManifestDownloadParams,
+        val manifestUrl: String,
+        val manifestHeaders: Map<String, String>,
+        val channelIdentifier: String,
+        val manifestHttpClient: OkHttpClient? = null,
         val manifestComparator: ManifestComparator = VersionNumberManifestComparator(),
         val bundleHttpClient: OkHttpClient? = null
 )
+
+@JvmOverloads
+fun expoHostedOTAConfig(username: String,
+                        projectName: String,
+                        releaseChannel: String = "default",
+                        manifestHttpClient: OkHttpClient? = null,
+                        bundleHttpClient: OkHttpClient? = null,
+                        expoSdkVersion: String = "34.0.0",
+                        manifestComparator: ManifestComparator = VersionNumberManifestComparator(),
+                        apiVersion: Number = 1): ExpoOTAConfig {
+    return ExpoOTAConfig(manifestUrl = "https://exp.host/@$username/$projectName",
+            manifestHeaders = mapOf(
+                    "Accept" to "application/expo+json,application/json",
+                    "Exponent-SDK-Version" to expoSdkVersion,
+                    "Expo-Api-Version" to apiVersion.toString(),
+                    "Expo-Release-Channel" to releaseChannel,
+                    "Exponent-Platform" to "android"),
+            manifestHttpClient = manifestHttpClient,
+            channelIdentifier = releaseChannel,
+            manifestComparator = manifestComparator,
+            bundleHttpClient = bundleHttpClient)
+}

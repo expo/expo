@@ -8,7 +8,13 @@ const val KEY_MANIFEST_BUNDLE_URL = "bundleUrl"
 const val DEFAULT_EXPO_OTA_ID = "defaultId"
 
 @Suppress("unused")
-class ExpoOTA @JvmOverloads constructor(context: Context, config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID) {
+class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String) {
+
+    companion object {
+        @JvmStatic @JvmOverloads fun create(context: Context, config: ExpoOTAConfig, loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID): ExpoOTA {
+            return ExpoOTA(context, config, loadFromBundler, id)
+        }
+    }
 
     private val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
     private val updater = OtaUpdater(context, persistence, id)
@@ -20,7 +26,7 @@ class ExpoOTA @JvmOverloads constructor(context: Context, config: ExpoOTAConfig,
     var bundlePath = if(loadFromBundler) null else persistence.bundlePath
 
     fun init() {
-        persistence.cleanOutdated()
+        updater.removeOutdatedBundle()
         if (!loadFromBundler) {
             updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
         }
