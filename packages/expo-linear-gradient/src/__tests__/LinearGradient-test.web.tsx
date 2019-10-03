@@ -11,7 +11,7 @@ it(`renders a multi-color gradient background with alpha`, () => {
   const component = mount(<LinearGradient colors={colors} />);
   const backgroundImage = getStyleProp(component.find('View'), 'backgroundImage');
 
-  // Ensure the correct amount of colors are present
+  // Ensure the correct number of colors are present
   expect((backgroundImage.match(/rgba/g) || []).length).toBe(colors.length);
   
   // Match colors
