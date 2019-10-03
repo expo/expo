@@ -9,27 +9,29 @@ import { InitialProps } from './withExpoRoot.types';
 export default function withExpoRoot<P extends InitialProps>(
   AppRootComponent: React.ComponentType<P>
 ): React.ComponentType<P> {
-  return class ExpoRootComponent extends React.Component<P> {
-    componentWillMount() {
+  return function ExpoRoot(props: P) {
+    const didInitialize = React.useRef(false);
+    if (!didInitialize.current) {
       if (StyleSheet.setStyleAttributePreprocessor) {
         StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
       }
-      const { exp } = this.props;
+
+      const { exp } = props;
       if (exp.notification) {
         Notifications._setInitialNotification(exp.notification);
       }
+
+      didInitialize.current = true;
     }
 
-    render() {
-      if (__DEV__) {
-        return (
-          <RootErrorBoundary>
-            <AppRootComponent {...this.props} />
-          </RootErrorBoundary>
-        );
-      } else {
-        return <AppRootComponent {...this.props} />;
-      }
+    if (__DEV__) {
+      return (
+        <RootErrorBoundary>
+          <AppRootComponent {...props} />
+        </RootErrorBoundary>
+      );
+    } else {
+      return <AppRootComponent {...props} />;
     }
   };
 }
