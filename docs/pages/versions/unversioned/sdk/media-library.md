@@ -249,7 +249,7 @@ Removes all listeners.
 | localUri \*      | _string_  | both      | Local URI for the asset                 |                                                                                                      |
 | location \*      | _object_  | both      | GPS location if available               | `latitude: number, longitude: number` or `null`                                                      |
 | exif \*          | _object_  | both      | EXIF metadata associated with the image |                                                                                                      |
-| orientation \*   | _number_  | iOS       | Display orientation of the image        | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
+| orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
 | isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite | `true`, `false`                                                                                      |
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method

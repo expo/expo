@@ -388,19 +388,31 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
-    PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
-    options.networkAccessAllowed = YES;
-    
-    [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
-      result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
-      result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
-      
-      if (asset.mediaType == PHAssetMediaTypeImage) {
+    if (asset.mediaType == PHAssetMediaTypeImage) {
+      PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
+      options.networkAccessAllowed = YES;
+
+      [asset requestContentEditingInputWithOptions:options
+                                 completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
+        result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
+        result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
+        
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
-      }
-      resolve(result);
-    }];
+        resolve(result);
+      }];
+    } else {
+      PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+      options.networkAccessAllowed = YES;
+
+      [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                      options:options
+                                                resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+        AVURLAsset *urlAsset = (AVURLAsset *)asset;
+        result[@"localUri"] = [[urlAsset URL] absoluteString];
+        resolve(result);
+      }];
+    }
   } else {
     resolve([NSNull null]);
   }
