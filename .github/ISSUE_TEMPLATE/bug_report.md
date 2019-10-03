@@ -11,33 +11,29 @@ assignees: ''
 
 ### Environment
 
-<!-- In your terminal run `expo diagnostics` and paste the output here. -->
-
-<!-- Please also let us know about your app's target (iOS, Android, Client, Standalone, ExpoKit) -->
+ System:
+      OS: Windows 10
+    Binaries:
+      npm: 6.9.0 - C:\Program Files\nodejs\npm.CMD
+    IDEs:
+      Android Studio: Version  3.4.0.0 AI-183.6156.11.34.5522156
+      
+      
+      app's target  Android, 
 
 ### Steps to Reproduce
 
-<!--
-  How would you describe your issue to someone who doesn’t know you or your project?
-  Try to write a sequence of steps that anybody can repeat to see the issue.
-  Be specific! If the bug cannot be reproduced, your issue may be closed.
--->
+Facebook ads doesnot appears 
+error appears 
+"errorCode": 1203, "errorMessage": "The SDK version in the ad request is no longer supported for new apps. Please upgrade to one of the latest versions of the SDK",Facebook ads does not appears on app
 
 ### Expected Behavior
 
-<!--
-  How did you expect your project to behave?
-  It’s fine if you’re not sure your understanding is correct.
-  Just write down what you thought would happen.
--->
+appears ads 
 
 ### Actual Behavior
 
-<!--
-  Did something go wrong?
-  Is something broken, or not behaving as you expected?
-  Describe this section in detail, and attach screenshots if possible.
-  Don't just say "it doesn't work"!
+ "it doesn't work"!
 -->
 
 ### Reproducible Demo
@@ -46,11 +42,9 @@ assignees: ''
   Please share a project that reproduces the issue.
   There are two ways to do it:
 
-    * Create a new app using https://snack.expo.io/ and try to reproduce the issue in it.
-      This is useful if you roughly know where the problem is, or can’t share the real code.
+     can’t share the real code.
 
-    * Or, copy your app and remove things until you’re left with the minimal reproducible demo.
-      This is useful for finding the root cause. You may then optionally create a Snack.
+   
 
   This is a good guide to creating bug demos: https://stackoverflow.com/help/mcve
   Once you’re done, copy and paste the link to the Snack or a public GitHub repository below:
