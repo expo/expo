@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.5.4",
-    "babel-preset-expo": "~7.0.0",
+    "babel-preset-expo": "~7.1.0",
     "@unimodules/core": "~4.0.0",
     "expo-module-scripts": "~1.1.1"
   },
