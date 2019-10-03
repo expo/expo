@@ -8,44 +8,44 @@
 
 /* Begin PBXBuildFile section */
 		0BB82A3568D36FB34C6E934CF0E7AAFF /* FIRVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C23C41ED8D8E1C5BFFE08FC993F2732 /* FIRVersion.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0DBBF0DA74505EE43613BF82C9156EBB /* FIRAppAssociationRegistration.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D77E16BD4DE17606E4727D90B7463D /* FIRAppAssociationRegistration.m */; };
+		0DAA92380D878FC3003ECFCB21316789 /* FIRBundleUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = CB124E87F91AF5476AAAB3C2E5B973D4 /* FIRBundleUtil.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		0E96C5D22DE27648D1299F8F6BB20B82 /* FIRAppAssociationRegistration.h in Headers */ = {isa = PBXBuildFile; fileRef = B08604B492CA45E2CBD8F36F1E9E0015 /* FIRAppAssociationRegistration.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		113F6DD3FDC742C14A82DA8B9CCB6A4D /* FIRErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E78C358D59F2B6DA3D1074767EFDB5F /* FIRErrors.m */; };
-		19CFDEE4130CF6C67840135982CD8C66 /* FIRBundleUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = CB124E87F91AF5476AAAB3C2E5B973D4 /* FIRBundleUtil.m */; };
+		10D31ECABCA64998E3C18956C26538DB /* FIRDependency.m in Sources */ = {isa = PBXBuildFile; fileRef = FD686555C50B64FCA2015EA8DA2EF352 /* FIRDependency.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1A962EED53851AC31887EC65E57CCBC7 /* FirebaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1DBA2A40BFB1280ED82429577F2D70 /* FirebaseCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1BC2A2DD8478486F55EECDB2CC736B52 /* FIRAnalyticsConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 41F1B41F4DB1417A28AFE77A7E0ED957 /* FIRAnalyticsConfiguration.m */; };
 		1FFF882B281C1A627780CE9A64F1B542 /* FIRErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 537E21C975C3246AC3DF3DA693EA8F26 /* FIRErrors.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		2079FCC97E2929D2BB685ED5D3B556DA /* FIRApp.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B925C803CAA07B88DB75046DEFBF4EB /* FIRApp.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		22770B03F55FFD856010DB89F60DE06B /* FIRComponentType.m in Sources */ = {isa = PBXBuildFile; fileRef = E10B2EEC466E4F9858D5E0B2247917A5 /* FIRComponentType.m */; };
-		2F10E834D11687DECFD2BB0CAD2A107A /* FirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B946DAD9514FA6985396C2B988564B3 /* FirebaseCore-dummy.m */; };
-		402FF9FFABED0B043A094F37CF48E9D1 /* FIRComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E5DFE86CDFE01BF38CF6E95B02135C2 /* FIRComponent.m */; };
+		24295DBBDF8C1B24DB469A504ADC7D5A /* FIRAnalyticsConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 41F1B41F4DB1417A28AFE77A7E0ED957 /* FIRAnalyticsConfiguration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2524D493E822F4F573E5B22045DB4624 /* FIRComponentContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 650280582CB1A7A156EFA0E79A6A8AE9 /* FIRComponentContainer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		27D32C5150C7CA9254825A45BE190087 /* FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = D4E0DC02A294BAA528568DC95A2B8303 /* FIRApp.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		45D3B79C8B6BF01A99422B30C03702A9 /* FIRComponent.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E5DFE86CDFE01BF38CF6E95B02135C2 /* FIRComponent.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		4693110D2F7CB5432AB75A39194A492D /* FIRComponentType.h in Headers */ = {isa = PBXBuildFile; fileRef = 672EB5076D97AE85D32714472938B54A /* FIRComponentType.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4822784F7C9F9F9A903F039E6D34960D /* FIRLoggerLevel.h in Headers */ = {isa = PBXBuildFile; fileRef = 4DF79DBE9A5AE76ED975639B9DA71250 /* FIRLoggerLevel.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4BFDBD558E5A499A97CCDE30244F9C3A /* FIRConfigurationInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 70DE064650FE8C998352B3DC69DD3FFB /* FIRConfigurationInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4CDACE8088F392F0F5F20E040DC6C32D /* FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 146602BE7D340C79A84BCBB7B3E4E266 /* FIROptions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		514F920A07687663B5D4D07EF5768BA8 /* FIRDiagnosticsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EFF4064FA0D1A4C8E815E1DF4B7F642 /* FIRDiagnosticsData.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5C158A7AC18B2A43690C7A044455EB08 /* FIRCoreDiagnosticsConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = 16AA161DA092F5E9848A7328E469B388 /* FIRCoreDiagnosticsConnector.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5DDD0B5591B9EFE48C1A3BB51E4FADDC /* FIRAnalyticsConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = DD22F371C0042FFED74F422B2E1DA732 /* FIRAnalyticsConfiguration.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		66D0B2184D006B6E9BBFDCC78A04978A /* FIRComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = AABD7C500CFC1490E4B65739042B23B0 /* FIRComponent.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6820C0ED6218A355885F280D4158FCC2 /* FIRCoreDiagnosticsConnector.h in Headers */ = {isa = PBXBuildFile; fileRef = D84A1665D81B5A799731D401E0567555 /* FIRCoreDiagnosticsConnector.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6B0435B58D4CA295DAF99460C5B5B321 /* FIRLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4137CFF9836FAC21E3DABC06DF46B5 /* FIRLogger.m */; };
 		6B567ED414F020B219B8A265579ABCB3 /* FIRComponentContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 81A70EC1FFE70CCBEAF8DBF4566987AD /* FIRComponentContainer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		78FDDD81F616A8B97160C2A1D3B93C99 /* FIRLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 271784BCC2551AEAC65400D3F2B6F40A /* FIRLibrary.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8E17B33FBA19A309B2096B82739816DF /* FIRDiagnosticsData.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DA57C278A854DD8EC7C796F9A7A046A /* FIRDiagnosticsData.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		92565A04819815E6418C5A279DF66FCE /* FIRCoreDiagnosticsConnector.m in Sources */ = {isa = PBXBuildFile; fileRef = 16AA161DA092F5E9848A7328E469B388 /* FIRCoreDiagnosticsConnector.m */; };
+		9628D4AC2CD485C8CAE3E79989323126 /* FirebaseCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B946DAD9514FA6985396C2B988564B3 /* FirebaseCore-dummy.m */; };
 		980E70516521349E02977030767980B4 /* FIRDependency.h in Headers */ = {isa = PBXBuildFile; fileRef = 57836884123F8522412FB6CE80B46549 /* FIRDependency.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9B8F1DE85A79D5ACED35F6837BD33145 /* FIRConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E9A94A66EC8F73B254202C969ACC72F /* FIRConfiguration.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B0EFB40FA26ED0CD63DBA4423DB3C6B2 /* FIRComponentContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 650280582CB1A7A156EFA0E79A6A8AE9 /* FIRComponentContainer.m */; };
-		BB96170366B96F7C747EF13A6B53EB26 /* FIRDiagnosticsData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EFF4064FA0D1A4C8E815E1DF4B7F642 /* FIRDiagnosticsData.m */; };
-		BF35F61B1FC22920333006324F3D5C7C /* FIRDependency.m in Sources */ = {isa = PBXBuildFile; fileRef = FD686555C50B64FCA2015EA8DA2EF352 /* FIRDependency.m */; };
+		A2687053EFE935F74B1A146326B80E54 /* FIRAppAssociationRegistration.m in Sources */ = {isa = PBXBuildFile; fileRef = 90D77E16BD4DE17606E4727D90B7463D /* FIRAppAssociationRegistration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ADA16DBB3FE9D7B8001D1F1BEBB84D59 /* FIRLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4137CFF9836FAC21E3DABC06DF46B5 /* FIRLogger.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C980924828B13EDE3BAB9704A24167D9 /* FIRAppInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 0AB7B3165FEAC64A2AABA7F052F7D309 /* FIRAppInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C9A0915F4721BCBA647CD1AF93490C98 /* FIROptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E8048C750AF93400B528BC9EE7CECB5D /* FIROptions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D18FB58B98FF41C81D5D964195FF8DAD /* FIRComponentContainerInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 76FE108888F0D279876B34BD83100A79 /* FIRComponentContainerInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D1CD1BD8DFAF378E65DD6CA0514369AF /* FIRErrorCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 980CD4116FE8942D1EACBDC1AF1E370F /* FIRErrorCode.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D7748892D15913A36BA7310C29592454 /* FIRConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 592BBE9C5AA139652186A17FD5A2DDC2 /* FIRConfiguration.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D796A790B2BD12BA7CF74429C4F5D1E8 /* FIRBundleUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D0C7099733F74AC2D2872CC1BAFFD /* FIRBundleUtil.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E1A1B7F316E4DC9EB28309A07738464F /* FIRLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DDF22409B4BFE95639CD3BDE9F55467E /* FIRLogger.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F1B7CDDA1AB60623679CBE5B1E1410C4 /* FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 146602BE7D340C79A84BCBB7B3E4E266 /* FIROptions.m */; };
-		F2AB80C579732A41B7E62A972BBC6950 /* FIRVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE8A7E0F75F8AB064F0736251E7D827 /* FIRVersion.m */; };
+		E27424B05725C1FF9FBBF75CB445638C /* FIRErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E78C358D59F2B6DA3D1074767EFDB5F /* FIRErrors.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		ECA1C9B27E46957258F52B5D2440CA0F /* FIRComponentType.m in Sources */ = {isa = PBXBuildFile; fileRef = E10B2EEC466E4F9858D5E0B2247917A5 /* FIRComponentType.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F2C2A3FD43CEFA4891157BD0E7A13FA5 /* FIROptionsInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = E694A72C2753BAC08F90E6C7538E26D8 /* FIROptionsInternal.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F5C597AAF4531BB160C9DFFD6A723053 /* FIRConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 592BBE9C5AA139652186A17FD5A2DDC2 /* FIRConfiguration.m */; };
-		F817EF29D1F852749C7C5FDF216D840C /* FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = D4E0DC02A294BAA528568DC95A2B8303 /* FIRApp.m */; };
+		FE67BE77496150FFA761ED75E9D7F4B4 /* FIRVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE8A7E0F75F8AB064F0736251E7D827 /* FIRVersion.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -263,7 +263,7 @@
 			buildConfigurationList = A0BFE30F8A5825E0658CAFAC3D6DDA23 /* Build configuration list for PBXNativeTarget "FirebaseCore" */;
 			buildPhases = (
 				C9B0D69B5063BF2FA18019FDF72F877F /* Headers */,
-				D9D9A87F671E54AC8F02F562651531C2 /* Sources */,
+				2911170122C432141B72B4F76FFEEBD1 /* Sources */,
 				C1E70FF50E95B7A3FEBEF1029220650F /* Frameworks */,
 			);
 			buildRules = (
@@ -316,26 +316,26 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D9D9A87F671E54AC8F02F562651531C2 /* Sources */ = {
+		2911170122C432141B72B4F76FFEEBD1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1BC2A2DD8478486F55EECDB2CC736B52 /* FIRAnalyticsConfiguration.m in Sources */,
-				F817EF29D1F852749C7C5FDF216D840C /* FIRApp.m in Sources */,
-				0DBBF0DA74505EE43613BF82C9156EBB /* FIRAppAssociationRegistration.m in Sources */,
-				19CFDEE4130CF6C67840135982CD8C66 /* FIRBundleUtil.m in Sources */,
-				402FF9FFABED0B043A094F37CF48E9D1 /* FIRComponent.m in Sources */,
-				B0EFB40FA26ED0CD63DBA4423DB3C6B2 /* FIRComponentContainer.m in Sources */,
-				22770B03F55FFD856010DB89F60DE06B /* FIRComponentType.m in Sources */,
-				F5C597AAF4531BB160C9DFFD6A723053 /* FIRConfiguration.m in Sources */,
-				92565A04819815E6418C5A279DF66FCE /* FIRCoreDiagnosticsConnector.m in Sources */,
-				BF35F61B1FC22920333006324F3D5C7C /* FIRDependency.m in Sources */,
-				BB96170366B96F7C747EF13A6B53EB26 /* FIRDiagnosticsData.m in Sources */,
-				2F10E834D11687DECFD2BB0CAD2A107A /* FirebaseCore-dummy.m in Sources */,
-				113F6DD3FDC742C14A82DA8B9CCB6A4D /* FIRErrors.m in Sources */,
-				6B0435B58D4CA295DAF99460C5B5B321 /* FIRLogger.m in Sources */,
-				F1B7CDDA1AB60623679CBE5B1E1410C4 /* FIROptions.m in Sources */,
-				F2AB80C579732A41B7E62A972BBC6950 /* FIRVersion.m in Sources */,
+				24295DBBDF8C1B24DB469A504ADC7D5A /* FIRAnalyticsConfiguration.m in Sources */,
+				27D32C5150C7CA9254825A45BE190087 /* FIRApp.m in Sources */,
+				A2687053EFE935F74B1A146326B80E54 /* FIRAppAssociationRegistration.m in Sources */,
+				0DAA92380D878FC3003ECFCB21316789 /* FIRBundleUtil.m in Sources */,
+				45D3B79C8B6BF01A99422B30C03702A9 /* FIRComponent.m in Sources */,
+				2524D493E822F4F573E5B22045DB4624 /* FIRComponentContainer.m in Sources */,
+				ECA1C9B27E46957258F52B5D2440CA0F /* FIRComponentType.m in Sources */,
+				D7748892D15913A36BA7310C29592454 /* FIRConfiguration.m in Sources */,
+				5C158A7AC18B2A43690C7A044455EB08 /* FIRCoreDiagnosticsConnector.m in Sources */,
+				10D31ECABCA64998E3C18956C26538DB /* FIRDependency.m in Sources */,
+				514F920A07687663B5D4D07EF5768BA8 /* FIRDiagnosticsData.m in Sources */,
+				9628D4AC2CD485C8CAE3E79989323126 /* FirebaseCore-dummy.m in Sources */,
+				E27424B05725C1FF9FBBF75CB445638C /* FIRErrors.m in Sources */,
+				ADA16DBB3FE9D7B8001D1F1BEBB84D59 /* FIRLogger.m in Sources */,
+				4CDACE8088F392F0F5F20E040DC6C32D /* FIROptions.m in Sources */,
+				FE67BE77496150FFA761ED75E9D7F4B4 /* FIRVersion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
