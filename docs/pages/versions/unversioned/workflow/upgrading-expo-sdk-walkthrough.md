@@ -14,18 +14,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Upgrade from SDK 34
 
-- `app.json`, change `sdkVersion` to `"35.0.0"`,
-- In package.json, change these dependencies:
-
-```json
-{
-  "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
-  "expo": "^35.0.0",
-  "react": "16.8.3"
-}
-```
-
-- Delete your project’s node_modules directory and run npm install again
+- Run `expo update 35.0.0`
 
 #### Notes
 
@@ -37,18 +26,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Upgrade from SDK 33
 
-- `app.json`, change `sdkVersion` to `"34.0.0"`,
-- In package.json, change these dependencies:
-
-```json
-{
-  "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
-  "expo": "^34.0.1",
-  "react": "16.8.3"
-}
-```
-
-- Delete your project’s node_modules directory and run npm install again
+- Run `expo update 34.0.0`
 
 #### Notes
 
