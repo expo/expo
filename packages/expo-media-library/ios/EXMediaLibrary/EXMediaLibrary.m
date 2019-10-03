@@ -276,7 +276,7 @@ UM_EXPORT_METHOD_AS(getAlbumsAsync,
   fetchOptions.includeAllBurstAssets = NO;
   
   PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
-  [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult]];
+  [albums addObjectsFromArray:[EXMediaLibrary _exportNestedCollections:userAlbumsFetchResult withFetchOptions:fetchOptions]];
 
   if ([options[@"includeSmartAlbums"] boolValue]) {
     PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
@@ -735,9 +735,27 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 + (NSArray *)_exportCollections:(PHFetchResult *)collections
 {
   NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
+  for (PHCollection *collection in collections) {
+    if ([collection isKindOfClass:[PHAssetCollection class]]) {
+      [albums addObject:[EXMediaLibrary _exportCollection:(PHAssetCollection *)collection]];
+    }
+  }
+  return [albums copy];
+}
+
++ (NSArray *)_exportNestedCollections:(PHFetchResult *)collections
+                     withFetchOptions:(PHFetchOptions *)options
+{
+  NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
   
-  for (PHAssetCollection *collection in collections) {
-    [albums addObject:[EXMediaLibrary _exportCollection:collection]];
+  for (PHCollection *collection in collections) {
+    if ([collection isKindOfClass:[PHAssetCollection class]]) {
+      [albums addObject:[EXMediaLibrary _exportCollection:(PHAssetCollection *)collection]];
+    } else if ([collection isKindOfClass:[PHCollectionList class]]) {
+      // getting albums from folders
+      PHFetchResult *collectionsInFolder = [PHCollectionList fetchCollectionsInCollectionList:(PHCollectionList *)collection options:options];
+      [albums addObjectsFromArray:[EXMediaLibrary _exportNestedCollections:collectionsInFolder withFetchOptions:options]];
+    }
   }
   return [albums copy];
 }
