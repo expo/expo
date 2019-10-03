@@ -1274,7 +1274,7 @@ PODS:
   - UMFontInterface (4.0.0)
   - UMImageLoaderInterface (4.0.0)
   - UMPermissionsInterface (4.0.0)
-  - UMReactNativeAdapter (4.0.0):
+  - UMReactNativeAdapter (5.0.0-rc.0):
     - React
     - UMCore
     - UMFontInterface
@@ -2517,7 +2517,7 @@ SPEC CHECKSUMS:
   UMFontInterface: 2d3c128285086bbed3d2a650f1d698323ef3b25a
   UMImageLoaderInterface: 2829a7571a12d2e754c73c55ffe7e327d8402c7d
   UMPermissionsInterface: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
-  UMReactNativeAdapter: 93c2f520a1cdb6ef3058a7b6a95275a804e0923b
+  UMReactNativeAdapter: 73625f2e528296fff63a24308821f58f0becc345
   UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
   UMTaskManagerInterface: 1e70fe58b872355f0ecb44fb81bb1a16484047f0
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
