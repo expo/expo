@@ -1,6 +1,7 @@
 package expo.modules.ota
 
 import android.text.TextUtils
+import net.swiftzer.semver.SemVer
 import org.json.JSONObject
 import java.util.*
 
@@ -21,21 +22,8 @@ class VersionNumberManifestComparator: ManifestComparator {
         }
     }
 
-    private fun compareVersions(version1: String, version2: String): Int {
-        val versions1 = version1.split(".").toList()
-        val versions2 = if (TextUtils.isEmpty(version2)) {
-            Collections.emptyList<String>()
-        } else {
-            version2.split(".").toList()
-        }
-        for (i in 0 until versions1.size) {
-            if(i > versions2.size - 1) return 1
-            val first = Integer.parseInt(versions1[i])
-            val second = Integer.parseInt(versions2[i])
-            val result = first.compareTo(second)
-            if (result != 0) return result
-        }
-        return versions1.size.compareTo(versions2.size)
+    private fun compareVersions(version1: String, version2: String): Int { // TODO: Do some semver in here!
+        return SemVer.parse(version1).compareTo(SemVer.parse(version2))
     }
 
 }

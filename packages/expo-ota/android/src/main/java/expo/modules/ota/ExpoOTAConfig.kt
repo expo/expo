@@ -8,6 +8,7 @@ interface ManifestDownloadParams {
     val okHttpClient: OkHttpClient?
 }
 
+@Suppress("unused")
 data class ExpoManifestConfig @JvmOverloads constructor(
         val username: String,
         val projectName: String,
@@ -26,6 +27,7 @@ data class ExpoManifestConfig @JvmOverloads constructor(
             "Exponent-Platform" to "android")
 }
 
+@Suppress("unused")
 data class CustomManifestConfig(
         override val url: String,
         override val headers: Map<String, String>,

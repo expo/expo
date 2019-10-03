@@ -7,9 +7,6 @@ import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
-import java.io.IOException
-import java.lang.Exception
-import java.lang.IllegalStateException
 
 class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, private val updater: OtaUpdater) : ExportedModule(context) {
 
@@ -40,7 +37,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
     @ExpoMethod
     fun reload(promise: Promise) {
         try {
-            updater.markDownloadedAsCurrent()
+            updater.prepareToReload()
             ProcessPhoenix.triggerRebirth(context)
             promise.resolve(true)
         } catch (e: Exception) {
@@ -77,6 +74,6 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
             }
 
     companion object {
-        private val NAME = "ExpoOta"
+        private const val NAME = "ExpoOta"
     }
 }

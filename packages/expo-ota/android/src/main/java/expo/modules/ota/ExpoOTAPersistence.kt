@@ -7,6 +7,7 @@ const val KEY_BUNDLE_PATH = "bundlePath"
 const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"
 const val KEY_MANIFEST = "manifest"
 const val KEY_DOWNLOADED_MANIFEST = "downloadedManifest"
+const val KEY_BUNDLE_OUTDATED = "outdatedBundle"
 
 class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
@@ -19,9 +20,7 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
         @Synchronized set(value) {
             val recentPath = storage.readString(KEY_BUNDLE_PATH, null)
             if (value != recentPath) {
-                if(value != null) {
-                    storage.writeString(KEY_BUNDLE_PATH, value)
-                }
+                storage.writeString(KEY_BUNDLE_PATH, value)
             }
         }
 
@@ -30,12 +29,15 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             return storage.readString(KEY_DOWNLOADED_BUNDLE_PATH, null)
         }
         @Synchronized set(value) {
-            val recentPath = storage.readString(KEY_DOWNLOADED_BUNDLE_PATH, null)
-            if (value != recentPath) {
-                if(value != null) {
-                    storage.writeString(KEY_DOWNLOADED_BUNDLE_PATH, value)
-                }
-            }
+            storage.writeString(KEY_DOWNLOADED_BUNDLE_PATH, value)
+        }
+
+    var outdatedBundlePath: String?
+        @Synchronized get() {
+            return storage.readString(KEY_BUNDLE_OUTDATED, null)
+        }
+        @Synchronized set(value) {
+            storage.writeString(KEY_BUNDLE_OUTDATED, value)
         }
 
     var manifest: JSONObject
@@ -57,19 +59,36 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             return if (persisted != null) JSONObject(persisted) else null
         }
         @Synchronized set(value) {
-            storage.writeString(KEY_DOWNLOADED_MANIFEST, value.toString())
+            storage.writeString(KEY_DOWNLOADED_MANIFEST, value?.toString())
         }
+
 
     fun makeDownloadedCurrent() {
-        val downloaded = downloadedBundlePath
-        bundlePath = downloaded
-        storage.removeKey(KEY_DOWNLOADED_BUNDLE_PATH)
-
         val downloadedManifest = downloadedManifest
-        if (downloadedManifest != null) {
-            manifest = downloadedManifest
+        val downloadedBundle = downloadedBundlePath
+        val oldOutdatedBundle = outdatedBundlePath
+        if (oldOutdatedBundle != null) {
+           removeFile(oldOutdatedBundle)
         }
-        storage.removeKey(KEY_DOWNLOADED_MANIFEST)
+        if (downloadedManifest != null && downloadedBundle != null) {
+            outdatedBundlePath = bundlePath
+            manifest = downloadedManifest
+            bundlePath = downloadedBundle
+            this.downloadedManifest = null
+            this.downloadedBundlePath = null
+        }
+    }
+
+    fun synchronize() {
+        storage.commit()
+    }
+
+    @Synchronized
+    fun cleanOutdated() {
+        if (outdatedBundlePath != null) {
+            removeFile(outdatedBundlePath!!)
+            outdatedBundlePath = null
+        }
     }
 
 }

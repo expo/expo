@@ -73,6 +73,8 @@ dependencies {
 
   implementation 'io.mockk:mockk:1.9'
 
+  implementation 'net.swiftzer.semver:semver:1.1.1'
+
   api 'com.android.support:support-annotations:28.0.0'
 
   implementation 'commons-io:commons-io:2.6'

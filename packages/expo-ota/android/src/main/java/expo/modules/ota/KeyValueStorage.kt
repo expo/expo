@@ -14,20 +14,16 @@ class KeyValueStorage(val context: Context, val key: String) {
         return sharedPreferences.getString(key, defaultValue)
     }
 
-    fun writeString(key: String, value: String) {
-        sharedPreferences.edit().putString(key, value).commit()
+    fun writeString(key: String, value: String?) {
+        if(value != null) {
+            sharedPreferences.edit().putString(key, value).apply()
+        } else {
+            sharedPreferences.edit().remove(key).apply()
+        }
     }
 
-    fun readStringSet(key: String, defaultValue: Set<String>? = null): Set<String>? {
-        return sharedPreferences.getStringSet(key, defaultValue)
-    }
-
-    fun writeStringSet(key: String, value: Set<String>) {
-        sharedPreferences.edit().putStringSet(key, value).commit()
-    }
-
-    fun removeKey(key: String) {
-        sharedPreferences.edit().remove(key).commit()
+    fun commit() {
+        sharedPreferences.edit().commit();
     }
 
 }
