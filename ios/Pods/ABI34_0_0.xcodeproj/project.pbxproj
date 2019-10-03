@@ -1466,7 +1466,7 @@
 /* Begin PBXContainerItemProxy section */
 		01342FA4FA0FCD74AE22AD9DF44B80DD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 063F9CFFAA7826D260C1C05DACFD9C88 /* Analytics.xcodeproj */;
+			containerPortal = 4F40EF85B36E62930911BD51DBA1F82F /* Analytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
 			remoteInfo = Analytics;
@@ -1492,16 +1492,9 @@
 			remoteGlobalIDString = 3CF0A68EDAC597670EB9981C008A642F;
 			remoteInfo = ABI34_0_0EXAppLoaderProvider;
 		};
-		06609F5B001A2A42CF5F3B76B10F8050 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 32FBC8E52D68251BE229E2299AE39A5F /* React.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
-		};
 		07F62E8FD4C33C1CFF642234BA3BF78D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 01CB88D78580CBC8EC9E513926237D63 /* Branch.xcodeproj */;
+			containerPortal = 9EF72F22F9BBA3D94683416CDC10F1AD /* Branch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
 			remoteInfo = Branch;
@@ -1515,7 +1508,7 @@
 		};
 		0C17ED13E082BFA0CD31ECEEEDF6C2D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 605EF9B4FA8E742A85AA34A80384940F /* lottie-ios.xcodeproj */;
+			containerPortal = 65B15F08E5F2990D8C7FFE6360759883 /* lottie-ios.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
 			remoteInfo = "lottie-ios";
@@ -1606,7 +1599,7 @@
 		};
 		21AC95859B3397952DF3C870051D1216 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 72102348398926974FBE425A4B248B48 /* glog.xcodeproj */;
+			containerPortal = 79B2893D18CE81177F210B1B53112742 /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
 			remoteInfo = glog;
@@ -1648,7 +1641,7 @@
 		};
 		28A2626BC050D2CD74F27A1BB7C33776 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9D5B2701586F87D3ECA0DD2A97600AE0 /* FBAudienceNetwork.xcodeproj */;
+			containerPortal = 4330443D18BFFE73ABFA877B0E5F03AD /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
@@ -1669,14 +1662,14 @@
 		};
 		2B80200A6A844129CD555710F87F4D36 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3857011ABD3B5C279F5E82641F6509D3 /* GoogleSignIn.xcodeproj */;
+			containerPortal = 2366ADBC814B19224FB08E88224EFE27 /* GoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
 		};
 		2D6CE9C3E90D4926BA6225E439E77859 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 55BE14A24CDFBF805342B6344799748B /* EXGL-CPP.xcodeproj */;
+			containerPortal = 832F0CFA86D7186B16C458947E008D61 /* EXGL-CPP.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 348F48833A31FAAF4C3FBBBCAA504BB8;
 			remoteInfo = "EXGL-CPP";
@@ -1704,7 +1697,7 @@
 		};
 		35DB20DD10B7232E8F78165F04A9D207 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3857011ABD3B5C279F5E82641F6509D3 /* GoogleSignIn.xcodeproj */;
+			containerPortal = 2366ADBC814B19224FB08E88224EFE27 /* GoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
@@ -1739,7 +1732,7 @@
 		};
 		3F1C1B71371BB45F73E559875BC6EB26 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FF6D5021639CA058188391FACDF6777A /* AppAuth.xcodeproj */;
+			containerPortal = A0F198C1E75B570FA9BC4D62FC52AF53 /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
@@ -1760,7 +1753,7 @@
 		};
 		4778EADF275E1F815948274C783F1FA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 063F9CFFAA7826D260C1C05DACFD9C88 /* Analytics.xcodeproj */;
+			containerPortal = 4F40EF85B36E62930911BD51DBA1F82F /* Analytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
 			remoteInfo = Analytics;
@@ -1788,7 +1781,7 @@
 		};
 		4A3EE1F165A6F685FDE464FB27B8101F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A76B7D3818E0B007215ABD30DD4D6083 /* Amplitude-iOS.xcodeproj */;
+			containerPortal = 4A0572583FAC9BBD89C1F4370CC447ED /* Amplitude-iOS.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
 			remoteInfo = "Amplitude-iOS";
@@ -1830,7 +1823,7 @@
 		};
 		56DC8C934879DE5763E6997CE11B7208 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2FA6DAB2DA663B38D672F66CB6D84D25 /* Firebase.xcodeproj */;
+			containerPortal = D02C2857114690318CFDA92F12746DC9 /* Firebase.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
 			remoteInfo = Firebase;
@@ -1935,7 +1928,7 @@
 		};
 		7493AE1FB70673EBB6ABC838FB9ED198 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8FD46B57D0235258CEF5F888E42BC86E /* Google-Maps-iOS-Utils.xcodeproj */;
+			containerPortal = 6AEC83AF86CFF44B483BBF139F673D8B /* Google-Maps-iOS-Utils.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1A622F006CCB28DCB3730A6D10AAB7C2;
 			remoteInfo = "Google-Maps-iOS-Utils";
@@ -1970,7 +1963,7 @@
 		};
 		78F34E944B781D730B5A53B1A3DA7AA7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6E2CECF50F2C0BA7F280A085EE0B3B1D /* FBSDKCoreKit.xcodeproj */;
+			containerPortal = 4DBF3AEEF70DB409EF79109ABC346515 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
@@ -2005,7 +1998,7 @@
 		};
 		81E998402BA625BDBB63D4E7E4ED6070 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8E25151D57872D4DC8100638CC975AE7 /* FBSDKLoginKit.xcodeproj */;
+			containerPortal = 178247CDC97625016468104270618C31 /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
@@ -2040,7 +2033,7 @@
 		};
 		89B486F1B2A3A030291F5FCAFFA7A7E1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5AA17322B25557381C2EE03BAAC25896 /* JKBigInteger2.xcodeproj */;
+			containerPortal = 6C76967F19884DD3D950D706C20B597E /* JKBigInteger2.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 55B5B69CD0128658056242174A61815A;
 			remoteInfo = JKBigInteger2;
@@ -2061,7 +2054,7 @@
 		};
 		8E2B18ECDB6AA8A154FD62EE6F23F570 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 31FCE1CBF0D8D5610537B7DEF6FE6584 /* Google-Mobile-Ads-SDK.xcodeproj */;
+			containerPortal = FAC00D93045412B82929A5C5CA04BEBF /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
 			remoteInfo = "Google-Mobile-Ads-SDK";
@@ -2152,7 +2145,7 @@
 		};
 		9F6A68CA3574499C326118EA647CD554 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2F60430B9863843E7175C8703AC2CFC2 /* Folly.xcodeproj */;
+			containerPortal = 7065D929739DD994480191D75E47C4D0 /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
@@ -2166,7 +2159,7 @@
 		};
 		9FB79538A294D70B1DDF9980F6222AFB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BB7647E1F6E91B1BF369232D25205F30 /* boost-for-react-native.xcodeproj */;
+			containerPortal = 7BFAE4C676A9871AE1685E8B9451AE8A /* boost-for-react-native.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
 			remoteInfo = "boost-for-react-native";
@@ -2208,7 +2201,7 @@
 		};
 		A6ABFA7FFE1BED841A8D7A63E592EB6A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3FBB64CF342F427D1F04186DA4519E2F /* DoubleConversion.xcodeproj */;
+			containerPortal = 8C11B47E184ECEDD257F18E319B4816C /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
@@ -2250,7 +2243,7 @@
 		};
 		B20564879DD94D93F7B59EBF5B38A685 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6E2CECF50F2C0BA7F280A085EE0B3B1D /* FBSDKCoreKit.xcodeproj */;
+			containerPortal = 4DBF3AEEF70DB409EF79109ABC346515 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
@@ -2292,7 +2285,7 @@
 		};
 		BE2AF0494B09B0FC0912091DACB8F248 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FF6D5021639CA058188391FACDF6777A /* AppAuth.xcodeproj */;
+			containerPortal = A0F198C1E75B570FA9BC4D62FC52AF53 /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
@@ -2446,14 +2439,14 @@
 		};
 		DA2F0278DBCB904C7674EA853BB0CCA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9D5B2701586F87D3ECA0DD2A97600AE0 /* FBAudienceNetwork.xcodeproj */;
+			containerPortal = 4330443D18BFFE73ABFA877B0E5F03AD /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
 		};
 		DB841396EE44662557A066DD76429A25 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A76B7D3818E0B007215ABD30DD4D6083 /* Amplitude-iOS.xcodeproj */;
+			containerPortal = 4A0572583FAC9BBD89C1F4370CC447ED /* Amplitude-iOS.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
 			remoteInfo = "Amplitude-iOS";
@@ -2474,7 +2467,7 @@
 		};
 		E01A052D1EEBCB83E39F024C6F34F288 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 31FCE1CBF0D8D5610537B7DEF6FE6584 /* Google-Mobile-Ads-SDK.xcodeproj */;
+			containerPortal = FAC00D93045412B82929A5C5CA04BEBF /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
 			remoteInfo = "Google-Mobile-Ads-SDK";
@@ -2558,7 +2551,7 @@
 		};
 		EC31BD48974BFB4B823FDCD646555745 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8E25151D57872D4DC8100638CC975AE7 /* FBSDKLoginKit.xcodeproj */;
+			containerPortal = 178247CDC97625016468104270618C31 /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
@@ -2614,7 +2607,7 @@
 		};
 		F4D929C660E18B2278AC259C459EE4BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9E8EAB9B392271A80B5BB204E548D04D /* GoogleMaps.xcodeproj */;
+			containerPortal = 96F340C75FE50FBA713407E6210B209E /* GoogleMaps.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF08434370CEBD287CA17CA7862D7C59;
 			remoteInfo = GoogleMaps;
@@ -2649,7 +2642,7 @@
 		};
 		FC618539F47726B2FC8D5EF2BB23ABF7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 55BE14A24CDFBF805342B6344799748B /* EXGL-CPP.xcodeproj */;
+			containerPortal = 832F0CFA86D7186B16C458947E008D61 /* EXGL-CPP.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 348F48833A31FAAF4C3FBBBCAA504BB8;
 			remoteInfo = "EXGL-CPP";
@@ -2697,7 +2690,6 @@
 		015CF6C41FE88E49D1B2EDC51F019B3C /* ABI34_0_0UMFaceDetectorManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0UMFaceDetectorManager.h; path = ABI34_0_0UMFaceDetectorInterface/ABI34_0_0UMFaceDetectorManager.h; sourceTree = "<group>"; };
 		017675296AFFA3D36A95420CEABB175A /* ABI34_0_0RCTSafeAreaViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTSafeAreaViewManager.h; sourceTree = "<group>"; };
 		0191BBF94B0BD94804D771B5866C5488 /* ABI34_0_0RNSVGClipPathManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGClipPathManager.m; sourceTree = "<group>"; };
-		01CB88D78580CBC8EC9E513926237D63 /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
 		021918ABFB61D63BD7EAB7B06C60CCDB /* ABI34_0_0RNSVGLinearGradientManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGLinearGradientManager.h; sourceTree = "<group>"; };
 		0229D4B045E7EF472EC313135E23CD16 /* ABI34_0_0AIRMapPolygonManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapPolygonManager.m; sourceTree = "<group>"; };
 		0259FA7B885355851736BD3E753114DA /* ABI34_0_0EXBlur.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXBlur.xcconfig; sourceTree = "<group>"; };
@@ -2726,7 +2718,6 @@
 		05747F640BE1F72F7DEC62C947D84C83 /* ABI34_0_0EXAppLoaderProvider.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXAppLoaderProvider.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		05C83D4FB4F9C2DE2168F0E1CBC5C71B /* ABI34_0_0RCTSurfaceRootView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI34_0_0RCTSurfaceRootView.mm; sourceTree = "<group>"; };
 		062A9C0A619EF85810372EA2F54569DB /* ABI34_0_0EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXWKSnapshotPDFRenderer.m; path = ABI34_0_0EXPrint/ABI34_0_0EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
-		063F9CFFAA7826D260C1C05DACFD9C88 /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
 		0647CC1AB2A9F1E849C13463D252E338 /* ABI34_0_0EXScopedPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXScopedPermissions.m; sourceTree = "<group>"; };
 		065E48FD61D19D28539ED47D7CC60756 /* ABI34_0_0RNSScreen.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSScreen.m; sourceTree = "<group>"; };
 		06E29378337EEF4D0ED7D1156340FFEB /* ABI34_0_0RCTRootView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTRootView.m; sourceTree = "<group>"; };
@@ -2832,6 +2823,7 @@
 		1747CC8F3BF1CE025A3A2CC9737B8551 /* ABI34_0_0RCTDecayAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTDecayAnimation.h; sourceTree = "<group>"; };
 		174A25DE327AD833B9218BB7B0E04383 /* yogaABI34_0_0-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "yogaABI34_0_0-prefix.pch"; sourceTree = "<group>"; };
 		1769F92D2F72C1DC9CC4054C6329D668 /* ABI34_0_0ARTText.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0ARTText.h; path = Libraries/ART/ABI34_0_0ARTText.h; sourceTree = "<group>"; };
+		178247CDC97625016468104270618C31 /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
 		1790A9157A735E75A143F95A83A9D28F /* ABI34_0_0EXVideoThumbnails-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXVideoThumbnails-dummy.m"; sourceTree = "<group>"; };
 		17B90AFDEC1607D440EB8208EA32333B /* ABI34_0_0JSExecutor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0JSExecutor.h; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0JSExecutor.h; sourceTree = "<group>"; };
 		17BC799A14EB2F77A1E907E79AA565B0 /* ABI34_0_0RNSVGBezierElement.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGBezierElement.m; sourceTree = "<group>"; };
@@ -2907,6 +2899,7 @@
 		22F977FF8DF0B6811D29FE619A1C4F63 /* ABI34_0_0EXAdsAdMobBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXAdsAdMobBannerView.m; path = ABI34_0_0EXAdsAdMob/ABI34_0_0EXAdsAdMobBannerView.m; sourceTree = "<group>"; };
 		2301E2A511E3507828E640916B5845F7 /* ABI34_0_0EXWebBrowser.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXWebBrowser.xcconfig; sourceTree = "<group>"; };
 		23245144C677A39A36516954104E1175 /* ABI34_0_0RCTImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0RCTImageView.m; path = Libraries/Image/ABI34_0_0RCTImageView.m; sourceTree = "<group>"; };
+		2366ADBC814B19224FB08E88224EFE27 /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		2369F07C31D88E41B2BDB58E777B4E71 /* ABI34_0_0EXSharingModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXSharingModule.m; path = ABI34_0_0EXSharing/ABI34_0_0EXSharingModule.m; sourceTree = "<group>"; };
 		23A02B2C36C86A0FC2CDAE3701B18C14 /* ABI34_0_0AIRGoogleMapPolyline.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRGoogleMapPolyline.m; sourceTree = "<group>"; };
 		23C1A55AB07A8A07706675E8CEB90097 /* ABI34_0_0EXFontScalersManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXFontScalersManager.m; sourceTree = "<group>"; };
@@ -2977,9 +2970,7 @@
 		2F07A1E07B4714334529112870A9AEF3 /* ABI34_0_0ExpoKit.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0ExpoKit.xcconfig; sourceTree = "<group>"; };
 		2F46857ABC1D63CF0354CC953FA64144 /* ABI34_0_0REATransformNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0REATransformNode.m; sourceTree = "<group>"; };
 		2F5E4493AA8E0C09BE439F033584C27B /* ABI34_0_0RCTEventAnimation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTEventAnimation.h; sourceTree = "<group>"; };
-		2F60430B9863843E7175C8703AC2CFC2 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
 		2F9B057A3B2DDFE9D39851A614BB74B9 /* ABI34_0_0RCTDatePicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTDatePicker.h; sourceTree = "<group>"; };
-		2FA6DAB2DA663B38D672F66CB6D84D25 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
 		2FF8CDB66DEE4E6E9BB47EC8E2B71C65 /* ABI34_0_0RCTProfileTrampoline-x86_64.S */ = {isa = PBXFileReference; includeInIndex = 1; path = "ABI34_0_0RCTProfileTrampoline-x86_64.S"; sourceTree = "<group>"; };
 		300FFB4DBED5D35B9E633FADED606B00 /* ABI34_0_0EXVideoThumbnailsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXVideoThumbnailsModule.m; path = ABI34_0_0EXVideoThumbnails/ABI34_0_0EXVideoThumbnailsModule.m; sourceTree = "<group>"; };
 		3078A84A08AE88E005ECFC6583621405 /* ABI34_0_0EXAppLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXAppLoaderInterface.h; sourceTree = "<group>"; };
@@ -2992,14 +2983,12 @@
 		315F945C07430B42EB7D7EBADA85E01E /* ABI34_0_0EXFontManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXFontManager.m; path = ABI34_0_0EXFont/ABI34_0_0EXFontManager.m; sourceTree = "<group>"; };
 		3179BBDA82A13871EC431B4B5D20AC6F /* ABI34_0_0ARTShapeManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0ARTShapeManager.h; sourceTree = "<group>"; };
 		318DD626F0B515522B489F51D7768562 /* ABI34_0_0RCTWebViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTWebViewManager.h; sourceTree = "<group>"; };
-		31FCE1CBF0D8D5610537B7DEF6FE6584 /* Google-Mobile-Ads-SDK */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Mobile-Ads-SDK"; path = "Google-Mobile-Ads-SDK.xcodeproj"; sourceTree = "<group>"; };
 		324740F2AE7FB1A02CF8D96BC2A2CF4D /* ReactABI34_0_0.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ReactABI34_0_0.xcconfig; sourceTree = "<group>"; };
 		3255630AEB5DA38E42634508D775EAC1 /* ABI34_0_0EXSplashScreen.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXSplashScreen.h; sourceTree = "<group>"; };
 		32A58E5221201E7D38141EB8EB99B77C /* ABI34_0_0EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXLocation-prefix.pch"; sourceTree = "<group>"; };
 		32B7BD4BC16FA37658A746E36984A7B6 /* ABI34_0_0RCTI18nManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTI18nManager.m; sourceTree = "<group>"; };
 		32CC7B6BCE6F3D04B289C216607AB464 /* ABI34_0_0EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXPrint-dummy.m"; sourceTree = "<group>"; };
 		32E747C0352D86EF4ABDEE4251993959 /* ABI34_0_0EXGeofencingTaskConsumer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXGeofencingTaskConsumer.h; sourceTree = "<group>"; };
-		32FBC8E52D68251BE229E2299AE39A5F /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		330B3312907C8FC24CA5EACF8898D5BB /* ABI34_0_0RNSVGUseManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGUseManager.m; sourceTree = "<group>"; };
 		330F46D38480BDA005287C3BA0DCF96F /* ABI34_0_0AIRMapWMSTile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapWMSTile.m; sourceTree = "<group>"; };
 		331AD1FA099083B7EA9D84BF0F93C29D /* ABI34_0_0EXGoogleSignIn+Serialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "ABI34_0_0EXGoogleSignIn+Serialization.h"; path = "ABI34_0_0EXGoogleSignIn/ABI34_0_0EXGoogleSignIn+Serialization.h"; sourceTree = "<group>"; };
@@ -3038,7 +3027,6 @@
 		382D8192D53E4299DC01D5FC259F21D0 /* ABI34_0_0RCTSurfaceRootShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSurfaceRootShadowView.m; sourceTree = "<group>"; };
 		382E2781E6CDB757B128A136B9AE4048 /* ABI34_0_0MessageQueueThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0MessageQueueThread.h; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0MessageQueueThread.h; sourceTree = "<group>"; };
 		383D32D27FCF66528140395603A715EA /* UIView+ReactABI34_0_0.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UIView+ReactABI34_0_0.m"; sourceTree = "<group>"; };
-		3857011ABD3B5C279F5E82641F6509D3 /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		385D25DD664294CF6B32E4C9FC61AF70 /* ABI34_0_0EXScopedReactNativeAdapter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXScopedReactNativeAdapter.h; sourceTree = "<group>"; };
 		38879F6EE98496BC7391898DDF115369 /* ABI34_0_0EXCalendar-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXCalendar-prefix.pch"; sourceTree = "<group>"; };
 		38D0B718253CE4DA0907CE98672DA03A /* ABI34_0_0EXSegment.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXSegment.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -3087,7 +3075,6 @@
 		3FA9B4FEC4A8BB5840930A5577C99B7A /* ABI34_0_0RCTMultilineTextInputView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTMultilineTextInputView.m; sourceTree = "<group>"; };
 		3FB8800DDB7D88AF5B3DD2C3F9952EB8 /* ABI34_0_0RNSVGSymbolManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGSymbolManager.h; sourceTree = "<group>"; };
 		3FB90A96F759B4333010BE57B226F4CD /* ABI34_0_0YGNodePrint.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0YGNodePrint.cpp; path = yoga/ABI34_0_0YGNodePrint.cpp; sourceTree = "<group>"; };
-		3FBB64CF342F427D1F04186DA4519E2F /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
 		3FF7E51C139C15F4DD7C90F8B7F45C40 /* ABI34_0_0RCTPropsAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTPropsAnimatedNode.m; sourceTree = "<group>"; };
 		402240B3B008BB3E84CB5D9B8B6098DD /* ABI34_0_0EXScopedPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXScopedPermissions.h; sourceTree = "<group>"; };
 		40404ABCA5472933EB9053DB0F881E62 /* ABI34_0_0EXCalendar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXCalendar.h; path = ABI34_0_0EXCalendar/ABI34_0_0EXCalendar.h; sourceTree = "<group>"; };
@@ -3105,6 +3092,7 @@
 		42345A88C9C8FBC80A12F1E8FA16A8FF /* ABI34_0_0UMReactNativeAdapter.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0UMReactNativeAdapter.xcconfig; sourceTree = "<group>"; };
 		42ACA5E16C12641BF634C2215B004A67 /* ABI34_0_0EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXSQLite.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		42ECF4E12034B30C6E17FF2851F77D6C /* libABI34_0_0EXImageManipulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0EXImageManipulator.a; path = libABI34_0_0EXImageManipulator.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4330443D18BFFE73ABFA877B0E5F03AD /* FBAudienceNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBAudienceNetwork; path = FBAudienceNetwork.xcodeproj; sourceTree = "<group>"; };
 		433BB453F3C8E567267EE6C6B82102A2 /* ABI34_0_0EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXAmplitude.m; path = ABI34_0_0EXAmplitude/ABI34_0_0EXAmplitude.m; sourceTree = "<group>"; };
 		438C7CDA757398631335447030CF8678 /* ABI34_0_0RCTConvert+Transform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0RCTConvert+Transform.m"; sourceTree = "<group>"; };
 		43AE56666073B6103893685167D0EBFC /* ABI34_0_0RCTUIManagerUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTUIManagerUtils.m; sourceTree = "<group>"; };
@@ -3152,6 +3140,7 @@
 		492BECBC4B2165DC34C73086F9294E55 /* ABI34_0_0UMPermissionsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0UMPermissionsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		495332AAF67DCA046D22C38C20D00C68 /* ABI34_0_0EXWebBrowser-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXWebBrowser-prefix.pch"; sourceTree = "<group>"; };
 		497344F751C85C20F59AC35AAE40247F /* ABI34_0_0RCTShadowView+Layout.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0RCTShadowView+Layout.m"; sourceTree = "<group>"; };
+		4A0572583FAC9BBD89C1F4370CC447ED /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
 		4A22F13F8A138B615029A3B27DEDCFC0 /* ABI34_0_0RCTActivityIndicatorViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTActivityIndicatorViewManager.h; sourceTree = "<group>"; };
 		4A3A11A7EF9D7F895C5462B6975275B1 /* ABI34_0_0AIRMapCalloutSubview.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRMapCalloutSubview.h; sourceTree = "<group>"; };
 		4A58324036D1C3875FA2C1FFE2EC2EB9 /* ABI34_0_0RCTDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTDefines.h; sourceTree = "<group>"; };
@@ -3174,6 +3163,7 @@
 		4D24CB9769A853DD9EA49275ED35E052 /* ABI34_0_0EXNotifications.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXNotifications.m; sourceTree = "<group>"; };
 		4D5A221C8EF7C2E465CA93C24FDDE51A /* ABI34_0_0EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXPermissions.m; path = ABI34_0_0EXPermissions/ABI34_0_0EXPermissions.m; sourceTree = "<group>"; };
 		4D7319FBA52AF94A85C9F5A1C440D760 /* ABI34_0_0AIRWeakTimerReference.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRWeakTimerReference.m; sourceTree = "<group>"; };
+		4DBF3AEEF70DB409EF79109ABC346515 /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
 		4DCF0017ED6983A59AF5BCC3EEA1AAD4 /* ABI34_0_0EXVersionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXVersionManager.h; path = Expo/Core/ABI34_0_0EXVersionManager.h; sourceTree = "<group>"; };
 		4DDFEA4ADA70080D1341C4D86E451DDF /* ABI34_0_0RCTBackedTextInputDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTBackedTextInputDelegate.h; sourceTree = "<group>"; };
 		4DFB71167777FA84885A99F0FAD00842 /* ABI34_0_0EXBackgroundFetch-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXBackgroundFetch-dummy.m"; sourceTree = "<group>"; };
@@ -3184,6 +3174,7 @@
 		4EC14C1EAFD541DB4CE6B7B34EFC7F11 /* ABI34_0_0RCTMaskedView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTMaskedView.m; sourceTree = "<group>"; };
 		4ED9DAFEBD85988FDDDF2C3E38FA7275 /* ABI34_0_0UMBarCodeScannerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0UMBarCodeScannerInterface.h; path = ABI34_0_0UMBarCodeScannerInterface/ABI34_0_0UMBarCodeScannerInterface.h; sourceTree = "<group>"; };
 		4F27135A28CBF004E9A7425CC23DC576 /* ABI34_0_0EXScopedModuleRegistryDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXScopedModuleRegistryDelegate.m; sourceTree = "<group>"; };
+		4F40EF85B36E62930911BD51DBA1F82F /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
 		4F4DDBD6B4D8E54F77CCF9520C279471 /* ABI34_0_0EXFacebookAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXFacebookAppDelegate.h; path = ABI34_0_0EXFacebook/ABI34_0_0EXFacebookAppDelegate.h; sourceTree = "<group>"; };
 		4F5B4F30BB120C82C9879422D8550D40 /* ABI34_0_0EXKeepAwake.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXKeepAwake.xcconfig; sourceTree = "<group>"; };
 		4F67CBDC1C0E8460DD0666E51B487F35 /* ABI34_0_0EXAudioSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXAudioSessionManager.h; path = ABI34_0_0EXAV/ABI34_0_0EXAudioSessionManager.h; sourceTree = "<group>"; };
@@ -3219,7 +3210,6 @@
 		555BF01716ABC2E184F50475DDEDAA51 /* libABI34_0_0EXAppLoaderProvider.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0EXAppLoaderProvider.a; path = libABI34_0_0EXAppLoaderProvider.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		557AFFEF32B8CAB734A3BE76465B7CF8 /* ABI34_0_0EXCalendarConverter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXCalendarConverter.h; path = ABI34_0_0EXCalendar/ABI34_0_0EXCalendarConverter.h; sourceTree = "<group>"; };
 		5586F1BA6A0BE7D2AA8310923841BFB2 /* ABI34_0_0EXTaskManagerAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXTaskManagerAppDelegate.h; path = ABI34_0_0EXTaskManager/ABI34_0_0EXTaskManagerAppDelegate.h; sourceTree = "<group>"; };
-		55BE14A24CDFBF805342B6344799748B /* EXGL-CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "EXGL-CPP"; path = "EXGL-CPP.xcodeproj"; sourceTree = "<group>"; };
 		55CFC2A9503C18F063C6FAA0F7426D56 /* ABI34_0_0RNSVGSolidColorBrush.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGSolidColorBrush.h; sourceTree = "<group>"; };
 		55FB88D38D3B944C469DD4FC3CCC59B8 /* ABI34_0_0ARTSurfaceViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0ARTSurfaceViewManager.m; sourceTree = "<group>"; };
 		56024270C96326B186A2C17E0D2C7837 /* libABI34_0_0ExpoKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0ExpoKit.a; path = libABI34_0_0ExpoKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3261,7 +3251,6 @@
 		5A1B3D36E97DC8C409BCDB86231C81C6 /* ABI34_0_0EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXPermissions.xcconfig; sourceTree = "<group>"; };
 		5A1BDEE63FE02A0D343CA790BDD6CB2B /* ABI34_0_0RCTProfile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTProfile.h; sourceTree = "<group>"; };
 		5A3B198EE01DDCAA0FD76C97C486CFF1 /* ABI34_0_0RCTStatusBarManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTStatusBarManager.m; sourceTree = "<group>"; };
-		5AA17322B25557381C2EE03BAAC25896 /* JKBigInteger2 */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = JKBigInteger2; path = JKBigInteger2.xcodeproj; sourceTree = "<group>"; };
 		5AB4F2B33EFDFA8556E99F026A63530E /* ABI34_0_0RCTValueAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTValueAnimatedNode.h; sourceTree = "<group>"; };
 		5AF4CCDDE14616C7B73193E03F261B6C /* ABI34_0_0AIRGoogleMap.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRGoogleMap.m; sourceTree = "<group>"; };
 		5B2ECB3B5A7E475C70866B44B6F70B0E /* ABI34_0_0EXFaceDetectorManagerProvider.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXFaceDetectorManagerProvider.m; path = ABI34_0_0EXFaceDetector/ABI34_0_0EXFaceDetectorManagerProvider.m; sourceTree = "<group>"; };
@@ -3306,7 +3295,6 @@
 		603470A71EABB4FE994D2C99C7E2A7FD /* ABI34_0_0JSBigString.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0JSBigString.cpp; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0JSBigString.cpp; sourceTree = "<group>"; };
 		603C40D966F80FDB1656E85DA626F141 /* ABI34_0_0EXCalendar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXCalendar.m; path = ABI34_0_0EXCalendar/ABI34_0_0EXCalendar.m; sourceTree = "<group>"; };
 		605B3523DC79D9229AEF102E62B86F01 /* ABI34_0_0EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXPrint.m; path = ABI34_0_0EXPrint/ABI34_0_0EXPrint.m; sourceTree = "<group>"; };
-		605EF9B4FA8E742A85AA34A80384940F /* lottie-ios */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "lottie-ios"; path = "lottie-ios.xcodeproj"; sourceTree = "<group>"; };
 		606B362F465B44101FF1F286230C8C61 /* ABI34_0_0RNSVGClipPath.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGClipPath.m; sourceTree = "<group>"; };
 		609482ADE483A8A9D4960FC46BAC32A4 /* ABI34_0_0RCTErrorInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTErrorInfo.h; sourceTree = "<group>"; };
 		60950D0728A65C4B50051725F54ABA5A /* ABI34_0_0JSBundleType.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0JSBundleType.cpp; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0JSBundleType.cpp; sourceTree = "<group>"; };
@@ -3337,6 +3325,7 @@
 		657EA4CFB3CD1158FDC64C4D6BBC62BA /* ABI34_0_0EXLocalAuthentication.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXLocalAuthentication.xcconfig; sourceTree = "<group>"; };
 		658BA31402AEC9B5CC64CD92C8DC851F /* ABI34_0_0JSBundleType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0JSBundleType.h; path = ReactCommon/cxxReactABI34_0_0/ABI34_0_0JSBundleType.h; sourceTree = "<group>"; };
 		6590E8F9105A514AF68B54C2B411AE57 /* ABI34_0_0ARTShape.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0ARTShape.h; path = Libraries/ART/ABI34_0_0ARTShape.h; sourceTree = "<group>"; };
+		65B15F08E5F2990D8C7FFE6360759883 /* lottie-ios */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "lottie-ios"; path = "lottie-ios.xcodeproj"; sourceTree = "<group>"; };
 		65DAC8FADBC2BB215B4FD23D781763F4 /* ABI34_0_0AIRMapPolyline.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapPolyline.m; sourceTree = "<group>"; };
 		65DAF8EED1CB738197320B71AB0CC1A9 /* ABI34_0_0EXFaceDetector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXFaceDetector.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		65F41B11AE20FE93D50F5AAAA8B8077C /* ABI34_0_0RCTShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTShadowView.m; sourceTree = "<group>"; };
@@ -3365,6 +3354,7 @@
 		6A7397296699AB2C091A6CEC902B032E /* ABI34_0_0RCTInterpolationAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTInterpolationAnimatedNode.m; sourceTree = "<group>"; };
 		6ACAD6D53C9E0C0FA0CA17CB4C3242E1 /* ABI34_0_0EXBarCodeScanner.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXBarCodeScanner.m; path = ABI34_0_0EXBarCodeScanner/ABI34_0_0EXBarCodeScanner.m; sourceTree = "<group>"; };
 		6AD20427D4AFE5106027EEEC30511B65 /* ABI34_0_0EXAppAuth.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXAppAuth.h; path = ABI34_0_0EXAppAuth/ABI34_0_0EXAppAuth.h; sourceTree = "<group>"; };
+		6AEC83AF86CFF44B483BBF139F673D8B /* Google-Maps-iOS-Utils */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Maps-iOS-Utils"; path = "Google-Maps-iOS-Utils.xcodeproj"; sourceTree = "<group>"; };
 		6AF3780BDDC3968FAF2B22E7372A1A66 /* ABI34_0_0EXFaceDetector.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXFaceDetector.xcconfig; sourceTree = "<group>"; };
 		6B0104392E86E8DB80BD9392E96E83A5 /* ABI34_0_0RCTBaseTextInputView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTBaseTextInputView.m; sourceTree = "<group>"; };
 		6B10671A5472BED4155E366C8E1C1174 /* ABI34_0_0RCTSurfaceStage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTSurfaceStage.h; sourceTree = "<group>"; };
@@ -3378,6 +3368,7 @@
 		6C030584036D9AE30CFF9C5CE807628F /* ABI34_0_0AIRGoogleMapMarker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRGoogleMapMarker.m; sourceTree = "<group>"; };
 		6C646DCD267AE2DECAB9497C3E655A00 /* ABI34_0_0RCTConvert.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTConvert.m; sourceTree = "<group>"; };
 		6C6CEBB7F17C9EF3C76E9A09C2D7788F /* ABI34_0_0ARTTextManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0ARTTextManager.m; sourceTree = "<group>"; };
+		6C76967F19884DD3D950D706C20B597E /* JKBigInteger2 */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = JKBigInteger2; path = JKBigInteger2.xcodeproj; sourceTree = "<group>"; };
 		6CAF8CA69591C444796B09443C99EA2A /* ABI34_0_0RNSVGVBMOS.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGVBMOS.h; sourceTree = "<group>"; };
 		6CEFD80B2DC88E04F1153D442409C2E4 /* ABI34_0_0AIRGoogleMapPolygon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRGoogleMapPolygon.h; sourceTree = "<group>"; };
 		6D1427BB4940C7B6ACAB2B6B57B8CD20 /* libABI34_0_0EXSpeech.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0EXSpeech.a; path = libABI34_0_0EXSpeech.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3387,7 +3378,6 @@
 		6DB5F8002B8A2A9935E001D0F2C7E21C /* ABI34_0_0UMCore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0UMCore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		6DD69A5EDCF1842813F7F0F58849EF43 /* ABI34_0_0RCTBackedTextInputDelegateAdapter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTBackedTextInputDelegateAdapter.h; sourceTree = "<group>"; };
 		6E05F4F4650E69A079CF4E2AE74083E0 /* ABI34_0_0EXImagePicker.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXImagePicker.xcconfig; sourceTree = "<group>"; };
-		6E2CECF50F2C0BA7F280A085EE0B3B1D /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
 		6E2FE91A8DA36DDB4BE8D7D483F35436 /* ABI34_0_0RCTNativeAnimatedModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTNativeAnimatedModule.h; path = Libraries/NativeAnimation/ABI34_0_0RCTNativeAnimatedModule.h; sourceTree = "<group>"; };
 		6E441F5DCFAE4E6F995F74CF3CA238F9 /* ReactABI34_0_0-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ReactABI34_0_0-prefix.pch"; sourceTree = "<group>"; };
 		6E478B512C22D9723878BF19CAC08C4C /* ABI34_0_0RCTSafeAreaView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSafeAreaView.m; sourceTree = "<group>"; };
@@ -3407,6 +3397,7 @@
 		70261810B613F9052FE8C4E84DB2FAE3 /* ABI34_0_0RCTSurfaceView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI34_0_0RCTSurfaceView.mm; sourceTree = "<group>"; };
 		704B1A87A060E7D9717E707DC4151943 /* ABI34_0_0RCTWebSocketExecutor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0RCTWebSocketExecutor.m; path = Libraries/WebSocket/ABI34_0_0RCTWebSocketExecutor.m; sourceTree = "<group>"; };
 		706319D1C59132F8D7145C62516ACA9B /* ABI34_0_0UMConstantsInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0UMConstantsInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		7065D929739DD994480191D75E47C4D0 /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
 		708AFEA0411A590B5EC7723975CBCDF0 /* ABI34_0_0RCTSurfaceDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTSurfaceDelegate.h; sourceTree = "<group>"; };
 		70C36139522469378DA541BC64B09980 /* ABI34_0_0RCTHTTPRequestHandler.mm */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI34_0_0RCTHTTPRequestHandler.mm; path = Libraries/Network/ABI34_0_0RCTHTTPRequestHandler.mm; sourceTree = "<group>"; };
 		70CA63FA127D887DA5641929540DF36F /* ABI34_0_0RCTSegmentedControlManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSegmentedControlManager.m; sourceTree = "<group>"; };
@@ -3417,7 +3408,6 @@
 		718A6E19D3F105B1D3D86E6785BF9A1E /* ABI34_0_0AIRMapOverlay.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapOverlay.m; sourceTree = "<group>"; };
 		71A8EEBB49A7E95C4E3C3D48CFFB29C6 /* ABI34_0_0RNBranchConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNBranchConfig.m; sourceTree = "<group>"; };
 		71B16C51DE682538945FEC0C71460221 /* ABI34_0_0REASetNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0REASetNode.m; sourceTree = "<group>"; };
-		72102348398926974FBE425A4B248B48 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
 		7236D64D2DDE3E039A6E474BF6118323 /* ABI34_0_0EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		724BAB106ED815B8F3702727FF1A7589 /* ABI34_0_0EXBarCodeScannerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXBarCodeScannerProvider.h; path = ABI34_0_0EXBarCodeScanner/ABI34_0_0EXBarCodeScannerProvider.h; sourceTree = "<group>"; };
 		7266917D67C1538B1301EA4CCD0F2C07 /* ABI34_0_0EXFaceDetector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXFaceDetector.m; path = ABI34_0_0EXFaceDetector/ABI34_0_0EXFaceDetector.m; sourceTree = "<group>"; };
@@ -3475,6 +3465,7 @@
 		795C193D7201A3B3D164CEDF90A4E714 /* ABI34_0_0EXDevSettingsDataSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXDevSettingsDataSource.m; sourceTree = "<group>"; };
 		7962BB5ADECC02ED7560D07DCFCEF587 /* ABI34_0_0RCTReloadCommand.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTReloadCommand.m; sourceTree = "<group>"; };
 		79943ECD63204B2B10612DBEA4E365DB /* ABI34_0_0EXAppLoaderProvider.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXAppLoaderProvider.xcconfig; sourceTree = "<group>"; };
+		79B2893D18CE81177F210B1B53112742 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
 		79F65E6F2F7986038BBD99B2410ABF3F /* ABI34_0_0ARTSurfaceViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0ARTSurfaceViewManager.h; sourceTree = "<group>"; };
 		7A059B39AABC7250F6DBF45AE7C8A807 /* ABI34_0_0AIRGoogleMapWMSTileManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRGoogleMapWMSTileManager.m; sourceTree = "<group>"; };
 		7A1917A4D56BC82B5DE20799056ACF66 /* ABI34_0_0EXFacebook.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXFacebook.xcconfig; sourceTree = "<group>"; };
@@ -3489,6 +3480,7 @@
 		7BB6C44FC3D66E2D5C5237DA84046610 /* ABI34_0_0RNSVGNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGNode.h; sourceTree = "<group>"; };
 		7BF27F432FB84AEE9A592CDA87AA2239 /* ABI34_0_0RCTBaseTextInputViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTBaseTextInputViewManager.h; sourceTree = "<group>"; };
 		7BF92399EDFC07A0DD3C6A599A2F0997 /* ABI34_0_0EXScopedBridgeModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXScopedBridgeModule.h; sourceTree = "<group>"; };
+		7BFAE4C676A9871AE1685E8B9451AE8A /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
 		7C15F63E22E7245490C1E36218C1A053 /* ABI34_0_0REAAllTransitions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0REAAllTransitions.m; sourceTree = "<group>"; };
 		7C63865842FE7CBBC351879AA03C87EE /* ABI34_0_0RCTImageShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTImageShadowView.h; path = Libraries/Image/ABI34_0_0RCTImageShadowView.h; sourceTree = "<group>"; };
 		7C715BC2340580C9E9EF9898B7B40955 /* ABI34_0_0CompactValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0CompactValue.h; path = yoga/ABI34_0_0CompactValue.h; sourceTree = "<group>"; };
@@ -3548,6 +3540,7 @@
 		829001C8731008B3E910BB5E749BEC8A /* ABI34_0_0RCTFollyConvert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTFollyConvert.h; sourceTree = "<group>"; };
 		830BC1B181C7D82CFD99754E8AF859EA /* ABI34_0_0EXDocumentPicker-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXDocumentPicker-prefix.pch"; sourceTree = "<group>"; };
 		8325B4D3FCB35A2407FD46C0CB93CCFE /* ABI34_0_0EXFacebookAdHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXFacebookAdHelper.m; path = ABI34_0_0EXAdsFacebook/ABI34_0_0EXFacebookAdHelper.m; sourceTree = "<group>"; };
+		832F0CFA86D7186B16C458947E008D61 /* EXGL-CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "EXGL-CPP"; path = "EXGL-CPP.xcodeproj"; sourceTree = "<group>"; };
 		833E2732625A2AAB1F1FA3674EEF8AC5 /* ABI34_0_0UMNativeModulesProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0UMNativeModulesProxy.h; sourceTree = "<group>"; };
 		8349771D22EB1102610C40CAAC0B9408 /* ABI34_0_0EXAppAuthSessionsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXAppAuthSessionsManager.h; path = ABI34_0_0EXAppAuth/ABI34_0_0EXAppAuthSessionsManager.h; sourceTree = "<group>"; };
 		835826F7785F7D2CE097E3AB7BC1A22D /* ABI34_0_0RCTNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTNetworking.h; path = Libraries/Network/ABI34_0_0RCTNetworking.h; sourceTree = "<group>"; };
@@ -3601,6 +3594,7 @@
 		8B4321AD32989CFFF722483CB44DAB92 /* ABI34_0_0EXFont-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXFont-dummy.m"; sourceTree = "<group>"; };
 		8B637FB155B6A22310A7F6D3A633F19C /* ABI34_0_0AIRMapMarkerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapMarkerManager.m; sourceTree = "<group>"; };
 		8C0B53D889BB07EA6862A553C504352B /* ABI34_0_0RCTImageEditingManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0RCTImageEditingManager.m; path = Libraries/Image/ABI34_0_0RCTImageEditingManager.m; sourceTree = "<group>"; };
+		8C11B47E184ECEDD257F18E319B4816C /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
 		8C45C076BAB530DCEAA640EC6744CDC6 /* ABI34_0_0EXHaptics.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXHaptics.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		8D6C6C25AF783F45BBBDA1C30DA08F8E /* ABI34_0_0RCTImageBlurUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTImageBlurUtils.h; path = Libraries/Image/ABI34_0_0RCTImageBlurUtils.h; sourceTree = "<group>"; };
 		8D862F93920DDC6A271719075451FC9B /* ABI34_0_0RNSVGPercentageConverter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGPercentageConverter.m; sourceTree = "<group>"; };
@@ -3609,13 +3603,11 @@
 		8D903FA70CFA510C8AF613BE814F8F4E /* ABI34_0_0AIRGoogleMapWMSTile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRGoogleMapWMSTile.m; sourceTree = "<group>"; };
 		8D9E09C13284377B5C3EC31B4297DB20 /* ABI34_0_0RNSVGCGFCRule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGCGFCRule.h; sourceTree = "<group>"; };
 		8E07F558B354B5858172CC5ADA5F32F6 /* ABI34_0_0EXAnimationViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXAnimationViewManager.h; sourceTree = "<group>"; };
-		8E25151D57872D4DC8100638CC975AE7 /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
 		8E5E84070932B0EE109EA3168E5832E9 /* ABI34_0_0RNSVGNodeManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGNodeManager.h; sourceTree = "<group>"; };
 		8ECD9D37042EC2AA4EAF635C822C39F3 /* ABI34_0_0EXCalendarRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXCalendarRequester.h; path = ABI34_0_0EXPermissions/ABI34_0_0EXCalendarRequester.h; sourceTree = "<group>"; };
 		8EEEC6B11127EA275EA1AF1D1D996D4C /* ABI34_0_0RNSVGTSpan.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGTSpan.m; sourceTree = "<group>"; };
 		8F8F57EE07BF3BB5CC0CDE96B4220467 /* ABI34_0_0RNGestureHandlerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNGestureHandlerModule.m; sourceTree = "<group>"; };
 		8FBCCE4D619EE568A8E3669D7A593DF8 /* ABI34_0_0RNGestureHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNGestureHandler.m; sourceTree = "<group>"; };
-		8FD46B57D0235258CEF5F888E42BC86E /* Google-Maps-iOS-Utils */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Maps-iOS-Utils"; path = "Google-Maps-iOS-Utils.xcodeproj"; sourceTree = "<group>"; };
 		8FEF94FE69BD1DD14E52533F6F483136 /* ABI34_0_0RCTImagePickerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTImagePickerManager.h; path = Libraries/CameraRoll/ABI34_0_0RCTImagePickerManager.h; sourceTree = "<group>"; };
 		900C55FC6A217990A78AB6163BFE5CD5 /* ABI34_0_0UMTaskManagerInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0UMTaskManagerInterface.xcconfig; sourceTree = "<group>"; };
 		9011036356BF1DAA3150BD8BA33C4C64 /* ABI34_0_0RCTDevMenu.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTDevMenu.h; sourceTree = "<group>"; };
@@ -3661,6 +3653,7 @@
 		9640D26FBAC0FA27B66093928D7061B5 /* ABI34_0_0UMGyroscopeInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0UMGyroscopeInterface.h; path = ABI34_0_0UMSensorsInterface/ABI34_0_0UMGyroscopeInterface.h; sourceTree = "<group>"; };
 		965C160662AF9DB61297F0F78C4AFDD7 /* ABI34_0_0instrumentation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0instrumentation.h; path = yoga/ABI34_0_0instrumentation.h; sourceTree = "<group>"; };
 		968CC12ACC17F145EBD88EB119C5DF87 /* ABI34_0_0RCTSafeAreaShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSafeAreaShadowView.m; sourceTree = "<group>"; };
+		96F340C75FE50FBA713407E6210B209E /* GoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleMaps; path = GoogleMaps.xcodeproj; sourceTree = "<group>"; };
 		96FA8F3D0D0C483CBE4BB6DFE1836AD4 /* ABI34_0_0EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
 		97103DB87CF68A7F160E719925654397 /* ABI34_0_0RCTURLRequestDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTURLRequestDelegate.h; sourceTree = "<group>"; };
 		9725E4CCED6E6C4DB81C6D4AC9556AF5 /* ABI34_0_0RCTActivityIndicatorView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTActivityIndicatorView.h; sourceTree = "<group>"; };
@@ -3704,7 +3697,6 @@
 		9C5CF8E3DD8932F515B7DE86DA6974C4 /* ABI34_0_0EXAdsAdMobDFPManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXAdsAdMobDFPManager.m; path = ABI34_0_0EXAdsAdMob/ABI34_0_0EXAdsAdMobDFPManager.m; sourceTree = "<group>"; };
 		9C6700B6A8EBB5FEC218045BBC000EC0 /* ABI34_0_0EXAdsAdMobBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXAdsAdMobBannerViewManager.h; path = ABI34_0_0EXAdsAdMob/ABI34_0_0EXAdsAdMobBannerViewManager.h; sourceTree = "<group>"; };
 		9CFC62889FB5916597407D158F503980 /* ABI34_0_0RNSVGLineManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGLineManager.m; sourceTree = "<group>"; };
-		9D5B2701586F87D3ECA0DD2A97600AE0 /* FBAudienceNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBAudienceNetwork; path = FBAudienceNetwork.xcodeproj; sourceTree = "<group>"; };
 		9D641D4EE6372E6A70A14AAD9D970E8B /* ABI34_0_0RCTFileRequestHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0RCTFileRequestHandler.h; path = Libraries/Network/ABI34_0_0RCTFileRequestHandler.h; sourceTree = "<group>"; };
 		9D8E7D3F98C70EBC89D4C513C76284BA /* ABI34_0_0EXDisabledRedBox.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0EXDisabledRedBox.h; sourceTree = "<group>"; };
 		9DD557EBE03F7CD069B1948DEA70D331 /* ABI34_0_0RCTTextShadowView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTTextShadowView.h; sourceTree = "<group>"; };
@@ -3712,11 +3704,11 @@
 		9E6B63A66E9306051A3C3CCE72EDE1CB /* ABI34_0_0RCTKeyCommands.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTKeyCommands.m; sourceTree = "<group>"; };
 		9E76ED450AA69B9E863C6AE05DA065C7 /* ABI34_0_0EXBarCodeScannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXBarCodeScannerViewManager.m; path = ABI34_0_0EXBarCodeScanner/ABI34_0_0EXBarCodeScannerViewManager.m; sourceTree = "<group>"; };
 		9E7B96B7692CC0EF8FDC2C909E83DC52 /* ABI34_0_0RCTEventAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTEventAnimation.m; sourceTree = "<group>"; };
-		9E8EAB9B392271A80B5BB204E548D04D /* GoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleMaps; path = GoogleMaps.xcodeproj; sourceTree = "<group>"; };
 		9EAC6E9D0C774E48215AA7B9A22A4AE4 /* ABI34_0_0RCTSwitch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTSwitch.m; sourceTree = "<group>"; };
 		9EBDF00DE932BDD6FE360943893E61E7 /* ABI34_0_0RCTAnimationUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0RCTAnimationUtils.m; path = Libraries/NativeAnimation/ABI34_0_0RCTAnimationUtils.m; sourceTree = "<group>"; };
 		9ECE9C022F941669E3E80D6A71E5502A /* libABI34_0_0EXFileSystem.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI34_0_0EXFileSystem.a; path = libABI34_0_0EXFileSystem.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9EEB0E24D8EEADC4BEE7F12065853D53 /* ABI34_0_0RNBranchConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNBranchConfig.h; sourceTree = "<group>"; };
+		9EF72F22F9BBA3D94683416CDC10F1AD /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
 		9F1D0F9E2B1951959F7ED0C0A3B0BF70 /* ABI34_0_0EXGeofencingTaskConsumer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXGeofencingTaskConsumer.m; sourceTree = "<group>"; };
 		9F405903EC48587681937E1BB03B055C /* ABI34_0_0RNSVGUse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGUse.m; sourceTree = "<group>"; };
 		9F43F828CB7C87C494B7F49F3E79A4DA /* ABI34_0_0RNFlingHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNFlingHandler.m; sourceTree = "<group>"; };
@@ -3730,6 +3722,7 @@
 		A063CF5EEB490B48F2092F5D4AFAC919 /* ABI34_0_0AIRMapPolylineRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRMapPolylineRenderer.h; sourceTree = "<group>"; };
 		A0725CD90991C0D2CDC1F92187B5B93A /* ABI34_0_0RNGestureHandlerEvents.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNGestureHandlerEvents.m; sourceTree = "<group>"; };
 		A0E7DE9A15F430C94D025EA55183EED2 /* ABI34_0_0RCTAssert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTAssert.h; sourceTree = "<group>"; };
+		A0F198C1E75B570FA9BC4D62FC52AF53 /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		A13898172C410A7453C10175A029BF56 /* ABI34_0_0AIRMapCalloutManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapCalloutManager.m; sourceTree = "<group>"; };
 		A18E59C5FE62FEFB207E1B73EF425211 /* ABI34_0_0UMTaskInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0UMTaskInterface.h; path = ABI34_0_0UMTaskManagerInterface/ABI34_0_0UMTaskInterface.h; sourceTree = "<group>"; };
 		A18EDCADA8CC542E03BDA0592E8766B3 /* ABI34_0_0EXNativeAdManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXNativeAdManager.m; path = ABI34_0_0EXAdsFacebook/ABI34_0_0EXNativeAdManager.m; sourceTree = "<group>"; };
@@ -3766,7 +3759,6 @@
 		A6CDF03532DBB8149833A1C0DDB7C050 /* ABI34_0_0EXContacts-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI34_0_0EXContacts-prefix.pch"; sourceTree = "<group>"; };
 		A6D899FE573F7A018B0FDB1C12524160 /* ABI34_0_0EXSMS.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXSMS.xcconfig; sourceTree = "<group>"; };
 		A716B1E071755582E0851CB070491BBA /* ABI34_0_0RCTClipboard.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTClipboard.m; sourceTree = "<group>"; };
-		A76B7D3818E0B007215ABD30DD4D6083 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
 		A7E5E7DBC4A24AFD96BAD9F2FFA39F8D /* ABI34_0_0RNSVGVectorEffect.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RNSVGVectorEffect.h; sourceTree = "<group>"; };
 		A80AD5948F7715AC4F199A8ABABF89B2 /* ABI34_0_0RCTUITextField.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTUITextField.h; sourceTree = "<group>"; };
 		A82A8A4AB27AD81D3386143B2020F1A4 /* ABI34_0_0EXLocation-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI34_0_0EXLocation-dummy.m"; sourceTree = "<group>"; };
@@ -3891,7 +3883,6 @@
 		BB209FB8F39669219F9DECE60BCE6F67 /* ABI34_0_0RCTJavaScriptLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		BB2DC79258C7C434647C342E8572B295 /* ABI34_0_0EXBarCodeScannerUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXBarCodeScannerUtils.m; sourceTree = "<group>"; };
 		BB3F2F1EC090AC7C12FE21D72B807A3D /* ABI34_0_0EXCameraUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0EXCameraUtils.m; sourceTree = "<group>"; };
-		BB7647E1F6E91B1BF369232D25205F30 /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
 		BB895F190E7D3A3850A621FA59685BB1 /* ABI34_0_0REAAlwaysNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0REAAlwaysNode.h; sourceTree = "<group>"; };
 		BBA0BA9C95F746861B074FA79A915CA3 /* ABI34_0_0REACondNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0REACondNode.h; sourceTree = "<group>"; };
 		BBC4C476981EA0C47EF2F4F543F6155C /* ABI34_0_0ARTSurfaceView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0ARTSurfaceView.h; path = Libraries/ART/ABI34_0_0ARTSurfaceView.h; sourceTree = "<group>"; };
@@ -4032,6 +4023,7 @@
 		CF9BE11A1B3031F425CFC6BB4A038F6A /* ABI34_0_0EXCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI34_0_0EXCameraPermissionRequester.h; path = ABI34_0_0EXPermissions/ABI34_0_0EXCameraPermissionRequester.h; sourceTree = "<group>"; };
 		CFAB7E98EBE3C4E16DA03EA480A9222F /* ABI34_0_0RCTAdditionAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTAdditionAnimatedNode.h; sourceTree = "<group>"; };
 		D004A4E49E51395599A7027FE29E7B2D /* ABI34_0_0RCTSurfaceSizeMeasureMode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTSurfaceSizeMeasureMode.h; sourceTree = "<group>"; };
+		D02C2857114690318CFDA92F12746DC9 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
 		D03043215D1985528E089C0618465143 /* ABI34_0_0EXCalendarRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXCalendarRequester.m; path = ABI34_0_0EXPermissions/ABI34_0_0EXCalendarRequester.m; sourceTree = "<group>"; };
 		D0490EA72340B2F21C9894BB8DD0EF0F /* ABI34_0_0RCTEventDispatcher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTEventDispatcher.h; sourceTree = "<group>"; };
 		D0A28AE00175C7B439B09E7FC9AB06C3 /* ABI34_0_0EXContacts.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXContacts.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -4281,6 +4273,7 @@
 		FA9B6526F138B381F2A6A02138ABE66B /* ABI34_0_0AIRGoogleMapCircleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRGoogleMapCircleManager.h; sourceTree = "<group>"; };
 		FA9E0943EFAD0DF20A19F160BBD1954D /* ABI34_0_0AIRGoogleMapUrlTile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0AIRGoogleMapUrlTile.h; sourceTree = "<group>"; };
 		FAB0CA5C6179515A5E24E7268F1DC853 /* ABI34_0_0AIRGMSPolyline.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRGMSPolyline.m; sourceTree = "<group>"; };
+		FAC00D93045412B82929A5C5CA04BEBF /* Google-Mobile-Ads-SDK */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Mobile-Ads-SDK"; path = "Google-Mobile-Ads-SDK.xcodeproj"; sourceTree = "<group>"; };
 		FACC74BDA28984DC17EAEEF1C33F1F16 /* ABI34_0_0RCTSurfaceHostingView.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI34_0_0RCTSurfaceHostingView.mm; sourceTree = "<group>"; };
 		FAE0511D7B9A26699AC17A7E34674C90 /* ABI34_0_0RCTSlider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTSlider.h; sourceTree = "<group>"; };
 		FB0F48EE0810EBF58DF049364851FF5D /* ABI34_0_0RNSVGGroupManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RNSVGGroupManager.m; sourceTree = "<group>"; };
@@ -4307,7 +4300,6 @@
 		FE549189DFF6ACC9ACEA8ACBAC332FB9 /* ABI34_0_0EXMailComposer.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI34_0_0EXMailComposer.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		FEC3DB7E23044D62F4257B19502A4AAB /* ABI34_0_0EXContacts.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI34_0_0EXContacts.xcconfig; sourceTree = "<group>"; };
 		FF2B4B49587EA9156CF0272FFECEEEA7 /* ABI34_0_0AIRMapMarker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0AIRMapMarker.m; sourceTree = "<group>"; };
-		FF6D5021639CA058188391FACDF6777A /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		FFBBAD87A484E115C34B9F881E5E63AA /* ABI34_0_0EXContactsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI34_0_0EXContactsViewController.m; path = ABI34_0_0EXContacts/ABI34_0_0EXContactsViewController.m; sourceTree = "<group>"; };
 		FFC5F887F98A5A67B6C1FED047C3D8C5 /* ABI34_0_0RCTSourceCode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI34_0_0RCTSourceCode.h; sourceTree = "<group>"; };
 		FFD239EAAF6557EE38AB9BC6E00448E8 /* ABI34_0_0RCTDecayAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI34_0_0RCTDecayAnimation.m; sourceTree = "<group>"; };
@@ -4797,7 +4789,7 @@
 				42121E66AE02FFBF27FAE4FA8C30C104 /* ABI34_0_0UMReactNativeAdapter */,
 				CC9F75BEC758E77D1882347F42E896EC /* ABI34_0_0UMSensorsInterface */,
 				4D1EB31F2C7E05911E20940C0421D4D8 /* ABI34_0_0UMTaskManagerInterface */,
-				7F31C32EA2931896ED0059F9FF2D6987 /* Dependencies */,
+				92345DC0C9FD39B6E71B35BC76D7ACC9 /* Dependencies */,
 				23A38EC3F9AD9661ACD22DC538387AFE /* Frameworks */,
 				69BC9C5781CF05F567B055F3331796A3 /* Products */,
 				90C387E615C67E13B00CB11B985B3817 /* ReactABI34_0_0 */,
@@ -6854,33 +6846,6 @@
 			path = "../versioned-react-native/ABI34_0_0/EXDocumentPicker";
 			sourceTree = "<group>";
 		};
-		7F31C32EA2931896ED0059F9FF2D6987 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				A76B7D3818E0B007215ABD30DD4D6083 /* Amplitude-iOS */,
-				063F9CFFAA7826D260C1C05DACFD9C88 /* Analytics */,
-				FF6D5021639CA058188391FACDF6777A /* AppAuth */,
-				BB7647E1F6E91B1BF369232D25205F30 /* boost-for-react-native */,
-				01CB88D78580CBC8EC9E513926237D63 /* Branch */,
-				3FBB64CF342F427D1F04186DA4519E2F /* DoubleConversion */,
-				55BE14A24CDFBF805342B6344799748B /* EXGL-CPP */,
-				9D5B2701586F87D3ECA0DD2A97600AE0 /* FBAudienceNetwork */,
-				6E2CECF50F2C0BA7F280A085EE0B3B1D /* FBSDKCoreKit */,
-				8E25151D57872D4DC8100638CC975AE7 /* FBSDKLoginKit */,
-				2FA6DAB2DA663B38D672F66CB6D84D25 /* Firebase */,
-				2F60430B9863843E7175C8703AC2CFC2 /* Folly */,
-				72102348398926974FBE425A4B248B48 /* glog */,
-				8FD46B57D0235258CEF5F888E42BC86E /* Google-Maps-iOS-Utils */,
-				31FCE1CBF0D8D5610537B7DEF6FE6584 /* Google-Mobile-Ads-SDK */,
-				9E8EAB9B392271A80B5BB204E548D04D /* GoogleMaps */,
-				3857011ABD3B5C279F5E82641F6509D3 /* GoogleSignIn */,
-				5AA17322B25557381C2EE03BAAC25896 /* JKBigInteger2 */,
-				605EF9B4FA8E742A85AA34A80384940F /* lottie-ios */,
-				32FBC8E52D68251BE229E2299AE39A5F /* React */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		80F452E87A92D29DC28165B2A5F62148 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
@@ -7139,6 +7104,32 @@
 			);
 			name = ReactABI34_0_0;
 			path = "../versioned-react-native/ABI34_0_0";
+			sourceTree = "<group>";
+		};
+		92345DC0C9FD39B6E71B35BC76D7ACC9 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				4A0572583FAC9BBD89C1F4370CC447ED /* Amplitude-iOS */,
+				4F40EF85B36E62930911BD51DBA1F82F /* Analytics */,
+				A0F198C1E75B570FA9BC4D62FC52AF53 /* AppAuth */,
+				7BFAE4C676A9871AE1685E8B9451AE8A /* boost-for-react-native */,
+				9EF72F22F9BBA3D94683416CDC10F1AD /* Branch */,
+				8C11B47E184ECEDD257F18E319B4816C /* DoubleConversion */,
+				832F0CFA86D7186B16C458947E008D61 /* EXGL-CPP */,
+				4330443D18BFFE73ABFA877B0E5F03AD /* FBAudienceNetwork */,
+				4DBF3AEEF70DB409EF79109ABC346515 /* FBSDKCoreKit */,
+				178247CDC97625016468104270618C31 /* FBSDKLoginKit */,
+				D02C2857114690318CFDA92F12746DC9 /* Firebase */,
+				7065D929739DD994480191D75E47C4D0 /* Folly */,
+				79B2893D18CE81177F210B1B53112742 /* glog */,
+				6AEC83AF86CFF44B483BBF139F673D8B /* Google-Maps-iOS-Utils */,
+				FAC00D93045412B82929A5C5CA04BEBF /* Google-Mobile-Ads-SDK */,
+				96F340C75FE50FBA713407E6210B209E /* GoogleMaps */,
+				2366ADBC814B19224FB08E88224EFE27 /* GoogleSignIn */,
+				6C76967F19884DD3D950D706C20B597E /* JKBigInteger2 */,
+				65B15F08E5F2990D8C7FFE6360759883 /* lottie-ios */,
+			);
+			name = Dependencies;
 			sourceTree = "<group>";
 		};
 		923B63A2E18E0A599F21DF181D8882F5 /* Pod */ = {
@@ -10390,7 +10381,6 @@
 			dependencies = (
 				A476E7A0A86BCFD8D0EC277319AFF845 /* PBXTargetDependency */,
 				184E0B5E36F400751ED5D2173E3CAEB6 /* PBXTargetDependency */,
-				58077339BF8097173F68AB2F74A11E42 /* PBXTargetDependency */,
 				4301051F018723198774E0699C277115 /* PBXTargetDependency */,
 				3A18D602CC9B53E8B1E2020F9ED6A400 /* PBXTargetDependency */,
 				3A68478E2B1FF1B6847D688B879DF93D /* PBXTargetDependency */,
@@ -10793,64 +10783,61 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 31FCE1CBF0D8D5610537B7DEF6FE6584 /* Google-Mobile-Ads-SDK */;
+					ProjectRef = FAC00D93045412B82929A5C5CA04BEBF /* Google-Mobile-Ads-SDK */;
 				},
 				{
-					ProjectRef = 9D5B2701586F87D3ECA0DD2A97600AE0 /* FBAudienceNetwork */;
+					ProjectRef = 4330443D18BFFE73ABFA877B0E5F03AD /* FBAudienceNetwork */;
 				},
 				{
-					ProjectRef = A76B7D3818E0B007215ABD30DD4D6083 /* Amplitude-iOS */;
+					ProjectRef = 4A0572583FAC9BBD89C1F4370CC447ED /* Amplitude-iOS */;
 				},
 				{
-					ProjectRef = FF6D5021639CA058188391FACDF6777A /* AppAuth */;
+					ProjectRef = A0F198C1E75B570FA9BC4D62FC52AF53 /* AppAuth */;
 				},
 				{
-					ProjectRef = 2FA6DAB2DA663B38D672F66CB6D84D25 /* Firebase */;
+					ProjectRef = D02C2857114690318CFDA92F12746DC9 /* Firebase */;
 				},
 				{
-					ProjectRef = 6E2CECF50F2C0BA7F280A085EE0B3B1D /* FBSDKCoreKit */;
+					ProjectRef = 4DBF3AEEF70DB409EF79109ABC346515 /* FBSDKCoreKit */;
 				},
 				{
-					ProjectRef = 8E25151D57872D4DC8100638CC975AE7 /* FBSDKLoginKit */;
+					ProjectRef = 178247CDC97625016468104270618C31 /* FBSDKLoginKit */;
 				},
 				{
-					ProjectRef = 55BE14A24CDFBF805342B6344799748B /* EXGL-CPP */;
+					ProjectRef = 832F0CFA86D7186B16C458947E008D61 /* EXGL-CPP */;
 				},
 				{
-					ProjectRef = 3857011ABD3B5C279F5E82641F6509D3 /* GoogleSignIn */;
+					ProjectRef = 2366ADBC814B19224FB08E88224EFE27 /* GoogleSignIn */;
 				},
 				{
-					ProjectRef = 063F9CFFAA7826D260C1C05DACFD9C88 /* Analytics */;
+					ProjectRef = 4F40EF85B36E62930911BD51DBA1F82F /* Analytics */;
 				},
 				{
-					ProjectRef = 9E8EAB9B392271A80B5BB204E548D04D /* GoogleMaps */;
+					ProjectRef = 96F340C75FE50FBA713407E6210B209E /* GoogleMaps */;
 				},
 				{
-					ProjectRef = 8FD46B57D0235258CEF5F888E42BC86E /* Google-Maps-iOS-Utils */;
+					ProjectRef = 6AEC83AF86CFF44B483BBF139F673D8B /* Google-Maps-iOS-Utils */;
 				},
 				{
-					ProjectRef = 605EF9B4FA8E742A85AA34A80384940F /* lottie-ios */;
+					ProjectRef = 65B15F08E5F2990D8C7FFE6360759883 /* lottie-ios */;
 				},
 				{
-					ProjectRef = 5AA17322B25557381C2EE03BAAC25896 /* JKBigInteger2 */;
+					ProjectRef = 6C76967F19884DD3D950D706C20B597E /* JKBigInteger2 */;
 				},
 				{
-					ProjectRef = 01CB88D78580CBC8EC9E513926237D63 /* Branch */;
+					ProjectRef = 9EF72F22F9BBA3D94683416CDC10F1AD /* Branch */;
 				},
 				{
-					ProjectRef = 2F60430B9863843E7175C8703AC2CFC2 /* Folly */;
+					ProjectRef = 7065D929739DD994480191D75E47C4D0 /* Folly */;
 				},
 				{
-					ProjectRef = 3FBB64CF342F427D1F04186DA4519E2F /* DoubleConversion */;
+					ProjectRef = 8C11B47E184ECEDD257F18E319B4816C /* DoubleConversion */;
 				},
 				{
-					ProjectRef = 72102348398926974FBE425A4B248B48 /* glog */;
+					ProjectRef = 79B2893D18CE81177F210B1B53112742 /* glog */;
 				},
 				{
-					ProjectRef = 32FBC8E52D68251BE229E2299AE39A5F /* React */;
-				},
-				{
-					ProjectRef = BB7647E1F6E91B1BF369232D25205F30 /* boost-for-react-native */;
+					ProjectRef = 7BFAE4C676A9871AE1685E8B9451AE8A /* boost-for-react-native */;
 				},
 			);
 			projectRoot = "";
@@ -12310,11 +12297,6 @@
 			isa = PBXTargetDependency;
 			name = "Google-Mobile-Ads-SDK";
 			targetProxy = E01A052D1EEBCB83E39F024C6F34F288 /* PBXContainerItemProxy */;
-		};
-		58077339BF8097173F68AB2F74A11E42 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 06609F5B001A2A42CF5F3B76B10F8050 /* PBXContainerItemProxy */;
 		};
 		58943073A1B3D29FD84EC98E5E05595A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
