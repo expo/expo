@@ -48,15 +48,15 @@ export async function authenticateAsync(
   }
 
   if (Platform.OS === 'ios') {
-    if (!options.promptMessage) {
-      options.promptMessage = 'Authenticate';
+    if (options.hasOwnProperty('promptMessage')) {
+      invariant(
+        typeof options.promptMessage === 'string' && options.promptMessage.length,
+        'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.'
+      );
     }
-    invariant(
-      typeof options.promptMessage === 'string',
-      'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a string.'
-    );
 
-    const result = await ExpoLocalAuthentication.authenticateAsync(options);
+    const promptMessage = options.promptMessage || 'Authenticate';
+    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
 
     if (result.warning) {
       console.warn(result.warning);
