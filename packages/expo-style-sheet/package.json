@@ -1,0 +1,38 @@
+{
+  "name": "expo-style-sheet",
+  "version": "0.0.0",
+  "description": "A style sheet API for Expo apps",
+  "main": "build/StyleSheet.js",
+  "types": "build/StyleSheet.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "expo",
+    "stylesheet"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-style-sheet"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/stylesheet/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
+  }
+}

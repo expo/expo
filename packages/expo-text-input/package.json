@@ -1,0 +1,38 @@
+{
+  "name": "expo-text-input",
+  "version": "0.0.0",
+  "description": "The text input component for Expo apps",
+  "main": "build/TextInput.js",
+  "types": "build/TextInput.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "expo",
+    "textinput"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-text-input"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/textinput/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
+  }
+}

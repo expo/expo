@@ -1,0 +1,1 @@
+{"version":3,"file":"Text.js","sourceRoot":"","sources":["../src/Text.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,IAAI,OAAO,EAAE,MAAM,cAAc,CAAC","sourcesContent":["export { Text as default } from 'react-native';\n"]}

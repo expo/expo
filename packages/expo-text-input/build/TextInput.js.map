@@ -1,0 +1,1 @@
+{"version":3,"file":"TextInput.js","sourceRoot":"","sources":["../src/TextInput.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,IAAI,OAAO,EAAE,MAAM,cAAc,CAAC","sourcesContent":["export { TextInput as default } from 'react-native';\n"]}
