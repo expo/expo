@@ -146,6 +146,10 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
 
   for (const [source, dest] of Object.entries(templatePaths)) {
     if (skipTemplates.includes(source)){
+      console.log(
+        'Skipping template %s ...',
+        chalk.cyan(path.join(templateFilesPath, platform, source))
+      );
       continue;
     }
 
