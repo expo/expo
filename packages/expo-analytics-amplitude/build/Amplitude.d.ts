@@ -1,20 +1,20 @@
 interface TrackingOptions {
-    disableCarrier: boolean;
-    disableCity: boolean;
-    disableCountry: boolean;
-    disableDeviceManufacturer: boolean;
-    disableDeviceModel: boolean;
-    disableDMA: boolean;
-    disableIDFA: boolean;
-    disableIDFV: boolean;
-    disableIPAddress: boolean;
-    disableLanguage: boolean;
-    disableLatLng: boolean;
-    disableOSName: boolean;
-    disableOSVersion: boolean;
-    disablePlatform: boolean;
-    disableRegion: boolean;
-    disableVersionName: boolean;
+    disableCarrier?: boolean;
+    disableCity?: boolean;
+    disableCountry?: boolean;
+    disableDeviceManufacturer?: boolean;
+    disableDeviceModel?: boolean;
+    disableDMA?: boolean;
+    disableIDFA?: boolean;
+    disableIDFV?: boolean;
+    disableIPAddress?: boolean;
+    disableLanguage?: boolean;
+    disableLatLng?: boolean;
+    disableOSName?: boolean;
+    disableOSVersion?: boolean;
+    disablePlatform?: boolean;
+    disableRegion?: boolean;
+    disableVersionName?: boolean;
 }
 export declare function initialize(apiKey: string): Promise<void>;
 export declare function setUserId(userId: string): Promise<void>;
