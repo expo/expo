@@ -361,6 +361,10 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
   @Override
   public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
-    return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
+    if (Constants.isStandaloneApp()) {
+      return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
+    } else {
+      return null;
+    }
   }
 }
