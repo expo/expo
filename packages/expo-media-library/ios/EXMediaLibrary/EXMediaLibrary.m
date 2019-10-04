@@ -720,12 +720,12 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   return [EXMediaLibrary _exportCollection:collection inFolder:nil];
 }
 
-+ (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection inFolder:(nullable NSString *)folder
++ (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection inFolder:(nullable NSString *)folderName
 {
   if (collection) {
     return @{
              @"id": [EXMediaLibrary _assetIdFromLocalId:collection.localIdentifier],
-             @"folder": UMNullIfNil(folder),
+             @"folderName": UMNullIfNil(folderName),
              @"title": collection.localizedTitle ?: [NSNull null],
              @"type": [EXMediaLibrary _stringifyAlbumType:collection.assetCollectionType],
              @"assetCount": [EXMediaLibrary _assetCountOfCollection:collection],
@@ -740,12 +740,12 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 
 + (NSArray *)_exportCollections:(PHFetchResult *)collections
                withFetchOptions:(PHFetchOptions *)options
-                       inFolder:(nullable NSString *)folder
+                       inFolder:(nullable NSString *)folderName
 {
   NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
   for (PHCollection *collection in collections) {
     if ([collection isKindOfClass:[PHAssetCollection class]]) {
-      [albums addObject:[EXMediaLibrary _exportCollection:(PHAssetCollection *)collection inFolder:folder]];
+      [albums addObject:[EXMediaLibrary _exportCollection:(PHAssetCollection *)collection inFolder:folderName]];
     }  else if ([collection isKindOfClass:[PHCollectionList class]]) {
       // getting albums from folders
       PHFetchResult *collectionsInFolder = [PHCollectionList fetchCollectionsInCollectionList:(PHCollectionList *)collection options:options];

@@ -261,7 +261,7 @@ Removes all listeners.
 | id                     | _string_ | both      |                                                                                             |                                                 |
 | title                  | _string_ | both      |                                                                                             |                                                 |
 | assetCount             | _number_ | both      | Estimated number of assets in the album                                                     |                                                 |
-| folder                 | _string_ | iOS       | Name of folder that the album belongs to. Can be null if the album is in the root directory |                                                 |
+| folderName             | _string_ | iOS       | Name of folder that the album belongs to. Can be null if the album is in the root directory |                                                 |
 | type                   | _string_ | iOS       | The type of the assets album                                                                | `album`, `moment`, `smartAlbum`                 |
 | startTime \*           | _number_ | iOS       | Earliest creation timestamp of all assets in the moment                                     |                                                 |
 | endTime \*             | _number_ | iOS       | Latest creation timestamp of all assets in the moment                                       |                                                 |
