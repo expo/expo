@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.amplitude.api.AmplitudeClient;
+import com.amplitude.api.TrackingOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -88,6 +89,63 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.setGroup(groupType, new JSONArray(groupNames));
+  }
+
+  @ExpoMethod
+  public void setTrackingOptions(final Map<String, boolean> options, Promise promise) {
+    if (rejectUnlessInitialized(promise)) {
+      return;
+    }
+
+    TrackingOptions trackingOptions = new TrackingOptions();
+
+    if (options.get('disableAdid') == true) {
+      trackingOptions.disableAdid();
+    }
+    if (options.get('disableCarrier') == true) {
+      trackingOptions.disableCarrier();
+    }
+    if (options.get('disableCity') == true) {
+      trackingOptions.disableCity();
+    }
+    if (options.get('disableCountry') == true) {
+      trackingOptions.disableCountry();
+    }
+    if (options.get('disableDeviceBrand') == true) {
+      trackingOptions.disableDeviceBrand();
+    }
+    if (options.get('disableDeviceModel') == true) {
+      trackingOptions.disableDeviceModel();
+    }
+    if (options.get('disableDma') == true) {
+      trackingOptions.disableDma();
+    }
+    if (options.get('disableIpAddress') == true) {
+      trackingOptions.disableIpAddress();
+    }
+    if (options.get('disableLanguage') == true) {
+      trackingOptions.disableLanguage();
+    }
+    if (options.get('disableLatLng') == true) {
+      trackingOptions.disableLatLng();
+    }
+    if (options.get('disableOsName') == true) {
+      trackingOptions.disableOsName();
+    }
+    if (options.get('disableOsVersion') == true) {
+      trackingOptions.disableOsVersion();
+    }
+    if (options.get('disablePlatform') == true) {
+      trackingOptions.disablePlatform();
+    }
+    if (options.get('disableRegion') == true) {
+      trackingOptions.disableRegion();
+    }
+    if (options.get('disableVersionName') == true) {
+      trackingOptions.disableVersionName();
+    }
+
+    mClient.setTrackingOptions(trackingOptions);
   }
 
   private boolean rejectUnlessInitialized(Promise promise) {

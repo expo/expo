@@ -82,11 +82,59 @@ UM_EXPORT_METHOD_AS(setGroup,
 }
 
 UM_EXPORT_METHOD_AS(setTrackingOptions,
-                    setTrackingOptions:(AMPTrackingOptions *)options
+                    setTrackingOptions:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  [[self amplitudeInstance] setTrackingOptions:options groupName:groupNames];
+  AMPTrackingOptions *trackingOptions = [AMPTrackingOptions options];
+  
+  if ([options objectForKey:@"disableAdid"])) {
+    [trackingOptions disableAdid];
+  }
+  if ([options objectForKey:@"disableCarrier"])) {
+    [trackingOptions disableCarrier];
+  }
+  if ([options objectForKey:@"disableCity"])) {
+    [trackingOptions disableCity];
+  }
+  if ([options objectForKey:@"disableCountry"])) {
+    [trackingOptions disableCountry];
+  }
+  if ([options objectForKey:@"disableDeviceBrand"])) {
+    [trackingOptions disableDeviceBrand];
+  }
+  if ([options objectForKey:@"disableDeviceModel"])) {
+    [trackingOptions disableDeviceModel];
+  }
+  if ([options objectForKey:@"disableDma"])) {
+    [trackingOptions disableDma];
+  }
+  if ([options objectForKey:@"disableIpAddress"])) {
+    [trackingOptions disableIpAddress];
+  }
+  if ([options objectForKey:@"disableLanguage"])) {
+    [trackingOptions disableLanguage];
+  }
+  if ([options objectForKey:@"disableLatLng"])) {
+    [trackingOptions disableLatLng];
+  }
+  if ([options objectForKey:@"disableOsName"])) {
+    [trackingOptions disableOsName];
+  }
+  if ([options objectForKey:@"disableOsVersion"])) {
+    [trackingOptions disableOsVersion];
+  }
+  if ([options objectForKey:@"disablePlatform"])) {
+    [trackingOptions disablePlatform];
+  }
+  if ([options objectForKey:@"disableRegion"])) {
+    [trackingOptions disableRegion];
+  }
+  if ([options objectForKey:@"disableVersionName"])) {
+    [trackingOptions disableVersionName];
+  }
+
+  [[self amplitudeInstance] setTrackingOptions:trackingOptions];
   resolve(nil);
 }
 
