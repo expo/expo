@@ -26,7 +26,7 @@ async function setupExpoModuleScripts(unimoduleDirectory) {
 
   console.log(`Installing ${chalk.bold.green('expo-module-scripts')}...`);
 
-  await spawnAsync('yarn', ['add', '--dev', `expo-module-scripts@~${moduleScriptsVersion}`], {
+  await spawnAsync('yarn', ['add', '--dev', `expo-module-scripts@^${moduleScriptsVersion}`], {
     cwd: unimoduleDirectory,
   });
 
@@ -77,7 +77,7 @@ export default (program: Command) => {
   program
     .command('create-unimodule')
     .alias('cu')
-    .description('Creates a new unimodule under `packages` folder.')
+    .description('Creates a new unimodule under the `packages` folder.')
     .option('-n, --name <string>', 'Name of the package to create.', null)
     .asyncAction(action);
 };
