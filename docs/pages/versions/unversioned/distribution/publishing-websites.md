@@ -11,6 +11,8 @@ title: Publishing Websites
   - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
   - [Continuous delivery](#continuous-delivery)
 - [GitHub Pages](#github-pages)
+- [Self hosting](#self-hosting)
+
 
 ## [AWS Amplify Console](https://console.amplify.aws)
 
@@ -170,3 +172,31 @@ Here are the formal instructions for deploying to GitHub Pages:
    - !! Your app is now available at the URL you set as `homepage` in your `package.json` (call your parents and show them! 😜)
 
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
+
+
+## Self hosting
+
+1. Build your Expo web app with `expo build:web`.
+
+2. Configure a webserver to host static files.
+
+3. Provide the `web-build/` repository to the server.
+
+### Apache example
+
+With a (too basic) configuration [Apache](https://httpd.apache.org/) v2.4 server:
+```apache
+<VirtualHost ip-server:80>
+    ServerAdmin your-email@address.tld
+    ServerName domain-for-the-app
+
+    Alias / /path/to/web-build/
+    <Directory /path/to/web-build/>
+            Require all granted
+    </Directory>
+</VirtualHost>
+```
+You have to copy the `web-build/` repository to `/path/to/web-build/` on the server (or deploy the repository if your have CI).
+`a2ensite` the new configuration and restart Apache.
+
+When users go to `http://domain-for-the-app`, the app will be loaded.
