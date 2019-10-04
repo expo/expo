@@ -34,10 +34,13 @@ export const globalExtras = `
 
   details summary p {
     margin-top: 10px;
+    margin-right: 15px;
+    line-height: 1.725rem;
+    letter-spacing: 0.2px;
   }
 
   details summary:hover {
-    opacity: 0.7;
+    opacity: 0.75;
   }
 
   details p {

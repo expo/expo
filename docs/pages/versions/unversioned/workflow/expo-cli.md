@@ -111,9 +111,8 @@ Alias: `expo bs`
 </p>
 </details>
 
-**bundle-assets**
-
-Bundles assets for a detached app. This command should be executed from xcode or gradle.
+<details><summary><h3>expo bundle-assets</h3><p>Bundles assets for a detached app. This command should be executed from xcode or gradle.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -121,55 +120,65 @@ Bundles assets for a detached app. This command should be executed from xcode or
 | `--platform` [platform] | Detached project platform. |
 | `--config` [path] | Specify a path to app.json. |
 
-**client:ios**
+</p>
+</details>
 
-Build a custom version of the Expo Client for iOS using your own Apple credentials and install it on your mobile device using Safari.
+<details><summary><h3>expo client:ios</h3><p>Build a custom version of the Expo Client for iOS using your own Apple credentials and install it on your mobile device using Safari.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--apple-id `[username] | Apple ID username. Set your Apple ID password as `EXPO_APPLE_PASSWORD` env variable. |
 | `--config` [path] | Specify a path to app.json. |
 
-**client:install:ios**
+</p>
+</details>
 
-Install the latest version of Expo client for iOS on the simulator.
+<details><summary><h3>expo client:install:ios</h3><p>Install the latest version of Expo client for iOS on the simulator.
+</p></summary>
+</details>
 
-**client:install:android**
+<details><summary><h3>expo client:install:android</h3><p>Install the latest version of Expo Client for Android on a connected device or emulator.
+</p></summary>
+</details>
 
-Install the latest version of Expo Client for Android on a connected device or emulator.
-
-**credentials:manager**
-
-Manage your iOS or Android credentials.
+<details><summary><h3>expo credentials:manager</h3><p>Manage your iOS or Android credentials.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--platform`, `-p` [platform] | Select platform [android or ios] |
 
-**customize:web**
+</p>
+</details>
 
-Generate static web files into your project.
+<details><summary><h3>expo customize:web</h3><p>Generate static web files into your project.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--force`, `-f` | Allows replacing existing files. |
 | `--offline` | Run this command in offline mode. |
 
-**diagnostics**
+</p>
+</details>
 
-Prints environment info to the console.
+<details><summary><h3>expo diagnostics</h3><p>Prints environment info to the console.</p></summary>
+</details>
 
-**doctor**
 
-Diagnoses issues with your Expo project.
+<details><summary><h3>expo doctor</h3><p>Diagnoses issues with your Expo project.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--config` [path] | Specify a path to app.json. |
 
-**eject**
+</p>
+</details>
 
-Creates Xcode and Android Studio projects for your app. Use this if you need to add custom native functionality.
+<details><summary><h3>expo eject</h3><p>Creates Xcode and Android Studio projects for your app. Use this if you need to add custom native functionality.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -177,9 +186,11 @@ Creates Xcode and Android Studio projects for your app. Use this if you need to 
 | `--force`, `-f `| Will attempt to generate an iOS project even when the system is not running macOS. Unsafe and may fail. |
 | `--config` [path] | Specify a path to app.json. |
 
-**export**
+</p>
+</details>
 
-Exports the static files of the app for hosting it on a web server.
+<details><summary><h3>expo export</h3><p>Exports the static files of the app for hosting it on a web server.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -195,49 +206,68 @@ Exports the static files of the app for hosting it on a web server.
 | `--max-workers` [number] | Maxinum number of tasks to allow Metro to spawn. |
 | `--config` [path] | Specify a path to app.json. |
 
-**fetch:ios:certs**
+</p>
+</details>
 
-Fetch this project's iOS certificates/keys and provisioning profile. Writes files to the PROJECT_DIR and prints passwords to stdout.
-
-| Option         | Description             |
-| ------------ | ----------------------- |
-| `--config` [path] | Specify a path to app.json. |
-
-**fetch:android:keystore**
-
-Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.
+<details><summary><h3>expo fetch:ios:certs</h3><p>Fetch this project's iOS certificates/keys and provisioning profile. Writes files to the PROJECT_DIR and prints passwords to stdout.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--config` [path] | Specify a path to app.json. |
 
-**fetch:android:hashes**
+</p>
+</details>
 
-Fetch this project's Android key hashes needed to set up Google/Facebook authentication. Note: if you are using Google Play signing, this app will be signed with a different key after publishing to the store, and you'll need to use the hashes displayed in the Google Play console.
-
-| Option         | Description             |
-| ------------ | ----------------------- |
-| `--config` [path] | Specify a path to app.json. |
-
-**fetch:android:upload-cert**
-
-Fetch this project's upload certificate needed after opting in to app signing by Google Play or after resetting a previous upload certificate.
+<details><summary><h3>expo fetch:android:keystore</h3><p>Fetch this project's Android keystore. Writes keystore to PROJECT_DIR/PROJECT_NAME.jks and prints passwords to stdout.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--config` [path] | Specify a path to app.json. |
 
-**generate-module**
+</p>
+</details>
 
-Generate a universal module for Expo from a template in a directory.
+
+<details><summary><h3>expo fetch:android:hashes</h3><p>Fetch this project's Android key hashes needed to set up Google/Facebook authentication. Note: if you are using Google Play signing, this app will be signed with a different key after publishing to the store, and you'll need to use the hashes displayed in the Google Play console.</p></summary>
+<p>
+
+| Option         | Description             |
+| ------------ | ----------------------- |
+| `--config` [path] | Specify a path to app.json. |
+
+</p>
+</details>
+
+<details><summary><h3>expo fetch:android:upload-cert</h3><p>Fetch this project's upload certificate needed after opting in to app signing by Google Play or after resetting a previous upload certificate.</p></summary>
+<p>
+
+| Option         | Description             |
+| ------------ | ----------------------- |
+| `--config` [path] | Specify a path to app.json. |
+
+</p>
+</details>
+
+
+<details><summary><h3>expo generate-module</h3><p>Generate a universal module for Expo from a template in a directory.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--template` [dir] | Local directory or npm package containing a template for a universal Expo module. |
 
-**init (alias: i)**
+</p>
+</details>
 
-Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
+
+
+<details><summary><h3>expo init</h3><p>Initializes a directory with an example project. Run it without any options and you will be prompted for the name and type.
+</p></summary>
+<p>
+
+Alias: `expo i`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -248,48 +278,65 @@ Initializes a directory with an example project. Run it without any options and 
 | `--android-package` [name] | The package name for your Android app. |
 | `--ios-bundle-identifier` [name] | The bundle identifier for your iOS app. |
 
-**install**
+</p>
+</details>
 
-Installs a unimodule or other package to a project.
+
+<details><summary><h3>expo install</h3><p>Installs a unimodule or other package to a project.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--npm` | Use npm to install dependencies. The default when package-lock.json exists. |
 | `--yarn` | Use Yarn to install dependencies. The default when yarn.lock exists. |
 
-**ios**
+</p>
+</details>
 
-Opens your app in the Expo Client in an iOS simulator.
+
+<details><summary><h3>expo ios</h3><p>Opens your app in the Expo Client in an iOS simulator.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--offline` | Run this command in offline mode. |
 | `--config` [path] | Specify a path to app.json. |
 
-**login (alias: signin)**
+</p>
+</details>
 
-Login with your Expo account.
+
+<details><summary><h3>expo login</h3><p>Login with your Expo account.</p></summary>
+<p>
+
+Alias: `expo signin`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--username`, `-u `[username] | Expo username. |
 | `--password` `-p` [password] | Expo password. |
 
-**logout**
+</p>
+</details>
 
-Log out from your Expo account.
+<details><summary><h3>expo logout</h3><p>Log out from your Expo account.</p></summary>
+</details>
 
-**opt-in-google-play-signing**
-
-Switch from the old method of signing APKs to the new App Signing by Google Play. The APK will be signed with an upload key and after uploading it to the store, app will be re-signed with the key from the original keystore.
+<details><summary><h3>expo opt-in-google-play-signing</h3><p>Switch from the old method of signing APKs to the new App Signing by Google Play. The APK will be signed with an upload key and after uploading it to the store, app will be re-signed with the key from the original keystore.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--config` [path] | Specify a path to app.json. |
 
-**optimize (alias: o)**
+</p>
+</details>
 
-Compress the assets in your Expo project.
+
+<details><summary><h3>expo optimize</h3><p>Compress the assets in your Expo project.</p></summary>
+<p>
+
+Alias: `expo o`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -299,9 +346,13 @@ Compress the assets in your Expo project.
 | `--exclude` [pattern] | Exclude all assets that match this glob pattern relative to project root. |
 | `--offline` | Run this command in offline mode. |
 
-**publish (alias: p)**
+</p>
+</details>
 
-Publishes your project to exp.host.
+<details><summary><h3>expo publish</h3><p>Publishes your project to exp.host.</p></summary>
+<p>
+
+Alias: `expo p`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -312,9 +363,13 @@ Publishes your project to exp.host.
 | `--release-channel` [channel] | The release channel to publish to. The default is `'default'`. |
 | `--config` [path] | Specify a path to app.json. |
 
-**publish:history (alias: ph)**
+</p>
+</details>
 
-View a log of your published releases.
+<details><summary><h3>expo publish:history</h3><p>View a log of your published releases.</p></summary>
+<p>
+
+Alias: `expo ph`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -324,9 +379,14 @@ View a log of your published releases.
 | `--raw`, `-r` | Produce raw output. |
 | `--config` [path] | Specify a path to app.json. |
 
-**publish:details (alias: ph)**
 
-View the details of a published release.
+</p>
+</details>
+
+<details><summary><h3>expo publish:details</h3><p>View the details of a published release.</p></summary>
+<p>
+
+Alias: `expo pd`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -334,9 +394,14 @@ View the details of a published release.
 | `--raw`, `-r` | Produce raw output. |
 | `--config` [path] | Specify a path to app.json. |
 
-**publish:set (alias: ps)**
+</p>
+</details>
 
-Set a published release to be served from a specified channel.
+
+<details><summary><h3>expo publish:set</h3><p>Set a published release to be served from a specified channel.</p></summary>
+<p>
+
+Alias: `expo ps`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -345,47 +410,60 @@ Set a published release to be served from a specified channel.
 | `--raw`, `-r` | Produce raw output. |
 | `--config` [path] | Specify a path to app.json. |
 
-**publish:rollback (alias: pr)**
 
-Rollback an update to a channel.
+</p>
+</details>
+
+<details><summary><h3>expo publish:rollback</h3><p>Rollback an update to a channel.</p></summary>
+<p>
+
+Alias: `expo pr`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--channel-id` [channel] | The channel id to rollback in the channel. **(required)** | 
 | `--config` [path] | Specify a path to app.json. |
 
-**push:android:upload**
+</p>
+</details>
 
-Uploads a Firebase Cloud Messaging key for Android push notifications.
+<details><summary><h3>expo push:android:upload</h3><p>Uploads a Firebase Cloud Messaging key for Android push notifications.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--api-key` [key] | Server API key for FCM. | 
 | `--config` [path] | Specify a path to app.json. |
 
-**push:android:show**
+</p>
+</details>
 
-Print the value currently in use for FCM notifications for this project.
-
-| Option         | Description             |
-| ------------ | ----------------------- |
-| `--config` [path] | Specify a path to app.json. |
-
-**push:android:clear**
-
-Deletes a previously uploaded FCM API key.
+<details><summary><h3>expo push:android:show</h3><p>Print the value currently in use for FCM notifications for this project.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--config` [path] | Specify a path to app.json. |
 
-**register**
+</p>
+</details>
 
-Sign up for a new Expo account via terminal prompts.
+<details><summary><h3>expo push:android:clear</h3><p>Deletes a previously uploaded FCM API key.</p></summary>
+<p>
 
-**send**
+| Option         | Description             |
+| ------------ | ----------------------- |
+| `--config` [path] | Specify a path to app.json. |
 
-Sends a link to your project to a specified email.
+</p>
+</details>
+
+<details><summary><h3>expo register</h3><p>Sign up for a new Expo account via terminal prompts.</p></summary>
+</details>
+
+
+<details><summary><h3>expo send</h3><p>Sends a link to your project to a specified email.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -405,9 +483,14 @@ Sends a link to your project to a specified email.
 | `--no-https` | Start a webpack with **http** protocol. |
 | `--config` [path] | Specify a path to app.json. |
 
-**start (alias: r)**
+</p>
+</details>
 
-Starts or restarts a local server for your app and gives you a url to it.
+
+<details><summary><h3>expo start</h3><p>Starts or restarts a local server for your app and gives you a url to it.</p></summary>
+<p>
+
+Alias: `expo r`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -431,9 +514,13 @@ Starts or restarts a local server for your app and gives you a url to it.
 | `--offline` | Run this command in offline mode. |
 | `--config` [path] | Specify a path to app.json. |
 
-**upload:android (alias: ua)**
+</p>
+</details>
 
-Uploads a standalone Android app to Google Play (works on macOS only). Uploads the latest build by default.
+<details><summary><h3>expo upload:android</h3><p>Uploads a standalone Android app to Google Play (works on macOS only). Uploads the latest build by default.</p></summary>
+<p>
+
+Alias: `expo ua`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -443,9 +530,15 @@ Uploads a standalone Android app to Google Play (works on macOS only). Uploads t
 | `--key` [path] | Path to the JSON key used to authenticate with Google Play. |
 | `--config` [path] | Specify a path to app.json. |
 
-**upload:ios (alias: ui)**
+</p>
+</details>
 
-Uploads a standalone app to Apple TestFlight (works on macOS only). Uploads the latest build by default.
+
+<details><summary><h3>expo upload:ios</h3><p>Uploads a standalone app to Apple TestFlight (works on macOS only). Uploads the latest build by default.
+</p></summary>
+<p>
+
+Alias: `expo ui`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -461,9 +554,14 @@ Uploads a standalone app to Apple TestFlight (works on macOS only). Uploads the 
 | `--public-url` [url] | The url of an externally hosted manifest for self-host apps. |
 | `--config` [path] | Specify a path to app.json. |
 
-**url (alias: u)**
+</p>
+</details>
 
-Displays the url you can use to view your project in Expo.
+<details><summary><h3>expo url</h3><p>Displays the url you can use to view your project in Expo.
+</p></summary>
+<p>
+
+Alias: `expo u`
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -482,27 +580,36 @@ Displays the url you can use to view your project in Expo.
 | `--no-https` | Start a webpack with **http** protocol. |
 | `--config` [path] | Specify a path to app.json. |
 
-**url:ipa**
+</p>
+</details>
 
-Displays the standalone iOS binary url you can use to download your app binary
 
-| Option         | Description             |
-| ------------ | ----------------------- |
-| `--public-url` [url] | The url of an externally hosted manifest for self-host apps. |
-| `--config` [path] | Specify a path to app.json. |
-
-**url:apk**
-
-Displays the standalone Android binary url you can use to download your app binary.
+<details><summary><h3>expo url:ipa</h3><p>Displays the standalone iOS binary url you can use to download your app binary
+.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--public-url` [url] | The url of an externally hosted manifest for self-host apps. |
 | `--config` [path] | Specify a path to app.json. |
 
-**webhooks:set**
+</p>
+</details>
 
-Set a webhook for the project.
+<details><summary><h3>expo url:apk</h3><p>Displays the standalone Android binary url you can use to download your app binary.
+</p></summary>
+<p>
+
+| Option         | Description             |
+| ------------ | ----------------------- |
+| `--public-url` [url] | The url of an externally hosted manifest for self-host apps. |
+| `--config` [path] | Specify a path to app.json. |
+
+</p>
+</details>
+
+<details><summary><h3>expo webhooks:sset</h3><p>Set a webhook for the project.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
@@ -511,26 +618,35 @@ Set a webhook for the project.
 | `--secret` [secret] | Secret to be used to calculate the webhook request payload signature. See docs for more details. Must be 16 chars long. |
 | `--config` [path] | Specify a path to app.json. |
 
-**webhooks:show**
+</p>
+</details>
 
-See webhooks for a project.
+<details><summary><h3>expo webhooks:show</h3><p>See webhooks for a project.</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--config` [path] | Specify a path to app.json. |
 
-**webhooks:clear**
+</p>
+</details>
 
-Clear a webhook associated with an Expo project.
+<details><summary><h3>expo webhooks:clear</h3><p>Clear a webhook associated with an Expo project.
+</p></summary>
+<p>
 
 | Option         | Description             |
 | ------------ | ----------------------- |
 | `--event` [type] | The type of webhook: [build]. |
 | `--config` [path] | Specify a path to app.json. |
 
-**whoami**
+</p>
+</details>
 
-Checks with the server to see if you are logged in and if you are, returns what Expo account you are logged in as.
+<details><summary><h3>expo whoami</h3><p>Checks with the server to see if you are logged in and if you are, returns what Expo account you are logged in as.
+</p></summary>
+
+</details>
 
 ## Universal Options
 
