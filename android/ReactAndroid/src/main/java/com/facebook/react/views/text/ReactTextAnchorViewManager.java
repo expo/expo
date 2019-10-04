@@ -1,16 +1,17 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.text;
 
 import android.text.Spannable;
 import android.text.TextUtils;
+import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -20,7 +21,6 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
-import javax.annotation.Nullable;
 
 /**
  * Abstract class for anchor {@code <Text>}-ish spannable views, such as {@link TextView} or {@link
@@ -91,15 +91,14 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.BORDER_RADIUS,
-      ViewProps.BORDER_TOP_LEFT_RADIUS,
-      ViewProps.BORDER_TOP_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-      ViewProps.BORDER_BOTTOM_LEFT_RADIUS
-    },
-    defaultFloat = YogaConstants.UNDEFINED
-  )
+      names = {
+        ViewProps.BORDER_RADIUS,
+        ViewProps.BORDER_TOP_LEFT_RADIUS,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderRadius(ReactTextView view, int index, float borderRadius) {
     if (!YogaConstants.isUndefined(borderRadius)) {
       borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
@@ -118,15 +117,14 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   }
 
   @ReactPropGroup(
-    names = {
-      ViewProps.BORDER_WIDTH,
-      ViewProps.BORDER_LEFT_WIDTH,
-      ViewProps.BORDER_RIGHT_WIDTH,
-      ViewProps.BORDER_TOP_WIDTH,
-      ViewProps.BORDER_BOTTOM_WIDTH,
-    },
-    defaultFloat = YogaConstants.UNDEFINED
-  )
+      names = {
+        ViewProps.BORDER_WIDTH,
+        ViewProps.BORDER_LEFT_WIDTH,
+        ViewProps.BORDER_RIGHT_WIDTH,
+        ViewProps.BORDER_TOP_WIDTH,
+        ViewProps.BORDER_BOTTOM_WIDTH,
+      },
+      defaultFloat = YogaConstants.UNDEFINED)
   public void setBorderWidth(ReactTextView view, int index, float width) {
     if (!YogaConstants.isUndefined(width)) {
       width = PixelUtil.toPixelFromDIP(width);
@@ -135,15 +133,14 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   }
 
   @ReactPropGroup(
-    names = {
-      "borderColor",
-      "borderLeftColor",
-      "borderRightColor",
-      "borderTopColor",
-      "borderBottomColor"
-    },
-    customType = "Color"
-  )
+      names = {
+        "borderColor",
+        "borderLeftColor",
+        "borderRightColor",
+        "borderTopColor",
+        "borderBottomColor"
+      },
+      customType = "Color")
   public void setBorderColor(ReactTextView view, int index, Integer color) {
     float rgbComponent =
         color == null ? YogaConstants.UNDEFINED : (float) ((int) color & 0x00FFFFFF);
@@ -159,5 +156,32 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   @ReactProp(name = "disabled", defaultBoolean = false)
   public void setDisabled(ReactTextView view, boolean disabled) {
     view.setEnabled(!disabled);
+  }
+
+  @ReactProp(name = "dataDetectorType")
+  public void setDataDetectorType(ReactTextView view, @Nullable String type) {
+    switch (type) {
+      case "phoneNumber":
+        view.setLinkifyMask(Linkify.PHONE_NUMBERS);
+        break;
+      case "link":
+        view.setLinkifyMask(Linkify.WEB_URLS);
+        break;
+      case "email":
+        view.setLinkifyMask(Linkify.EMAIL_ADDRESSES);
+        break;
+      case "all":
+        view.setLinkifyMask(Linkify.ALL);
+        break;
+      case "none":
+      default:
+        view.setLinkifyMask(0);
+        break;
+    }
+  }
+
+  @ReactProp(name = "onInlineViewLayout")
+  public void setNotifyOnInlineViewLayout(ReactTextView view, boolean notifyOnInlineViewLayout) {
+    view.setNotifyOnInlineViewLayout(notifyOnInlineViewLayout);
   }
 }
