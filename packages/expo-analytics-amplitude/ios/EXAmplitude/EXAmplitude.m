@@ -88,49 +88,49 @@ UM_EXPORT_METHOD_AS(setTrackingOptions,
 {
   AMPTrackingOptions *trackingOptions = [AMPTrackingOptions options];
   
-  if ([options objectForKey:@"disableAdid"])) {
-    [trackingOptions disableAdid];
-  }
-  if ([options objectForKey:@"disableCarrier"])) {
+  if ([options objectForKey:@"disableCarrier"]) {
     [trackingOptions disableCarrier];
   }
-  if ([options objectForKey:@"disableCity"])) {
+  if ([options objectForKey:@"disableCity"]) {
     [trackingOptions disableCity];
   }
-  if ([options objectForKey:@"disableCountry"])) {
+  if ([options objectForKey:@"disableCountry"]) {
     [trackingOptions disableCountry];
   }
-  if ([options objectForKey:@"disableDeviceBrand"])) {
-    [trackingOptions disableDeviceBrand];
-  }
-  if ([options objectForKey:@"disableDeviceModel"])) {
+  if ([options objectForKey:@"disableDeviceModel"]) {
     [trackingOptions disableDeviceModel];
   }
-  if ([options objectForKey:@"disableDma"])) {
-    [trackingOptions disableDma];
+  if ([options objectForKey:@"disableDMA"]) {
+    [trackingOptions disableDMA];
   }
-  if ([options objectForKey:@"disableIpAddress"])) {
-    [trackingOptions disableIpAddress];
+  if ([options objectForKey:@"disableIDFA"]) {
+    [trackingOptions disableIDFA];
   }
-  if ([options objectForKey:@"disableLanguage"])) {
+  if ([options objectForKey:@"disableIDFV"]) {
+    [trackingOptions disableIDFV];
+  }
+  if ([options objectForKey:@"disableIPAddress"]) {
+    [trackingOptions disableIPAddress];
+  }
+  if ([options objectForKey:@"disableLanguage"]) {
     [trackingOptions disableLanguage];
   }
-  if ([options objectForKey:@"disableLatLng"])) {
+  if ([options objectForKey:@"disableLatLng"]) {
     [trackingOptions disableLatLng];
   }
-  if ([options objectForKey:@"disableOsName"])) {
-    [trackingOptions disableOsName];
+  if ([options objectForKey:@"disableOSName"]) {
+    [trackingOptions disableOSName];
   }
-  if ([options objectForKey:@"disableOsVersion"])) {
-    [trackingOptions disableOsVersion];
+  if ([options objectForKey:@"disableOSVersion"]) {
+    [trackingOptions disableOSVersion];
   }
-  if ([options objectForKey:@"disablePlatform"])) {
+  if ([options objectForKey:@"disablePlatform"]) {
     [trackingOptions disablePlatform];
   }
-  if ([options objectForKey:@"disableRegion"])) {
+  if ([options objectForKey:@"disableRegion"]) {
     [trackingOptions disableRegion];
   }
-  if ([options objectForKey:@"disableVersionName"])) {
+  if ([options objectForKey:@"disableVersionName"]) {
     [trackingOptions disableVersionName];
   }
 

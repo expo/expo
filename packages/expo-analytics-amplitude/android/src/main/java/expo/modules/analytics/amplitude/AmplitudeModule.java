@@ -117,10 +117,10 @@ public class AmplitudeModule extends ExportedModule {
     if (options.get('disableDeviceModel') == true) {
       trackingOptions.disableDeviceModel();
     }
-    if (options.get('disableDma') == true) {
+    if (options.get('disableDMA') == true) {
       trackingOptions.disableDma();
     }
-    if (options.get('disableIpAddress') == true) {
+    if (options.get('disableIPAddress') == true) {
       trackingOptions.disableIpAddress();
     }
     if (options.get('disableLanguage') == true) {
@@ -129,10 +129,10 @@ public class AmplitudeModule extends ExportedModule {
     if (options.get('disableLatLng') == true) {
       trackingOptions.disableLatLng();
     }
-    if (options.get('disableOsName') == true) {
+    if (options.get('disableOSName') == true) {
       trackingOptions.disableOsName();
     }
-    if (options.get('disableOsVersion') == true) {
+    if (options.get('disableOSVersion') == true) {
       trackingOptions.disableOsVersion();
     }
     if (options.get('disablePlatform') == true) {
