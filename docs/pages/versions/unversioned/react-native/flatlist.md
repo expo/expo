@@ -168,13 +168,11 @@ Provides additional metadata like `index` if you need it, as well as a more gene
   - `item` (Object): The item from `data` being rendered.
   - `index` (number): The index corresponding to this item in the `data` array.
   - `separators` (Object)
-
-_Seperator Types_
-  - `highlight` (Function)
-  - `unhighlight` (Function)
-  - `updateProps` (Function)
-      - `select` (enum('leading', 'trailing'))
-      - `newProps` (Object)
+    - `highlight` (Function)
+    - `unhighlight` (Function)
+    - `updateProps` (Function)
+        - `select` (enum('leading', 'trailing'))
+        - `newProps` (Object)
 
 Example usage:
 
