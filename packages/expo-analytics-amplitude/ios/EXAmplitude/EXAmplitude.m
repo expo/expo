@@ -3,6 +3,7 @@
 #import <EXAmplitude/EXAmplitude.h>
 
 #import <Amplitude-iOS/Amplitude.h>
+#import <Amplitude-iOS/AMPTrackingOptions.h>
 
 @implementation EXAmplitude
 
@@ -77,6 +78,15 @@ UM_EXPORT_METHOD_AS(setGroup,
                     reject:(UMPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] setGroup:groupType groupName:groupNames];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(setTrackingOptions,
+                    setTrackingOptions:(AMPTrackingOptions *)options
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  [[self amplitudeInstance] setTrackingOptions:options groupName:groupNames];
   resolve(nil);
 }
 
