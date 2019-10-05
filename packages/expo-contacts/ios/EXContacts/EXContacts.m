@@ -95,7 +95,7 @@ UM_EXPORT_METHOD_AS(getDefaultContainerIdentifierAsync,
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
-    
+
     resolve([contactStore defaultContainerIdentifier]);
 }
 
@@ -106,29 +106,29 @@ UM_EXPORT_METHOD_AS(writeContactToFileAsync,
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
-    
+
     NSArray *keysToFetch = [self _contactKeysToFetchFromFields:options[@"fields"]];
     NSDictionary *payload = [self _fetchContactData:options
                                        contactStore:contactStore
                                         keysToFetch:keysToFetch
                              ];
-    
+
     if (payload[@"error"]) {
         [EXContacts rejectWithError:@"Error while fetching contacts" error:payload[@"error"] rejecter:reject];
         return;
     } else {
-        
+
         NSArray<CNContact *> *contacts = payload[@"data"];
-        
+
         NSString *fileName = [[NSUUID UUID] UUIDString];
-        
+
         if (contacts.count == 1) {
             NSString *name = [CNContactFormatter stringFromContact:contacts[0] style:CNContactFormatterStyleFullName];
             if (name) {
                 fileName = [[name componentsSeparatedByString:@" "] componentsJoinedByString:@"_"];
             }
         }
-            
+
         if (!self.fileSystem) {
             reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
             return;
@@ -144,12 +144,12 @@ UM_EXPORT_METHOD_AS(writeContactToFileAsync,
             [EXContacts rejectWithError:@"Failed to cache contacts" error:error rejecter:reject];
             return;
         }
-        
+
         [data writeToFile:newPath atomically:YES];
-        
+
         NSURL *fileURL = [NSURL fileURLWithPath:newPath];
         NSString *filePath = [fileURL absoluteString];
-        
+
         resolve(filePath);
     }
 }
@@ -179,12 +179,12 @@ UM_EXPORT_METHOD_AS(presentFormAsync,
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
-  
+
   [UMUtilities performSynchronouslyOnMainThread:^{
-    
+
         EXContactsViewController *controller;
         CNMutableContact *contact;
-        
+
         if (identifier) {
             // Must be full contact from device
             contact = [[self _contactWithId:identifier contactStore:contactStore rejecter:reject] mutableCopy];
@@ -200,20 +200,20 @@ UM_EXPORT_METHOD_AS(presentFormAsync,
                 controller = [EXContactsViewController viewControllerForUnknownContact:contact];
             }
         }
-        
+
         if (!controller) {
             [EXContacts rejectWithError:@"Could not build controller, invalid props" error:nil rejecter:reject];
             return;
         }
-        
+
         NSString *cancelButtonTitle = options[@"cancelButtonTitle"];
         if (![self _fieldHasValue:cancelButtonTitle])
             cancelButtonTitle = @"Cancel";
         [controller setCloseButton:cancelButtonTitle];
-        
+
         controller.contactStore = contactStore;
         controller.delegate = self;
-        
+
         if ([options[@"displayedPropertyKeys"] isKindOfClass:[NSArray class]])
             controller.displayedPropertyKeys = [self _contactKeysToFetchFromFields:options[@"displayedPropertyKeys"]];
         if (options[@"allowsEditing"] != nil && [options[@"allowsEditing"] boolValue])
@@ -228,13 +228,13 @@ UM_EXPORT_METHOD_AS(presentFormAsync,
             controller.alternateName = [options[@"alternateName"] stringValue];
         if (options[EXContactsOptionGroupId] != nil && [options[EXContactsOptionGroupId] stringValue])
             controller.parentGroup = [self _groupWithId:[options[EXContactsOptionGroupId] stringValue] contactStore:contactStore rejecter:reject];
-        
+
         BOOL isAnimated = true;
         if (options[@"preventAnimation"] != nil && [options[@"preventAnimation"] boolValue])
             isAnimated = [options[@"preventAnimation"] boolValue];
-        
+
         UIViewController *parent = self->_utilities.currentViewController;
-        
+
         // We need to wrap our contact view controller in UINavigationController.
         // See: https://stackoverflow.com/questions/38748969/cnui-error-contact-view-delayed-appearance-timed-out
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -256,18 +256,18 @@ UM_EXPORT_METHOD_AS(addExistingContactToGroupAsync,
     if(!contactStore) return;
     CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
     NSArray *keysToFetch = [self _contactKeysToFetchFromFields:nil];
-    
+
     CNMutableContact *contact = [EXContacts getContactWithId:identifier
                                                 contactStore:contactStore
                                                  keysToFetch:keysToFetch
                                                     rejecter:reject];
     if (!contact) return;
-    
+
     CNGroup *group = [self _groupWithId:groupId contactStore:contactStore rejecter:reject];
     if (!group) return;
-    
+
     [saveRequest addMember:contact toGroup:group];
-    
+
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
@@ -293,15 +293,16 @@ UM_EXPORT_METHOD_AS(addContactAsync,
 
 UM_EXPORT_METHOD_AS(updateContactAsync,
                     updateContactAsync:(NSDictionary *)updates
+                    fields:(NSArray *)fields
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-    
-    NSArray *keysToFetch = [self _contactKeysToFetchFromFields:nil];
-    
+
+    NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fields];
+
     CNMutableContact *contact = [EXContacts getContactWithId:updates[@"id"]
                                                 contactStore:contactStore
                                                  keysToFetch:keysToFetch
@@ -320,15 +321,15 @@ UM_EXPORT_METHOD_AS(removeContactAsync,
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-    
-    
+
+
     NSArray *keysToFetch = @[CNContactIdentifierKey];
-    
+
     CNMutableContact *contact = [EXContacts getContactWithId:identifier contactStore:contactStore keysToFetch:keysToFetch rejecter:reject];
     if (!contact) return;
-    
+
     [saveRequest deleteContact:contact];
-    
+
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
@@ -392,17 +393,17 @@ UM_EXPORT_METHOD_AS(removeContactFromGroupAsync,
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-    
+
     NSArray *keysToFetch = @[CNContactIdentifierKey];
-    
+
     CNMutableContact *contact = [EXContacts getContactWithId:identifier contactStore:contactStore keysToFetch:keysToFetch rejecter:reject];
     if (!contact) return;
-    
+
     CNGroup *group = [self _groupWithId:groupId contactStore:contactStore rejecter:reject];
     if (!group) return;
     CNMutableGroup *mutableGroup = [group mutableCopy];
     [saveRequest removeMember:contact fromGroup:mutableGroup];
-    
+
     [EXContacts executeSaveRequest:saveRequest contactStore:contactStore resolver:resolve rejecter:reject];
 }
 
@@ -414,7 +415,7 @@ UM_EXPORT_METHOD_AS(removeGroupAsync,
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-    
+
     CNGroup *group = [self _groupWithId:groupId contactStore:contactStore rejecter:reject];
     if (!group) return;
     CNMutableGroup *mutableGroup = [group mutableCopy];
@@ -430,7 +431,7 @@ UM_EXPORT_METHOD_AS(getContainersAsync,
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     NSError *error;
-    
+
     NSPredicate *predicate;
     if (options[EXContactsOptionContactId]) {
         predicate = [CNContainer predicateForContainerOfContactWithIdentifier:options[EXContactsOptionContactId]];
@@ -440,9 +441,9 @@ UM_EXPORT_METHOD_AS(getContainersAsync,
         NSArray *ids = [EXContacts _ensureArray: options[EXContactsOptionContainerId]];
         predicate = [CNContainer predicateForContainersWithIdentifiers:ids];
     }
-    
+
     NSArray<CNContainer*> *containers = [contactStore containersMatchingPredicate:predicate error:&error];
-    
+
     if (error) {
         [EXContacts rejectWithError:@"Error fetching containers" error:nil rejecter:reject];
         return;
@@ -463,7 +464,7 @@ UM_EXPORT_METHOD_AS(getGroupsAsync,
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     NSMutableArray *response = [[NSMutableArray alloc] init];
-    
+
     if (options[EXContactsOptionGroupName]) {
         NSArray<NSDictionary *> *groups = [self _groupsWithName:options[EXContactsOptionGroupName] contactStore:contactStore rejecter:reject];
         if (groups) {
@@ -476,7 +477,7 @@ UM_EXPORT_METHOD_AS(getGroupsAsync,
             if (group) [response addObject: [[self class] encodeGroup:group]];
         }
     }
-    
+
     resolve(response);
 }
 
@@ -487,13 +488,13 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
-    
+
     NSArray *keysToFetch = [self _contactKeysToFetchFromFields:options[@"fields"]];
     NSDictionary *payload = [self _fetchContactData:options
                                        contactStore:contactStore
                                         keysToFetch:keysToFetch
                              ];
-    
+
     [self _serializeContactPayload:payload
                        keysToFetch:keysToFetch
                            options:options
@@ -531,15 +532,15 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
 {
     NSUInteger pageOffset = 0;
     NSUInteger pageSize = 0;
-    
+
     if (options[EXContactsOptionPageOffset] != nil && [options[EXContactsOptionPageOffset] unsignedIntegerValue]) {
         pageOffset = [options[EXContactsOptionPageOffset] unsignedIntegerValue];
     }
-    
+
     if (options[EXContactsOptionPageSize] != nil && [options[EXContactsOptionPageSize] unsignedIntegerValue]) {
         pageSize = [options[EXContactsOptionPageSize] unsignedIntegerValue];
     }
-    
+
     NSString *sortOrder = options[EXContactsOptionSort];
     CNContactFetchRequest *fetchRequest = [EXContacts buildFetchRequest:sortOrder keysToFetch:keysToFetch];
     fetchRequest.predicate = predicate;
@@ -550,11 +551,11 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         BOOL shouldReturnRawContacts = [options[EXContactsOptionRawContacts] boolValue];
         fetchRequest.unifyResults = !shouldReturnRawContacts;
     }
-    
+
     __block NSUInteger currentIndex = 0;
     NSError *err;
     NSMutableArray *response = [[NSMutableArray alloc] init];
-    
+
     NSUInteger endIndex = pageOffset + pageSize;
     BOOL success = [contactStore enumerateContactsWithFetchRequest:fetchRequest error:&err usingBlock:^(CNContact * _Nonnull person, BOOL * _Nonnull stop) {
         // Paginate the result.
@@ -564,14 +565,14 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
             [response addObject:person];
         }
     }];
-    
+
     NSUInteger total = currentIndex;
     BOOL hasNextPage = NO;
     BOOL hasPreviousPage = pageOffset > 0;
     if (pageSize > 0) {
         hasNextPage = pageOffset + pageSize < total;
     }
-    
+
     if (success && !err) {
         NSMutableDictionary *payload = [NSMutableDictionary new];
         [payload setObject:response forKey:EXContactsOptionData];
@@ -596,9 +597,9 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     if (keysToFetch == nil) {
         keysToFetch = [self _contactKeysToFetchFromFields:nil];
     }
-    
+
     NSMutableDictionary *contact = [NSMutableDictionary new];
-    
+
     // no-op
     contact[EXContactsKeyId] = person.identifier;
     contact[EXContactsKeyContactType] = person.contactType == CNContactTypePerson ? EXContactsContactTypePerson : EXContactsContactTypeCompany;
@@ -610,12 +611,12 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     if ([self _fieldHasValue:person.middleName]) contact[EXContactsKeyMiddleName] = person.middleName;
     if ([self _fieldHasValue:person.familyName]) contact[EXContactsKeyLastName] = person.familyName;
     if ([self _fieldHasValue:person.previousFamilyName]) contact[EXContactsKeyMaidenName] = person.previousFamilyName;
-    
+
     if ([self _fieldHasValue:person.nickname]) contact[EXContactsKeyNickname] = person.nickname;
     if ([self _fieldHasValue:person.organizationName]) contact[EXContactsKeyCompany] = person.organizationName;
     if ([self _fieldHasValue:person.jobTitle]) contact[EXContactsKeyJobTitle] = person.jobTitle;
     if ([self _fieldHasValue:person.departmentName]) contact[EXContactsKeyDepartment] = person.departmentName;
-    
+
     if ([keysToFetch containsObject:CNContactNamePrefixKey] &&
         [self _fieldHasValue:person.namePrefix]) {
         contact[EXContactsKeyNamePrefix] = person.namePrefix;
@@ -639,7 +640,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     if ([keysToFetch containsObject:CNContactNoteKey] && [self _fieldHasValue:person.note]) {
         contact[EXContactsKeyNote] = person.note;
     }
-    
+
     // complex types
     if (person.imageDataAvailable) {
         // This is the raw image used for a contact - no crop
@@ -701,7 +702,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         NSArray *values = [[self class] relationsForContact:person];
         if (values.count > 0) contact[EXContactsKeyRelationships] = values;
     }
-    
+
     return contact;
 }
 
@@ -724,9 +725,9 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     if (data[EXContactsKeyPhoneticMiddleName]) contact.phoneticMiddleName = data[EXContactsKeyPhoneticMiddleName];
     if (data[EXContactsKeyPhoneticLastName]) contact.phoneticFamilyName = data[EXContactsKeyPhoneticLastName];
     if (data[EXContactsKeyNote]) contact.note = data[EXContactsKeyNote];
-    
+
     contact.birthday = [EXContacts decodeBirthday:data[EXContactsKeyBirthday] contact:contact];
-    
+
     if (data[EXContactsKeyNonGregorianBirthday]) {
         NSDictionary *birthday = data[EXContactsKeyNonGregorianBirthday];
         NSString *identifier = birthday[@"format"];
@@ -735,7 +736,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
             //      contact.nonGregorianBirthday = [EXContacts decodeBirthday:data[@"nonGregorianBirthday"] contact:contact];
         }
     }
-    
+
     if (data[EXContactsKeyContactType]) {
         NSString *contactType = data[EXContactsKeyContactType];
         if ([contactType isEqualToString:EXContactsContactTypePerson]) {
@@ -744,31 +745,31 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
             contact.contactType = CNContactTypeOrganization;
         }
     }
-    
+
     NSMutableArray *postalAddresses = [EXContacts decodeAddresses:data[EXContactsKeyAddresses]];
     if (postalAddresses) contact.postalAddresses = postalAddresses;
-    
+
     NSMutableArray *phoneNumbers = [EXContacts decodePhoneNumbers:data[EXContactsKeyPhoneNumbers]];
     if (phoneNumbers) contact.phoneNumbers = phoneNumbers;
-    
+
     NSMutableArray *emails = [EXContacts decodeEmailAddresses:data[EXContactsKeyEmails]];
     if (emails) contact.emailAddresses = emails;
-    
+
     NSMutableArray *socialProfiles = [EXContacts decodeSocialProfiles:data[EXContactsKeySocialProfiles]];
     if (socialProfiles) contact.socialProfiles = socialProfiles;
-    
+
     NSMutableArray *instantMessageAddresses = [EXContacts decodeInstantMessageAddresses:data[EXContactsKeyInstantMessageAddresses]];
     if (instantMessageAddresses) contact.instantMessageAddresses = instantMessageAddresses;
-    
+
     NSMutableArray *urlAddresses = [EXContacts decodeUrlAddresses:data[EXContactsKeyUrlAddresses]];
     if (urlAddresses) contact.urlAddresses = urlAddresses;
-    
+
     NSMutableArray *dates = [EXContacts decodeDates:data[EXContactsKeyDates]];
     if (dates) contact.dates = dates;
-    
+
     NSMutableArray *relationships = [EXContacts decodeRelationships:data[EXContactsKeyRelationships]];
     if (relationships) contact.contactRelations = relationships;
-    
+
     if (data[EXContactsKeyImage]) {
         NSData *imageData;
         if ([data[EXContactsKeyImage] isKindOfClass:[NSString class]]) {
@@ -787,7 +788,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
 {
     NSURL *url = [NSURL URLWithString:uri];
     NSString *path = [url.path stringByStandardizingPath];
-    
+
     if (!self.fileSystem) {
         reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
         return nil;
@@ -795,23 +796,23 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         reject(@"E_MISSING_PERMISSION", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
         return nil;
     }
-    
+
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
     if (image == nil) {
         reject(@"E_CANNOT_OPEN", @"Could not open provided image", nil);
         return nil;
     }
-    
+
     return UIImagePNGRepresentation(image);
 }
 
 - (nullable CNContactStore *)_getContactStoreOrReject:(UMPromiseRejectBlock)reject {
     if(!_contactStore) {
         CNContactStore* store = [[CNContactStore alloc] init];
-        
+
         if(!store.defaultContainerIdentifier) {
             //APPL says: If the caller lacks Contacts authorization or an error occurs, nil is returned.
-            
+
             NSDictionary *cameraPermissions = [_permissionsManager getPermissionsForResource:@"contacts"];
             if (![cameraPermissions[@"status"] isEqualToString:@"granted"]) {
                 reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
@@ -821,21 +822,21 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
                 return nil;
             }
         }
-        
+
         _contactStore = store;
     }
-    
+
     return _contactStore;
 }
 
 - (nullable NSDictionary *)_writeDataToUri:(NSString *)userId data:(NSData *)data imageKey:(NSString *)imageKey includeBase64:(BOOL)includeBase64 rejecter:(UMPromiseRejectBlock)reject
 {
-    
+
     if (!self.fileSystem) {
         reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
         return nil;
     }
-    
+
     UIImage *image = [[UIImage alloc] initWithData:data];
     NSString *extension = @".png";
     //TODO: Evan: Do we need to check to make sure we have write permission for FILE_SYSTEM?
@@ -853,13 +854,13 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
                                                                                       @"width": @(CGImageGetWidth(image.CGImage)),
                                                                                       @"height": @(CGImageGetHeight(image.CGImage))
                                                                                       }];
-    
+
     if (includeBase64) {
         //TODO: Evan: Make sure this can be decoded using ReactNative.ImageStore
         NSString *base64String = [data base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];
         response[@"base64"] = [NSString stringWithFormat:@"%@%@", @"data:image/png;base64,", base64String];
     }
-    
+
     return response;
 }
 
@@ -898,9 +899,9 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
                                     @"name": [CNContactFormatter descriptorForRequiredKeysForStyle:CNContactFormatterStyleFullName],
                                     @"editor": [CNContactViewController descriptorForRequiredKeys],
                                     };
-    
+
     NSMutableArray <id<CNKeyDescriptor>> *results = [NSMutableArray arrayWithCapacity:fields.count];
-    
+
     if (fields == nil) {
         // If no fields are defined, get all fields.
       NSMutableArray *mutableFields = [[mapping allKeys] mutableCopy];
@@ -930,7 +931,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         // Remove duplicates
         fields = [[NSSet setWithArray:fields] allObjects];
     }
-    
+
     for (NSString *field in fields) {
         if (mapping[field]) {
             [results addObject:mapping[field]];
@@ -980,7 +981,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     if (sortOrders[sort]) {
         fetchRequest.sortOrder = (CNContactSortOrder)sortOrders[sort];
     }
-    
+
     return fetchRequest;
 }
 
@@ -988,7 +989,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
 {
     NSError *error;
     [contactStore executeSaveRequest:saveRequest error:&error];
-    
+
     if (error) {
         [EXContacts rejectWithError:@"Failed to execute save request" error:error rejecter:reject];
         return false;
@@ -1011,7 +1012,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
 + (CNMutableContact *)getContactWithId:(NSString *)identifier contactStore:(CNContactStore *)contactStore keysToFetch:(NSArray<id<CNKeyDescriptor> > *)keys rejecter:(UMPromiseRejectBlock)reject
 {
     NSError *error;
-    
+
     CNMutableContact *contact = [[contactStore unifiedContactWithIdentifier:identifier keysToFetch:keys error:&error] mutableCopy];
     if (error) {
         [EXContacts rejectWithError:[NSString stringWithFormat:@"Failed to get contact with id: %@", identifier] error:error rejecter:reject];
@@ -1029,7 +1030,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
     } else if (data[EXContactsOptionGroupId]) {
         predicate = [CNGroup predicateForGroupsWithIdentifiers:[EXContacts _ensureArray:data[EXContactsOptionGroupId]]];
     }
-    
+
     NSError *error;
     NSArray<CNGroup *> *groups = [contactStore groupsMatchingPredicate:predicate error:&error];
     if (error) {
@@ -1062,7 +1063,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
         return nil;
     }
     NSMutableArray *response = [[NSMutableArray alloc] init];
-    
+
     for (CNGroup *group in groups) {
         if ([name isEqualToString:group.name]) {
             [response addObject:[[self class] encodeGroup:group]];
@@ -1085,7 +1086,7 @@ UM_EXPORT_METHOD_AS(getContactsAsync,
 - (NSDictionary *)_fetchContactData:(NSDictionary *)options contactStore:(CNContactStore *)contactStore keysToFetch:(NSArray<NSString *> *)keysToFetch
 {
     NSPredicate *predicate;
-    
+
     if (options[@"id"]) {
         NSArray<NSString *> *contactIds = [EXContacts _ensureArray:options[@"id"]];
         predicate = [CNContact predicateForContactsWithIdentifiers:contactIds];

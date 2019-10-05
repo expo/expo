@@ -59,11 +59,11 @@ export async function addContactAsync(contact, containerId) {
     }
     return await ExpoContacts.addContactAsync(contact, containerId);
 }
-export async function updateContactAsync(contact) {
+export async function updateContactAsync(contact, fields) {
     if (!ExpoContacts.updateContactAsync) {
         throw new UnavailabilityError('Contacts', 'updateContactAsync');
     }
-    return await ExpoContacts.updateContactAsync(contact);
+    return await ExpoContacts.updateContactAsync(contact, fields);
 }
 export async function removeContactAsync(contactId) {
     if (!ExpoContacts.removeContactAsync) {
