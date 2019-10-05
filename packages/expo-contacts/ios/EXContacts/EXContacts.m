@@ -293,15 +293,22 @@ UM_EXPORT_METHOD_AS(addContactAsync,
 
 UM_EXPORT_METHOD_AS(updateContactAsync,
                     updateContactAsync:(NSDictionary *)updates
+                    fields:(NSArray *)fields
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
     CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
+<<<<<<< Updated upstream
     
     NSArray *keysToFetch = [self _contactKeysToFetchFromFields:nil];
     
+=======
+
+    NSArray *keysToFetch = [self _contactKeysToFetchFromFields:fields];
+
+>>>>>>> Stashed changes
     CNMutableContact *contact = [EXContacts getContactWithId:updates[@"id"]
                                                 contactStore:contactStore
                                                  keysToFetch:keysToFetch
