@@ -3,7 +3,7 @@
 
 
 "@unimodules/core@file:../../@unimodules/core":
-  version "3.0.2"
+  version "4.0.0"
   dependencies:
     compare-versions "^3.4.0"
 
@@ -16,13 +16,13 @@ compare-versions@^3.4.0:
   version "0.0.0"
 
 "expo-permissions@file:../../expo-permissions":
-  version "6.0.0"
+  version "7.0.0"
 
 "expo-sensors-interface@file:../../expo-sensors-interface":
   version "0.0.0"
 
 "expo-sensors@file:../../expo-sensors":
-  version "6.0.0"
+  version "7.0.0"
   dependencies:
     invariant "^2.2.4"
 
