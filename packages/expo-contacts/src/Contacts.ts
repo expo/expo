@@ -307,7 +307,7 @@ export async function addContactAsync(contact: Contact, containerId: string): Pr
   return await ExpoContacts.addContactAsync(contact, containerId);
 }
 
-export async function updateContactAsync(contact: Contact, fields?: FieldType): Promise<string> {
+export async function updateContactAsync(contact: Contact, fields?: FieldType[]): Promise<string> {
   if (!ExpoContacts.updateContactAsync) {
     throw new UnavailabilityError('Contacts', 'updateContactAsync');
   }
