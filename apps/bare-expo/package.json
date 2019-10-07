@@ -36,7 +36,7 @@
     "@babel/runtime": "^7.5.5",
     "@react-navigation/web": "2.0.0-alpha.0",
     "expo": "~35.0.0",
-    "expo-yarn-workspaces": "^1.2.0",
+    "expo-yarn-workspaces": "^1.2.1",
     "react": "16.8.3",
     "react-dom": "16.8.3",
     "react-native": "0.59.8",
@@ -102,7 +102,7 @@
     "@types/react-native": "^0.57.65",
     "babel-preset-expo": "~7.1.0",
     "detox": "^14.3.4",
-    "expo-yarn-workspaces": "^1.2.0",
+    "expo-yarn-workspaces": "^1.2.1",
     "jest-expo": "~35.0.0",
     "jest-expo-puppeteer": "~0.0.0",
     "typescript": "^3.6.3"
