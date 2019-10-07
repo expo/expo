@@ -47,8 +47,18 @@ const defaultMode: AudioMode = {
   playThroughEarpieceAndroid: true,
 };
 
+let currentAudioMode: any = null;
+
+function getCurrentAudioMode(): AudioMode {
+  if (!currentAudioMode) {
+    return defaultMode;
+  }
+  return currentAudioMode;
+}
+
 export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
-  mode = _populateMissingKeys(mode, defaultMode);
+  mode = _populateMissingKeys(mode, getCurrentAudioMode());
+  currentAudioMode = mode;
 
   if (
     !_isValueValid(mode.interruptionModeIOS, [

@@ -30,8 +30,16 @@ const defaultMode = {
     shouldDuckAndroid: true,
     playThroughEarpieceAndroid: true,
 };
+let currentAudioMode = null;
+function getCurrentAudioMode() {
+    if (!currentAudioMode) {
+        return defaultMode;
+    }
+    return currentAudioMode;
+}
 export async function setAudioModeAsync(mode) {
-    mode = _populateMissingKeys(mode, defaultMode);
+    mode = _populateMissingKeys(mode, getCurrentAudioMode());
+    currentAudioMode = mode;
     if (!_isValueValid(mode.interruptionModeIOS, [
         INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
         INTERRUPTION_MODE_IOS_DO_NOT_MIX,
