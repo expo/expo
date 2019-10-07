@@ -33,7 +33,7 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     fun downloadManifest(success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
         val config = persistence.config
         if (config != null) {
-            manifestHttpClient(config).newCall(createManifestRequest(config)).enqueue(object : Callback {
+            config.manifestHttpClient.newCall(createManifestRequest(config)).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     error(IllegalStateException("Manifest fetching failed: ", e))
                 }
@@ -41,18 +41,24 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
                         if (response.body() != null) {
-                            success(JSONObject(response.body()!!.string()))
+                            verifyManifest(response, config, success, error)
                         } else {
                             error(IllegalStateException("Response body is null: ", response.body()))
                         }
                     } else {
                         error(IllegalStateException("Response not successful. Code: " + response.code() + ", body: " + response.body()?.toString()))
                     }
-                }
-            })
-        } else {
-            throwUninitializedExpoOtaError()
-        }
+    }
+})
+} else {
+    throwUninitializedExpoOtaError()
+}
+}
+
+fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
+        config.manifestResponseValidator.validate(response, {
+            success(JSONObject(it))
+        }, error)
     }
 
     fun saveDownloadedManifestAndBundlePath(manifest: JSONObject, path: String) {
@@ -106,9 +112,6 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
             }
             return validFilesSet
         }
-
-    private fun manifestHttpClient(config: ExpoOTAConfig) = config.manifestHttpClient
-            ?: OkHttpClient()
 
     private fun downloadBundle(manifest: JSONObject, success: (String) -> Unit, error: (Exception?) -> Unit) {
         val bundleUrl = manifest.optString(KEY_MANIFEST_BUNDLE_URL)
