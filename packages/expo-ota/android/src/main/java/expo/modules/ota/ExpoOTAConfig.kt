@@ -36,5 +36,5 @@ fun expoHostedOTAConfig(username: String,
             channelIdentifier = releaseChannel,
             manifestComparator = manifestComparator,
             bundleHttpClient = bundleHttpClient,
-            manifestResponseValidator = if (validateManifestResponse) ExpoValidator(manifestClient) else DummyValidator())
+            manifestResponseValidator = if (validateManifestResponse) ExpoValidator("https://exp.host/--/manifest-public-key", manifestClient) else DummyValidator())
 }

@@ -24,13 +24,11 @@ class DummyValidator : ManifestResponseValidator {
     }
 }
 
-const val PUBLIC_URL_KEY = "https://exp.host/--/manifest-public-key"
-
-class ExpoValidator(private val httpClient: OkHttpClient) : ManifestResponseValidator {
+class ExpoValidator(private val publicKeyUrl: String, private val httpClient: OkHttpClient) : ManifestResponseValidator {
 
     override fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
         val request = Request.Builder()
-                .url(PUBLIC_URL_KEY)
+                .url(publicKeyUrl)
                 .get()
                 .build()
         httpClient.newCall(request).enqueue(object : Callback {
