@@ -33,10 +33,11 @@ To see more details about this particular release, you can run `expo publish:det
 
 ## What version of the app will my users get?
 
-Your users will get the most recent compatible release that was pushed to a channel. Factors that affect compatibility:
+Your users will get the most recent compatible release that was pushed to a release channel. Factors that affect compatibility:
 
-- sdkVersion
+- sdkVersion (standalone apps are built to support only a single SDK version)
 - platform
+- releaseChannel
 
 The following flowchart shows how we determine which release to return to a user:
 
