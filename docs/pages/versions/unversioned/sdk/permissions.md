@@ -4,7 +4,7 @@ title: Permissions
 
 When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the `Permissions` module.
 
-If you are deploying your app to the Apple iTunes Store, you should consider adding additional metadata to your app in order to customize the system permissions dialog and explain why your app requires permissions. See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
+If you are deploying your app to the Apple iTunes Store, you must add additional metadata to your app in order to customize the system permissions dialog, and more importantly, explain why your app requires permissions. **Without this explanation, your app may be rejected from the App Store.** See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
 
 ## Installation
 
