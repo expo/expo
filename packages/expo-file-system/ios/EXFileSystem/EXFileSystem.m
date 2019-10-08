@@ -129,12 +129,12 @@ UM_REGISTER_MODULE();
 }
 
 - (void)startObserving {
-  
+
 }
 
 
 - (void)stopObserving {
-  
+
 }
 
 - (NSDictionary *)encodingMap
@@ -185,6 +185,10 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
+  // no scheme provided in uri, handle as a local path and add 'file://' scheme
+  if (!uri.scheme) {
+    uri = [NSURL fileURLWithPath:uriString isDirectory:false];
+  }
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
@@ -210,6 +214,10 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
+  // no scheme provided in uri, handle as a local path and add 'file://' scheme
+  if (!uri.scheme) {
+    uri = [NSURL fileURLWithPath:uriString isDirectory:false];
+  }
   if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
