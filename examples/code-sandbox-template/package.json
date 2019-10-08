@@ -1,0 +1,27 @@
+{
+  "name": "expo-sandbox",
+  "description": "",
+  "keywords": [],
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "dependencies": {
+    "expo": "next",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-native-web": "^0.11.2"
+  },
+  "devDependencies": {
+    "expo-cli": "^2.16.1"
+  },
+  "scripts": {
+    "start": "expo-cli start",
+    "build": "expo-cli build:web"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

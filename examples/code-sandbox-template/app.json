@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "expo sandbox",
+    "slug": "expo-sandbox",
+    "privacy": "public",
+    "platforms": ["web"],
+    "icon": "./assets/icon.png"
+  }
+}
