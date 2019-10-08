@@ -174,7 +174,7 @@ Here are the formal instructions for deploying to GitHub Pages:
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
 
 
-## Self hosting
+## Self-Hosting
 
 1. Build your Expo web app with `expo build:web`.
 
