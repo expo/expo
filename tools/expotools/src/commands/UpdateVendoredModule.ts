@@ -70,6 +70,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Reanimated',
         sourceAndroidPath: 'android/src/main/java/com/swmansion/reanimated',
@@ -143,9 +144,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
         sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
         targetAndroidPath:
-          '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
+          '../../../../../../../../../packages/expo-branch/android/src/main/java/io/branch/rnbranch',
         sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'expo.modules.branch.vendored',
+        targetAndroidPackage: 'io.branch.rnbranch',
         recursive: false,
         updatePbxproj: false,
       },
@@ -171,6 +172,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
+        recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/Svg',
         sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
@@ -214,7 +216,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'react-native-webview': {
-    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
+    repoUrl: 'https://github.com/expo/react-native-webview.git',
     installableInManagedApps: true,
     steps: [
       {
@@ -267,6 +269,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/datetimepicker',
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
+      },
+    ],
+  },
+  'react-native-shared-element': {
+    repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
+    packageName: 'react-native-shared-element',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/SharedElement',
+        sourceAndroidPath: 'android/src/main/java/com/ijzerenhein/sharedelement',
+        targetAndroidPath: 'modules/api/components/sharedelement',
+        sourceAndroidPackage: 'com.ijzerenhein.sharedelement',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.sharedelement',
       },
     ],
   },

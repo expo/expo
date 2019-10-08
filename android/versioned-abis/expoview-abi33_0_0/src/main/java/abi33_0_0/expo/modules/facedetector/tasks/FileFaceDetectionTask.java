@@ -2,7 +2,7 @@ package abi33_0_0.expo.modules.facedetector.tasks;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 
 import abi33_0_0.org.unimodules.interfaces.facedetector.FaceDetector;
 

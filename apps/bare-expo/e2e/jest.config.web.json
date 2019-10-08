@@ -1,0 +1,6 @@
+{
+  "preset": "jest-expo-puppeteer",
+  "testMatch": ["**/*-test.web.js"],
+  "moduleFileExtensions": ["js", "json", "node"],
+  "resetModules": false
+}

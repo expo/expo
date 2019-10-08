@@ -1,7 +1,7 @@
 package abi33_0_0.expo.modules.camera.events;
 
 import android.os.Bundle;
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import java.util.List;
 

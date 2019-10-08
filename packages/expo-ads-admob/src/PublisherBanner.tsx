@@ -36,6 +36,18 @@ type PropsType = React.ComponentProps<typeof View> & {
    */
   testDeviceID?: string;
   /**
+   * Additional request params added to underlying request for the ad.
+   */
+  additionalRequestParams?: { [key: string]: string };
+  /**
+   * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
+   * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
+   * https://developers.google.com/admob/ios/eu-consent#forward_consent_to_the_google_mobile_ads_sdk
+   * and
+   * https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
+   */
+  servePersonalizedAds?: boolean;
+  /**
    * AdMob iOS library events
    */
   onAdViewDidReceiveAd?: () => void;
@@ -64,7 +76,9 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     ]),
     adUnitID: PropTypes.string,
     testDeviceID: PropTypes.string,
+    servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
+    additionalRequestParams: PropTypes.object,
     onDidFailToReceiveAdWithError: PropTypes.func,
     onAdViewWillPresentScreen: PropTypes.func,
     onAdViewWillDismissScreen: PropTypes.func,
@@ -88,6 +102,12 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
+    let additionalRequestParams: { [key: string]: string } = {
+      ...this.props.additionalRequestParams,
+    };
+    if (!this.props.servePersonalizedAds) {
+      additionalRequestParams.npa = '1';
+    }
     return (
       <View style={this.props.style}>
         <ExpoBannerView
@@ -96,6 +116,7 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
           bannerSize={this.props.bannerSize}
           testDeviceID={this.props.testDeviceID}
           onSizeChange={this._handleSizeChange}
+          additionalRequestParams={additionalRequestParams}
           onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}
           onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError}
           onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen}

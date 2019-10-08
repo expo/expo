@@ -37,6 +37,7 @@ const ReanimatedProgress = optionalRequire(() =>
 );
 const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
+const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
 
 const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   AdMob,
@@ -60,6 +61,7 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   Video,
   Screens: ScreensScreens,
   WebView,
+  SharedElement,
 };
 
 interface ScreensObjectType {

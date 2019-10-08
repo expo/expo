@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.0'
   }
 }
 
@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '1.0.0'
+version = '1.0.2'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -46,7 +46,7 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion 26
-    versionCode 2
+    versionCode 3
     versionName '1.0.0'
   }
   lintOptions {
@@ -64,6 +64,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  compileOnly 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-native:+'
   api 'io.branch.sdk.android:library:3.2.0'
 }

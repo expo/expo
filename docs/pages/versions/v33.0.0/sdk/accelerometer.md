@@ -2,7 +2,7 @@
 title: Accelerometer
 ---
 
-Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space.
+Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space. Note that the accelerometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
 ## Installation
 

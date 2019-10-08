@@ -33,9 +33,6 @@ export declare class GLView extends React.Component<GLViewProps> {
         collapsable?: PropTypes.Validator<boolean | undefined> | undefined;
         needsOffscreenAlphaCompositing?: PropTypes.Validator<boolean | undefined> | undefined;
         renderToHardwareTextureAndroid?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
         isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
         hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -62,16 +59,24 @@ export declare class GLView extends React.Component<GLViewProps> {
         onTouchCancel?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityActions?: PropTypes.Validator<readonly Readonly<{
+            name: import("react-native").AccessibilityActionName;
+            label?: string | undefined;
+        }>[] | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
         accessibilityRole?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "keyboardkey" | "text" | "adjustable" | "imagebutton" | "header" | "summary" | "alert" | "checkbox" | "combobox" | "menu" | "menubar" | "menuitem" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "switch" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").NativeSyntheticEvent<Readonly<{
+            actionName: string;
+        }>>) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
         accessibilityTraits?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "text" | "adjustable" | "header" | "summary" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;

@@ -51,6 +51,14 @@ const asset = await MediaLibrary.createAssetAsync(uri);
 
 An object representing an [asset](#asset).
 
+### `MediaLibrary.saveToLibraryAsync(localUri)`
+
+Saves the file at given `localUri` to the user's media library. On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+
+#### Arguments
+
+- **localUri (_string_)** -- A URI to the image or video file. On Android it must be a local path, so it must start with `file:///`.
+
 ### `MediaLibrary.getAssetsAsync(options)`
 
 Fetches a page of assets matching the provided criteria.
@@ -241,7 +249,7 @@ Removes all listeners.
 | localUri \*      | _string_  | both      | Local URI for the asset                 |                                                                                                      |
 | location \*      | _object_  | both      | GPS location if available               | `latitude: number, longitude: number` or `null`                                                      |
 | exif \*          | _object_  | both      | EXIF metadata associated with the image |                                                                                                      |
-| orientation \*   | _number_  | iOS       | Display orientation of the image        | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
+| orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
 | isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite | `true`, `false`                                                                                      |
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method

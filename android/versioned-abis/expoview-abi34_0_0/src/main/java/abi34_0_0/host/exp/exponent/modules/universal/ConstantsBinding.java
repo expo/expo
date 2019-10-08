@@ -4,7 +4,7 @@ package abi34_0_0.host.exp.exponent.modules.universal;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 
 import org.json.JSONException;

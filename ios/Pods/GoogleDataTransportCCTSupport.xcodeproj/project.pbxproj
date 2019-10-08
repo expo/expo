@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		20D46481F92261865FA849B7689B4EF0 /* cct.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BED21DD76360AF3F633A64B240E932D /* cct.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		358AEAED6B58F7BBC69B0CD0B9FBFDEE /* GDTCCTUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = C6A5926062B1A450D729C9EF82E98921 /* GDTCCTUploader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		42898990012F52BB2052B835C986A722 /* GoogleDataTransportCCTSupport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 392B03A6BBD8F4E47A0E145C14558245 /* GoogleDataTransportCCTSupport-dummy.m */; };
 		49FF7F11C6CD85E0CA56CB9451975A54 /* GDTCCTUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = A7CDC96DAE568B122D11EE9F078C4DF1 /* GDTCCTUploader.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		556AB12BD6578C019E591C27E22C93F6 /* GDTCCTPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF8B6BE211C07E222B83E10CA7A3B4D1 /* GDTCCTPrioritizer.m */; };
+		75DAC40CB8422B1ECD663551955AA899 /* GDTCCTPrioritizer.m in Sources */ = {isa = PBXBuildFile; fileRef = DF8B6BE211C07E222B83E10CA7A3B4D1 /* GDTCCTPrioritizer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7C150073D25F451E25414F1372F39C89 /* GDTCCTNanopbHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DF5A6550936A1CB39500DE01F4DCDCE /* GDTCCTNanopbHelpers.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A7D6F678752F07FD6DB5BCFF3FD878A0 /* cct.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = CEF48D452AB0592D8CF2D9EB84FE67A3 /* cct.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B2F3088C3B4BADD6B961D432FABA9AC6 /* GDTCCTPrioritizer.h in Headers */ = {isa = PBXBuildFile; fileRef = F63B1CB3E04FB8151E24339D76DF3A58 /* GDTCCTPrioritizer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C2D788468F1A264DA25B556CDD08D933 /* GoogleDataTransportCCTSupport-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 392B03A6BBD8F4E47A0E145C14558245 /* GoogleDataTransportCCTSupport-dummy.m */; };
-		C8E871EDBFB837A6E20C295FEE06F74C /* cct.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = CEF48D452AB0592D8CF2D9EB84FE67A3 /* cct.nanopb.c */; };
-		E1EDA3FA68A3FF90857C6D50DE1D40D9 /* GDTCCTUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = C6A5926062B1A450D729C9EF82E98921 /* GDTCCTUploader.m */; };
-		FF1D3D76910223EECA1BBC56250E381F /* GDTCCTNanopbHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EAEAE51A155CE00C64EF6F7990647A /* GDTCCTNanopbHelpers.m */; };
+		EDFA5822DEA122414A33B9DFA4DEF05A /* GDTCCTNanopbHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = F6EAEAE51A155CE00C64EF6F7990647A /* GDTCCTNanopbHelpers.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,7 +145,7 @@
 			buildConfigurationList = B018F9BFABA0711A72B3BFCB4F18676B /* Build configuration list for PBXNativeTarget "GoogleDataTransportCCTSupport" */;
 			buildPhases = (
 				B51EE4AEF09213AF45253A428977F853 /* Headers */,
-				39D1AD51C754FF17B7CAE78CBD1E8758 /* Sources */,
+				9C611729C5DF088C4B0882B71C9AECA5 /* Sources */,
 				FC3F07E79E364BF7E3EA20D04B9DB4D8 /* Frameworks */,
 			);
 			buildRules = (
@@ -194,15 +194,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		39D1AD51C754FF17B7CAE78CBD1E8758 /* Sources */ = {
+		9C611729C5DF088C4B0882B71C9AECA5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8E871EDBFB837A6E20C295FEE06F74C /* cct.nanopb.c in Sources */,
-				FF1D3D76910223EECA1BBC56250E381F /* GDTCCTNanopbHelpers.m in Sources */,
-				556AB12BD6578C019E591C27E22C93F6 /* GDTCCTPrioritizer.m in Sources */,
-				E1EDA3FA68A3FF90857C6D50DE1D40D9 /* GDTCCTUploader.m in Sources */,
-				C2D788468F1A264DA25B556CDD08D933 /* GoogleDataTransportCCTSupport-dummy.m in Sources */,
+				A7D6F678752F07FD6DB5BCFF3FD878A0 /* cct.nanopb.c in Sources */,
+				EDFA5822DEA122414A33B9DFA4DEF05A /* GDTCCTNanopbHelpers.m in Sources */,
+				75DAC40CB8422B1ECD663551955AA899 /* GDTCCTPrioritizer.m in Sources */,
+				358AEAED6B58F7BBC69B0CD0B9FBFDEE /* GDTCCTUploader.m in Sources */,
+				42898990012F52BB2052B835C986A722 /* GoogleDataTransportCCTSupport-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,6 +1,6 @@
 {
   "name": "EXLocalAuthentication",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "summary": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "license": "MIT",

@@ -25,7 +25,7 @@
     "@expo/commander": "2.21.1",
     "@expo/json-file": "^8.0.0",
     "@expo/spawn-async": "^1.5.0",
-    "@expo/xdl": "56.2.2-alpha.0",
+    "@expo/xdl": "~56.2.2-alpha.2",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
     "@types/connect": "^3.4.32",
@@ -69,12 +69,13 @@
     "semver": "^5.4.1",
     "server-destroy": "^1.0.1",
     "source-map-support": "^0.5.9",
+    "tar": "^4.4.10",
     "transformer-proxy": "^0.3.4",
     "uuid": "^3.1.0",
     "ws": "^6.1.0",
     "xcode": "^2.0.0"
   },
   "devDependencies": {
-    "typescript": "^3.1.6"
+    "typescript": "^3.6.3"
   }
 }

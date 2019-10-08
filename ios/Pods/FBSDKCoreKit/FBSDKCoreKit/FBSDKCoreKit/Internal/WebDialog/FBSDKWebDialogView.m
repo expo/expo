@@ -18,6 +18,8 @@
 
 #import "FBSDKWebDialogView.h"
 
+#import <WebKit/WebKit.h>
+
 #import "FBSDKCloseIcon.h"
 #import "FBSDKError.h"
 #import "FBSDKInternalUtility.h"
@@ -25,14 +27,14 @@
 
 #define FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH 10.0
 
-@interface FBSDKWebDialogView () <UIWebViewDelegate>
+@interface FBSDKWebDialogView () <WKNavigationDelegate>
 @end
 
 @implementation FBSDKWebDialogView
 {
   UIButton *_closeButton;
   UIActivityIndicatorView *_loadingView;
-  UIWebView *_webView;
+  WKWebView *_webView;
 }
 
 #pragma mark - Object Lifecycle
@@ -43,8 +45,8 @@
     self.backgroundColor = [UIColor clearColor];
     self.opaque = NO;
 
-    _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-    _webView.delegate = self;
+    _webView = [[WKWebView alloc] initWithFrame:CGRectZero];
+    _webView.navigationDelegate = self;
     [self addSubview:_webView];
 
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -69,7 +71,7 @@
 
 - (void)dealloc
 {
-  _webView.delegate = nil;
+  _webView.navigationDelegate = nil;
 }
 
 #pragma mark - Public Methods
@@ -137,9 +139,9 @@
   [_delegate webDialogViewDidCancel:self];
 }
 
-#pragma mark - UIWebViewDelegate
+#pragma mark - WKNavigationDelegate
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
   [_loadingView stopAnimating];
 
@@ -154,11 +156,11 @@
   }
 }
 
-- (BOOL)webView:(UIWebView *)webView
-shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType
+- (void)webView:(WKWebView *)webView
+decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-  NSURL *URL = request.URL;
+  NSURL *URL = navigationAction.request.URL;
 
   if ([URL.scheme isEqualToString:@"fbconnect"]) {
     NSMutableDictionary<NSString *, id> *parameters = [[FBSDKBasicUtility dictionaryWithQueryString:URL.query] mutableCopy];
@@ -175,16 +177,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
       [_delegate webDialogView:self didCompleteWithResults:parameters];
     }
-    return NO;
-  } else if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-    [[UIApplication sharedApplication] openURL:request.URL];
-    return NO;
+    decisionHandler(WKNavigationActionPolicyCancel);
+  } else if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
+    [[UIApplication sharedApplication] openURL:URL];
+    decisionHandler(WKNavigationActionPolicyCancel);
   } else {
-    return YES;
+    decisionHandler(WKNavigationActionPolicyAllow);
   }
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
   [_loadingView stopAnimating];
   [_delegate webDialogViewDidFinishLoad:self];

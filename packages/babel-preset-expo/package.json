@@ -1,10 +1,11 @@
 {
   "name": "babel-preset-expo",
-  "version": "6.0.1",
+  "version": "7.1.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "lazy-imports-blacklist.js"
   ],
   "scripts": {
     "jest": "jest",
@@ -20,7 +21,11 @@
     "babel",
     "babel-preset",
     "expo",
-    "react-native"
+    "expo-web",
+    "react-native",
+    "react-native-web",
+    "metro",
+    "webpack"
   ],
   "author": "Expo <support@expo.io>",
   "license": "MIT",
@@ -49,5 +54,6 @@
   },
   "devDependencies": {
     "jest": "^24.7.1"
-  }
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

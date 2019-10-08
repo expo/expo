@@ -69,28 +69,16 @@ export async function test(t) {
         t.expect(osBuildFingerprint).toBeNull();
       });
 
-      t.it(`doesn't call getPlatformFeaturesAsync()`, async () => {
-        let error;
+      t.it(`getPlatformFeaturesAsync() returns empty array on iOS`, async () => {
         let allFeatures;
-        try {
-          allFeatures = await Device.getPlatformFeaturesAsync();
-        } catch (e) {
-          error = e;
-        }
-        t.expect(error).toBeDefined();
-        t.expect(typeof allFeatures).toEqual('undefined');
+        allFeatures = await Device.getPlatformFeaturesAsync();
+        t.expect(allFeatures).toEqual([]);
       });
 
-      t.it(`doesn't call hasPlatformFeatureAsync()`, async () => {
-        let error;
+      t.it(`hasPlatformFeatureAsync() returns false on iOS`, async () => {
         let hasFeature;
-        try {
-          hasFeature = await Device.hasPlatformFeatureAsync('amazon_fire_tv');
-        } catch (e) {
-          error = e;
-        }
-        t.expect(error).toBeDefined();
-        t.expect(typeof hasFeature).toEqual('undefined');
+        hasFeature = await Device.hasPlatformFeatureAsync('amazon_fire_tv');
+        t.expect(hasFeature).toEqual(false);
       });
 
       t.it(`doesn't call getMaxMemoryAsync()`, async () => {

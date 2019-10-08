@@ -44,9 +44,12 @@ RCT_EXPORT_MODULE();
   return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSDictionary *, getPreferences)
+- (NSDictionary *)constantsToExport
 {
-  return @{ @"colorScheme": RNCColorSchemePreference(nil)};
+    return @{
+        @"initialPreferences":
+            @{ @"colorScheme": RNCColorSchemePreference(nil) }
+    };
 }
 
 - (void)appearanceChanged:(NSNotification *)notification

@@ -18,7 +18,7 @@
 
 #import "FBSDKInstrumentManager.h"
 
-#import "FBSDKCrashHandler.h"
+#import "FBSDKCrashObserver.h"
 #import "FBSDKErrorReport.h"
 #import "FBSDKFeatureManager.h"
 #import "FBSDKSettings.h"
@@ -33,7 +33,7 @@
 
   [FBSDKFeatureManager checkFeature:FBSDKFeatureCrashReport completionBlock:^(BOOL enabled) {
     if (enabled) {
-      [FBSDKCrashHandler enable];
+      [FBSDKCrashObserver enable];
     }
   }];
   [FBSDKFeatureManager checkFeature:FBSDKFeatureErrorReport completionBlock:^(BOOL enabled) {

@@ -10,7 +10,7 @@
     <dependency>
       <groupId>com.google.android.gms</groupId>
       <artifactId>play-services-ads</artifactId>
-      <version>15.0.1</version>
+      <version>17.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

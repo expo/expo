@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 'use strict';
 
+const process = require('process');
+
 const spawnSync = require('../common/cross-spawn-sync');
 
 function checkWorkspaceDependencies() {
   let workspacesInfo = getWorkspacesInfo();
   if (!workspacesInfo) {
     console.error(`Couldn't generate Yarn's workspace root information.`);
-    return;
+    return false;
   }
 
   let count = countMismatchedWorkspaceDependencies(workspacesInfo);
   if (count === 0) {
     console.log(`✅  Verified that all workspace dependencies are symlinked.`);
-    return;
+    return true;
   } else {
     let singular = count === 1;
     console.warn(
@@ -38,6 +40,8 @@ function checkWorkspaceDependencies() {
       }
     }
   }
+
+  return false;
 }
 
 function getWorkspacesInfo() {
@@ -91,5 +95,7 @@ function countMismatchedWorkspaceDependencies(workspacesInfo) {
 }
 
 if (module === require.main) {
-  checkWorkspaceDependencies();
+  if (!checkWorkspaceDependencies()) {
+    process.exit(1);
+  }
 }

@@ -18,7 +18,11 @@
 
 #import "FBSDKLoginButton.h"
 
+#ifdef COCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
 #import "FBSDKCoreKit+Internal.h"
+#endif
 #import "FBSDKLoginTooltipView.h"
 
 static const CGFloat kFBLogoSize = 16.0;

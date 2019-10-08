@@ -77,6 +77,9 @@ export const iosModelNames = {
   'iPhone11,4': 'iPhone XS Max', // (model A1921, A2103)
   'iPhone11,6': 'iPhone XS Max', // (model A2104)
   'iPhone11,8': 'iPhone XR', // (model A1882, A1719, A2105)
+  'iPhone12,1': 'iPhone 11',
+  'iPhone12,3': 'iPhone 11 Pro',
+  'iPhone12,5': 'iPhone 11 Pro Max',
   'iPad4,1': 'iPad Air', // 5th Generation iPad (iPad Air) - Wifi
   'iPad4,2': 'iPad Air', // 5th Generation iPad (iPad Air) - Cellular
   'iPad4,3': 'iPad Air', // 5th Generation iPad (iPad Air)
