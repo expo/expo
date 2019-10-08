@@ -118,7 +118,7 @@ platform :ios do
       destination: "generic/platform=iOS",
       archive: true,
       archive_path: directory + "/Exponent.xcarchive",
-      xcargs: "CODE_SIGNING_ALLOWED=NO"
+      xcargs: "CODE_SIGNING_ALLOWED=NO APP_OWNER=Public"
     )
   end
 
