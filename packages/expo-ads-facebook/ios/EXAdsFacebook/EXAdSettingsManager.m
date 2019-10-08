@@ -20,7 +20,6 @@ UM_EXPORT_MODULE(CTKAdSettingsManager)
 - (instancetype)init {
   if (self = [super init]) {
     _testDevices = [NSMutableArray new];
-    _urlPrefix = @"";
     _mediationService = @"";
   }
   return self;
@@ -102,7 +101,9 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
 {
   [FBAdSettings setIsChildDirected:_isChildDirected];
   [FBAdSettings setMediationService:_mediationService];
-  [FBAdSettings setUrlPrefix:_urlPrefix];
+  if (_urlPrefix) {
+    [FBAdSettings setUrlPrefix:_urlPrefix];
+  }
   [FBAdSettings setLogLevel:_logLevel];
   [FBAdSettings addTestDevices:_testDevices];
 }
@@ -111,7 +112,9 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
 {
   [FBAdSettings setIsChildDirected:NO];
   [FBAdSettings setMediationService:@""];
-  [FBAdSettings setUrlPrefix:@""];
+  if (_urlPrefix) {
+    [FBAdSettings setUrlPrefix:nil];
+  }
   [FBAdSettings setLogLevel:FBAdLogLevelLog];
   [FBAdSettings clearTestDevices];
 }
