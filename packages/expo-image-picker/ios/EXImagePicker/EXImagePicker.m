@@ -36,10 +36,6 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 {
   if (self = [super init]) {
     self.defaultOptions = @{
-                            @"title": @"Select a Photo",
-                            @"cancelButtonTitle": @"Cancel",
-                            @"takePhotoButtonTitle": @"Take Photo…",
-                            @"chooseFromLibraryButtonTitle": @"Choose from Library…",
                             @"allowsEditing" : @NO,
                             @"base64": @NO,
                             };
