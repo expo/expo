@@ -127,7 +127,7 @@ UM_EXPORT_METHOD_AS(deviceSupportsApplePay, deviceSupportsApplePay:(UMPromiseRes
 - (void)updateTaxes:(NSNumber *)taxes {
     // We find the TAX item in Apple pay sheet and update its value with tax received in 'taxes' function paramter
     for (PKPaymentSummaryItem *item in paymentSummaryItems) {
-        if([item.label isEqualToString:@"TAX"]) {
+        if([item.label isEqualToString:@"SALES TAX"]) {
             item.amount = [NSDecimalNumber decimalNumberWithString:[taxes stringValue]];
         }
     }
