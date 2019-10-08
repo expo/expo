@@ -47,7 +47,7 @@ const defaultMode: AudioMode = {
   playThroughEarpieceAndroid: true,
 };
 
-let currentAudioMode: any = null;
+let currentAudioMode: AudioMode | null = null;
 
 function getCurrentAudioMode(): AudioMode {
   if (!currentAudioMode) {
