@@ -1,13 +1,10 @@
 require_relative './podfile_helpers.rb'
 require_relative '../packages/react-native-unimodules/cocoapods.rb'
 
-source 'https://cdn.cocoapods.org/'
-platform :ios, '10.0'
-
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-
+platform :ios, '10.0'
 inhibit_all_warnings!
 
 target 'Exponent' do

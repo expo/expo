@@ -1,5 +1,5 @@
 PODS:
-  - Amplitude-iOS (4.8.0)
+  - Amplitude-iOS (4.7.1)
   - Analytics (3.7.0)
   - AppAuth (1.2.0):
     - AppAuth/Core (= 1.2.0)
@@ -562,6 +562,6 @@ SPEC CHECKSUMS:
   UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
-PODFILE CHECKSUM: d4b154d721002b6dfac8755ed4790c0a6a1b5cc9
+PODFILE CHECKSUM: ecacb8b8f2e1491c52c416bdb589d93a9613d66d
 
 COCOAPODS: 1.8.1

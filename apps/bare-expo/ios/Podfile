@@ -1,6 +1,7 @@
 require 'json'
 
 platform :ios, '10.0'
+inhibit_all_warnings!
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
@@ -20,40 +21,49 @@ target 'BareExpo' do
 
   # Pods for BareExpo
   # [Custom] Use the symlinked react-native module
-  pod 'React', :path => react_native_path, :subspecs => [
-    'Core',
-    'CxxBridge',
-    'DevSupport',
-    'RCTActionSheet',
-    'RCTAnimation',
-    'RCTBlob',
-    'RCTGeolocation',
-    'RCTImage',
-    'RCTLinkingIOS',
-    'RCTNetwork',
-    'RCTSettings',
-    'RCTText',
-    'RCTVibration',
-    'RCTWebSocket',
-  ]
+  pod 'React',
+      path: react_native_path,
+      subspecs: %w[
+        Core
+        CxxBridge
+        DevSupport
+        RCTActionSheet
+        RCTAnimation
+        RCTBlob
+        RCTGeolocation
+        RCTImage
+        RCTLinkingIOS
+        RCTNetwork
+        RCTSettings
+        RCTText
+        RCTVibration
+        RCTWebSocket
+      ]
 
   # [Custom] Use the RN path to ensure this is being required correctly
-  pod 'yoga', :path => "#{react_native_path}/ReactCommon/yoga"
-  
-  pod 'DoubleConversion', :podspec => "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{react_native_path}/third-party-podspecs/glog.podspec"
-  pod 'Folly', :podspec => "#{react_native_path}/third-party-podspecs/Folly.podspec"
-  # [Custom] RNGH, Reanimated, and SAC are installed as node_modules in the root of the workspace
-  pod 'RNGestureHandler', :podspec => "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
-  pod 'RNReanimated', :podspec => "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
-  pod 'react-native-safe-area-context', :podspec => "#{modules_path}/react-native-safe-area-context"
+  pod 'yoga', path: "#{react_native_path}/ReactCommon/yoga"
 
-  use_unimodules!({
-    # [Custom] Use the packages directory for unimodules
-    modules_paths: ['../../../packages'],
-    # [Custom] Prevent the bundling of template code and stripe
-    exclude: package['excludedUnimodules']
-  })
+  pod 'DoubleConversion',
+      podspec: "#{react_native_path}/third-party-podspecs/DoubleConversion.podspec"
+  pod 'glog', podspec: "#{react_native_path}/third-party-podspecs/glog.podspec"
+  pod 'Folly', podspec: "#{react_native_path}/third-party-podspecs/Folly.podspec"
+  # [Custom] RNGH, Reanimated, and SAC are installed as node_modules in the root of the workspace
+  pod 'RNGestureHandler',
+      podspec: "#{modules_path}/react-native-gesture-handler/RNGestureHandler.podspec"
+  pod 'RNReanimated', podspec: "#{modules_path}/react-native-reanimated/RNReanimated.podspec"
+  pod 'react-native-safe-area-context', podspec: "#{modules_path}/react-native-safe-area-context"
+
+  use_unimodules!(
+    {
+      modules_paths: %w[../../../packages],
+      exclude:
+        # [Custom] Prevent the bundling of template code and stripe
+        package[
+          'excludedUnimodules'
+        ],
+      flags: { inhibit_warnings: false }
+    }
+  )
 
   target 'BareExpoTests' do
     inherit! :search_paths
