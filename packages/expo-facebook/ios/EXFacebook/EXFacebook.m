@@ -81,6 +81,38 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
   });
 }
 
+UM_EXPORT_METHOD_AS(setAutoLogAppEventsEnabledAsync,
+                    setAutoLogAppEventsEnabled:(BOOL)enabled
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [FBSDKSettings setAutoLogAppEventsEnabled:enabled];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
+                    setAutoInitEnabled:(BOOL)enabled
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [FBSDKSettings setAutoInitEnabled:enabled];
+  if (enabled) {
+    [FBSDKApplicationDelegate initializeSDK:nil];
+  }
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(setAdvertiserIDCollectionEnabledAsync,
+                    setAdvertiserIDCollectionEnabled:(BOOL)enabled
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [FBSDKSettings setAdvertiserIDCollectionEnabled:enabled];
+  resolve(nil);
+}
+
+# pragma mark - Utilities
+
 + (id)facebookAppIdFromNSBundle
 {
   return [[NSBundle mainBundle].infoDictionary objectForKey:@"FacebookAppID"];
