@@ -8,4 +8,10 @@ fi
 
 source ${EXPO_TOOLS_DIR}/source-login-scripts.sh
 export PATH="${SRCROOT}/../bin:$PATH"
-et ios-generate-dynamic-macros --configuration ${CONFIGURATION}
+
+if [ "${APP_OWNER}" == "Expo" ]; then
+  et ios-generate-dynamic-macros --configuration ${CONFIGURATION}
+else
+  et ios-generate-dynamic-macros --configuration ${CONFIGURATION} --skip-template=GoogleService-Info.plist
+fi
+
