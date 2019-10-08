@@ -35,7 +35,7 @@ export default class LinearGradient extends React.Component<Props> {
         {...props}
         colors={Platform.select({
           web: colors as any,
-          default: colors.map(processColor)
+          default: colors.map(processColor),
         })}
         locations={locations}
         startPoint={_normalizePoint(start)}

@@ -13,7 +13,7 @@ it(`renders a multi-color gradient background with alpha`, () => {
 
   // Ensure the correct number of colors are present
   expect((backgroundImage.match(/rgba/g) || []).length).toBe(colors.length);
-  
+
   // Match colors
   expect(backgroundImage).toMatchSnapshot();
 });
