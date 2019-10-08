@@ -174,17 +174,14 @@ Here are the formal instructions for deploying to GitHub Pages:
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
 
 
-## Self-Hosting
+## Self-Hosting with Apache v2.4
 
 1. Build your Expo web app with `expo build:web`.
 
-2. Configure a webserver to host static files.
+2. Configure the [webserver](https://httpd.apache.org/) to host static files:
 
-3. Provide the `web-build/` repository to the server.
+Create a file at `/etc/apache2/sites-available/expo.conf` with:
 
-### Apache example
-
-With a (too basic) configuration [Apache](https://httpd.apache.org/) v2.4 server:
 ```apache
 <VirtualHost ip-server:80>
     ServerAdmin your-email@address.tld
@@ -196,7 +193,23 @@ With a (too basic) configuration [Apache](https://httpd.apache.org/) v2.4 server
     </Directory>
 </VirtualHost>
 ```
+
+You have to change `your-email@address.tld`, `domain-for-the-app` and `/path/to/web-build/` according to your setup.
+
+3. Provide the `web-build/` repository to the server.
+
 You have to copy the `web-build/` repository to `/path/to/web-build/` on the server (or deploy the repository if your have CI).
-`a2ensite` the new configuration and restart Apache.
+
+4. Enable the new virtualhost:
+
+```
+$ sudo a2ensite expo
+```
+
+5. Restart Apache:
+
+```
+$ sudo systemctl restart apache2
+```
 
 When users go to `http://domain-for-the-app`, the app will be loaded.
