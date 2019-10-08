@@ -592,13 +592,13 @@ public class Exponent {
         emulatorField.setAccessible(true);
         emulatorField.set(null, debuggerHostHostname);
 
-        Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-        debugServerHostPortField.setAccessible(true);
-        debugServerHostPortField.set(null, debuggerHostPort);
+        // Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
+        // debugServerHostPortField.setAccessible(true);
+        // debugServerHostPortField.set(null, debuggerHostPort);
 
-        Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-        inspectorProxyPortField.setAccessible(true);
-        inspectorProxyPortField.set(null, debuggerHostPort);
+        // Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
+        // inspectorProxyPortField.setAccessible(true);
+        // inspectorProxyPortField.set(null, debuggerHostPort);
 
         builder.callRecursive("setUseDeveloperSupport", true);
         builder.callRecursive("setJSMainModulePath", mainModuleName);

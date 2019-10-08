@@ -274,6 +274,7 @@ public class Kernel extends KernelInterface {
           public void run() {
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
                 .setApplication(mApplicationContext)
+                .setCurrentActivity(getActivityContext())
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
                 .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
@@ -302,10 +303,6 @@ public class Kernel extends KernelInterface {
 
             mReactInstanceManager = builder.build();
             mReactInstanceManager.createReactContextInBackground();
-            if (getActivityContext() != null) {
-              // RN expects an activity in some places.
-              mReactInstanceManager.onHostResume(getActivityContext(), null);
-            }
 
             mIsRunning = true;
             EventBus.getDefault().postSticky(new KernelStartedRunningEvent());
