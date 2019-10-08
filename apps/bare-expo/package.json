@@ -32,22 +32,6 @@
     "nuke": "rm -rf node_modules; rm -rf ios/Pods/ && rm -rf ios/build/ && rm -rf android/.gradle",
     "sync:tools": "cp -a ../../../react-native/React/DevSupport/ ../../react-native-lab/react-native/React/DevSupport/"
   },
-  "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@react-navigation/web": "2.0.0-alpha.0",
-    "expo": "~35.0.0",
-    "expo-yarn-workspaces": "^1.2.1",
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
-    "react-native": "0.59.8",
-    "react-native-gesture-handler": "~1.3.0",
-    "react-native-reanimated": "~1.1.0",
-    "react-native-safe-area-context": "0.3.6",
-    "react-native-unimodules": "~0.7.0-rc.1",
-    "react-native-web": "^0.11.4",
-    "react-navigation": "4.1.0-alpha.0",
-    "test-suite": "*"
-  },
   "excludedUnimodules": [
     "expo-task-manager",
     "unimodules-task-manager-interface",
@@ -96,12 +80,28 @@
     "runner-config": "./e2e/jest.config.json",
     "test-runner": "jest"
   },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@react-navigation/web": "2.0.0-alpha.0",
+    "expo": "~35.0.0",
+    "expo-yarn-workspaces": "^1.2.1",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
+    "react-native": "0.59.8",
+    "react-native-gesture-handler": "~1.3.0",
+    "react-native-reanimated": "~1.1.0",
+    "react-native-safe-area-context": "0.3.6",
+    "react-native-unimodules": "~0.7.0-rc.1",
+    "react-native-web": "^0.11.4",
+    "react-navigation": "4.1.0-alpha.0",
+    "test-suite": "*"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@types/react": "^16.8.23",
     "@types/react-native": "^0.57.65",
     "babel-preset-expo": "~7.1.0",
-    "detox": "^14.3.4",
+    "detox": "^14.4.1",
     "expo-yarn-workspaces": "^1.2.1",
     "jest-expo": "~35.0.0",
     "jest-expo-puppeteer": "~0.0.0",
