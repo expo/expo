@@ -1,13 +1,14 @@
 #import "ExpoFlutterAdapterPlugin.h"
+#import <Flutter/Flutter.h>
 #import "InternalServicesModule.h"
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXCore/EXModuleRegistryProvider.h>
-#import <EXCore/EXEventEmitter.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMCore/UMModuleRegistryProvider.h>
+#import <UMCore/UMEventEmitter.h>
 
 @interface ExpoFlutterAdapterPlugin ()
 
-@property (nonatomic, strong) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, strong) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) InternalServicesModule *internalServicesModule;
 
 @end
@@ -30,7 +31,7 @@
         NSString* methodName = call.arguments[@"methodName"];
         NSArray* arguments = call.arguments[@"arguments"];
         
-        EXExportedModule* module = [_moduleRegistry getExportedModuleForName:moduleName];
+        UMExportedModule* module = [_moduleRegistry getExportedModuleForName:moduleName];
         
         [module getExportedMethods];
         
@@ -39,8 +40,8 @@
             result([FlutterError errorWithCode:@"E_NO_MODULE" message:reason details:nil]);
         }
         
-        if ([module conformsToProtocol:@protocol(EXEventEmitter)] && ([methodName isEqualToString:@"startObserving"] || [methodName isEqualToString:@"stopObserving"])) {
-            id<EXEventEmitter> eventEmitter = (id<EXEventEmitter>)module;
+        if ([module conformsToProtocol:@protocol(UMEventEmitter)] && ([methodName isEqualToString:@"startObserving"] || [methodName isEqualToString:@"stopObserving"])) {
+            id<UMEventEmitter> eventEmitter = (id<UMEventEmitter>)module;
             
             if ([methodName isEqualToString:@"startObserving"]) {
                 [eventEmitter startObserving];
@@ -50,10 +51,10 @@
                result(@{@"status": @"success", @"payload":[NSNull null]});
             }
         } else {
-            EXPromiseResolveBlock resolve = ^(id res) {
+            UMPromiseResolveBlock resolve = ^(id res) {
                 result(@{@"status": @"success",@"payload":res});
             };
-            EXPromiseRejectBlock reject = ^(NSString* code, NSString* message, NSError* error) {
+            UMPromiseRejectBlock reject = ^(NSString* code, NSString* message, NSError* error) {
                 result(@{ @"status": @"error", @"code":code, @"message":message, @"details":[error localizedDescription]});
             };
             
@@ -68,14 +69,14 @@
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     if (self = [super init]) {
-        EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] init];
-        _moduleRegistry = [moduleRegistryProvider moduleRegistryForExperienceId:@"expo_flutter_adapter"];
+        UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] init];
+        _moduleRegistry = [moduleRegistryProvider moduleRegistry];
         [_moduleRegistry initialize];
 
-        NSArray<id<EXInternalModule>> *internalModules = [_moduleRegistry getAllInternalModules];
+        NSArray<id<UMInternalModule>> *internalModules = [_moduleRegistry getAllInternalModules];
 
         for (int i = 0; i < [internalModules count]; i++) {
-            id<EXInternalModule> module = [internalModules objectAtIndex:i];
+            id<UMInternalModule> module = [internalModules objectAtIndex:i];
 
             if ([module isKindOfClass:[InternalServicesModule class]]) {
                 FlutterEventChannel* eventChannel =
@@ -105,42 +106,3 @@
 }
 
 @end
-
-#pragma mark EXCore Logging Blocks
-
-extern void EXLogInfo(NSString *format, ...) {
-    va_list args;
-    va_start(args, format);
-    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-    va_end(args);
-    NSLog(@"%@", message);
-}
-
-extern void EXLogWarn(NSString *format, ...) {
-    va_list args;
-    va_start(args, format);
-    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-    va_end(args);
-    NSLog(@"%@", message);
-}
-
-extern void EXLogError(NSString *format, ...) {
-    va_list args;
-    va_start(args, format);
-    NSString *message = [[NSString alloc] initWithFormat:format arguments:args];
-    va_end(args);
-    NSLog(@"%@", message);
-}
-
-extern void EXFatal(NSError *error) {
-    NSLog(@"%@",[error description]);
-}
-
-extern NSError * EXErrorWithMessage(NSString *message) {
-    NSLog(@"%@", message);
-    return nil;
-}
-
-extern UIApplication *EXSharedApplication() {
-    return nil;
-}
