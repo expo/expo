@@ -2,9 +2,11 @@ package expo.modules.permissions.requesters
 
 import android.Manifest
 import android.os.Bundle
-import org.unimodules.interfaces.permissions.PermissionsResponse.EXPIRES_KEY
-import org.unimodules.interfaces.permissions.PermissionsResponse.PERMISSION_EXPIRES_NEVER
-import org.unimodules.interfaces.permissions.PermissionsResponse.STATUS_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse
+import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.EXPIRES_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.NEVER_ASK_AGAIN_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.PERMISSION_EXPIRES_NEVER
+import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.STATUS_KEY
 import org.unimodules.interfaces.permissions.PermissionsStatus
 
 class LocationRequester : PermissionRequester {
@@ -13,22 +15,23 @@ class LocationRequester : PermissionRequester {
       Manifest.permission.ACCESS_COARSE_LOCATION
   )
 
-  override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsStatus>): Bundle {
+  override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsResponse>): Bundle {
     return Bundle().apply {
       var scope = "none"
-      val accessFineLocation = permissionsResponse[Manifest.permission.ACCESS_FINE_LOCATION]
-      val accessCoarseLocation = permissionsResponse[Manifest.permission.ACCESS_COARSE_LOCATION]
+      val accessFineLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_FINE_LOCATION)
+      val accessCoarseLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_COARSE_LOCATION)
+      val neverAskAgain = accessCoarseLocation.neverAskAgain || accessCoarseLocation.neverAskAgain
 
       putString(STATUS_KEY, when {
-        accessFineLocation == PermissionsStatus.GRANTED -> {
+        accessFineLocation.status == PermissionsStatus.GRANTED -> {
           scope = "fine"
           PermissionsStatus.GRANTED.jsString
         }
-        accessCoarseLocation == PermissionsStatus.GRANTED -> {
+        accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
           scope = "coarse"
           PermissionsStatus.GRANTED.jsString
         }
-        accessFineLocation == PermissionsStatus.DENIED && accessCoarseLocation == PermissionsStatus.DENIED -> {
+        accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
           PermissionsStatus.DENIED.jsString
         }
         else -> {
@@ -36,6 +39,7 @@ class LocationRequester : PermissionRequester {
         }
       })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
+      putBoolean(NEVER_ASK_AGAIN_KEY, neverAskAgain)
       putBundle("android", Bundle().apply { putString("scope", scope) })
     }
   }

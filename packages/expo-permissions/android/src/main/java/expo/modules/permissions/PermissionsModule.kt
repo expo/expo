@@ -15,8 +15,7 @@ import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import org.unimodules.interfaces.permissions.PermissionsResponseListener
 
 class PermissionsModule(context: Context) : ExportedModule(context) {
   private lateinit var mPermissions: Permissions
@@ -68,7 +67,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun askAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
-      mPermissions.askForPermissions(PermissionsResponse {
+      mPermissions.askForPermissions(PermissionsResponseListener {
         promise.resolve(getPermissionsBundle(requestedPermissionsTypes))
       }, *getAndroidPermissionsFromList(requestedPermissionsTypes))
 
@@ -80,7 +79,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @Throws(IllegalStateException::class)
   private fun getPermissionsBundle(requestedPermissionsTypes: List<String>): Bundle {
     return Bundle().apply {
-      mPermissions.getPermissions(PermissionsResponse { permissionsMap ->
+      mPermissions.getPermissions(PermissionsResponseListener { permissionsMap ->
         requestedPermissionsTypes.forEach {
           putBundle(it, getRequester(it).parseAndroidPermissions(permissionsMap))
         }

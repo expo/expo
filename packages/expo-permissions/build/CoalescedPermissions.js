@@ -28,4 +28,7 @@ export function coalesceExpirations(permissions) {
     // We choose the earliest expiration
     return expirations[0];
 }
+export function coalesceNeveAskAgin(permissions) {
+    return Object.keys(permissions).reduce((neverAskAgain, type) => neverAskAgain || permissions[type].neverAskAgain, false);
+}
 //# sourceMappingURL=CoalescedPermissions.js.map

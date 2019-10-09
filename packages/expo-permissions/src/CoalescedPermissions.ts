@@ -34,3 +34,10 @@ export function coalesceExpirations(permissions: PermissionMap): PermissionExpir
   // We choose the earliest expiration
   return expirations[0];
 }
+
+export function coalesceNeveAskAgin(permissions: PermissionMap): Boolean {
+  return Object.keys(permissions).reduce<Boolean>(
+    (neverAskAgain, type) => neverAskAgain || permissions[type].neverAskAgain,
+    false
+  );
+}

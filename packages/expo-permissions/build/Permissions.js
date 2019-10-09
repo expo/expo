@@ -1,4 +1,4 @@
-import { coalesceExpirations, coalesceStatuses } from './CoalescedPermissions';
+import { coalesceExpirations, coalesceStatuses, coalesceNeveAskAgin } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
 import { Platform } from 'react-native';
 import { PermissionStatus, } from './Permissions.types';
@@ -14,13 +14,13 @@ export const CALENDAR = 'calendar';
 export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 export async function getAsync(...types) {
-    if (Platform.OS === "ios") {
+    if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
     }
     return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
 }
 export async function askAsync(...types) {
-    if (Platform.OS === "ios") {
+    if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.askAsync);
     }
     return await _handlePermissionsRequestAsync(types, Permissions.askAsync);
@@ -39,7 +39,8 @@ async function _handleMultiPermissionsRequestIOSAsync(types, handlePermission) {
     return {
         status: coalesceStatuses(permissions),
         expires: coalesceExpirations(permissions),
-        permissions
+        neverAskAgain: coalesceNeveAskAgin(permissions),
+        permissions,
     };
 }
 async function _handlePermissionsRequestAsync(types, handlePermissions) {
@@ -50,6 +51,7 @@ async function _handlePermissionsRequestAsync(types, handlePermissions) {
     return {
         status: coalesceStatuses(permissions),
         expires: coalesceExpirations(permissions),
+        neverAskAgain: coalesceNeveAskAgin(permissions),
         permissions,
     };
 }

@@ -1,4 +1,4 @@
-import { coalesceExpirations, coalesceStatuses } from './CoalescedPermissions';
+import { coalesceExpirations, coalesceStatuses, coalesceNeveAskAgin } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
 import { Platform } from 'react-native';
 
@@ -32,14 +32,14 @@ export const REMINDERS = 'reminders';
 export const SYSTEM_BRIGHTNESS = 'systemBrightness';
 
 export async function getAsync(...types: PermissionType[]): Promise<PermissionResponse> {
-  if (Platform.OS === "ios") {
+  if (Platform.OS === 'ios') {
     return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
   }
   return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
 }
 
 export async function askAsync(...types: PermissionType[]): Promise<PermissionResponse> {
-  if (Platform.OS === "ios") {
+  if (Platform.OS === 'ios') {
     return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.askAsync);
   }
   return await _handlePermissionsRequestAsync(types, Permissions.askAsync);
@@ -60,15 +60,16 @@ async function _handleMultiPermissionsRequestIOSAsync(
     throw new Error('At least one permission type must be specified');
   }
 
-  let permissions = {}
+  let permissions = {};
   for (let type of types) {
-    permissions[type] = await _handleSinglePermissionRequestIOSAsync(type, handlePermission);    
+    permissions[type] = await _handleSinglePermissionRequestIOSAsync(type, handlePermission);
   }
 
   return {
     status: coalesceStatuses(permissions),
     expires: coalesceExpirations(permissions),
-    permissions
+    neverAskAgain: coalesceNeveAskAgin(permissions),
+    permissions,
   };
 }
 
@@ -84,6 +85,7 @@ async function _handlePermissionsRequestAsync(
   return {
     status: coalesceStatuses(permissions),
     expires: coalesceExpirations(permissions),
+    neverAskAgain: coalesceNeveAskAgin(permissions),
     permissions,
   };
 }

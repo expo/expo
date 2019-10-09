@@ -54,6 +54,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: "never" | number;
     granted: boolean;
+    neverAskAgain: boolean;
 };
 interface LocationTaskOptions {
     accuracy?: LocationAccuracy;

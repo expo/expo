@@ -10,7 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 import com.facebook.react.modules.core.PermissionAwareActivity
 
@@ -22,6 +23,7 @@ import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.interfaces.permissions.PermissionsResponse
+import org.unimodules.interfaces.permissions.PermissionsResponseListener
 import org.unimodules.interfaces.permissions.PermissionsStatus
 
 private const val PERMISSIONS_REQUEST: Int = 13
@@ -62,9 +64,11 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   }
 
   override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
-    getPermissions(PermissionsResponse { permissionsMap: Map<String, PermissionsStatus> ->
-      val allGranted = permissionsMap.all { (_, status) -> status == PermissionsStatus.GRANTED }
-      val allDenied = permissionsMap.all { (_, status) -> status == PermissionsStatus.DENIED }
+    getPermissions(PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
+      val allGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
+      val allDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
+      val neverAskAgain = permissionsMap.any { (_, response) -> response.neverAskAgain }
+
       promise.resolve(Bundle().apply {
         putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
         putString(PermissionsResponse.STATUS_KEY, when {
@@ -72,34 +76,38 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
           allDenied -> PermissionsStatus.DENIED.jsString
           else -> PermissionsStatus.UNDETERMINED.jsString
         })
+        putBoolean(PermissionsResponse.NEVER_ASK_AGAIN_KEY, neverAskAgain)
         putBoolean(PermissionsResponse.GRANTED_KEY, allGranted)
       })
     }, *permissions)
   }
 
   override fun askForPermissionsWithPromise(promise: Promise, vararg permissions: String) {
-    askForPermissions(PermissionsResponse {
+    askForPermissions(PermissionsResponseListener {
       getPermissionsWithPromise(promise, *permissions)
     }, *permissions)
   }
 
 
-  override fun getPermissions(response: PermissionsResponse, vararg permissions: String) {
-    val permissionsMap = HashMap<String, PermissionsStatus>()
+  override fun getPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
+    val permissionsMap = HashMap<String, PermissionsResponse>()
     permissions.forEach {
-      permissionsMap[it] = when {
+      val status = when {
         isPermissionGranted(it) -> PermissionsStatus.GRANTED
         didAsk(it) -> PermissionsStatus.DENIED
         else -> PermissionsStatus.UNDETERMINED
       }
+
+      val neverAskAgain = status == PermissionsStatus.DENIED && !canAskAgain(it)
+      permissionsMap[it] = PermissionsResponse(status, neverAskAgain)
     }
-    response.onResult(permissionsMap)
+    responseListener.onResult(permissionsMap)
   }
 
-  override fun askForPermissions(response: PermissionsResponse, vararg permissions: String) {
+  override fun askForPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
     val permissionsToAsk = permissions.filter { !isPermissionGranted(it) }
     askForManifestPermissions(permissionsToAsk.toTypedArray()) {
-      getPermissions(response, *permissions)
+      getPermissions(responseListener, *permissions)
     }
   }
 
@@ -146,6 +154,12 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
       }
     }
     return PackageManager.PERMISSION_DENIED
+  }
+
+  private fun canAskAgain(permission: String): Boolean {
+    return mActivityProvider?.currentActivity?.let {
+      ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
+    } ?: false
   }
 
   /**

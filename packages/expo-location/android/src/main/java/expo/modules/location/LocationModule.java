@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
 import android.location.Address;
 import android.location.Geocoder;
@@ -480,30 +479,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   //region private methods
-
-  private Bundle parseLocationPermissions(Map<String, PermissionsStatus> permissions) {
-    PermissionsStatus status = PermissionsStatus.DENIED;
-    String scope = "none";
-    if (permissions.get(Manifest.permission.ACCESS_FINE_LOCATION) == PermissionsStatus.GRANTED) {
-      scope = "fine";
-      status = PermissionsStatus.GRANTED;
-    } else if (permissions.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionsStatus.GRANTED) {
-      scope = "coarse";
-      status = PermissionsStatus.GRANTED;
-    } else if (permissions.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PermissionsStatus.UNDETERMINED
-        || permissions.get(Manifest.permission.ACCESS_FINE_LOCATION) == PermissionsStatus.UNDETERMINED) {
-      status = PermissionsStatus.UNDETERMINED;
-    }
-
-    Bundle result = new Bundle();
-    result.putString(PermissionsResponse.STATUS_KEY, status.getJsString());
-    result.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
-
-    Bundle scopeBundle = new Bundle();
-    scopeBundle.putString("scope", scope);
-    result.putBundle("android", scopeBundle);
-    return result;
-  }
 
   private boolean isMissingPermissions() {
     return mPermissions == null

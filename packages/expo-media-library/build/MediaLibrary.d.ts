@@ -77,6 +77,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     granted: boolean;
     expires: "never" | number;
+    neverAskAgain: boolean;
 };
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;

@@ -22,11 +22,11 @@ public interface Permissions {
 
   void getPermissionsWithPromise(final Promise promise, String... permissions);
 
-  void getPermissions(final PermissionsResponse response, String... permissions);
+  void getPermissions(final PermissionsResponseListener response, String... permissions);
 
   void askForPermissionsWithPromise(final Promise promise, String... permissions);
 
-  void askForPermissions(final PermissionsResponse response, String... permissions);
+  void askForPermissions(final PermissionsResponseListener response, String... permissions);
 
   boolean hasGrantedPermissions(String... permissions);
 

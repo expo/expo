@@ -32,7 +32,6 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.imageloader.ImageLoader;
 import org.unimodules.interfaces.permissions.Permissions;
-import org.unimodules.interfaces.permissions.PermissionsResponse;
 import org.unimodules.interfaces.permissions.PermissionsStatus;
 
 import java.io.ByteArrayOutputStream;
@@ -293,15 +292,12 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    permissionsModule.askForPermissions(new PermissionsResponse() {
-      @Override
-      public void onResult(Map<String, PermissionsStatus> permissionsResponse) {
-        if (permissionsResponse.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PermissionsStatus.GRANTED
-            &&  permissionsResponse.get(Manifest.permission.CAMERA) == PermissionsStatus.GRANTED) {
-          launchCameraWithPermissionsGranted(promise, cameraIntent);
-        } else {
-          promise.reject(new SecurityException("User rejected permissions"));
-        }
+    permissionsModule.askForPermissions(permissionsResponse -> {
+      if (permissionsResponse.get(Manifest.permission.WRITE_EXTERNAL_STORAGE).getStatus() == PermissionsStatus.GRANTED
+          &&  permissionsResponse.get(Manifest.permission.CAMERA).getStatus() == PermissionsStatus.GRANTED) {
+        launchCameraWithPermissionsGranted(promise, cameraIntent);
+      } else {
+        promise.reject(new SecurityException("User rejected permissions"));
       }
     });
   }

@@ -16,8 +16,9 @@ export const PermissionsStatus = {
 
 export type PermissionsResponse = {
   status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: "never" | number;
+  expires: 'never' | number;
   granted: boolean;
+  neverAskAgain: boolean;
 };
 
 export async function getBrightnessAsync(): Promise<number> {
@@ -85,9 +86,9 @@ export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMod
 }
 
 export async function getPermissionsAsync(): Promise<PermissionsResponse> {
-  return NativeModulesProxy.ExpoBrightness.getPermissionsAsync();
+  return ExpoBrightness.getPermissionsAsync();
 }
 
 export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
-  return NativeModulesProxy.ExpoBrightness.requestPermissionsAsync();
+  return ExpoBrightness.requestPermissionsAsync();
 }

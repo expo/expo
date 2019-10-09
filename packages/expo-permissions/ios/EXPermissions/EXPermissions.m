@@ -178,9 +178,12 @@ UM_EXPORT_METHOD_AS(askAsync,
   NSMutableDictionary *parsedPermission = [permission mutableCopy];
   UMPermissionStatus status = (UMPermissionStatus)[permission[@"status"] intValue];
   BOOL granted = status == UMPermissionStatusGranted;
+  BOOL neverAskAgain = status == UMPermissionStatusDenied;
+  
   [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:@"status"];
   [parsedPermission setValue:EXPermissionExpiresNever forKey:@"expires"];
   [parsedPermission setValue:@(granted) forKey:@"granted"];
+  [parsedPermission setValue:@(neverAskAgain) forKey:@"neverAskAgain"];
   return parsedPermission;
 }
 

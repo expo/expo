@@ -33,8 +33,8 @@ Determines whether your app has already been granted access to the provided perm
 #### Returns
 
 Returns a `Promise` that is resolved with the information about the permissions, including status, expiration and scope (if it applies to the permission type).
-Top-level `status` and `expires` keys stores combined info of each component permission that is asked for.
-If any permission resulted in a negative result, then that negative result is propagated here; that means top-level values are positive only if all component values are positive.
+Top-level `status`, `expires` and `neverAskAgain` keys stores combined info of each component permission that is asked for.
+If any permission resulted in a negative result, then that negative result is propagated here; that means top-level values are positive only if all component values are positive. The same rule is applied to `neverAskAgain` value.
 
 Examples `[...componentsValues] => topLevelStatus`:
 
@@ -45,10 +45,12 @@ Examples `[...componentsValues] => topLevelStatus`:
 {
   status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
   expires, // combined expires of all permissions being asked for, same as status
+  neverAskAgain,
   permissions: { // an object with an entry for each permission requested
     [Permissions.TYPE]: {
       status,
       expires,
+      neverAskAgain,
       ... // any additional permission-specific fields
     },
     ...

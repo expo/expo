@@ -10,8 +10,9 @@ export declare const PermissionsStatus: {
 };
 export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-    expires: "never" | number;
+    expires: 'never' | number;
     granted: boolean;
+    neverAskAgain: boolean;
 };
 export declare function getBrightnessAsync(): Promise<number>;
 export declare function setBrightnessAsync(brightnessValue: number): Promise<void>;

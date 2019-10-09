@@ -14,6 +14,8 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -38,6 +40,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   private static abstract class ExperienceEvent {
     private ExperienceId mExperienceId;
+
     ExperienceEvent(ExperienceId experienceId) {
       this.mExperienceId = experienceId;
     }
@@ -46,14 +49,23 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       return mExperienceId;
     }
   }
+
   public static class ExperienceForegroundedEvent extends ExperienceEvent {
-    ExperienceForegroundedEvent(ExperienceId experienceId) { super(experienceId); }
+    ExperienceForegroundedEvent(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
+
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
-    ExperienceBackgroundedEvent(ExperienceId experienceId) { super(experienceId); }
+    ExperienceBackgroundedEvent(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
+
   public static class ExperienceContentLoaded extends ExperienceEvent {
-    public ExperienceContentLoaded(ExperienceId experienceId) { super(experienceId); }
+    public ExperienceContentLoaded(ExperienceId experienceId) {
+      super(experienceId);
+    }
   }
 
   private static BaseExperienceActivity sVisibleActivity;
@@ -298,7 +310,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     }
   }
 
-  // for getting scope permission
+  // for getting scoped permission
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
@@ -321,7 +333,17 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   }
 
   @Override
-  public void onRequestPermissionsResult(final int requestCode, final String permissions[], final int[] grantResults) {
+  public boolean shouldShowRequestPermissionRationale(@NotNull String permission) {
+    // in scoped application we don't have `don't ask again` button
+    if (!Constants.isStandaloneApp() && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+      return true;
+    }
+    return super.shouldShowRequestPermissionRationale(permission);
+  }
+
+
+  @Override
+  public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NotNull final int[] grantResults) {
     if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
       mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
       mPermissionsHelper = null;

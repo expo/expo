@@ -105,6 +105,7 @@ export type PermissionsResponse = {
   status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
   granted: boolean;
   expires: "never" | number;
+  neverAskAgain: boolean;
 };
 
 export type AssetRef = Asset | string;

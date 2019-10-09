@@ -126,8 +126,9 @@ export const PermissionsStatus = {
 
 export type PermissionsResponse = {
   status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: "never" | number;
+  expires: 'never' | number;
   granted: boolean;
+  neverAskAgain: boolean;
 };
 
 type OptionalKeys<T> = {
