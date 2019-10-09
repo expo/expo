@@ -55,7 +55,8 @@ export function getTestModules() {
       require('./tests/Contacts'),
       require('./tests/Haptics'),
       require('./tests/Localization'),
-      require('./tests/SecureStore')
+      require('./tests/SecureStore'),
+      require('./tests/SMS')
     );
     return modules;
   }
@@ -110,6 +111,8 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Location')));
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(optionalRequire(() => require('./tests/Linking')));
+    // Has uncontrolled view controllers
+    modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/Permissions')));
