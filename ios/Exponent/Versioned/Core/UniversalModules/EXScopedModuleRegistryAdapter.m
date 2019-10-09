@@ -15,6 +15,7 @@
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
 #import "EXScopedBranch.h"
+#import "EXScopedFacebook.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -33,6 +34,11 @@
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
+#endif
+
+#if __has_include(<EXFacebook/EXFacebook.h>)
+  EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] init];
+  [moduleRegistry registerExportedModule:scopedFacebook];
 #endif
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
