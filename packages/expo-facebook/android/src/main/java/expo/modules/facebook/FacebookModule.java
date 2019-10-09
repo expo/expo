@@ -14,10 +14,6 @@ import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -27,14 +23,16 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class FacebookModule extends ExportedModule implements ActivityEventListener {
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
 
   public FacebookModule(Context context) {
     super(context);
-    //noinspection deprecation
-    FacebookSdk.sdkInitialize(context);
     mCallbackManager = CallbackManager.Factory.create();
   }
 
@@ -44,9 +42,50 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @ExpoMethod
+  public void setAutoLogAppEventsEnabledAsync(final Boolean enabled, Promise promise) {
+    FacebookSdk.setAutoLogAppEventsEnabled(enabled);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void setAutoInitEnabledAsync(final Boolean enabled, final Promise promise) {
+    FacebookSdk.setAutoInitEnabled(enabled);
+    if (enabled) {
+      FacebookSdk.fullyInitialize();
+    }
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void setAdvertiserIDCollectionEnabledAsync(final Boolean enabled, Promise promise) {
+    FacebookSdk.setAdvertiserIDCollectionEnabled(enabled);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void initializeAsync(final String appId, final Promise promise) {
+    try {
+      if (appId != null) {
+        FacebookSdk.setApplicationId(appId);
+      }
+      FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
+        @Override
+        public void onInitialized() {
+          FacebookSdk.fullyInitialize();
+          promise.resolve(null);
+        }
+      });
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
   public void logInWithReadPermissionsAsync(final String appId, final ReadableArguments config, final Promise promise) {
     AccessToken.setCurrentAccessToken(null);
-    FacebookSdk.setApplicationId(appId);
+    if (appId != null) {
+      FacebookSdk.setApplicationId(appId);
+    }
 
     List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
 
