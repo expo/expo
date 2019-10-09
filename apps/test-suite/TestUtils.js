@@ -40,7 +40,8 @@ export function getTestModules() {
     require('./tests/Constants'),
     require('./tests/FileSystem'),
     require('./tests/Font'),
-    require('./tests/Permissions')
+    require('./tests/Permissions'),
+    require('./tests/ImagePicker')
   );
 
   // Universally tested APIs
