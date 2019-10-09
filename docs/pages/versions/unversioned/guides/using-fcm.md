@@ -6,6 +6,10 @@ Firebase Cloud Messaging is required for all standalone Android apps made with E
 
 Note that FCM is not currently available for Expo iOS apps.
 
+## Eject required
+
+If you use Expo and would like to use this package, you'll need to eject which is not reversible.
+
 ## Client Setup
 
 1. If you have not already created a Firebase project for your app, do so now by clicking on **Add project** in the [Firebase Console](https://console.firebase.google.com/).
