@@ -1,11 +1,16 @@
 import React from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import { ThemeContext } from 'react-navigation';
 import { BaseButton } from 'react-native-gesture-handler';
+
 import ScrollView from '../components/NavigationScrollView';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
+import { StyledText } from '../components/Text';
 
 class ShadowButton extends React.Component {
+  static contextType = ThemeContext;
+
   state = {
     scale: new Animated.Value(1),
   };
@@ -31,7 +36,7 @@ class ShadowButton extends React.Component {
         }}>
         <Animated.View
           style={{
-            backgroundColor: '#fff',
+            backgroundColor: this.context === 'light' ? '#fff' : Colors.dark.cardBackground,
             padding: 15,
             borderRadius: 10,
             shadowOffset: { width: 0, height: 0 },
@@ -54,7 +59,7 @@ export default class DiagnosticsScreen extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: Colors.greyBackground }}>
+      <View style={{ flex: 1, backgroundColor: Colors.light.greyBackground }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
           <AudioDiagnostic navigation={this.props.navigation} />
           {Environment.IsIOSRestrictedBuild ? (
@@ -72,13 +77,13 @@ export default class DiagnosticsScreen extends React.Component {
 function AudioDiagnostic(props) {
   return (
     <ShadowButton onPress={() => props.navigation.navigate('Audio')}>
-      <Text style={styles.titleText}>Audio</Text>
-      <Text style={styles.bodyText}>
+      <StyledText style={styles.titleText}>Audio</StyledText>
+      <StyledText style={styles.bodyText}>
         On iOS you can play audio
         {!Environment.IsIOSRestrictedBuild ? ` in the foreground and background` : ``}, choose
         whether it plays when the device is on silent, and set how the audio interacts with audio
         from other apps. This diagnostic allows you to see the available options.
-      </Text>
+      </StyledText>
     </ShadowButton>
   );
 }
@@ -86,12 +91,12 @@ function AudioDiagnostic(props) {
 function BackgroundLocationDiagnostic(props) {
   return (
     <ShadowButton onPress={() => props.navigation.navigate('Location')}>
-      <Text style={styles.titleText}>Background location</Text>
-      <Text style={styles.bodyText}>
+      <StyledText style={styles.titleText}>Background location</StyledText>
+      <StyledText style={styles.bodyText}>
         On iOS it's possible to track your location when an app is foregrounded, backgrounded, or
         even closed. This diagnostic allows you to see what options are available, see the output,
         and test the functionality on your device. None of the location data will leave your device.
-      </Text>
+      </StyledText>
     </ShadowButton>
   );
 }
@@ -99,13 +104,13 @@ function BackgroundLocationDiagnostic(props) {
 function ForegroundLocationDiagnostic(props) {
   return (
     <ShadowButton onPress={() => props.navigation.navigate('Location')}>
-      <Text style={styles.titleText}>Location (when app in use)</Text>
-      <Text style={styles.bodyText}>
+      <StyledText style={styles.titleText}>Location (when app in use)</StyledText>
+      <StyledText style={styles.bodyText}>
         On iOS, there are different permissions for tracking your location. This diagnostic allows
         you to see what options are available and test the functionality on your device while you
         are using the app (background location is available only in standalone apps). None of the
         location data will leave your device.
-      </Text>
+      </StyledText>
     </ShadowButton>
   );
 }
@@ -113,13 +118,13 @@ function ForegroundLocationDiagnostic(props) {
 function GeofencingDiagnostic(props) {
   return (
     <ShadowButton onPress={() => props.navigation.navigate('Geofencing')}>
-      <Text style={styles.titleText}>Geofencing</Text>
-      <Text style={styles.bodyText}>
+      <StyledText style={styles.titleText}>Geofencing</StyledText>
+      <StyledText style={styles.bodyText}>
         You can fire actions when your device enters specific geographical regions represented by a
         longitude, latitude, and a radius. This diagnostic lets you experiment with Geofencing using
         regions that you specify and shows you the data that is made available. None of the data
         will leave your device.
-      </Text>
+      </StyledText>
     </ShadowButton>
   );
 }
@@ -133,6 +138,6 @@ const styles = StyleSheet.create({
   bodyText: {
     fontSize: 14,
     lineHeight: 20,
-    color: 'rgba(0,0,0,0.6)',
+    opacity: 0.6,
   },
 });

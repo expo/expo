@@ -1,6 +1,6 @@
 import { ViewProps } from 'react-native';
 
-import WebGL2RenderingContext from './WebGL2RenderingContext'
+import WebGL2RenderingContext from './WebGL2RenderingContext';
 
 export type SurfaceCreateEvent = {
   nativeEvent: {

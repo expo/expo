@@ -1,5 +1,5 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExponentMediaLibrary';
@@ -99,7 +99,7 @@ export enum PermissionStatus {
   UNDETERMINED = 'undetermined',
   GRANTED = 'granted',
   DENIED = 'denied',
-};
+}
 
 export type PermissionInfo = {
   status: 'granted' | 'denied' | 'undetermined';
@@ -196,6 +196,13 @@ export async function createAssetAsync(localUri: string): Promise<Asset> {
     return asset[0];
   }
   return asset;
+}
+
+export async function saveToLibraryAsync(localUri: string): Promise<void> {
+  if (!MediaLibrary.saveToLibraryAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'saveToLibraryAsync');
+  }
+  return await MediaLibrary.saveToLibraryAsync(localUri);
 }
 
 export async function addAssetsToAlbumAsync(

@@ -1,6 +1,6 @@
 {
   "name": "EXBranch",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "summary": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "license": "MIT",
@@ -23,7 +23,7 @@
 
     ],
     "Branch": [
-
+      "~> 0.28"
     ]
   }
 }

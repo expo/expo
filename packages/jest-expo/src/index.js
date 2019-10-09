@@ -1,6 +1,5 @@
-import { Platform as PlatformExpo } from '@unimodules/core';
-import { Linking, Platform } from 'react-native';
 import { EventEmitter } from 'fbemitter';
+import { Linking } from 'react-native';
 
 const allOriginalPropertyDescriptors = new Map();
 
@@ -58,40 +57,6 @@ export function unmockAllProperties() {
     }
   }
   allOriginalPropertyDescriptors.clear();
-}
-
-export function mockPlatformIOS() {
-  mockProperty(Platform, 'OS', 'ios');
-  mockProperty(PlatformExpo, 'OS', 'ios');
-}
-
-export function mockPlatformAndroid() {
-  mockProperty(Platform, 'OS', 'android');
-  mockProperty(PlatformExpo, 'OS', 'android');
-}
-
-export function mockPlatformWeb() {
-  mockProperty(Platform, 'OS', 'web');
-  mockProperty(PlatformExpo, 'OS', 'web');
-}
-
-export function describeCrossPlatform(message, tests) {
-  describe(`  ${message}`, () => {
-    beforeEach(mockPlatformIOS);
-    tests();
-    afterAll(() => {
-      unmockProperty(Platform, 'OS');
-      unmockProperty(PlatformExpo, 'OS');
-    });
-  });
-  describe(`🤖  ${message}`, () => {
-    beforeEach(mockPlatformAndroid);
-    tests();
-    afterAll(() => {
-      unmockProperty(Platform, 'OS');
-      unmockProperty(PlatformExpo, 'OS');
-    });
-  });
 }
 
 export function mockLinking() {

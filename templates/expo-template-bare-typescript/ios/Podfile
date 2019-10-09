@@ -28,6 +28,8 @@ target 'HelloWorld' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
   pod 'RNGestureHandler', :podspec => '../node_modules/react-native-gesture-handler/RNGestureHandler.podspec'
   pod 'RNReanimated', :podspec => '../node_modules/react-native-reanimated/RNReanimated.podspec'
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
   use_unimodules!
+
 end

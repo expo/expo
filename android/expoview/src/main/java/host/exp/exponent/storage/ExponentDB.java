@@ -2,12 +2,13 @@
 
 package host.exp.exponent.storage;
 
+import androidx.annotation.NonNull;
+
 import com.raizlabs.android.dbflow.annotation.Database;
-import com.raizlabs.android.dbflow.runtime.TransactionManager;
-import com.raizlabs.android.dbflow.runtime.transaction.BaseTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.SelectSingleModelTransaction;
-import com.raizlabs.android.dbflow.runtime.transaction.TransactionListener;
-import com.raizlabs.android.dbflow.sql.builder.Condition;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.sql.language.CursorResult;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +16,7 @@ import org.json.JSONObject;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 
-@Database(name = ExponentDB.NAME, version = ExponentDB.VERSION)
+@Database(version = ExponentDB.VERSION)
 public class ExponentDB {
 
   private static final String TAG = ExponentDB.class.getSimpleName();
@@ -36,32 +37,26 @@ public class ExponentDB {
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
       experience.manifest = manifest.toString();
-      TransactionManager.getInstance().saveOnSaveQueue(experience);
+      FlowManager.getDatabase(ExponentDB.class).getTransactionManager().getSaveQueue().add(experience);
     } catch (JSONException e) {
       EXL.e(TAG, e.getMessage());
     }
   }
 
   public static void experienceIdToExperience(String experienceId, final ExperienceResultListener listener) {
-    TransactionManager.getInstance().addTransaction(new SelectSingleModelTransaction<>(ExperienceDBObject.class, new TransactionListener<ExperienceDBObject>() {
-      @Override
-      public void onResultReceived(ExperienceDBObject result) {
-        if (result == null) {
-          listener.onFailure();
-        } else {
-          listener.onSuccess(result);
-        }
-      }
-
-      @Override
-      public boolean onReady(BaseTransaction<ExperienceDBObject> transaction) {
-        return true;
-      }
-
-      @Override
-      public boolean hasResult(BaseTransaction<ExperienceDBObject> transaction, ExperienceDBObject result) {
-        return true;
-      }
-    }, Condition.column(ExperienceDBObject$Table.ID).eq(experienceId)));
+    SQLite.select()
+        .from(ExperienceDBObject.class)
+        .where(ExperienceDBObject_Table.id.is(experienceId))
+        .async()
+        .queryResultCallback(new QueryTransaction.QueryResultCallback<ExperienceDBObject>() {
+          @Override
+          public void onQueryResult(QueryTransaction<ExperienceDBObject> transaction, @NonNull CursorResult<ExperienceDBObject> tResult) {
+            if (tResult.getCount() == 0) {
+              listener.onFailure();
+            } else {
+              listener.onSuccess(tResult.getItem(0));
+            }
+          }
+        }).execute();
   }
 }

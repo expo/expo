@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { StoreReview } from 'expo';
+import * as StoreReview  from 'expo-store-review';
 
 import Button from '../components/Button';
 import CannyFooter from '../components/CannyFooter';

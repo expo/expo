@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/UMSensorsInterface/ABI35_0_0UMSensorsInterface/ABI35_0_0UMMagnetometerUncalibratedInterface.h

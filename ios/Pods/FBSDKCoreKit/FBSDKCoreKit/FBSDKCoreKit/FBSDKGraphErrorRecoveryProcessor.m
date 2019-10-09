@@ -17,7 +17,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #import "FBSDKGraphErrorRecoveryProcessor.h"
 
-#import "FBSDKCoreKit+Internal.h"
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+
 #import "FBSDKErrorRecoveryAttempter.h"
 
 @interface FBSDKGraphErrorRecoveryProcessor()
@@ -26,18 +27,13 @@
   NSError *_error;
 }
 
-@property (nonatomic, strong) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate;
+@property (nonatomic, strong, nullable) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate;
 
 @end
 
 @implementation FBSDKGraphErrorRecoveryProcessor
 
-- (void)dealloc
-{
-
-}
-
-- (BOOL)processError:(NSError *)error request:(FBSDKGraphRequest *)request delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>) delegate
+- (BOOL)processError:(NSError *)error request:(FBSDKGraphRequest *)request delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>)delegate
 {
   self.delegate = delegate;
   if ([self.delegate respondsToSelector:@selector(processorWillProcessError:error:)]) {
@@ -55,7 +51,6 @@
     case FBSDKGraphRequestErrorRecoverable :
       if ([request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
         _recoveryAttempter = error.recoveryAttempter;
-        BOOL isLoginRecoveryAttempter = [_recoveryAttempter isKindOfClass:NSClassFromString(@"_FBSDKLoginRecoveryAttempter")];
 
         // Set up a block to do the typical recovery work so that we can chain it for ios auth special cases.
         // the block returns YES if recovery UI is started (meaning we wait for the alertviewdelegate to resume control flow).
@@ -71,26 +66,6 @@
           }
           return NO;
         };
-
-        if ([request.tokenString isEqualToString:[FBSDKSystemAccountStoreAdapter sharedInstance].accessTokenString] &&
-            isLoginRecoveryAttempter) {
-          // special system auth case: if user has granted permissions we can simply renew. On a successful
-          // renew, treat this as immediately recovered without the standard alert prompty.
-          // (for example, this can repair expired tokens seamlessly)
-          [[FBSDKSystemAccountStoreAdapter sharedInstance]
-           renewSystemAuthorization:^(ACAccountCredentialRenewResult result, NSError *renewError) {
-             dispatch_async(dispatch_get_main_queue(), ^{
-               if (result == ACAccountCredentialRenewResultRenewed) {
-                 [self.delegate processorDidAttemptRecovery:self didRecover:YES error:nil];
-                 self.delegate = nil;
-               } else if (!standardRecoveryWork()) {
-                 [self.delegate processorDidAttemptRecovery:self didRecover:NO error:self->_error];
-               };
-             });
-           }];
-          // short-circuit YES so that the renew callback resumes the control flow.
-          return YES;
-        }
 
         return standardRecoveryWork();
       }

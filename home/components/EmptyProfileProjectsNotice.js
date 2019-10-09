@@ -2,9 +2,11 @@
 
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
+import { StyledView } from './Views';
+import { StyledText } from './Text';
 import SharedStyles from '../constants/SharedStyles';
 import PrimaryButton from './PrimaryButton';
 
@@ -12,11 +14,11 @@ export default class EmptyProfileProjectsNotice extends React.Component {
   render() {
     if (this.props.isOwnProfile) {
       return (
-        <View style={styles.container}>
-          <Text style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
+        <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
+          <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
             Projects that you publish will appear here! Go ahead and publish one, then refresh this
             screen.
-          </Text>
+          </StyledText>
 
           <PrimaryButton
             plain
@@ -25,15 +27,15 @@ export default class EmptyProfileProjectsNotice extends React.Component {
             style={{ marginBottom: 5 }}>
             Learn more about publishing
           </PrimaryButton>
-        </View>
+        </StyledView>
       );
     } else {
       return (
-        <View style={styles.container}>
-          <Text style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
+        <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
+          <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
             No published projects
-          </Text>
-        </View>
+          </StyledText>
+        </StyledView>
       );
     }
   }
@@ -46,7 +48,6 @@ export default class EmptyProfileProjectsNotice extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
     paddingTop: 5,
     alignItems: 'flex-start',
     paddingHorizontal: 15,

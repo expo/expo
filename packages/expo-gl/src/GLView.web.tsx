@@ -10,7 +10,6 @@ import {
   ExpoWebGLRenderingContext,
   SnapshotOptions,
 } from './GLView.types';
-export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 
 declare const window: Window;
 
@@ -86,7 +85,7 @@ const propTypes = {
   webglContextAttributes: PropTypes.object,
 };
 
-interface GLViewProps extends BaseGLViewProps {
+export interface GLViewProps extends BaseGLViewProps {
   onContextCreate: (gl: WebGLRenderingContext) => void;
   onContextRestored?: (gl?: WebGLRenderingContext) => void;
   onContextLost?: () => void;
@@ -133,7 +132,7 @@ export class GLView extends React.Component<GLViewProps, State> {
     options: SnapshotOptions = {}
   ): Promise<GLSnapshot> {
     invariant(exgl, 'GLView.takeSnapshotAsync(): canvas is not defined');
-    const canvas: HTMLCanvasElement = exgl.canvas;
+    const canvas = exgl.canvas as HTMLCanvasElement;
     return await new Promise(resolve => {
       canvas.toBlob(
         (blob: Blob | null) => {

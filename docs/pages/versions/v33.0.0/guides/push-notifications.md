@@ -6,7 +6,7 @@ Push Notifications are an important feature to, as _"growth hackers"_ would say,
 
 > **Note:** iOS and Android simulators cannot receive push notifications. To test them out you will need to use a real-life device. Additionally, when calling Permissions.askAsync on the simulator, it will resolve immediately with "undetermined" as the status, regardless of whether you choose to allow or not.
 
-There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).  This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34)!
+There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to).  This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34?platform=ios)!
 
 ## 1. Save the user's Expo Push Token on your server
 

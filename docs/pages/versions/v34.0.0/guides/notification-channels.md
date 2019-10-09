@@ -24,7 +24,7 @@ Creating a channel is easy -- before you create a local notification (or receive
 
 ```javascript
 if (Platform.OS === 'android') {
-  Expo.Notifications.createChannelAndroidAsync('chat-messages', {
+  Notifications.createChannelAndroidAsync('chat-messages', {
     name: 'Chat messages',
     sound: true,
   });
@@ -36,7 +36,7 @@ Creating a channel that already exists is essentially a no-op, so it's safe to c
 Then, when you want to send a notification for a chat message, either add the `channelId: 'chat-messages'` field to your [push notification message](../push-notifications/#message-format), or create a local notification like this:
 
 ```javascript
-Expo.Notifications.presentLocalNotificationAsync({
+Notifications.presentLocalNotificationAsync({
   title: 'New Message',
   body: 'Message!!!!',
   android: {
@@ -65,7 +65,7 @@ For example, if this is your code before:
 
 ```javascript
 _createNotificationAsync = () => {
-  Expo.Notifications.presentLocalNotificationAsync({
+  Notifications.presentLocalNotificationAsync({
     title: 'Reminder',
     body: 'This is an important reminder!!!!',
     android: {
@@ -83,7 +83,7 @@ You might change it to something like this:
 componentDidMount() {
   // ...
   if (Platform.OS === 'android') {
-    Expo.Notifications.createChannelAndroidAsync('reminders', {
+    Notifications.createChannelAndroidAsync('reminders', {
       name: 'Reminders',
       priority: 'max',
       vibrate: [0, 250, 250, 250],
@@ -94,7 +94,7 @@ componentDidMount() {
 // ...
 
 _createNotificationAsync = () => {
-  Expo.Notifications.presentLocalNotificationAsync({
+  Notifications.presentLocalNotificationAsync({
     title: 'Reminder',
     body: 'This is an important reminder!!!!',
     android: {

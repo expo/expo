@@ -24,30 +24,44 @@ type PropsType = React.ComponentProps<typeof View> & {
     | 'fullBanner'
     | 'leaderboard'
     | 'smartBannerPortrait'
-    | 'smartBannerLandscape',
+    | 'smartBannerLandscape';
   /**
    * AdMob ad unit ID
    */
-  adUnitID?: string,
+  adUnitID?: string;
 
   /**
    * Test device ID
    */
-  testDeviceID?: string,
+  testDeviceID?: string;
+
+  /**
+   * Additional request params added to underlying request for the ad.
+   */
+  additionalRequestParams?: { [key: string]: string };
+
+  /**
+   * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
+   * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
+   * https://developers.google.com/admob/ios/eu-consent#forward_consent_to_the_google_mobile_ads_sdk
+   * and
+   * https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
+   */
+  servePersonalizedAds?: boolean;
 
   /**
    * AdMob iOS library events
    */
-  onAdViewDidReceiveAd?: () => void,
-  onDidFailToReceiveAdWithError?: (string) => void,
-  onAdViewWillPresentScreen?: () => void,
-  onAdViewWillDismissScreen?: () => void,
-  onAdViewDidDismissScreen?: () => void,
-  onAdViewWillLeaveApplication?: () => void,
+  onAdViewDidReceiveAd?: () => void;
+  onDidFailToReceiveAdWithError?: (string) => void;
+  onAdViewWillPresentScreen?: () => void;
+  onAdViewWillDismissScreen?: () => void;
+  onAdViewDidDismissScreen?: () => void;
+  onAdViewWillLeaveApplication?: () => void;
 };
 
 type StateType = {
-  style: { width?: number, height?: number },
+  style: { width?: number; height?: number };
 };
 
 export default class AdMobBanner extends React.Component<PropsType, StateType> {
@@ -63,7 +77,9 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     ]),
     adUnitID: PropTypes.string,
     testDeviceID: PropTypes.string,
+    servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
+    additionalRequestParams: PropTypes.object,
     onDidFailToReceiveAdWithError: PropTypes.func,
     onAdViewWillPresentScreen: PropTypes.func,
     onAdViewWillDismissScreen: PropTypes.func,
@@ -76,7 +92,7 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
 
   state = { style: {} };
 
-  _handleSizeChange = ({ nativeEvent }: { nativeEvent: { width: number, height: number } }) => {
+  _handleSizeChange = ({ nativeEvent }: { nativeEvent: { width: number; height: number } }) => {
     const { height, width } = nativeEvent;
     this.setState({ style: { width, height } });
   };
@@ -86,6 +102,12 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
+    let additionalRequestParams: { [key: string]: string } = {
+      ...this.props.additionalRequestParams,
+    };
+    if (!this.props.servePersonalizedAds) {
+      additionalRequestParams.npa = '1';
+    }
     return (
       <View style={this.props.style}>
         <ExpoBannerView
@@ -94,6 +116,7 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
           bannerSize={this.props.bannerSize}
           testDeviceID={this.props.testDeviceID}
           onSizeChange={this._handleSizeChange}
+          additionalRequestParams={additionalRequestParams}
           onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}
           onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError}
           onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen}

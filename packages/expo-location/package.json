@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "main": "build/Location.js",
   "types": "build/Location.d.ts",
@@ -26,7 +26,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-location"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -46,7 +47,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "~1.1.1"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

@@ -13,7 +13,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
-    "expo-yarn-workspaces": "^1.2.0",
+    "expo-yarn-workspaces": "^1.2.1",
     "metro-react-native-babel-preset": "^0.54.1"
   }
 }

@@ -50,8 +50,8 @@ export async function getContactByIdAsync(id, fields) {
         if (results && results.data && results.data.length > 0) {
             return results.data[0];
         }
-        return;
     }
+    return undefined;
 }
 export async function addContactAsync(contact, containerId) {
     if (!ExpoContacts.addContactAsync) {

@@ -1,57 +1,19 @@
 [
   {
     "name": "Amplitude-iOS",
-    "version": "~> 3.8"
-  },
-  {
-    "name": "Analytics",
-    "version": "~> 3.5"
-  },
-  {
-    "name": "AppAuth",
-    "version": "~> 0.4"
+    "version": "~> 4.7.1"
   },
   {
     "name": "CocoaLumberjack",
-    "version": "~> 3.2.1"
+    "version": "~> 3.5.3"
   },
   {
     "name": "Crashlytics",
-    "version": "~> 3.8"
-  },
-  {
-    "name": "FBAudienceNetwork",
-    "version": "5.1.1"
-  },
-  {
-    "name": "FBSDKCoreKit",
-    "version": "4.40.0"
-  },
-  {
-    "name": "Bolts",
-    "version": "1.9.0",
-    "comments": [
-      "We want to inhibit warnings in this pod and",
-      "CocoaPods doesn't inhibit warnings for transient dependencies",
-      "(it's a dependency of FBSDKCoreKit). Update when updating FBSDKCoreKit,",
-      "remove once it stops depending on it."
-    ]
-  },
-  {
-    "name": "FBSDKLoginKit",
-    "version": "4.40.0"
-  },
-  {
-    "name": "Fabric",
-    "version": "~> 1.6"
-  },
-  {
-    "name": "GoogleSignIn",
-    "version": "~> 4.1"
+    "version": "~> 3.13.4"
   },
   {
     "name": "GoogleMaps",
-    "version": "~> 2.5.0"
+    "version": "~> 3.3"
   },
   {
     "name": "Google-Maps-iOS-Utils",
@@ -64,13 +26,5 @@
   {
     "name": "JKBigInteger2",
     "version": "0.0.5"
-  },
-  {
-    "name": "Branch",
-    "version": "~> 0.27.1"
-  },
-  {
-    "name": "Google-Mobile-Ads-SDK",
-    "version": "~> 7.22.0"
   }
 ]

@@ -1,6 +1,6 @@
 {
   "name": "EXImageManipulator",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "summary": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "license": "MIT",

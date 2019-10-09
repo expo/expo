@@ -246,13 +246,12 @@ export async function shareContactAsync(
         url,
         message,
       },
-      shareOptions,
+      shareOptions
     );
   } else if (!ExpoContacts.shareContactAsync) {
     throw new UnavailabilityError('Contacts', 'shareContactAsync');
   }
   return await ExpoContacts.shareContactAsync(contactId, message);
-
 }
 
 export async function getContactsAsync(contactQuery: ContactQuery = {}): Promise<ContactResponse> {
@@ -297,8 +296,8 @@ export async function getContactByIdAsync(
     if (results && results.data && results.data.length > 0) {
       return results.data[0];
     }
-    return;
   }
+  return undefined;
 }
 
 export async function addContactAsync(contact: Contact, containerId: string): Promise<string> {

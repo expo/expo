@@ -13,7 +13,7 @@ It notifies you of exceptions that your users run into while using your app and 
 - It scales to meet the demands of even the largest projects.
 - It works on most platforms, so you can use the same service for reporting your server, CLI, or desktop app errors as you use for your Expo app.
 - We trust it for our projects at Expo.
-- It is free for up to 10,000 events per month.
+- It is free for up to 5,000 events per month.
 
 ## Add Sentry to your Expo project
 
@@ -21,7 +21,7 @@ It notifies you of exceptions that your users run into while using your app and 
 
 - [Sign up for a Sentry account](https://sentry.io/signup/)
 - Once you have signed up, you will be prompted to create a project. Enter the name of your project and continue.
-- Copy your "Public DSN", you will need it shortly.
+- Copy your "DSN", you will need it shortly.
 - Go to the [Sentry API](https://sentry.io/api/) section and create an auth token. You can use the default configuration, this token will never be made available to users of your app. Ensure you have `project:write` selected under scopes. Copy your auth token and save it for later.
 - Go to your project dashboard by going to [sentry.io](https://sentry.io) and selecting your project. Next go to the settings tab and copy the name of your project, we will need this. The "legacy name" will not work for our purposes.
 - Go to your organization settings by going to [sentry.io](https://sentry.io), press the button in the top left of your screen with the arrow beside it and select "organization settings". Copy the name of your organization. The "legacy name" will not work for our purposes.
@@ -33,12 +33,13 @@ It notifies you of exceptions that your users run into while using your app and 
 - Add the following in your app's main file (`App.js` by default).
 
 ```javascript
-import Sentry from 'sentry-expo';
+import * as Sentry from 'sentry-expo';
 
-// Remove this once Sentry is correctly setup.
-Sentry.enableInExpoDevelopment = true;
-
-Sentry.config('your Public DSN goes here').install();
+Sentry.init({
+  dsn: 'DSN',
+  enableInExpoDevelopment: true,
+  debug: true
+});
 ```
 
 - Open `app.json` and add a `postPublish hook`:
@@ -62,6 +63,7 @@ Sentry.config('your Public DSN goes here').install();
       ]
     }
   }
+}
 ```
 
 The correct `authToken` value can be generated from the [Sentry API page ](https://sentry.io/settings/account/api/).
@@ -75,7 +77,7 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 
 ### Publish your app with sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is hit publish and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](https://blog.expo.io/publishing-on-exponent-790493660d24).
+With the `postPublish` hook in place, now all you need to do is hit publish and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../../workflow/publishing/).
 
 ## Error reporting semantics
 
@@ -83,8 +85,8 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 
 ## Disabled by default in dev
 
-Unless `Sentry.enableInExpoDevelopment = true` is set before calling `Sentry.config({...}).install()`, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.captureException(new Error('Oops!'))` but these methods will be no-op.
+Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.captureException(new Error('Oops!'))` but these methods will be no-op.
 
 ## Learn more about Sentry
 
-Sentry does more than just catch fatal errors, learn more about how to use Sentry from their [JavaScript usage docs](https://docs.sentry.io/clients/javascript/usage/).
+Sentry does more than just catch fatal errors, learn more about how to use Sentry from their [JavaScript usage docs](https://docs.sentry.io/platforms/javascript/).

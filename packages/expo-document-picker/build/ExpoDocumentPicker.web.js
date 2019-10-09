@@ -19,7 +19,7 @@ export default {
                     const targetFile = input.files[0];
                     const reader = new FileReader();
                     reader.onerror = () => {
-                        reject('Failed to read the selected media because the operation failed.');
+                        reject(new Error(`Failed to read the selected media because the operation failed.`));
                     };
                     reader.onload = ({ target }) => {
                         const uri = target.result;

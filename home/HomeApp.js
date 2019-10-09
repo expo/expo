@@ -4,10 +4,12 @@ import Constants from 'expo-constants';
 import * as Font from 'expo-font';
 import React from 'react';
 import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
+import { Appearance } from 'react-native-appearance';
 import { Assets as StackAssets } from 'react-navigation-stack';
-import url from 'url';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import url from 'url';
 
 import './menu/MenuView';
 
@@ -17,18 +19,40 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import Store from './redux/Store';
 import LocalStorage from './storage/LocalStorage';
+import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
 
+@connect(data => App.getDataProps(data))
 export default class App extends React.Component {
+  static getDataProps(data) {
+    let { settings } = data;
+
+    return {
+      preferredAppearance: settings.preferredAppearance,
+    };
+  }
+
   state = {
     isReady: false,
+    colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
     this._initializeStateAsync();
+    this._addProjectHistoryListener();
   }
+
+  _addProjectHistoryListener = () => {
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+      let { manifestUrl, manifest, manifestString } = event;
+      if (!manifest && manifestString) {
+        manifest = JSON.parse(manifestString);
+      }
+      Store.dispatch(HistoryActions.addHistoryItem(manifestUrl, manifest));
+    });
+  };
 
   _isExpoHost = host => {
     return (
@@ -90,13 +114,21 @@ export default class App extends React.Component {
       return <AppLoading />;
     }
 
+    let { preferredAppearance, colorScheme } = this.props;
+    let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+    if (theme === 'no-preference') {
+      theme = 'light';
+    }
+
     return (
       <View style={styles.container}>
         <ActionSheetProvider>
-          <Navigation />
+          <Navigation theme={theme} />
         </ActionSheetProvider>
 
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && (
+          <StatusBar barStyle={theme === 'dark' ? 'light-content' : 'dark-content'} />
+        )}
         {Platform.OS === 'android' && <View style={styles.statusBarUnderlay} />}
       </View>
     );
@@ -110,7 +142,14 @@ const styles = StyleSheet.create({
   },
   statusBarUnderlay: {
     height: Constants.statusBarHeight,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    ...Platform.select({
+      ios: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+      },
+      android: {
+        backgroundColor: 'rgba(0,0,0,0.2)',
+      },
+    }),
     position: 'absolute',
     top: 0,
     left: 0,

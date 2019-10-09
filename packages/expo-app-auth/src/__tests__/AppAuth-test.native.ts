@@ -52,6 +52,8 @@ describe('revokeAsync', () => {
   });
 
   it(`rejects invalid IDs`, async () => {
-    await expect(AppAuth.revokeAsync(config, { token: refreshToken })).rejects.toThrowErrorMatchingSnapshot();
+    await expect(
+      AppAuth.revokeAsync(config, { token: refreshToken })
+    ).rejects.toThrowErrorMatchingSnapshot();
   });
 });

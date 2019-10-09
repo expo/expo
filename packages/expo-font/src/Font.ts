@@ -11,8 +11,7 @@ type FontSource = string | number | Asset;
 
 const isWeb = Platform.OS === 'web';
 const isInClient = !isWeb && Constants.appOwnership === 'expo';
-const isInIOSStandalone =
-  Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
+const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
 
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};

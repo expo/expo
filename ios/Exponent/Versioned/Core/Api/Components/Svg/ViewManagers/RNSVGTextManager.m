@@ -52,6 +52,10 @@ RCT_CUSTOM_VIEW_PROPERTY(rotate, id, RNSVGText)
     view.rotate = [RCTConvert RNSVGLengthArray:json];
 }
 RCT_EXPORT_VIEW_PROPERTY(font, NSDictionary)
+RCT_CUSTOM_VIEW_PROPERTY(inlineSize, id, RNSVGText)
+{
+    view.inlineSize = [RCTConvert RNSVGLength:json];
+}
 RCT_CUSTOM_VIEW_PROPERTY(textLength, id, RNSVGText)
 {
     view.textLength = [RCTConvert RNSVGLength:json];
@@ -68,7 +72,7 @@ RCT_CUSTOM_VIEW_PROPERTY(baselineShift, id, RNSVGText)
 RCT_EXPORT_VIEW_PROPERTY(lengthAdjust, NSString)
 RCT_EXPORT_VIEW_PROPERTY(alignmentBaseline, NSString)
 
-RCT_CUSTOM_VIEW_PROPERTY(fontSize, id, RNSVGGroup)
+RCT_CUSTOM_VIEW_PROPERTY(fontSize, id, RNSVGText)
 {
     if ([json isKindOfClass:[NSString class]]) {
         NSString *stringValue = (NSString *)json;
@@ -77,6 +81,18 @@ RCT_CUSTOM_VIEW_PROPERTY(fontSize, id, RNSVGGroup)
         NSNumber* number = (NSNumber*)json;
         double num = [number doubleValue];
         view.font = @{@"fontSize": [NSNumber numberWithDouble:num] };
+    }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(fontWeight, id, RNSVGText)
+{
+    if ([json isKindOfClass:[NSString class]]) {
+        NSString *stringValue = (NSString *)json;
+        view.font = @{ @"fontWeight": stringValue };
+    } else {
+        NSNumber* number = (NSNumber*)json;
+        double num = [number doubleValue];
+        view.font = @{@"fontWeight": [NSNumber numberWithDouble:num] };
     }
 }
 

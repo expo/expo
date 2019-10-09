@@ -1,19 +1,20 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
-  TouchableHighlight,
-  TouchableNativeFeedback,
-  StyleSheet,
-  FlatList,
-  View,
-  Text,
-  Platform,
-  Linking,
   Alert,
   Button,
+  FlatList,
+  Linking,
   PixelRatio,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
-import { MaterialIcons } from '@expo/vector-icons';
+import SafeAreaView from 'react-native-safe-area-view';
+
 import { getTestModules } from '../TestUtils';
 
 class ListItem extends React.Component {
@@ -51,15 +52,62 @@ export default class SelectScreen extends React.PureComponent {
   constructor(props) {
     super(props);
 
+    if (global.ErrorUtils) {
+      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
+
+      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
+        // Prevent optionalRequire from failing
+        if (
+          isFatal &&
+          (error.message.includes('Native module cannot be null') ||
+            error.message.includes(
+              `from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: `
+            ))
+        ) {
+          console.log('Caught require error');
+        } else {
+          global.expoErrorDelegate.throw(error, isFatal);
+          originalErrorHandler(error, isFatal);
+        }
+      });
+    }
     this.modules = getTestModules();
     this.state = {
       selected: new Set(),
     };
   }
 
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this._handleOpenURL);
+  }
+
+  checkLinking = incomingTests => {
+    if (incomingTests) {
+      const testNames = incomingTests.split(',').map(v => v.trim());
+      const selected = this.modules.filter(m => testNames.includes(m.name));
+      if (!selected.length) {
+        console.log('[TEST_SUITE]', 'No selected modules', testNames);
+      }
+      this.props.navigation.navigate('RunTests', {
+        selected: this.modules.filter(m => testNames.includes(m.name)),
+      });
+    }
+  };
+
+  _handleOpenURL = ({ url }) => {
+    setTimeout(() => {
+      if (url && url.includes('select/')) {
+        this.checkLinking(url.split('/').pop());
+      }
+    }, 100);
+  };
+
   componentDidMount() {
+    Linking.addEventListener('url', this._handleOpenURL);
+
     Linking.getInitialURL()
       .then(url => {
+        this._handleOpenURL({ url });
         // TODO: Use Expo Linking library once parseURL is implemented for web
         if (url && url.indexOf('/all') > -1) {
           // Test all available modules
@@ -75,7 +123,9 @@ export default class SelectScreen extends React.PureComponent {
     title: 'Test Suite',
   };
 
-  _keyExtractor = item => item.name;
+  _keyExtractor = (item, index) => {
+    return `${index}-${item.name}`;
+  };
 
   _onPressItem = id => {
     this.setState(state => {
@@ -100,7 +150,7 @@ export default class SelectScreen extends React.PureComponent {
       if (state.selected.size === this.modules.length) {
         return { selected: new Set() };
       }
-      return { selected: new Set(this.modules.map(this._keyExtractor)) };
+      return { selected: new Set(this.modules.map(item => item.name)) };
     });
   };
 

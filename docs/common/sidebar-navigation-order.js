@@ -84,6 +84,7 @@ const FUNDAMENTALS = [
   'Upgrading Expo SDK Walkthrough',
   'Linking',
   'How Expo Works',
+  'Ejecting to Bare Workflow',
   'Glossary of terms',
   'exp Command-Line Interface',
 ];
@@ -117,6 +118,7 @@ const ESSENTIALS = [
   'Supported Expo SDK APIs',
   'Using Expo client',
   'Using Expo for web',
+  'Ejecting from Managed Workflow',
   'Migrating from ExpoKit',
 ];
 

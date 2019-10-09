@@ -1,3 +1,2 @@
-import { _setShouldThrowAnErrorOutsideOfExpo } from 'expo/build/environment/validatorState'
+import './env';
 import './index.tsx';
-_setShouldThrowAnErrorOutsideOfExpo(false);

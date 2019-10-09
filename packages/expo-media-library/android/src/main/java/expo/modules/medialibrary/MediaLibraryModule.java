@@ -33,6 +33,7 @@ import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIO
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -139,6 +140,16 @@ public class MediaLibraryModule extends ExportedModule {
     response.putString("status", isGranted ? "granted" : "denied");
     response.putBoolean("granted", isGranted);
     promise.resolve(response);
+  }
+
+  @ExpoMethod
+  public void saveToLibraryAsync(String localUri, Promise promise) {
+    if (isMissingWritePermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE);
+    }
+
+    new CreateAsset(mContext, localUri, promise, false)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -306,6 +317,16 @@ public class MediaLibraryModule extends ExportedModule {
       return false;
     }
     int[] grantResults = permissionsManager.getPermissions(new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE});
+
+    return grantResults.equals(new int[]{PERMISSION_GRANTED, PERMISSION_GRANTED});
+  }
+
+  private boolean isMissingWritePermission() {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      return false;
+    }
+    int[] grantResults = permissionsManager.getPermissions(new String[]{WRITE_EXTERNAL_STORAGE});
 
     return grantResults.equals(new int[]{PERMISSION_GRANTED, PERMISSION_GRANTED});
   }
