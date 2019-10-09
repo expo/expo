@@ -7,7 +7,7 @@ export default {
         return false;
     },
     async sendSMSAsync(addresses, message) {
-        throw new CodedError('E_SMS_UNAVAILABLE', 'SMS service not available');
+        throw new CodedError('E_SMS_UNAVAILABLE', 'SMS not available');
     },
 };
 //# sourceMappingURL=ExpoSMS.web.js.map
