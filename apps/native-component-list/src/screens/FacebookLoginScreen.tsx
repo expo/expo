@@ -3,6 +3,8 @@ import { Alert, ScrollView } from 'react-native';
 import * as Facebook from 'expo-facebook';
 import ListButton from '../components/ListButton';
 
+const appId = '1201211719949057';
+
 export default class FacebookLoginScreen extends React.Component {
   static navigationOptions = {
     title: 'FacebookLogin',
@@ -14,7 +16,11 @@ export default class FacebookLoginScreen extends React.Component {
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton
-          onPress={() => this._testFacebookLogin('1201211719949057', permissions)}
+          onPress={async () => await Facebook.initializeAsync(appId)}
+          title="Initialize Facebook SDK"
+        />
+        <ListButton
+          onPress={() => this._testFacebookLogin(appId, permissions)}
           title="Authenticate with Facebook"
         />
       </ScrollView>
