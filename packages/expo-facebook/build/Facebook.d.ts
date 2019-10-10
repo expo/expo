@@ -6,7 +6,7 @@ export declare type FacebookLoginResult = {
 export declare type FacebookOptions = {
     permissions?: string[];
 };
-export declare function logInWithReadPermissionsAsync(appId: string, options?: FacebookOptions): Promise<FacebookLoginResult>;
+export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
 /**
  * Sets whether Facebook SDK should log app events. App events involve eg. app installs,
  * app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events)
