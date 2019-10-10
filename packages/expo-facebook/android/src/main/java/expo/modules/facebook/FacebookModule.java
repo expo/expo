@@ -31,6 +31,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
   protected String mAppId;
+  protected String mAppName;
 
   public FacebookModule(Context context) {
     super(context);
@@ -64,17 +65,22 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @ExpoMethod
-  public void initializeAsync(final String appId, final Promise promise) {
+  public void initializeAsync(final String appId, final String appName, final Promise promise) {
     try {
       if (appId != null) {
         mAppId = appId;
         FacebookSdk.setApplicationId(appId);
+      }
+      if (appName != null) {
+        mAppName = appName;
+        FacebookSdk.setApplicationName(appName);
       }
       FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
         @Override
         public void onInitialized() {
           FacebookSdk.fullyInitialize();
           mAppId = FacebookSdk.getApplicationId();
+          mAppName = FacebookSdk.getApplicationName();
           promise.resolve(null);
         }
       });

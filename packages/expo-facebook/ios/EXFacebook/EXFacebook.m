@@ -40,6 +40,7 @@ UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
 
 UM_EXPORT_METHOD_AS(initializeAsync,
                     initializeWithAppId:(NSString *)appId
+                    appName:(NSString *)appName
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -49,6 +50,9 @@ UM_EXPORT_METHOD_AS(initializeAsync,
   if (![FBSDKSettings appID]) {
     reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
+  }
+  if (appName) {
+    [FBSDKSettings setDisplayName:appName];
   }
   [FBSDKApplicationDelegate initializeSDK:nil];
   resolve(nil);

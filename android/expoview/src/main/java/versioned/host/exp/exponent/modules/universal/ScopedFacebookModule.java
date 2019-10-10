@@ -18,11 +18,15 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
     if (mAppId != null) {
       FacebookSdk.setApplicationId(mAppId);
     }
+    if (mAppName != null) {
+      FacebookSdk.setApplicationName(mAppName);
+    }
   }
 
   @Override
   public void onHostPause() {
     FacebookSdk.setApplicationId(null);
+    FacebookSdk.setApplicationName(null);
   }
 
   @Override
