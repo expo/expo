@@ -732,13 +732,13 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
   if (collection) {
     return @{
              @"id": [EXMediaLibrary _assetIdFromLocalId:collection.localIdentifier],
-             @"title": collection.localizedTitle ?: [NSNull null],
+             @"title": UMNullIfNil(collection.localizedTitle),
              @"type": [EXMediaLibrary _stringifyAlbumType:collection.assetCollectionType],
              @"assetCount": [EXMediaLibrary _assetCountOfCollection:collection],
              @"startTime": [EXMediaLibrary _exportDate:collection.startDate],
              @"endTime": [EXMediaLibrary _exportDate:collection.endDate],
              @"approximateLocation": [EXMediaLibrary _exportLocation:collection.approximateLocation],
-             @"locationNames": collection.localizedLocationNames,
+             @"locationNames": UMNullIfNil(collection.localizedLocationNames),
              };
   }
   return nil;
