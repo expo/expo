@@ -113,9 +113,6 @@ ABI33_0_0UM_EXPORT_METHOD_AS(init,
                     resolve:(ABI33_0_0UMPromiseResolveBlock)resolve
                     reject:(ABI33_0_0UMPromiseRejectBlock)reject)
 {
-  if (![ABI33_0_0EXFacebookAdHelper facebookAppIdFromNSBundle]) {
-    ABI33_0_0UMLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
-  }
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
                                                                 forNumAdsRequested:[adsToRequest intValue]];
 
