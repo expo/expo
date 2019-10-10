@@ -38,8 +38,11 @@
 #endif
 
 #if __has_include(<EXFacebook/EXFacebook.h>)
-  EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] init];
-  [moduleRegistry registerExportedModule:scopedFacebook];
+  // only override in Expo client
+  if ([params[@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] init];
+    [moduleRegistry registerExportedModule:scopedFacebook];
+  }
 #endif
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
