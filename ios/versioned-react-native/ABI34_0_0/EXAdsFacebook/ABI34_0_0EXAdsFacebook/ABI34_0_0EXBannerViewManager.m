@@ -8,9 +8,6 @@ ABI34_0_0UM_EXPORT_MODULE(CTKBannerViewManager)
 
 - (UIView *)view
 {
-  if (![ABI34_0_0EXFacebookAdHelper facebookAppIdFromNSBundle]) {
-    ABI34_0_0UMLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
-  }
   return [ABI34_0_0EXBannerView new];
 }
 
