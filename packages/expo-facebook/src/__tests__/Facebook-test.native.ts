@@ -1,5 +1,3 @@
-import { NativeModulesProxy } from '@unimodules/core';
-
 import ExponentFacebook from '../ExponentFacebook';
 import * as Facebook from '../Facebook';
 
