@@ -20,16 +20,16 @@ export default class FacebookLoginScreen extends React.Component {
           title="Initialize Facebook SDK"
         />
         <ListButton
-          onPress={() => this._testFacebookLogin(appId, permissions)}
+          onPress={() => this._testFacebookLogin(permissions)}
           title="Authenticate with Facebook"
         />
       </ScrollView>
     );
   }
 
-  _testFacebookLogin = async (id: string, perms: string[]) => {
+  _testFacebookLogin = async (perms: string[]) => {
     try {
-      const result = await Facebook.logInWithReadPermissionsAsync(id, {
+      const result = await Facebook.logInWithReadPermissionsAsync({
         permissions: perms,
       });
 
