@@ -9,8 +9,6 @@ import org.unimodules.core.interfaces.LifecycleEventListener;
 import expo.modules.facebook.FacebookModule;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
-  private String mAppId;
-
   public ScopedFacebookModule(Context context) {
     super(context);
   }
@@ -24,7 +22,6 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
 
   @Override
   public void onHostPause() {
-    mAppId = FacebookSdk.getApplicationId();
     FacebookSdk.setApplicationId(null);
   }
 

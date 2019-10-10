@@ -30,6 +30,7 @@ import java.util.List;
 public class FacebookModule extends ExportedModule implements ActivityEventListener {
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
+  protected String mAppId;
 
   public FacebookModule(Context context) {
     super(context);
@@ -66,12 +67,14 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   public void initializeAsync(final String appId, final Promise promise) {
     try {
       if (appId != null) {
+        mAppId = appId;
         FacebookSdk.setApplicationId(appId);
       }
       FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
         @Override
         public void onInitialized() {
           FacebookSdk.fullyInitialize();
+          mAppId = FacebookSdk.getApplicationId();
           promise.resolve(null);
         }
       });
@@ -81,12 +84,13 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @ExpoMethod
-  public void logInWithReadPermissionsAsync(final String appId, final ReadableArguments config, final Promise promise) {
-    AccessToken.setCurrentAccessToken(null);
-    if (appId != null) {
-      FacebookSdk.setApplicationId(appId);
+  public void logInWithReadPermissionsAsync(final ReadableArguments config, final Promise promise) {
+    if (FacebookSdk.getApplicationId() == null) {
+      promise.reject("E_CONF_ERROR", "No appId configured, required for initialization. " +
+          "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml.");
     }
 
+    AccessToken.setCurrentAccessToken(null);
     List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
 
     if (config.containsKey("behavior")) {
@@ -109,7 +113,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
 
         // This is the only route through which we send an access token back. Make sure the
         // application ID is correct.
-        if (!appId.equals(loginResult.getAccessToken().getApplicationId())) {
+        if (!mAppId.equals(loginResult.getAccessToken().getApplicationId())) {
           promise.reject(new IllegalStateException("Logged into wrong app, try again?"));
           return;
         }
