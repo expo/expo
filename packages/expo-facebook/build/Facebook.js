@@ -58,13 +58,15 @@ export async function setAutoInitEnabledAsync(enabled) {
  * - If you don't provide it, Facebook SDK will try to use `appId` from native app resources,
  *   If it fails to find one, the promise will be rejected.
  * - If you provide an explicit `appId`, it will override any other source.
+ * The same resolution mechanism is applied to `appName`.
  * @param appId An optional Facebook App ID argument
+ * @param appName An optional Facebook App Name argument
  */
-export async function initializeAsync(appId) {
+export async function initializeAsync(appId, appName) {
     if (!ExponentFacebook.initializeAsync) {
         throw new UnavailabilityError('Facebook', 'initializeAsync');
     }
-    return await ExponentFacebook.initializeAsync(appId);
+    return await ExponentFacebook.initializeAsync(appId, appName);
 }
 /**
  * Sets whether Facebook SDK should collect and attach `advertiser-id` to sent events.

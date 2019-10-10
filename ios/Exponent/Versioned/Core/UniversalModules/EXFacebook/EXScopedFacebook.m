@@ -8,8 +8,12 @@
 @interface EXScopedFacebook ()
 
 @property (nonatomic, strong) NSString *appId;
+@property (nonatomic, strong) NSString *displayName;
 
 @end
+
+// Expo client-only EXFacebook module, which ensures that Facebook SDK configurations
+// of different experiences don't collide.
 
 @implementation EXScopedFacebook : EXFacebook
 
@@ -25,13 +29,17 @@
 
 - (void)onAppBackgrounded {
   _appId = [FBSDKSettings appID];
+  _displayName = [FBSDKSettings displayName];
   [FBSDKSettings setAppID:nil];
+  [FBSDKSettings setDisplayName:nil];
 }
 
 - (void)onAppForegrounded {
-  // Do not override appId from native resources
   if (_appId) {
     [FBSDKSettings setAppID:_appId];
+  }
+  if (_displayName) {
+    [FBSDKSettings setDisplayName:_displayName];
   }
 }
 

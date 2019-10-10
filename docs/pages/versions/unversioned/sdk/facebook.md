@@ -44,13 +44,15 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 import * as Facebook from 'expo-facebook';
 ```
 
-### `Facebook.initializeAsync(appId: string | undefined): Promise<void>`
+### `Facebook.initializeAsync(appId: string | undefined, appName: string | undefined): Promise<void>`
 
 Calling this method ensures that the SDK is initialized. You have to call this method before calling `logInWithReadPermissionsAsync` to ensure that Facebook support is initialized properly.
 
 You may or may not provide an optional `appId: string` argument.
 - If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
 - If you provide an explicit `appId`, it will override any other source.
+
+The same resolution mechanism works for `appName`.
 
 ### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
 
