@@ -12,17 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXOtaPersistance : NSObject
 
--(id )initWithStorage:(EXKeyValueStorage*)storage andId:(NSString*)appId;
+- (id)initWithStorage:(EXKeyValueStorage*)storage;
 
--(void)storeManifest:(NSDictionary*)manifest withBundle:(NSData*)bundle;
+- (void)storeManifest:(NSDictionary*)manifest withBundle:(NSString*)bundlePath;
 
--(void)markDownloadedAsCurrent;
+- (void)markDownloadedAsCurrent;
 
--(void)removeDownloadedBundle;
+- (NSDictionary*)readManifest;
 
--(NSDictionary*)readManifest;
-
--(NSString*)bundlePath;
+- (NSString*)bundlePath;
 
 @end
 

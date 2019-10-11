@@ -2,8 +2,10 @@
 
 #import <EXOta/EXOtaModule.h>
 #import <EXOta/EXKeyValueStorage.h>
+#import <EXOta/EXOtaPersistance.h>
+#import "EXOtaPersistanceFactory.h"
 #import <EXOtaUpdater.h>
-#import <EXExpoManifestRequestConfig.h>
+#import <EXExpoUpdatesConfig.h>
 
 @interface EXOtaModule ()
 
@@ -13,8 +15,9 @@
 
 @implementation EXOtaModule {
     EXKeyValueStorage *keyValueStorage;
-    EXExpoManifestRequestConfig *config;
+    EXExpoUpdatesConfig *config;
     EXOtaUpdater *updater;
+    EXOtaPersistance *persistance;
 }
 
 UM_EXPORT_MODULE(ExpoOta);
@@ -23,16 +26,16 @@ UM_EXPORT_MODULE(ExpoOta);
 {
     _moduleRegistry = moduleRegistry;
     keyValueStorage = [[EXKeyValueStorage alloc] init];
-    config = [[EXExpoManifestRequestConfig alloc] initWithBuilder:^(EXOtaConfigBuilder * _Nonnull builder) {
+    config = [[EXExpoUpdatesConfig alloc] initWithBuilder:^(EXExpoUpdatesConfigBuilder * _Nonnull builder) {
         builder.username = @"mczernek";
         builder.projectName = @"expo-template-bare";
     }];
-    updater = [[EXOtaUpdater alloc] initWithConfig:config];
+    updater = [[EXOtaUpdater alloc] initWithConfig:config withId:@"expo-template-bare"];
+    persistance = [EXOtaPersistanceFactory.sharedFactory persistanceForId:@"expo-template-bare"];
 }
 
 UM_EXPORT_METHOD_AS(checkForUpdateAsync,
-                    checkForUpdateAsync:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
+                    checkForUpdateAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
     [updater downloadManifest:^(NSDictionary * _Nonnull manifest) {
@@ -42,15 +45,17 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     }];
 }
 
-UM_EXPORT_METHOD_AS(saveValueAsync,
-                    saveValueAsync:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(fetchUpdatesAsync,
+                    fetchUpdatesAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-    NSString *key = options[@"key"];
-    NSString *value = options[@"value"];
-    [keyValueStorage persistString:value forKey:key];
-    resolve(@{@"result": @YES});
+    [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {
+        resolve(@{
+            @"bundle": filePath
+        });
+    } error:^(NSError * _Nonnull error) {
+        reject(@"ERR_EXPO_OTA", @"Could not download update", error);
+    }];
 }
 
 UM_EXPORT_METHOD_AS(removeValue,
@@ -64,12 +69,10 @@ UM_EXPORT_METHOD_AS(removeValue,
 }
 
 UM_EXPORT_METHOD_AS(readValueAsync,
-                    readValueAsync:(NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-    NSString *key = options[@"key"];
-    resolve(@{@"result": [keyValueStorage readStringForKey:key]});
+    resolve(@{@"result": [persistance bundlePath]});
 }
 
 @end

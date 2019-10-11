@@ -11,22 +11,23 @@ static NSString *const manifestKey = @"manifest";
 static NSString *const bundlePathKey = @"bundlePath";
 static NSString *const downloadedManifestKey = @"manifest";
 static NSString *const downloadedBundlePathKey = @"bundlePath";
+static NSString *const outdatedBundlePathKey = @"outdatedBundlePath";
 
 @implementation EXOtaPersistance
 
 EXKeyValueStorage *_storage;
 NSString *_appId;
 
-- (id)initWithStorage:(EXKeyValueStorage*)storage andId:(NSString*)appId
+- (id)initWithStorage:(EXKeyValueStorage*)storage
 {
     _storage = storage;
-    _appId = appId;
     return self;
 }
 
-- (void)storeManifest:(NSDictionary*)manifest withBundle:(NSData*)bundle
+- (void)storeManifest:(NSDictionary*)manifest withBundle:(NSString*)bundlePath
 {
     [_storage persistObject:manifest forKey:manifestKey];
+    [_storage persistString:bundlePath forKey:bundlePathKey];
 }
 
 - (void)markDownloadedAsCurrent
@@ -53,11 +54,6 @@ NSString *_appId;
 - (void)saveData:(NSData*)data toFile:(NSString*)path
 {
     
-}
-
-- (BOOL)removeFile:(NSString*)path
-{
-    return [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 - (NSString*):ensureBundleDirExists

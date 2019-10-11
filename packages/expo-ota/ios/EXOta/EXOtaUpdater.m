@@ -6,86 +6,70 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <EXOta/EXOtaUpdater.h>
+#import "EXOtaUpdater.h"
+#import "EXOtaPersistance.h"
+#import "EXOtaApiClient.h"
+#import "EXOtaBundleLoader.h"
+#import "EXOtaPersistanceFactory.h"
 
 @implementation EXOtaUpdater: NSObject
 
-id<EXManifestRequestConfig> _config;
+id<EXOtaConfig> _config;
+NSString* _identifier;
+EXOtaPersistance *_persistance;
 
-- (id)initWithConfig:(id<EXManifestRequestConfig>)config
+- (id)initWithConfig:(id<EXOtaConfig>)config withId:(NSString*)identifier
 {
     _config = config;
+    _identifier = identifier;
+    _persistance = [EXOtaPersistanceFactory.sharedFactory persistanceForId:identifier];
     return self;
 }
 
-- (void)downloadManifest:(nonnull EXManifestSuccessBlock)successBlock error:(nonnull EXManifestErrorBlock)errorBlock
+
+- (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock error:(nonnull EXErrorBlock)errorBlock
 {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-    NSInteger timeout = 2 * 60 * 1000;
-    
-    NSURL *url = [NSURL URLWithString:_config.manifestUrl];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:timeout];
-    
-    [self setHTTPHeaderFields:request fromDictionary:_config.manifestRequestHeaders];
-    
-    __weak typeof(self) weakSelf = self;
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (!error && [response isKindOfClass:[NSHTTPURLResponse class]]) {
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            if (httpResponse.statusCode != 200) {
-                NSStringEncoding encoding = [weakSelf _encodingFromResponse:response];
-                NSString *body = [[NSString alloc] initWithData:data encoding:encoding];
-                errorBlock([NSError errorWithDomain:@"expo-ota" code:200 userInfo:@{body: body}]);
-            }
-        }
-        
-        if (error) {
-            errorBlock(error);
-        } else {
-            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-            successBlock(json);
-        }
+    [self downloadManifest:^(NSDictionary * _Nonnull manifest) {
+        [self downloadBundle:manifest success:^(NSString *path) {
+            [_persistance storeManifest:manifest withBundle:path];
+            successBlock(manifest, path);
+        } error:errorBlock];
+    } error:errorBlock];
+}
+
+- (void)downloadManifest:(nonnull EXManifestSuccessBlock)successBlock error:(nonnull EXErrorBlock)errorBlock
+{
+    EXOtaApiClient *api = [[EXOtaApiClient alloc] init];
+    [api performRequest:_config.manifestUrl withHeaders:_config.manifestRequestHeaders withTimeout:_config.manifestRequestTimeout success:^(NSData * _Nonnull response) {
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:response options:kNilOptions error:nil];
+        NSString *manifestString = [json valueForKey:@"manifestString"];
+        NSData *data = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *manifest =[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+        successBlock(manifest);
+    } error:^(NSError * _Nonnull error) {
+        errorBlock(error);
     }];
-    [task resume];
-    [session finishTasksAndInvalidate];
 }
 
-#pragma mark - Configuring Request
-
-- (void)setHTTPHeaderFields:(NSMutableURLRequest *)request fromDictionary:(NSDictionary*) headers
+- (void)downloadBundle:(NSDictionary*)manifest success:(void (^)(NSString* path))successBlock error:(EXErrorBlock)errorBlock
 {
-    for(id key in headers)
-    {
-        [request setValue:headers[key] forHTTPHeaderField:key];
-    }
+    EXOtaBundleLoader *bundleLoader = [[EXOtaBundleLoader alloc] initWithTimeout:_config.bundleRequestTimeout];
+    NSString *filename = [self bundleFilenameFromManifest:manifest];
+    [bundleLoader loadJSBundleFromUrl:manifest[@"bundleUrl"] withDirectory:[self bundlesDir] withFileName:filename success:successBlock error:^(NSError * _Nonnull error) {
+        errorBlock(error);
+    }];
 }
 
-#pragma mark - Parsing response
-
-- (NSStringEncoding)_encodingFromResponse:(NSURLResponse *)response
+- (NSString*)bundleFilenameFromManifest:(NSDictionary*)manifest
 {
-    if (response.textEncodingName) {
-        CFStringRef cfEncodingName = (__bridge CFStringRef)response.textEncodingName;
-        CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding(cfEncodingName);
-        if (cfEncoding != kCFStringEncodingInvalidId) {
-            return CFStringConvertEncodingToNSStringEncoding(cfEncoding);
-        }
-    }
-    // Default to UTF-8
-    return NSUTF8StringEncoding;
+    NSString *version = manifest[@"version"];
+    NSNumber *date = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
+    return [NSString stringWithFormat:@"bundle_%@_%@", version, date];
 }
 
-#pragma mark - NSURLSessionTaskDelegate
-
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *))completionHandler
+- (NSString*)bundlesDir
 {
-    completionHandler(request);
-}
-
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask willCacheResponse:(NSCachedURLResponse *)proposedResponse completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler
-{
-    completionHandler(proposedResponse);
+    return [NSString stringWithFormat:@"bundle-%@", _identifier];
 }
 
 @end

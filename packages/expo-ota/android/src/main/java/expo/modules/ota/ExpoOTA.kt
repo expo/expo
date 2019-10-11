@@ -11,7 +11,11 @@ const val DEFAULT_EXPO_OTA_ID = "defaultId"
 class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, private val loadFromBundler: Boolean, id: String) {
 
     companion object {
+
+        var id: String = DEFAULT_EXPO_OTA_ID
+
         @JvmStatic @JvmOverloads fun create(context: Context, config: ExpoOTAConfig, loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID): ExpoOTA {
+            ExpoOTA.id = id
             return ExpoOTA(context, config, loadFromBundler, id)
         }
     }

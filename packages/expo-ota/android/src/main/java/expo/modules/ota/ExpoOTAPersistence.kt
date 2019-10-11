@@ -3,6 +3,7 @@ package expo.modules.ota
 import android.content.Context
 import android.text.TextUtils
 import org.json.JSONObject
+import java.lang.IllegalStateException
 
 const val KEY_BUNDLE_PATH = "bundlePath"
 const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"
@@ -89,8 +90,14 @@ object ExpoOTAPersistenceFactory {
     private val persistenceMap = HashMap<String, ExpoOTAPersistence>()
 
     @Synchronized
-    fun persistence(context: Context, id: String): ExpoOTAPersistence {
-        return if (persistenceMap.containsKey(id)) {
+    fun persistence(context: Context, id: String?): ExpoOTAPersistence {
+        return if(id == null) {
+            if(persistenceMap.size == 1) {
+                persistenceMap[persistenceMap.keys.first()]!!
+            } else {
+                throw IllegalStateException("Unable to determine which persistence to use! If you have more than one ExpoOTA, make sure you provide native packages manually with ids!")
+            }
+        } else if (persistenceMap.containsKey(id)) {
             persistenceMap[id]!!
         } else {
             val persistence = ExpoOTAPersistence(context.applicationContext, KeyValueStorage(context, id))

@@ -6,25 +6,29 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EXOtaUpdater.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EXManifestComparator
+@protocol ManifestComparator
 
-- (NSInteger) compare:(NSDictionary*)first with:(NSDictionary*)second;
+-(BOOL) shouldDownloadBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest;
 
 @end
 
 @protocol EXOtaConfig
 
-@property (readonly) id<EXManifestRequestConfig> manifestConfig;
-@property (readonly) id<EXManifestComparator> manifestComparator;
-@property (atomic, readonly) NSInteger bundleDownloadTimeout;
+@property(nonnull, readonly) NSString *manifestUrl;
+@property(nullable, readonly) NSDictionary *manifestRequestHeaders;
+@property(nullable, readonly) NSString *channelIdentifier;
+@property(readonly) NSInteger manifestRequestTimeout;
+@property(readonly) id<ManifestComparator> manifestComparator;
+@property(readonly) NSInteger bundleRequestTimeout;
 
 @end
 
 @interface EXOta : NSObject
+
+@property (readonly) NSString *bundlePath;
 
 @end
 

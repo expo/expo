@@ -9,25 +9,21 @@
 #define EXOtaUpdater_h
 
 #import <Foundation/Foundation.h>
+#import "EXOta.h"
 
 NS_ASSUME_NONNULL_BEGIN
- 
-@protocol EXManifestRequestConfig
-
-@property(nonnull, readonly) NSString *manifestUrl;
-@property(nullable, readonly) NSDictionary *manifestRequestHeaders;
-@property(readonly) NSInteger requestTimeout;
-
-@end
 
 typedef void (^EXManifestSuccessBlock)(NSDictionary* manifest);
-typedef void (^EXManifestErrorBlock)(NSError* error);
+typedef void (^EXUpdateSuccessBlock)(NSDictionary* manifest, NSString *filePath);
+typedef void (^EXErrorBlock)(NSError* error);
 
 @interface EXOtaUpdater: NSObject<NSURLSessionTaskDelegate>
 
-- (id)initWithConfig:(nonnull id<EXManifestRequestConfig>)config;
+- (id)initWithConfig:(id<EXOtaConfig>)config withId:(NSString*)identifier;
 
-- (void)downloadManifest:(nonnull EXManifestSuccessBlock)success error:(nonnull EXManifestErrorBlock)error;
+- (void)downloadManifest:(nonnull EXManifestSuccessBlock)success error:(nonnull EXErrorBlock)error;
+
+- (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)success error:(nonnull EXErrorBlock)error;
 
 @end
 
