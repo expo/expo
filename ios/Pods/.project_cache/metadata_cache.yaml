@@ -734,10 +734,6 @@ AppAuth:
   LABEL: AppAuth
   PROJECT_PATH: AppAuth.xcodeproj
   UUID: 4EFA7E4CE531453CF475A9A4322A84F8
-Bolts:
-  LABEL: Bolts
-  PROJECT_PATH: Bolts.xcodeproj
-  UUID: 0C0BB4AC1A76EE1BD3C8E728766E286C
 boost-for-react-native:
   LABEL: boost-for-react-native
   PROJECT_PATH: boost-for-react-native.xcodeproj

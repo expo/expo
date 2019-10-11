@@ -17,10 +17,10 @@
 #import <GoogleDataTransport/GDTTransport.h>
 #import "GDTLibrary/Private/GDTTransport_Private.h"
 
+#import <GoogleDataTransport/GDTAssert.h>
 #import <GoogleDataTransport/GDTClock.h>
 #import <GoogleDataTransport/GDTEvent.h>
 
-#import "GDTLibrary/Private/GDTAssert.h"
 #import "GDTLibrary/Private/GDTTransformer.h"
 
 @implementation GDTTransport
@@ -28,10 +28,13 @@
 - (instancetype)initWithMappingID:(NSString *)mappingID
                      transformers:(nullable NSArray<id<GDTEventTransformer>> *)transformers
                            target:(NSInteger)target {
+  GDTAssert(mappingID.length > 0, @"A mapping ID cannot be nil or empty");
+  GDTAssert(target > 0, @"A target cannot be negative or 0");
+  if (mappingID == nil || mappingID.length == 0 || target <= 0) {
+    return nil;
+  }
   self = [super init];
   if (self) {
-    GDTAssert(mappingID.length > 0, @"A mapping ID cannot be nil or empty");
-    GDTAssert(target > 0, @"A target cannot be negative or 0");
     _mappingID = mappingID;
     _transformers = transformers;
     _target = target;

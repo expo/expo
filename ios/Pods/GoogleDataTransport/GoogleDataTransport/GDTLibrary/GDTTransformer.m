@@ -17,11 +17,11 @@
 #import "GDTLibrary/Private/GDTTransformer.h"
 #import "GDTLibrary/Private/GDTTransformer_Private.h"
 
+#import <GoogleDataTransport/GDTAssert.h>
 #import <GoogleDataTransport/GDTConsoleLogger.h>
 #import <GoogleDataTransport/GDTEventTransformer.h>
 #import <GoogleDataTransport/GDTLifecycle.h>
 
-#import "GDTLibrary/Private/GDTAssert.h"
 #import "GDTLibrary/Private/GDTStorage.h"
 
 @implementation GDTTransformer

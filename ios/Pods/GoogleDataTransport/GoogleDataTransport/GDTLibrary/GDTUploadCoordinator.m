@@ -16,10 +16,10 @@
 
 #import "GDTLibrary/Private/GDTUploadCoordinator.h"
 
+#import <GoogleDataTransport/GDTAssert.h>
 #import <GoogleDataTransport/GDTClock.h>
 #import <GoogleDataTransport/GDTConsoleLogger.h>
 
-#import "GDTLibrary/Private/GDTAssert.h"
 #import "GDTLibrary/Private/GDTReachability.h"
 #import "GDTLibrary/Private/GDTRegistrar_Private.h"
 #import "GDTLibrary/Private/GDTStorage.h"

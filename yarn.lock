@@ -1196,7 +1196,7 @@
     pouchdb-collections "^1.0.1"
     tiny-queue "^0.2.1"
 
-"@expo/xdl@^56.0.0", "@expo/xdl@^56.2.1", "@expo/xdl@^56.2.7":
+"@expo/xdl@^56.2.1", "@expo/xdl@^56.2.7":
   version "56.2.8"
   resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-56.2.8.tgz#3f4398efab149f52714d28d446bc7abe1e7e2042"
   integrity sha512-6e/RaNe7kJ2/Lri+IJauH4pLDaSLw1VT5VyjB9YoBo8mhwPvhD5HN2vBrLoOe3zMmHnecNVp/K05sg6vC4aWIg==
@@ -12137,7 +12137,7 @@ punycode@^1.2.4, punycode@^1.3.2, punycode@^1.4.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
   integrity sha1-wNWmOycYgArY4esPpSachN1BhF4=
 
-puppeteer@^1.11.0, puppeteer@^1.19.0:
+puppeteer@^1.19.0:
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-1.20.0.tgz#e3d267786f74e1d87cf2d15acc59177f471bbe38"
   integrity sha512-bt48RDBy2eIwZPrkgbcwHtb51mj2nKvHOPMaSH2IsWiv7lOG9k9zhaRzpDZafrk05ajMc3cu+lSQYYOfH2DkVQ==

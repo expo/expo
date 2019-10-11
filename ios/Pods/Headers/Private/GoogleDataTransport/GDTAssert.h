@@ -1,1 +1,1 @@
-../../../GoogleDataTransport/GoogleDataTransport/GDTLibrary/Private/GDTAssert.h
+../../../GoogleDataTransport/GoogleDataTransport/GDTLibrary/Public/GDTAssert.h

@@ -16,9 +16,9 @@
 
 #import <GoogleDataTransport/GDTEvent.h>
 
+#import <GoogleDataTransport/GDTAssert.h>
 #import <GoogleDataTransport/GDTStoredEvent.h>
 
-#import "GDTLibrary/Private/GDTAssert.h"
 #import "GDTLibrary/Private/GDTEvent_Private.h"
 
 @implementation GDTEvent
@@ -26,6 +26,9 @@
 - (instancetype)initWithMappingID:(NSString *)mappingID target:(NSInteger)target {
   GDTAssert(mappingID.length > 0, @"Please give a valid mapping ID");
   GDTAssert(target > 0, @"A target cannot be negative or 0");
+  if (mappingID == nil || mappingID.length == 0 || target <= 0) {
+    return nil;
+  }
   self = [super init];
   if (self) {
     _mappingID = mappingID;

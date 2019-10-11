@@ -56,7 +56,12 @@ typedef NS_ENUM(NSInteger, GDTMessageCode) {
   GDTMCETransportBytesError = 1005,
 
   /** For general purpose error messages in a dependency. */
-  GDTMCEGeneralError = 1006
+  GDTMCEGeneralError = 1006,
+
+  /** For fatal errors. Please go to https://github.com/firebase/firebase-ios-sdk/issues and open
+   * an issue if you encounter an error with this code.
+   */
+  GDTMCEFatalAssertion = 1007
 };
 
 /** */

@@ -167,10 +167,6 @@
 		7043DFAD2283303800272D74 /* RNSVGNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF742283303800272D74 /* RNSVGNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		78CEE2D11ACD07D70095B124 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D01ACD07D70095B124 /* Images.xcassets */; };
 		78CEE2D41ACD07D70095B124 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 78CEE2D21ACD07D70095B124 /* LaunchScreen.xib */; };
-		78D82527204E8F9C00CBD9D9 /* EXApiV2Client.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */; };
-		78D8252A204F826700CBD9D9 /* EXApiV2Result.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D82529204F826700CBD9D9 /* EXApiV2Result.m */; };
-		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
-		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
 		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
@@ -387,8 +383,6 @@
 		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
 		1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionManager.m; sourceTree = "<group>"; };
 		23181375B61140378B02E53B /* RNSharedElementStyle.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementStyle.h; sourceTree = "<group>"; };
-		2519CCFA216B292600FA7C80 /* EXUserNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationCenter.h; sourceTree = "<group>"; };
-		2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUserNotificationCenter.m; sourceTree = "<group>"; };
 		2520E83821ABEEF100D900A4 /* EXScopedFilePermissionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFilePermissionModule.h; sourceTree = "<group>"; };
 		2520E83921ABEEF100D900A4 /* EXScopedFilePermissionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFilePermissionModule.m; sourceTree = "<group>"; };
 		255A63082154FB88009FDFC6 /* EXPendingNotification.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXPendingNotification.h; sourceTree = "<group>"; };
@@ -684,14 +678,6 @@
 		78CEE2C01ACD07D70095B124 /* Exponent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exponent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		78CEE2D31ACD07D70095B124 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		78D82525204E8F9C00CBD9D9 /* EXApiV2Client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Client.h; sourceTree = "<group>"; };
-		78D82526204E8F9C00CBD9D9 /* EXApiV2Client.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Client.m; sourceTree = "<group>"; };
-		78D82528204F826700CBD9D9 /* EXApiV2Result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXApiV2Result.h; sourceTree = "<group>"; };
-		78D82529204F826700CBD9D9 /* EXApiV2Result.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXApiV2Result.m; sourceTree = "<group>"; };
-		78D8252C2051217F00CBD9D9 /* NSData+EXRemoteNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+EXRemoteNotifications.h"; sourceTree = "<group>"; };
-		78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+EXRemoteNotifications.m"; sourceTree = "<group>"; };
-		78D8252F2051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXApiV2Client+EXRemoteNotifications.h"; sourceTree = "<group>"; };
-		78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "EXApiV2Client+EXRemoteNotifications.m"; sourceTree = "<group>"; };
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
 		80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNodeManager.m; sourceTree = "<group>"; };
 		80F51F42EE852A05B015A15E /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
