@@ -11,7 +11,7 @@ title: Publishing Websites
   - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
   - [Continuous delivery](#continuous-delivery)
 - [GitHub Pages](#github-pages)
-- [Self hosting](#self-hosting)
+- [Self-hosting](#self-hosting)
 
 
 ## [AWS Amplify Console](https://console.amplify.aws)
@@ -178,7 +178,15 @@ Here are the formal instructions for deploying to GitHub Pages:
 
 1. Build your Expo web app with `expo build:web`.
 
-2. Configure the [webserver](https://httpd.apache.org/) to host static files:
+2. Provide the `web-build/` directory to the server.
+
+Several ways are available according to your workflow.
+
+For example:
+- copy the `web-build/` directory to `/path/to/web-build/` on the server with `scp` or `sftp`. `ssh` server is required on the server. Create distant path (`/path/to/`) before copying `web-build/` directory.
+- configure Continous Integration to build and deploy the `web-build/` directory.
+
+3. Configure the [webserver](https://httpd.apache.org/) to host static files:
 
 Create a file at `/etc/apache2/sites-available/expo.conf` with:
 
@@ -194,11 +202,11 @@ Create a file at `/etc/apache2/sites-available/expo.conf` with:
 </VirtualHost>
 ```
 
-You have to change `your-email@address.tld`, `domain-for-the-app` and `/path/to/web-build/` according to your setup.
-
-3. Provide the `web-build/` repository to the server.
-
-You have to copy the `web-build/` repository to `/path/to/web-build/` on the server (or deploy the repository if your have CI).
+You have to change `ip-server`, `your-email@address.tld`, `domain-for-the-app` and `/path/to/web-build/` according to your setup.
+- `ip-server`: IP used by the server to receive requests from the clients
+- `your-email@address.tld`: e-mail address shown to the client if a server error occurs
+- `domain-for-the-app`: domain where the files are served to the client. When users go to `http://domain-for-the-app` with a browser, the app will be loaded.
+- `/path/to/web-build/`: path where the web-build/ directory is
 
 4. Enable the new virtualhost:
 
@@ -212,4 +220,4 @@ $ sudo a2ensite expo
 $ sudo systemctl restart apache2
 ```
 
-When users go to `http://domain-for-the-app`, the app will be loaded.
+
