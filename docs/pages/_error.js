@@ -238,4 +238,5 @@ const RENAMED_PAGES = {
     '/versions/latest/guides/troubleshooting-proxies/',
   '/versions/latest/introduction/running-in-the-browser/':
     '/versions/latest/guides/running-in-the-browser/',
+  '/versions/latest/workflow/up-and-running/': '/versions/latest/get-started/installation/',
 };
