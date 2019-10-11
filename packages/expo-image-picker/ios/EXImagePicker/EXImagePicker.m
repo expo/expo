@@ -120,7 +120,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
       self.picker.allowsEditing = true;
     }
-    self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
+    self.picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;
     self.picker.delegate = self;
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
