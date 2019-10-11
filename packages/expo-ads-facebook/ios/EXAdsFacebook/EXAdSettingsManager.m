@@ -6,7 +6,7 @@
 
 @property (nonatomic) BOOL isChildDirected;
 @property (nonatomic, strong) NSString *mediationService;
-@property (nonatomic, strong) NSString *urlPrefix;
+@property (nonatomic, strong, nullable) NSString *urlPrefix;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic) FBAdLogLevel logLevel;
 @property (nonatomic, strong) NSMutableArray<NSString*> *testDevices;
