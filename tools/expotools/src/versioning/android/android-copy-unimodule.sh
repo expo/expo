@@ -40,7 +40,7 @@ then
   while read CLASS_NAME
   do
     find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -E -i '' "s/($CLASS_NAME)/$ABI_VERSION\1/g";
-  done < ../tools/classes-to-rename.txt
+  done < $TOOLS_DIR/classes-to-rename.txt
 fi
 
 popd
