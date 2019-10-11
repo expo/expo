@@ -1,6 +1,7 @@
 package host.exp.exponent.fcm;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,12 +14,14 @@ import org.json.JSONObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import expo.modules.notifications.push.fcm.ExpoFcmMessagingService;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.RNObject;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
@@ -64,11 +67,7 @@ public class ExpoFirebaseEventDispatcher extends IntentService {
           JSONObject manifest = new JSONObject(experience.manifest);
           String version = manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
-          if (version.equals("UNVERSIONED")) {
-
-            triggerServiceOnNewMessage(new ExpoFcmMessagingService(), remoteMessage);
-
-          } else if (ABIVersion.toNumber(version) < ABIVersion.toNumber(BASE_SDK)) {
+          if (ABIVersion.toNumber(version) < ABIVersion.toNumber(BASE_SDK)) {
 
             PushNotificationHelper.getInstance().onMessageReceived(
                 getApplicationContext(),
@@ -82,9 +81,9 @@ public class ExpoFirebaseEventDispatcher extends IntentService {
 
           } else {
 
-            ExpoFcmMessagingService service = getServiceForAbi(version);
+            FirebaseMessagingService service = getServiceForAbi(version);
             if (service != null) {
-              triggerServiceOnNewMessage(service, remoteMessage);
+              service.onMessageReceived(remoteMessage);
             }
 
           }
@@ -104,43 +103,25 @@ public class ExpoFirebaseEventDispatcher extends IntentService {
   private void onNewToken(String token) {
     FcmRegistrationIntentService.registerForeground(getApplicationContext(), token);
 
-    ExpoFcmMessagingService unversionedService = new ExpoFcmMessagingService();
-    triggerServiceOnNewToken(unversionedService, token);
-
     for (String abiVersion : getAbiVersionsWithNotificationsUnimodule()) {
-      ExpoFcmMessagingService service = getServiceForAbi(abiVersion);
+      FirebaseMessagingService service = getServiceForAbi(abiVersion);
       if (service != null) {
-        triggerServiceOnNewToken(service, token);
+        service.onNewToken(token);
       }
     }
   }
 
-  ExpoFcmMessagingService getServiceForAbi(String abi) {
-    String abiNumber = abi.split(".")[0];
-    String className = "abi" + abiNumber +  "_0_0.expo.modules.notifications.push.fcm.ExpoFcmMessagingService";
-    try {
-      Class<?> serviceClass = Class.forName(className);
-      Constructor<?> ctor = serviceClass.getConstructor();
-      Object object = ctor.newInstance();
-      return (ExpoFcmMessagingService) object;
-    } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  void triggerServiceOnNewToken(ExpoFcmMessagingService service, String token) {
-    service.setContext(getApplicationContext());
-    service.onNewToken(token);
-  }
-
-  void triggerServiceOnNewMessage(ExpoFcmMessagingService service, RemoteMessage message) {
-    service.setContext(getApplicationContext());
-    service.onMessageReceived(message);
+  FirebaseMessagingService getServiceForAbi(String abi) {
+    RNObject service = new RNObject("expo.modules.notifications.push.fcm.ExpoFcmMessagingService");
+    service.loadVersion(abi);
+    service.construct();
+    service.call("setContext", getApplicationContext());
+    FirebaseMessagingService firebaseService = (FirebaseMessagingService) service.get();
+    return firebaseService;
   }
 
   List<String> getAbiVersionsWithNotificationsUnimodule() {
-    ArrayList<String> abis = new ArrayList<>();
+    List<String> abis = Arrays.asList(RNObject.UNVERSIONED);
 
     for (String abi : Constants.SDK_VERSIONS_LIST) {
       if (ABIVersion.toNumber(abi) >= ABIVersion.toNumber(BASE_SDK)) {

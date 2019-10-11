@@ -15,6 +15,7 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.MapArguments;
+import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
@@ -69,7 +70,6 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   public NotificationsModule(Context context) {
     super(context);
-    mContext = context;
   }
 
   @Override
@@ -124,6 +124,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   @ExpoMethod
   public void createChannelGroup(String groupId, String groupName, final Promise promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      groupId = getProperString(groupId);
       NotificationManager notificationManager =
           (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
       notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(groupId, groupName));
@@ -134,6 +135,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   @ExpoMethod
   public void deleteChannelGroup(String groupId, final Promise promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      groupId = getProperString(groupId);
       NotificationManager notificationManager =
           (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
       notificationManager.deleteNotificationChannelGroup(groupId);
@@ -279,6 +281,8 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+    //we need applicationContextHere
+    mContext = moduleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplicationContext();
 
     AppIdProvider appIdProvider = moduleRegistry.getModule(AppIdProvider.class);
     mAppId = appIdProvider.getAppId();

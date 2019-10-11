@@ -10,7 +10,7 @@ import expo.modules.notifications.push.TokenDispatcher.ThreadSafeTokenDispatcher
 
 public class ExpoIntentService extends IntentService {
 
-  protected ExpoIntentService() {
+  public ExpoIntentService() {
     super("ExpoIntentService");
   }
 

@@ -18,6 +18,7 @@ public class ThreadSafeTokenDispatcher implements TokenDispatcher {
   private ThreadSafeTokenDispatcher() { }
 
   private ThreadSafeTokenDispatcher(Context context) {
+    context = context.getApplicationContext();
     Engine engine = PushNotificationEngineProvider.getPushNotificationEngine(context);
     mNextTokenDispatcher = new SimpleTokenDispatcher(context.getApplicationContext(), engine);
   }
