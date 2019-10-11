@@ -4,7 +4,7 @@ import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NotificationManagerCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import expo.modules.notifications.action.NotificationActionCenter;
 import expo.modules.notifications.NotificationConstants;

@@ -4,11 +4,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import java.util.UUID;
 
-import expo.modules.notifications.configuration.Configuration;
 import expo.modules.notifications.userinteractionreceiver.NotificationBroadcastReceiver;
 
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_OBJECT_KEY;

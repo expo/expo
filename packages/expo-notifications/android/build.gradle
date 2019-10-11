@@ -93,8 +93,7 @@ dependencies {
   kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
   implementation "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"
   implementation "com.github.Raizlabs.DBFlow:dbflow:${dbflow_version}"
-
-  api group: 'com.android.support', name: 'support-v4', version: '26.1.0'
+  implementation 'androidx.legacy:legacy-support-v4:1.0.0'
   implementation 'com.cronutils:cron-utils:4.1.3'
   api 'com.google.firebase:firebase-core:16.0.9'
   api 'com.google.firebase:firebase-messaging:18.0.0'

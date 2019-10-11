@@ -3,7 +3,7 @@ package expo.modules.notifications.presenters.modifiers;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
