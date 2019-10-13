@@ -217,6 +217,7 @@ PODS:
     - UMCore
     - UMFontInterface
   - UMSensorsInterface (4.0.0)
+  - UMTaskManagerInterface (4.0.0)
   - yoga (0.59.8.React)
 
 DEPENDENCIES:
@@ -295,6 +296,7 @@ DEPENDENCIES:
   - UMPermissionsInterface (from `../../../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../../../packages/unimodules-sensors-interface/ios`)
+  - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -487,6 +489,9 @@ EXTERNAL SOURCES:
   UMSensorsInterface:
     :path: !ruby/object:Pathname
     path: "../../../packages/unimodules-sensors-interface/ios"
+  UMTaskManagerInterface:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/unimodules-task-manager-interface/ios"
   yoga:
     :path: "../../../react-native-lab/react-native/ReactCommon/yoga"
 
@@ -560,6 +565,7 @@ SPEC CHECKSUMS:
   UMPermissionsInterface: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
   UMReactNativeAdapter: 73625f2e528296fff63a24308821f58f0becc345
   UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
+  UMTaskManagerInterface: 1e70fe58b872355f0ecb44fb81bb1a16484047f0
   yoga: 92b2102c3d373d1a790db4ab761d2b0ffc634f64
 
 PODFILE CHECKSUM: ecacb8b8f2e1491c52c416bdb589d93a9613d66d

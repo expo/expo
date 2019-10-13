@@ -19,4 +19,10 @@
 
 ## TODO
 
-- [iOS] Detox builds fail but they exit with 0, meaning you can get false positives in CI
+- [x] [iOS] Detox builds fail but they exit with 0, meaning you can get false positives in CI
+- [ ] Enable camera libraries
+- [ ] Enable location libraries
+- [ ] Enable Facebook libraries
+- [ ] Enable Google libraries
+- [ ] Enable payments
+- [ ] Enable Apple Auth
