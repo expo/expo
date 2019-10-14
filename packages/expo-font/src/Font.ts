@@ -5,7 +5,7 @@ import {
   getNativeFontName,
 } from './FontLoader';
 
-import { FontSource, FontDisplay, FontResource } from './FontTypes';
+import { FontSource, FontResource } from './Font.types';
 
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};
@@ -95,7 +95,7 @@ export async function loadAsync(
   await loadPromises[name];
 }
 
-export { FontSource, FontDisplay, FontResource };
+export { FontSource, FontResource };
 
 declare var module: any;
 
@@ -115,7 +115,6 @@ if (module && module.exports) {
         isLoaded,
         isLoading,
         loadAsync,
-        FontDisplay,
       };
     },
   });

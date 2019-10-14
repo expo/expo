@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontResource, FontSource } from './FontTypes';
+import { FontResource, FontSource } from './Font.types';
 
 const isInClient = Constants.appOwnership === 'expo';
 const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';

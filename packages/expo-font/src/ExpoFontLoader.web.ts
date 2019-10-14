@@ -1,5 +1,5 @@
 import FontObserver from 'fontfaceobserver';
-import { FontResource, FontDisplay } from './FontTypes';
+import { FontResource } from './Font.types';
 
 export default {
   get name(): string {
@@ -18,7 +18,7 @@ export default {
   },
 };
 
-const ID = 'generated-expo-font';
+const ID = 'expo-generated-fonts';
 
 function getStyleElement(): HTMLStyleElement {
   const element = document.getElementById(ID);
@@ -35,7 +35,6 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
   const fontStyle = `@font-face {
     font-family: ${fontFamily};
     src: url(${resource.uri});
-    font-display: ${resource.display || FontDisplay.AUTO};
   }`;
 
   const styleElement = getStyleElement();

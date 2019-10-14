@@ -1,4 +1,4 @@
-import { FontSource, FontResource } from './FontTypes';
+import { FontSource, FontResource } from './Font.types';
 import { Asset } from 'expo-asset';
 export declare function fontFamilyNeedsScoping(name: string): boolean;
 export declare function getAssetForSource(source: FontSource): Asset | FontResource;

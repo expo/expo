@@ -1,5 +1,4 @@
 import FontObserver from 'fontfaceobserver';
-import { FontDisplay } from './FontTypes';
 export default {
     get name() {
         return 'ExpoFontLoader';
@@ -14,7 +13,7 @@ export default {
         return new FontObserver(fontFamilyName).load();
     },
 };
-const ID = 'generated-expo-font';
+const ID = 'expo-generated-fonts';
 function getStyleElement() {
     const element = document.getElementById(ID);
     if (element && element instanceof HTMLStyleElement) {
@@ -29,7 +28,6 @@ function _createWebStyle(fontFamily, resource) {
     const fontStyle = `@font-face {
     font-family: ${fontFamily};
     src: url(${resource.uri});
-    font-display: ${resource.display || FontDisplay.AUTO};
   }`;
     const styleElement = getStyleElement();
     // @ts-ignore: TypeScript does not define HTMLStyleElement::styleSheet. This is just for IE and

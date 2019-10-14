@@ -1,6 +1,5 @@
 import ExpoFontLoader from './ExpoFontLoader';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { FontSource, FontResource } from './FontTypes';
+import { FontSource, FontResource } from './Font.types';
 import { Asset } from 'expo-asset';
 
 export function fontFamilyNeedsScoping(name: string): boolean {
@@ -37,10 +36,7 @@ export async function loadSingleFontAsync(
     throw new Error('expo-font: loadSingleFontAsync expected an asset of type FontResource on web');
   }
 
-  // Guard for SSR
-  if (canUseDOM) {
-    await ExpoFontLoader.loadAsync(name, input);
-  }
+  await ExpoFontLoader.loadAsync(name, input);
 }
 
 export function getNativeFontName(name: string): string {

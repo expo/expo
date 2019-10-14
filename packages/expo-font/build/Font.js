@@ -1,5 +1,4 @@
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
-import { FontDisplay } from './FontTypes';
 const loaded = {};
 const loadPromises = {};
 /**
@@ -69,7 +68,6 @@ export async function loadAsync(nameOrMap, source) {
     })();
     await loadPromises[name];
 }
-export { FontDisplay };
 if (module && module.exports) {
     let wasImportWarningShown = false;
     // @ts-ignore: Temporarily define an export named "Font" for legacy compatibility
@@ -84,7 +82,6 @@ if (module && module.exports) {
                 isLoaded,
                 isLoading,
                 loadAsync,
-                FontDisplay,
             };
         },
     });
