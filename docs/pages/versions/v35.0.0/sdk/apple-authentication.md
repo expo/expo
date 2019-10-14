@@ -133,7 +133,7 @@ function YourComponent() {
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
       buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={5}
-      onPress={() => {
+      onPress={async () => {
         try {
           const credential = await AppleAuthentication.signInAsync({
             requestedScopes: [
