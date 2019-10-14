@@ -20,6 +20,14 @@ export default class FacebookLoginScreen extends React.Component {
           title="Initialize Facebook SDK"
         />
         <ListButton
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}
+          title="Set autoinit to true"
+        />
+        <ListButton
+          onPress={async () => await Facebook.setAutoInitEnabledAsync(false)}
+          title="Set autoinit to false"
+        />
+        <ListButton
           onPress={() => this._testFacebookLogin(permissions)}
           title="Authenticate with Facebook"
         />
