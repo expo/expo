@@ -79,9 +79,9 @@ export default class VersionSelector extends React.Component {
           <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
         {// hidden links to help test-links spidering
-        orderVersions(VERSIONS).map(v => {
-          return <a key={v} href={`/versions/${v}/`} />;
-        })}
+        orderVersions(VERSIONS).map(v => (
+          <a key={v} href={`/versions/${v}/`} />
+        ))}
         <select
           className={STYLES_SELECT_ELEMENT}
           id="version-menu"
