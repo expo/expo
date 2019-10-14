@@ -28,7 +28,6 @@ extern NSString * _Nonnull const RNBranchLinkOpenedNotificationLinkPropertiesKey
 
 + (void)setDebug;
 + (void)delayInitToCheckForSearchAds;
-+ (void)setAppleSearchAdsDebugMode;
 + (void)setRequestMetadataKey:(NSString * _Nonnull)key value:(NSObject * _Nonnull)value;
 
 @end

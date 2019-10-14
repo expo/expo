@@ -7,20 +7,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * A document text word recognized in an image that consists of an array of symbols.
- */
+/** A document text word recognized in an image that consists of an array of symbols. */
 NS_SWIFT_NAME(VisionDocumentTextWord)
 @interface FIRVisionDocumentTextWord : NSObject
 
-/**
- * String representation of the document text word that was recognized.
- */
+/** String representation of the document text word that was recognized. */
 @property(nonatomic, readonly) NSString *text;
 
-/**
- * An array of symbols in the document text word.
- */
+/** An array of symbols in the document text word. */
 @property(nonatomic, readonly) NSArray<FIRVisionDocumentTextSymbol *> *symbols;
 
 /**
@@ -29,9 +23,7 @@ NS_SWIFT_NAME(VisionDocumentTextWord)
  */
 @property(nonatomic, readonly) CGRect frame;
 
-/**
- * The confidence of the recognized document text word.
- */
+/** The confidence of the recognized document text word. */
 @property(nonatomic, readonly) NSNumber *confidence;
 
 /**
@@ -40,14 +32,10 @@ NS_SWIFT_NAME(VisionDocumentTextWord)
  */
 @property(nonatomic, readonly) NSArray<FIRVisionTextRecognizedLanguage *> *recognizedLanguages;
 
-/**
- * The recognized start or end of the document text word.
- */
+/** The recognized start or end of the document text word. */
 @property(nonatomic, readonly, nullable) FIRVisionTextRecognizedBreak *recognizedBreak;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

@@ -20,13 +20,12 @@
 
 #import <sys/time.h>
 
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 #import <mach-o/dyld.h>
 
-#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKError.h"
 #import "FBSDKSettings+Internal.h"
 #import "FBSDKSettings.h"
-#import "FBSDKUtility.h"
 
 typedef NS_ENUM(NSUInteger, FBSDKInternalUtilityVersionMask)
 {
@@ -71,20 +70,13 @@ typedef NS_ENUM(NSUInteger, FBSDKInternalUtilityVersionShift)
   // version 3.3 and above encode the parameters in the fragment;
   // merge them together with fragment taking priority.
   NSMutableDictionary *params = [NSMutableDictionary dictionary];
-  [params addEntriesFromDictionary:[FBSDKUtility dictionaryWithQueryString:url.query]];
+  [params addEntriesFromDictionary:[FBSDKBasicUtility dictionaryWithQueryString:url.query]];
 
   // Only get the params from the fragment if it has authorize as the host
   if ([url.host isEqualToString:@"authorize"]) {
-    [params addEntriesFromDictionary:[FBSDKUtility dictionaryWithQueryString:url.fragment]];
+    [params addEntriesFromDictionary:[FBSDKBasicUtility dictionaryWithQueryString:url.fragment]];
   }
   return params;
-}
-
-+ (void)array:(NSMutableArray *)array addObject:(id)object
-{
-  if (object) {
-    [array addObject:object];
-  }
 }
 
 + (NSBundle *)bundleForStrings
@@ -100,16 +92,6 @@ typedef NS_ENUM(NSUInteger, FBSDKInternalUtilityVersionShift)
   return bundle;
 }
 
-+ (id)convertRequestValue:(id)value
-{
-  if ([value isKindOfClass:[NSNumber class]]) {
-    value = ((NSNumber *)value).stringValue;
-  } else if ([value isKindOfClass:[NSURL class]]) {
-    value = ((NSURL *)value).absoluteString;
-  }
-  return value;
-}
-
 + (uint64_t)currentTimeInMilliseconds
 {
   struct timeval time;
@@ -117,32 +99,10 @@ typedef NS_ENUM(NSUInteger, FBSDKInternalUtilityVersionShift)
   return ((uint64_t)time.tv_sec * 1000) + (time.tv_usec / 1000);
 }
 
-+ (BOOL)dictionary:(NSMutableDictionary *)dictionary
-setJSONStringForObject:(id)object
-            forKey:(id<NSCopying>)key
-             error:(NSError *__autoreleasing *)errorRef
-{
-  if (!object || !key) {
-    return YES;
-  }
-  NSString *JSONString = [self JSONStringForObject:object error:errorRef invalidObjectHandler:NULL];
-  if (!JSONString) {
-    return NO;
-  }
-  [self dictionary:dictionary setObject:JSONString forKey:key];
-  return YES;
-}
-
-+ (void)dictionary:(NSMutableDictionary *)dictionary setObject:(id)object forKey:(id<NSCopying>)key
-{
-  if (object && key) {
-    dictionary[key] = object;
-  }
-}
-
 + (void)extractPermissionsFromResponse:(NSDictionary *)responseObject
                     grantedPermissions:(NSMutableSet *)grantedPermissions
                    declinedPermissions:(NSMutableSet *)declinedPermissions
+                    expiredPermissions:(NSMutableSet *)expiredPermissions
 {
   NSArray *resultData = responseObject[@"data"];
   if (resultData.count > 0) {
@@ -154,6 +114,8 @@ setJSONStringForObject:(id)object
         [grantedPermissions addObject:permissionName];
       } else if ([status isEqualToString:@"declined"]) {
         [declinedPermissions addObject:permissionName];
+      } else if ([status isEqualToString:@"expired"]) {
+          [expiredPermissions addObject:permissionName];
       }
     }
   }
@@ -167,7 +129,7 @@ setJSONStringForObject:(id)object
   return [self facebookURLWithHostPrefix:hostPrefix
                                     path:path
                          queryParameters:queryParameters
-                          defaultVersion:nil
+                          defaultVersion:@""
                                    error:errorRef];
 }
 
@@ -188,7 +150,7 @@ setJSONStringForObject:(id)object
   }
   host = [NSString stringWithFormat:@"%@%@", hostPrefix ?: @"", host ?: @""];
 
-  NSString *version = defaultVersion ?: [FBSDKSettings graphAPIVersion];
+  NSString *version = (defaultVersion.length > 0) ? defaultVersion : [FBSDKSettings graphAPIVersion];
   if (version.length) {
     version = [@"/" stringByAppendingString:version];
   }
@@ -276,29 +238,7 @@ setJSONStringForObject:(id)object
   }
 }
 
-+ (NSString *)JSONStringForObject:(id)object
-                            error:(NSError *__autoreleasing *)errorRef
-             invalidObjectHandler:(id(^)(id object, BOOL *stop))invalidObjectHandler
-{
-  if (invalidObjectHandler || ![NSJSONSerialization isValidJSONObject:object]) {
-    object = [self _convertObjectToJSONObject:object invalidObjectHandler:invalidObjectHandler stop:NULL];
-    if (![NSJSONSerialization isValidJSONObject:object]) {
-      if (errorRef != NULL) {
-        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"object"
-                                                       value:object
-                                                     message:@"Invalid object for JSON serialization."];
-      }
-      return nil;
-    }
-  }
-  NSData *data = [NSJSONSerialization dataWithJSONObject:object options:0 error:errorRef];
-  if (!data) {
-    return nil;
-  }
-  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-}
-
-+ (BOOL)object:(id)object isEqualToObject:(id)other;
++ (BOOL)object:(id)object isEqualToObject:(id)other
 {
   if (object == other) {
     return YES;
@@ -307,18 +247,6 @@ setJSONStringForObject:(id)object
     return NO;
   }
   return [object isEqual:other];
-}
-
-+ (id)objectForJSONString:(NSString *)string error:(NSError *__autoreleasing *)errorRef
-{
-  NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-  if (!data) {
-    if (errorRef != NULL) {
-      *errorRef = nil;
-    }
-    return nil;
-  }
-  return [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:errorRef];
 }
 
 + (NSOperatingSystemVersion)operatingSystemVersion
@@ -354,47 +282,6 @@ setJSONStringForObject:(id)object
   return operatingSystemVersion;
 }
 
-+ (NSString *)queryStringWithDictionary:(NSDictionary *)dictionary
-                                  error:(NSError *__autoreleasing *)errorRef
-                   invalidObjectHandler:(id(^)(id object, BOOL *stop))invalidObjectHandler
-{
-  NSMutableString *queryString = [[NSMutableString alloc] init];
-  __block BOOL hasParameters = NO;
-  if (dictionary) {
-    NSMutableArray<NSString *> *keys = [dictionary.allKeys mutableCopy];
-    // remove non-string keys, as they are not valid
-    [keys filterUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-      return [evaluatedObject isKindOfClass:[NSString class]];
-    }]];
-    // sort the keys so that the query string order is deterministic
-    [keys sortUsingSelector:@selector(compare:)];
-    BOOL stop = NO;
-    for (NSString *key in keys) {
-      id value = [self convertRequestValue:dictionary[key]];
-      if ([value isKindOfClass:[NSString class]]) {
-        value = [FBSDKUtility URLEncode:value];
-      }
-      if (invalidObjectHandler && ![value isKindOfClass:[NSString class]]) {
-        value = invalidObjectHandler(value, &stop);
-        if (stop) {
-          break;
-        }
-      }
-      if (value) {
-        if (hasParameters) {
-          [queryString appendString:@"&"];
-        }
-        [queryString appendFormat:@"%@=%@", key, value];
-        hasParameters = YES;
-      }
-    }
-  }
-  if (errorRef != NULL) {
-    *errorRef = nil;
-  }
-  return (queryString.length ? [queryString copy] : nil);
-}
-
 + (BOOL)shouldManuallyAdjustOrientation
 {
   return (![self isUIKitLinkTimeVersionAtLeast:FBSDKUIKitVersion_8_0] ||
@@ -414,11 +301,12 @@ setJSONStringForObject:(id)object
   NSString *queryString = nil;
   if (queryParameters.count) {
     NSError *queryStringError;
-    queryString = [@"?" stringByAppendingString:[FBSDKUtility queryStringWithDictionary:queryParameters
-                                                                                  error:&queryStringError]];
+    queryString = [@"?" stringByAppendingString:[FBSDKBasicUtility queryStringWithDictionary:queryParameters
+                                                                                       error:&queryStringError
+                                                                        invalidObjectHandler:NULL]];
     if (!queryString) {
       if (errorRef != NULL) {
-        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"queryParameters"
+        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"queryParameters"
                                                        value:queryParameters
                                                      message:nil
                                              underlyingError:queryStringError];
@@ -427,17 +315,17 @@ setJSONStringForObject:(id)object
     }
   }
 
-  NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithFormat:
-                                              @"%@://%@%@%@",
-                                              scheme ?: @"",
-                                              host ?: @"",
-                                              path ?: @"",
-                                              queryString ?: @""]];
+  NSURL *const URL = [NSURL URLWithString:[NSString stringWithFormat:
+                                           @"%@://%@%@%@",
+                                           scheme ?: @"",
+                                           host ?: @"",
+                                           path ?: @"",
+                                           queryString ?: @""]];
   if (errorRef != NULL) {
     if (URL) {
       *errorRef = nil;
     } else {
-      *errorRef = [NSError fbUnknownErrorWithMessage:@"Unknown error building URL."];
+      *errorRef = [FBSDKError unknownErrorWithMessage:@"Unknown error building URL."];
     }
   }
   return URL;
@@ -448,7 +336,7 @@ setJSONStringForObject:(id)object
   NSHTTPCookieStorage *cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
   NSArray *facebookCookies = [cookies cookiesForURL:[self facebookURLWithHostPrefix:@"m."
                                                                                path:@"/dialog/"
-                                                                    queryParameters:nil
+                                                                    queryParameters:@{}
                                                                               error:NULL]];
 
   for (NSHTTPCookie *cookie in facebookCookies) {
@@ -549,45 +437,6 @@ static NSMapTable *_transientObjects;
   }
 }
 
-+ (id)_convertObjectToJSONObject:(id)object
-            invalidObjectHandler:(id(^)(id object, BOOL *stop))invalidObjectHandler
-                            stop:(BOOL *)stopRef
-{
-  __block BOOL stop = NO;
-  if ([object isKindOfClass:[NSString class]] || [object isKindOfClass:[NSNumber class]]) {
-    // good to go, keep the object
-  } else if ([object isKindOfClass:[NSURL class]]) {
-    object = ((NSURL *)object).absoluteString;
-  } else if ([object isKindOfClass:[NSDictionary class]]) {
-    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] init];
-    [(NSDictionary *)object enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *dictionaryStop) {
-      [self dictionary:dictionary
-             setObject:[self _convertObjectToJSONObject:obj invalidObjectHandler:invalidObjectHandler stop:&stop]
-                forKey:[FBSDKTypeUtility stringValue:key]];
-      if (stop) {
-        *dictionaryStop = YES;
-      }
-    }];
-    object = dictionary;
-  } else if ([object isKindOfClass:[NSArray class]]) {
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    for (id obj in (NSArray *)object) {
-      id convertedObj = [self _convertObjectToJSONObject:obj invalidObjectHandler:invalidObjectHandler stop:&stop];
-      [self array:array addObject:convertedObj];
-      if (stop) {
-        break;
-      }
-    }
-    object = array;
-  } else {
-    object = invalidObjectHandler(object, stopRef);
-  }
-  if (stopRef != NULL) {
-    *stopRef = stop;
-  }
-  return object;
-}
-
 + (BOOL)_canOpenURLScheme:(NSString *)scheme
 {
   NSURLComponents *components = [[NSURLComponents alloc] init];
@@ -645,6 +494,32 @@ static NSMapTable *_transientObjects;
       }
     }
   }
+
+  // Find active key window from UIScene
+  if (@available(iOS 13.0, *)) {
+    NSSet *scenes = [[UIApplication sharedApplication] valueForKey:@"connectedScenes"];
+    for (id scene in scenes) {
+      if (window) {
+        break;
+      }
+
+      id activationState = [scene valueForKeyPath:@"activationState"];
+      BOOL isActive = activationState != nil && [activationState integerValue] == 0;
+      if (isActive) {
+        Class WindowScene = NSClassFromString(@"UIWindowScene");
+        if ([scene isKindOfClass:WindowScene]) {
+          NSArray<UIWindow *> *windows = [scene valueForKeyPath:@"windows"];
+          for (UIWindow *w in windows) {
+            if (w.isKeyWindow) {
+              window = w;
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (window == nil) {
     [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
                        formatString:@"Unable to find a valid UIWindow", nil];
@@ -742,39 +617,6 @@ static NSMapTable *_transientObjects;
   [permission isEqualToString:@"ads_management"] ||
   [permission isEqualToString:@"create_event"] ||
   [permission isEqualToString:@"rsvp_event"];
-}
-
-+ (BOOL)areAllPermissionsReadPermissions:(NSSet *)permissions
-{
-  for (NSString *permission in permissions) {
-    if ([[self class] isPublishPermission:permission]) {
-      return NO;
-    }
-  }
-  return YES;
-}
-
-+ (BOOL)areAllPermissionsPublishPermissions:(NSSet *)permissions
-{
-  for (NSString *permission in permissions) {
-    if (![[self class] isPublishPermission:permission]) {
-      return NO;
-    }
-  }
-  return YES;
-}
-
-+ (Class)resolveBoltsClassWithName:(NSString *)className;
-{
-  Class clazz = NSClassFromString(className);
-  if (clazz == nil) {
-    NSString *message = [NSString stringWithFormat:@"Unable to load class %@. Did you link Bolts.framework?", className];
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:message
-                                 userInfo:nil];
-  }
-
-  return clazz;
 }
 
 + (BOOL)isUnity

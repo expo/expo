@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/VisibleRegionViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -63,11 +59,12 @@ static CGFloat kOverlayHeight = 140.0f;
   [UIView animateWithDuration:2.0 animations:^{
     CGSize size = self.view.bounds.size;
     if (padding.bottom == 0.0f) {
-      _overlay.frame = CGRectMake(0, size.height - kOverlayHeight, size.width, kOverlayHeight);
-      _mapView.padding = UIEdgeInsetsMake(0, 0, kOverlayHeight, 0);
+      self->_overlay.frame =
+          CGRectMake(0, size.height - kOverlayHeight, size.width, kOverlayHeight);
+      self->_mapView.padding = UIEdgeInsetsMake(0, 0, kOverlayHeight, 0);
     } else {
-      _overlay.frame = CGRectMake(0, _mapView.bounds.size.height, size.width, 0);
-      _mapView.padding = UIEdgeInsetsZero;
+      self->_overlay.frame = CGRectMake(0, self->_mapView.bounds.size.height, size.width, 0);
+      self->_mapView.padding = UIEdgeInsetsZero;
     }
   }];
 }

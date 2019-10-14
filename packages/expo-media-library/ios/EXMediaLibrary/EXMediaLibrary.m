@@ -4,6 +4,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <EXMediaLibrary/EXMediaLibrary.h>
+#import <EXMediaLibrary/EXSaveToLibraryDelegate.h>
 
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
@@ -25,12 +26,21 @@ NSString *const EXMediaLibraryDidChangeEvent = @"mediaLibraryDidChange";
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, strong) NSMutableSet *saveToLibraryDelegates;
 
 @end
 
 @implementation EXMediaLibrary
 
 UM_EXPORT_MODULE(ExponentMediaLibrary);
+
+- (instancetype) init
+{
+  if (self = [super init]) {
+    _saveToLibraryDelegates = [NSMutableSet new];
+  }
+  return self;
+}
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
@@ -141,6 +151,44 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
       reject(@"E_ASSET_SAVE_FAILED", @"Asset couldn't be saved to photo library", error);
     }
   }];
+}
+
+UM_EXPORT_METHOD_AS(saveToLibraryAsync,
+                    saveToLibraryAsync:(nonnull NSString *)localUri
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSPhotoLibraryAddUsageDescription"] == nil) {
+    return reject(@"E_NO_PERMISSIONS", @"This app is missing NSPhotoLibraryAddUsageDescription. Add this entry to your bundle's Info.plist.", nil);
+  }
+  PHAssetMediaType assetType = [EXMediaLibrary _assetTypeForUri:localUri];
+  NSURL *assetUrl = [self.class _normalizeAssetURLFromUri:localUri];
+  UM_WEAKIFY(self)
+  __block EXSaveToLibraryDelegate *delegate = [EXSaveToLibraryDelegate new];
+  [_saveToLibraryDelegates addObject:delegate];
+  EXSaveToLibraryCallback callback = ^(id asset, NSError *error){
+    UM_STRONGIFY(self)
+    [self.saveToLibraryDelegates removeObject:delegate];
+    if (error) {
+      return reject(@"E_SAVE_FAILED", [error localizedDescription], nil);
+    }
+    return resolve(nil);
+  };
+  
+  if (assetType == PHAssetMediaTypeImage) {
+    UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:assetUrl]];
+    if (image == nil) {
+      return reject(@"E_FILE_IS_MISSING", [NSString stringWithFormat:@"Couldn't open file: %@. Make sure if this file exists.", localUri], nil);
+    }
+    return [delegate writeImage:image withCallback:callback];
+  } else if (assetType == PHAssetMediaTypeVideo) {
+    if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([assetUrl path])) {
+      return [delegate writeVideo:[assetUrl path] withCallback:callback];
+    }
+    return reject(@"E_COULD_NOT_SAVE_VIDEO", @"This video couldn't be saved to the Camera Roll album.", nil);
+  }
+  
+  return reject(@"E_UNSUPPORTED_ASSET", @"This file type is not supported yet.", nil);
 }
 
 UM_EXPORT_METHOD_AS(addAssetsToAlbumAsync,
@@ -340,19 +388,31 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
-    PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
-    options.networkAccessAllowed = YES;
-    
-    [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
-      result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
-      result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
-      
-      if (asset.mediaType == PHAssetMediaTypeImage) {
+    if (asset.mediaType == PHAssetMediaTypeImage) {
+      PHContentEditingInputRequestOptions *options = [PHContentEditingInputRequestOptions new];
+      options.networkAccessAllowed = YES;
+
+      [asset requestContentEditingInputWithOptions:options
+                                 completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
+        result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
+        result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
+        
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
-      }
-      resolve(result);
-    }];
+        resolve(result);
+      }];
+    } else {
+      PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+      options.networkAccessAllowed = YES;
+
+      [[PHImageManager defaultManager] requestAVAssetForVideo:asset
+                                                      options:options
+                                                resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+        AVURLAsset *urlAsset = (AVURLAsset *)asset;
+        result[@"localUri"] = [[urlAsset URL] absoluteString];
+        resolve(result);
+      }];
+    }
   } else {
     resolve([NSNull null]);
   }

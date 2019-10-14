@@ -55,6 +55,14 @@ To access these values at runtime, you can use the [Expo Constants API](../../sd
 - All apps in the iTunes Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
 - Apple will ask you whether your app uses the IDFA. Because Expo depends on Segment Analytics, the answer is yes, and you'll need to check a couple boxes on the Apple submission form. See [Segment's Guide](https://segment.com/docs/sources/mobile/ios/quickstart/#step-5-submitting-to-the-app-store) for which specific boxes to fill in.
 
+## Android Permissions
+
+- Permissions are configured via the [`android.permissions` key in your `app.json` file](../../workflow/configuration/#android)
+- By default, your app will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the Expo Client and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
+- There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing since nothing in the app seems to use the camera, so why would it need that permission?
+- To remedy this, simply add the `android.permissions` key in your `app.json` file, and specify which permissions your app will use. A list of all Android permissions and configuration options can be found [here](../../workflow/configuration/#android).
+- To use _only_ the minimum necessary permissions that Expo requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
+
 ## Common App Rejections
 
 - It's helpful to glance over [Common App Rejections](https://developer.apple.com/app-store/review/rejections/).
@@ -64,7 +72,7 @@ To access these values at runtime, you can use the [Expo Constants API](../../sd
 
 ## System permissions dialogs on iOS
 
-If your app asks for [system permissions](../../sdk/permissions/) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera." If you would like to provide more information, you can override these values using the [ios.infoPlist](../../workflow/configuration) key in `app.json`, for example:
+If your app asks for [system permissions](../../sdk/permissions/) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../../workflow/configuration) key in `app.json`, for example:
 
 ```
 "infoPlist": {

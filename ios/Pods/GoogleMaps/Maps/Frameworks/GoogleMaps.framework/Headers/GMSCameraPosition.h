@@ -11,7 +11,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <CoreLocation/CoreLocation.h>
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
 * An immutable class that aggregates all camera position parameters.
@@ -55,10 +55,50 @@ NS_ASSUME_NONNULL_BEGIN;
  * @param viewingAngle The angle, in degrees, of the camera angle from the nadir (directly facing
  *                     the Earth)
  */
-- (id)initWithTarget:(CLLocationCoordinate2D)target
-                zoom:(float)zoom
-             bearing:(CLLocationDirection)bearing
-        viewingAngle:(double)viewingAngle;
+- (instancetype)initWithTarget:(CLLocationCoordinate2D)target
+                          zoom:(float)zoom
+                       bearing:(CLLocationDirection)bearing
+                  viewingAngle:(double)viewingAngle;
+
+/**
+ * Convenience initializer for GMSCameraPosition for a particular target and zoom level. This will
+ * set the bearing and viewingAngle properties of this camera to zero defaults (i.e., directly
+ * facing the Earth's surface, with the top of the screen pointing north).
+ *
+ * @param target Location on the earth towards which the camera points.
+ * @param zoom The zoom level near the center of the screen.
+ */
+- (instancetype)initWithTarget:(CLLocationCoordinate2D)target zoom:(float)zoom;
+
+/**
+ * Convenience initializer for GMSCameraPosition for a particular latitidue, longitude and zoom
+ * level. This will set the bearing and viewingAngle properties of this camera to zero defaults
+ * (i.e., directly facing the Earth's surface, with the top of the screen pointing north).
+ *
+ * @param latitude The latitude component of the location towards which the camera points.
+ * @param longitude The latitude component of the location towards which the camera points.
+ * @param zoom The zoom level near the center of the screen.
+ */
+- (instancetype)initWithLatitude:(CLLocationDegrees)latitude
+                       longitude:(CLLocationDegrees)longitude
+                            zoom:(float)zoom;
+
+/**
+ * Convenience initializer for GMSCameraPosition, with latitude/longitude and all other camera
+ * properties as per -initWithTarget:zoom:bearing:viewingAngle:.
+ *
+ * @param latitude The latitude component of the location towards which the camera points.
+ * @param longitude The latitude component of the location towards which the camera points.
+ * @param zoom The zoom level near the center of the screen.
+ * @param bearing Bearing of the camera in degrees clockwise from true north.
+ * @param viewingAngle The angle, in degrees, of the camera angle from the nadir (directly facing
+ *                     the Earth)
+ */
+- (instancetype)initWithLatitude:(CLLocationDegrees)latitude
+                       longitude:(CLLocationDegrees)longitude
+                            zoom:(float)zoom
+                         bearing:(CLLocationDirection)bearing
+                    viewingAngle:(double)viewingAngle;
 
 /**
  * Convenience constructor for GMSCameraPosition for a particular target and zoom level. This will
@@ -123,4 +163,4 @@ FOUNDATION_EXTERN const float kGMSMaxZoomLevel;
 /** The minimum zoom (farthest from the Earth's surface) permitted by the map camera. */
 FOUNDATION_EXTERN const float kGMSMinZoomLevel;
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

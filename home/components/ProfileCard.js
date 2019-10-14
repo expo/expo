@@ -1,20 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import {
-  Image,
-  Keyboard,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} from 'react-native';
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
+import { Image, Keyboard, Platform, StyleSheet, TouchableHighlight, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 import { withNavigation } from 'react-navigation';
 
-import Colors from '../constants/Colors';
+import { StyledButton, StyledView } from '../components/Views';
+import { StyledText } from '../components/Text';
 
 @withNavigation
 export default class ProfileCard extends React.Component {
@@ -23,38 +15,46 @@ export default class ProfileCard extends React.Component {
 
     return (
       <View style={this.props.style}>
-        <TouchableNativeFeedbackSafe
+        <StyledButton
           onPress={this._handlePressProfile}
           fallback={TouchableHighlight}
-          underlayColor="#b7b7b7"
-          style={[styles.container, styles.bottomBorder]}>
-          <View>
-            <View style={styles.header}>
-              <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
-                  {isLegacy ? username : fullName}
-                </Text>
-                <View style={styles.profileExtraInfoContainer}>
-                  {!isLegacy && (
-                    <Text
-                      style={styles.profileExtraInfoText}
-                      ellipsizeMode="tail"
-                      numberOfLines={1}>
-                      @{username}
-                    </Text>
-                  )}
-                  {!isLegacy && <View style={styles.bullet} />}
-                  <Text
-                    onPress={appCount > 0 ? this._handlePressProjects : null}
-                    style={styles.profileExtraInfoText}>
-                    {appCount} {appCount === 1 ? 'project' : 'projects'}
-                  </Text>
-                </View>
+          style={styles.container}
+          underlayColor="#b7b7b7">
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>{this._maybeRenderPhoto()}</View>
+            <View style={styles.infoContainer}>
+              <StyledText style={styles.profileNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {isLegacy ? username : fullName}
+              </StyledText>
+              <View style={styles.profileExtraInfoContainer}>
+                {!isLegacy && (
+                  <StyledText
+                    lightColor="rgba(36, 44, 58, 0.4)"
+                    darkColor="#ccc"
+                    style={styles.profileExtraInfoText}
+                    ellipsizeMode="tail"
+                    numberOfLines={1}>
+                    @{username}
+                  </StyledText>
+                )}
+                {!isLegacy && (
+                  <StyledView
+                    style={styles.bullet}
+                    lightBackgroundColor="rgba(36, 44, 58, 0.2)"
+                    darkBackgroundColor="#ccc"
+                  />
+                )}
+                <StyledText
+                  lightColor="rgba(36, 44, 58, 0.7)"
+                  darkColor="#eee"
+                  onPress={appCount > 0 ? this._handlePressProjects : null}
+                  style={styles.profileExtraInfoText}>
+                  {appCount} {appCount === 1 ? 'project' : 'projects'}
+                </StyledText>
               </View>
             </View>
           </View>
-        </TouchableNativeFeedbackSafe>
+        </StyledButton>
       </View>
     );
   }
@@ -98,9 +98,7 @@ export default class ProfileCard extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   header: {
@@ -119,7 +117,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   descriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     lineHeight: 19,
   },
   iconClipContainer: {
@@ -143,7 +140,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   profileNameText: {
-    color: Colors.blackText,
     fontSize: 15,
     marginRight: 170,
     marginBottom: 2,
@@ -165,11 +161,9 @@ const styles = StyleSheet.create({
     width: 3.5,
     height: 3.5,
     borderRadius: 3.5 / 2,
-    backgroundColor: 'rgba(36, 44, 58, 0.2)',
     marginHorizontal: 6,
   },
   profileExtraInfoText: {
-    color: 'rgba(36, 44, 58, 0.4)',
     fontSize: 13,
     lineHeight: 16,
   },

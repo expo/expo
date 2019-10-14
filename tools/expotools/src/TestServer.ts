@@ -119,7 +119,7 @@ export async function startServerAsync(
   });
 
   app.all('*', (req, res) => {
-    let host = req.headers.host;
+    let host = req.hostname;
     let subdomain = host.split('.')[0];
     if (!subdomain.startsWith('manifest-') && !subdomain.startsWith('packager-')) {
       res.status(400).send('Invalid subdomain');

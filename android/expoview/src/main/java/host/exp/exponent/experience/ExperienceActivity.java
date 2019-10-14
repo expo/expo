@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -324,6 +324,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         // grab SDK version from optimisticManifest -- in this context we just need to know ensure it's above 5.0.0 (which it should always be)
         String optimisticSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
         ExperienceActivityUtils.setWindowTransparency(optimisticSdkVersion, manifest, ExperienceActivity.this);
+        ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
 
         showLoadingScreen(manifest);
 
@@ -366,7 +367,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       mSDKVersion = RNObject.UNVERSIONED;
     }
-    // In detach/shell, since SDK31 we always use UNVERSIONED as the ABI.
+    // In detach/shell, we always use UNVERSIONED as the ABI.
     mDetachSdkVersion = Constants.isStandaloneApp() ? RNObject.UNVERSIONED : mSDKVersion;
 
     if (!RNObject.UNVERSIONED.equals(mSDKVersion)) {
@@ -467,6 +468,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         }
 
         ExperienceActivityUtils.setWindowTransparency(mDetachSdkVersion, manifest, ExperienceActivity.this);
+        ExperienceActivityUtils.setNavigationBar(manifest, ExperienceActivity.this);
 
         showLoadingScreen(manifest);
 

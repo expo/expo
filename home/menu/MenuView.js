@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import React from 'react';
 import {
+  Animated,
   Alert,
   AppRegistry,
   Clipboard,
@@ -8,7 +9,6 @@ import {
   Image,
   NativeModules,
   PixelRatio,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -16,15 +16,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { ThemeContext } from 'react-navigation';
 
+import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import DevIndicator from '../components/DevIndicator';
 import * as Kernel from '../kernel/Kernel';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+import { StyledView, StyledScrollView } from '../components/Views';
+import { StyledText } from '../components/Text';
+import LocalStorage from '../storage/LocalStorage';
 
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 
-export default class MenuView extends React.Component {
+class MenuView extends React.Component {
+  _scrollPosition = new Animated.Value(0);
+
   constructor(props, context) {
     super(props, context);
 
@@ -50,6 +57,14 @@ export default class MenuView extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (!this.state.isLoading) {
       this._loadStateAsync();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.visible && !this.props.visible) {
+      this.restoreStatusBar();
+    } else if (!prevProps.visible && this.props.visible) {
+      this.forceStatusBarUpdateAsync();
     }
   }
 
@@ -80,6 +95,7 @@ export default class MenuView extends React.Component {
       StatusBar._currentValues = null;
     }
   };
+
   restoreStatusBar = () => {
     if (
       NativeModules.StatusBarManager._applyPropertiesAndForget &&
@@ -88,6 +104,15 @@ export default class MenuView extends React.Component {
       NativeModules.StatusBarManager._applyPropertiesAndForget(this._statusBarValuesToRestore);
     }
   };
+
+  _handleScroll = ({ nativeEvent }) => {
+    let y = nativeEvent.contentOffset.y;
+    this._scrollPosition.setValue(y);
+    if (y <= -150) {
+      this._onPressClose();
+    }
+  };
+
   render() {
     if (!this.state.isLoaded) {
       return <View />;
@@ -108,49 +133,63 @@ export default class MenuView extends React.Component {
       height: Dimensions.get('window').height,
     };
 
+    const { theme } = this.props;
+
+    let opacity = this._scrollPosition.interpolate({
+      inputRange: [-150, 0, 1],
+      outputRange: [0.5, 1, 1],
+    });
+
     return (
-      <View style={[styles.container, screenStyles]}>
-        <StatusBar barStyle="default" />
-        <ScrollView style={styles.overlay}>
-          {this.state.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
-          <View style={styles.separator} />
-          <View style={styles.buttonContainer}>
-            {this._renderButton({
-              key: 'refresh',
-              text: 'Reload Manifest and JS Bundle',
-              onPress: () => Kernel.selectRefresh(),
-              iconSource: require('../assets/ios-menu-refresh.png'),
-            })}
-            {copyUrlButton}
-            {this._renderButton({
-              key: 'home',
-              text: 'Go to Expo Home',
-              onPress: this._goToHome,
-              iconSource: require('../assets/ios-menu-home.png'),
-            })}
-          </View>
-          {this._maybeRenderDevMenuTools()}
-          <TouchableHighlight
-            style={styles.closeButton}
-            onPress={this._onPressClose}
-            underlayColor="#eee"
-            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
-            <Image
-              source={require('../assets/menu-md-close.png')}
-              style={{ width: 12, height: 20 }}
-            />
-          </TouchableHighlight>
-        </ScrollView>
-      </View>
+      <StyledView style={[styles.container, screenStyles]} darkBackgroundColor="#000">
+        <Animated.View style={{ flex: 1, opacity }}>
+          <StatusBar barStyle={theme === 'light' ? 'default' : 'light-content'} />
+          <StyledScrollView
+            style={styles.overlay}
+            onScroll={this._handleScroll}
+            scrollEventThrottle={16}>
+            {this.state.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
+            <StyledView style={styles.separator} />
+            <View style={styles.buttonContainer}>
+              {this._renderButton({
+                key: 'refresh',
+                text: 'Reload Manifest and JS Bundle',
+                onPress: () => Kernel.selectRefresh(),
+                iconSource: require('../assets/ios-menu-refresh.png'),
+              })}
+              {copyUrlButton}
+              {this._renderButton({
+                key: 'home',
+                text: 'Go to Expo Home',
+                onPress: this._goToHome,
+                iconSource: require('../assets/ios-menu-home.png'),
+              })}
+            </View>
+            {this._maybeRenderDevMenuTools()}
+            <TouchableHighlight
+              style={styles.closeButton}
+              onPress={this._onPressClose}
+              underlayColor="#eee"
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}>
+              <Image
+                source={require('../assets/menu-md-close.png')}
+                style={{ width: 12, height: 20 }}
+              />
+            </TouchableHighlight>
+          </StyledScrollView>
+        </Animated.View>
+      </StyledView>
     );
   }
 
   _renderNUXRow() {
     let tooltipMessage;
     if (Constants.isDevice) {
-      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
+      tooltipMessage =
+        'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that you can shake your device to get back to it at any time.';
     } else {
-      tooltipMessage = 'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
+      tooltipMessage =
+        'Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that in an iOS Simulator you can press \u2318D to get back to it at any time.';
     }
     let headingStyles = MENU_NARROW_SCREEN
       ? [styles.nuxHeading, styles.nuxHeadingNarrow]
@@ -158,9 +197,13 @@ export default class MenuView extends React.Component {
     return (
       <View style={styles.nuxRow}>
         <View style={styles.nuxHeadingRow}>
-          <Text style={headingStyles}>Hello there, friend! 👋</Text>
+          <StyledText style={headingStyles} lightColor="#595c68">
+            Hello there, friend! 👋
+          </StyledText>
         </View>
-        <Text style={styles.nuxTooltip}>{tooltipMessage}</Text>
+        <StyledText style={styles.nuxTooltip} lightColor="#595c68">
+          {tooltipMessage}
+        </StyledText>
         <TouchableOpacity style={styles.nuxButton} onPress={this._onPressFinishNux}>
           <Text style={styles.nuxButtonLabel}>Got it</Text>
         </TouchableOpacity>
@@ -186,9 +229,9 @@ export default class MenuView extends React.Component {
       <View style={styles.taskMetaRow}>
         <View style={styles.taskIconColumn}>{icon}</View>
         <View style={styles.taskInfoColumn}>
-          <Text style={taskNameStyles} numberOfLines={1}>
+          <StyledText style={taskNameStyles} numberOfLines={1} lightColor="#595c68">
             {taskName ? taskName : 'Untitled Experience'}
-          </Text>
+          </StyledText>
           <Text style={[styles.taskUrl]} numberOfLines={1}>
             {taskUrl}
           </Text>
@@ -221,7 +264,7 @@ export default class MenuView extends React.Component {
     if (this.state.enableDevMenuTools && this.state.devMenuItems) {
       return (
         <View>
-          <View style={styles.separator} />
+          <StyledView style={styles.separator} />
           <View style={styles.buttonContainer}>
             {Object.keys(this.state.devMenuItems).map(key => {
               return this._renderDevMenuItem(key, this.state.devMenuItems[key]);
@@ -248,11 +291,13 @@ export default class MenuView extends React.Component {
     } else {
       const detailButton = detail ? this._renderDevMenuDetailButton(label, detail) : null;
       return (
-        <View style={[styles.button, styles.buttonWithSeparator]} key={key}>
+        <StyledView style={[styles.button, styles.buttonWithSeparator]} key={key}>
           <View style={styles.buttonIcon} />
-          <Text style={[styles.buttonText, { color: '#9ca0a6' }]}>{label}</Text>
+          <StyledText style={styles.buttonText} lightColor="#9ca0a6">
+            {label}
+          </StyledText>
           {detailButton}
-        </View>
+        </StyledView>
       );
     }
   }
@@ -288,7 +333,9 @@ export default class MenuView extends React.Component {
     return (
       <TouchableOpacity key={key} style={buttonStyles} onPress={onPress}>
         {icon}
-        <Text style={styles.buttonText}>{text}</Text>
+        <StyledText style={styles.buttonText} lightColor="#595c68">
+          {text}
+        </StyledText>
       </TouchableOpacity>
     );
   }
@@ -324,12 +371,9 @@ export default class MenuView extends React.Component {
 }
 
 let styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#ffffff',
-  },
+  container: {},
   overlay: {
     flex: 1,
-    backgroundColor: '#ffffff',
     marginTop: Constants.statusBarHeight,
   },
   closeButton: {
@@ -355,7 +399,6 @@ let styles = StyleSheet.create({
     alignItems: 'center',
   },
   taskName: {
-    color: '#595c68',
     backgroundColor: 'transparent',
     fontWeight: '700',
     fontSize: 16,
@@ -385,9 +428,7 @@ let styles = StyleSheet.create({
     fontWeight: '700',
   },
   separator: {
-    borderColor: '#d5d6d7',
     borderTopWidth: 1 / PixelRatio.get(),
-    backgroundColor: '#f0f0f1',
     height: 12,
     marginVertical: 4,
     marginHorizontal: -1,
@@ -401,7 +442,6 @@ let styles = StyleSheet.create({
   },
   buttonWithSeparator: {
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: '#f4f4f5',
   },
   buttonIcon: {
     width: 16,
@@ -411,7 +451,6 @@ let styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   buttonText: {
-    color: '#595c68',
     fontSize: 14,
     textAlign: 'left',
     marginVertical: 12,
@@ -437,7 +476,6 @@ let styles = StyleSheet.create({
   },
   nuxHeading: {
     flex: 1,
-    color: '#595c68',
     fontWeight: '700',
     fontSize: 22,
   },
@@ -446,7 +484,6 @@ let styles = StyleSheet.create({
     marginTop: 2,
   },
   nuxTooltip: {
-    color: '#595c68',
     marginRight: 16,
     marginVertical: 4,
     fontSize: 16,
@@ -459,9 +496,42 @@ let styles = StyleSheet.create({
     borderRadius: 3,
   },
   nuxButtonLabel: {
-    color: '#ffffff',
+    color: '#fff',
     fontSize: 16,
   },
 });
 
-AppRegistry.registerComponent('HomeMenu', () => MenuView);
+function useUserSettings(renderId) {
+  let [settings, setSettings] = React.useState({});
+
+  React.useEffect(() => {
+    async function getUserSettings() {
+      let settings = await LocalStorage.getSettingsAsync();
+      setSettings(settings);
+    }
+
+    getUserSettings();
+  }, [renderId]);
+
+  return settings;
+}
+
+const HomeMenu = props => {
+  let colorScheme = useColorScheme();
+  let { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
+
+  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+  if (theme === 'no-preference') {
+    theme = 'light';
+  }
+
+  return (
+    <AppearanceProvider>
+      <ThemeContext.Provider value={theme}>
+        <MenuView {...props} theme={theme} />
+      </ThemeContext.Provider>
+    </AppearanceProvider>
+  );
+};
+
+AppRegistry.registerComponent('HomeMenu', () => HomeMenu);

@@ -46,12 +46,9 @@ export default class ProjectTools extends React.Component {
 
   _clipboardUpdateInterval: ?number = null;
 
-  componentWillMount() {
-    this._fetchClipboardContentsAsync();
-  }
-
   componentDidMount() {
     this._startPollingClipboard();
+    this._fetchClipboardContentsAsync();
     AppState.addEventListener('change', this._maybeResumePollingFromAppState);
   }
 

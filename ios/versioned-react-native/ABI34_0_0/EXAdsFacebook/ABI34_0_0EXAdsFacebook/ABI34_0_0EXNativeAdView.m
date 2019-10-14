@@ -43,8 +43,6 @@
                   @"socialContext": nativeAd.socialContext,
                   @"callToActionText": nativeAd.callToAction,
                   @"bodyText": nativeAd.bodyText,
-                  // TODO: Remove this deprecated field (in lieu of adTranslation) in SDK 32+
-                  @"translation": nativeAd.adTranslation,
                   @"adTranslation": nativeAd.adTranslation,
                   @"promotedTranslation": nativeAd.promotedTranslation,
                   @"sponsoredTranslation": nativeAd.sponsoredTranslation,
@@ -52,7 +50,7 @@
   }
 }
 
-- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBAdIconView *)adIconView clickableViews:(NSArray<UIView *> *)clickable
+- (void)registerViewsForInteraction:(FBMediaView *)mediaView adIcon:(FBMediaView *)adIconView clickableViews:(NSArray<UIView *> *)clickable
 {
   __weak typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{

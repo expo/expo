@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { UnavailabilityError, CodedError } from '@unimodules/core';
+import { canUseViewport } from 'fbjs/lib/ExecutionEnvironment';
 import {
   BaseGLViewProps,
   GLSnapshot,
   ExpoWebGLRenderingContext,
   SnapshotOptions,
 } from './GLView.types';
-export { BaseGLViewProps, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps };
 
 declare const window: Window;
 
@@ -85,7 +85,7 @@ const propTypes = {
   webglContextAttributes: PropTypes.object,
 };
 
-interface GLViewProps extends BaseGLViewProps {
+export interface GLViewProps extends BaseGLViewProps {
   onContextCreate: (gl: WebGLRenderingContext) => void;
   onContextRestored?: (gl?: WebGLRenderingContext) => void;
   onContextLost?: () => void;
@@ -132,7 +132,7 @@ export class GLView extends React.Component<GLViewProps, State> {
     options: SnapshotOptions = {}
   ): Promise<GLSnapshot> {
     invariant(exgl, 'GLView.takeSnapshotAsync(): canvas is not defined');
-    const canvas: HTMLCanvasElement = exgl.canvas;
+    const canvas = exgl.canvas as HTMLCanvasElement;
     return await new Promise(resolve => {
       canvas.toBlob(
         (blob: Blob | null) => {
@@ -151,7 +151,7 @@ export class GLView extends React.Component<GLViewProps, State> {
   }
 
   componentDidMount() {
-    if (window.addEventListener) {
+    if (canUseViewport && window.addEventListener) {
       window.addEventListener('resize', this._updateLayout);
     }
   }
@@ -188,7 +188,7 @@ export class GLView extends React.Component<GLViewProps, State> {
   };
 
   render() {
-    const { devicePixelRatio = 1 } = window;
+    const { devicePixelRatio = 1 } = canUseViewport ? window : {};
     const { style, ...props } = this.props;
     const { width, height } = this.state;
     const domProps = stripNonDOMProps(props);

@@ -17,31 +17,31 @@ export async function test({ describe, it, expect }) {
     }
   }
 
-  describe('Contacts.addContactAsync()', () => {
+  describe('addContactAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.addContactAsync));
   });
-  describe('Contacts.writeContactToFileAsync()', () => {
+  describe('writeContactToFileAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.writeContactToFileAsync));
   });
-  describe('Contacts.removeContactAsync()', () => {
+  describe('removeContactAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.removeContactAsync));
   });
-  describe('Contacts.getContactsAsync()', () => {
+  describe('getContactsAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.getContactsAsync));
   });
-  describe('Contacts.getContactByIdAsync()', () => {
+  describe('getContactByIdAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.getContactByIdAsync));
   });
-  describe('Contacts.createGroupAsync()', () => {
+  describe('createGroupAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.createGroupAsync));
   });
-  describe('Contacts.getGroupsAsync()', () => {
+  describe('getGroupsAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.getGroupsAsync));
   });
-  describe('Contacts.removeGroupAsync()', () => {
+  describe('removeGroupAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.removeGroupAsync));
   });
-  describe('Contacts.getDefaultContainerIdAsync()', () => {
+  describe('getDefaultContainerIdAsync()', () => {
     it(unavailableMessage, () => executeFailingMethod(Contacts.getDefaultContainerIdAsync));
   });
 }

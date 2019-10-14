@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#import <Foundation/Foundation.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 #import <GoogleUtilities/GULMutableDictionary.h>
 

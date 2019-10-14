@@ -13,14 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 NS_SWIFT_NAME(VisionDocumentTextParagraph)
 @interface FIRVisionDocumentTextParagraph : NSObject
 
-/**
- * String representation of the document text paragraph that was recognized.
- */
+/** String representation of the document text paragraph that was recognized. */
 @property(nonatomic, readonly) NSString *text;
 
-/**
- * An array of words in the document text paragraph.
- */
+/** An array of words in the document text paragraph. */
 @property(nonatomic, readonly) NSArray<FIRVisionDocumentTextWord *> *words;
 
 /**
@@ -29,9 +25,7 @@ NS_SWIFT_NAME(VisionDocumentTextParagraph)
  */
 @property(nonatomic, readonly) CGRect frame;
 
-/**
- * The confidence of the recognized document text paragraph.
- */
+/** The confidence of the recognized document text paragraph. */
 @property(nonatomic, readonly) NSNumber *confidence;
 
 /**
@@ -40,14 +34,10 @@ NS_SWIFT_NAME(VisionDocumentTextParagraph)
  */
 @property(nonatomic, readonly) NSArray<FIRVisionTextRecognizedLanguage *> *recognizedLanguages;
 
-/**
- * The recognized start or end of the document text paragraph.
- */
+/** The recognized start or end of the document text paragraph. */
 @property(nonatomic, readonly, nullable) FIRVisionTextRecognizedBreak *recognizedBreak;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

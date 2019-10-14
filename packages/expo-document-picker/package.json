@@ -1,6 +1,6 @@
 {
   "name": "expo-document-picker",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -22,7 +22,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-document-picker"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -31,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/document-picker/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
     "uuid": "^3.3.2"
@@ -40,7 +41,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "~1.1.1"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

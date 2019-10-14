@@ -21,7 +21,7 @@
 @class GMSStrokeStyle;
 @class GMSStyleSpan;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /** Average Earth radius in meters. */
 static const CLLocationDistance kGMSEarthRadius = 6371009.0;
@@ -240,4 +240,4 @@ NSArray<GMSStyleSpan *> *GMSStyleSpansOffset(GMSPath *path,
 
 /**@}*/
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

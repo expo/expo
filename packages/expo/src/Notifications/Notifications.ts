@@ -17,11 +17,11 @@ let _initialNotification;
 function _maybeInitEmitter() {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    RCTDeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+    RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
   }
 }
 
-function _emitNotification(notification) {
+export function emitNotification(notification) {
   if (typeof notification === 'string') {
     notification = JSON.parse(notification);
   }
@@ -114,7 +114,6 @@ if (Platform.OS === 'android') {
   AsyncStorage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
     try {
       let keys = await AsyncStorage.getAllKeys();
-      let result = null;
       if (keys && keys.length) {
         let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
         await AsyncStorage.multiRemove(filteredKeys);
@@ -381,7 +380,7 @@ export default {
       const initialNotification = _initialNotification;
       _initialNotification = null;
       setTimeout(() => {
-        _emitNotification(initialNotification);
+        emitNotification(initialNotification);
       }, 0);
     }
 
@@ -449,5 +448,5 @@ export default {
 };
 
 function isInRangeInclusive(variable: number, min: number, max: number): boolean {
-  return (variable >= min && variable <= max);
+  return variable >= min && variable <= max;
 }

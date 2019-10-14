@@ -674,6 +674,17 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
           }
         }
 
+        if (endDate == null && occurrence == null) {
+          long eventStartDate = eventValues.getAsLong(CalendarContract.Events.DTSTART);
+          long eventEndDate = eventValues.getAsLong(CalendarContract.Events.DTEND);
+          long duration = (eventEndDate - eventStartDate) / 1000;
+
+          eventValues.putNull(CalendarContract.Events.LAST_DATE);
+          eventValues.putNull(CalendarContract.Events.DTEND);
+
+          eventValues.put(CalendarContract.Events.DURATION, String.format("PT%dS", duration));
+        }
+
         String rule = createRecurrenceRule(frequency, interval, endDate, occurrence);
         if (rule != null) {
           eventValues.put(CalendarContract.Events.RRULE, rule);

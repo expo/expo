@@ -7,41 +7,25 @@ NS_ASSUME_NONNULL_BEGIN
  * An enum of recognized text break types.
  */
 typedef NS_ENUM(NSInteger, FIRVisionTextRecognizedBreakType) {
-  /**
-   * Unknown break type.
-   */
+  /** Unknown break type. */
   FIRVisionTextRecognizedBreakTypeUnknown,
-  /**
-   * Line-wrapping break type.
-   */
+  /** Line-wrapping break type. */
   FIRVisionTextRecognizedBreakTypeLineWrap,
-  /**
-   * Hyphen break type.
-   */
+  /** Hyphen break type. */
   FIRVisionTextRecognizedBreakTypeHyphen,
-  /**
-   * Line break that ends a paragraph.
-   */
+  /** Line break that ends a paragraph. */
   FIRVisionTextRecognizedBreakTypeLineBreak,
-  /**
-   * Space break type.
-   */
+  /** Space break type. */
   FIRVisionTextRecognizedBreakTypeSpace,
-  /**
-   * Sure space break type.
-   */
+  /** Sure space break type. */
   FIRVisionTextRecognizedBreakTypeSureSpace,
 } NS_SWIFT_NAME(VisionTextRecognizedBreakType);
 
-/**
- * Detected break from text recognition.
- */
+/** Detected break from text recognition. */
 NS_SWIFT_NAME(VisionTextRecognizedBreak)
 @interface FIRVisionTextRecognizedBreak : NSObject
 
-/**
- *  The recognized text break type.
- */
+/** The recognized text break type. */
 @property(nonatomic, readonly) FIRVisionTextRecognizedBreakType type;
 
 /**
@@ -50,9 +34,7 @@ NS_SWIFT_NAME(VisionTextRecognizedBreak)
  */
 @property(nonatomic, readonly) BOOL isPrefix;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

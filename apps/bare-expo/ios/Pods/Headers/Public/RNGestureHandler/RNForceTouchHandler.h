@@ -1,0 +1,1 @@
+../../../RNGestureHandler/ios/Handlers/RNForceTouchHandler.h

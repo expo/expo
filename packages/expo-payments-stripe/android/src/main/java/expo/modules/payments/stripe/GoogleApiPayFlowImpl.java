@@ -1,7 +1,7 @@
 package expo.modules.payments.stripe;
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.unimodules.core.Promise;
 import expo.modules.payments.stripe.util.ArgCheck;

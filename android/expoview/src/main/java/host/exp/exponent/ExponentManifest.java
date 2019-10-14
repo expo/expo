@@ -93,6 +93,12 @@ public class ExponentManifest {
   @Deprecated
   public static final String MANIFEST_STATUS_BAR_COLOR = "androidStatusBarColor";
 
+  // NavigationBar
+  public static final String MANIFEST_NAVIGATION_BAR_KEY = "androidNavigationBar";
+  public static final String MANIFEST_NAVIGATION_BAR_VISIBLILITY = "visible";
+  public static final String MANIFEST_NAVIGATION_BAR_APPEARANCE = "barStyle";
+  public static final String MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR = "backgroundColor";
+
   // Notification
   public static final String MANIFEST_NOTIFICATION_INFO_KEY = "notification";
   public static final String MANIFEST_NOTIFICATION_ICON_URL_KEY = "iconUrl";
@@ -395,6 +401,20 @@ public class ExponentManifest {
     }
   }
 
+  private boolean isManifestSDKVersionValid(JSONObject manifest) {
+    String sdkVersion = manifest.optString(MANIFEST_SDK_VERSION_KEY);
+    if (RNObject.UNVERSIONED.equals(sdkVersion)) {
+      return true;
+    } else {
+      for (String version : Constants.SDK_VERSIONS_LIST) {
+        if (version.equals(sdkVersion)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
   private JSONObject extractManifest(final String manifestString) throws IOException {
       try {
           return new JSONObject(manifestString);
@@ -447,7 +467,14 @@ public class ExponentManifest {
       if (embeddedResponse != null) {
         try {
           JSONObject embeddedManifest = new JSONObject(embeddedResponse);
-          manifest = newerManifest(embeddedManifest, manifest);
+          if (!isManifestSDKVersionValid(manifest)) {
+            // if we somehow try to load a cached manifest with an invalid SDK version,
+            // fall back immediately to the embedded manifest, which should never have an
+            // invalid SDK version.
+            manifest = embeddedManifest;
+          } else {
+            manifest = newerManifest(embeddedManifest, manifest);
+          }
           isUsingEmbeddedManifest = embeddedManifest == manifest;
         } catch (Exception e) {
           EXL.e(TAG, e);

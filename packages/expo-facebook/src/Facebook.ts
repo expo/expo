@@ -2,15 +2,14 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
 
-type FacebookLoginResult = {
+export type FacebookLoginResult = {
   type: string;
   token?: string;
   expires?: number;
 };
 
-type FacebookOptions = {
+export type FacebookOptions = {
   permissions?: string[];
-  behavior?: 'web' | 'native' | 'browser' | 'system';
 };
 
 export async function logInWithReadPermissionsAsync(

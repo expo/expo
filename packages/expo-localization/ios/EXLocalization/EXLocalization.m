@@ -22,7 +22,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
 {
   NSArray<NSString *> *preferredLocales = [NSLocale preferredLanguages];
   NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
-  NSString *countryCode = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
+  NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
   
   return @{
            @"isRTL": @([self isRTL]),
@@ -30,7 +30,7 @@ UM_EXPORT_METHOD_AS(getLocalizationAsync,
            @"locales": preferredLocales,
            @"timezone": [currentTimeZone name],
            @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
-           @"country": countryCode
+           @"region": region
            };
 }
 
