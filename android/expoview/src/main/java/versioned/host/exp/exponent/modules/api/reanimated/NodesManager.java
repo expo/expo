@@ -37,6 +37,9 @@ import versioned.host.exp.exponent.modules.api.reanimated.nodes.SetNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.StyleNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.TransformNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.ValueNode;
+import versioned.host.exp.exponent.modules.api.reanimated.nodes.ParamNode;
+import versioned.host.exp.exponent.modules.api.reanimated.nodes.FunctionNode;
+import versioned.host.exp.exponent.modules.api.reanimated.nodes.CallFuncNode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -264,6 +267,12 @@ public class NodesManager implements EventDispatcherListener {
       node = new AlwaysNode(nodeID, config, this);
     } else if ("concat".equals(type)) {
       node = new ConcatNode(nodeID, config, this);
+    } else if ("param".equals(type)) {
+      node = new ParamNode(nodeID, config, this);
+    } else if ("func".equals(type)) {
+      node = new FunctionNode(nodeID, config, this);
+    } else if ("callfunc".equals(type)) {
+      node = new CallFuncNode(nodeID, config, this);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }
