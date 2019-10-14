@@ -11,8 +11,9 @@
     NSString *moduleId;
 }
 
-- (instancetype)initWithId:(NSString *)id
+- (instancetype)initWithId:(NSString *)identifier
 {
+    moduleId = identifier;
     return self;
 }
 
@@ -26,7 +27,7 @@
 }
 
 - (NSString *)readStringForKey:(NSString *)key {
-    return [NSUserDefaults.standardUserDefaults objectForKey:[self keyWithId:key]];
+    return [NSUserDefaults.standardUserDefaults stringForKey:[self keyWithId:key]];
 }
 
 - (void)persistObject:(NSObject *)value forKey:(NSString *)key {

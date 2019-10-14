@@ -9,8 +9,8 @@
 
 static NSString *const manifestKey = @"manifest";
 static NSString *const bundlePathKey = @"bundlePath";
-static NSString *const downloadedManifestKey = @"manifest";
-static NSString *const downloadedBundlePathKey = @"bundlePath";
+static NSString *const downloadedManifestKey = @"downloadedManifest";
+static NSString *const downloadedBundlePathKey = @"downloadedBundlePath";
 static NSString *const outdatedBundlePathKey = @"outdatedBundlePath";
 
 @implementation EXOtaPersistance
@@ -24,21 +24,77 @@ NSString *_appId;
     return self;
 }
 
-- (void)storeManifest:(NSDictionary*)manifest withBundle:(NSString*)bundlePath
+- (void)storeManifest:(NSDictionary*)manifest
 {
-    [_storage persistObject:manifest forKey:manifestKey];
-    [_storage persistString:bundlePath forKey:bundlePathKey];
+    [self storeOrRemoveValue:manifest forKey:manifestKey];
 }
 
-- (void)markDownloadedAsCurrent
+- (void)storeBundle:(NSString*)bundlePath
 {
-    
+    [self storeOrRemoveString:bundlePath forKey:bundlePathKey];
 }
 
-
-- (void)removeDownloadedBundle
+- (void)storeDownloadedManifest:(nullable NSDictionary*)manifest
 {
-    NSString *downloadedBundle = nil;
+    [self storeOrRemoveValue:manifest forKey:downloadedManifestKey];
+}
+
+- (void)storeDownloadedBundle:(nullable NSString*)bundlePath
+{
+    [self storeOrRemoveString:bundlePath forKey:downloadedBundlePathKey];
+}
+
+- (void)storeOutdatedBundle:(nullable NSString*)bundlePath
+{
+    [self storeOrRemoveString:bundlePath forKey:outdatedBundlePathKey];
+}
+
+- (void)storeOrRemoveValue:(nullable NSObject*)object forKey:(NSString*)key
+{
+    if(object != nil)
+    {
+        [_storage persistObject:object forKey:key];
+    } else
+    {
+        [_storage removeValueForKey:key];
+    }
+}
+
+- (void)storeOrRemoveString:(nullable NSString*)value forKey:(NSString*)key
+{
+    if(value != nil)
+    {
+        [_storage persistString:value forKey:key];
+    } else
+    {
+        [_storage removeValueForKey:key];
+    }
+}
+
+- (void)markDownloadedCurrentAndCurrentOutdated
+{
+    NSDictionary *downloadedManifest = [self readDownloadedManifest];
+    NSString *downloadedBundle = [self readDownloadedBundlePath];
+    if(downloadedManifest != nil && downloadedBundle != nil)
+    {
+        [self storeOutdatedBundle:[self readBundlePath]];
+        [self storeManifest:downloadedManifest];
+        [self storeBundle:downloadedBundle];
+        [self storeDownloadedBundle:nil];
+        [self storeDownloadedManifest:nil];
+    }
+}
+
+- (NSDictionary*)readNewestManifest
+{
+    NSDictionary *downloadedManifest = [self readDownloadedManifest];
+    if(downloadedManifest == nil)
+    {
+        return [self readManifest];
+    } else
+    {
+        return downloadedManifest;
+    }
 }
 
 - (NSDictionary*)readManifest
@@ -46,38 +102,24 @@ NSString *_appId;
     return [_storage readObject:manifestKey];
 }
 
-- (NSString*)bundlePath
+- (NSString*)readBundlePath
 {
     return [_storage readStringForKey:bundlePathKey];
 }
 
-- (void)saveData:(NSData*)data toFile:(NSString*)path
+- (NSDictionary*)readDownloadedManifest
 {
-    
+    return [_storage readObject:downloadedManifestKey];
 }
 
-- (NSString*):ensureBundleDirExists
+- (NSString*)readDownloadedBundlePath
 {
-    NSString *cachcesDir = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES).firstObject;
-    NSString *bundlesDir = [NSString stringWithFormat:@"bundle-%@", _appId];
-    NSString *bundlesPath = [cachcesDir stringByAppendingPathComponent:bundlesDir];
-    BOOL cacheDirectoryExists = [[NSFileManager defaultManager] fileExistsAtPath:bundlesPath isDirectory:nil];
-    
-    if(!cacheDirectoryExists) {
-        NSError *error;
-        BOOL created = [[NSFileManager defaultManager] createDirectoryAtPath:bundlesPath
-                                                 withIntermediateDirectories:YES
-                                                                  attributes:nil
-                                                                       error:&error];
-        if(!created)
-        {
-            @throw error;
-        } else
-        {
-            cacheDirectoryExists = YES;
-        }
-    }
-    return cacheDirectoryExists ? bundlesPath : nil;
+    return [_storage readStringForKey:downloadedBundlePathKey];
+}
+
+- (NSString*)readOutdatedBundlePath
+{
+    return [_storage readStringForKey:outdatedBundlePathKey];
 }
 
 @end

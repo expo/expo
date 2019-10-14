@@ -91,7 +91,7 @@ fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObje
         }
     }
 
-    fun cleanOtherReleaseChannelsBundles() {
+    fun cleanUnusedFiles() {
         val bundlesDir = bundleDir()
         if (bundlesDir.exists() && bundlesDir.isDirectory) {
             bundlesDir.listFiles { directory, filename -> !validFilesSet.contains(File(directory, filename).path) }

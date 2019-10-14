@@ -27,13 +27,20 @@ EXOtaPersistance *_persistance;
 }
 
 
-- (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock error:(nonnull EXErrorBlock)errorBlock
+- (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock updateUnavailable:(void (^)(void))unavailableBlock error:(nonnull EXErrorBlock)errorBlock
 {
     [self downloadManifest:^(NSDictionary * _Nonnull manifest) {
-        [self downloadBundle:manifest success:^(NSString *path) {
-            [_persistance storeManifest:manifest withBundle:path];
-            successBlock(manifest, path);
-        } error:errorBlock];
+        NSDictionary *oldManifest = [_persistance readManifest];
+        if(oldManifest == nil || [_config.manifestComparator shouldDownloadBundle:oldManifest forNew:manifest])
+        {
+            [self downloadBundle:manifest success:^(NSString *path) {
+                [self saveDownloadedManifest:manifest andBundlePath:path];
+                successBlock(manifest, path);
+            } error:errorBlock];
+        } else
+        {
+            unavailableBlock();
+        }
     } error:errorBlock];
 }
 
@@ -51,13 +58,81 @@ EXOtaPersistance *_persistance;
     }];
 }
 
+- (void)saveDownloadedManifest:(NSDictionary*)manifest andBundlePath:(NSString*)path
+{
+    NSString *previousBundle = [_persistance readDownloadedBundlePath];
+    if(previousBundle != nil)
+    {
+        [self removeFile:previousBundle];
+    }
+    [_persistance storeDownloadedManifest:manifest];
+    [_persistance storeDownloadedBundle:path];
+}
+
+- (void)prepareToReload
+{
+    NSString *outdated = [_persistance readOutdatedBundlePath];
+    if(outdated != nil)
+    {
+        [self removeFile:outdated];
+    }
+    [_persistance markDownloadedCurrentAndCurrentOutdated];
+}
+
+- (void)removeOutdatedBundle
+{
+    NSString *outdated = [_persistance readOutdatedBundlePath];
+    [_persistance storeOutdatedBundle:nil];
+    if(outdated != nil)
+    {
+        [self removeFile:outdated];
+    }
+}
+
+- (void)cleanUnusedFiles
+{
+    NSString *bundlesDir = [[self bundlesDir] absoluteString];
+    NSArray<NSString *> *filesArray = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:bundlesDir error:nil];
+    NSSet *doNotDelete = [self validFilesSet];
+    for (id file in filesArray)
+    {
+        NSString *absolutePath = [bundlesDir stringByAppendingPathComponent:file];
+        if(![doNotDelete containsObject:absolutePath])
+        {
+            [self removeFile:absolutePath];
+        }
+    }
+}
+
+- (NSSet*)validFilesSet
+{
+    NSMutableSet *set = [NSMutableSet new];
+    NSString *downloadedBundle = [_persistance readDownloadedBundlePath];
+    NSString *bundle = [_persistance readBundlePath];
+    if (downloadedBundle != nil)
+    {
+        [set addObject:downloadedBundle];
+    }
+    if (bundle != nil)
+    {
+        [set addObject:bundle];
+    }
+    return set;
+}
+
 - (void)downloadBundle:(NSDictionary*)manifest success:(void (^)(NSString* path))successBlock error:(EXErrorBlock)errorBlock
 {
+    NSString* bundleUrl = manifest[@"bundleUrl"];
     EXOtaBundleLoader *bundleLoader = [[EXOtaBundleLoader alloc] initWithTimeout:_config.bundleRequestTimeout];
     NSString *filename = [self bundleFilenameFromManifest:manifest];
-    [bundleLoader loadJSBundleFromUrl:manifest[@"bundleUrl"] withDirectory:[self bundlesDir] withFileName:filename success:successBlock error:^(NSError * _Nonnull error) {
+    [bundleLoader loadJSBundleFromUrl:bundleUrl withDirectory:[self bundlesDir] withFileName:filename success:successBlock error:^(NSError * _Nonnull error) {
         errorBlock(error);
     }];
+}
+
+- (void)removeFile:(NSString*)path
+{
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
 - (NSString*)bundleFilenameFromManifest:(NSDictionary*)manifest
@@ -67,9 +142,19 @@ EXOtaPersistance *_persistance;
     return [NSString stringWithFormat:@"bundle_%@_%@", version, date];
 }
 
-- (NSString*)bundlesDir
+- (NSURL*)bundlesDir
 {
-    return [NSString stringWithFormat:@"bundle-%@", _identifier];
+    NSString *bundlesDirName = [NSString stringWithFormat:@"bundle-%@", _identifier];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
+    NSURL *dirPath = nil;
+    NSArray *paths = [fm URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
+    if([paths count] > 0)
+    {
+        NSURL* appSupportDir = [paths objectAtIndex:0];
+        dirPath = [[appSupportDir URLByAppendingPathComponent:bundleID] URLByAppendingPathComponent:bundlesDirName isDirectory:true];
+    }
+    return dirPath;
 }
 
 @end

@@ -53,26 +53,47 @@ UM_EXPORT_METHOD_AS(fetchUpdatesAsync,
         resolve(@{
             @"bundle": filePath
         });
-    } error:^(NSError * _Nonnull error) {
+    } updateUnavailable:^{
+        resolve(nil);
+    }   error:^(NSError * _Nonnull error) {
         reject(@"ERR_EXPO_OTA", @"Could not download update", error);
     }];
 }
 
-UM_EXPORT_METHOD_AS(removeValue,
-                    removeValue:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(clearUpdateCacheAsync,
+                    clearUpdateCacheAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-    NSString *key = options[@"key"];
-    [keyValueStorage removeValueForKey:key];
-    resolve(@{@"result": @YES});
+    [updater cleanUnusedFiles];
+    resolve(@true);
+}
+
+UM_EXPORT_METHOD_AS(reload,
+                    reload:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+    [updater prepareToReload];
+    resolve(@true);
+}
+
+UM_EXPORT_METHOD_AS(reloadFromCache,
+                    reloadFromCache:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+    [self reload:resolve reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(readValueAsync,
-                    resolve:(UMPromiseResolveBlock)resolve
+                    readValueAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-    resolve(@{@"result": [persistance bundlePath]});
+    NSString *bundlePath = [persistance readBundlePath];
+    if(bundlePath != nil)
+    {
+        resolve(@{@"bundle": bundlePath});
+    } else {
+        resolve(@"none!");
+    }
 }
 
 @end

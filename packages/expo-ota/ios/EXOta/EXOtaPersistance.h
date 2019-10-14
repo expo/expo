@@ -14,13 +14,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithStorage:(EXKeyValueStorage*)storage;
 
-- (void)storeManifest:(NSDictionary*)manifest withBundle:(NSString*)bundlePath;
+- (void)storeManifest:(NSDictionary*)manifest;
 
-- (void)markDownloadedAsCurrent;
+- (void)storeBundle:(NSString*)bundlePath;
+
+- (void)storeDownloadedManifest:(nullable NSDictionary*)manifest;
+
+- (void)storeDownloadedBundle:(nullable NSString*)bundlePath;
+
+- (void)storeOutdatedBundle:(nullable NSString*)bundlePath;
+
+- (void)markDownloadedCurrentAndCurrentOutdated;
+
+- (NSDictionary*)readNewestManifest;
 
 - (NSDictionary*)readManifest;
 
-- (NSString*)bundlePath;
+- (NSString*)readBundlePath;
+
+- (NSDictionary*)readDownloadedManifest;
+
+- (NSString*)readDownloadedBundlePath;
+
+- (NSString*)readOutdatedBundlePath;
+
 
 @end
 

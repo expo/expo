@@ -23,7 +23,13 @@ typedef void (^EXErrorBlock)(NSError* error);
 
 - (void)downloadManifest:(nonnull EXManifestSuccessBlock)success error:(nonnull EXErrorBlock)error;
 
-- (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)success error:(nonnull EXErrorBlock)error;
+- (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock updateUnavailable:(void (^)(void))unavailableBlock error:(nonnull EXErrorBlock)errorBlock;
+
+- (void)prepareToReload;
+
+- (void)removeOutdatedBundle;
+
+- (void)cleanUnusedFiles;
 
 @end
 

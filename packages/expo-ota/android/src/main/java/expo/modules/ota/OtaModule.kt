@@ -53,7 +53,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
     @ExpoMethod
     fun clearUpdateCacheAsync(promise: Promise) {
         updater.removeOutdatedBundle()
-        updater.cleanOtherReleaseChannelsBundles()
+        updater.cleanUnusedFiles()
         promise.resolve(true)
     }
 
