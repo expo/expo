@@ -61,6 +61,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 {
   if (enabled) {
     [_settings setBool:enabled forKey:@"autoInit"];
+    // Facebook SDK on iOS is initialized when `setAutoInitEnabled` is called with `YES`.
     _isInitialized = YES;
   }
   [super setAutoInitEnabled:enabled resolver:resolve rejecter:reject];
@@ -68,6 +69,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 - (void)logInWithReadPermissionsWithConfig:(NSDictionary *)config resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
+  // If the developer didn't initialize the SDK, let them know.
   if (!_isInitialized) {
     reject(@"E_NO_INIT", @"Facebook SDK has not been initialized yet.", nil);
     return;
