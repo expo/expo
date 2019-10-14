@@ -40,7 +40,7 @@
 #if __has_include(<EXFacebook/EXFacebook.h>)
   // only override in Expo client
   if ([params[@"appOwnership"] isEqualToString:@"expo"]) {
-    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] init];
+    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithExperienceId:experienceId];
     [moduleRegistry registerExportedModule:scopedFacebook];
   }
 #endif
