@@ -42,11 +42,7 @@ export default {
      * Sets URL prefix
      */
     setUrlPrefix(urlPrefix) {
-        let nullableUrlPrefix = urlPrefix;
-        if (nullableUrlPrefix && nullableUrlPrefix.length === 0) {
-            nullableUrlPrefix = null;
-        }
-        CTKAdSettingsManager.setUrlPrefix(nullableUrlPrefix);
+        CTKAdSettingsManager.setUrlPrefix(urlPrefix || null);
     },
 };
 //# sourceMappingURL=AdSettings.js.map

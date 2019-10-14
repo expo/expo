@@ -47,10 +47,6 @@ export default {
    * Sets URL prefix
    */
   setUrlPrefix(urlPrefix: string): void {
-    let nullableUrlPrefix: string | null = urlPrefix;
-    if (nullableUrlPrefix && nullableUrlPrefix.length === 0) {
-      nullableUrlPrefix = null;
-    }
-    CTKAdSettingsManager.setUrlPrefix(nullableUrlPrefix);
+    CTKAdSettingsManager.setUrlPrefix(urlPrefix || null);
   },
 };
