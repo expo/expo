@@ -65,7 +65,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
 
     // Overriding expo-facebook
-    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

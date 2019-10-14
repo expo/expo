@@ -44,6 +44,7 @@ UM_EXPORT_METHOD_AS(initializeAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
+  // Caller overrides buildtime settings
   if (appId) {
     [FBSDKSettings setAppID:appId];
   }
@@ -51,6 +52,7 @@ UM_EXPORT_METHOD_AS(initializeAsync,
     reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
   }
+  // Caller overrides buildtime settings
   if (appName) {
     [FBSDKSettings setDisplayName:appName];
   }
@@ -63,6 +65,7 @@ UM_EXPORT_METHOD_AS(setAdvertiserIDCollectionEnabledAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
+  // Caller overrides buildtime settings
   [FBSDKSettings setAdvertiserIDCollectionEnabled:enabled];
   resolve(nil);
 }
@@ -72,14 +75,14 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSArray *permissions = config[@"permissions"];
-  if (!permissions) {
-    permissions = @[@"public_profile", @"email"];
-  }
-
   if (![FBSDKSettings appID]) {
     reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
     return;
+  }
+
+  NSArray *permissions = config[@"permissions"];
+  if (!permissions) {
+    permissions = @[@"public_profile", @"email"];
   }
 
   // FB SDK requires login to run on main thread

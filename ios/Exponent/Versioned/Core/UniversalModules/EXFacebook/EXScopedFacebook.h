@@ -8,7 +8,7 @@
 
 @interface EXScopedFacebook : EXFacebook <UMAppLifecycleListener, UMModuleRegistryConsumer>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params;
 
 @end
 #endif
