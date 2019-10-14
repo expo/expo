@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Build;
-import androidx.annotation.Nullable;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,16 +13,16 @@ import android.view.WindowManager;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import androidx.annotation.Nullable;
+
 public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnGlobalLayoutListener {
   public interface OnInsetsChangeListener {
     void onInsetsChange(SafeAreaView view, EdgeInsets insets);
   }
 
-  private @Nullable
-  OnInsetsChangeListener mInsetsChangeListener;
+  private @Nullable OnInsetsChangeListener mInsetsChangeListener;
   private WindowManager mWindowManager;
-  private @Nullable
-  EdgeInsets mLastInsets;
+  private @Nullable EdgeInsets mLastInsets;
 
   public SafeAreaView(Context context) {
     super(context);
@@ -35,9 +34,9 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnG
     Context context = getContext();
     while (context instanceof ContextWrapper) {
       if (context instanceof Activity) {
-        return (Activity) context;
+        return (Activity)context;
       }
-      context = ((ContextWrapper) context).getBaseContext();
+      context = ((ContextWrapper)context).getBaseContext();
     }
     return null;
   }

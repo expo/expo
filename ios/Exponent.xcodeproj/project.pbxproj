@@ -1076,10 +1076,10 @@
 		3151637623146FC300AA029B /* SafeAreaContext */ = {
 			isa = PBXGroup;
 			children = (
-				3151637723146FC300AA029B /* RNCSafeAreaView.m */,
-				3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */,
 				3151637923146FC300AA029B /* RNCSafeAreaView.h */,
+				3151637723146FC300AA029B /* RNCSafeAreaView.m */,
 				3151637A23146FC300AA029B /* RNCSafeAreaViewManager.h */,
+				3151637823146FC300AA029B /* RNCSafeAreaViewManager.m */,
 			);
 			path = SafeAreaContext;
 			sourceTree = "<group>";
