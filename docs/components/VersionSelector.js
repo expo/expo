@@ -70,18 +70,18 @@ const orderVersions = versions => {
   });
 };
 
-
 export default class VersionSelector extends React.Component {
   render() {
     return (
       <div className={STYLES_SELECT} style={this.props.style}>
         <label className={STYLES_SELECT_TEXT} htmlFor="version-menu">
-          {Utilities.getUserFacingVersionString(this.props.version)} <ChevronDownIcon style={{ marginLeft: 8 }} />
+          {Utilities.getUserFacingVersionString(this.props.version)}{' '}
+          <ChevronDownIcon style={{ marginLeft: 8 }} />
         </label>
         {// hidden links to help test-links spidering
-        VERSIONS.map(v => (
-          <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
-        ))}
+        orderVersions(VERSIONS).map(v => {
+          return <a key={v} href={`/versions/${v}/`} />;
+        })}
         <select
           className={STYLES_SELECT_ELEMENT}
           id="version-menu"
@@ -91,7 +91,9 @@ export default class VersionSelector extends React.Component {
             .map(version => {
               return (
                 <option key={version} value={version}>
-                  {version === 'latest' ? 'latest (' + LATEST_VERSION + ')' : Utilities.getUserFacingVersionString(version)}
+                  {version === 'latest'
+                    ? 'latest (' + LATEST_VERSION + ')'
+                    : Utilities.getUserFacingVersionString(version)}
                 </option>
               );
             })
