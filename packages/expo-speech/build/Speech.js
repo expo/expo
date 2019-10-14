@@ -58,9 +58,6 @@ export function speak(text, options = {}) {
     ExponentSpeech.speak(String(id), text, options);
 }
 export async function getAvailableVoicesAsync() {
-    if (!ExponentSpeech.getVoices) {
-        throw new UnavailabilityError('Speech', 'getVoices');
-    }
     return ExponentSpeech.getVoices();
 }
 export async function isSpeakingAsync() {
