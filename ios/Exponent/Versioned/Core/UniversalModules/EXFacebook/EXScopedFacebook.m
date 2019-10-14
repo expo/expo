@@ -4,6 +4,7 @@
 #import "EXScopedFacebook.h"
 #import <FBSDKCoreKit/FBSDKSettings.h>
 #import <UMCore/UMAppLifecycleService.h>
+#import <FBSDKCoreKit/FBSDKApplicationDelegate.h>
 
 @interface EXFacebook (ExportedMethods)
 
@@ -38,12 +39,31 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 @implementation EXScopedFacebook : EXFacebook
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
 {
   if (self = [super init]) {
     NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), experienceId];
     _settings = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
-    _isInitialized = [_settings boolForKey:@"autoInit"];
+
+    BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
+    BOOL manifestDefinesAutoInitEnabled = [params[@"manifest"][@"facebookAutoInitEnabled"] boolValue];
+
+    NSString *facebookAppId = params[@"manifest"][@"facebookAppId"];
+    NSString *facebookDisplayName = params[@"manifest"][@"facebookDisplayName"];
+
+    if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
+      // FacebookAppId is a prerequisite for initialization.
+      // This happens even before the app foregrounds, which mimics
+      // the mechanism behind EXFacebookAppDelegate.
+      if (facebookAppId) {
+        [FBSDKSettings setAppID:facebookAppId];
+        [FBSDKSettings setDisplayName:facebookDisplayName];
+        [FBSDKApplicationDelegate initializeSDK:nil];
+        _isInitialized = YES;
+      } else {
+        UMLogWarn(@"FacebookAutoInit is enabled, but no FacebookAppId has been provided. Facebook SDK initialization aborted.");
+      }
+    }
   }
   return self;
 }
@@ -60,7 +80,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 - (void)setAutoInitEnabled:(BOOL)enabled resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
   if (enabled) {
-    [_settings setBool:enabled forKey:@"autoInit"];
+    [_settings setBool:enabled forKey:AUTO_INIT_KEY];
     // Facebook SDK on iOS is initialized when `setAutoInitEnabled` is called with `YES`.
     _isInitialized = YES;
   }
@@ -88,6 +108,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 # pragma mark - UMAppLifecycleListener
 
 - (void)onAppBackgrounded {
+  // Save SDK settings state
   _appId = [FBSDKSettings appID];
   _displayName = [FBSDKSettings displayName];
   [FBSDKSettings setAppID:nil];
@@ -95,6 +116,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 }
 
 - (void)onAppForegrounded {
+  // Restore SDK settings state
   if (_appId) {
     [FBSDKSettings setAppID:_appId];
   }
