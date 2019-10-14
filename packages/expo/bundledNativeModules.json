@@ -75,7 +75,7 @@
   "expo-in-app-purchases": "~7.0.0",
   "expo-branch": "~1.0.2",
   "react-native-appearance": "~0.1.0",
-  "react-native-safe-area-context": "~0.3.6",
+  "react-native-safe-area-context": "~0.5.0",
   "react-native-shared-element": "~0.5.1",
   "expo-application": "~1.0.0",
   "expo-battery": "~1.0.0",
