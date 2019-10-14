@@ -93,7 +93,6 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
                     reject:(UMPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setUrlPrefix:urlPrefix];
-  _urlPrefix = urlPrefix;
   resolver(nil);
 }
 
@@ -101,7 +100,13 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
 {
   [FBAdSettings setIsChildDirected:_isChildDirected];
   [FBAdSettings setMediationService:_mediationService];
-  if (_urlPrefix) {
+  // Calling setUrlPrefix always triggers a call to Facebook,
+  // so we don't want to call it without need.
+  //
+  // If _urlPrefix is empty we have nothing to do (foregrounding app
+  // doesn't customize urlPrefix). If it's not empty we need to call
+  // setUrlPrefix to ensure FBAdSettings is configured properly.
+  if ([_urlPrefix length] > 0) {
     [FBAdSettings setUrlPrefix:_urlPrefix];
   }
   [FBAdSettings setLogLevel:_logLevel];
@@ -112,7 +117,15 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
 {
   [FBAdSettings setIsChildDirected:NO];
   [FBAdSettings setMediationService:@""];
-  if (_urlPrefix) {
+  _urlPrefix = FBAdSettings.urlPrefix;
+  // Calling setUrlPrefix always triggers a call to Facebook,
+  // so we don't want to call it without need.
+  //
+  // If FBAdSettings.urlPrefix is empty we have nothing to do (backgrounding app
+  // didn't customize urlPrefix). If it's not empty we need to call
+  // setUrlPrefix to ensure FBAdSettings's configuration is appropriately
+  // cleared before yielding to another app.
+  if ([FBAdSettings.urlPrefix length] > 0) {
     [FBAdSettings setUrlPrefix:nil];
   }
   [FBAdSettings setLogLevel:FBAdLogLevelLog];
