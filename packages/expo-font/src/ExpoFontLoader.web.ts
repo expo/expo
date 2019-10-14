@@ -5,7 +5,11 @@ export default {
     return 'ExpoFontLoader';
   },
 
-  loadAsync(fontFamilyName: string, resource: string): Promise<void> {
+  async loadAsync(fontFamilyName: string, resource: string): Promise<void> {
+    if (!('document' in global)) {
+      return;
+    }
+
     const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
     if (!canInjectStyle) {
       throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
@@ -13,6 +17,10 @@ export default {
 
     const style = _createWebStyle(fontFamilyName, resource);
     document.head!.appendChild(style);
+    // https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
+    if (navigator.userAgent.includes('Edge')) {
+      return;
+    }
     return new FontObserver(fontFamilyName).load();
   },
 };
