@@ -52,7 +52,7 @@
   
   NSString *token = [_defaults stringForKey:@"token"];
   NSString *lastAppIdToken = [_defaults stringForKey:appId];
-  if (token != nil && [token isEqualToString:lastAppIdToken]) {
+  if (token != nil && (![token isEqualToString:lastAppIdToken])) {
     [_defaults setObject:token forKey:appId];
     [onTokenChangeListener onTokenChange:[_engine generateTokenForAppId:appId withToken:token]];
   }

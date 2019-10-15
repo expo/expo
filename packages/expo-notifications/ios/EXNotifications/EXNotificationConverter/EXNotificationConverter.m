@@ -14,7 +14,7 @@
   notification[@"count"] = notificationContent.badge;
   notification[@"categoryId"] = notificationContent.categoryIdentifier;
   notification[@"data"] = notificationContent.userInfo[@"body"];
-  notification[@"appId"] = notificationContent.userInfo[@"appId"];
+  notification[@"appId"] = notificationContent.userInfo[@"appId"] ?: notificationContent.userInfo[@"experienceId"];
   notification[@"id"] = notificationContent.userInfo[@"id"];
   
   return notification;

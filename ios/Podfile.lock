@@ -728,6 +728,9 @@ PODS:
   - Crashlytics (3.13.4):
     - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
+  - DTFoundation/Core (1.7.14)
+  - DTFoundation/DTASN1 (1.7.14):
+    - DTFoundation/Core
   - EXAdsAdMob (7.0.0):
     - Google-Mobile-Ads-SDK (~> 7.49.0)
     - UMCore
@@ -852,6 +855,7 @@ PODS:
   - EXNetwork (1.0.0):
     - UMCore
   - EXNotifications (1.0.0):
+    - TCMobileProvision
     - UMCore
   - EXPermissions (7.0.0):
     - UMCore
@@ -1267,6 +1271,8 @@ PODS:
   - ReactABI35_0_0/RCTWebSocket (0.59.8):
     - ReactABI35_0_0/Core
     - ReactABI35_0_0/RCTBlob
+  - TCMobileProvision (1.0.0):
+    - DTFoundation/DTASN1 (~> 1.6)
   - UMBarCodeScannerInterface (4.0.0)
   - UMCameraInterface (4.0.0)
   - UMConstantsInterface (4.0.0)
@@ -1616,6 +1622,7 @@ SPEC REPOS:
     - Branch
     - CocoaLumberjack
     - Crashlytics
+    - DTFoundation
     - Fabric
     - FBAudienceNetwork
     - FBSDKCoreKit
@@ -1646,6 +1653,7 @@ SPEC REPOS:
     - lottie-ios
     - nanopb
     - Protobuf
+    - TCMobileProvision
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
@@ -2424,6 +2432,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Crashlytics: 2dfd686bcb918dc10ee0e76f7f853fe42c7bd552
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   EXAdsAdMob: 8d73d7b6bedebd53990f388dc1bd382599a78e43
   EXAdsFacebook: 5d54983c1200eb5b8ef44858a3827add306f6321
   EXAmplitude: 69201cb81956823fd24697fe077f51fc5f10a88b
@@ -2464,7 +2473,7 @@ SPEC CHECKSUMS:
   EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
   EXMediaLibrary: 6ebeb433efd9065c0a6dbce80e53ce63fe23c300
   EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXNotifications: ed29d0adef64a1dc88229fde5e1f642eb92ecbca
+  EXNotifications: 9085ccd9dce0f9f4ea1f5cd522dc41eb4d7e31d8
   EXPermissions: df10ad83df2f6b647aec304619354f8ab48d5f63
   EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
   EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
@@ -2515,6 +2524,7 @@ SPEC CHECKSUMS:
   ReactABI33_0_0: c2470ed130198ad8b34cdc39e1cf01bf1cd80519
   ReactABI34_0_0: 62be061dc1a8d0580da0f3d63a8ab9ccc90461ab
   ReactABI35_0_0: 8d797808891a76916d3545459a5034d72b2a7f70
+  TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
   UMBarCodeScannerInterface: d5a6fdc98ed6241225b0a8432a7f4e2b397668bc
   UMCameraInterface: 68870a3197fee85bd5afca5609ba4a5b7257d19d
   UMConstantsInterface: d25b8e8887ca7aaf568c06caf08f4d40734ee4ef

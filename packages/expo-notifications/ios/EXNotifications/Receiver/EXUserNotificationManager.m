@@ -27,7 +27,7 @@
   userInteractionBundle[@"userTest"] = [response isKindOfClass:[UNTextInputNotificationResponse class]]?
   ((UNTextInputNotificationResponse *) response).userText : nil;
   
-  NSString *appId = response.notification.request.content.userInfo[@"appId"];
+  NSString *appId = userInteractionBundle[@"appId"];
   [[EXThreadSafePostOffice sharedInstance] notifyAboutUserInteractionForAppId:appId userInteraction:userInteractionBundle];
   completionHandler();
 }
@@ -35,8 +35,8 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
   __block NSDictionary *userInfo = notification.request.content.userInfo;
-  __block NSString *appId = userInfo[@"appId"];
   __block NSMutableDictionary *notificationBundle = [EXNotificationConverter convertToDictionary:notification.request.content];
+  __block NSString *appId = notificationBundle[@"appId"];
   
   __block BOOL shouldDisplayInForeground = NO || userInfo[@"canInForeground"];
   

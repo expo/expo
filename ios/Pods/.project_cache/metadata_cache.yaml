@@ -754,6 +754,10 @@ DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
   UUID: 725D0E8C1060F8939288E8C91236BA4F
+DTFoundation:
+  LABEL: DTFoundation
+  PROJECT_PATH: DTFoundation.xcodeproj
+  UUID: 9F03C29D7FA4029DF24B80327A613330
 EXAdsAdMob:
   LABEL: EXAdsAdMob
   PROJECT_PATH: EXAdsAdMob.xcodeproj
@@ -1130,6 +1134,10 @@ ReactABI35_0_0:
   LABEL: ReactABI35_0_0
   PROJECT_PATH: ABI35_0_0.xcodeproj
   UUID: 1C7CEF45DA27B60F2543F49620147E8A
+TCMobileProvision:
+  LABEL: TCMobileProvision
+  PROJECT_PATH: TCMobileProvision.xcodeproj
+  UUID: 842A818A6887F13466E4B00ACCFA868F
 UMBarCodeScannerInterface:
   LABEL: UMBarCodeScannerInterface
   PROJECT_PATH: UMBarCodeScannerInterface.xcodeproj
