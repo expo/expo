@@ -14,6 +14,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - Added rich content supports for push notifications. ([#4787](https://github.com/expo/expo/pull/4787) by [@hesyifei](https://github.com/hesyifei))
 - Added `MediaLibrary.saveToAssetsAsync` function that can work without `CAMERA_ROLL` permission. ([#5678](https://github.com/expo/expo/pull/5678) by [@lukmccall](https://github.com/lukmccall))
+- Added `setTrackingOptions` to `expo-analytics-amplitude` to fine-tune what Amplitude can track. ([#5877](https://github.com/expo/expo/pull/5877) by [@amaurymartiny](https://github.com/amaurymartiny))
 
 ### 🐛 Bug fixes
 
