@@ -92,7 +92,7 @@ public class AmplitudeModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setTrackingOptions(final Map<String, boolean> options, Promise promise) {
+  public void setTrackingOptions(final ReadableArguments options, Promise promise) {
     if (rejectUnlessInitialized(promise)) {
       return;
     }
