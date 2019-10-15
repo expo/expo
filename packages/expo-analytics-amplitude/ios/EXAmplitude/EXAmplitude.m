@@ -88,49 +88,49 @@ UM_EXPORT_METHOD_AS(setTrackingOptions,
 {
   AMPTrackingOptions *trackingOptions = [AMPTrackingOptions options];
   
-  if ([options objectForKey:@"disableCarrier"]) {
+  if ([options[@"disableCarrier"] boolValue]) {
     [trackingOptions disableCarrier];
   }
-  if ([options objectForKey:@"disableCity"]) {
+  if ([options[@"disableCity"] boolValue]) {
     [trackingOptions disableCity];
   }
-  if ([options objectForKey:@"disableCountry"]) {
+  if ([options[@"disableCountry"] boolValue]) {
     [trackingOptions disableCountry];
   }
-  if ([options objectForKey:@"disableDeviceModel"]) {
+  if ([options[@"disableDeviceModel"] boolValue]) {
     [trackingOptions disableDeviceModel];
   }
-  if ([options objectForKey:@"disableDMA"]) {
+  if ([options[@"disableDMA"] boolValue]) {
     [trackingOptions disableDMA];
   }
-  if ([options objectForKey:@"disableIDFA"]) {
+  if ([options[@"disableIDFA"] boolValue]) {
     [trackingOptions disableIDFA];
   }
-  if ([options objectForKey:@"disableIDFV"]) {
+  if ([options[@"disableIDFV"] boolValue]) {
     [trackingOptions disableIDFV];
   }
-  if ([options objectForKey:@"disableIPAddress"]) {
+  if ([options[@"disableIPAddress"] boolValue]) {
     [trackingOptions disableIPAddress];
   }
-  if ([options objectForKey:@"disableLanguage"]) {
+  if ([options[@"disableLanguage"] boolValue]) {
     [trackingOptions disableLanguage];
   }
-  if ([options objectForKey:@"disableLatLng"]) {
+  if ([options[@"disableLatLng"] boolValue]) {
     [trackingOptions disableLatLng];
   }
-  if ([options objectForKey:@"disableOSName"]) {
+  if ([options[@"disableOSName"] boolValue]) {
     [trackingOptions disableOSName];
   }
-  if ([options objectForKey:@"disableOSVersion"]) {
+  if ([options[@"disableOSVersion"] boolValue]) {
     [trackingOptions disableOSVersion];
   }
-  if ([options objectForKey:@"disablePlatform"]) {
+  if ([options[@"disablePlatform"] boolValue]) {
     [trackingOptions disablePlatform];
   }
-  if ([options objectForKey:@"disableRegion"]) {
+  if ([options[@"disableRegion"] boolValue]) {
     [trackingOptions disableRegion];
   }
-  if ([options objectForKey:@"disableVersionName"]) {
+  if ([options[@"disableVersionName"] boolValue]) {
     [trackingOptions disableVersionName];
   }
 
