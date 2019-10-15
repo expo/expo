@@ -734,10 +734,6 @@ AppAuth:
   LABEL: AppAuth
   PROJECT_PATH: AppAuth.xcodeproj
   UUID: 4EFA7E4CE531453CF475A9A4322A84F8
-Bolts:
-  LABEL: Bolts
-  PROJECT_PATH: Bolts.xcodeproj
-  UUID: 0C0BB4AC1A76EE1BD3C8E728766E286C
 boost-for-react-native:
   LABEL: boost-for-react-native
   PROJECT_PATH: boost-for-react-native.xcodeproj
@@ -982,6 +978,14 @@ FBAudienceNetwork:
   LABEL: FBAudienceNetwork
   PROJECT_PATH: FBAudienceNetwork.xcodeproj
   UUID: 51D72679DE0FCD549F01BCDBBF19E2B0
+FBLazyVector:
+  LABEL: FBLazyVector
+  PROJECT_PATH: FBLazyVector.xcodeproj
+  UUID: 4B95F1280DBD545D036916608691C3EF
+FBReactNativeSpec:
+  LABEL: FBReactNativeSpec
+  PROJECT_PATH: FBReactNativeSpec.xcodeproj
+  UUID: 5CDFFFDA1BEA16A0D3629FE9F761022A
 FBSDKCoreKit:
   LABEL: FBSDKCoreKit
   PROJECT_PATH: FBSDKCoreKit.xcodeproj
@@ -1114,10 +1118,78 @@ Protobuf:
   LABEL: Protobuf
   PROJECT_PATH: Protobuf.xcodeproj
   UUID: BF47F3270E009392526FDEE0C3BA42AD
+RCTRequired:
+  LABEL: RCTRequired
+  PROJECT_PATH: RCTRequired.xcodeproj
+  UUID: 7B4E6DC12B1D694845842E9A06C59213
+RCTTypeSafety:
+  LABEL: RCTTypeSafety
+  PROJECT_PATH: RCTTypeSafety.xcodeproj
+  UUID: 9C3601DE72183D42B9DC3FF333D35CF7
 React:
   LABEL: React
   PROJECT_PATH: React.xcodeproj
   UUID: 94DA87F24FB4B93E5D08FE961D5E5A3E
+React-Core:
+  LABEL: React-Core
+  PROJECT_PATH: React-Core.xcodeproj
+  UUID: 5DA1A74647F652AE8E4DE074AFC4C6B7
+React-CoreModules:
+  LABEL: React-CoreModules
+  PROJECT_PATH: React-CoreModules.xcodeproj
+  UUID: 42F070932EC272C376353459CE0FA76E
+React-cxxreact:
+  LABEL: React-cxxreact
+  PROJECT_PATH: React-cxxreact.xcodeproj
+  UUID: BD509719D4F0C3D8910F2BED0B6AB5F3
+React-jsi:
+  LABEL: React-jsi
+  PROJECT_PATH: React-jsi.xcodeproj
+  UUID: D0DB82AB65D33935072718EA2468992F
+React-jsiexecutor:
+  LABEL: React-jsiexecutor
+  PROJECT_PATH: React-jsiexecutor.xcodeproj
+  UUID: 7F7693C84AD2D676CE4E5741F508C198
+React-jsinspector:
+  LABEL: React-jsinspector
+  PROJECT_PATH: React-jsinspector.xcodeproj
+  UUID: 1AC0EAF3E808B6AA276E43B30A5B20AA
+React-RCTActionSheet:
+  LABEL: React-RCTActionSheet
+  PROJECT_PATH: React-RCTActionSheet.xcodeproj
+  UUID: 2B622CBAFD85AC413ED6306FD8B71B00
+React-RCTAnimation:
+  LABEL: React-RCTAnimation
+  PROJECT_PATH: React-RCTAnimation.xcodeproj
+  UUID: 8FD0C9BFE0E509D0066C67C06EE170B5
+React-RCTBlob:
+  LABEL: React-RCTBlob
+  PROJECT_PATH: React-RCTBlob.xcodeproj
+  UUID: D8D59AAB809693DB02967107370F4619
+React-RCTImage:
+  LABEL: React-RCTImage
+  PROJECT_PATH: React-RCTImage.xcodeproj
+  UUID: C78CA5C5EDDCCF5EC637E0FC8BB4C96E
+React-RCTLinking:
+  LABEL: React-RCTLinking
+  PROJECT_PATH: React-RCTLinking.xcodeproj
+  UUID: FF1621D1C3F9AF33EDD2BF51FEDEB3D8
+React-RCTNetwork:
+  LABEL: React-RCTNetwork
+  PROJECT_PATH: React-RCTNetwork.xcodeproj
+  UUID: B42CC4F102742853C37E7C4841756DBE
+React-RCTSettings:
+  LABEL: React-RCTSettings
+  PROJECT_PATH: React-RCTSettings.xcodeproj
+  UUID: 02DD1E05F06C403A8300ABEFC2C29A3D
+React-RCTText:
+  LABEL: React-RCTText
+  PROJECT_PATH: React-RCTText.xcodeproj
+  UUID: F0809BF90AC70C40646AB597C21CC420
+React-RCTVibration:
+  LABEL: React-RCTVibration
+  PROJECT_PATH: React-RCTVibration.xcodeproj
+  UUID: 502D208480A94D02F62BB739D7512657
 ReactABI33_0_0:
   LABEL: ReactABI33_0_0
   PROJECT_PATH: ABI33_0_0.xcodeproj
@@ -1130,6 +1202,10 @@ ReactABI35_0_0:
   LABEL: ReactABI35_0_0
   PROJECT_PATH: ABI35_0_0.xcodeproj
   UUID: 1C7CEF45DA27B60F2543F49620147E8A
+ReactCommon:
+  LABEL: ReactCommon
+  PROJECT_PATH: ReactCommon.xcodeproj
+  UUID: 2610D146B211EB79FECF83D4FA5AB36D
 UMBarCodeScannerInterface:
   LABEL: UMBarCodeScannerInterface
   PROJECT_PATH: UMBarCodeScannerInterface.xcodeproj
@@ -1178,10 +1254,10 @@ UMTaskManagerInterface:
   LABEL: UMTaskManagerInterface
   PROJECT_PATH: UMTaskManagerInterface.xcodeproj
   UUID: A565C99DEFBAFA44A1B5C3B49ADD8A84
-yoga:
-  LABEL: yoga
-  PROJECT_PATH: yoga.xcodeproj
-  UUID: F001D83614826A2E774873EA88316F8C
+Yoga:
+  LABEL: Yoga
+  PROJECT_PATH: Yoga.xcodeproj
+  UUID: 8DB658880A3F558549A84D99BCFADCBC
 yogaABI33_0_0:
   LABEL: yogaABI33_0_0
   PROJECT_PATH: ABI33_0_0.xcodeproj

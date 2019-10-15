@@ -30,15 +30,6 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
   get: () => mockNativeModules.Linking,
 });
 
-const mockPlatformConstants = {
-  configurable: true,
-  enumerable: true,
-  get: () => ({
-    forceTouchAvailable: true,
-  }),
-};
-Object.defineProperty(mockNativeModules, 'PlatformConstants', mockPlatformConstants);
-
 const publicExpoModules = require('./expoModules');
 const internalExpoModules = require('./internalExpoModules');
 const expoModules = {
@@ -110,13 +101,6 @@ mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName
       directEventTypes: [],
     }),
   });
-});
-
-Object.defineProperty(mockNativeModules.UIManager, 'takeSnapshot', {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  value: jest.fn(),
 });
 
 const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
@@ -196,13 +180,3 @@ try {
     throw error;
   }
 }
-
-// The UIManager module is not idempotent and causes issues if we load it again after resetting
-// the modules with Jest.
-let UIManager;
-jest.doMock('react-native/Libraries/ReactNative/UIManager', () => {
-  if (!UIManager) {
-    UIManager = require.requireActual('react-native/Libraries/ReactNative/UIManager');
-  }
-  return UIManager;
-});

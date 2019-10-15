@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "expo": "~35.0.0",
-    "react": "16.8.3",
-    "react-native": "0.59.8"
+    "react": "16.9.0",
+    "react-native": "0.61.2"
   },
   "devDependencies": {
-    "babel-preset-expo": "~7.1.0",
+    "babel-preset-expo": "^7.1.0",
     "expo-yarn-workspaces": "^1.0.0"
   },
   "private": true
