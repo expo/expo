@@ -1,10 +1,11 @@
 import FontObserver from 'fontfaceobserver';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 export default {
     get name() {
         return 'ExpoFontLoader';
     },
     async loadAsync(fontFamilyName, resource) {
-        if (!('document' in global)) {
+        if (!canUseDOM) {
             return;
         }
         const canInjectStyle = document.head && typeof document.head.appendChild === 'function';

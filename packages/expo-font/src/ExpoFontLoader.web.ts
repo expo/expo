@@ -1,4 +1,5 @@
 import FontObserver from 'fontfaceobserver';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 
 export default {
   get name(): string {
@@ -6,7 +7,7 @@ export default {
   },
 
   async loadAsync(fontFamilyName: string, resource: string): Promise<void> {
-    if (!('document' in global)) {
+    if (!canUseDOM) {
       return;
     }
 
