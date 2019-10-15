@@ -495,6 +495,19 @@ exit:
     return found;
 }
 
+// workaround for new V1 APIs that expect V2 API format
+- (BOOL)isNewV1API:(NSString *)urlstring {
+    NSArray<NSString *> *newV1Apis = @[ BRANCH_REQUEST_ENDPOINT_CPID, BRANCH_REQUEST_ENDPOINT_LATD ];
+    for (NSString *tmp in newV1Apis) {
+        NSRange range = [urlstring rangeOfString:tmp];
+        BOOL found = (range.location != NSNotFound);
+        if (found) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (void)postRequest:(NSDictionary *)post
                 url:(NSString *)url
         retryNumber:(NSInteger)retryNumber
@@ -502,7 +515,7 @@ exit:
            callback:(BNCServerCallback)callback {
 
     NSMutableDictionary *extendedParams = nil;
-    if ([self isV2APIURL:url]) {
+    if ([self isV2APIURL:url] || [self isNewV1API:url]) {
         extendedParams = [NSMutableDictionary new];
         if (post) [extendedParams addEntriesFromDictionary:post];
         NSDictionary *d = [[BNCDeviceInfo getInstance] v2dictionary];
@@ -881,7 +894,7 @@ exit:
     [self safeSetValue:deviceInfo.screenWidth forKey:BRANCH_REQUEST_KEY_SCREEN_WIDTH onDict:dict];
     [self safeSetValue:deviceInfo.screenHeight forKey:BRANCH_REQUEST_KEY_SCREEN_HEIGHT onDict:dict];
 
-    [self safeSetValue:deviceInfo.browserUserAgent forKey:@"user_agent" onDict:dict];
+    [self safeSetValue:[BNCDeviceInfo userAgentString] forKey:@"user_agent" onDict:dict];
     [self safeSetValue:deviceInfo.country forKey:@"country" onDict:dict];
     [self safeSetValue:deviceInfo.language forKey:@"language" onDict:dict];
     dict[@"local_ip"] = deviceInfo.localIPAddress;

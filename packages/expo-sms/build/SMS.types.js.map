@@ -1,0 +1,1 @@
+{"version":3,"file":"SMS.types.js","sourceRoot":"","sources":["../src/SMS.types.ts"],"names":[],"mappings":"","sourcesContent":["export type SMSResponse = {\n  result: 'unknown' | 'sent' | 'cancelled';\n};\n"]}

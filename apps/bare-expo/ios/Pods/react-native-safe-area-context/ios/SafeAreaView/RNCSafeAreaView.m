@@ -16,6 +16,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 @implementation RNCSafeAreaView
 {
   UIEdgeInsets _currentSafeAreaInsets;
+  BOOL _initialInsetsSent;
 }
 
 - (BOOL)isSupportedByOS
@@ -67,12 +68,19 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 
 - (void)invalidateSafeAreaInsets
 {
-  UIEdgeInsets safeAreaInsets = [self realOrEmulateSafeAreaInsets];
-
-  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+  // This gets called before the view size is set by react-native so
+  // make sure to wait so we don't set wrong insets to JS.
+  if (CGSizeEqualToSize(self.frame.size, CGSizeZero)) {
     return;
   }
 
+  UIEdgeInsets safeAreaInsets = [self realOrEmulateSafeAreaInsets];
+
+  if (_initialInsetsSent && UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+    return;
+  }
+
+  _initialInsetsSent = YES;
   _currentSafeAreaInsets = safeAreaInsets;
 
   self.onInsetsChange(@{
@@ -89,9 +97,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 {
   [super layoutSubviews];
 
-  if (!self.isSupportedByOS) {
-    [self invalidateSafeAreaInsets];
-  }
+  [self invalidateSafeAreaInsets];
 }
 
 @end

@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-@interface PodsDummy_yoga : NSObject
+@interface PodsDummy_Yoga : NSObject
 @end
-@implementation PodsDummy_yoga
+@implementation PodsDummy_Yoga
 @end

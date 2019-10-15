@@ -19,7 +19,9 @@
 #import "REAModule.h"
 #import "Nodes/REAAlwaysNode.h"
 #import "Nodes/REAConcatNode.h"
-#import "REAModule.h"
+#import "Nodes/REAParamNode.h"
+#import "Nodes/REAFunctionNode.h"
+#import "Nodes/REACallFuncNode.h"
 
 @interface RCTUIManager ()
 
@@ -231,6 +233,9 @@
             @"event": [REAEventNode class],
             @"always": [REAAlwaysNode class],
             @"concat": [REAConcatNode class],
+            @"param": [REAParamNode class],
+            @"func": [REAFunctionNode class],
+            @"callfunc": [REACallFuncNode class],
 //            @"listener": nil,
             };
   });

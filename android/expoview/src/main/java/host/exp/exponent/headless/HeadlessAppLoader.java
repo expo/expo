@@ -16,7 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.Package;
+import org.unimodules.core.interfaces.SingletonModule;
+
 import expo.loaders.provider.AppLoaderProvider;
 import expo.loaders.provider.interfaces.AppLoaderInterface;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
@@ -25,12 +28,14 @@ import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
+import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExpoActivityIds;
 import host.exp.expoview.Exponent;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ExponentPackageDelegate;
+import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
@@ -43,7 +48,7 @@ import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 // I've found it pretty hard to make just one implementation that can be used in both cases,
 // so I decided to go with a copy until we refactor these activity classes.
 
-public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate {
+public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReactInstanceDelegate, ExponentPackageDelegate {
   private static String READY_FOR_BUNDLE = "headlessAppReadyForBundle";
 
   private static final Map<Integer, String> sActivityIdToBundleUrl = new HashMap<>();
@@ -253,7 +258,7 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
 
   @Override
   public ExponentPackageDelegate getExponentPackageDelegate() {
-    return null;
+    return this;
   }
 
   @Override
@@ -351,6 +356,15 @@ public class HeadlessAppLoader implements AppLoaderInterface, Exponent.StartReac
       } else {
         return mManifestUrl;
       }
+    }
+  }
+
+  @Override
+  public ExpoModuleRegistryAdapter getScopedModuleRegistryAdapterForPackages(List<Package> packages, List<SingletonModule> singletonModules) {
+    if (Constants.isStandaloneApp()) {
+      return new DetachedModuleRegistryAdapter(new ReactModuleRegistryProvider(packages, singletonModules));
+    } else {
+      return null;
     }
   }
 }

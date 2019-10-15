@@ -1,7 +1,5 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
-import androidx.annotation.NonNull;
-
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -9,6 +7,8 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.events.EventDispatcher;
 
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 public class SafeAreaViewManager extends ViewGroupManager<SafeAreaView> {
   @Override
