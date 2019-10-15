@@ -5,7 +5,6 @@ import { Asset } from 'expo-asset';
  */
 export type FontSource = string | number | Asset | FontResource;
 
-
 export type FontResource = {
-    uri: string | number;
-}
+  uri: string | number;
+};

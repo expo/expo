@@ -1,6 +1,6 @@
+import { Asset } from 'expo-asset';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontSource, FontResource } from './Font.types';
-import { Asset } from 'expo-asset';
 
 export function fontFamilyNeedsScoping(name: string): boolean {
   return false;
