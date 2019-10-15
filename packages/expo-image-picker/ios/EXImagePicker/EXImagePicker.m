@@ -127,15 +127,15 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
     id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
     [utils.currentViewController presentViewController:self.picker animated:YES completion:^{
-      [self freeCroppingBox:self.picker];
+      [self unlockCroppingBox:self.picker];
     }];
   });
 }
 
-// Since iOS 6, exist bug, which causes that you can't move the cropping box.
-// That's why we had to apply a workaround to unlock editing box.
+// Due to a bug that exists since iOS 6, you can't move the cropping box.
 // You can read more about this here: https://stackoverflow.com/questions/12630155/uiimagepicker-allowsediting-stuck-in-center.
-- (void)freeCroppingBox:(UIImagePickerController *)imagePickerController {
+- (void)unlockCroppingBox:(UIImagePickerController *)imagePickerController
+{
   if (!imagePickerController ||
       !imagePickerController.allowsEditing ||
       imagePickerController.sourceType != UIImagePickerControllerSourceTypeCamera) {
@@ -146,12 +146,11 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   Class ScrollViewClass = NSClassFromString(@"PLImageScrollView");
   Class CropViewClass = NSClassFromString(@"PLCropOverlayCropView");
 
-  [EXImagePicker foreachSubviewIn:imagePickerController.view call:^(UIView *subview){
+  [EXImagePicker foreachSubviewIn:imagePickerController.view call:^(UIView *subview) {
     if ([subview isKindOfClass:CropViewClass]) {
         // 0. crop rect position
         subview.frame = subview.superview.bounds;
-    } else  if ([subview isKindOfClass:[UIScrollView class]]
-        && [subview isKindOfClass:ScrollViewClass]) {
+    } else if ([subview isKindOfClass:[UIScrollView class]] && [subview isKindOfClass:ScrollViewClass]) {
         BOOL isNewImageScrollView = !self->_imageScrollView;
         self->_imageScrollView = (UIScrollView *)subview;
         // 1. enable scrolling
@@ -168,13 +167,6 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
         }
     }
   }];
-
-  // prevent re-layout, maybe not necessary
-  UM_WEAKIFY(self)
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      UM_STRONGIFY(self)
-      [self freeCroppingBox:self.picker];
-  });
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -529,7 +521,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   return mediaTypes;
 }
 
-+ (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function {
++ (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function 
+{
   for (UIView *subview in view.subviews) {
     function(subview);
     [EXImagePicker foreachSubviewIn:subview call:function];
