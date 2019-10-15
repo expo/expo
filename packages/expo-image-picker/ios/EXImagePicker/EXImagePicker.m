@@ -288,20 +288,29 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
       [self updateResponse:response withMetadata:metadata];
       completionHandler();
     } else {
-      PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
-      if (assets.count > 0) {
-        PHAsset *asset = assets.firstObject;
-        PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
-        options.networkAccessAllowed = YES; // Download from iCloud if needed
-        [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
-          NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
-          [self updateResponse:response withMetadata:metadata];
-          completionHandler();
-        }];
+      PHAsset *asset;
+      if (@available(iOS 11.0, *)) {
+        asset = [info objectForKey:UIImagePickerControllerPHAsset];
       } else {
+        PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+        if (assets.count > 0) {
+          asset = assets.firstObject;
+        }
+      }
+      if (!asset) {
         UMLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
+      
+      PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
+      options.networkAccessAllowed = YES; // Download from iCloud if needed
+      UM_WEAKIFY(self)
+      [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
+        UM_ENSURE_STRONGIFY(self)
+        NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
+        [self updateResponse:response withMetadata:metadata];
+        completionHandler();
+      }];
     }
   } else {
     completionHandler();
