@@ -289,8 +289,7 @@ final class MediaLibraryUtils {
     response.putParcelable("exif", exifMap);
   }
 
-  static void
-  queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
+  static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
     final String countColumn = "COUNT(*)";
     final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME, countColumn};
