@@ -60,7 +60,7 @@ UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
                   rejecter:(UMPromiseRejectBlock)reject)
 {
 
-  BOOL permissionsAreGranted = [self.permissionsModule hasGrantedPermission:@"cameraRoll"] &&
+  BOOL permissionsAreGranted = [self hasCameraRollPermission] &&
                                [self.permissionsModule hasGrantedPermission:@"camera"];
 
   if (!permissionsAreGranted) {
@@ -76,7 +76,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![self.permissionsModule hasGrantedPermission:@"cameraRoll"]) {
+  if (![self hasCameraRollPermission]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
     return;
   }
@@ -479,6 +479,15 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     [mediaTypes addObject:(NSString *)kUTTypeImage];
   }
   return mediaTypes;
+}
+
+- (BOOL)hasCameraRollPermission
+{
+  // to use UIImagePickerController on iOS 11+, we don't have to have camera Roll permission
+  if (@available(iOS 11, *)) {
+    return true;
+  }
+  return [self.permissionsModule hasGrantedPermission:@"cameraRoll"];
 }
 
 @end
