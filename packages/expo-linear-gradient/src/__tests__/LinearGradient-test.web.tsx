@@ -7,8 +7,15 @@ import { LinearGradient } from '..';
 const getStyleProp = (component, prop) => StyleSheet.flatten(component.prop('style'))[prop];
 
 it(`renders a multi-color gradient background with alpha`, () => {
-  const component = mount(<LinearGradient colors={['cyan', '#ff00ff', 'rgba(0,0,0,0)']} />);
-  expect(getStyleProp(component.find('View'), 'backgroundImage')).toMatchSnapshot();
+  const colors = ['cyan', '#ff00ff', 'rgba(0,0,0,0)', 'rgba(0,255,255,0.5)'];
+  const component = mount(<LinearGradient colors={colors} />);
+  const backgroundImage = getStyleProp(component.find('View'), 'backgroundImage');
+
+  // Ensure the correct number of colors are present
+  expect((backgroundImage.match(/rgba/g) || []).length).toBe(colors.length);
+
+  // Match colors
+  expect(backgroundImage).toMatchSnapshot();
 });
 
 it(`renders a complex gradient with angles and locations`, () => {

@@ -45,12 +45,12 @@ A short description of what your app is and why it is great.
 
 ### `"owner"`
 
-The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
+The primary user to use for publishing and creating builds. If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
 Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
- Valid values: `public`, `unlisted`
+Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
@@ -73,7 +73,7 @@ If you would like to share the source code of your app on Github, enter the URL 
 ### `"orientation"`
 
 Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- Valid values: 'default', 'portrait', 'landscape'
+Valid values: 'default', 'portrait', 'landscape'
 
 ### `"primaryColor"`
 
@@ -346,10 +346,10 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Corresponds to `CFBundleVersion` 
+      Build number for your iOS standalone app. Corresponds to `CFBundleVersion`
       and must match Apple's specified format.
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
-      
+
       Note- Application loader will pull the value for "Version Number" from `expo.version` and NOT from `expo.ios.buildNumber`
 
       ExpoKit: use Xcode to set this.
@@ -400,6 +400,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration.
+      Must be customized if your app requests system permissions.
 
       No other validation is performed, so use this at your own risk of rejection from the App Store.
     */
@@ -407,7 +408,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
-      
+
       Entries must follow the format "applinks:<fully qualified domain>[:port number]". See Apple's docs for details -> https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains
 
       ExpoKit: use Xcode to set this.

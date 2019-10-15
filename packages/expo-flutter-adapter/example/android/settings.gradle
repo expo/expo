@@ -15,16 +15,16 @@ plugins.each { name, path ->
 }
 
 include ':unimodules-core'
-project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../node_modules/unimodules-core/android')
+project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../../../@unimodules/core/android')
 
 include ':expo-permissions'
-project(':expo-permissions').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions/android')
+project(':expo-permissions').projectDir = new File(rootProject.projectDir, '../../../expo-permissions/android')
 
-include ':expo-permissions-interface'
-project(':expo-permissions-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-permissions-interface/android')
+include ':unimodules-permissions-interface'
+project(':unimodules-permissions-interface').projectDir = new File(rootProject.projectDir, '../../../unimodules-permissions-interface/android')
 
 include ':expo-sensors'
-project(':expo-sensors').projectDir = new File(rootProject.projectDir, '../node_modules/expo-sensors/android')
+project(':expo-sensors').projectDir = new File(rootProject.projectDir, '../../../expo-sensors/android')
 
-include ':expo-sensors-interface'
-project(':expo-sensors-interface').projectDir = new File(rootProject.projectDir, '../node_modules/expo-sensors-interface/android')
+include ':unimodules-sensors-interface'
+project(':unimodules-sensors-interface').projectDir = new File(rootProject.projectDir, '../../../unimodules-sensors-interface/android')

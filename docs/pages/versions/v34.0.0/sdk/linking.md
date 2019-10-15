@@ -6,6 +6,8 @@ This module allows your app to interact with other apps via deep links. It provi
 
 This module is an extension of the React Native [Linking module](https://facebook.github.io/react-native/docs/linking.html), meaning that all methods in the RN module can be accessed via `Linking`, on top of the extra methods provided by Expo (detailed here). **These methods only apply to the managed workflow, you cannot use them in a bare React Native app**.
 
+For information and examples on how to use this API and the `react-native` Linking API in your app, take a look at [this guide](../../workflow/linking/).
+
 ## API
 
 ### `Linking.makeUrl(path, queryParams)`
@@ -14,8 +16,8 @@ Helper method for constructing a deep link into your app, given an optional path
 
 #### Arguments
 
--   **path (_string_)** -- Any path into your app.
--   **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
+- **path (_string_)** -- Any path into your app.
+- **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
 
 #### Returns
 
@@ -27,14 +29,14 @@ Helper method for parsing out deep link information from a URL.
 
 #### Arguments
 
--   **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Linking.makeUrl()`).
+- **url (_string_)** -- A URL that points to the currently running experience (e.g. an output of `Linking.makeUrl()`).
 
 #### Returns
 
 An object with the following keys:
 
--   **path (_string_)** -- The path into the app specified by the url.
--   **queryParams (_object_)** -- The set of query parameters specified by the query string of the url.
+- **path (_string_)** -- The path into the app specified by the url.
+- **queryParams (_object_)** -- The set of query parameters specified by the query string of the url.
 
 ### `Linking.parseInitialURLAsync()`
 
@@ -44,6 +46,5 @@ Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.p
 
 A promise that resolves to an object with the following keys:
 
--   **path (_string_)** -- The path specified by the url used to open the app.
--   **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.
-
+- **path (_string_)** -- The path specified by the url used to open the app.
+- **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.

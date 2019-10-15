@@ -567,7 +567,9 @@ jobs:
       - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
-          command: expotools ios-generate-dynamic-macros
+          # Remove GoogleServices-Info because it has been stripped of all our secret keys
+          # Will be generated later in the build process if the user provides their own ios.googleServicesFile
+          command: expotools ios-generate-dynamic-macros --skip-template=GoogleService-Info.plist
       - run:
           name: Build Expo Client and upload tarball
           command: |

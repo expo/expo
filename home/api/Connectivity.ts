@@ -1,4 +1,4 @@
-import { NetInfo } from 'react-native';
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 
 type ConnectivityListener = (available: boolean) => void;
 
@@ -7,7 +7,7 @@ class Connectivity {
   _listeners = new Set<ConnectivityListener>();
 
   constructor() {
-    NetInfo.isConnected.addEventListener('connectionChange', this._handleConnectivityChange);
+    NetInfo.addEventListener(this._handleConnectivityChange);
     this.isAvailableAsync();
   }
 
@@ -21,7 +21,8 @@ class Connectivity {
     }
 
     try {
-      this._isAvailable = await NetInfo.isConnected.fetch();
+      const netInfo = await NetInfo.fetch();
+      this._isAvailable = netInfo.isConnected;
     } catch (e) {
       this._isAvailable = false;
       console.warn(`Uncaught error when fetching connectivity status: ${e}`);
@@ -30,8 +31,8 @@ class Connectivity {
     return this._isAvailable;
   }
 
-  _handleConnectivityChange = (isAvailable: boolean) => {
-    this._isAvailable = isAvailable;
+  _handleConnectivityChange = (netInfo: NetInfoState) => {
+    this._isAvailable = netInfo.isConnected;
     this._listeners.forEach(listener => {
       listener(this._isAvailable);
     });

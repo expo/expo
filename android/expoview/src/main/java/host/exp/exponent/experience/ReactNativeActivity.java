@@ -427,6 +427,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
+    // LAUNCHBLOCKING: Look at mSDKVersion or test for existence of the method to gate this to RN 0.61+
+    builder.call("setCurrentActivity", this);
+
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
         builder.call("addPackage", nativeModule);
@@ -517,7 +520,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       }
     }
 
-    mReactInstanceManager.onHostResume(this, this);
+    // LAUNCHBLOCKING: Call this only for RN <0.61
+    // mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
         mReactInstanceManager.get(),
         mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),

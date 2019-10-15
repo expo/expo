@@ -14,18 +14,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Upgrade from SDK 34
 
-- `app.json`, change `sdkVersion` to `"35.0.0"`,
-- In package.json, change these dependencies:
-
-```json
-{
-  "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
-  "expo": "^35.0.0",
-  "react": "16.8.3"
-}
-```
-
-- Delete your project’s node_modules directory and run npm install again
+- Run `expo update 35.0.0`
 
 #### Notes
 
@@ -37,18 +26,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Upgrade from SDK 33
 
-- `app.json`, change `sdkVersion` to `"34.0.0"`,
-- In package.json, change these dependencies:
-
-```json
-{
-  "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.0.tar.gz",
-  "expo": "^34.0.1",
-  "react": "16.8.3"
-}
-```
-
-- Delete your project’s node_modules directory and run npm install again
+- Run `expo update 34.0.0`
 
 #### Notes
 
@@ -325,7 +303,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 #### Notes
 
-- React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component. [See a Snack example here](https://snack.expo.io/@notbrent/imagebackground-example).
+- React Native no longer supports nesting components inside of `<Image>` — some developers used this to use an image as a background behind other views. To fix this in your app, replace the `Image` component anywhere where you are nesting views inside of it with the `ImageBackground` component. [See a Snack example here](https://snack.expo.io/@notbrent/imagebackground-example?platform=ios).
 
 - React Native now defaults `enableBabelRCLookup` (recursive) to false in Metro bundler (the packager used by React Native / Expo). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
 

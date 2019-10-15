@@ -68,7 +68,9 @@ allprojects {
     }
     // https://github.com/google/ExoPlayer/issues/5225#issuecomment-445739013
     maven { url 'https://google.bintray.com/exoplayer' }
-    maven { url "https://jitpack.io" }
+    // Using www.jitpack.io instead of plain jitpack.io due to
+    // https://github.com/jitpack/jitpack.io/issues/4002
+    maven { url "https://www.jitpack.io" }
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()

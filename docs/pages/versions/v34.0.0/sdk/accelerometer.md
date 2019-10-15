@@ -35,7 +35,7 @@ Subscribe for updates to the accelerometer.
 - **listener (_function_)** -- A callback that is invoked when an
   accelerometer update is available. When invoked, the listener is
   provided a single argument that is an object containing keys x, y,
-  z.
+  z. Each of these keys represents the acceleration along that particular axis in Gs (A G is a unit of gravitational force equal to that exerted by the earth’s gravitational field (9.81 m s<sup>-2</sup>).
 
 #### Returns
 
@@ -106,8 +106,8 @@ export default class AccelerometerSensor extends React.Component {
     let { x, y, z } = this.state.accelerometerData;
     return (
       <View style={styles.sensor}>
-        <Text>Accelerometer:</Text>
-        <Text>
+        <Text style={styles.text}>Accelerometer: (in Gs where 1 G = 9.81 m s^-2)</Text>
+        <Text style={styles.text}>
           x: {round(x)} y: {round(y)} z: {round(z)}
         </Text>
         <View style={styles.buttonContainer}>
@@ -156,6 +156,9 @@ const styles = StyleSheet.create({
     marginTop: 45,
     paddingHorizontal: 10,
   },
+  text:{
+    textAlign: 'center'
+  }
 });
 ```
 
