@@ -293,12 +293,13 @@ final class MediaLibraryUtils {
     Bundle result = new Bundle();
     final String countColumn = "COUNT(*)";
     final String[] projection = {Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME, countColumn};
-    final String group = "*/ GROUP BY " + Media.BUCKET_ID + " ORDER BY " + Media.BUCKET_DISPLAY_NAME;
+    final String selectionWithGroupBy = selection + ") GROUP BY (" + Media.BUCKET_ID;
+    final String group = Media.BUCKET_DISPLAY_NAME;
 
     try (Cursor albums = context.getContentResolver().query(
         EXTERNAL_CONTENT,
         projection,
-        selection,
+        selectionWithGroupBy,
         selectionArgs,
         group)) {
 
