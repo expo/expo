@@ -163,5 +163,8 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _resolve = nil;
   _reject = nil;
 }
-
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
 @end
