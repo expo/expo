@@ -139,8 +139,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   if (!imagePickerController ||
       !imagePickerController.allowsEditing ||
       imagePickerController.sourceType != UIImagePickerControllerSourceTypeCamera) {
-         return;
-   }
+    return;
+  }
   
   // undocumented class
   Class ScrollViewClass = NSClassFromString(@"PLImageScrollView");
@@ -148,23 +148,23 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   [EXImagePicker foreachSubviewIn:imagePickerController.view call:^(UIView *subview) {
     if ([subview isKindOfClass:CropViewClass]) {
-        // 0. crop rect position
-        subview.frame = subview.superview.bounds;
+      // 0. crop rect position
+      subview.frame = subview.superview.bounds;
     } else if ([subview isKindOfClass:[UIScrollView class]] && [subview isKindOfClass:ScrollViewClass]) {
-        BOOL isNewImageScrollView = !self->_imageScrollView;
-        self->_imageScrollView = (UIScrollView *)subview;
-        // 1. enable scrolling
-        CGSize size = self->_imageScrollView.frame.size;
-        CGFloat inset = ABS(size.width - size.height) / 2;
-        self->_imageScrollView.contentInset = UIEdgeInsetsMake(inset, 0, inset, 0);
-        // 2. centering image by default
-        if (isNewImageScrollView) {
-            CGSize contentSize = self->_imageScrollView.contentSize;
-            if (contentSize.height > contentSize.width) {
-                CGFloat offset = round((contentSize.height - contentSize.width) / 2 - inset);
-                self->_imageScrollView.contentOffset = CGPointMake(self->_imageScrollView.contentOffset.x, offset);
-            }
+      BOOL isNewImageScrollView = !self->_imageScrollView;
+      self->_imageScrollView = (UIScrollView *)subview;
+      // 1. enable scrolling
+      CGSize size = self->_imageScrollView.frame.size;
+      CGFloat inset = ABS(size.width - size.height) / 2;
+      self->_imageScrollView.contentInset = UIEdgeInsetsMake(inset, 0, inset, 0);
+      // 2. centering image by default
+      if (isNewImageScrollView) {
+        CGSize contentSize = self->_imageScrollView.contentSize;
+        if (contentSize.height > contentSize.width) {
+          CGFloat offset = round((contentSize.height - contentSize.width) / 2 - inset);
+          self->_imageScrollView.contentOffset = CGPointMake(self->_imageScrollView.contentOffset.x, offset);
         }
+      }
     }
   }];
 }
