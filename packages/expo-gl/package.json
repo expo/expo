@@ -44,12 +44,12 @@
   },
   "dependencies": {
     "expo-gl-cpp": "~7.0.0",
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "babel-preset-expo": "~7.1.0",
     "expo-module-scripts": "~1.1.1",
-    "react-test-renderer": "~16.8.3"
+    "react-test-renderer": "~16.9.0"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

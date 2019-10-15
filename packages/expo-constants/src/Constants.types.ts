@@ -93,8 +93,10 @@ export interface NativeConstants {
   deviceName?: string;
   deviceYearClass: number | null;
   experienceUrl: string;
-  expoRuntimeVersion: string;
-  expoVersion: string;
+  // only nullable on web
+  expoRuntimeVersion: string | null;
+  // only nullable on web
+  expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
   installationId: string;

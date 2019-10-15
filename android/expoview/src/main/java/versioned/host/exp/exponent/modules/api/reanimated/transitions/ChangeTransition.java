@@ -3,7 +3,6 @@ package versioned.host.exp.exponent.modules.api.reanimated.transitions;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.transition.ChangeBounds;
 import androidx.transition.ChangeTransform;

@@ -161,7 +161,12 @@ void GULLogBasic(GULLoggerLevel level,
                                                                     range:messageCodeRange];
   NSCAssert(numberOfMatches == 1, @"Incorrect message code format.");
 #endif
-  NSString *logMsg = [[NSString alloc] initWithFormat:message arguments:args_ptr];
+  NSString *logMsg;
+  if (args_ptr == NULL) {
+    logMsg = message;
+  } else {
+    logMsg = [[NSString alloc] initWithFormat:message arguments:args_ptr];
+  }
   logMsg = [NSString stringWithFormat:@"%s - %@[%@] %@", sVersion, service, messageCode, logMsg];
   dispatch_async(sGULClientQueue, ^{
     asl_log(sGULLoggerClient, NULL, (int)level, "%s", logMsg.UTF8String);
