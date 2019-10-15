@@ -139,7 +139,7 @@ Whether the Facebook SDK log app events automatically. If you don't set this pro
 
 ### `"facebookAdvertiserIDCollectionEnabled"`
 
-Whether the Facebook SDK should collect `advertiser-id` properties automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.)
+Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
 
 > **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
