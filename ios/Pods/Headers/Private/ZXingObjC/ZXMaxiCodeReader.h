@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/maxicode/ZXMaxiCodeReader.h

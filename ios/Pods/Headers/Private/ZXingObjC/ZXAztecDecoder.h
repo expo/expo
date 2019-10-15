@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/aztec/decoder/ZXAztecDecoder.h
