@@ -39,6 +39,15 @@
     return [NSUserDefaults.standardUserDefaults objectForKey:[self keyWithId:key]];
 }
 
+- (void)persistBool:(BOOL)value forKey:(NSString *)key {
+    [NSUserDefaults.standardUserDefaults setBool:value
+                                            forKey:[self keyWithId:key]];
+}
+
+- (BOOL)readBool:(NSString *)key {
+    return [NSUserDefaults.standardUserDefaults boolForKey:[self keyWithId:key]];
+}
+
 - (NSString *)keyWithId:(NSString *)key{
     return [NSString stringWithFormat:@"%@-%@", moduleId, key];
 }

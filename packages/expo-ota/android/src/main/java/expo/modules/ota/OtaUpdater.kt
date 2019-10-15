@@ -8,6 +8,15 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val id: String) {
+
+    init {
+        if(persistence.enqueqedReorderAtNextBoot) {
+            markDownloadedCurrentAndCurrentOutdated()
+            removeOutdatedBundle()
+            persistence.enqueqedReorderAtNextBoot = false
+        }
+    }
+
     fun checkAndDownloadUpdate(success: (manifest: JSONObject, path: String) -> Unit,
                                updateUnavailable: (manifest: JSONObject) -> Unit,
                                error: (Exception?) -> Unit) {
@@ -71,7 +80,7 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
     fun prepareToReload() {
-        markDownloadedCurrentAndCurrentOutdated()
+        persistence.enqueqedReorderAtNextBoot = true
         persistence.synchronize()
     }
 

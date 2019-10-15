@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)readStringForKey:(NSString *)key;
 - (void)persistObject:(NSObject *)value forKey:(NSString *)key;
 - (NSDictionary *)readObject:(NSString *)key;
-
+- (void)persistBool:(BOOL)value forKey:(NSString *)key;
+- (BOOL)readBool:(NSString *)key;
 
 @end
 

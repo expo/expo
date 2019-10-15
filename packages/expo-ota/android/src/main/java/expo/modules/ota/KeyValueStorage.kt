@@ -23,7 +23,15 @@ class KeyValueStorage(val context: Context, val key: String) {
     }
 
     fun commit() {
-        sharedPreferences.edit().commit();
+        sharedPreferences.edit().commit()
+    }
+
+    fun readBoolean(key: String, default: Boolean = false): Boolean {
+        return sharedPreferences.getBoolean(key, default)
+    }
+
+    fun writeBoolean(key: String, value: Boolean) {
+        sharedPreferences.edit().putBoolean(key, value).apply()
     }
 
 }

@@ -23,9 +23,19 @@ EXOtaPersistance *_persistance;
     _config = config;
     _identifier = identifier;
     _persistance = persistance;
+    [self performEnqueqedReorder];
     return self;
 }
 
+- (void)performEnqueqedReorder
+{
+    if ([_persistance isReorderAtNextBootEnqueued])
+    {
+        [self markDownloadedCurrentAndCurrentOutdated];
+        [self removeOutdatedBundle];
+        [_persistance dequeueReorderAtNextBoot];
+    }
+}
 
 - (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock updateUnavailable:(void (^)(void))unavailableBlock error:(nonnull EXErrorBlock)errorBlock
 {
@@ -68,7 +78,7 @@ EXOtaPersistance *_persistance;
     [_persistance storeDownloadedBundle:path];
 }
 
-- (void)prepareToReload
+- (void)scheduleForExchangeAtNextBoot
 {
     [self markDownloadedCurrentAndCurrentOutdated];
 }

@@ -20,7 +20,7 @@ EXOtaPersistance *persistance;
     [updater removeOutdatedBundle];
     [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {
         [updater saveDownloadedManifest:manifest andBundlePath:filePath];
-        [updater markDownloadedCurrentAndCurrentOutdated];
+        [updater scheduleForExchangeAtNextBoot];
     } updateUnavailable:^{} error:^(NSError * _Nonnull error) {
         NSLog(@"EXOta: error while fetching update! %@ %@", error, [error userInfo]);
     }];

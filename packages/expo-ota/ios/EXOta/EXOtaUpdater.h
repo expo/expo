@@ -30,7 +30,7 @@ typedef void (^EXErrorBlock)(NSError* error);
 
 - (void)saveDownloadedManifest:manifest andBundlePath:path;
 
-- (void)prepareToReload;
+- (void)scheduleForExchangeAtNextBoot;
 
 - (void)removeOutdatedBundle;
 

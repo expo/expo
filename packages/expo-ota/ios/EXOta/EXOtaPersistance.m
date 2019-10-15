@@ -12,6 +12,7 @@ static NSString *const bundlePathKey = @"bundlePath";
 static NSString *const downloadedManifestKey = @"downloadedManifest";
 static NSString *const downloadedBundlePathKey = @"downloadedBundlePath";
 static NSString *const outdatedBundlePathKey = @"outdatedBundlePath";
+static NSString *const enqueueReorderKey = @"enqueueReorder";
 
 @implementation EXOtaPersistance
 
@@ -86,6 +87,21 @@ NSString *_appId;
         [self storeDownloadedBundle:nil];
         [self storeDownloadedManifest:nil];
     }
+}
+
+- (void)enqueueReorderAtNextBoot
+{
+    [_storage persistBool:YES forKey:enqueueReorderKey];
+}
+
+- (void)dequeueReorderAtNextBoot
+{
+    [_storage persistBool:NO forKey:enqueueReorderKey];
+}
+
+- (BOOL)isReorderAtNextBootEnqueued
+{
+    return [_storage readBool:enqueueReorderKey];
 }
 
 - (NSDictionary*)readNewestManifest

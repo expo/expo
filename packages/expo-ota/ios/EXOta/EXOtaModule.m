@@ -74,15 +74,15 @@ UM_EXPORT_METHOD_AS(clearUpdateCacheAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
     [updater cleanUnusedFiles];
-    resolve(@true);
+    resolve(@YES);
 }
 
 UM_EXPORT_METHOD_AS(reload,
                     reload:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-    [updater prepareToReload];
-    resolve(@true);
+    [updater scheduleForExchangeAtNextBoot];
+    resolve(@YES);
 }
 
 UM_EXPORT_METHOD_AS(reloadFromCache,

@@ -10,6 +10,7 @@ const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"
 const val KEY_MANIFEST = "manifest"
 const val KEY_DOWNLOADED_MANIFEST = "downloadedManifest"
 const val KEY_BUNDLE_OUTDATED = "outdatedBundle"
+const val KEY_REORDER_ENQUEUED = "reorderAtBoot"
 
 class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
@@ -65,6 +66,14 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
         }
         @Synchronized set(value) {
             storage.writeString(KEY_DOWNLOADED_MANIFEST, value?.toString())
+        }
+
+    var enqueqedReorderAtNextBoot: Boolean
+        @Synchronized get() {
+            return storage.readBoolean(KEY_REORDER_ENQUEUED, false)
+        }
+        @Synchronized set(value) {
+            storage.writeBoolean(KEY_REORDER_ENQUEUED, value)
         }
 
 

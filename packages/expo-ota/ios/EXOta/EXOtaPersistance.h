@@ -30,6 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markDownloadedCurrentAndCurrentOutdated;
 
+- (void)enqueueReorderAtNextBoot;
+
+- (void)dequeueReorderAtNextBoot;
+
+- (BOOL)isReorderAtNextBootEnqueued;
+
 - (NSDictionary*)readNewestManifest;
 
 - (NSDictionary*)readManifest;
