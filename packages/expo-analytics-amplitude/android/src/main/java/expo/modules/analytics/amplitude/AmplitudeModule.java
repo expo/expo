@@ -19,6 +19,7 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 public class AmplitudeModule extends ExportedModule {
   private AmplitudeClient mClient;
+  private TrackingOptions trackingOptions = new TrackingOptions();
 
   public AmplitudeModule(Context context) {
     super(context);
@@ -33,6 +34,7 @@ public class AmplitudeModule extends ExportedModule {
   public void initialize(final String apiKey, Promise promise) {
     resetAmplitudeDatabaseHelper();
     mClient = new AmplitudeClient();
+    mClient.setTrackingOptions(trackingOptions);
     mClient.initialize(getContext(), apiKey);
     promise.resolve(null);
   }
@@ -93,12 +95,6 @@ public class AmplitudeModule extends ExportedModule {
 
   @ExpoMethod
   public void setTrackingOptions(final ReadableArguments options, Promise promise) {
-    if (rejectUnlessInitialized(promise)) {
-      return;
-    }
-
-    TrackingOptions trackingOptions = new TrackingOptions();
-
     if (options.get('disableAdid') == true) {
       trackingOptions.disableAdid();
     }
@@ -145,7 +141,9 @@ public class AmplitudeModule extends ExportedModule {
       trackingOptions.disableVersionName();
     }
 
-    mClient.setTrackingOptions(trackingOptions);
+    if (mClient != null) {
+      mClient.setTrackingOptions(trackingOptions);
+    }
   }
 
   private boolean rejectUnlessInitialized(Promise promise) {
