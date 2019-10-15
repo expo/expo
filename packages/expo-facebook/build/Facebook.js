@@ -69,9 +69,9 @@ export async function initializeAsync(appId, appName) {
     return await ExponentFacebook.initializeAsync(appId, appName);
 }
 /**
- * Sets whether Facebook SDK should collect and attach `advertiser-id` to sent events.
- * `advertiser-id` let you identify and target specific customers. To learn more visit
- * [Facebook documentation](https://developers.facebook.com/docs/app-ads/targeting/mobile-advertiser-ids)
+ * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA
+ * and Android Advertising ID, automatically. Advertiser IDs let you identify and target specific customers.
+ * To learn more visit [Facebook documentation](https://developers.facebook.com/docs/app-ads/targeting/mobile-advertiser-ids)
  * describing that topic.
  *
  * In some cases, you may want to disable or delay the collection of `advertiser-id`,
