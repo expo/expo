@@ -105,7 +105,7 @@ EXOtaPersistance *_persistance;
 
 - (void)cleanUnusedFiles
 {
-    NSString *bundlesDir = [[self bundlesDir] absoluteString];
+    NSString *bundlesDir = [[self bundlesDir] path];
     NSArray<NSString *> *filesArray = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:bundlesDir error:nil];
     NSSet *doNotDelete = [self validFilesSet];
     for (id file in filesArray)
