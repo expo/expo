@@ -19,6 +19,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - Fixed crash when `BarCodeScanner` was mounted more than 128 times. ([#5719](https://github.com/expo/expo/pull/5719) by [@geovannimp](https://github.com/geovannimp))
 - Fixed URI parsing in `expo-video-thumbnails`. ([#5711](https://github.com/expo/expo/pull/5711) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `MediaLibrary` methods crashing on Android 10. ([#5905](https://github.com/expo/expo/pull/5905) by [@lukmccall](https://github.com/lukmccall))
 
 ## 35.0.0
 
