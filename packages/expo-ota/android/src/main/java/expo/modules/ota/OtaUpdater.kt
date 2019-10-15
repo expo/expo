@@ -48,14 +48,14 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
                     } else {
                         error(IllegalStateException("Response not successful. Code: " + response.code() + ", body: " + response.body()?.toString()))
                     }
+                }
+            })
+        } else {
+            throwUninitializedExpoOtaError()
+        }
     }
-})
-} else {
-    throwUninitializedExpoOtaError()
-}
-}
 
-fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
+    fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
         config.manifestResponseValidator.validate(response, {
             success(JSONObject(it))
         }, error)
@@ -71,16 +71,16 @@ fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObje
     }
 
     fun prepareToReload() {
-        markDownloadedAsCurrent()
+        markDownloadedCurrentAndCurrentOutdated()
         persistence.synchronize()
     }
 
-    fun markDownloadedAsCurrent() {
+    fun markDownloadedCurrentAndCurrentOutdated() {
         val outdated = persistence.outdatedBundlePath
-        if(outdated != null) {
+        if (outdated != null) {
             removeFile(outdated)
         }
-        persistence.makeDownloadedCurrentAndCurrentOutdated()
+        persistence.markDownloadedCurrentAndCurrentOutdated()
     }
 
     fun removeOutdatedBundle() {
@@ -108,7 +108,7 @@ fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObje
                 validFilesSet = validFilesSet.plus(bundlePath)
             }
             if (downloadedBundlePath != null) {
-                validFilesSet =  validFilesSet.plus(downloadedBundlePath)
+                validFilesSet = validFilesSet.plus(downloadedBundlePath)
             }
             return validFilesSet
         }

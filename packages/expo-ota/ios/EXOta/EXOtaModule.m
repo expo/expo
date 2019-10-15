@@ -14,24 +14,32 @@
 @end
 
 @implementation EXOtaModule {
-    EXKeyValueStorage *keyValueStorage;
-    EXExpoUpdatesConfig *config;
-    EXOtaUpdater *updater;
     EXOtaPersistance *persistance;
+    EXOtaUpdater *updater;
 }
 
 UM_EXPORT_MODULE(ExpoOta);
 
+- (id)init
+{
+    return [self configure:nil];
+}
+
+- (id)initWithId:(NSString *)appId
+{
+    return [self configure:appId];
+}
+
+- (id)configure:(NSString* _Nullable)appId
+{
+    persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
+    updater = [[EXOtaUpdater alloc] initWithConfig:persistance.config withPersistance:persistance withId:persistance.appId];
+    return self;
+}
+
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
     _moduleRegistry = moduleRegistry;
-    keyValueStorage = [[EXKeyValueStorage alloc] init];
-    config = [[EXExpoUpdatesConfig alloc] initWithBuilder:^(EXExpoUpdatesConfigBuilder * _Nonnull builder) {
-        builder.username = @"mczernek";
-        builder.projectName = @"expo-template-bare";
-    }];
-    updater = [[EXOtaUpdater alloc] initWithConfig:config withId:@"expo-template-bare"];
-    persistance = [EXOtaPersistanceFactory.sharedFactory persistanceForId:@"expo-template-bare"];
 }
 
 UM_EXPORT_METHOD_AS(checkForUpdateAsync,
@@ -50,6 +58,7 @@ UM_EXPORT_METHOD_AS(fetchUpdatesAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
     [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {
+        [self->updater saveDownloadedManifest:manifest andBundlePath:filePath];
         resolve(@{
             @"bundle": filePath
         });

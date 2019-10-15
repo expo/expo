@@ -10,6 +10,7 @@
 
 #import <Foundation/Foundation.h>
 #import "EXOta.h"
+#import "EXOtaPersistance.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,11 +20,15 @@ typedef void (^EXErrorBlock)(NSError* error);
 
 @interface EXOtaUpdater: NSObject<NSURLSessionTaskDelegate>
 
-- (id)initWithConfig:(id<EXOtaConfig>)config withId:(NSString*)identifier;
+- (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier;
 
 - (void)downloadManifest:(nonnull EXManifestSuccessBlock)success error:(nonnull EXErrorBlock)error;
 
 - (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock updateUnavailable:(void (^)(void))unavailableBlock error:(nonnull EXErrorBlock)errorBlock;
+
+- (void)markDownloadedCurrentAndCurrentOutdated;
+
+- (void)saveDownloadedManifest:manifest andBundlePath:path;
 
 - (void)prepareToReload;
 

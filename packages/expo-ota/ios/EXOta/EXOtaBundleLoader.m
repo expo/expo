@@ -33,6 +33,7 @@ NSInteger fileTimeout;
     {
         NSURL *bundleFile = [NSURL URLWithString:filename relativeToURL:dirUrl];
         if([response writeToURL:bundleFile atomically:YES]) {
+            [bundleFile setResourceValue:[NSNumber numberWithBool:YES] forKey:NSURLIsExcludedFromBackupKey error:nil];
             successBlock([bundleFile path]);
         } else {
             errorBlock([[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorCannotOpenFile userInfo:nil]);

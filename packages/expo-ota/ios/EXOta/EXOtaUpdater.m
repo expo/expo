@@ -15,14 +15,14 @@
 @implementation EXOtaUpdater: NSObject
 
 id<EXOtaConfig> _config;
-NSString* _identifier;
+NSString *_identifier;
 EXOtaPersistance *_persistance;
 
-- (id)initWithConfig:(id<EXOtaConfig>)config withId:(NSString*)identifier
+- (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier
 {
     _config = config;
     _identifier = identifier;
-    _persistance = [EXOtaPersistanceFactory.sharedFactory persistanceForId:identifier];
+    _persistance = persistance;
     return self;
 }
 
@@ -30,11 +30,10 @@ EXOtaPersistance *_persistance;
 - (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock updateUnavailable:(void (^)(void))unavailableBlock error:(nonnull EXErrorBlock)errorBlock
 {
     [self downloadManifest:^(NSDictionary * _Nonnull manifest) {
-        NSDictionary *oldManifest = [_persistance readManifest];
+        NSDictionary *oldManifest = [_persistance readNewestManifest];
         if(oldManifest == nil || [_config.manifestComparator shouldDownloadBundle:oldManifest forNew:manifest])
         {
             [self downloadBundle:manifest success:^(NSString *path) {
-                [self saveDownloadedManifest:manifest andBundlePath:path];
                 successBlock(manifest, path);
             } error:errorBlock];
         } else
@@ -70,6 +69,11 @@ EXOtaPersistance *_persistance;
 }
 
 - (void)prepareToReload
+{
+    [self markDownloadedCurrentAndCurrentOutdated];
+}
+
+- (void)markDownloadedCurrentAndCurrentOutdated
 {
     NSString *outdated = [_persistance readOutdatedBundlePath];
     if(outdated != nil)

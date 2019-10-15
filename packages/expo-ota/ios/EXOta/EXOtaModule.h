@@ -4,4 +4,8 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 
 @interface EXOtaModule : UMExportedModule <UMModuleRegistryConsumer>
+
+-(id)init;
+-(id)initWithId:(NSString*)appId;
+
 @end

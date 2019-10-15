@@ -11,13 +11,13 @@
 
 NSMutableDictionary *persistances;
 
-- (id) init
+- (id)init
 {
     persistances = [[NSMutableDictionary alloc] init];
     return self;
 }
 
-+ (id) sharedFactory
++ (id)sharedFactory
 {
     static EXOtaPersistanceFactory *factory = nil;
     static dispatch_once_t onceToken;
@@ -27,16 +27,29 @@ NSMutableDictionary *persistances;
     return factory;
 }
 
-- (EXOtaPersistance*)persistanceForId:(NSString*)identifier
+- (EXOtaPersistance*)persistanceForId:(NSString* _Nullable)identifier
 {
-    EXOtaPersistance *persistance = persistances[identifier];
-    if(persistance == nil)
+    if(identifier == nil)
     {
-        EXKeyValueStorage *storage = [[EXKeyValueStorage alloc] initWithId:identifier];
-        persistance = [[EXOtaPersistance alloc] initWithStorage:storage];
-        [persistances setValue:persistance forKey:identifier];
+        NSArray *values = [persistances allValues];
+        if([values count] == 1)
+        {
+            return values[0];
+        } else
+        {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unable to determine which persistence to use! If you have more than one ExpoOTA, make sure you provide native packages manually with ids!" userInfo:nil];
+        }
+    } else
+    {
+        EXOtaPersistance *persistance = persistances[identifier];
+        if(persistance == nil)
+        {
+            EXKeyValueStorage *storage = [[EXKeyValueStorage alloc] initWithId:identifier];
+            persistance = [[EXOtaPersistance alloc] initWithStorage:storage];
+            [persistances setValue:persistance forKey:identifier];
+        }
+        return persistance;
     }
-    return persistance;
 }
 
 @end

@@ -7,10 +7,14 @@
 
 #import <Foundation/Foundation.h>
 #import "EXKeyValueStorage.h"
+#import "EXOta.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXOtaPersistance : NSObject
+
+@property (strong) id<EXOtaConfig> config;
+@property (strong) NSString *appId;
 
 - (id)initWithStorage:(EXKeyValueStorage*)storage;
 

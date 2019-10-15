@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXOtaPersistanceFactory : NSObject
 
-- (EXOtaPersistance*)persistanceForId:(NSString*)identifier;
+- (EXOtaPersistance*)persistanceForId:(NSString* _Nullable)identifier;
 
 + (id) sharedFactory;
 

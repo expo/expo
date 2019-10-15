@@ -18,6 +18,9 @@ static NSString *const outdatedBundlePathKey = @"outdatedBundlePath";
 EXKeyValueStorage *_storage;
 NSString *_appId;
 
+@synthesize config = _config;
+@synthesize appId = _appId;
+
 - (id)initWithStorage:(EXKeyValueStorage*)storage
 {
     _storage = storage;

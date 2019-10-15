@@ -42,3 +42,10 @@ class RevisionIdManifestCompoarator: ManifestComparator {
     }
 
 }
+
+class AllAcceptingManifestComparator: ManifestComparator {
+    override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
+        return true
+    }
+
+}

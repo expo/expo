@@ -12,10 +12,7 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
 
     companion object {
 
-        var id: String = DEFAULT_EXPO_OTA_ID
-
         @JvmStatic @JvmOverloads fun create(context: Context, config: ExpoOTAConfig, loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID): ExpoOTA {
-            ExpoOTA.id = id
             return ExpoOTA(context, config, loadFromBundler, id)
         }
     }
@@ -25,6 +22,7 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
 
     init {
         persistence.config = config
+        persistence.id = id
     }
 
     var bundlePath = if(loadFromBundler) null else persistence.bundlePath
@@ -38,7 +36,7 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
 
     private fun saveManifestAndBundle(manifest: JSONObject, path: String) {
         updater.saveDownloadedManifestAndBundlePath(manifest, path)
-        updater.markDownloadedAsCurrent()
+        updater.markDownloadedCurrentAndCurrentOutdated()
     }
 
 }

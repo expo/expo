@@ -14,6 +14,7 @@ const val KEY_BUNDLE_OUTDATED = "outdatedBundle"
 class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
 
     var config: ExpoOTAConfig? = null
+    var id: String? = null
 
     var bundlePath: String?
         @Synchronized get() {
@@ -67,7 +68,7 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
         }
 
 
-    fun makeDownloadedCurrentAndCurrentOutdated() {
+    fun markDownloadedCurrentAndCurrentOutdated() {
         val downloadedManifest = downloadedManifest
         val downloadedBundle = downloadedBundlePath
         if (downloadedManifest != null && downloadedBundle != null) {

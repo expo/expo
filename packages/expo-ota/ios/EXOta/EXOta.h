@@ -28,6 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXOta : NSObject
 
+-(id)initWithConfig:(id<EXOtaConfig>)config;
+
+-(id)initWithId:(NSString*)appId withConfig:(id<EXOtaConfig>)config;
+
+-(void)start;
+
 @property (readonly) NSString *bundlePath;
 
 @end
