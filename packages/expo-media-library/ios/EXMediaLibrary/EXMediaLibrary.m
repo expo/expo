@@ -276,14 +276,14 @@ UM_EXPORT_METHOD_AS(getAlbumsAsync,
   fetchOptions.includeAllBurstAssets = NO;
   
   PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
-  [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult]];
+  [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:userAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
 
   if ([options[@"includeSmartAlbums"] boolValue]) {
     PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
     [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
                                              subtype:PHAssetCollectionSubtypeAlbumRegular
                                              options:fetchOptions];
-    [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult]];
+    [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
   }
   
   resolve(albums);
@@ -302,7 +302,7 @@ UM_EXPORT_METHOD_AS(getMomentsAsync,
   options.includeAllBurstAssets = NO;
   
   PHFetchResult *fetchResult = [PHAssetCollection fetchMomentsWithOptions:options];
-  NSArray<NSDictionary *> *albums = [EXMediaLibrary _exportCollections:fetchResult];
+  NSArray<NSDictionary *> *albums = [EXMediaLibrary _exportCollections:fetchResult withFetchOptions:options inFolder:nil];
   
   resolve(albums);
 }
@@ -729,9 +729,15 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 
 + (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection
 {
+  return [EXMediaLibrary _exportCollection:collection inFolder:nil];
+}
+
++ (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection inFolder:(nullable NSString *)folderName
+{
   if (collection) {
     return @{
              @"id": [EXMediaLibrary _assetIdFromLocalId:collection.localIdentifier],
+             @"folderName": UMNullIfNil(folderName),
              @"title": collection.localizedTitle ?: [NSNull null],
              @"type": [EXMediaLibrary _stringifyAlbumType:collection.assetCollectionType],
              @"assetCount": [EXMediaLibrary _assetCountOfCollection:collection],
@@ -745,11 +751,18 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
 }
 
 + (NSArray *)_exportCollections:(PHFetchResult *)collections
+               withFetchOptions:(PHFetchOptions *)options
+                       inFolder:(nullable NSString *)folderName
 {
   NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
-  
-  for (PHAssetCollection *collection in collections) {
-    [albums addObject:[EXMediaLibrary _exportCollection:collection]];
+  for (PHCollection *collection in collections) {
+    if ([collection isKindOfClass:[PHAssetCollection class]]) {
+      [albums addObject:[EXMediaLibrary _exportCollection:(PHAssetCollection *)collection inFolder:folderName]];
+    }  else if ([collection isKindOfClass:[PHCollectionList class]]) {
+      // getting albums from folders
+      PHFetchResult *collectionsInFolder = [PHCollectionList fetchCollectionsInCollectionList:(PHCollectionList *)collection options:options];
+      [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:collectionsInFolder withFetchOptions:options inFolder:collection.localizedTitle]];
+    }
   }
   return [albums copy];
 }
