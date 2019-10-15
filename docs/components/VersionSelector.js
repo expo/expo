@@ -80,7 +80,7 @@ export default class VersionSelector extends React.Component {
         </label>
         {// hidden links to help test-links spidering
         orderVersions(VERSIONS).map(v => (
-          <a key={v} href={`/versions/${v}/`} />
+          <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
         ))}
         <select
           className={STYLES_SELECT_ELEMENT}
