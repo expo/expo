@@ -44,7 +44,7 @@ export default {
         return false;
     },
     get expoVersion() {
-        return this.manifest.sdkVersion || '';
+        return this.manifest.sdkVersion || null;
     },
     get linkingUri() {
         if (canUseDOM) {

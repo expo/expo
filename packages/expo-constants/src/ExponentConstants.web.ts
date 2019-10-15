@@ -52,8 +52,8 @@ export default {
   get isDetached(): false {
     return false;
   },
-  get expoVersion(): string {
-    return this.manifest.sdkVersion || '';
+  get expoVersion(): string | null {
+    return this.manifest.sdkVersion || null;
   },
   get linkingUri(): string {
     if (canUseDOM) {
@@ -63,7 +63,7 @@ export default {
       return '';
     }
   },
-  get expoRuntimeVersion(): string {
+  get expoRuntimeVersion(): string | null {
     return this.expoVersion;
   },
   get deviceName(): string | undefined {
