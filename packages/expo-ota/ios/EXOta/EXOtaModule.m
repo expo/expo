@@ -14,7 +14,6 @@
 @end
 
 @implementation EXOtaModule {
-    EXOtaPersistance *persistance;
     EXOtaUpdater *updater;
 }
 
@@ -32,7 +31,7 @@ UM_EXPORT_MODULE(ExpoOta);
 
 - (id)configure:(NSString* _Nullable)appId
 {
-    persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
+    EXOtaPersistance *persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
     updater = [[EXOtaUpdater alloc] initWithConfig:persistance.config withPersistance:persistance withId:persistance.appId];
     return self;
 }
@@ -90,19 +89,6 @@ UM_EXPORT_METHOD_AS(reloadFromCache,
                     reject:(UMPromiseRejectBlock)reject)
 {
     [self reload:resolve reject:reject];
-}
-
-UM_EXPORT_METHOD_AS(readValueAsync,
-                    readValueAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
-{
-    NSString *bundlePath = [persistance readBundlePath];
-    if(bundlePath != nil)
-    {
-        resolve(@{@"bundle": bundlePath});
-    } else {
-        resolve(@"none!");
-    }
 }
 
 @end
