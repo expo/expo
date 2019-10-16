@@ -28,20 +28,6 @@ let _orientationChangeSubscribers: Subscription[] = [];
 
 let _lastOrientationLock: OrientationLock = OrientationLock.UNKNOWN;
 
-export function allow(orientationLock: OrientationLock): void {
-  console.warn(
-    "'ScreenOrientation.allow' is deprecated in favour of 'ScreenOrientation.lockAsync' and will be removed in SDK 35 or later"
-  );
-  lockAsync(orientationLock);
-}
-
-export async function allowAsync(orientationLock: OrientationLock): Promise<void> {
-  console.warn(
-    "'ScreenOrientation.allowAsync' is deprecated in favour of 'ScreenOrientation.lockAsync'"
-  );
-  await lockAsync(orientationLock);
-}
-
 export async function lockAsync(orientationLock: OrientationLock): Promise<void> {
   if (!ExpoScreenOrientation.lockAsync) {
     throw new UnavailabilityError('ScreenOrientation', 'lockAsync');
@@ -162,13 +148,6 @@ export async function supportsOrientationLockAsync(
   }
 
   return await ExpoScreenOrientation.supportsOrientationLockAsync(orientationLock);
-}
-
-export async function doesSupportAsync(orientationLock: OrientationLock): Promise<boolean> {
-  console.warn(
-    "'ScreenOrientation.doesSupportAsync' is deprecated in favour of 'ScreenOrientation.supportsOrientationLockAsync'"
-  );
-  return await supportsOrientationLockAsync(orientationLock);
 }
 
 // Determine the event name lazily so Jest can set up mocks in advance
