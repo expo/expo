@@ -2,12 +2,12 @@ import ExpoFontLoader from './ExpoFontLoader';
 export function fontFamilyNeedsScoping(name) {
     return false;
 }
+function isAsset(asset) {
+    return typeof asset === 'object' && 'uri' in asset && 'name' in asset;
+}
 export function getAssetForSource(source) {
-    if (typeof source === 'object' && 'uri' in source) {
+    if (isAsset(source)) {
         return {
-            // @ts-ignore
-            display: source.display,
-            // @ts-ignore
             uri: source.uri || source.localUri,
         };
     }

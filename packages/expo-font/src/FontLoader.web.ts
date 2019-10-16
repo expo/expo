@@ -6,13 +6,14 @@ export function fontFamilyNeedsScoping(name: string): boolean {
   return false;
 }
 
-export function getAssetForSource(source: FontSource): Asset | FontResource {
-  if (typeof source === 'object' && 'uri' in source) {
+function isAsset(asset: any): asset is Asset {
+  return typeof asset === 'object' && 'uri' in asset && 'name' in asset;
+}
+
+export function getAssetForSource(source: FontSource): FontResource {
+  if (isAsset(source)) {
     return {
-      // @ts-ignore
-      display: source.display,
-      // @ts-ignore
-      uri: source.uri || source.localUri,
+      uri: source.uri || source.localUri!,
     };
   }
 
