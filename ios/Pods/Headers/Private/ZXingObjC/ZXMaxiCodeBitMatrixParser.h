@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/maxicode/decoder/ZXMaxiCodeBitMatrixParser.h

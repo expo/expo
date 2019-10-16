@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/qrcode/encoder/ZXQRCodeEncoder.h

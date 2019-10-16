@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/datamatrix/encoder/ZXDataMatrixEncoderContext.h

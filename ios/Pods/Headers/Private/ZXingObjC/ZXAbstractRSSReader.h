@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/oned/rss/ZXAbstractRSSReader.h

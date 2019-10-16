@@ -4,7 +4,8 @@
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
 #import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
 #import <UMCore/UMDefines.h>
-#import <ZXingObjC/ZXingObjC.h>
+#import <ZXingObjC/ZXingObjCCore.h>
+#import <ZXingObjC/ZXingObjCPDF417.h>
 
 @interface EXBarCodeScanner() <AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -298,58 +299,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 + (NSString *)zxingFormatToString:(ZXBarcodeFormat)format
 {
   switch (format) {
-    /** Aztec 2D barcode format. */
-    case kBarcodeFormatAztec:
-      return AVMetadataObjectTypeAztecCode;
-    /** CODABAR 1D format. */
-    case kBarcodeFormatCodabar:
-      return @"Codabar";
-    /** Code 39 1D format. */
-    case kBarcodeFormatCode39:
-      return AVMetadataObjectTypeCode39Code;
-    /** Code 93 1D format. */
-    case kBarcodeFormatCode93:
-      return AVMetadataObjectTypeCode93Code;
-    /** Code 128 1D format. */
-    case kBarcodeFormatCode128:
-      return AVMetadataObjectTypeCode128Code;
-    /** Data Matrix 2D barcode format. */
-    case kBarcodeFormatDataMatrix:
-      return AVMetadataObjectTypeDataMatrixCode;
-    /** EAN-8 1D format. */
-    case kBarcodeFormatEan8:
-      return AVMetadataObjectTypeEAN8Code;
-    /** EAN-13 1D format. */
-    case kBarcodeFormatEan13:
-      return AVMetadataObjectTypeEAN13Code;
-    /** ITF (Interleaved Two of Five) 1D format. */
-    case kBarcodeFormatITF:
-      return AVMetadataObjectTypeITF14Code;
-    /** MaxiCode 2D barcode format. */
-    case kBarcodeFormatMaxiCode:
-      return @"MaxiCode";
     /** PDF417 format. */
     case kBarcodeFormatPDF417:
       return AVMetadataObjectTypePDF417Code;
-    /** QR Code 2D barcode format. */
-    case kBarcodeFormatQRCode:
-      return AVMetadataObjectTypeQRCode;
-    /** RSS 14 */
-    case kBarcodeFormatRSS14:
-      return @"RSS 14";
-    /** RSS EXPANDED */
-    case kBarcodeFormatRSSExpanded:
-      return @"RSS Expanded";
-    /** UPC-A 1D format. */
-    case kBarcodeFormatUPCA:
-      return @"UPCA";
-    /** UPC-E 1D format. */
-    case kBarcodeFormatUPCE:
-      return AVMetadataObjectTypeUPCECode;
-    /** UPC/EAN extension format. Not a stand-alone format. */
-    case kBarcodeFormatUPCEANExtension:
-      return @"UPC/EAN extension";
-
     default:
       return @"unknown";
   }
