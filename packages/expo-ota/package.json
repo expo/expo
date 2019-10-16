@@ -1,6 +1,6 @@
 {
   "name": "expo-ota",
-  "version": "6.0.0",
+  "version": "0.1.0",
   "description": "ExpoOta standalone module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
