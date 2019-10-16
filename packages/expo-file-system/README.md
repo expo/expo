@@ -15,6 +15,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 For bare React Native projects, this package is included in [`react-native-unimodules`](https://github.com/unimodules/react-native-unimodules). Please refer to those installation instructions to install this package.
 
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).

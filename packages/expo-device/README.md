@@ -17,7 +17,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-device
+expo install expo-device
 ```
 
 # Contributing
