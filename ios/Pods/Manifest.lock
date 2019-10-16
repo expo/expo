@@ -728,7 +728,6 @@ PODS:
   - Crashlytics (3.13.4):
     - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
-  - EDSemver (0.4.0)
   - EXAdsAdMob (7.0.0):
     - Google-Mobile-Ads-SDK (~> 7.49.0)
     - UMCore
@@ -851,9 +850,6 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - EXNetwork (1.0.0):
-    - UMCore
-  - EXOta (6.0.0):
-    - EDSemver
     - UMCore
   - EXPermissions (7.0.0):
     - UMCore
@@ -1675,7 +1671,6 @@ DEPENDENCIES:
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXNetwork (from `../packages/expo-network/ios`)
-  - EXOta (from `../packages/expo-ota/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
@@ -1786,7 +1781,6 @@ SPEC REPOS:
     - Branch
     - CocoaLumberjack
     - Crashlytics
-    - EDSemver
     - Fabric
     - FBAudienceNetwork
     - FBSDKCoreKit
@@ -2303,9 +2297,6 @@ EXTERNAL SOURCES:
   EXNetwork:
     :path: !ruby/object:Pathname
     path: "../packages/expo-network/ios"
-  EXOta:
-    :path: !ruby/object:Pathname
-    path: "../packages/expo-ota/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../packages/expo-permissions/ios"
@@ -2635,7 +2626,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Crashlytics: 2dfd686bcb918dc10ee0e76f7f853fe42c7bd552
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  EDSemver: 2923ee872701634861fe566ad8a028ed4300989d
   EXAdsAdMob: 8d73d7b6bedebd53990f388dc1bd382599a78e43
   EXAdsFacebook: 5d54983c1200eb5b8ef44858a3827add306f6321
   EXAmplitude: 69201cb81956823fd24697fe077f51fc5f10a88b
@@ -2676,7 +2666,6 @@ SPEC CHECKSUMS:
   EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
   EXMediaLibrary: 6ebeb433efd9065c0a6dbce80e53ce63fe23c300
   EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXOta: a01e828f054d69669ed5d9a13cb8a656f101baa4
   EXPermissions: df10ad83df2f6b647aec304619354f8ab48d5f63
   EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
   EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
@@ -2764,6 +2753,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 0b97c2b68ca7458bee47a62af54a8c9d3b897929
+PODFILE CHECKSUM: 1577530459fae6efbcba691d77c53b5d638d6c7b
 
 COCOAPODS: 1.8.1

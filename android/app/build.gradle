@@ -236,6 +236,7 @@ dependencies {
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-payments-stripe',
+        'expo-ota',
         'expo-updates'
       ]
   ])

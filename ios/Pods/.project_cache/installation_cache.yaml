@@ -3873,13 +3873,6 @@ CACHE_KEYS:
     PROJECT_NAME: DoubleConversion
     SPECS:
       - DoubleConversion (1.1.6)
-  EDSemver:
-    BUILD_SETTINGS_CHECKSUM:
-      EDSemver: cff2a2535edd24586f5def57ee6164e4
-    CHECKSUM: 2923ee872701634861fe566ad8a028ed4300989d
-    PROJECT_NAME: EDSemver
-    SPECS:
-      - EDSemver (0.4.0)
   EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
@@ -4453,38 +4446,6 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (1.0.0)
-  EXOta:
-    BUILD_SETTINGS_CHECKSUM:
-      EXOta: 2514c63990f62f172613fb8cb5ee2363
-    CHECKSUM: a01e828f054d69669ed5d9a13cb8a656f101baa4
-    FILES:
-      - "../../packages/expo-ota/ios/EXOta/EXAlwaysAllowingManifestComparator.h"
-      - "../../packages/expo-ota/ios/EXOta/EXAlwaysAllowingManifestComparator.m"
-      - "../../packages/expo-ota/ios/EXOta/EXExpoUpdatesConfig.h"
-      - "../../packages/expo-ota/ios/EXOta/EXExpoUpdatesConfig.m"
-      - "../../packages/expo-ota/ios/EXOta/EXKeyValueStorage.h"
-      - "../../packages/expo-ota/ios/EXOta/EXKeyValueStorage.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOta.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOta.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaApiClient.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaApiClient.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaBundleLoader.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaBundleLoader.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaModule.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaModule.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaPersistance.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaPersistance.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaPersistanceFactory.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaPersistanceFactory.m"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaUpdater.h"
-      - "../../packages/expo-ota/ios/EXOta/EXOtaUpdater.m"
-      - "../../packages/expo-ota/ios/EXOta/EXRevisionIdManifestComparator.h"
-      - "../../packages/expo-ota/ios/EXOta/EXRevisionIdManifestComparator.m"
-      - "../../packages/expo-ota/ios/EXOta/EXVersionNumberManifestComparator.h"
-      - "../../packages/expo-ota/ios/EXOta/EXVersionNumberManifestComparator.m"
-    PROJECT_NAME: EXOta
-    SPECS:
-      - EXOta (6.0.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
@@ -4944,16 +4905,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 24a7547f31a03f898d1046af86b955a9
-      Release: 24a7547f31a03f898d1046af86b955a9
+      Debug: d7767f319d1ec8fecad608d613f44624
+      Release: d7767f319d1ec8fecad608d613f44624
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: fca3b6d00c938b67aab700cc57c0d5c2
-      Release: fca3b6d00c938b67aab700cc57c0d5c2
+      Debug: 838e10a9148eef4d6eed1d816d1dcefc
+      Release: 838e10a9148eef4d6eed1d816d1dcefc
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: fca3b6d00c938b67aab700cc57c0d5c2
-      Release: fca3b6d00c938b67aab700cc57c0d5c2
+      Debug: 838e10a9148eef4d6eed1d816d1dcefc
+      Release: 838e10a9148eef4d6eed1d816d1dcefc
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c

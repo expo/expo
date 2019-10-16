@@ -15,6 +15,7 @@
 
 @implementation EXOtaModule {
     EXOtaUpdater *updater;
+    EXOtaPersistance *persistance;
 }
 
 UM_EXPORT_MODULE(ExpoOta);
@@ -31,7 +32,7 @@ UM_EXPORT_MODULE(ExpoOta);
 
 - (id)configure:(NSString* _Nullable)appId
 {
-    EXOtaPersistance *persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
+    persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
     updater = [[EXOtaUpdater alloc] initWithConfig:persistance.config withPersistance:persistance withId:persistance.appId];
     return self;
 }
@@ -46,10 +47,21 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
     [updater downloadManifest:^(NSDictionary * _Nonnull manifest) {
-        resolve(manifest);
+        if([self isManifestNewer:manifest])
+        {
+            resolve(manifest);
+        } else
+        {
+            resolve(@NO);
+        }
     } error:^(NSError * _Nonnull error) {
         reject(@"ERR_EXPO_OTA", @"Could not download manifest", error);
     }];
+}
+
+- (BOOL) isManifestNewer:(NSDictionary * _Nonnull)manifest
+{
+    return [persistance.config.manifestComparator shouldDownloadBundle:[persistance readNewestManifest] forNew:manifest];
 }
 
 UM_EXPORT_METHOD_AS(fetchUpdatesAsync,

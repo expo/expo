@@ -170,6 +170,7 @@ dependencies {
       exclude      : [
           'expo-bluetooth',
           'expo-in-app-purchases',
+          'expo-ota',
           'expo-updates',
       ]
   ])

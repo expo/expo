@@ -25,7 +25,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
     }
 
     private fun manifestHandler(promise: Promise): (JSONObject) -> Unit = { manifest ->
-        val manifestComparator = VersionNumberManifestComparator()
+        val manifestComparator = persistence.config!!.manifestComparator
         if (manifestComparator.shouldDownloadBundle(persistence.newestManifest, manifest)) {
             promise.resolve(manifest.toString())
         } else {
