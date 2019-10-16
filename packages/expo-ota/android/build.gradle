@@ -79,7 +79,6 @@ dependencies {
 
   implementation 'commons-io:commons-io:2.6'
   implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-  implementation 'com.jakewharton:process-phoenix:2.0.0'
 
   implementation "com.madgag.spongycastle:core:1.53.0.0"
   implementation "com.madgag.spongycastle:prov:1.53.0.0"

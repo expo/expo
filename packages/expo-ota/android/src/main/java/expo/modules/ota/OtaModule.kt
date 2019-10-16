@@ -1,7 +1,6 @@
 package expo.modules.ota
 
 import android.content.Context
-import com.jakewharton.processphoenix.ProcessPhoenix
 import org.json.JSONObject
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
@@ -38,7 +37,6 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
     fun reload(promise: Promise) {
         try {
             updater.prepareToReload()
-            ProcessPhoenix.triggerRebirth(context)
             promise.resolve(true)
         } catch (e: Exception) {
             promise.reject(e)
