@@ -34,6 +34,7 @@
   },
   "excludedUnimodules": [
     "expo-task-manager",
+    "expo-ota",
     "unimodules-task-manager-interface",
     "expo-background-fetch",
     "expo-location",

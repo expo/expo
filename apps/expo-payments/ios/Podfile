@@ -11,7 +11,7 @@ target 'expo-payments' do
 
   # Install unimodules
   require_relative '../../../node_modules/react-native-unimodules/cocoapods.rb'
-  options = { modules_paths: ['../../../packages'] }
+  options = { modules_paths: ['../../../packages'], exclude: ['expo-ota'] }
   use_unimodules!(options)
 
   pod 'React',

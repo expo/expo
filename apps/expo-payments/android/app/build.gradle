@@ -198,6 +198,7 @@ dependencies {
         'expo-payments-stripe',
         'expo-video-thumbnails',
         'expo-camera',
+        "expo-ota",
         // Adding a name here will also remove the package
         // from auto-generated BasePackageList.java
       ]
