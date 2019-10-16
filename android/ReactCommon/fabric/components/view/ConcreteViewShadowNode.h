@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/components/view/AccessibleShadowNode.h>
 #include <react/components/view/ViewEventEmitter.h>
 #include <react/components/view/ViewProps.h>
 #include <react/components/view/YogaLayoutableShadowNode.h>
@@ -28,12 +27,13 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename ViewPropsT = ViewProps,
-    typename ViewEventEmitterT = ViewEventEmitter>
+    typename ViewEventEmitterT = ViewEventEmitter,
+    typename... Ts>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
                                    ViewPropsT,
-                                   ViewEventEmitterT>,
-                               public AccessibleShadowNode,
+                                   ViewEventEmitterT,
+                                   Ts...>,
                                public YogaLayoutableShadowNode {
   static_assert(
       std::is_base_of<ViewProps, ViewPropsT>::value,
@@ -46,16 +46,17 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       "ViewPropsT must be a descendant of AccessibilityProps");
 
  public:
-  using BaseShadowNode =
-      ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>;
+  using BaseShadowNode = ConcreteShadowNode<
+      concreteComponentName,
+      ViewPropsT,
+      ViewEventEmitterT,
+      Ts...>;
   using ConcreteViewProps = ViewPropsT;
 
   ConcreteViewShadowNode(
       const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction)
-      : BaseShadowNode(fragment, cloneFunction),
-        AccessibleShadowNode(
-            std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
+      const ComponentDescriptor &componentDescriptor)
+      : BaseShadowNode(fragment, componentDescriptor),
         YogaLayoutableShadowNode() {
     YogaLayoutableShadowNode::setProps(
         *std::static_pointer_cast<const ConcreteViewProps>(fragment.props));
@@ -67,9 +68,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       const ShadowNode &sourceShadowNode,
       const ShadowNodeFragment &fragment)
       : BaseShadowNode(sourceShadowNode, fragment),
-        AccessibleShadowNode(
-            static_cast<const ConcreteViewShadowNode &>(sourceShadowNode),
-            std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
         YogaLayoutableShadowNode(
             static_cast<const ConcreteViewShadowNode &>(sourceShadowNode)) {
     if (fragment.props) {
@@ -110,6 +108,10 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
         clonedChildShadowNode,
         suggestedIndex);
     return clonedChildShadowNode.get();
+  }
+
+  Transform getTransform() const override {
+    return BaseShadowNode::getProps()->transform;
   }
 
 #pragma mark - DebugStringConvertible

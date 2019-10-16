@@ -10,7 +10,7 @@
 /** @file CoreClasses.h
  *
  * In CoreClasses.h wrappers for the core classes (jobject, jclass, and jstring) is defined
- * to provide access to corresponding JNI functions + some conveniance.
+ * to provide access to corresponding JNI functions + some convenience.
  */
 
 #include "References-forward.h"
@@ -235,9 +235,9 @@ class FBEXPORT JClass : public JavaClass<JClass, JObject, jclass> {
   ///     makeNativeMethod("nativeMethodWithExplicitDescriptor",
   ///                      "(Lcom/facebook/example/MyClass;)V",
   ///                      methodWithExplicitDescriptor),
-  ///     makeCriticalNativeMethod("criticalNativeMethodWithAutomaticDescriptor",
+  ///     makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED("criticalNativeMethodWithAutomaticDescriptor",
   ///                              criticalNativeMethodWithAutomaticDescriptor),
-  ///     makeCriticalNativeMethod("criticalNativeMethodWithExplicitDescriptor",
+  ///     makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED("criticalNativeMethodWithExplicitDescriptor",
   ///                              "(IIF)Z",
   ///                              criticalNativeMethodWithExplicitDescriptor),
   ///  });

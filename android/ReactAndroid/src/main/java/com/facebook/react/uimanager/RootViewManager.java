@@ -1,18 +1,15 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.view.ViewGroup;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import android.widget.FrameLayout;
 
-/**
- * View manager for ReactRootView components.
- */
+/** View manager for ReactRootView components. */
 public class RootViewManager extends ViewGroupManager<ViewGroup> {
 
   public static final String REACT_CLASS = "RootView";
@@ -24,6 +21,6 @@ public class RootViewManager extends ViewGroupManager<ViewGroup> {
 
   @Override
   protected ViewGroup createViewInstance(ThemedReactContext reactContext) {
-    return new SizeMonitoringFrameLayout(reactContext);
+    return new FrameLayout(reactContext);
   }
 }

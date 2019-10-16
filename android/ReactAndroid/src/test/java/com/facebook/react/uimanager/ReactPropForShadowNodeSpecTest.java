@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.view.View;
@@ -23,11 +22,10 @@ import org.robolectric.RobolectricTestRunner;
  * correct
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropForShadowNodeSpecTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
+  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private static class BaseViewManager extends ViewManager {
 
@@ -58,8 +56,7 @@ public class ReactPropForShadowNodeSpecTest {
     }
 
     @Override
-    public void updateExtraData(View root, Object extraData) {
-    }
+    public void updateExtraData(View root, Object extraData) {}
   }
 
   @Test(expected = RuntimeException.class)

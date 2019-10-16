@@ -1,6 +1,6 @@
 {
   "name": "EXDevice",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0",
   "summary": "A universal module that gets physical information about the device running the application",
   "description": "A universal module that gets physical information about the device running the application",
   "license": "MIT",

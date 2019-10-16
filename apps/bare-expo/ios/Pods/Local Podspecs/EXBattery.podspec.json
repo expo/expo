@@ -1,6 +1,6 @@
 {
   "name": "EXBattery",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0",
   "summary": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "license": "MIT",

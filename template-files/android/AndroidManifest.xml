@@ -200,7 +200,7 @@
         </intent-filter>
     </activity>
     <!-- Versioned Activity for Stripe -->
-		<!-- BEGIN_SDK_abi35_0_0 -->
+		<!-- BEGIN_SDK_35 -->
 		<activity
 			android:exported="true"
 			android:launchMode="singleTask"
@@ -213,7 +213,7 @@
 					<data android:scheme="abi35_0_0.expo.modules.payments.stripe" />
 			</intent-filter>
 		</activity>
-		<!-- END_SDK_abi35_0_0 -->
+		<!-- END_SDK_35 -->
     <!-- BEGIN_SDK_34 -->
     <activity
       android:exported="true"

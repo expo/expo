@@ -10,10 +10,6 @@ interface PlistObject {
   [key: string]: any;
 }
 
-interface TemplateSubstitutions {
-  [key: string]: string;
-}
-
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
 async function modifyInfoPlistAsync(
@@ -137,34 +133,11 @@ function validateBuildConstants(config, buildConfiguration) {
 async function writeTemplatesAsync(
   expoKitPath: string,
   templateFilesPath: string,
-  templateSubstitutions: TemplateSubstitutions
 ) {
-  await renderClientPodfileAsync(templateFilesPath, templateSubstitutions);
-
   if (expoKitPath) {
     await renderExpoKitPodspecAsync(expoKitPath, templateFilesPath);
     await renderExpoKitPodfileAsync(expoKitPath, templateFilesPath);
   }
-}
-
-async function renderClientPodfileAsync(
-  templateFilesPath: string,
-  templateSubstitutions: TemplateSubstitutions
-) {
-  const podfilePath = path.join(EXPO_DIR, 'ios', 'Podfile');
-  const podfileTemplatePath = path.join(templateFilesPath, 'ios', 'Podfile');
-
-  console.log(
-    'Rendering %s from template %s ...',
-    chalk.cyan(path.relative(EXPO_DIR, podfilePath)),
-    chalk.cyan(path.relative(EXPO_DIR, podfileTemplatePath))
-  );
-
-  await IosPodsTools.renderPodfileAsync(podfileTemplatePath, podfilePath, {
-    TARGET_NAME: 'Exponent',
-    REACT_NATIVE_PATH: templateSubstitutions.REACT_NATIVE_PATH,
-    REACT_NATIVE_EXPO_SUBSPECS: ['Expo', 'ExpoOptional'],
-  });
 }
 
 async function renderExpoKitPodspecAsync(
@@ -225,7 +198,6 @@ export default class IosMacrosGenerator {
     await writeTemplatesAsync(
       options.expoKitPath,
       options.templateFilesPath,
-      templateSubstitutions
     );
   }
 

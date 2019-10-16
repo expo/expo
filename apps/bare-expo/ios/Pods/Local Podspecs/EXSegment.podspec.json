@@ -1,6 +1,6 @@
 {
   "name": "EXSegment",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Expo module that provides access to Segment mobile analytics",
   "description": "Expo module that provides access to Segment mobile analytics",
   "license": "MIT",
@@ -23,7 +23,7 @@
 
     ],
     "Analytics": [
-      "~> 3.5"
+      "~> 3.7"
     ]
   }
 }

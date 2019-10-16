@@ -1,6 +1,6 @@
 {
   "name": "EXAppAuth",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "description": "Expo Unimodule for interfacing with the OpenID library AppAuth",
   "license": "MIT",
@@ -20,7 +20,7 @@
 
     ],
     "AppAuth": [
-
+      "~> 1.2"
     ]
   }
 }

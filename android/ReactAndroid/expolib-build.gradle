@@ -1,0 +1,12 @@
+/**
+ * A fragment of a Gradle file that we add to ReactAndroid's build.gradle file
+ * for part of the support for Expolib-versioned dependencies.
+ */
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        url "$rootDir/../maven"
+    }
+}

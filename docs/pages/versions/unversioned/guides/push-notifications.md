@@ -10,7 +10,7 @@ Push Notifications are an important feature to, as _"growth hackers"_ would say,
 >
 > For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for push notifications to work.
 
-There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to). This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34)!
+There are three main steps to wiring up push notifications: sending a user's Expo Push Token to your server, calling Expo's Push API with the token when you want to send a notification, and responding to receiving and/or selecting the notification in your app (for example to jump to a particular screen that the notification refers to). This has all been put together for you to try out in [this example snack](https://snack.expo.io/@charliecruzan/pushnotifications34?platform=ios)!
 
 ## 1. Save the user's Expo Push Token on your server
 

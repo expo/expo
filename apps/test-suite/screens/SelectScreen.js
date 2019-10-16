@@ -66,7 +66,6 @@ export default class SelectScreen extends React.PureComponent {
         ) {
           console.log('Caught require error');
         } else {
-          global.expoErrorDelegate.throw(error, isFatal);
           originalErrorHandler(error, isFatal);
         }
       });

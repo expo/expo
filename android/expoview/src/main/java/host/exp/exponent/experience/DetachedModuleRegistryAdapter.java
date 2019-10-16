@@ -52,7 +52,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
       // If this doesn't throw an exception, we can instantiate the binding.
       Class.forName("expo.modules.securestore.SecureStoreModule");
       moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException | NoClassDefFoundError e) { //https://stackoverflow.com/a/5756989
       // do nothing, if there's no SecureStoreModule we don't need to override it
     }
 

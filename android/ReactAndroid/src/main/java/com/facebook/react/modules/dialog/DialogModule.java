@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.modules.dialog;
 
@@ -11,7 +11,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -20,11 +23,11 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 @ReactModule(name = DialogModule.NAME)
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -71,93 +74,56 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @Override
+    @NonNull
     public String getName() {
         return NAME;
     }
 
-    /**
-   * Helper to allow this module to work with both the standard FragmentManager
-   * and the Support FragmentManager (for apps that need to use it for legacy reasons).
-   * Since the two APIs don't share a common interface there's unfortunately some
-   * code duplication.
-   */
     private class FragmentManagerHelper {
 
-        // Exactly one of the two is null
-        @Nullable
-        public final android.app.FragmentManager mFragmentManager;
-
-        @Nullable
-        public final androidx.fragment.app.FragmentManager mSupportFragmentManager;
+        @NonNull
+        public final FragmentManager mFragmentManager;
 
         @Nullable
         public Object mFragmentToShow;
 
-        private boolean isUsingSupportLibrary() {
-            return mSupportFragmentManager != null;
-        }
-
-        public FragmentManagerHelper(androidx.fragment.app.FragmentManager supportFragmentManager) {
-            mFragmentManager = null;
-            mSupportFragmentManager = supportFragmentManager;
-        }
-
-        public FragmentManagerHelper(android.app.FragmentManager fragmentManager) {
+        public FragmentManagerHelper(@NonNull FragmentManager fragmentManager) {
             mFragmentManager = fragmentManager;
-            mSupportFragmentManager = null;
         }
 
         public void showPendingAlert() {
             UiThreadUtil.assertOnUiThread();
+            SoftAssertions.assertCondition(mIsInForeground, "showPendingAlert() called in background");
             if (mFragmentToShow == null) {
                 return;
             }
-            if (isUsingSupportLibrary()) {
-                ((SupportAlertFragment) mFragmentToShow).show(mSupportFragmentManager, FRAGMENT_TAG);
-            } else {
-                ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
-            }
+            dismissExisting();
+            ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
             mFragmentToShow = null;
         }
 
         private void dismissExisting() {
-            if (isUsingSupportLibrary()) {
-                SupportAlertFragment oldFragment = (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-                if (oldFragment != null && oldFragment.isResumed()) {
-                    oldFragment.dismiss();
-                }
-            } else {
-                AlertFragment oldFragment = (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-                if (oldFragment != null && oldFragment.isResumed()) {
-                    oldFragment.dismiss();
-                }
+            if (!mIsInForeground) {
+                return;
+            }
+            AlertFragment oldFragment = (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+            if (oldFragment != null && oldFragment.isResumed()) {
+                oldFragment.dismiss();
             }
         }
 
-        public void showNewAlert(boolean isInForeground, Bundle arguments, Callback actionCallback) {
+        public void showNewAlert(Bundle arguments, Callback actionCallback) {
             UiThreadUtil.assertOnUiThread();
             dismissExisting();
             AlertFragmentListener actionListener = actionCallback != null ? new AlertFragmentListener(actionCallback) : null;
-            if (isUsingSupportLibrary()) {
-                SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
-                if (isInForeground && !mSupportFragmentManager.isStateSaved()) {
-                    if (arguments.containsKey(KEY_CANCELABLE)) {
-                        alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
-                    }
-                    alertFragment.show(mSupportFragmentManager, FRAGMENT_TAG);
-                } else {
-                    mFragmentToShow = alertFragment;
+            AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
+            if (mIsInForeground && !mFragmentManager.isStateSaved()) {
+                if (arguments.containsKey(KEY_CANCELABLE)) {
+                    alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
                 }
+                alertFragment.show(mFragmentManager, FRAGMENT_TAG);
             } else {
-                AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
-                if (isInForeground) {
-                    if (arguments.containsKey(KEY_CANCELABLE)) {
-                        alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
-                    }
-                    alertFragment.show(mFragmentManager, FRAGMENT_TAG);
-                } else {
-                    mFragmentToShow = alertFragment;
-                }
+                mFragmentToShow = alertFragment;
             }
         }
     }
@@ -269,16 +235,16 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
             @Override
             public void run() {
-                fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);
+                fragmentManagerHelper.showNewAlert(args, actionCallback);
             }
         });
     }
 
     /**
-   * Creates a new helper to work with either the FragmentManager or the legacy support
-   * FragmentManager transparently. Returns null if we're not attached to an Activity.
+   * Creates a new helper to work with FragmentManager. Returns null if we're not attached to an
+   * Activity.
    *
-   * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
+   * <p>DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
    * MEMORY LEAKS.
    */
     @Nullable
@@ -287,10 +253,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
         if (activity == null) {
             return null;
         }
-        if (activity instanceof FragmentActivity) {
-            return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
-        } else {
-            return new FragmentManagerHelper(activity.getFragmentManager());
-        }
+        return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
     }
 }

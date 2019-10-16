@@ -33,6 +33,7 @@ const EXPOVIEW_PKG = {
   buildDirRelative: path.join('host', 'exp', 'exponent', 'expoview'),
 };
 
+// TODO(eric): use Packages for this instead
 async function _findUnimodules(pkgDir: string): Promise<Package[]> {
   const unimodules: Package[] = [];
 

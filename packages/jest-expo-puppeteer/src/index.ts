@@ -37,6 +37,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
   } = config;
   const projectPath = path.resolve(projectRoot || process.cwd());
 
+  // @ts-ignore: ProjectConfig doesn't declare "web" -- either fix this or the declaration
   const { web = {} } = readConfigJson(projectPath);
 
   const hasServerSideRendering = web.use === 'nextjs';
