@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString*)readOutdatedBundlePath;
 
+- (void)clean;
 
 @end
 

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger apiVersion;
 @property (nonatomic) NSInteger manifestTimeout;
 @property (nonatomic) id<ManifestComparator> manifestComparator;
+@property (nonatomic) id<ManifestResponseValidator> manifestValidator;
 @property (nonatomic) NSInteger bundleTimeout;
 
 @end
@@ -33,8 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
     withExpoSdkVersion:(NSString*)sdkVersion
         withApiVersion:(NSInteger)apiVersion
    withManifestTimeout:(NSInteger)manifestTimeout
-   withManifestComparator:(id<ManifestComparator>)manifestComparator
-   withBundleTimeout:(NSInteger)bundleTimeout;
+withManifestComparator:(id<ManifestComparator>)manifestComparator
+ withManifestValidator:(id<ManifestResponseValidator>)manifestValidator
+     withBundleTimeout:(NSInteger)bundleTimeout;
 
 @end
 

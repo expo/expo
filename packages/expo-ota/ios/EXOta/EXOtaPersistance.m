@@ -141,4 +141,14 @@ NSString *_appId;
     return [_storage readStringForKey:outdatedBundlePathKey];
 }
 
+- (void)clean
+{
+    [_storage removeValueForKey:@"manifest"];
+    [_storage removeValueForKey:@"bundlePath"];
+    [_storage removeValueForKey:@"downloadedManifest"];
+    [_storage removeValueForKey:@"downloadedBundlePath"];
+    [_storage removeValueForKey:@"outdatedBundlePath"];
+    [_storage removeValueForKey:@"enqueueReorder"];
+}
+
 @end

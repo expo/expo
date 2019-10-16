@@ -18,6 +18,8 @@
 		4267480F0AB1706705615C59E92A6BBB /* EXOtaUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = 22780952D141F966ADE00D17241FEE38 /* EXOtaUpdater.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5E3AAD4BAAC02E2D51A2E3E4B1EF550F /* EXOta-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B73B8AC17B90E52E6D0DC4F0F5AE76E /* EXOta-dummy.m */; };
 		6DDDAF23320C96A9E5A09C612BF29556 /* EXOtaModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 357C1D888933F45FF6BA1B395415795E /* EXOtaModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7021AF2123573CDE003009FF /* EXExpoPublicKeyManifestValidator.h in Headers */ = {isa = PBXBuildFile; fileRef = 7021AF1F23573CDD003009FF /* EXExpoPublicKeyManifestValidator.h */; };
+		7021AF2223573CDE003009FF /* EXExpoPublicKeyManifestValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7021AF2023573CDD003009FF /* EXExpoPublicKeyManifestValidator.m */; };
 		713DDCB508722BD6E6B45FC713018966 /* EXVersionNumberManifestComparator.h in Headers */ = {isa = PBXBuildFile; fileRef = B0BBE8A45A6DFC4AAC4BE24B728173CD /* EXVersionNumberManifestComparator.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7336BBECF11086DE2159AFAD53D42FC5 /* EXOtaBundleLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB22A26132523F6177922A35147ABF8 /* EXOtaBundleLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		74B0E446B12CF3DB2F76CA27BB6B4B76 /* EXKeyValueStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F7C4A7ED22A7B3BA84FA7EED7CC3928 /* EXKeyValueStorage.m */; };
@@ -37,14 +39,28 @@
 /* Begin PBXContainerItemProxy section */
 		55EC3C67DDAAB1F3232E65D7A46965F4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 93CB2929CF06413994162A8050FA2D82 /* EDSemver.xcodeproj */;
+			containerPortal = 93CB2929CF06413994162A8050FA2D82 /* EDSemver */;
 			proxyType = 1;
 			remoteGlobalIDString = 07E6DE29224FE58C285CB12768D5FAB0;
 			remoteInfo = EDSemver;
 		};
+		7021AF2323573CDF003009FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93CB2929CF06413994162A8050FA2D82 /* EDSemver */;
+			proxyType = 2;
+			remoteGlobalIDString = C80C8A7AB292D457E23AACDC84182C0F;
+			remoteInfo = EDSemver;
+		};
+		7021AF2523573CDF003009FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F4D7E4BD648250831F024767F335594B /* UMCore */;
+			proxyType = 2;
+			remoteGlobalIDString = B028FE6A90DCDB619E0BA9877EB50D3B;
+			remoteInfo = UMCore;
+		};
 		E58F770A2910AFCF8405BB74582B2D8B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F4D7E4BD648250831F024767F335594B /* UMCore.xcodeproj */;
+			containerPortal = F4D7E4BD648250831F024767F335594B /* UMCore */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
@@ -64,11 +80,13 @@
 		330B8EC47BAEA7EBFE34BDB461ED2CB6 /* EXOtaPersistance.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaPersistance.h; path = EXOta/EXOtaPersistance.h; sourceTree = "<group>"; };
 		33AA2C832536CFFD02BD678A89C5C6C2 /* EXOtaPersistanceFactory.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaPersistanceFactory.m; path = EXOta/EXOtaPersistanceFactory.m; sourceTree = "<group>"; };
 		357C1D888933F45FF6BA1B395415795E /* EXOtaModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaModule.h; path = EXOta/EXOtaModule.h; sourceTree = "<group>"; };
-		42901338C01ACFBACD664E8B98D88A12 /* libEXOta.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXOta.a; path = libEXOta.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4972D064EA5362C9A72616EA8CD3C869 /* EXOta.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXOta.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		42901338C01ACFBACD664E8B98D88A12 /* libEXOta.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEXOta.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4972D064EA5362C9A72616EA8CD3C869 /* EXOta.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = EXOta.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4C9FF71A7C6AB0FF6DB544A84CD1FA33 /* EXKeyValueStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXKeyValueStorage.h; path = EXOta/EXKeyValueStorage.h; sourceTree = "<group>"; };
 		6096B575E42B7490B24CE45D2968FF03 /* EXExpoUpdatesConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXExpoUpdatesConfig.m; path = EXOta/EXExpoUpdatesConfig.m; sourceTree = "<group>"; };
 		6F7C4A7ED22A7B3BA84FA7EED7CC3928 /* EXKeyValueStorage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXKeyValueStorage.m; path = EXOta/EXKeyValueStorage.m; sourceTree = "<group>"; };
+		7021AF1F23573CDD003009FF /* EXExpoPublicKeyManifestValidator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EXExpoPublicKeyManifestValidator.h; path = EXOta/EXExpoPublicKeyManifestValidator.h; sourceTree = "<group>"; };
+		7021AF2023573CDD003009FF /* EXExpoPublicKeyManifestValidator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EXExpoPublicKeyManifestValidator.m; path = EXOta/EXExpoPublicKeyManifestValidator.m; sourceTree = "<group>"; };
 		71EEF2D27FAF2CA7019E730DC2746A12 /* EXOtaPersistance.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaPersistance.m; path = EXOta/EXOtaPersistance.m; sourceTree = "<group>"; };
 		8744431811BBD2599B1F1FD8B728184B /* EXOtaApiClient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXOtaApiClient.m; path = EXOta/EXOtaApiClient.m; sourceTree = "<group>"; };
 		876C5A1715BE9A855701353225716A62 /* EXOtaPersistanceFactory.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXOtaPersistanceFactory.h; path = EXOta/EXOtaPersistanceFactory.h; sourceTree = "<group>"; };
@@ -152,9 +170,27 @@
 				FE1F4C5E5FCF9FC500792333A7D6CCEC /* EXVersionNumberManifestComparator.m */,
 				7B592A6C1A820664AF4B9FC1B08E76C0 /* Pod */,
 				303C01709EE92D1CFF03A933ACCB825D /* Support Files */,
+				7021AF1F23573CDD003009FF /* EXExpoPublicKeyManifestValidator.h */,
+				7021AF2023573CDD003009FF /* EXExpoPublicKeyManifestValidator.m */,
 			);
 			name = EXOta;
 			path = "../../packages/expo-ota/ios";
+			sourceTree = "<group>";
+		};
+		7021AE9D23573282003009FF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7021AF2423573CDF003009FF /* libEDSemver.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7021AE9F23573282003009FF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7021AF2623573CDF003009FF /* libUMCore.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		7B592A6C1A820664AF4B9FC1B08E76C0 /* Pod */ = {
@@ -193,6 +229,7 @@
 				17AFFB07F35A51C3642F9105B6A0B214 /* EXAlwaysAllowingManifestComparator.h in Headers */,
 				2701FA721D33B1D22B875EA2F5DCBF23 /* EXExpoUpdatesConfig.h in Headers */,
 				33E1B5CA21E22F458C5F2CF40F273A31 /* EXKeyValueStorage.h in Headers */,
+				7021AF2123573CDE003009FF /* EXExpoPublicKeyManifestValidator.h in Headers */,
 				934C0E78A8F79781A56B2610718E4183 /* EXOta.h in Headers */,
 				D798B7013A3C3B4BCD7DCEED6C9FE06B /* EXOtaApiClient.h in Headers */,
 				7336BBECF11086DE2159AFAD53D42FC5 /* EXOtaBundleLoader.h in Headers */,
@@ -248,10 +285,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = F4D7E4BD648250831F024767F335594B /* UMCore */;
+					ProductGroup = 7021AE9D23573282003009FF /* Products */;
+					ProjectRef = 93CB2929CF06413994162A8050FA2D82 /* EDSemver */;
 				},
 				{
-					ProjectRef = 93CB2929CF06413994162A8050FA2D82 /* EDSemver */;
+					ProductGroup = 7021AE9F23573282003009FF /* Products */;
+					ProjectRef = F4D7E4BD648250831F024767F335594B /* UMCore */;
 				},
 			);
 			projectRoot = "";
@@ -260,6 +299,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		7021AF2423573CDF003009FF /* libEDSemver.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libEDSemver.a;
+			remoteRef = 7021AF2323573CDF003009FF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7021AF2623573CDF003009FF /* libUMCore.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libUMCore.a;
+			remoteRef = 7021AF2523573CDF003009FF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		18AF44BD0371F144720D11DF2C49A5A3 /* Sources */ = {
@@ -273,6 +329,7 @@
 				20199650165A9D2E0AEAF6469635F441 /* EXOta.m in Sources */,
 				9993A8071238B8CA274D3AA38B6AEC7A /* EXOtaApiClient.m in Sources */,
 				7AB8F363E1686727137BE7B520A5EF83 /* EXOtaBundleLoader.m in Sources */,
+				7021AF2223573CDE003009FF /* EXExpoPublicKeyManifestValidator.m in Sources */,
 				A4FF170330CE83EC5E123B294FBD335D /* EXOtaModule.m in Sources */,
 				79928934BE51D7018D85C9CC4D48B73B /* EXOtaPersistance.m in Sources */,
 				E5A85E70E2A889A7724E5C0ECDC9A5A4 /* EXOtaPersistanceFactory.m in Sources */,
@@ -351,8 +408,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};

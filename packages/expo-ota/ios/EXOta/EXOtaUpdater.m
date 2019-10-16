@@ -23,8 +23,18 @@ EXOtaPersistance *_persistance;
     _config = config;
     _identifier = identifier;
     _persistance = persistance;
+    [self ensureBundleExists];
     [self performEnqueqedReorder];
     return self;
+}
+
+- (void)ensureBundleExists
+{
+    if(![[NSFileManager defaultManager] fileExistsAtPath:[_persistance readBundlePath]])
+    {
+        [_persistance clean];
+        [self cleanUnusedFiles];
+    }
 }
 
 - (void)performEnqueqedReorder
@@ -57,14 +67,22 @@ EXOtaPersistance *_persistance;
 {
     EXOtaApiClient *api = [[EXOtaApiClient alloc] init];
     [api performRequest:_config.manifestUrl withHeaders:_config.manifestRequestHeaders withTimeout:_config.manifestRequestTimeout success:^(NSData * _Nonnull response) {
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:response options:kNilOptions error:nil];
-        NSString *manifestString = [json valueForKey:@"manifestString"];
-        NSData *data = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *manifest =[NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-        successBlock(manifest);
+        NSDictionary *responseJson = [NSJSONSerialization JSONObjectWithData:response options:kNilOptions error:nil];
+        [_config.manifestValidator verifyManifest:responseJson success:^(NSDictionary * _Nonnull originalResponse) {
+            successBlock([self extractManifestFromResponse:originalResponse]);
+        } error:^(NSError * _Nonnull error) {
+            
+        }];
     } error:^(NSError * _Nonnull error) {
         errorBlock(error);
     }];
+}
+
+- (NSDictionary*)extractManifestFromResponse:(NSDictionary *)responseJson
+{
+    NSString *manifestString = [responseJson valueForKey:@"manifestString"];
+    NSData *data = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
 }
 
 - (void)saveDownloadedManifest:(NSDictionary*)manifest andBundlePath:(NSString*)path
@@ -117,6 +135,7 @@ EXOtaPersistance *_persistance;
         }
     }
 }
+
 
 - (NSSet*)validFilesSet
 {

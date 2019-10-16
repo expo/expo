@@ -15,6 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@protocol ManifestResponseValidator
+
+-(void) verifyManifest:(NSDictionary*)response success:(void (^)(NSDictionary*))successBlock error:(void (^)(NSError*))errorBlock;
+
+@end
+
 @protocol EXOtaConfig
 
 @property(nonnull, readonly) NSString *manifestUrl;
@@ -22,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nullable, readonly) NSString *channelIdentifier;
 @property(readonly) NSInteger manifestRequestTimeout;
 @property(readonly) id<ManifestComparator> manifestComparator;
+@property(readonly) id<ManifestResponseValidator> manifestValidator;
 @property(readonly) NSInteger bundleRequestTimeout;
 
 @end

@@ -7,6 +7,9 @@
 
 #import "EXExpoUpdatesConfig.h"
 #import "EXVersionNumberManifestComparator.h"
+#import "EXExpoPublicKeyManifestValidator.h"
+
+
 
 @implementation EXExpoUpdatesConfigBuilder: NSObject
 - (id) init
@@ -14,8 +17,9 @@
     _releaseChannel = @"default";
     _sdkVersion = @"34.0.0";
     _apiVersion = 1;
-    _manifestTimeout = 30 * 1000;
+    _manifestTimeout = 60 * 1000;
     _manifestComparator = [[EXVersionNumberManifestComparator alloc] init];
+    _manifestValidator = [[EXExpoPublicKeyManifestValidator alloc] initWithPublicKeyUrl:@"https://exp.host/--/manifest-public-key" andTimeout:60 * 1000];
     _bundleTimeout = 2 * 60 * 1000;
     return self;
 }
@@ -30,6 +34,7 @@
 @synthesize bundleRequestTimeout = _bundleRequestTimeout;
 @synthesize channelIdentifier = _channelIdentifier;
 @synthesize manifestComparator = _manifestComparator;
+@synthesize manifestValidator = _manifestValidator;
 
 - (id)initWithBuilder:(void (^)(EXExpoUpdatesConfigBuilder *))builderBlock
 {
@@ -42,6 +47,7 @@
                    withApiVersion:builder.apiVersion
               withManifestTimeout:builder.manifestTimeout
            withManifestComparator:builder.manifestComparator
+            withManifestValidator:builder.manifestValidator
                 withBundleTimeout:builder.bundleTimeout];
 }
 
@@ -52,6 +58,7 @@ withExpoSdkVersion:(NSString*)sdkVersion
     withApiVersion:(NSInteger)apiVersion
 withManifestTimeout:(NSInteger)manifestTimeout
 withManifestComparator:(id<ManifestComparator>)manifestComparator
+withManifestValidator:(id<ManifestResponseValidator>)manifestValidator
  withBundleTimeout:(NSInteger)bundleTimeout
 {
     if([username length] == 0 || [projectName length] == 0) {
@@ -70,6 +77,7 @@ withManifestComparator:(id<ManifestComparator>)manifestComparator
         _bundleRequestTimeout = bundleTimeout;
         _channelIdentifier = channel;
         _manifestComparator = manifestComparator;
+        _manifestValidator = manifestValidator;
         return self;
     }
 }
