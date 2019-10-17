@@ -26,6 +26,10 @@ You can test this library in development in the iOS Expo client without followin
 
 You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
 
+## Verifying the Response from Apple
+
+Apple's response includes a signed JWT with information about the user. To ensure that the response came from Apple, you can cryptographically verify the signature with Apple's public key, which is published at https://appleid.apple.com/auth/keys. This process is not specific to Expo.
+
 ## API
 
 ```js
