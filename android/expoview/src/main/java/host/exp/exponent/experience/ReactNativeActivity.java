@@ -88,7 +88,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   protected boolean mIsCrashed = false;
-  protected boolean mShouldDestroyRNInstanceOnExit = true;
 
   protected String mManifestUrl;
   protected String mExperienceIdString;
@@ -328,7 +327,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("destroy");
     }
 
