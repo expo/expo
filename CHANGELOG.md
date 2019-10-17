@@ -26,6 +26,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed unclosed http connections in `FileSystem.downloadAsync` method. ([#5840](https://github.com/expo/expo/pull/5840) by [@bbarthec](https://github.com/bbarthec))
 - Fixed `ImagePicker` ignoring orientation of the application. ([#5946](https://github.com/expo/expo/pull/5946) by [@lukmccall](https://github.com/lukmccall))
 - Fixed cropping tool in `ImagePicker`, which was not moving on iOS. ([#5965](https://github.com/expo/expo/pull/5965) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `Calendar.getCalendarsAsync` rejecting on iOS 13, when `source.name` is null. ([5994](https://github.com/expo/expo/pull/5994) by [@lukmccall](https://github.com/lukmccall))
 
 ## 35.0.0
 
