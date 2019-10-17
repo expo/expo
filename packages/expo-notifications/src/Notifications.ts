@@ -69,16 +69,20 @@ function _validateNotification(notification) {
   }
 }
 
+export async function getInitalUserInteractionAsync(): Promise<UserInteraction | null> {
+  return ExponentNotifications.getInitalUserInteractionAsync();
+}
+
 // User passes set of actions titles.
-export function createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
+export async function createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void> {
   return ExponentNotifications.createCategoryAsync(categoryId, actions);
 }
 
-export function deleteCategoryAsync(categoryId: string): Promise<void> {
+export async function deleteCategoryAsync(categoryId: string): Promise<void> {
   return ExponentNotifications.deleteCategoryAsync(categoryId);
 }
 
-export function createChannelAsync(id: string, channel: Channel): Promise<void> {
+export async function createChannelAsync(id: string, channel: Channel): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
     return Promise.resolve();
@@ -86,7 +90,7 @@ export function createChannelAsync(id: string, channel: Channel): Promise<void> 
   return ExponentNotifications.createChannel(id, channel);
 }
 
-export function deleteChannelAsync(id: string): Promise<void> {
+export async function deleteChannelAsync(id: string): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
     return Promise.resolve();
@@ -94,11 +98,11 @@ export function deleteChannelAsync(id: string): Promise<void> {
   return ExponentNotifications.deleteChannel(id);
 }
 
-export function createChannelGroupAsync(groupId: string, groupName: string): Promise<void> {
+export async function createChannelGroupAsync(groupId: string, groupName: string): Promise<void> {
   return ExponentNotifications.createChannelGroup(groupId, groupName);
 }
 
-export function deleteChannelGroupAsync(groupId: string): Promise<void> {
+export async function deleteChannelGroupAsync(groupId: string): Promise<void> {
   return ExponentNotifications.deleteChannelGroup(groupId);
 }
 

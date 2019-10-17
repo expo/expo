@@ -338,7 +338,9 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
   return @[@"Exponent.onUserInteraction", @"Exponent.onForegroundNotification", @"Exponent.onTokenChange"];
 }
 
-- (void)startObserving {}
+- (void)startObserving {
+  NSLog(@"adfsfsf");
+}
 - (void)stopObserving {}
 
 - (void)onTokenChange:(NSString *)token {

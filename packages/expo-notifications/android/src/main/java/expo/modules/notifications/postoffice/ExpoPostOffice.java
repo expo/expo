@@ -8,12 +8,10 @@ public interface ExpoPostOffice {
 
   void notifyAboutUserInteraction(String appId, Bundle userInteraction);
 
-  void sendForegroundNotification(String appId, Bundle notification);
-
-  void registerModuleAndGetPendingDeliveries(String appId, Mailbox mailbox);
+  void registerModuleAndGetInitialUserInteraction(String appId, Mailbox mailbox, Function<Bundle, Boolean> callback);
 
   void unregisterModule(String appId);
 
-  void doWeHaveMailboxRegisteredAsAppId(String appId, Function<Boolean, Boolean> completionHandler);
+  void tryToSendForegroundNotificationToMailbox(String appId, Bundle notification, Function<Boolean, Boolean> completionHandler);
 
 }

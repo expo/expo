@@ -32,13 +32,8 @@ public class PostOfficeProxy implements ExpoPostOffice {
   }
 
   @Override
-  public void sendForegroundNotification(final String appId, final Bundle notification) {
-    mSingleThreadExecutor.execute(() -> mPostOffice.sendForegroundNotification(appId, notification));
-  }
-
-  @Override
-  public void registerModuleAndGetPendingDeliveries(final String appId, final Mailbox mailbox) {
-    mSingleThreadExecutor.execute(() -> mPostOffice.registerModuleAndGetPendingDeliveries(appId, mailbox));
+  public void registerModuleAndGetInitialUserInteraction(String appId, Mailbox mailbox, Function<Bundle, Boolean> callback) {
+    mSingleThreadExecutor.execute(() -> mPostOffice.registerModuleAndGetInitialUserInteraction(appId, mailbox, callback));
   }
 
   @Override
@@ -46,7 +41,7 @@ public class PostOfficeProxy implements ExpoPostOffice {
     mSingleThreadExecutor.execute(() -> mPostOffice.unregisterModule(appId));
   }
 
-  public void doWeHaveMailboxRegisteredAsAppId(String appId, Function<Boolean, Boolean> completionHandler) {
-    mSingleThreadExecutor.execute(() -> mPostOffice.doWeHaveMailboxRegisteredAsAppId(appId, completionHandler));
+  public void tryToSendForegroundNotificationToMailbox(String appId, Bundle notification, Function<Boolean, Boolean> completionHandler) {
+    mSingleThreadExecutor.execute(() -> mPostOffice.tryToSendForegroundNotificationToMailbox(appId, notification, completionHandler));
   }
 }

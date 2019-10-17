@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import expo.modules.notifications.helpers.Utils;
-import expo.modules.notifications.postoffice.pendingdeliveries.PendingForegroundNotification;
-import expo.modules.notifications.postoffice.pendingdeliveries.PendingForegroundNotification_Table;
 import expo.modules.notifications.postoffice.pendingdeliveries.PendingUserInteraction;
 import expo.modules.notifications.postoffice.pendingdeliveries.PendingUserInteraction_Table;
 
@@ -30,37 +28,22 @@ class PostOffice implements ExpoPostOffice {
   }
 
   @Override
-  public void sendForegroundNotification(String appId, Bundle notification) {
-    if (mMailBoxes.containsKey(appId)) {
-      mMailBoxes.get(appId).onForegroundNotification(notification);
-    } else {
-      addForegroundNotificationToDatabase(appId, notification);
-    }
-  }
-
-  @Override
-  public void registerModuleAndGetPendingDeliveries(String appId, Mailbox mailbox) {
+  public void registerModuleAndGetInitialUserInteraction(String appId, Mailbox mailbox, Function<Bundle, Boolean> callback) {
     mMailBoxes.put(appId, mailbox);
-
-    List<PendingForegroundNotification> pendingForegroundNotificationList = new Select().from(PendingForegroundNotification.class)
-        .where(PendingForegroundNotification_Table.appId.eq(appId))
-        .queryList();
 
     List<PendingUserInteraction> pendingUserInteractionList = new Select().from(PendingUserInteraction.class)
         .where(PendingUserInteraction_Table.appId.eq(appId))
         .queryList();
 
-    for (PendingForegroundNotification pendingForegroundNotification : pendingForegroundNotificationList) {
-      mailbox.onForegroundNotification(
-          Utils.StringToBundle(pendingForegroundNotification.getNotification())
-      );
-      pendingForegroundNotification.delete();
+    if (pendingUserInteractionList.size() == 0) {
+      callback.apply(null);
+    } else {
+      PendingUserInteraction lastPendingUserInteraction = pendingUserInteractionList.get(pendingUserInteractionList.size() - 1);;
+      Bundle initialUserInteraction = Utils.StringToBundle(lastPendingUserInteraction.getUserInteraction());
+      callback.apply(initialUserInteraction);
     }
 
     for (PendingUserInteraction pendingUserInteraction : pendingUserInteractionList) {
-      mailbox.onUserInteraction(
-          Utils.StringToBundle(pendingUserInteraction.getUserInteraction())
-      );
       pendingUserInteraction.delete();
     }
   }
@@ -72,20 +55,17 @@ class PostOffice implements ExpoPostOffice {
 
   private void addUserInteractionToDatabase(String appId, Bundle userInteraction) {
     PendingUserInteraction pendingUserInteraction = new PendingUserInteraction();
-    pendingUserInteraction.setappId(appId);
+    pendingUserInteraction.setAppId(appId);
     pendingUserInteraction.setUserInteraction(Utils.bundleToString(userInteraction));
     pendingUserInteraction.save();
   }
 
-  private void addForegroundNotificationToDatabase(String appId, Bundle notification) {
-    PendingForegroundNotification pendingForegroundNotification = new PendingForegroundNotification();
-    pendingForegroundNotification.setappId(appId);
-    pendingForegroundNotification.setNotification(Utils.bundleToString(notification));
-    pendingForegroundNotification.save();
-  }
-
-  public void doWeHaveMailboxRegisteredAsAppId(String appId, Function<Boolean, Boolean> completionHandler) {
-    completionHandler.apply(mMailBoxes.containsKey(appId));
+  public void tryToSendForegroundNotificationToMailbox(String appId, Bundle notification, Function<Boolean, Boolean> completionHandler) {
+    if (mMailBoxes.containsKey(appId)) {
+      mMailBoxes.get(appId).onForegroundNotification(notification);
+    } else {
+      completionHandler.apply(mMailBoxes.containsKey(appId));
+    }
   }
 
 }

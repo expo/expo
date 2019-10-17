@@ -26,11 +26,11 @@ public class PendingUserInteraction extends BaseModel {
     this.id = id;
   }
 
-  public String getappId() {
+  public String getAppId() {
     return appId;
   }
 
-  public void setappId(String appId) {
+  public void setAppId(String appId) {
     this.appId = appId;
   }
 

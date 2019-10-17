@@ -68,6 +68,8 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   private ModuleRegistry mModuleRegistry = null;
 
+  private Bundle mInitialUserInteraction = null;
+
   public NotificationsModule(Context context) {
     super(context);
   }
@@ -75,6 +77,12 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   @Override
   public String getName() {
     return "ExponentNotifications";
+  }
+
+  @ExpoMethod
+  public void getInitalUserInteractionAsync(final Promise promise) {
+    promise.resolve(mInitialUserInteraction);
+    mInitialUserInteraction = null;
   }
 
   @ExpoMethod
@@ -267,15 +275,15 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     SchedulerImpl scheduler = new SchedulerImpl(calendarSchedulerModel);
 
     SchedulersManagerProxy.getInstance(mContext.getApplicationContext()).addScheduler(
-        scheduler,
-        (String id) -> {
-          if (id == null) {
-            promise.reject(new UnableToScheduleException());
-            return false;
-          }
-          promise.resolve(id);
-          return true;
+      scheduler,
+      (String id) -> {
+        if (id == null) {
+          promise.reject(new UnableToScheduleException());
+          return false;
         }
+        promise.resolve(id);
+        return true;
+      }
     );
   }
 
@@ -290,7 +298,14 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     createDefaultChannel();
     mChannelManager = getChannelManager();
 
-    PostOfficeProxy.getInstance().registerModuleAndGetPendingDeliveries(mAppId, this);
+    PostOfficeProxy.getInstance().registerModuleAndGetInitialUserInteraction(
+      mAppId,
+        this,
+        (initialUserInteraction) -> {
+          mInitialUserInteraction = MessageUnscoper.getUnscopedMessage(initialUserInteraction, mModuleRegistry.getModule(StringScoper.class));
+          return false;
+        }
+    );
   }
 
   private void createDefaultChannel() {
