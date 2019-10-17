@@ -15,6 +15,7 @@
 @property (strong) NSString *appId;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (atomic, strong) NSDictionary *initialUserInteraction;
 
 @end
 
@@ -45,8 +46,23 @@ UM_REGISTER_MODULE();
   _appId = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppIdProvider)] getAppId];
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   
-  [[EXThreadSafePostOffice sharedInstance]
-   registerModuleAndGetPendingDeliveriesWithAppId:self.appId mailbox:self];
+  __weak EXNotifications *weakSelf = self;
+  
+  [[EXThreadSafePostOffice sharedInstance] registerModuleAndGetInitialNotificationWithAppId:_appId
+                                               mailbox:self
+                                    completionHandler:^(NSDictionary *initialUserInteraction)
+    {
+      weakSelf.initialUserInteraction = initialUserInteraction;
+    }
+   ];
+}
+
+UM_EXPORT_METHOD_AS(getInitialUserInteractionAsync,
+                    getInitialUserInteractionAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  resolve(_initialUserInteraction);
+  _initialUserInteraction = nil;
 }
 
 UM_EXPORT_METHOD_AS(presentLocalNotification,

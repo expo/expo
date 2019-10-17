@@ -35,21 +35,18 @@ static dispatch_queue_t queue;
   return sharedInstance;
 }
 
-- (void)notifyAboutForegroundNotificationForAppId:(NSString *)appId notification:(NSDictionary *)notification {
-  dispatch_async(queue, ^{
-    [self.insecurePostOffice notifyAboutForegroundNotificationForAppId:appId notification:notification];
-  });
-}
-
 - (void)notifyAboutUserInteractionForAppId:(NSString *)appId userInteraction:(NSDictionary *)userInteraction {
   dispatch_async(queue, ^{
     [self.insecurePostOffice notifyAboutUserInteractionForAppId:appId userInteraction:userInteraction];
   });
 }
 
-- (void)registerModuleAndGetPendingDeliveriesWithAppId:(NSString *)appId mailbox:(id<EXMailbox>)mailbox {
+- (void)registerModuleAndGetInitialNotificationWithAppId:(NSString *)appId
+          mailbox:(id<EXMailbox>)mailbox
+completionHandler:(void (^)(NSDictionary*))completionHandler
+{
   dispatch_async(queue, ^{
-    [self.insecurePostOffice registerModuleAndGetPendingDeliveriesWithAppId:appId mailbox:mailbox];
+    [self.insecurePostOffice registerModuleAndGetInitialNotificationWithAppId:appId mailbox:mailbox completionHandler:completionHandler];
   });
 }
 
@@ -59,10 +56,10 @@ static dispatch_queue_t queue;
   });
 }
 
-- (void)doWeHaveMailboxRegisteredAsAppId:(NSString*)appId completionHandler:(void (^)(BOOL))completionHandler
+- (void)tryToSendForegroundNotificationTo:(NSString*)appId foregroundNotification:(NSDictionary*)foregroundNotification completionHandler:(void (^)(BOOL))completionHandler
 {
   dispatch_async(queue, ^{
-    [self.insecurePostOffice doWeHaveMailboxRegisteredAsAppId:appId completionHandler:completionHandler];
+    [self.insecurePostOffice tryToSendForegroundNotificationTo:appId foregroundNotification:foregroundNotification completionHandler:completionHandler];
   });
 }
 

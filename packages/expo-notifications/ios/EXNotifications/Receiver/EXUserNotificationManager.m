@@ -40,26 +40,28 @@
   
   __block BOOL shouldDisplayInForeground = NO || userInfo[@"canInForeground"];
   
-  [[EXThreadSafePostOffice sharedInstance] doWeHaveMailboxRegisteredAsAppId:appId completionHandler:^void (BOOL isJSActive) {
-    if (isJSActive || shouldDisplayInForeground) {
-      NSUInteger notificationPresentationOptions = UNNotificationPresentationOptionAlert;
-      
-      if (notificationBundle[@"count"]) {
-        notificationPresentationOptions += UNNotificationPresentationOptionBadge;
+  [[EXThreadSafePostOffice sharedInstance] tryToSendForegroundNotificationTo:appId foregroundNotification:notificationBundle completionHandler:^void (BOOL successful) {
+        if (!successful) {
+          
+          if (shouldDisplayInForeground) {
+            NSUInteger notificationPresentationOptions = UNNotificationPresentationOptionAlert;
+                             
+            if (notificationBundle[@"count"]) {
+              notificationPresentationOptions += UNNotificationPresentationOptionBadge;
+            }
+
+            if (notificationBundle[@"sound"]) {
+              notificationPresentationOptions += UNNotificationPresentationOptionSound;
+            }
+                 
+            completionHandler(notificationPresentationOptions);
+          } else {
+             completionHandler(UNNotificationPresentationOptionNone);
+          }
+          
+        }
       }
-      
-      if (notificationBundle[@"sound"]) {
-        notificationPresentationOptions += UNNotificationPresentationOptionSound;
-      }
-      
-      completionHandler(notificationPresentationOptions);
-      return;
-    }
-    
-    [[EXThreadSafePostOffice sharedInstance] notifyAboutForegroundNotificationForAppId:appId notification:notificationBundle];
-    
-    completionHandler(UNNotificationPresentationOptionNone);
-  }];
+  ];
 }
 
 @end

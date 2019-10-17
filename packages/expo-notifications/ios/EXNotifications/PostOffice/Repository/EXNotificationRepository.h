@@ -5,13 +5,9 @@
 
 @protocol EXNotificationRepository <NSObject>
 
-- (void)addForegroundNotificationForAppId:(NSString*)appId foregroundNotification:(NSDictionary*)foregroundNotification;
-
 - (void)addUserInteractionForAppId:(NSString*)appId userInteraction:(NSDictionary*)userInteraction;
 
-- (NSArray<NSDictionary*>*)getForegroundNotificationsForAppId:(NSString*)appId;
-
-- (NSArray<NSDictionary*>*)getUserInterationsForAppId:(NSString*)appId;
+- (NSDictionary*)getUserInterationForAppId:(NSString*)appId;
 
 @end
 

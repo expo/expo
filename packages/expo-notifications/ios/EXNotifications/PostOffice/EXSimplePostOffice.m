@@ -35,47 +35,30 @@
   [self.notificationRepository addUserInteractionForAppId:appId userInteraction:userInteraction];
 }
 
-- (void)notifyAboutForegroundNotificationForAppId:(NSString*)appId
-                                            notification:(NSDictionary*)notification
+- (void)registerModuleAndGetInitialNotificationWithAppId:(NSString *)appId
+                                               mailbox:(id<EXMailbox>)mailbox
+                                     completionHandler:(void (^)(NSDictionary*))completionHandler
 {
-  id<EXMailbox> mailbox = [self.mailboxes objectForKey:appId];
-  if (mailbox) {
-    [mailbox onForegroundNotification:notification];
-    return;
-  }
-  
-  [self.notificationRepository addForegroundNotificationForAppId:appId foregroundNotification:notification];
-}
-
-- (void)registerModuleAndGetPendingDeliveriesWithAppId:(NSString *)appId
-                                                      mailbox:(id<EXMailbox>)mailbox
-{
-  NSLog(@"REGISTER");
   self.mailboxes[appId] = mailbox;
   
-  NSArray<NSDictionary*> *pendingForegroundNotifications = [self.notificationRepository getForegroundNotificationsForAppId:appId];
+  NSDictionary *initialUserInteraction = [_notificationRepository getUserInterationForAppId:appId];
   
-  NSArray<NSDictionary*> *pendingUserInteractions = [self.notificationRepository getUserInterationsForAppId:appId];
-  
-  for (NSDictionary *userInteraction in pendingUserInteractions) {
-    [mailbox onUserInteraction:userInteraction];
-  }
-  
-  for (NSDictionary *notification in pendingForegroundNotifications) {
-    [mailbox onForegroundNotification:notification];
-  }
+  completionHandler(initialUserInteraction);
 }
 
 - (void)unregisterModuleWithAppId:(NSString*)appId
 {
-  NSLog(@"UN REGISTER");
   [self.mailboxes removeObjectForKey:appId];
 }
 
-- (void)doWeHaveMailboxRegisteredAsAppId:(NSString*)appId completionHandler:(void (^)(BOOL))completionHandler
+- (void)tryToSendForegroundNotificationTo:(NSString*)appId foregroundNotification:(NSDictionary*)foregroundNotification completionHandler:(void (^)(BOOL))completionHandler
 {
   id<EXMailbox> mailbox = [self.mailboxes objectForKey:appId];
-  completionHandler(mailbox == nil);
+  if (mailbox != nil) {
+    [mailbox onForegroundNotification:foregroundNotification];
+    return;
+  }
+  completionHandler(mailbox != nil);
 }
 
 @end

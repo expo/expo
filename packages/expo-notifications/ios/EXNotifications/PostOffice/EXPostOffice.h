@@ -9,13 +9,13 @@
 
 - (void)notifyAboutUserInteractionForAppId:(NSString*)appId userInteraction:(NSDictionary*)userInteraction;
 
-- (void)notifyAboutForegroundNotificationForAppId:(NSString*)appId notification:(NSDictionary*)notification;
-
-- (void)registerModuleAndGetPendingDeliveriesWithAppId:(NSString*)appId mailbox:(id<EXMailbox>)mailbox;
+- (void)registerModuleAndGetInitialNotificationWithAppId:(NSString *)appId
+                                               mailbox:(id<EXMailbox>)mailbox
+                                     completionHandler:(void (^)(NSDictionary*))completionHandler;
 
 - (void)unregisterModuleWithAppId:(NSString*)appId;
 
-- (void)doWeHaveMailboxRegisteredAsAppId:(NSString*)appId completionHandler:(void (^)(BOOL))completionHandler;
+- (void)tryToSendForegroundNotificationTo:(NSString*)appId foregroundNotification:(NSDictionary*)foregroundNotification completionHandler:(void (^)(BOOL))completionHandler;
 
 @end
 
