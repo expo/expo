@@ -1,0 +1,44 @@
+platform :ios, '10.0'
+
+require_relative '../node_modules/react-native-unimodules/cocoapods'
+
+package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+
+target 'OTABare' do
+  # Pods for OTABare
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+    'Core',
+    'CxxBridge',
+    'DevSupport',
+    'RCTActionSheet',
+    'RCTAnimation',
+    'RCTBlob',
+    'RCTGeolocation',
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTNetwork',
+    'RCTSettings',
+    'RCTText',
+    'RCTVibration',
+    'RCTWebSocket',
+  ]
+
+  use_unimodules!(
+      {
+        modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
+        exclude: package['excludedUnimodules'],
+        flags: { inhibit_warnings: false }
+      }
+    )
+
+  pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
+  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+
+  target 'OTABareTests' do
+    inherit! :search_paths
+
+  end
+end

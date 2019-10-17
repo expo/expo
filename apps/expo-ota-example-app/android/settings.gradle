@@ -1,0 +1,13 @@
+import groovy.json.JsonSlurper
+def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+
+apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
+includeUnimodulesProjects(modulesPaths : [
+        '../../../../packages',
+    ], exclude: excludedUnimodules)
+
+rootProject.name = 'OTABare'
+
+include ':app'

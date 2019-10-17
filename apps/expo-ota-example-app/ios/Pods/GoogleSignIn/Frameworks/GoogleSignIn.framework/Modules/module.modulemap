@@ -1,0 +1,13 @@
+framework module GoogleSignIn {
+  umbrella header "GoogleSignIn.h"
+  export *
+  module * { export * }
+  link framework "AuthenticationServices"
+  link framework "CoreGraphics"
+  link framework "CoreText"
+  link framework "Foundation"
+  link framework "LocalAuthentication"
+  link framework "SafariServices"
+  link framework "Security"
+  link framework "UIKit"
+}

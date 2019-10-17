@@ -1,0 +1,51 @@
+{
+  "name": "expo-ota-example-app",
+  "version": "1.0.0",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "web": "expo start --web",
+    "start": "react-native start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "expo": "^34.0.1",
+    "react": "16.8.3",
+    "react-dom": "^16.8.6",
+    "react-native": "0.59.8",
+    "react-native-unimodules": "~0.5.2",
+    "react-native-web": "^0.11.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@types/react": "^16.8.23",
+    "@types/react-native": "^0.57.65",
+    "babel-preset-expo": "^6.0.0",
+    "jest-expo": "^34.0.0",
+    "react-test-renderer": "^16.10.1",
+    "typescript": "^3.4.5"
+  },
+  "excludedUnimodules": [
+    "expo-task-manager",
+    "expo-background-fetch",
+    "expo-branch",
+    "expo-camera",
+    "expo-face-detector",
+    "expo-payments-stripe",
+    "expo-facebook",
+    "expo-ads-facebook",
+    "expo-ads-admob",
+    "expo-video-thumbnails",
+    "expo-module-template",
+    "expo-in-app-purchases",
+    "expo-apple-authentication",
+    "expo-bluetooth",
+    "expo-mail-composer",
+    "expo-av",
+    "expo-updates"
+  ],
+  "jest": {
+    "preset": "react-native"
+  },
+  "private": true
+}

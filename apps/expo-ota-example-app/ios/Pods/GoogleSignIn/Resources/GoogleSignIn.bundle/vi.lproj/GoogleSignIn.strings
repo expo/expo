@@ -1,0 +1,44 @@
+/* Sign-in button text */
+"Sign in" = "Đăng nhập";
+
+/* Long form sign-in button text */
+"Sign in with Google" = "Đăng nhập bằng Google";
+
+/* The title of the promotional prompt to install the Google app. */
+"PromoTitle" = "Đăng nhập bằng Google";
+
+/* The body message of the promotional prompt to install the Google app. */
+"PromoMessage" = "Tải ứng dụng Google miễn phí và đăng nhập vào các ứng dụng bằng Tài khoản Google của bạn. Không cần phải nhớ mật khẩu.";
+
+/* The cancel button on the promotional prompt to install the Google app. */
+"PromoActionCancel" = "Hủy";
+
+/* The install button on the promotional prompt to install the Google app. */
+"PromoActionInstall" = "Tải";
+
+/* The text for the button for user to acknowledge and dismiss a dialog. */
+"OK" = "OK";
+
+/* The text for the button for user to dismiss a dialog without taking any action. */
+"Cancel" = "Hủy";
+
+/* The name of the iOS native "Settings" app. */
+"SettingsAppName" = "Cài đặt";
+
+/* The title for the error dialog for unable to sign in because of EMM policy. */
+"EmmErrorTitle" = "Không thể đăng nhập vào tài khoản";
+
+/* The text in the error dialog asking user to set up a passcode for the device due to EMM policy. */
+"EmmPasscodeRequired" = "Quản trị viên của bạn yêu cầu bạn phải đặt mật mã trên thiết bị này để truy cập vào tài khoản này. Hãy đặt mật mã và thử lại.";
+
+/* The text in the error dialog informing user that EMM policy prevented sign-in on the device. */
+"EmmGeneralError" = "Thiết bị này không tuân thủ chính sách bảo mật do quản trị viên của bạn thiết lập.";
+
+/* The title in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectTitle" = "Kết nối với ứng dụng Device Policy?";
+
+/* The text in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectText" = "Để bảo vệ dữ liệu của tổ chức của mình, bạn phải kết nối với ứng dụng Device Policy trước khi đăng nhập.";
+
+/* The action button label in the error dialog informing user that connecting with Device Policy app is required. */
+"EmmConnectLabel" = "Kết nối";
