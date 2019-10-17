@@ -12,7 +12,9 @@ import com.otabare.generated.BasePackageList;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+import org.unimodules.core.interfaces.Package;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,15 +23,18 @@ import javax.annotation.Nullable;
 import expo.modules.ota.ExpoOTA;
 import expo.modules.ota.ExpoOTAConfig;
 import expo.modules.ota.ExpoOTAConfigKt;
+import expo.modules.ota.OtaPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
     private ExpoOTA expoOTA;
 
-    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
-            new BasePackageList().getPackageList(),
-            Arrays.asList()
-    );
+    private ReactModuleRegistryProvider createReactModuleRegistryProvider() {
+        List<Package> basePackages = new BasePackageList().getPackageList();
+        List<Package> packages = new ArrayList<>(basePackages);
+        packages.add(new OtaPackage());
+        return  new ReactModuleRegistryProvider(packages, Arrays.asList());
+    }
 
     private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
         @Override
@@ -41,7 +46,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
-                    new ModuleRegistryAdapter(mModuleRegistryProvider)
+                    new ModuleRegistryAdapter(createReactModuleRegistryProvider())
             );
         }
 
@@ -72,7 +77,7 @@ public class MainApplication extends Application implements ReactApplication {
     }
 
     private ExpoOTA createExpoOTA() {
-        ExpoOTAConfig otaConfig = ExpoOTAConfigKt.expoHostedOTAConfig("mczernek", "expo-template-bare", "test", false);
+        ExpoOTAConfig otaConfig = ExpoOTAConfigKt.expoHostedOTAConfig("mczernek", "expo-template-bare");
         return ExpoOTA.create(this, otaConfig, false);
     }
 }

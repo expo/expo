@@ -75,7 +75,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-        entryFile    : "index.tsx"
+        entryFile    : "index.tsx",
+        enableHermes: false,
 ]
 
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
@@ -158,6 +159,8 @@ android {
     }
 }
 
+def jscFlavor = 'org.webkit:android-jsc:+'
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "androidx.appcompat:appcompat:1.0.0"
@@ -166,6 +169,8 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+
+    implementation jscFlavor
 
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation project(':expo-ota')

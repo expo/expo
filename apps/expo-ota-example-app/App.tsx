@@ -48,7 +48,7 @@ export default function App() {
       <View style={{height: 10}}/>
       <Button title={"Reload"} onPress={reload}/>
       <View style={{height: 10}}/>
-      <Text>Version 1.0.88</Text>
+      <Text>Version 1.0.90</Text>
     </View>
   );
 }
