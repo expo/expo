@@ -2,12 +2,10 @@ import { useEffect } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
 const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 export function useKeepAwake(tag = ExpoKeepAwakeTag) {
-    if (ExpoKeepAwake.activate || ExpoKeepAwake.deactivate) {
-        useEffect(() => {
-            activateKeepAwake(tag);
-            return () => deactivateKeepAwake(tag);
-        }, [tag]);
-    }
+    useEffect(() => {
+        activateKeepAwake(tag);
+        return () => deactivateKeepAwake(tag);
+    }, [tag]);
 }
 export function activateKeepAwake(tag = ExpoKeepAwakeTag) {
     if (ExpoKeepAwake.activate)
