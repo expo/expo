@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit
 class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val id: String) {
 
     init {
-        if(persistence.enqueqedReorderAtNextBoot) {
+        if(persistence.enqueuedReorderAtNextBoot) {
             markDownloadedCurrentAndCurrentOutdated()
             removeOutdatedBundle()
-            persistence.enqueqedReorderAtNextBoot = false
+            persistence.enqueuedReorderAtNextBoot = false
         }
     }
 
@@ -80,7 +80,7 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
     fun prepareToReload() {
-        persistence.enqueqedReorderAtNextBoot = true
+        persistence.enqueuedReorderAtNextBoot = true
         persistence.synchronize()
     }
 

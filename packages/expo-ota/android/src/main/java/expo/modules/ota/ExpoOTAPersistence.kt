@@ -68,7 +68,7 @@ class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
             storage.writeString(KEY_DOWNLOADED_MANIFEST, value?.toString())
         }
 
-    var enqueqedReorderAtNextBoot: Boolean
+    var enqueuedReorderAtNextBoot: Boolean
         @Synchronized get() {
             return storage.readBoolean(KEY_REORDER_ENQUEUED, false)
         }
