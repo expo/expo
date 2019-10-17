@@ -45,31 +45,34 @@ function _validateNotification(notification) {
         invariant(!!notification.title, 'Local notifications on Android require a title');
     }
 }
+export async function getInitalUserInteractionAsync() {
+    return ExponentNotifications.getInitalUserInteractionAsync();
+}
 // User passes set of actions titles.
-export function createCategoryAsync(categoryId, actions) {
+export async function createCategoryAsync(categoryId, actions) {
     return ExponentNotifications.createCategoryAsync(categoryId, actions);
 }
-export function deleteCategoryAsync(categoryId) {
+export async function deleteCategoryAsync(categoryId) {
     return ExponentNotifications.deleteCategoryAsync(categoryId);
 }
-export function createChannelAsync(id, channel) {
+export async function createChannelAsync(id, channel) {
     if (Platform.OS !== 'android') {
         console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
         return Promise.resolve();
     }
     return ExponentNotifications.createChannel(id, channel);
 }
-export function deleteChannelAsync(id) {
+export async function deleteChannelAsync(id) {
     if (Platform.OS !== 'android') {
         console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
         return Promise.resolve();
     }
     return ExponentNotifications.deleteChannel(id);
 }
-export function createChannelGroupAsync(groupId, groupName) {
+export async function createChannelGroupAsync(groupId, groupName) {
     return ExponentNotifications.createChannelGroup(groupId, groupName);
 }
-export function deleteChannelGroupAsync(groupId) {
+export async function deleteChannelGroupAsync(groupId) {
     return ExponentNotifications.deleteChannelGroup(groupId);
 }
 /**
