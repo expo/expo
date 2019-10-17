@@ -437,7 +437,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
       ExpoKit: use Xcode to set this.
     */
-    "note": BOOLEAN,
+    "accessesContactNotes": BOOLEAN,
 
     /*
       Extra module configuration to be added to your app's native Info.plist.
