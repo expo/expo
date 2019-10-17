@@ -1,9 +1,7 @@
 package expo.modules.ota
 
 import okhttp3.Response
-import org.apache.commons.io.output.TeeOutputStream
 import java.io.*
-import java.lang.Exception
 
 fun saveResponseToFile(directory: File, fileName: String): (response: Response, success: (String) -> Unit, error: (Exception) -> Unit) -> Unit {
     return fun(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
@@ -14,10 +12,8 @@ fun saveResponseToFile(directory: File, fileName: String): (response: Response, 
         try {
             val inputStream = response.body()!!.byteStream()
             val fileOutputStream = FileOutputStream(sourceFile)
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            val teeOutputStream = TeeOutputStream(fileOutputStream, byteArrayOutputStream)
 
-            copyStream(inputStream, teeOutputStream)
+            copyStream(inputStream, fileOutputStream)
 
             fileOutputStream.flush()
             fileOutputStream.fd.sync()
