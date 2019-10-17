@@ -123,7 +123,7 @@ Write default imports before namespace imports before named imports:
 ````js
 // CORRECT
 import a, * as b, { c } from 'module';
-``
+```
 
 ## React and JSX
 
@@ -304,7 +304,6 @@ console.log(history.deleted);
 
 // CLEAR
 console.log(history.isDeleted);
-console.log(history.deletedEntries);
 ```
 
 # Examples
