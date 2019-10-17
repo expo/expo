@@ -45,8 +45,8 @@ function _validateNotification(notification) {
         invariant(!!notification.title, 'Local notifications on Android require a title');
     }
 }
-export async function getInitalUserInteractionAsync() {
-    return ExponentNotifications.getInitalUserInteractionAsync();
+export async function getInitialUserInteractionAsync() {
+    return ExponentNotifications.getInitialUserInteractionAsync();
 }
 // User passes set of actions titles.
 export async function createCategoryAsync(categoryId, actions) {

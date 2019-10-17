@@ -56,7 +56,6 @@
   id<EXMailbox> mailbox = [self.mailboxes objectForKey:appId];
   if (mailbox != nil) {
     [mailbox onForegroundNotification:foregroundNotification];
-    return;
   }
   completionHandler(mailbox != nil);
 }

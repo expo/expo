@@ -42,19 +42,23 @@ UM_REGISTER_MODULE();
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
+  bool isItFirstTime = _moduleRegistry == nil;
   _moduleRegistry = moduleRegistry;
   _appId = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppIdProvider)] getAppId];
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   
   __weak EXNotifications *weakSelf = self;
+  __weak id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
   
-  [[EXThreadSafePostOffice sharedInstance] registerModuleAndGetInitialNotificationWithAppId:_appId
-                                               mailbox:self
-                                    completionHandler:^(NSDictionary *initialUserInteraction)
-    {
-      weakSelf.initialUserInteraction = initialUserInteraction;
-    }
-   ];
+  if (isItFirstTime) {
+    [[EXThreadSafePostOffice sharedInstance] registerModuleAndGetInitialNotificationWithAppId:_appId
+                                                 mailbox:self
+                                      completionHandler:^(NSDictionary *initialUserInteraction)
+      {
+        weakSelf.initialUserInteraction = [EXMessageUnscoper getUnscopedMessage:initialUserInteraction scoper:scoper];
+      }
+    ];
+  }
 }
 
 UM_EXPORT_METHOD_AS(getInitialUserInteractionAsync,
@@ -77,7 +81,7 @@ UM_EXPORT_METHOD_AS(presentLocalNotification,
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
   
   NSMutableDictionary *userInfo =  [content.userInfo mutableCopy];
-  [userInfo setObject:@(YES) forKey:@"canInForeground"];
+  [userInfo setObject:@(YES) forKey:@"presentedByUser"];
   content.userInfo = userInfo;
   
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:content.userInfo[@"id"]
@@ -354,9 +358,7 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
   return @[@"Exponent.onUserInteraction", @"Exponent.onForegroundNotification", @"Exponent.onTokenChange"];
 }
 
-- (void)startObserving {
-  NSLog(@"adfsfsf");
-}
+- (void)startObserving {}
 - (void)stopObserving {}
 
 - (void)onTokenChange:(NSString *)token {

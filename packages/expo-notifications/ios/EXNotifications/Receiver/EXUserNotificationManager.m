@@ -38,30 +38,32 @@
   __block NSMutableDictionary *notificationBundle = [EXNotificationConverter convertToDictionary:notification.request.content];
   __block NSString *appId = notificationBundle[@"appId"];
   
-  __block BOOL shouldDisplayInForeground = NO || userInfo[@"canInForeground"];
+  if(userInfo[@"presentedByUser"]) {
+    [EXUserNotificationManager presentForegroundNotification:notificationBundle completionHandler:completionHandler];
+    return;
+  }
   
   [[EXThreadSafePostOffice sharedInstance] tryToSendForegroundNotificationTo:appId foregroundNotification:notificationBundle completionHandler:^void (BOOL successful) {
         if (!successful) {
-          
-          if (shouldDisplayInForeground) {
-            NSUInteger notificationPresentationOptions = UNNotificationPresentationOptionAlert;
-                             
-            if (notificationBundle[@"count"]) {
-              notificationPresentationOptions += UNNotificationPresentationOptionBadge;
-            }
-
-            if (notificationBundle[@"sound"]) {
-              notificationPresentationOptions += UNNotificationPresentationOptionSound;
-            }
-                 
-            completionHandler(notificationPresentationOptions);
-          } else {
-             completionHandler(UNNotificationPresentationOptionNone);
-          }
-          
+          [EXUserNotificationManager presentForegroundNotification:notificationBundle completionHandler:completionHandler];
         }
       }
   ];
+}
+
++ (void)presentForegroundNotification:(NSDictionary*)notificationBundle completionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  NSUInteger notificationPresentationOptions = UNNotificationPresentationOptionAlert;
+                      
+     if (notificationBundle[@"count"]) {
+       notificationPresentationOptions += UNNotificationPresentationOptionBadge;
+     }
+
+     if (notificationBundle[@"sound"]) {
+       notificationPresentationOptions += UNNotificationPresentationOptionSound;
+     }
+          
+     completionHandler(notificationPresentationOptions);
 }
 
 @end
