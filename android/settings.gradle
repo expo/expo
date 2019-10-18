@@ -34,6 +34,7 @@ includeUnimodulesProjects(
         'expo-bluetooth',
         'expo-in-app-purchases',
         'expo-updates',
+        'expo-notifications'
 // FLAG_END_REMOVE__UPDATE_EXPOKIT
     ]
 ]

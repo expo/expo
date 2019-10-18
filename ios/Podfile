@@ -28,6 +28,7 @@ target 'Exponent' do
       'expo-in-app-purchases',
       'expo-payments-stripe',
       'expo-updates',
+      'expo-notifications',
     ],
     flags: {
       :inhibit_warnings => false
