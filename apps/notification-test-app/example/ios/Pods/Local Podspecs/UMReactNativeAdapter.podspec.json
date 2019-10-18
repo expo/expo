@@ -1,0 +1,29 @@
+{
+  "name": "UMReactNativeAdapter",
+  "version": "3.0.0",
+  "summary": "The adapter to use universal modules with the React Native bridge",
+  "description": "The adapter to use universal modules with the React Native bridge",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/@unimodules/react-native-adapter",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "UMReactNativeAdapter/**/*.{h,m}",
+  "preserve_paths": "UMReactNativeAdapter/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "React": [
+
+    ],
+    "UMCore": [
+
+    ],
+    "UMFontInterface": [
+
+    ]
+  }
+}

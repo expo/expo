@@ -15,6 +15,7 @@
     "packages": [
       "apps/*",
       "apps/test-suite/puppeteer-test",
+      "apps/notification-test-app/example",
       "expokit-npm-package",
       "home",
       "packages/*",

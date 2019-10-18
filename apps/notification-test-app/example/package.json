@@ -1,6 +1,7 @@
 {
+  "name": "expo-notifications-bare-example",
+  "version": "0.1.0",
   "scripts": {
-    "postinstall": "jetify",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",

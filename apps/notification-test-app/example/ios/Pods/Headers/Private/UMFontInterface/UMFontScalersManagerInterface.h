@@ -1,0 +1,1 @@
+../../../../../node_modules/unimodules-font-interface/ios/UMFontInterface/UMFontScalersManagerInterface.h
