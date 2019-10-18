@@ -80,7 +80,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void getInitalUserInteractionAsync(final Promise promise) {
+  public void getInitialUserInteractionAsync(final Promise promise) {
     promise.resolve(mInitialUserInteraction);
     mInitialUserInteraction = null;
   }
@@ -289,7 +289,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
-    //we need applicationContextHere
+    //we need application context
     mContext = moduleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplicationContext();
 
     AppIdProvider appIdProvider = moduleRegistry.getModule(AppIdProvider.class);
@@ -300,11 +300,15 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
     PostOfficeProxy.getInstance().registerModuleAndGetInitialUserInteraction(
       mAppId,
-        this,
-        (initialUserInteraction) -> {
+      this,
+      (initialUserInteraction) -> {
+        if (initialUserInteraction != null) {
           mInitialUserInteraction = MessageUnscoper.getUnscopedMessage(initialUserInteraction, mModuleRegistry.getModule(StringScoper.class));
-          return false;
+        } else {
+          mInitialUserInteraction = null;
         }
+        return false;
+      }
     );
   }
 
