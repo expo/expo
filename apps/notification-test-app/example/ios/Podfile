@@ -30,6 +30,12 @@ target 'example' do
   pod 'RNReanimated', :podspec => '../node_modules/react-native-reanimated/RNReanimated.podspec'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
-  use_unimodules!
+  use_unimodules!({
+    modules_paths: ['../node_modules', '../../../../packages/bare-only'],
+    exclude: [],
+    flags: {
+      :inhibit_warnings => false
+    }
+  })
 
 end

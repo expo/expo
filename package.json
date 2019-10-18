@@ -20,6 +20,7 @@
       "home",
       "packages/*",
       "packages/@unimodules/*",
+      "packages/bare-only/*",
       "react-native-lab/react-native"
     ]
   },

@@ -1,6 +1,9 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - DTFoundation/Core (1.7.14)
+  - DTFoundation/DTASN1 (1.7.14):
+    - DTFoundation/Core
   - EXAppLoaderProvider (6.0.0)
   - EXConstants (6.0.0):
     - UMConstantsInterface
@@ -8,6 +11,9 @@ PODS:
   - EXFileSystem (6.0.2):
     - UMCore
     - UMFileSystemInterface
+  - EXNotifications (0.1.0):
+    - TCMobileProvision
+    - UMCore
   - EXPermissions (6.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -77,6 +83,8 @@ PODS:
     - React
   - RNScreens (1.0.0-alpha.23):
     - React
+  - TCMobileProvision (1.0.0):
+    - DTFoundation/DTASN1 (~> 1.6)
   - UMBarCodeScannerInterface (3.0.0)
   - UMCameraInterface (3.0.0)
   - UMConstantsInterface (3.0.0)
@@ -99,6 +107,7 @@ DEPENDENCIES:
   - EXAppLoaderProvider (from `../node_modules/expo-app-loader-provider/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
+  - EXNotifications (from `../../../../packages/bare-only/expo-notifications/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
@@ -136,6 +145,8 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - boost-for-react-native
+    - DTFoundation
+    - TCMobileProvision
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -149,6 +160,9 @@ EXTERNAL SOURCES:
   EXFileSystem:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-file-system/ios"
+  EXNotifications:
+    :path: !ruby/object:Pathname
+    path: "../../../../packages/bare-only/expo-notifications/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../node_modules/expo-permissions/ios"
@@ -206,9 +220,11 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   EXAppLoaderProvider: 7a8185228d8ba9e689a0e2d6d957fe9bdd49c8a0
   EXConstants: 5d81e84ca71b9a552529889cc798b4a04e9e22b3
   EXFileSystem: 091907902fcec9f9182b656fdead41a82f30986a
+  EXNotifications: bb3fd6d3b6ec3e58d2ff34073f9eec05870f569c
   EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
@@ -216,6 +232,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
   RNReanimated: 1b52415c4302f198cb581282a0166690bad62c43
   RNScreens: f28b48b8345f2f5f39ed6195518291515032a788
+  TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
   UMBarCodeScannerInterface: 84ea2d6b58ff0dc27ef9b68bab71286be18ee020
   UMCameraInterface: 26b26005d1756a0d5f4f04f1e168e39ea9154535
   UMConstantsInterface: 038bacb19de12b6fd328c589122c8dc977cccf61
@@ -230,6 +247,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: 8664abd37a00715727e60df9ecd65e42ba47b548
   yoga: 684513b14b03201579ba3cee20218c9d1298b0cc
 
-PODFILE CHECKSUM: a187c3d558b29919c3923ed8641853655d161144
+PODFILE CHECKSUM: 0a4a4bff75a0960331b42cd2bbc8649ff78e78fc
 
 COCOAPODS: 1.8.1
