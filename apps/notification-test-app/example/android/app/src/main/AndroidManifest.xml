@@ -53,11 +53,11 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-         </service>
+          </service>
 
          <!-- choose if you want to use expo servers START -->
           <meta-data android:name="appId" android:value="@szymon20000/wefwefjwhefwhefwefwefwef" /> <!-- only with expo engine -->
-          <meta-data android:name="pushNotificationEngine" android:value="expo" /> <!-- expo|bare-->>
+          <meta-data android:name="pushNotificationEngine" android:value="expo" /> <!-- expo|bare-->
          <!-- choose if you want to use expo servers END -->
 
         <!-- turn on push notifications END -->
