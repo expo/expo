@@ -1,0 +1,17 @@
+{
+  "name": "example",
+  "displayName": "notifications example",
+  "expo": {
+    "name": "example",
+    "slug": "expo-template-bare",
+    "privacy": "unlisted",
+    "sdkVersion": "35.0.0",
+    "version": "1.0.0",
+    "entryPoint": "node_modules/expo/AppEntry.js",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ]
+  }
+}
