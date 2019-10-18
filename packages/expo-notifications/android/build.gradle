@@ -7,7 +7,6 @@ buildscript {
 
   dependencies {
     classpath 'com.android.tools.build:gradle:3.3.2'
-  //  classpath 'com.google.gms:google-services:4.3.0'
   }
 }
 
@@ -66,8 +65,6 @@ android {
     unitTests.returnDefaultValues = true
   }
 }
-
-//apply plugin: 'com.google.gms.google-services'
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
