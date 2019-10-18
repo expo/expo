@@ -43,6 +43,30 @@
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+      <!-- expo-notifications START -->
+
+        <!-- turn on push notifications START -->
+          <service
+            android:name="expo.modules.notifications.push.fcm.ExpoFcmMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+         </service>
+
+         <!-- choose if you want to use expo servers START -->
+          <meta-data android:name="appId" android:value="@szymon20000/wefwefjwhefwhefwefwefwef" /> <!-- only with expo engine -->
+          <meta-data android:name="pushNotificationEngine" android:value="expo" /> <!-- expo|bare-->>
+         <!-- choose if you want to use expo servers END -->
+
+        <!-- turn on push notifications END -->
+
+        <!-- tell us which activity should be launched when notification is tapped START -->
+          <meta-data android:name="notificationReceiver" android:value="com.example.MainActivity" />
+        <!-- tell us which activity should be launched when notification is tapped END -->
+
+      <!-- expo-notifications END -->
     </application>
 
 </manifest>
