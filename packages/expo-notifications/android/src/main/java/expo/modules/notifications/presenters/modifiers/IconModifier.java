@@ -22,7 +22,7 @@ import static expo.modules.notifications.NotificationConstants.NOTIFICATION_ICON
 public class IconModifier implements NotificationModifier {
   @Override
   public void modify(NotificationCompat.Builder builder, Bundle notification, Context context, String appId) {
-    builder.setSmallIcon(R.mipmap.notification_icon);
+    builder.setSmallIcon(R.drawable.notification_icon);
     if (notification.containsKey(NOTIFICATION_ICON) && notification.getString(NOTIFICATION_ICON) != null) {
       ImageRequest imageRequest = ImageRequest.fromUri(notification.getString(NOTIFICATION_ICON));
       ImagePipeline imagePipeline = Fresco.getImagePipeline();
