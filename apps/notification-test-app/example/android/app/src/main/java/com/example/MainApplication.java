@@ -62,5 +62,10 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    // init FlowManager [it's used by expo-notifications]
+    FlowManager.init(FlowConfig.builder(context)
+        .addDatabaseHolder(ExpoNotificationsGeneratedDatabaseHolder.class)
+        .build()
+    );
   }
 }
