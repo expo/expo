@@ -746,7 +746,7 @@ PODS:
   - EXApplication (1.0.0):
     - UMCore
   - EXAppLoaderProvider (7.0.0)
-  - EXAV (7.0.1):
+  - EXAV (8.0.0-rc.1):
     - UMCore
     - UMPermissionsInterface
   - EXBackgroundFetch (7.0.0):
@@ -777,7 +777,7 @@ PODS:
     - UMPermissionsInterface
   - EXCellular (1.0.0):
     - UMCore
-  - EXConstants (7.0.0):
+  - EXConstants (8.0.0-rc.1):
     - UMConstantsInterface
     - UMCore
   - EXContacts (7.0.0):
@@ -804,7 +804,7 @@ PODS:
     - FirebaseMLVision (= 0.17.0)
     - UMCore
     - UMFaceDetectorInterface
-  - EXFileSystem (7.0.0):
+  - EXFileSystem (8.0.0-rc.0):
     - UMCore
     - UMFileSystemInterface
   - EXFont (7.0.0):
@@ -821,9 +821,9 @@ PODS:
   - EXGoogleSignIn (7.0.0):
     - GoogleSignIn (~> 5.0)
     - UMCore
-  - EXHaptics (7.0.0):
+  - EXHaptics (8.0.0-rc.0):
     - UMCore
-  - EXImageManipulator (7.0.0):
+  - EXImageManipulator (8.0.0-rc.0):
     - UMCore
     - UMFileSystemInterface
     - UMImageLoaderInterface
@@ -846,12 +846,12 @@ PODS:
   - EXMailComposer (7.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXMediaLibrary (7.0.0):
+  - EXMediaLibrary (8.0.0-rc.0):
     - UMCore
     - UMPermissionsInterface
   - EXNetwork (1.0.0):
     - UMCore
-  - EXPermissions (7.0.0):
+  - EXPermissions (8.0.0-rc.0):
     - UMCore
     - UMPermissionsInterface
   - EXPrint (7.0.0):
@@ -1429,7 +1429,7 @@ PODS:
   - UMFaceDetectorInterface (4.0.0)
   - UMFileSystemInterface (4.0.0)
   - UMFontInterface (4.0.0)
-  - UMImageLoaderInterface (4.0.0)
+  - UMImageLoaderInterface (5.0.0-rc.0)
   - UMPermissionsInterface (4.0.0)
   - UMReactNativeAdapter (5.0.0-rc.0):
     - React
@@ -2633,7 +2633,7 @@ SPEC CHECKSUMS:
   EXAppleAuthentication: 73447420d5b740854610befc0eb6558261e694ad
   EXApplication: af8850de5a2f8df18e94d05281a628e823699485
   EXAppLoaderProvider: 5d348813a9cf09b03bbe5b8b55437bc1bfbddbd1
-  EXAV: 97912c6002e7d7934843f50c9080f1d7f8b99a4f
+  EXAV: 2fead9acfc39b4946ba9228d3a199e0704aec65d
   EXBackgroundFetch: 5983dac76493f8cabb7c5366bbfae26c8e3d6764
   EXBarCodeScanner: 2443883e2a0a8075fc323dad136a73384ab71cde
   EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
@@ -2643,20 +2643,20 @@ SPEC CHECKSUMS:
   EXCalendar: bf85bd9ced7ff032ccd7a2a952e18d8536b99a6a
   EXCamera: 8ad7012d4e0fef09ff35de14fcb41b410357e9be
   EXCellular: d9e0853ddc346bab7aa9fd96371b6ce4efdf7639
-  EXConstants: 31e5318521be6175009af6ccd3e97dedf39da96a
+  EXConstants: 372356a14e0c4610783252c077173370b1fb0b12
   EXContacts: 5ec0cb83ea2ea68694eac97ddf2a5cfefb8e2286
   EXCrypto: bfcc3236abe7a6f16017f79129f3dd85f9732778
   EXDevice: fd3b1b55f2547b7d51e5e093569a1fb678cce946
   EXDocumentPicker: 15acaac45e3c4060eff044cddceb6a8494fb58c1
   EXFacebook: 165670d591c87e48aa31faf73eedab5eaae5c7ef
   EXFaceDetector: c436467d9f3f892fbffa6f471d46431bcbae2788
-  EXFileSystem: 7e53a2c30a2eb6987ba6d5158ab908f947523228
+  EXFileSystem: 6ecb14b5c5557a5208d4474487d2eb1edef6892c
   EXFont: 71d07dc5d2153db7d1a23f1e0cc1b6341d55c432
   EXGL: 4b21885aee37fb5f5230e05a62bba480fa886a3d
   EXGL-CPP: da3c4f31ff50a34bd8184fadbf409806281b103d
   EXGoogleSignIn: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
-  EXHaptics: 9279b288e4bd10ca159442269790492a8819f917
-  EXImageManipulator: 211c40025c6d5452b919c5f89cc07a3d833dd660
+  EXHaptics: 51c25ffefdda66b15feb0b0ac6b1615e2f401f16
+  EXImageManipulator: 78bfe480fdf7a7bb37913a387caef360e31a86dd
   EXImagePicker: 63549baa9487f4b99c03163c5639ddede4c7be4e
   EXKeepAwake: d4caf9a1a7691126ade4ca0b76592e93250a8f29
   EXLinearGradient: ebfd46cb98a46330213e4945b96227d98f624054
@@ -2664,9 +2664,9 @@ SPEC CHECKSUMS:
   EXLocalization: 3be3ee21f5af16cfecc1fbb33cac495f444b3ccc
   EXLocation: 452a1d9edceb1b93deb86fd785236606d33742dd
   EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
-  EXMediaLibrary: 6ebeb433efd9065c0a6dbce80e53ce63fe23c300
+  EXMediaLibrary: afa771d4df578966a65a3cd05c0a2f0f3b17441f
   EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXPermissions: df10ad83df2f6b647aec304619354f8ab48d5f63
+  EXPermissions: a8da2bebf970af22e4714cc24fc5fab124ee315c
   EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
   EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
   EXSecureStore: bf94958c936b2b9e3813509d2e7e6b8a263d40df
@@ -2743,7 +2743,7 @@ SPEC CHECKSUMS:
   UMFaceDetectorInterface: 7b4f1a92f0c726b58b086296048efe193b570678
   UMFileSystemInterface: aadb9a67aa6470d7ebc06cf04dc54fee6781ac48
   UMFontInterface: 2d3c128285086bbed3d2a650f1d698323ef3b25a
-  UMImageLoaderInterface: 2829a7571a12d2e754c73c55ffe7e327d8402c7d
+  UMImageLoaderInterface: ea8fb13bd906a5473f71e33cf6b328905f7d4d59
   UMPermissionsInterface: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
   UMReactNativeAdapter: 73625f2e528296fff63a24308821f58f0becc345
   UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
