@@ -78,5 +78,11 @@
 	<string>Give notifications example periences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow notifications example to access your reminders</string>
+	<!-- expo-notifications config START -->
+	<key>appId</key>
+	<string>@szymon20000/wfjwoghjwiljhgrowhepghwougeogheourg</string>
+	<key>engineType</key>
+	<string>expo</string>
+	<!-- expo-notifications config END -->
 </dict>
 </plist>
