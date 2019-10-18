@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Expo notification unimodule",
   "main": "build/index.js",
   "types": "build/index.d.ts",
