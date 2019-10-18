@@ -1,0 +1,41 @@
+<manifest package="expo.modules.notifications"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application>
+        <!-- expo-notifications BEGIN -->
+        <receiver
+            android:name=".scheduling.insecurescheduler.ScheduledNotificationReceiver"
+            android:exported="false"/>
+
+        <receiver
+            android:name=".scheduling.receivers.SchedulingTriggerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.REBOOT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/> // only after unlock
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+                <action android:name="android.intent.action.TIME_CHANGED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".userinteractionreceiver.NotificationBroadcastReceiver"
+            android:exported="false">
+        </receiver>
+
+        <service android:name=".push.fcm.ExpoIntentService"/>
+
+        <service
+            android:name=".push.fcm.ExpoFcmMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- expo-notifications END -->
+    </application>
+
+</manifest>

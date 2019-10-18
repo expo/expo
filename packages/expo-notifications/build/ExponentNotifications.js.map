@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentNotifications.js","sourceRoot":"","sources":["../src/ExponentNotifications.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,qBAAqB,CAAA","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExponentNotifications\n"]}
