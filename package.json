@@ -23,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.7.0-rc.1"
+    "react-native-unimodules": "~0.7.0-rc.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.2.0",
