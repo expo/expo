@@ -1,5 +1,5 @@
 ---
-title: Additional Resources
+title: Additional resources
 ---
 
 The following resources are useful for learning Expo and some of the projects that it depends on.
