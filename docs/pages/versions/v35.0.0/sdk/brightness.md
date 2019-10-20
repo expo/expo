@@ -6,25 +6,35 @@ An API to get and set screen brightness.
 
 On Android, there is a global system-wide brightness setting, and each app has its own brightness setting that can optionally override the global setting. It is possible to set either of these values with this API. On iOS, the system brightness setting cannot be changed programmatically; instead, any changes to the screen brightness will persist until the device is locked or powered off.
 
+## Installation
+
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-brightness`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-brightness).
+
+## API
+
+```js
+import * as Brightness from 'expo-brightness';
+```
+
 ### Methods
-- [`Expo.Brightness.getBrightnessAsync()`](#expobrightnessgetbrightnessasync)
-- [`Expo.Brightness.setBrightnessAsync(brightnessValue)`](#expobrightnesssetbrightnessasyncbrightnessvalue)
-- [`Expo.Brightness.useSystemBrightnessAsync()`](#expobrightnessusesystembrightnessasync)
-- [`Expo.Brightness.isUsingSystemBrightnessAsync()`](#expobrightnessisusingsystembrightnessasync)
-- [`Expo.Brightness.getSystemBrightnessAsync()`](#expobrightnessgetsystembrightnessasync)
-- [`Expo.Brightness.setSystemBrightnessAsync(brightnessValue)`](#expobrightnesssetsystembrightnessasyncbrightnessvalue)
-- [`Expo.Brightness.getSystemBrightnessModeAsync()`](#expobrightnessgetsystembrightnessmodeasync)
-- [`Expo.Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#expobrightnesssetsystembrightnessmodeasyncbrightnessmode)
+- [`Brightness.getBrightnessAsync()`](#expobrightnessgetbrightnessasync)
+- [`Brightness.setBrightnessAsync(brightnessValue)`](#expobrightnesssetbrightnessasyncbrightnessvalue)
+- [`Brightness.useSystemBrightnessAsync()`](#expobrightnessusesystembrightnessasync)
+- [`Brightness.isUsingSystemBrightnessAsync()`](#expobrightnessisusingsystembrightnessasync)
+- [`Brightness.getSystemBrightnessAsync()`](#expobrightnessgetsystembrightnessasync)
+- [`Brightness.setSystemBrightnessAsync(brightnessValue)`](#expobrightnesssetsystembrightnessasyncbrightnessvalue)
+- [`Brightness.getSystemBrightnessModeAsync()`](#expobrightnessgetsystembrightnessmodeasync)
+- [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#expobrightnesssetsystembrightnessmodeasyncbrightnessmode)
 
 ### Enum Types
-- [`Expo.Brightness.BrightnessMode`](#expobrightnessbrightnessmode)
+- [`Brightness.BrightnessMode`](#expobrightnessbrightnessmode)
 
 ### Errors
 - [Error Codes](#error-codes)
 
 ## Methods
 
-### `Expo.Brightness.getBrightnessAsync()`
+### `Brightness.getBrightnessAsync()`
 
 Gets the current brightness level of the device's main screen.
 
@@ -34,7 +44,7 @@ A `Promise` that is resolved with a number between 0 and 1, inclusive, represent
 
 ---
 
-### `Expo.Brightness.setBrightnessAsync(brightnessValue)`
+### `Brightness.setBrightnessAsync(brightnessValue)`
 
 Sets the current screen brightness. On iOS, this setting will persist until the device is locked, after which the screen brightness will revert to the user's default setting. On Android, this setting only applies to the current activity; it will override the system brightness value whenever your app is in the foreground.
 
@@ -52,7 +62,7 @@ A `Promise` that is resolved when the brightness has been successfully set.
 
 ---
 
-### `Expo.Brightness.useSystemBrightnessAsync()`
+### `Brightness.useSystemBrightnessAsync()`
 
 **Android only.** Resets the brightness setting of the current activity to use the system-wide brightness value rather than overriding it.
 
@@ -62,7 +72,7 @@ A `Promise` that is resolved when the setting has been successfully changed.
 
 ---
 
-### `Expo.Brightness.isUsingSystemBrightnessAsync()`
+### `Brightness.isUsingSystemBrightnessAsync()`
 
 **Android only.** Returns a boolean specifying whether or not the current activity is using the system-wide brightness value.
 
@@ -76,7 +86,7 @@ A `Promise` that resolves with `true` when the current activity is using the sys
 
 ---
 
-### `Expo.Brightness.getSystemBrightnessAsync()`
+### `Brightness.getSystemBrightnessAsync()`
 
 **Android only.** Gets the global system screen brightness.
 
@@ -90,7 +100,7 @@ A `Promise` that is resolved with a number between 0 and 1, inclusive, represent
 
 ---
 
-### `Expo.Brightness.setSystemBrightnessAsync(brightnessValue)`
+### `Brightness.setSystemBrightnessAsync(brightnessValue)`
 
 > **WARNING:** This method is experimental.
 
@@ -116,13 +126,13 @@ await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
 
 const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
 if (status === 'granted') {
-  Expo.Brightness.setSystemBrightnessAsync(1);
+  Brightness.setSystemBrightnessAsync(1);
 }
 ```
 
 ---
 
-### `Expo.Brightness.getSystemBrightnessModeAsync()`
+### `Brightness.getSystemBrightnessModeAsync()`
 
 **Android only.** Gets the system brightness mode (e.g. whether or not the OS will automatically adjust the screen brightness depending on ambient light).
 
@@ -136,7 +146,7 @@ A `Promise` that is resolved with a [`BrightnessMode`](#expobrightnessbrightness
 
 ---
 
-### `Expo.Brightness.setSystemBrightnessModeAsync(brightnessMode)`
+### `Brightness.setSystemBrightnessModeAsync(brightnessMode)`
 
 **Android only.** Sets the system brightness mode.
 
