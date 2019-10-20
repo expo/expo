@@ -17,17 +17,17 @@ import * as Brightness from 'expo-brightness';
 ```
 
 ### Methods
-- [`Brightness.getBrightnessAsync()`](#expobrightnessgetbrightnessasync)
-- [`Brightness.setBrightnessAsync(brightnessValue)`](#expobrightnesssetbrightnessasyncbrightnessvalue)
-- [`Brightness.useSystemBrightnessAsync()`](#expobrightnessusesystembrightnessasync)
-- [`Brightness.isUsingSystemBrightnessAsync()`](#expobrightnessisusingsystembrightnessasync)
-- [`Brightness.getSystemBrightnessAsync()`](#expobrightnessgetsystembrightnessasync)
-- [`Brightness.setSystemBrightnessAsync(brightnessValue)`](#expobrightnesssetsystembrightnessasyncbrightnessvalue)
-- [`Brightness.getSystemBrightnessModeAsync()`](#expobrightnessgetsystembrightnessmodeasync)
-- [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#expobrightnesssetsystembrightnessmodeasyncbrightnessmode)
+- [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
+- [`Brightness.setBrightnessAsync(brightnessValue)`](#brightnesssetbrightnessasyncbrightnessvalue)
+- [`Brightness.useSystemBrightnessAsync()`](#brightnessusesystembrightnessasync)
+- [`Brightness.isUsingSystemBrightnessAsync()`](#brightnessisusingsystembrightnessasync)
+- [`Brightness.getSystemBrightnessAsync()`](#brightnessgetsystembrightnessasync)
+- [`Brightness.setSystemBrightnessAsync(brightnessValue)`](#brightnesssetsystembrightnessasyncbrightnessvalue)
+- [`Brightness.getSystemBrightnessModeAsync()`](#brightnessgetsystembrightnessmodeasync)
+- [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#brightnesssetsystembrightnessmodeasyncbrightnessmode)
 
 ### Enum Types
-- [`Brightness.BrightnessMode`](#expobrightnessbrightnessmode)
+- [`Brightness.BrightnessMode`](#brightnessbrightnessmode)
 
 ### Errors
 - [Error Codes](#error-codes)
@@ -138,7 +138,7 @@ if (status === 'granted') {
 
 #### Returns
 
-A `Promise` that is resolved with a [`BrightnessMode`](#expobrightnessbrightnessmode). Requires `SYSTEM_BRIGHTNESS` permissions.
+A `Promise` that is resolved with a [`BrightnessMode`](#brightnessbrightnessmode). Requires `SYSTEM_BRIGHTNESS` permissions.
 
 #### Error Codes
 
@@ -152,7 +152,7 @@ A `Promise` that is resolved with a [`BrightnessMode`](#expobrightnessbrightness
 
 #### Arguments
 
-- **brightnessMode (_[BrightnessMode](#expobrightnessbrightnessmode)_)** - One of `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC`. The system brightness mode cannot be set to `BrightnessMode.UNKNOWN`.
+- **brightnessMode (_[BrightnessMode](#brightnessbrightnessmode)_)** - One of `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC`. The system brightness mode cannot be set to `BrightnessMode.UNKNOWN`.
 
 #### Returns
 
@@ -166,7 +166,7 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 ## Enum Types
 
-### BrightnessMode
+### Brightness.BrightnessMode
 
 - **`BrightnessMode.AUTOMATIC`** - Mode in which the device OS will automatically adjust the screen brightness depending on the ambient light.
 - **`BrightnessMode.MANUAL`** - Mode in which the screen brightness will remain constant and will not be adjusted by the OS.
