@@ -3,7 +3,7 @@ title: Create a new app
 sidebar_title: Create a new app
 ---
 
-At this point we should have Expo CLI installed on our development machine and the Expo client on an iOS or Android physical device or emulator. If not, go back to the [Installation](../../introduction/installation/) guide before proceeding.
+At this point we should have Expo CLI installed on our development machine and the Expo client on an iOS or Android physical device or emulator. If not, go back to the [Installation](../../get-started/installation/) guide before proceeding.
 
 ## Initializing the project
 
@@ -51,7 +51,7 @@ Open up `App.js` and change the text to "Hello, world!". You should see it updat
 
 The Expo client is configured by default to automatically reload the app whenever a file is changed, but let's just make sure we go over the steps to enable it in case somehow things just aren't working.
 
-- First, make sure you have [development mode enabled in Expo CLI](../development-mode/#development-mode).
+- First, make sure you have [development mode enabled in Expo CLI](../../workflow/development-mode/#development-mode).
 - Next, close the app and reopen it.
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press `⌘+d` for iOS or `ctrl+m` for Android.
 - If you see `Enable Live Reload`, press it and your app will reload. If you see `Disable Live Reload` then exit the developer menu and try making another change.

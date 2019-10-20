@@ -51,7 +51,7 @@ We have to start somewhere so let’s start with the `ImagePicker`. There’s a 
 
 <Video file="exploring-managed/picker.mp4" />
 
-At the risk of evoking the [How To Draw an Owl meme](https://knowyourmeme.com/memes/how-to-draw-an-owl), let's jump right ahead to when the app is complete. To get from where we started to here you will need to read the React and React Native documentation as needed to build parts of your app, but that's too much to cover in this particular article. Find out about learning resources [here](../../introduction/additional-resources/).
+At the risk of evoking the [How To Draw an Owl meme](https://knowyourmeme.com/memes/how-to-draw-an-owl), let's jump right ahead to when the app is complete. To get from where we started to here you will need to read the React and React Native documentation as needed to build parts of your app, but that's too much to cover in this particular article. Find out about learning resources [here](../../next-steps/additional-resources/).
 
 <Video file="exploring-managed/done.mp4" />
 
