@@ -32,7 +32,6 @@ Expo tools are free to use and open source. You can view the source for the Expo
 <details><summary><h4>How do you make money if Expo is free?</h4></summary>
 <p>
 
-** TODO: BETTER WORDING**
 Just because you can run everything that Expo provides on your own hardware doesn't mean setting up and managing all of the services you need is the right fit for your team.
 
 If that sounds like you, you can see what we offer at https://expo.io/developer-services
