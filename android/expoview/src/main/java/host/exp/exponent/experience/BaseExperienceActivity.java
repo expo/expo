@@ -4,6 +4,7 @@ package host.exp.exponent.experience;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.Pair;
@@ -15,6 +16,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.jetbrains.annotations.NotNull;
+import org.unimodules.interfaces.filesystem.Permission;
 
 import javax.inject.Inject;
 
@@ -314,7 +316,17 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
-    if (Constants.isStandaloneApp()) {
+
+    // only these permissions, which show a dialog to the user should be scoped.
+    boolean isDangerousPermission;
+    try {
+      PermissionInfo permissionInfo = getPackageManager().getPermissionInfo(permission, PackageManager.GET_META_DATA);
+      isDangerousPermission = permissionInfo.protectionLevel == PermissionInfo.PROTECTION_DANGEROUS;
+    } catch (PackageManager.NameNotFoundException e) {
+      return PackageManager.PERMISSION_DENIED;
+    }
+
+    if (Constants.isStandaloneApp() || !isDangerousPermission) {
       return globalResult;
     }
 
