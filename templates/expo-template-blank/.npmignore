@@ -3,6 +3,7 @@
 *.mobileprovision
 *.p12
 *.p8
+.DS_Store
 .expo
 .npmignore
 .vscode
