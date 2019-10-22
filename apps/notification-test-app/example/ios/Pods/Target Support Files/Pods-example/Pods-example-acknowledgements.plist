@@ -331,9 +331,9 @@ SOFTWARE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>The MIT License (MIT)
+			<string>MIT License
 
-Copyright (c) 2018 Krzysztof Magiera
+Copyright (c) Facebook, Inc. and its affiliates.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -356,7 +356,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT</string>
 			<key>Title</key>
-			<string>RNScreens</string>
+			<string>React</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -387,7 +387,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT</string>
 			<key>Title</key>
-			<string>React</string>
+			<string>React-Core</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

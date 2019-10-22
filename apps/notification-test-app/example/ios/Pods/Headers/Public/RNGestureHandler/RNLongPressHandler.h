@@ -1,1 +1,1 @@
-../../../RNGestureHandler/ios/Handlers/RNLongPressHandler.h
+../../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNLongPressHandler.h

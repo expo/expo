@@ -1,0 +1,1 @@
+../../../../../../node_modules/react-native/ReactCommon/jscallinvoker/ReactCommon/JSCallInvoker.h

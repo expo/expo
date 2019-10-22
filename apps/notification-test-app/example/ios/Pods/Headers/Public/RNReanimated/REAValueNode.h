@@ -1,1 +1,1 @@
-../../../RNReanimated/ios/Nodes/REAValueNode.h
+../../../../../node_modules/react-native-reanimated/ios/Nodes/REAValueNode.h

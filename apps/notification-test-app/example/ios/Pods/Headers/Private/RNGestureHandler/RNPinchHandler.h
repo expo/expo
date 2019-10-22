@@ -1,1 +1,1 @@
-../../../RNGestureHandler/ios/Handlers/RNPinchHandler.h
+../../../../../node_modules/react-native-gesture-handler/ios/Handlers/RNPinchHandler.h

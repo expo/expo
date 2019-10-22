@@ -1,1 +1,1 @@
-../../../RNReanimated/ios/Nodes/READebugNode.h
+../../../../../node_modules/react-native-reanimated/ios/Nodes/READebugNode.h

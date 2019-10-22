@@ -1,1 +1,1 @@
-../../../RNReanimated/ios/Nodes/REASetNode.h
+../../../../../node_modules/react-native-reanimated/ios/Nodes/REASetNode.h

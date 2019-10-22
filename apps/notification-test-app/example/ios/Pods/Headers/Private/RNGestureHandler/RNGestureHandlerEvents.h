@@ -1,1 +1,1 @@
-../../../RNGestureHandler/ios/RNGestureHandlerEvents.h
+../../../../../node_modules/react-native-gesture-handler/ios/RNGestureHandlerEvents.h

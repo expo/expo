@@ -1,0 +1,28 @@
+{
+  "name": "React-RCTNetwork",
+  "version": "0.61.1",
+  "summary": "The networking library of React Native.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.61.1"
+  },
+  "source_files": "*.{m,mm}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "RCTNetwork",
+  "dependencies": {
+    "React-Core/RCTNetworkHeaders": [
+      "0.61.1"
+    ]
+  }
+}

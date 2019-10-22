@@ -1,19 +1,20 @@
 {
-  "name": "yoga",
-  "version": "0.59.10.React",
+  "name": "Yoga",
+  "version": "1.14.0",
   "license": {
     "type": "MIT"
   },
-  "homepage": "https://facebook.github.io/yoga/",
-  "documentation_url": "https://facebook.github.io/yoga/docs/api/c/",
+  "homepage": "https://yogalayout.com",
+  "documentation_url": "https://yogalayout.com/docs/",
   "summary": "Yoga is a cross-platform layout engine which implements Flexbox.",
   "description": "Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.",
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.59.10"
+    "tag": "v0.61.1"
   },
   "module_name": "yoga",
+  "header_dir": "yoga",
   "requires_arc": false,
   "compiler_flags": [
     "-fno-omit-frame-pointer",

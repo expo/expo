@@ -1,1 +1,1 @@
-../../../RNReanimated/ios/Transitioning/REATransitionAnimation.h
+../../../../../node_modules/react-native-reanimated/ios/Transitioning/REATransitionAnimation.h
