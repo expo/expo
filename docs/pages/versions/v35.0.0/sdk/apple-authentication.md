@@ -119,6 +119,8 @@ You should only attempt to render this if [`AppleAuthentication.isAvailableAsync
 
 The properties of this component extend from `View`; however, you should not attempt to set `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the predefined color styles and the `cornerRadius` property to change the border radius of the button.
 
+Make sure to attach height and width via the `style` props as without these styles, the button will not appear on the screen. 
+
 #### `AppleAuthentication.AppleAuthenticationButtonProps`
 
 - **onPress (_function_)** - The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) in here.
@@ -137,6 +139,7 @@ function YourComponent() {
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
       buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={5}
+      style={{ width: 200, height: 44 }}
       onPress={() => {
         try {
           const credential = await AppleAuthentication.signInAsync({
