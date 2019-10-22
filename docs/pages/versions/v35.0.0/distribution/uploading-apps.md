@@ -68,12 +68,12 @@ To upload your iOS app to TestFlight, run `expo upload:ios`. You can set followi
 
 ### Manually uploading your app
 
-In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using Application loader. In order to do this, there are a few prequisite steps which you may not have followed previously if this is your first app submission to Apple:
+In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using [Transporter](https://apps.apple.com/nl/app/transporter/id1450874784?l=en&mt=12). In order to do this, there are a few prequisite steps which you may not have followed previously if this is your first app submission to Apple:
 
 1. Make sure you have logged into iTunes connect at least once with your Apple ID and accepted the terms.
 2. Login to https://appleid.apple.com
 3. Generate an app specific password by going to Accounts > Manage > Generate App Specific Password. Make a note of this password as it will be needed later.
-4. *(optional)* Previously, Application Loader would validate your IPA submission prior to uploading it. If you want to validate the application submission, run `xcrun altool --validate-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`
+4. *(optional)* Please note that Transporter doesn't validate your IPA submission prior to uploading it. If you want to validate the application submission, run `xcrun altool --validate-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`
 5. Run `xcrun altool --upload-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`.
 6. You will be prompted for the app specific password generated in step 3.
 
