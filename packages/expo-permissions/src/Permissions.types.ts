@@ -13,7 +13,7 @@ export type PermissionType =
 export type PermissionResponse = {
   status: PermissionStatus;
   expires: PermissionExpiration;
-  neverAskAgain: Boolean;
+  canAskAgain: Boolean;
   permissions: PermissionMap;
 };
 
@@ -22,7 +22,7 @@ export type PermissionMap = { [permissionType: string /* PermissionType */]: Per
 export type PermissionInfo = {
   status: PermissionStatus;
   expires: PermissionExpiration;
-  neverAskAgain: Boolean;
+  canAskAgain: Boolean;
   ios?: PermissionDetailsLocationIOS;
   android?: PermissionDetailsLocationAndroid;
 };

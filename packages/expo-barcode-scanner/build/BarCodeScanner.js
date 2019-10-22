@@ -37,11 +37,9 @@ export class BarCodeScanner extends React.Component {
     static async getPermissionsAsync() {
         return ExpoBarCodeScannerModule.getPermissionsAsync();
     }
-    ;
     static async requestPermissionsAsync() {
         return ExpoBarCodeScannerModule.requestPermissionsAsync();
     }
-    ;
     static async scanFromURLAsync(url, barCodeTypes = Object.values(BarCodeType)) {
         if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
             throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
@@ -93,7 +91,5 @@ BarCodeScanner.defaultProps = {
     type: Type.back,
     barCodeTypes: Object.values(BarCodeType),
 };
-export const { Constants } = BarCodeScanner;
-export const { getPermissionsAsync } = BarCodeScanner;
-export const { requestPermissionsAsync } = BarCodeScanner;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
 //# sourceMappingURL=BarCodeScanner.js.map

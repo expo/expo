@@ -12,7 +12,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: 'never' | number;
     granted: boolean;
-    neverAskAgain: boolean;
+    canAskAgain: boolean;
 };
 export declare function getBrightnessAsync(): Promise<number>;
 export declare function setBrightnessAsync(brightnessValue: number): Promise<void>;

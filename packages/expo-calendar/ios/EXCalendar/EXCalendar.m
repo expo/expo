@@ -753,7 +753,7 @@ UM_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
                     requestCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                        withRequester:[EXCalendarRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];
@@ -773,7 +773,7 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
                     requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                        withRequester:[EXRemindersRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];

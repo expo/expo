@@ -10,7 +10,7 @@
                                  withResult:(UMPromiseResolveBlock)resolve
                                withRejecter:(UMPromiseRejectBlock)reject;
 
-+ (void)askForPermissionWithPermissionsManger:(id<UMPermissionsInterface>)permissionsManager
++ (void)askForPermissionWithPermissionsManager:(id<UMPermissionsInterface>)permissionsManager
                                 withRequester:(Class)requesterClass
                                    withResult:(UMPromiseResolveBlock)resolve
                                  withRejecter:(UMPromiseRejectBlock)reject;

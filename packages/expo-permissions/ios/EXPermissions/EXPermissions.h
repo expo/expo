@@ -8,7 +8,7 @@ FOUNDATION_EXPORT NSString * const EXPermissionExpiresNever;
 
 @interface EXPermissions : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
 
-+ (UMPermissionStatus)statusForPermission:(NSDictionary *)permissions;
++ (UMPermissionStatus)statusForPermission:(NSDictionary *)permission;
 
 + (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
 

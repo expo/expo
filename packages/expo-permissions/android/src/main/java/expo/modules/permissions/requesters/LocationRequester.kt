@@ -4,7 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.EXPIRES_KEY
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.NEVER_ASK_AGAIN_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.CAN_ASK_AGAIN_KEY
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.PERMISSION_EXPIRES_NEVER
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.STATUS_KEY
 import org.unimodules.interfaces.permissions.PermissionsStatus
@@ -20,26 +20,26 @@ class LocationRequester : PermissionRequester {
       var scope = "none"
       val accessFineLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_FINE_LOCATION)
       val accessCoarseLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_COARSE_LOCATION)
-      val neverAskAgain = accessCoarseLocation.neverAskAgain || accessCoarseLocation.neverAskAgain
+      val canAskAgain = accessCoarseLocation.canAskAgain && accessCoarseLocation.canAskAgain
 
       putString(STATUS_KEY, when {
         accessFineLocation.status == PermissionsStatus.GRANTED -> {
           scope = "fine"
-          PermissionsStatus.GRANTED.jsString
+          PermissionsStatus.GRANTED.status
         }
         accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
           scope = "coarse"
-          PermissionsStatus.GRANTED.jsString
+          PermissionsStatus.GRANTED.status
         }
         accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
-          PermissionsStatus.DENIED.jsString
+          PermissionsStatus.DENIED.status
         }
         else -> {
-          PermissionsStatus.UNDETERMINED.jsString
+          PermissionsStatus.UNDETERMINED.status
         }
       })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
-      putBoolean(NEVER_ASK_AGAIN_KEY, neverAskAgain)
+      putBoolean(CAN_ASK_AGAIN_KEY, canAskAgain)
       putBundle("android", Bundle().apply { putString("scope", scope) })
     }
   }

@@ -17,7 +17,7 @@ export declare const PermissionsStatus: {
 };
 export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-    expires: "never" | number;
+    expires: 'never' | number;
     granted: boolean;
 };
 export interface BarCodeScannerProps extends ViewProps {
@@ -175,7 +175,5 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-};
-export declare const getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync;
-export declare const requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync;
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync;
 export {};

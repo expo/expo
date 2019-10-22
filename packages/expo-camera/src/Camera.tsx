@@ -159,11 +159,11 @@ export default class Camera extends React.Component<Props> {
 
   static async getPermissionsAsync(): Promise<PermissionsResponse> {
     return CameraManager.getPermissionsAsync();
-  };
+  }
 
   static async requestPermissionsAsync(): Promise<PermissionsResponse> {
     return CameraManager.requestPermissionsAsync();
-  };
+  }
 
   _cameraHandle?: number | null;
   _cameraRef?: React.Component | null;
@@ -290,8 +290,4 @@ export default class Camera extends React.Component<Props> {
   }
 }
 
-export const Constants = Camera.Constants;
-
-export const getPermissionsAsync = Camera.getPermissionsAsync;
-
-export const requestPermissionsAsync = Camera.requestPermissionsAsync;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;

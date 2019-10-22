@@ -113,7 +113,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: 'never' | number;
     granted: boolean;
-    neverAskAgain: boolean;
+    canAskAgain: boolean;
 };
 declare type OptionalKeys<T> = {
     [P in keyof T]?: T[P];

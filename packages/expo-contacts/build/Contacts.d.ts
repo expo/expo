@@ -157,7 +157,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: "never" | number;
     granted: boolean;
-    neverAskAgain: boolean;
+    canAskAgain: boolean;
 };
 export declare function shareContactAsync(contactId: string, message: string, shareOptions?: Object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;

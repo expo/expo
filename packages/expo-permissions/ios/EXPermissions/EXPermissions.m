@@ -7,6 +7,12 @@
 
 #import <EXPermissions/EXUserNotificationRequester.h>
 
+
+NSString * const EXStatusKey = @"status";
+NSString * const EXExpiresKey = @"expires";
+NSString * const EXGrantedKey = @"granted";
+NSString * const EXCanAskAgain = @"canAskAgain";
+
 NSString * const EXPermissionExpiresNever = @"never";
 
 @interface EXPermissions ()
@@ -54,7 +60,7 @@ UM_EXPORT_MODULE(ExpoPermissions);
 # pragma mark - Exported methods
 
 UM_EXPORT_METHOD_AS(getAsync,
-                    getPermissionsWithTypes:(NSString *)permissionType
+                    getPermissionWithType:(NSString *)permissionType
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -123,7 +129,7 @@ UM_EXPORT_METHOD_AS(askAsync,
     return false;
   }
   
-  return [permissions[@"status"] isEqualToString:@"granted"];
+  return [permissions[EXStatusKey] isEqualToString:@"granted"];
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
@@ -176,14 +182,14 @@ UM_EXPORT_METHOD_AS(askAsync,
 + (NSDictionary *)parsePermissionFromRequester:(NSDictionary *)permission
 {
   NSMutableDictionary *parsedPermission = [permission mutableCopy];
-  UMPermissionStatus status = (UMPermissionStatus)[permission[@"status"] intValue];
-  BOOL granted = status == UMPermissionStatusGranted;
-  BOOL neverAskAgain = status == UMPermissionStatusDenied;
+  UMPermissionStatus status = (UMPermissionStatus)[permission[EXStatusKey] intValue];
+  BOOL isGranted = status == UMPermissionStatusGranted;
+  BOOL canAskAgain = status != UMPermissionStatusDenied;
   
-  [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:@"status"];
-  [parsedPermission setValue:EXPermissionExpiresNever forKey:@"expires"];
-  [parsedPermission setValue:@(granted) forKey:@"granted"];
-  [parsedPermission setValue:@(neverAskAgain) forKey:@"neverAskAgain"];
+  [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:EXStatusKey];
+  [parsedPermission setValue:EXPermissionExpiresNever forKey:EXExpiresKey];
+  [parsedPermission setValue:@(isGranted) forKey:EXGrantedKey];
+  [parsedPermission setValue:@(canAskAgain) forKey:EXCanAskAgain];
   return parsedPermission;
 }
 
@@ -199,9 +205,9 @@ UM_EXPORT_METHOD_AS(askAsync,
   }
 }
 
-+ (UMPermissionStatus)statusForPermission:(NSDictionary *)permissions
++ (UMPermissionStatus)statusForPermission:(NSDictionary *)permission
 {
-  NSString *status = permissions[@"status"];
+  NSString *status = permission[EXStatusKey];
   if ([status isEqualToString:@"granted"]) {
     return UMPermissionStatusGranted;
   } else if ([status isEqualToString:@"denied"]) {

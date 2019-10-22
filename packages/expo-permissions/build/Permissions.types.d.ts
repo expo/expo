@@ -2,7 +2,7 @@ export declare type PermissionType = 'camera' | 'cameraRoll' | 'audioRecording' 
 export declare type PermissionResponse = {
     status: PermissionStatus;
     expires: PermissionExpiration;
-    neverAskAgain: Boolean;
+    canAskAgain: Boolean;
     permissions: PermissionMap;
 };
 export declare type PermissionMap = {
@@ -11,7 +11,7 @@ export declare type PermissionMap = {
 export declare type PermissionInfo = {
     status: PermissionStatus;
     expires: PermissionExpiration;
-    neverAskAgain: Boolean;
+    canAskAgain: Boolean;
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
 };

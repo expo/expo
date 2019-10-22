@@ -18,7 +18,7 @@ export type PermissionsResponse = {
   status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
   expires: 'never' | number;
   granted: boolean;
-  neverAskAgain: boolean;
+  canAskAgain: boolean;
 };
 
 export async function getBrightnessAsync(): Promise<number> {

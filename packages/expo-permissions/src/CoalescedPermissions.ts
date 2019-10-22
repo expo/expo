@@ -35,9 +35,9 @@ export function coalesceExpirations(permissions: PermissionMap): PermissionExpir
   return expirations[0];
 }
 
-export function coalesceNeveAskAgin(permissions: PermissionMap): Boolean {
+export function coalesceCanAskAgain(permissions: PermissionMap): Boolean {
   return Object.keys(permissions).reduce<Boolean>(
-    (neverAskAgain, type) => neverAskAgain || permissions[type].neverAskAgain,
-    false
+    (canAskAgain, type) => canAskAgain && permissions[type].canAskAgain,
+    true
   );
 }

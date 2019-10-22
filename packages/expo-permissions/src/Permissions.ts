@@ -1,4 +1,4 @@
-import { coalesceExpirations, coalesceStatuses, coalesceNeveAskAgin } from './CoalescedPermissions';
+import { coalesceExpirations, coalesceStatuses, coalesceCanAskAgain } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
 import { Platform } from 'react-native';
 
@@ -68,7 +68,7 @@ async function _handleMultiPermissionsRequestIOSAsync(
   return {
     status: coalesceStatuses(permissions),
     expires: coalesceExpirations(permissions),
-    neverAskAgain: coalesceNeveAskAgin(permissions),
+    canAskAgain: coalesceCanAskAgain(permissions),
     permissions,
   };
 }
@@ -85,7 +85,7 @@ async function _handlePermissionsRequestAsync(
   return {
     status: coalesceStatuses(permissions),
     expires: coalesceExpirations(permissions),
-    neverAskAgain: coalesceNeveAskAgin(permissions),
+    canAskAgain: coalesceCanAskAgain(permissions),
     permissions,
   };
 }

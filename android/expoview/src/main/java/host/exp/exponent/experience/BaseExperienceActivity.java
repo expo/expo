@@ -15,8 +15,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.jetbrains.annotations.NotNull;
-import org.unimodules.interfaces.filesystem.Permission;
+import androidx.annotation.NonNull;
 
 import javax.inject.Inject;
 
@@ -345,7 +344,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   }
 
   @Override
-  public boolean shouldShowRequestPermissionRationale(@NotNull String permission) {
+  public boolean shouldShowRequestPermissionRationale(@NonNull String permission) {
     // in scoped application we don't have `don't ask again` button
     if (!Constants.isStandaloneApp() && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       return true;
@@ -355,7 +354,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
 
   @Override
-  public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NotNull final int[] grantResults) {
+  public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
       mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
       mPermissionsHelper = null;

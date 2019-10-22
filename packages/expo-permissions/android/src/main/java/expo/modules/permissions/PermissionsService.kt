@@ -42,12 +42,12 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   private var mAskAsyncListener: PermissionsListener? = null
   private var mAskAsyncRequestedPermissions: Array<String>? = null
 
-  private lateinit var mPermissionsAskedStorage: SharedPreferences
+  private lateinit var mAskedPermissionsCache: SharedPreferences
 
-  private fun didAsk(permission: String): Boolean = mPermissionsAskedStorage.getBoolean(permission, false)
+  private fun didAsk(permission: String): Boolean = mAskedPermissionsCache.getBoolean(permission, false)
 
   private fun addToAskedPreferences(permissions: List<String>) {
-    with(mPermissionsAskedStorage.edit()) {
+    with(mAskedPermissionsCache.edit()) {
       permissions.forEach { putBoolean(it, true) }
       apply()
     }
@@ -60,24 +60,24 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
         ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    mPermissionsAskedStorage = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
+    mAskedPermissionsCache = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
   }
 
   override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
     getPermissions(PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
-      val allGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
-      val allDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
-      val neverAskAgain = permissionsMap.any { (_, response) -> response.neverAskAgain }
+      val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
+      val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
+      val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
 
       promise.resolve(Bundle().apply {
         putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
         putString(PermissionsResponse.STATUS_KEY, when {
-          allGranted -> PermissionsStatus.GRANTED.jsString
-          allDenied -> PermissionsStatus.DENIED.jsString
-          else -> PermissionsStatus.UNDETERMINED.jsString
+          areAllGranted -> PermissionsStatus.GRANTED.status
+          areAllDenied -> PermissionsStatus.DENIED.status
+          else -> PermissionsStatus.UNDETERMINED.status
         })
-        putBoolean(PermissionsResponse.NEVER_ASK_AGAIN_KEY, neverAskAgain)
-        putBoolean(PermissionsResponse.GRANTED_KEY, allGranted)
+        putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain)
+        putBoolean(PermissionsResponse.GRANTED_KEY, areAllGranted)
       })
     }, *permissions)
   }
@@ -98,8 +98,12 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
         else -> PermissionsStatus.UNDETERMINED
       }
 
-      val neverAskAgain = status == PermissionsStatus.DENIED && !canAskAgain(it)
-      permissionsMap[it] = PermissionsResponse(status, neverAskAgain)
+      val canAskAgain = if (status == PermissionsStatus.DENIED) {
+        canAskAgain(it)
+      } else {
+        true
+      }
+      permissionsMap[it] = PermissionsResponse(status, canAskAgain)
     }
     responseListener.onResult(permissionsMap)
   }

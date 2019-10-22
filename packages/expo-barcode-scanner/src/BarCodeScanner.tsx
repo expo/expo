@@ -31,7 +31,7 @@ export const PermissionsStatus = {
 
 export type PermissionsResponse = {
   status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: "never" | number;
+  expires: 'never' | number;
   granted: boolean;
 };
 
@@ -68,11 +68,11 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
 
   static async getPermissionsAsync(): Promise<PermissionsResponse> {
     return ExpoBarCodeScannerModule.getPermissionsAsync();
-  };
+  }
 
   static async requestPermissionsAsync(): Promise<PermissionsResponse> {
     return ExpoBarCodeScannerModule.requestPermissionsAsync();
-  };
+  }
 
   static async scanFromURLAsync(
     url: string,
@@ -144,8 +144,4 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   }
 }
 
-export const { Constants } = BarCodeScanner;
-
-export const { getPermissionsAsync } = BarCodeScanner;
-
-export const { requestPermissionsAsync } = BarCodeScanner;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;

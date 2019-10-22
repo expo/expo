@@ -764,7 +764,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                        withRequester:[EXAudioRecordingRequester class]
                                                           withResult:resolve
                                                        withRejecter:reject];
@@ -902,4 +902,3 @@ UM_EXPORT_METHOD_AS(unloadAudioRecorder,
 }
 
 @end
-

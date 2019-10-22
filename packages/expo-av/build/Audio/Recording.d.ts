@@ -101,7 +101,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: "never" | number;
     granted: boolean;
-    neverAskAgain: boolean;
+    canAskAgain: boolean;
 };
 export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;

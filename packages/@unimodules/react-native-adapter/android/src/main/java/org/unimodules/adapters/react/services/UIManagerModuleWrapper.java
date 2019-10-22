@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class UIManagerModuleWrapper implements
     ActivityProvider,

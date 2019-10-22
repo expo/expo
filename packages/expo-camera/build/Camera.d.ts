@@ -130,6 +130,4 @@ export declare const Constants: {
     WhiteBalance: any;
     VideoQuality: any;
     VideoStabilization: any;
-};
-export declare const getPermissionsAsync: typeof Camera.getPermissionsAsync;
-export declare const requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
+}, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;

@@ -36,7 +36,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManger:_permissionsManager
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                        withRequester:[EXSystemBrightnessRequester class]
                                                           withResult:resolve
                                                         withRejecter:reject];

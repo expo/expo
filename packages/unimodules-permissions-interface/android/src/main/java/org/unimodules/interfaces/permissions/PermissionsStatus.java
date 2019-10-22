@@ -5,13 +5,13 @@ public enum PermissionsStatus {
   UNDETERMINED("undetermined"),
   DENIED("denied");
 
-  private String jsString;
+  private String status;
 
-  PermissionsStatus(String jsString) {
-    this.jsString = jsString;
+  PermissionsStatus(String status) {
+    this.status = status;
   }
 
-  public String getJsString() {
-    return jsString;
+  public String getStatus() {
+    return status;
   }
 }

@@ -291,9 +291,8 @@ public class MediaLibraryModule extends ExportedModule {
     if (permissionsManager == null) {
       return false;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[]{WRITE_EXTERNAL_STORAGE});
 
-    return grantResults.equals(new int[]{PERMISSION_GRANTED, PERMISSION_GRANTED});
+    return permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
   }
 
   private class MediaStoreContentObserver extends ContentObserver {
