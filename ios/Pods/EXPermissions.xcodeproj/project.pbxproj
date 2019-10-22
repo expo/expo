@@ -7,42 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		06B3B055E72E5FA652C8F277FEA6029E /* EXCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E12F770A42F895DEBCBDFE1B9D5D5BE /* EXCameraRollRequester.m */; };
-		1DF401A375780777E89480D0CFC4377D /* EXRemindersRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = C349E1F9E855806B3CCEA83ECCC7D1B9 /* EXRemindersRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		289AD92F0DC980923D23A211880FE997 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DDEF09DEC5E2168ABAC4E6A7C46A3C0F /* EXPermissions-dummy.m */; };
-		2D24955AFD11AC96EC6F62E47A4BDE2F /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = BF13A431A98B498316C9073B61B12B00 /* EXLocationRequester.m */; };
-		2E09EB263856F01AC7C6D57F409297F0 /* EXCalendarRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 23DEE044DBD95A76F75C1FB59982B941 /* EXCalendarRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		37225E2335C1790AE8CB49C452D3864E /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 840D21CF3701120C36DB92629B5F4D52 /* EXContactsRequester.m */; };
-		3EFE9D6B7908D54933CBC261CA6CC90B /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FC5664D9492E6E27B7ECDE2DA40EEF5 /* EXAudioRecordingPermissionRequester.m */; };
-		55E725C6AC804E53C22B4204C543FA76 /* EXSystemBrightnessRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = E7B79D2D4987380BC877F81DEA3C9085 /* EXSystemBrightnessRequester.m */; };
-		59FEEF282269D05D529369D4B0DF6DEA /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E5A0D154A43A89B2F023D2BBCC9F710 /* EXPermissions.m */; };
-		5CB02654960758ECEFCEE0D129569BAF /* EXLocationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A67A8326B015E29D1CADB017DA2286F /* EXLocationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8302F196D3EA55766B0B2C5CBE60DFD3 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 28399281198AE1F2375D8F4C18B86B2B /* EXCameraPermissionRequester.m */; };
-		83F317DA8C5F14D4E5FD50B8DA3F9042 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 87ED1B800063E9A17A33213DC9A25C3C /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8B480763B36D14852205E950FEF399A1 /* EXUserNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 56C1228D7E878EF4FE7AD8089AE57204 /* EXUserNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8DFD384BA128B0C3AD4419E474F18ABB /* EXSystemBrightnessRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = AD2DDA246094CC104AC24B340174EA97 /* EXSystemBrightnessRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9A09746CEA7F8F9F1AC72EE2E2050FB3 /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A14819AE5A6D09E26ECF3FB55D68208 /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9F7B63CACD12A2C97E5094C47D6DD6DB /* EXAudioRecordingPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 2D633D8E2413B9407EA1F04F0EC2FD72 /* EXAudioRecordingPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A20593B5D571C2978D9551621ED227F5 /* EXRemoteNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F7D4AB5DD41DCFBB9F8A16D2DE6C4F8 /* EXRemoteNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BD2A18828759B2824DA3CA2E9A588D87 /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = F59FDAE96C1A4279C54EEB7E460DDCD7 /* EXCalendarRequester.m */; };
-		C0BA279ADE65BF8F4576557E5A218490 /* EXRemindersRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C614B329FC60E2F6F0F23C766AED2A /* EXRemindersRequester.m */; };
-		C7BA7D111B7100FA89AFA908F378D330 /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = BFC5BE5BFEF109495BFC771306428BF5 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CD3C58468AAAA19438071703F19AB0BE /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = CA1AE1EFE624ED4011F1F24B95543C83 /* EXRemoteNotificationRequester.m */; };
-		D11D5D51BF0D85E02CCBA89400671166 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 79F6A9AA15FEE13ADC9123B97BE4D181 /* EXReactNativeUserNotificationCenterProxy.m */; };
-		D2BBEDDFC4BCDBA245A88607634B8A2E /* EXContactsRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BBB079868E32024C8330DB7FB52BCCC /* EXContactsRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E222ACFC1FF757D3DFDD9FE98E2C814F /* EXUserNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 70461392FCD2D7792919C759700AA97B /* EXUserNotificationRequester.m */; };
-		FD150C6EEF7883C56149D43A8E783360 /* EXCameraRollRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = FEE7F00CB7EA57961534ECA399CDBDD5 /* EXCameraRollRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3AB363BD034C5A7851F47CF8163E2A0D /* EXUserNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = C9A056DA0EA49BA663024E25E4C75EBA /* EXUserNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		42421403A3A38D83C52B35BCE9E95460 /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E8F682AD8382E4CB882C15D745E7F86 /* EXPermissions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8710A8920362B3B75FB77171A3830373 /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 24CE7C052EC60009861757A7A1152EAF /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8C16DB30D77801F7CCB62B769F1D7B6B /* EXUserNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A008C6BBC8DA8DD5C2BBC3D7CF74077 /* EXUserNotificationRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		904C25062C929A9BC1697BC08DFC2930 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = CC7129FA0E708732FE9E1C2C8FFF263C /* EXReactNativeUserNotificationCenterProxy.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		934F124CE6E03004893BFC63F740F3F4 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AEAF4592D683C7344BDFFFEE4B85F3EC /* EXPermissions-dummy.m */; };
+		E5F671C132609841A9C7161E8E7B5726 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 194C523EE54A560604ADB69584F86D92 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		12E97E56ACB70D66CAD062E16812F3C8 /* PBXContainerItemProxy */ = {
+		8D3B0E2C91FB158B218BBCD29AFA08F3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
-		370B68E22D23C1FE1660D26030235878 /* PBXContainerItemProxy */ = {
+		ECAB06EE460F1A33119F96D7097CE84F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D2058653576C4016C65A58703057E384 /* UMCore.xcodeproj */;
 			proxyType = 1;
@@ -53,40 +35,22 @@
 
 /* Begin PBXFileReference section */
 		01A1DC8068A812A8B3A183BCC95FFF5A /* libEXPermissions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXPermissions.a; path = libEXPermissions.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		06CF181FEAFB5F6FDCAB20AB2FAA2ED9 /* EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		0E5A0D154A43A89B2F023D2BBCC9F710 /* EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPermissions.m; path = EXPermissions/EXPermissions.m; sourceTree = "<group>"; };
+		01AC69404A04FBA2E3BE614E046E0613 /* EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		194C523EE54A560604ADB69584F86D92 /* EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPermissions.h; path = EXPermissions/EXPermissions.h; sourceTree = "<group>"; };
 		23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		23DEE044DBD95A76F75C1FB59982B941 /* EXCalendarRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendarRequester.h; path = EXPermissions/EXCalendarRequester.h; sourceTree = "<group>"; };
-		28399281198AE1F2375D8F4C18B86B2B /* EXCameraPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCameraPermissionRequester.m; path = EXPermissions/EXCameraPermissionRequester.m; sourceTree = "<group>"; };
-		2D633D8E2413B9407EA1F04F0EC2FD72 /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAudioRecordingPermissionRequester.h; path = EXPermissions/EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
-		2E12F770A42F895DEBCBDFE1B9D5D5BE /* EXCameraRollRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCameraRollRequester.m; path = EXPermissions/EXCameraRollRequester.m; sourceTree = "<group>"; };
-		31771931C70F2B8D0D8E38C4EF1DD6BC /* EXPermissions-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPermissions-prefix.pch"; sourceTree = "<group>"; };
-		3AB4ED3D6223F95D5BE4A4397B1B6194 /* EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPermissions.xcconfig; sourceTree = "<group>"; };
-		44C614B329FC60E2F6F0F23C766AED2A /* EXRemindersRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRemindersRequester.m; path = EXPermissions/EXRemindersRequester.m; sourceTree = "<group>"; };
-		4A14819AE5A6D09E26ECF3FB55D68208 /* EXReactNativeUserNotificationCenterProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXReactNativeUserNotificationCenterProxy.h; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.h; sourceTree = "<group>"; };
-		4F7D4AB5DD41DCFBB9F8A16D2DE6C4F8 /* EXRemoteNotificationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRemoteNotificationRequester.h; path = EXPermissions/EXRemoteNotificationRequester.h; sourceTree = "<group>"; };
-		4FC5664D9492E6E27B7ECDE2DA40EEF5 /* EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAudioRecordingPermissionRequester.m; path = EXPermissions/EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
-		56C1228D7E878EF4FE7AD8089AE57204 /* EXUserNotificationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXUserNotificationRequester.h; path = EXPermissions/EXUserNotificationRequester.h; sourceTree = "<group>"; };
-		6A67A8326B015E29D1CADB017DA2286F /* EXLocationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocationRequester.h; path = EXPermissions/EXLocationRequester.h; sourceTree = "<group>"; };
-		70461392FCD2D7792919C759700AA97B /* EXUserNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXUserNotificationRequester.m; path = EXPermissions/EXUserNotificationRequester.m; sourceTree = "<group>"; };
-		79F6A9AA15FEE13ADC9123B97BE4D181 /* EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXReactNativeUserNotificationCenterProxy.m; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
-		7BBB079868E32024C8330DB7FB52BCCC /* EXContactsRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContactsRequester.h; path = EXPermissions/EXContactsRequester.h; sourceTree = "<group>"; };
-		840D21CF3701120C36DB92629B5F4D52 /* EXContactsRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsRequester.m; path = EXPermissions/EXContactsRequester.m; sourceTree = "<group>"; };
-		87ED1B800063E9A17A33213DC9A25C3C /* EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPermissions.h; path = EXPermissions/EXPermissions.h; sourceTree = "<group>"; };
-		AD2DDA246094CC104AC24B340174EA97 /* EXSystemBrightnessRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSystemBrightnessRequester.h; path = EXPermissions/EXSystemBrightnessRequester.h; sourceTree = "<group>"; };
-		BF13A431A98B498316C9073B61B12B00 /* EXLocationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocationRequester.m; path = EXPermissions/EXLocationRequester.m; sourceTree = "<group>"; };
-		BFC5BE5BFEF109495BFC771306428BF5 /* EXCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCameraPermissionRequester.h; path = EXPermissions/EXCameraPermissionRequester.h; sourceTree = "<group>"; };
-		C349E1F9E855806B3CCEA83ECCC7D1B9 /* EXRemindersRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRemindersRequester.h; path = EXPermissions/EXRemindersRequester.h; sourceTree = "<group>"; };
-		CA1AE1EFE624ED4011F1F24B95543C83 /* EXRemoteNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRemoteNotificationRequester.m; path = EXPermissions/EXRemoteNotificationRequester.m; sourceTree = "<group>"; };
+		24CE7C052EC60009861757A7A1152EAF /* EXReactNativeUserNotificationCenterProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXReactNativeUserNotificationCenterProxy.h; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.h; sourceTree = "<group>"; };
+		4E8F682AD8382E4CB882C15D745E7F86 /* EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPermissions.m; path = EXPermissions/EXPermissions.m; sourceTree = "<group>"; };
+		6A008C6BBC8DA8DD5C2BBC3D7CF74077 /* EXUserNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EXUserNotificationRequester.m; sourceTree = "<group>"; };
+		7AFB25E1D7FB2C95DD49FF981B50CC99 /* EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPermissions.xcconfig; sourceTree = "<group>"; };
+		AEAF4592D683C7344BDFFFEE4B85F3EC /* EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPermissions-dummy.m"; sourceTree = "<group>"; };
+		C9A056DA0EA49BA663024E25E4C75EBA /* EXUserNotificationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = EXUserNotificationRequester.h; sourceTree = "<group>"; };
+		CC7129FA0E708732FE9E1C2C8FFF263C /* EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXReactNativeUserNotificationCenterProxy.m; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
 		D2058653576C4016C65A58703057E384 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		DDEF09DEC5E2168ABAC4E6A7C46A3C0F /* EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPermissions-dummy.m"; sourceTree = "<group>"; };
-		E7B79D2D4987380BC877F81DEA3C9085 /* EXSystemBrightnessRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSystemBrightnessRequester.m; path = EXPermissions/EXSystemBrightnessRequester.m; sourceTree = "<group>"; };
-		F59FDAE96C1A4279C54EEB7E460DDCD7 /* EXCalendarRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendarRequester.m; path = EXPermissions/EXCalendarRequester.m; sourceTree = "<group>"; };
-		FEE7F00CB7EA57961534ECA399CDBDD5 /* EXCameraRollRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCameraRollRequester.h; path = EXPermissions/EXCameraRollRequester.h; sourceTree = "<group>"; };
+		D9DE17ED2B38E17834788C0E93E73826 /* EXPermissions-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPermissions-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2F9D1F7DA9298AC772F26245582E1880 /* Frameworks */ = {
+		B5A30F6B7B84D8DFDE4C461F5DCB4A6E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -96,12 +60,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1F5A3C4D644D57EF328063BFAB70424D /* Pod */ = {
+		22A8971A54892176CA5DAE1F0112E783 /* Requesters */ = {
 			isa = PBXGroup;
 			children = (
-				06CF181FEAFB5F6FDCAB20AB2FAA2ED9 /* EXPermissions.podspec */,
+				290D89A4DF64DA7F4905A48F731A3FB2 /* UserNotification */,
 			);
-			name = Pod;
+			name = Requesters;
+			path = EXPermissions/Requesters;
+			sourceTree = "<group>";
+		};
+		290D89A4DF64DA7F4905A48F731A3FB2 /* UserNotification */ = {
+			isa = PBXGroup;
+			children = (
+				C9A056DA0EA49BA663024E25E4C75EBA /* EXUserNotificationRequester.h */,
+				6A008C6BBC8DA8DD5C2BBC3D7CF74077 /* EXUserNotificationRequester.m */,
+			);
+			name = UserNotification;
+			path = UserNotification;
 			sourceTree = "<group>";
 		};
 		3F718E59B0171F9699987AA7D05A9460 /* Dependencies */ = {
@@ -113,49 +88,38 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		4C8A0D31FDF177398939FC181B1CE2F7 /* Support Files */ = {
+		5AF066424641C4E18791483E5520F76B /* EXPermissions */ = {
 			isa = PBXGroup;
 			children = (
-				3AB4ED3D6223F95D5BE4A4397B1B6194 /* EXPermissions.xcconfig */,
-				DDEF09DEC5E2168ABAC4E6A7C46A3C0F /* EXPermissions-dummy.m */,
-				31771931C70F2B8D0D8E38C4EF1DD6BC /* EXPermissions-prefix.pch */,
+				194C523EE54A560604ADB69584F86D92 /* EXPermissions.h */,
+				4E8F682AD8382E4CB882C15D745E7F86 /* EXPermissions.m */,
+				24CE7C052EC60009861757A7A1152EAF /* EXReactNativeUserNotificationCenterProxy.h */,
+				CC7129FA0E708732FE9E1C2C8FFF263C /* EXReactNativeUserNotificationCenterProxy.m */,
+				9C37E14CB79B5DD4C4C691F86DC20F0B /* Pod */,
+				22A8971A54892176CA5DAE1F0112E783 /* Requesters */,
+				6822A874D4CAF9172A17B8E3EBA017B1 /* Support Files */,
+			);
+			name = EXPermissions;
+			path = "../../packages/expo-permissions/ios";
+			sourceTree = "<group>";
+		};
+		6822A874D4CAF9172A17B8E3EBA017B1 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7AFB25E1D7FB2C95DD49FF981B50CC99 /* EXPermissions.xcconfig */,
+				AEAF4592D683C7344BDFFFEE4B85F3EC /* EXPermissions-dummy.m */,
+				D9DE17ED2B38E17834788C0E93E73826 /* EXPermissions-prefix.pch */,
 			);
 			name = "Support Files";
 			path = "../../../ios/Pods/Target Support Files/EXPermissions";
 			sourceTree = "<group>";
 		};
-		6CCB97A5498D002D59AD25AEC9B073CA /* EXPermissions */ = {
+		9C37E14CB79B5DD4C4C691F86DC20F0B /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				2D633D8E2413B9407EA1F04F0EC2FD72 /* EXAudioRecordingPermissionRequester.h */,
-				4FC5664D9492E6E27B7ECDE2DA40EEF5 /* EXAudioRecordingPermissionRequester.m */,
-				23DEE044DBD95A76F75C1FB59982B941 /* EXCalendarRequester.h */,
-				F59FDAE96C1A4279C54EEB7E460DDCD7 /* EXCalendarRequester.m */,
-				BFC5BE5BFEF109495BFC771306428BF5 /* EXCameraPermissionRequester.h */,
-				28399281198AE1F2375D8F4C18B86B2B /* EXCameraPermissionRequester.m */,
-				FEE7F00CB7EA57961534ECA399CDBDD5 /* EXCameraRollRequester.h */,
-				2E12F770A42F895DEBCBDFE1B9D5D5BE /* EXCameraRollRequester.m */,
-				7BBB079868E32024C8330DB7FB52BCCC /* EXContactsRequester.h */,
-				840D21CF3701120C36DB92629B5F4D52 /* EXContactsRequester.m */,
-				6A67A8326B015E29D1CADB017DA2286F /* EXLocationRequester.h */,
-				BF13A431A98B498316C9073B61B12B00 /* EXLocationRequester.m */,
-				87ED1B800063E9A17A33213DC9A25C3C /* EXPermissions.h */,
-				0E5A0D154A43A89B2F023D2BBCC9F710 /* EXPermissions.m */,
-				4A14819AE5A6D09E26ECF3FB55D68208 /* EXReactNativeUserNotificationCenterProxy.h */,
-				79F6A9AA15FEE13ADC9123B97BE4D181 /* EXReactNativeUserNotificationCenterProxy.m */,
-				C349E1F9E855806B3CCEA83ECCC7D1B9 /* EXRemindersRequester.h */,
-				44C614B329FC60E2F6F0F23C766AED2A /* EXRemindersRequester.m */,
-				4F7D4AB5DD41DCFBB9F8A16D2DE6C4F8 /* EXRemoteNotificationRequester.h */,
-				CA1AE1EFE624ED4011F1F24B95543C83 /* EXRemoteNotificationRequester.m */,
-				AD2DDA246094CC104AC24B340174EA97 /* EXSystemBrightnessRequester.h */,
-				E7B79D2D4987380BC877F81DEA3C9085 /* EXSystemBrightnessRequester.m */,
-				56C1228D7E878EF4FE7AD8089AE57204 /* EXUserNotificationRequester.h */,
-				70461392FCD2D7792919C759700AA97B /* EXUserNotificationRequester.m */,
-				1F5A3C4D644D57EF328063BFAB70424D /* Pod */,
-				4C8A0D31FDF177398939FC181B1CE2F7 /* Support Files */,
+				01AC69404A04FBA2E3BE614E046E0613 /* EXPermissions.podspec */,
 			);
-			name = EXPermissions;
-			path = "../../packages/expo-permissions/ios";
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		9EDFF3299932780154763497EC9393F2 /* Products */ = {
@@ -170,7 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				3F718E59B0171F9699987AA7D05A9460 /* Dependencies */,
-				6CCB97A5498D002D59AD25AEC9B073CA /* EXPermissions */,
+				5AF066424641C4E18791483E5520F76B /* EXPermissions */,
 				F0844FFECEE1FF894716DA737ACCEFEF /* Frameworks */,
 				9EDFF3299932780154763497EC9393F2 /* Products */,
 			);
@@ -186,22 +150,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		B17FE3A295D1665969393331C5B7FE20 /* Headers */ = {
+		4DCD75CCF516E39D126A9870DDF13DF3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F7B63CACD12A2C97E5094C47D6DD6DB /* EXAudioRecordingPermissionRequester.h in Headers */,
-				2E09EB263856F01AC7C6D57F409297F0 /* EXCalendarRequester.h in Headers */,
-				C7BA7D111B7100FA89AFA908F378D330 /* EXCameraPermissionRequester.h in Headers */,
-				FD150C6EEF7883C56149D43A8E783360 /* EXCameraRollRequester.h in Headers */,
-				D2BBEDDFC4BCDBA245A88607634B8A2E /* EXContactsRequester.h in Headers */,
-				5CB02654960758ECEFCEE0D129569BAF /* EXLocationRequester.h in Headers */,
-				83F317DA8C5F14D4E5FD50B8DA3F9042 /* EXPermissions.h in Headers */,
-				9A09746CEA7F8F9F1AC72EE2E2050FB3 /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
-				1DF401A375780777E89480D0CFC4377D /* EXRemindersRequester.h in Headers */,
-				A20593B5D571C2978D9551621ED227F5 /* EXRemoteNotificationRequester.h in Headers */,
-				8DFD384BA128B0C3AD4419E474F18ABB /* EXSystemBrightnessRequester.h in Headers */,
-				8B480763B36D14852205E950FEF399A1 /* EXUserNotificationRequester.h in Headers */,
+				E5F671C132609841A9C7161E8E7B5726 /* EXPermissions.h in Headers */,
+				8710A8920362B3B75FB77171A3830373 /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
+				3AB363BD034C5A7851F47CF8163E2A0D /* EXUserNotificationRequester.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,17 +165,17 @@
 /* Begin PBXNativeTarget section */
 		488F0C19AB92FC4B503EB55CC688FCF5 /* EXPermissions */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E63A2BBBDA228AB5130B1514F562D08C /* Build configuration list for PBXNativeTarget "EXPermissions" */;
+			buildConfigurationList = BEC1706B18FA51510A44384EA7FBE98B /* Build configuration list for PBXNativeTarget "EXPermissions" */;
 			buildPhases = (
-				B17FE3A295D1665969393331C5B7FE20 /* Headers */,
-				FA6A4874FC55C97ED36D69C13DC2B752 /* Sources */,
-				2F9D1F7DA9298AC772F26245582E1880 /* Frameworks */,
+				4DCD75CCF516E39D126A9870DDF13DF3 /* Headers */,
+				56ADDC891BF886A0777A6E332144803F /* Sources */,
+				B5A30F6B7B84D8DFDE4C461F5DCB4A6E /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5DC41D014F87C31FB212926708BEFAF4 /* PBXTargetDependency */,
-				B681E9696FD1486B80D2CF5A8E4C8240 /* PBXTargetDependency */,
+				E47D2D1D89A762C6A110A5B02FB2CCE1 /* PBXTargetDependency */,
+				D0D614360321897CA7630AD223A3D966 /* PBXTargetDependency */,
 			);
 			name = EXPermissions;
 			productName = EXPermissions;
@@ -262,42 +217,58 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FA6A4874FC55C97ED36D69C13DC2B752 /* Sources */ = {
+		56ADDC891BF886A0777A6E332144803F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3EFE9D6B7908D54933CBC261CA6CC90B /* EXAudioRecordingPermissionRequester.m in Sources */,
-				BD2A18828759B2824DA3CA2E9A588D87 /* EXCalendarRequester.m in Sources */,
-				8302F196D3EA55766B0B2C5CBE60DFD3 /* EXCameraPermissionRequester.m in Sources */,
-				06B3B055E72E5FA652C8F277FEA6029E /* EXCameraRollRequester.m in Sources */,
-				37225E2335C1790AE8CB49C452D3864E /* EXContactsRequester.m in Sources */,
-				2D24955AFD11AC96EC6F62E47A4BDE2F /* EXLocationRequester.m in Sources */,
-				289AD92F0DC980923D23A211880FE997 /* EXPermissions-dummy.m in Sources */,
-				59FEEF282269D05D529369D4B0DF6DEA /* EXPermissions.m in Sources */,
-				D11D5D51BF0D85E02CCBA89400671166 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
-				C0BA279ADE65BF8F4576557E5A218490 /* EXRemindersRequester.m in Sources */,
-				CD3C58468AAAA19438071703F19AB0BE /* EXRemoteNotificationRequester.m in Sources */,
-				55E725C6AC804E53C22B4204C543FA76 /* EXSystemBrightnessRequester.m in Sources */,
-				E222ACFC1FF757D3DFDD9FE98E2C814F /* EXUserNotificationRequester.m in Sources */,
+				934F124CE6E03004893BFC63F740F3F4 /* EXPermissions-dummy.m in Sources */,
+				42421403A3A38D83C52B35BCE9E95460 /* EXPermissions.m in Sources */,
+				904C25062C929A9BC1697BC08DFC2930 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
+				8C16DB30D77801F7CCB62B769F1D7B6B /* EXUserNotificationRequester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5DC41D014F87C31FB212926708BEFAF4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 370B68E22D23C1FE1660D26030235878 /* PBXContainerItemProxy */;
-		};
-		B681E9696FD1486B80D2CF5A8E4C8240 /* PBXTargetDependency */ = {
+		D0D614360321897CA7630AD223A3D966 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = 12E97E56ACB70D66CAD062E16812F3C8 /* PBXContainerItemProxy */;
+			targetProxy = 8D3B0E2C91FB158B218BBCD29AFA08F3 /* PBXContainerItemProxy */;
+		};
+		E47D2D1D89A762C6A110A5B02FB2CCE1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = ECAB06EE460F1A33119F96D7097CE84F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		139009A42AA1098BAE27FC209C5C5B0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7AFB25E1D7FB2C95DD49FF981B50CC99 /* EXPermissions.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPermissions;
+				PRODUCT_NAME = EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		1C291454ECC94DD336D729B6C0798D35 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -357,30 +328,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Release;
-		};
-		33C60FEC96F0D46B35CA73003240EFC9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3AB4ED3D6223F95D5BE4A4397B1B6194 /* EXPermissions.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXPermissions;
-				PRODUCT_NAME = EXPermissions;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		4523848AF98B335121EB81A3C940A764 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -446,9 +393,9 @@
 			};
 			name = Debug;
 		};
-		7DB91BC477A90D6CEA314AC7CDD804F8 /* Release */ = {
+		E279ABD4E60C08203380F5CC8679D675 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3AB4ED3D6223F95D5BE4A4397B1B6194 /* EXPermissions.xcconfig */;
+			baseConfigurationReference = 7AFB25E1D7FB2C95DD49FF981B50CC99 /* EXPermissions.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -467,9 +414,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -483,11 +429,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E63A2BBBDA228AB5130B1514F562D08C /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
+		BEC1706B18FA51510A44384EA7FBE98B /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				33C60FEC96F0D46B35CA73003240EFC9 /* Debug */,
-				7DB91BC477A90D6CEA314AC7CDD804F8 /* Release */,
+				E279ABD4E60C08203380F5CC8679D675 /* Debug */,
+				139009A42AA1098BAE27FC209C5C5B0D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

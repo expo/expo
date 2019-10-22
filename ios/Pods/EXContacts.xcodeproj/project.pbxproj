@@ -7,58 +7,62 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0734CC5E06C9249240F93D96288F323C /* EXContactsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = E5A395AD695898D025F3666BBA2BEDF9 /* EXContactsViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1A2E664F24A86CB7CFCB15CACCB33860 /* EXContacts.h in Headers */ = {isa = PBXBuildFile; fileRef = 892868CF515507D069D4539E6F685C76 /* EXContacts.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		456E23C9B13F66670FB99513E88D26F2 /* EXContacts+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 54A8906B61C27A52FDAF04A300BFBA0D /* EXContacts+Serialization.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		72267EBBAE647DC00C16CA836C663B22 /* EXContacts+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C4D06AF641AC37615427CF598D22470 /* EXContacts+Serialization.m */; };
-		96A1A2C7D75984052D3FB9450237E8B9 /* EXContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = C67FE67D4E2BFF29E5652D4B28129D01 /* EXContacts.m */; };
-		AE02F18ED73DD68A814151DEC82E0325 /* EXContacts-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D0889288799E4A8C8C126437D4DC782A /* EXContacts-dummy.m */; };
-		C7754DFFBE94D6C652577EA4069CB1DA /* EXContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C12FEF17E53C5C19DFF85B29A04A395 /* EXContactsViewController.m */; };
+		0B83E9A8A6AEE3068503836E7EAE7B7B /* EXContacts+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 1168C13F305B0749F5AED384188E604A /* EXContacts+Serialization.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1A6E2515AE31D4D8D4F5E38C6656F9A6 /* EXContacts.h in Headers */ = {isa = PBXBuildFile; fileRef = 0EB1107BFA4C9B7A5381CC59C0DDE531 /* EXContacts.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		360AB749F766E49C26600C57A0D3C3D3 /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 51B5AF21CC823C3F88F40DD181487398 /* EXContactsRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		36CC73F3EA25364C3B8BA396D0D90D81 /* EXContactsRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C8A732FF79873B83714930C7931936C /* EXContactsRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6701B1DDB448EAA0D67275E7415D2C4C /* EXContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43202F704A41660D4114D1B92F916567 /* EXContactsViewController.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7CC086B2ADD79EFEEFE2F4524BFBB0B1 /* EXContacts-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D1AF16C1E934257CA88FA5493190CE9 /* EXContacts-dummy.m */; };
+		8A03A9835AC233F70A3C2F94A8DE1A1B /* EXContacts+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = AA100922DCD64E04A10C104743FF07C0 /* EXContacts+Serialization.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BCD61AFD04649B60DCF254B2476BC5D9 /* EXContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 494D384013A6F50D6E94979AAEF800A4 /* EXContacts.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FEFAEFC6739A04EA709E471B94BC3592 /* EXContactsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1024DFCF289B4137CCB7C2C1A69E8840 /* EXContactsViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		45AF1CCBCD893ADE4AA48AD268F6C38B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
-			remoteInfo = UMFileSystemInterface;
-		};
-		98DFC78A0ECC4F2F8F7E938B23D9D952 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
-			remoteInfo = UMPermissionsInterface;
-		};
-		D5CF954609F03A5D48E0610C9F0F3365 /* PBXContainerItemProxy */ = {
+		5BAB3C3031F72ECA3676FAFC42C2DE94 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D442B20761D3ED25D42E24D8290AD7E8 /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
+		B929AFA83506C7A03E3CB976ED051C1E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
+		D7A3877A74384185AF8D64B9E763B093 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0C4D06AF641AC37615427CF598D22470 /* EXContacts+Serialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXContacts+Serialization.m"; path = "EXContacts/EXContacts+Serialization.m"; sourceTree = "<group>"; };
-		4C12FEF17E53C5C19DFF85B29A04A395 /* EXContactsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsViewController.m; path = EXContacts/EXContactsViewController.m; sourceTree = "<group>"; };
-		54A8906B61C27A52FDAF04A300BFBA0D /* EXContacts+Serialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXContacts+Serialization.h"; path = "EXContacts/EXContacts+Serialization.h"; sourceTree = "<group>"; };
-		6239B6635E4DF416E05604F47629FB45 /* EXContacts.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXContacts.xcconfig; sourceTree = "<group>"; };
-		7E50124AA74E8D67DB95B7EA86888270 /* EXContacts-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXContacts-prefix.pch"; sourceTree = "<group>"; };
-		892868CF515507D069D4539E6F685C76 /* EXContacts.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContacts.h; path = EXContacts/EXContacts.h; sourceTree = "<group>"; };
+		0D1AF16C1E934257CA88FA5493190CE9 /* EXContacts-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXContacts-dummy.m"; sourceTree = "<group>"; };
+		0EB1107BFA4C9B7A5381CC59C0DDE531 /* EXContacts.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContacts.h; path = EXContacts/EXContacts.h; sourceTree = "<group>"; };
+		1024DFCF289B4137CCB7C2C1A69E8840 /* EXContactsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContactsViewController.h; path = EXContacts/EXContactsViewController.h; sourceTree = "<group>"; };
+		1168C13F305B0749F5AED384188E604A /* EXContacts+Serialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXContacts+Serialization.m"; path = "EXContacts/EXContacts+Serialization.m"; sourceTree = "<group>"; };
+		39FDDA1F7EFF595A9AAB2E3C968BEC6F /* EXContacts.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXContacts.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		43202F704A41660D4114D1B92F916567 /* EXContactsViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsViewController.m; path = EXContacts/EXContactsViewController.m; sourceTree = "<group>"; };
+		433D0F79185DF0ECE71BD1B71F40CBB8 /* EXContacts.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXContacts.xcconfig; sourceTree = "<group>"; };
+		494D384013A6F50D6E94979AAEF800A4 /* EXContacts.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContacts.m; path = EXContacts/EXContacts.m; sourceTree = "<group>"; };
+		4C8A732FF79873B83714930C7931936C /* EXContactsRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContactsRequester.h; path = EXContacts/EXContactsRequester.h; sourceTree = "<group>"; };
+		51B5AF21CC823C3F88F40DD181487398 /* EXContactsRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsRequester.m; path = EXContacts/EXContactsRequester.m; sourceTree = "<group>"; };
+		AA100922DCD64E04A10C104743FF07C0 /* EXContacts+Serialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXContacts+Serialization.h"; path = "EXContacts/EXContacts+Serialization.h"; sourceTree = "<group>"; };
 		AE923B3D56C15590FE3DF2ECDF7CC468 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		C67FE67D4E2BFF29E5652D4B28129D01 /* EXContacts.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContacts.m; path = EXContacts/EXContacts.m; sourceTree = "<group>"; };
 		CF9D4F3C50FAF99803D925DE18E424E6 /* libEXContacts.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXContacts.a; path = libEXContacts.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D0889288799E4A8C8C126437D4DC782A /* EXContacts-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXContacts-dummy.m"; sourceTree = "<group>"; };
 		D442B20761D3ED25D42E24D8290AD7E8 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
 		DD43B4DDA0345AD3F08AF2B929E1AB25 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
-		E55789EAA67E58105FFAF64D23030502 /* EXContacts.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXContacts.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		E5A395AD695898D025F3666BBA2BEDF9 /* EXContactsViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContactsViewController.h; path = EXContacts/EXContactsViewController.h; sourceTree = "<group>"; };
+		EF5AAD6DC8C3A600F3BAA0CBD0300A99 /* EXContacts-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXContacts-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DD4149FB192C59E326AEC51C87FB700C /* Frameworks */ = {
+		C29BB2A586C800CBEE3C51478C3BD618 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -68,47 +72,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		008EE16298B3D6687BAED4B3E6C6B56D /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				433D0F79185DF0ECE71BD1B71F40CBB8 /* EXContacts.xcconfig */,
+				0D1AF16C1E934257CA88FA5493190CE9 /* EXContacts-dummy.m */,
+				EF5AAD6DC8C3A600F3BAA0CBD0300A99 /* EXContacts-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXContacts";
+			sourceTree = "<group>";
+		};
+		28221968B0D74F873AEF97613DD3C879 /* EXContacts */ = {
+			isa = PBXGroup;
+			children = (
+				0EB1107BFA4C9B7A5381CC59C0DDE531 /* EXContacts.h */,
+				494D384013A6F50D6E94979AAEF800A4 /* EXContacts.m */,
+				AA100922DCD64E04A10C104743FF07C0 /* EXContacts+Serialization.h */,
+				1168C13F305B0749F5AED384188E604A /* EXContacts+Serialization.m */,
+				4C8A732FF79873B83714930C7931936C /* EXContactsRequester.h */,
+				51B5AF21CC823C3F88F40DD181487398 /* EXContactsRequester.m */,
+				1024DFCF289B4137CCB7C2C1A69E8840 /* EXContactsViewController.h */,
+				43202F704A41660D4114D1B92F916567 /* EXContactsViewController.m */,
+				C4D9A227C0B3C1D0231FD81E62C8BD55 /* Pod */,
+				008EE16298B3D6687BAED4B3E6C6B56D /* Support Files */,
+			);
+			name = EXContacts;
+			path = "../../packages/expo-contacts/ios";
+			sourceTree = "<group>";
+		};
 		4349F9BE0505EE6952C7FADBCB13104C /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				CF9D4F3C50FAF99803D925DE18E424E6 /* libEXContacts.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		5B4AB0A9DEC17CAEB1C981D9FAB85F3D /* EXContacts */ = {
-			isa = PBXGroup;
-			children = (
-				892868CF515507D069D4539E6F685C76 /* EXContacts.h */,
-				C67FE67D4E2BFF29E5652D4B28129D01 /* EXContacts.m */,
-				54A8906B61C27A52FDAF04A300BFBA0D /* EXContacts+Serialization.h */,
-				0C4D06AF641AC37615427CF598D22470 /* EXContacts+Serialization.m */,
-				E5A395AD695898D025F3666BBA2BEDF9 /* EXContactsViewController.h */,
-				4C12FEF17E53C5C19DFF85B29A04A395 /* EXContactsViewController.m */,
-				A670C0F73AA22A8EC26FB4225340A509 /* Pod */,
-				607B845C9962B2D4EAD6784C9AD05C7A /* Support Files */,
-			);
-			name = EXContacts;
-			path = "../../packages/expo-contacts/ios";
-			sourceTree = "<group>";
-		};
-		607B845C9962B2D4EAD6784C9AD05C7A /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				6239B6635E4DF416E05604F47629FB45 /* EXContacts.xcconfig */,
-				D0889288799E4A8C8C126437D4DC782A /* EXContacts-dummy.m */,
-				7E50124AA74E8D67DB95B7EA86888270 /* EXContacts-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXContacts";
-			sourceTree = "<group>";
-		};
-		A670C0F73AA22A8EC26FB4225340A509 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				E55789EAA67E58105FFAF64D23030502 /* EXContacts.podspec */,
-			);
-			name = Pod;
 			sourceTree = "<group>";
 		};
 		C0189A280154DAF792E25A53EE0F7996 /* Frameworks */ = {
@@ -122,10 +120,18 @@
 			isa = PBXGroup;
 			children = (
 				DAD553C0DFEE287FB4A39DB64F07524A /* Dependencies */,
-				5B4AB0A9DEC17CAEB1C981D9FAB85F3D /* EXContacts */,
+				28221968B0D74F873AEF97613DD3C879 /* EXContacts */,
 				C0189A280154DAF792E25A53EE0F7996 /* Frameworks */,
 				4349F9BE0505EE6952C7FADBCB13104C /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		C4D9A227C0B3C1D0231FD81E62C8BD55 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				39FDDA1F7EFF595A9AAB2E3C968BEC6F /* EXContacts.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		DAD553C0DFEE287FB4A39DB64F07524A /* Dependencies */ = {
@@ -141,13 +147,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		17D41175A14A1E1B388D3A20F993123B /* Headers */ = {
+		04D774F822C1DE7CE276C37E266E8304 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				456E23C9B13F66670FB99513E88D26F2 /* EXContacts+Serialization.h in Headers */,
-				1A2E664F24A86CB7CFCB15CACCB33860 /* EXContacts.h in Headers */,
-				0734CC5E06C9249240F93D96288F323C /* EXContactsViewController.h in Headers */,
+				8A03A9835AC233F70A3C2F94A8DE1A1B /* EXContacts+Serialization.h in Headers */,
+				1A6E2515AE31D4D8D4F5E38C6656F9A6 /* EXContacts.h in Headers */,
+				36CC73F3EA25364C3B8BA396D0D90D81 /* EXContactsRequester.h in Headers */,
+				FEFAEFC6739A04EA709E471B94BC3592 /* EXContactsViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,18 +163,18 @@
 /* Begin PBXNativeTarget section */
 		B22EE26A55A92797A576C80A1202EFFD /* EXContacts */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 39760644E0E977DD09F871984796F2C0 /* Build configuration list for PBXNativeTarget "EXContacts" */;
+			buildConfigurationList = CD466CFDD6D7BA6CEB42594638D9F5DD /* Build configuration list for PBXNativeTarget "EXContacts" */;
 			buildPhases = (
-				17D41175A14A1E1B388D3A20F993123B /* Headers */,
-				196A8E91544965A021E8132D357E9F5E /* Sources */,
-				DD4149FB192C59E326AEC51C87FB700C /* Frameworks */,
+				04D774F822C1DE7CE276C37E266E8304 /* Headers */,
+				9E9EFED8C29F4E67D6EAC238FCE031D0 /* Sources */,
+				C29BB2A586C800CBEE3C51478C3BD618 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C6B2D18912746069C1E993CC96D20ADF /* PBXTargetDependency */,
-				86ED353B8DFA8EE3C316EC6CC321476E /* PBXTargetDependency */,
-				B58B28CC92B218DD67923E6C0E58BA2A /* PBXTargetDependency */,
+				DDD2F93346CEF52931A6F7F38D618E9B /* PBXTargetDependency */,
+				5325E809CE16AD085749E0DEB1AE3BD0 /* PBXTargetDependency */,
+				F1935D472088D2E26ADCBEDBA48336A9 /* PBXTargetDependency */,
 			);
 			name = EXContacts;
 			productName = EXContacts;
@@ -212,66 +219,42 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		196A8E91544965A021E8132D357E9F5E /* Sources */ = {
+		9E9EFED8C29F4E67D6EAC238FCE031D0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				72267EBBAE647DC00C16CA836C663B22 /* EXContacts+Serialization.m in Sources */,
-				AE02F18ED73DD68A814151DEC82E0325 /* EXContacts-dummy.m in Sources */,
-				96A1A2C7D75984052D3FB9450237E8B9 /* EXContacts.m in Sources */,
-				C7754DFFBE94D6C652577EA4069CB1DA /* EXContactsViewController.m in Sources */,
+				0B83E9A8A6AEE3068503836E7EAE7B7B /* EXContacts+Serialization.m in Sources */,
+				7CC086B2ADD79EFEEFE2F4524BFBB0B1 /* EXContacts-dummy.m in Sources */,
+				BCD61AFD04649B60DCF254B2476BC5D9 /* EXContacts.m in Sources */,
+				360AB749F766E49C26600C57A0D3C3D3 /* EXContactsRequester.m in Sources */,
+				6701B1DDB448EAA0D67275E7415D2C4C /* EXContactsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		86ED353B8DFA8EE3C316EC6CC321476E /* PBXTargetDependency */ = {
+		5325E809CE16AD085749E0DEB1AE3BD0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMFileSystemInterface;
-			targetProxy = 45AF1CCBCD893ADE4AA48AD268F6C38B /* PBXContainerItemProxy */;
+			targetProxy = D7A3877A74384185AF8D64B9E763B093 /* PBXContainerItemProxy */;
 		};
-		B58B28CC92B218DD67923E6C0E58BA2A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMPermissionsInterface;
-			targetProxy = 98DFC78A0ECC4F2F8F7E938B23D9D952 /* PBXContainerItemProxy */;
-		};
-		C6B2D18912746069C1E993CC96D20ADF /* PBXTargetDependency */ = {
+		DDD2F93346CEF52931A6F7F38D618E9B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = D5CF954609F03A5D48E0610C9F0F3365 /* PBXContainerItemProxy */;
+			targetProxy = 5BAB3C3031F72ECA3676FAFC42C2DE94 /* PBXContainerItemProxy */;
+		};
+		F1935D472088D2E26ADCBEDBA48336A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = B929AFA83506C7A03E3CB976ED051C1E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0BA08952106DDEB323DC67E0A1AEB411 /* Release */ = {
+		2F7114319A9825BE85A668DCA253E0E8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6239B6635E4DF416E05604F47629FB45 /* EXContacts.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXContacts/EXContacts-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXContacts;
-				PRODUCT_NAME = EXContacts;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		9721B97C1F51FDEBEFF92C9A44A2B0AB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6239B6635E4DF416E05604F47629FB45 /* EXContacts.xcconfig */;
+			baseConfigurationReference = 433D0F79185DF0ECE71BD1B71F40CBB8 /* EXContacts.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -417,23 +400,48 @@
 			};
 			name = Release;
 		};
+		E8610DCCFEDF9DCD8519B47FF5B1AD92 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 433D0F79185DF0ECE71BD1B71F40CBB8 /* EXContacts.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXContacts/EXContacts-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXContacts;
+				PRODUCT_NAME = EXContacts;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		39760644E0E977DD09F871984796F2C0 /* Build configuration list for PBXNativeTarget "EXContacts" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9721B97C1F51FDEBEFF92C9A44A2B0AB /* Debug */,
-				0BA08952106DDEB323DC67E0A1AEB411 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		C7D635738144B93C7149E218867A25B0 /* Build configuration list for PBXProject "EXContacts" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B1F331C8708609A6D5369868E460FA38 /* Debug */,
 				B9C15C88AF84E2C57BD806695746DD3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD466CFDD6D7BA6CEB42594638D9F5DD /* Build configuration list for PBXNativeTarget "EXContacts" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F7114319A9825BE85A668DCA253E0E8 /* Debug */,
+				E8610DCCFEDF9DCD8519B47FF5B1AD92 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
