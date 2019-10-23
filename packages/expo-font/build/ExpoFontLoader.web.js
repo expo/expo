@@ -1,15 +1,23 @@
 import FontObserver from 'fontfaceobserver';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 export default {
     get name() {
         return 'ExpoFontLoader';
     },
-    loadAsync(fontFamilyName, resource) {
+    async loadAsync(fontFamilyName, resource) {
+        if (!canUseDOM) {
+            return;
+        }
         const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
         if (!canInjectStyle) {
             throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
         }
         const style = _createWebStyle(fontFamilyName, resource);
         document.head.appendChild(style);
+        // https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
+        if (navigator.userAgent.includes('Edge')) {
+            return;
+        }
         return new FontObserver(fontFamilyName).load();
     },
 };
