@@ -1,16 +1,14 @@
 package expo.modules.ota
 
-import okhttp3.Response
 import java.io.*
 
-fun saveResponseToFile(directory: File, fileName: String): (response: Response, success: (String) -> Unit, error: (Exception) -> Unit) -> Unit {
-    return fun(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
+fun saveResponseToFile(directory: File, fileName: String): (inputStream: InputStream, success: (String) -> Unit, error: (Exception) -> Unit) -> Unit {
+    return fun(inputStream: InputStream, success: (String) -> Unit, error: (Exception) -> Unit) {
         if (!directory.exists()) {
             directory.mkdir()
         }
         val sourceFile = File(directory, fileName)
         try {
-            val inputStream = response.body()!!.byteStream()
             val fileOutputStream = FileOutputStream(sourceFile)
 
             copyStream(inputStream, fileOutputStream)

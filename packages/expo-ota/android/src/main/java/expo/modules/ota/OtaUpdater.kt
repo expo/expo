@@ -7,10 +7,13 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val id: String) {
+class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val config: ExpoOTAConfig, private val id: String) {
+
+    private val embeddedManifestAndBundle = EmbeddedManifestAndBundle(context)
 
     init {
-        if(persistence.enqueuedReorderAtNextBoot) {
+        checkAssetsBundleAndManifest()
+        if (persistence.enqueuedReorderAtNextBoot) {
             markDownloadedCurrentAndCurrentOutdated()
             removeOutdatedBundle()
             persistence.enqueuedReorderAtNextBoot = false
@@ -21,7 +24,7 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
                                updateUnavailable: (manifest: JSONObject) -> Unit,
                                error: (Exception?) -> Unit) {
         downloadManifest({ manifest ->
-            if (persistence.config!!.manifestComparator.shouldDownloadBundle(persistence.newestManifest, manifest)) {
+            if (shouldReplaceBundle(persistence.newestManifest, manifest)) {
                 downloadBundle(manifest, {
                     success(manifest, it)
                 }) { error(it) }
@@ -30,6 +33,9 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
             }
         }) { error(it) }
     }
+
+    private fun shouldReplaceBundle(currentManifest: JSONObject, manifestToReplace: JSONObject) =
+            config.manifestComparator.shouldReplaceBundle(currentManifest, manifestToReplace)
 
 
     private fun createManifestRequest(config: ExpoOTAConfig): Request {
@@ -40,31 +46,26 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
     fun downloadManifest(success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
-        val config = persistence.config
-        if (config != null) {
-            config.manifestHttpClient.newCall(createManifestRequest(config)).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    error(IllegalStateException("Manifest fetching failed: ", e))
-                }
+        config.manifestHttpClient.newCall(createManifestRequest(config)).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                error(IllegalStateException("Manifest fetching failed: ", e))
+            }
 
-                override fun onResponse(call: Call, response: Response) {
-                    if (response.isSuccessful) {
-                        if (response.body() != null) {
-                            verifyManifest(response, config, success, error)
-                        } else {
-                            error(IllegalStateException("Response body is null: ", response.body()))
-                        }
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    if (response.body() != null) {
+                        verifyManifest(response, success, error)
                     } else {
-                        error(IllegalStateException("Response not successful. Code: " + response.code() + ", body: " + response.body()?.toString()))
+                        error(IllegalStateException("Response body is null: ", response.body()))
                     }
+                } else {
+                    error(IllegalStateException("Response not successful. Code: " + response.code() + ", body: " + response.body()?.toString()))
                 }
-            })
-        } else {
-            throwUninitializedExpoOtaError()
-        }
+            }
+        })
     }
 
-    fun verifyManifest(response: Response, config: ExpoOTAConfig, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
+    fun verifyManifest(response: Response, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
         config.manifestResponseValidator.validate(response, {
             success(JSONObject(it))
         }, error)
@@ -108,6 +109,16 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
         }
     }
 
+    private fun checkAssetsBundleAndManifest() {
+        val embeddedManifest: JSONObject = embeddedManifestAndBundle.readManifest()
+        if (!shouldReplaceBundle(embeddedManifest, persistence.newestManifest)) {
+            saveResponseToFile(bundleDir(), bundleFilename(embeddedManifest)) (embeddedManifestAndBundle.readBundle(), {
+                saveDownloadedManifestAndBundlePath(embeddedManifest, it)
+                markDownloadedCurrentAndCurrentOutdated()
+            }, {})
+        }
+    }
+
     private val validFilesSet: Set<String>
         get() {
             val bundlePath = persistence.bundlePath
@@ -124,7 +135,7 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
 
     private fun downloadBundle(manifest: JSONObject, success: (String) -> Unit, error: (Exception?) -> Unit) {
         val bundleUrl = manifest.optString(KEY_MANIFEST_BUNDLE_URL)
-        val bundleLoader = BundleLoader(context, bundleClient(persistence.config!!))
+        val bundleLoader = BundleLoader(context, bundleClient())
         val params = BundleLoader.BundleLoadParams(bundleUrl, bundleDir(), bundleFilename(manifest))
         bundleLoader.loadJsBundle(params, success, error)
     }
@@ -134,10 +145,10 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
     }
 
     private fun bundleFilePrefix(): String {
-        return "bundle_${persistence.config?.channelIdentifier}"
+        return "bundle_${config.channelIdentifier}"
     }
 
-    private fun bundleClient(config: ExpoOTAConfig): OkHttpClient {
+    private fun bundleClient(): OkHttpClient {
         return config.bundleHttpClient ?: longTimeoutHttpClient()
     }
 

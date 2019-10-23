@@ -16,7 +16,6 @@ class BundleLoader(val context: Context, val httpClient: OkHttpClient) {
 
         downloadBundle(requestBuilder.build(), this.handleResponse(params, success, error), error)
 
-
         val sourceFile = File(params.directory, params.fileName)
         return sourceFile.exists()
     }
@@ -44,7 +43,7 @@ class BundleLoader(val context: Context, val httpClient: OkHttpClient) {
                     handleUnsuccessfulResponse(response, error)
                 } else {
                     try {
-                        saveResponseToFile(params.directory, params.fileName)(response, success, error)
+                        saveResponseToFile(params.directory, params.fileName)(response.body()!!.byteStream(), success, error)
                     } catch (e: Exception) {
                         error(e)
                     }

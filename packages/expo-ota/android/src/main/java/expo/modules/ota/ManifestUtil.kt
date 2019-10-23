@@ -6,19 +6,20 @@ import org.json.JSONObject
 import java.util.*
 
 interface ManifestComparator {
-    fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean
+    fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean
 }
 
 const val MANIFEST_VERSION_KEY = "version"
+const val MANIFEST_SDK_VERSION_KEY = "sdkVersion"
 
-class VersionNumberManifestComparator: ManifestComparator {
-    override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
+class VersionNumberManifestComparator(private val nativeComparator: ManifestComparator): ManifestComparator {
+    override fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
         val newVersion = newManifest.optString(MANIFEST_VERSION_KEY, "")
         val lastVersion = lastManifest.optString(MANIFEST_VERSION_KEY, "")
         return when {
             TextUtils.isEmpty(newVersion) -> throw IllegalArgumentException("Manifest must provide version parameter!")
             TextUtils.isEmpty(lastVersion) -> true
-            else -> compareVersions(newVersion, lastVersion) > 0
+            else -> nativeComparator.shouldReplaceBundle(lastManifest, newManifest) && compareVersions(newVersion, lastVersion) > 0
         }
     }
 
@@ -30,22 +31,34 @@ class VersionNumberManifestComparator: ManifestComparator {
 
 const val MANIFEST_REVISION_KEY = "revisionId"
 
-class RevisionIdManifestCompoarator: ManifestComparator {
-    override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
+class RevisionIdManifestCompoarator(private val nativeComparator: ManifestComparator): ManifestComparator {
+    override fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
         val newVersion = newManifest.optString(MANIFEST_REVISION_KEY, "")
         val lastVersion = lastManifest.optString(MANIFEST_REVISION_KEY, "")
         return when {
             TextUtils.isEmpty(newVersion) -> throw IllegalArgumentException("Manifest must provide version parameter!")
             TextUtils.isEmpty(lastVersion) -> true
-            else -> newVersion != lastVersion
+            else -> nativeComparator.shouldReplaceBundle(lastManifest, newManifest) && newVersion != lastVersion
         }
     }
 
 }
 
-class AllAcceptingManifestComparator: ManifestComparator {
-    override fun shouldDownloadBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
-        return true
+class AllAcceptingManifestComparator(private val nativeComparator: ManifestComparator): ManifestComparator {
+    override fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
+        return nativeComparator.shouldReplaceBundle(lastManifest, newManifest)
     }
 
+}
+
+class SdkVersionMustBeEqualNativeComparator: ManifestComparator {
+    override fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
+        val newVersion = newManifest.optString(MANIFEST_SDK_VERSION_KEY, "")
+        val lastVersion = lastManifest.optString(MANIFEST_SDK_VERSION_KEY, "")
+        return when {
+            TextUtils.isEmpty(newVersion) -> throw IllegalArgumentException("Manifest must provide version parameter!")
+            TextUtils.isEmpty(lastVersion) -> true
+            else -> newVersion == lastVersion
+        }
+    }
 }

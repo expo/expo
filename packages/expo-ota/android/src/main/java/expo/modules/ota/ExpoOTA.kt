@@ -12,13 +12,17 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
 
     companion object {
 
-        @JvmStatic @JvmOverloads fun create(context: Context, config: ExpoOTAConfig, loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID): ExpoOTA {
-            return ExpoOTA(context, config, loadFromBundler, id)
+        @JvmStatic @JvmOverloads fun init(context: Context, config: ExpoOTAConfig, loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID): ExpoOTA {
+            val ota = ExpoOTA(context, config, loadFromBundler, id)
+            if(config.checkForUpdatesAutomatically) {
+                ota.start()
+            }
+            return ota
         }
     }
 
     private val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
-    private val updater = OtaUpdater(context, persistence, id)
+    private val updater = OtaUpdater(context, persistence, config, id)
 
     init {
         persistence.config = config
@@ -27,7 +31,7 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
 
     var bundlePath = if(loadFromBundler) null else persistence.bundlePath
 
-    fun init() {
+    fun start() {
         updater.removeOutdatedBundle()
         if (!loadFromBundler) {
             updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }

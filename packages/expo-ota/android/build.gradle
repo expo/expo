@@ -84,6 +84,8 @@ dependencies {
   implementation "com.madgag.spongycastle:prov:1.53.0.0"
 
   unimodule 'unimodules-core'
+  unimodule 'unimodules-constants-interface'
+  unimodule 'expo-constants'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 }
 repositories {
