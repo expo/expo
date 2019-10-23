@@ -615,11 +615,8 @@ module.exports = {
         },
         ExpoCellular: {
           addListener: { type: 'function' },
-          allowsVoip: { type: 'boolean', mock: false },
-          carrier: {
-            type: 'object',
-            mock: null,
-          },
+          allowsVoip: { type: 'boolean', mock: true },
+          carrier: { type: 'string' },
           getCellularGenerationAsync: { type: 'function' },
           isoCountryCode: { type: 'string' },
           mobileCountryCode: { type: 'string' },

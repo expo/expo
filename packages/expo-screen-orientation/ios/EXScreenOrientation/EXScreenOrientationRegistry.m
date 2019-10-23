@@ -3,9 +3,16 @@
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #import <UMCore/UMDefines.h>
 
+@interface EXScreenOrientationRegistry ()
+
+@property (atomic, strong) NSMutableDictionary<NSString *, NSNumber *> *orientationMap;
+
+@end
+
 @implementation EXScreenOrientationRegistry
 
 UM_REGISTER_SINGLETON_MODULE(EXScreenOrientationRegistry)
+
 
 - (instancetype)init {
   if (self = [super init]) {
