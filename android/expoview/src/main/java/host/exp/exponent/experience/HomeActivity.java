@@ -45,7 +45,7 @@ public class HomeActivity extends BaseExperienceActivity {
     mSDKVersion = RNObject.UNVERSIONED;
 
     EventBus.getDefault().registerSticky(this);
-    mKernel.startJSKernel();
+    mKernel.startJSKernel(this);
     showLoadingScreen(null);
 
     tryInstallLeakCanary(true);

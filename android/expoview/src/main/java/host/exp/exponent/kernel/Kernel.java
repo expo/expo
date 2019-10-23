@@ -170,10 +170,11 @@ public class Kernel extends KernelInterface {
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
-  public void startJSKernel() {
+  public void startJSKernel(Activity activity) {
     if (Constants.isStandaloneApp()) {
       return;
     }
+    setActivityContext(activity);
 
     SoLoader.init(mContext, false);
 
@@ -303,6 +304,7 @@ public class Kernel extends KernelInterface {
 
             mReactInstanceManager = builder.build();
             mReactInstanceManager.createReactContextInBackground();
+            mReactInstanceManager.onHostResume(getActivityContext(), null);
 
             mIsRunning = true;
             EventBus.getDefault().postSticky(new KernelStartedRunningEvent());

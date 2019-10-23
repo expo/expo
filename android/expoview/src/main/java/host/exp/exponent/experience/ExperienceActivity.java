@@ -585,11 +585,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  public void onEvent(BaseExperienceActivity.ExperienceDoneLoadingEvent event) {
-    // On cold boot to this experience, wait until we're done loading to load the kernel.
-    mKernel.startJSKernel();
-  }
-
   /*
    *
    * Notification
