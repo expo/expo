@@ -34,6 +34,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
@@ -426,8 +427,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
-    // LAUNCHBLOCKING: Look at mSDKVersion or test for existence of the method to gate this to RN 0.61+
-    builder.call("setCurrentActivity", this);
+    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
+      builder.call("setCurrentActivity", this);
+    }
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -519,8 +521,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       }
     }
 
-    // LAUNCHBLOCKING: Call this only for RN <0.61
-    // mReactInstanceManager.onHostResume(this, this);
+    mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
         mReactInstanceManager.get(),
         mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
