@@ -358,7 +358,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
     mJSBundlePath = jsBundlePath;
 
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+    // TODO: remove once SDK 35 is deprecated
+    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
       new AlertDialog.Builder(this)
           .setTitle("Please enable \"Permit drawing over other apps\"")
           .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
