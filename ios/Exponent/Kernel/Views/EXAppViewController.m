@@ -328,31 +328,26 @@ NS_ASSUME_NONNULL_BEGIN
     return [self legacySupportedInterfaceOrientations];
   }
   
-  if (_appRecord.experienceId == nil) {
+  if (!_appRecord.experienceId) {
     return UIInterfaceOrientationMaskAllButUpsideDown;
   }
   EXScreenOrientationRegistry *registry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if ([registry doesKeyExistForAppId:_appRecord.experienceId]) {
     return [registry orientationMaskForAppId:_appRecord.experienceId];
-  } else if (_appRecord.appLoader.manifest) {
-    NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
-    UIInterfaceOrientationMask mask = UIInterfaceOrientationMaskAllButUpsideDown;
-    if ([orientationConfig isEqualToString:@"portrait"]) {
-      mask = UIInterfaceOrientationMaskPortrait;
-    } else if ([orientationConfig isEqualToString:@"landscape"]) {
-      mask = UIInterfaceOrientationMaskLandscape;
-    }
-    [registry setOrientationMask:mask forAppId:_appRecord.experienceId];
-    return mask;
   }
-  // no config or default value: allow autorotation
-  return UIInterfaceOrientationMaskAllButUpsideDown;
+  UIInterfaceOrientationMask mask = [self orientationMaskFromManifestOrDefault];
+  [registry setOrientationMask:mask forAppId:_appRecord.experienceId];
+  return mask;
 }
 
 - (UIInterfaceOrientationMask)legacySupportedInterfaceOrientations {
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
+  return [self orientationMaskFromManifestOrDefault];
+}
+
+- (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
   if (_appRecord.appLoader.manifest) {
     NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
     if ([orientationConfig isEqualToString:@"portrait"]) {

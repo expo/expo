@@ -1,8 +1,6 @@
 import { Subscription } from '@unimodules/core';
 import { Orientation, OrientationChangeEvent, OrientationChangeListener, OrientationLock, PlatformOrientationInfo, SizeClassIOS, WebOrientationLock } from './ScreenOrientation.types';
 export { Orientation, OrientationLock, SizeClassIOS, PlatformOrientationInfo, OrientationChangeListener, OrientationChangeEvent, WebOrientationLock, };
-export declare function allow(orientationLock: OrientationLock): void;
-export declare function allowAsync(orientationLock: OrientationLock): Promise<void>;
 export declare function lockAsync(orientationLock: OrientationLock): Promise<void>;
 export declare function lockPlatformAsync(options: PlatformOrientationInfo): Promise<void>;
 export declare function unlockAsync(): Promise<void>;

@@ -1,5 +1,6 @@
 // Copyright © 2019-present 650 Industries. All rights reserved.
 
+#if __has_include(<EXScreenOrientation/EXScreenOrientationModule.h>)
 #import "EXAppViewController.h"
 #import "EXScopedScreenOrientation.h"
 
@@ -30,3 +31,4 @@
 }
 
 @end
+#endif

@@ -31,14 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, strong) EXButtonView *btnMenu;
 @property (nonatomic, strong, nullable) EXMenuWindow *menuWindow;
-//@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 
 @end
 
 @implementation EXRootViewController
-
-//@synthesize supportedInterfaceOrientations = _supportedInterfaceOrientations;
-
 
 - (instancetype)init
 {
@@ -341,15 +337,6 @@ NS_ASSUME_NONNULL_BEGIN
     [[EXKernel sharedInstance] switchTasks];
   }
 }
-
-//- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-//{
-//  if (self.contentViewController != nil) {
-//    return self.contentViewController.supportedInterfaceOrientations;
-//  }
-//  // no config or default value: allow autorotation
-//  return UIInterfaceOrientationMaskAllButUpsideDown;
-//}
 
 @end
 

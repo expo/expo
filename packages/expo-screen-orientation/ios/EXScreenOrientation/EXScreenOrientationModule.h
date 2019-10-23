@@ -5,7 +5,6 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 
-@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter>
 typedef NS_ENUM(NSInteger, EXOrientation) {
   EXOrientationPortrait,
   EXOrientationPortraitUp,
@@ -28,6 +27,8 @@ typedef NS_ENUM(NSInteger, EXOrientationLock) {
   EXOrientationOtherLock,
   EXOrientationAllButUpsideDownLock // deprecated
 };
+
+@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter>
 
 - (UIInterfaceOrientationMask)orientationMask;
 - (void)setOrientationMask:(UIInterfaceOrientationMask)mask;

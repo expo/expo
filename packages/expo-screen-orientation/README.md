@@ -1,6 +1,6 @@
 # expo-screen-orientation
 
-Allows you to manage your device's orientation.
+Allows you to manage the orientation of your app's interface.
 
 # API documentation
 

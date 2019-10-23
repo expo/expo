@@ -1,3 +1,3 @@
 import { NativeModulesProxy } from '@unimodules/core';
 
-export default NativeModulesProxy.ExpoScreenOrientation || ({} as any);
+export default NativeModulesProxy.ExpoScreenOrientation || {};
