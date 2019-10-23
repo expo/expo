@@ -14,7 +14,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Battery from 'expo-battery';
 ```
 
-Note: On iOS simulators, battery monitoring is not possible.
+Note: On iOS simulators, battery monitoring is not possible. You can confirm by checking [`Battery.isSupported`](#batteryissupported).
 
 ### Methods
 
@@ -32,6 +32,7 @@ Note: On iOS simulators, battery monitoring is not possible.
 ### Enum Types
 
 - [`Battery.BatteryState`](#batterybatterystate)
+- [`Battery.isSupported`](#batteryissupported)
 
 ### Errors
 
@@ -216,3 +217,8 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+### `Battery.isSupported`
+
+- **`TRUE`** - for Android or iOS devices.
+- **`FALSE`** - for iOS simulators.
