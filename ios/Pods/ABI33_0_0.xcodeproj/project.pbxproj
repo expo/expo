@@ -1485,14 +1485,14 @@
 		};
 		0A15F635CE799D15074F686837B1276F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2566676035A092815E0F76FDDE3E1176 /* EXGL-CPP.xcodeproj */;
+			containerPortal = EEA5AD1D68E12E28C35CB8B93FA5CC5F /* EXGL-CPP.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 348F48833A31FAAF4C3FBBBCAA504BB8;
 			remoteInfo = "EXGL-CPP";
 		};
 		0A5E4590B818EC89996D917EF961EF6B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E8FED488B688610DBECDAC438C3F8470 /* GoogleMaps.xcodeproj */;
+			containerPortal = 0624827FCD3F5DE8CF1A8EEE332C68F0 /* GoogleMaps.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF08434370CEBD287CA17CA7862D7C59;
 			remoteInfo = GoogleMaps;
@@ -1513,7 +1513,7 @@
 		};
 		0FC68876DB651DA4006506822DEA3FDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D8267F9AA68B96C14DD421918F75941A /* Firebase.xcodeproj */;
+			containerPortal = 17B5B67ACE307C81789740E091F5B7A4 /* Firebase.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
 			remoteInfo = Firebase;
@@ -1576,7 +1576,7 @@
 		};
 		170D5A1CDAE81279A7063B3B1FA5D2A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4240A24CC9C762CD719F332396C98455 /* JKBigInteger2.xcodeproj */;
+			containerPortal = B88514FAE80F025AE29F81C5964EABFD /* JKBigInteger2.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 55B5B69CD0128658056242174A61815A;
 			remoteInfo = JKBigInteger2;
@@ -1597,7 +1597,7 @@
 		};
 		196EFACB407F1934C04EFBB809012647 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 90CFA69FB1EF4E091715689D5D0BE774 /* FBSDKCoreKit.xcodeproj */;
+			containerPortal = 0D0120167568BBA890C815D7C9660266 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
@@ -1618,7 +1618,7 @@
 		};
 		1AFFCFF46C8862548A9A4E34F4B1F35F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 640665D01EB832EBF431BD3BF33B949F /* Google-Mobile-Ads-SDK.xcodeproj */;
+			containerPortal = EC7EF358649EC1DB4DE4F75D833B9872 /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
 			remoteInfo = "Google-Mobile-Ads-SDK";
@@ -1660,7 +1660,7 @@
 		};
 		25EA7A1F0BA894BF6005C73AF2D5755D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9E9D268D22F4020F17E8B62DE46B9A0D /* AppAuth.xcodeproj */;
+			containerPortal = FE83369EBFE52BC6F589B607F7EBCF68 /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
@@ -1674,7 +1674,7 @@
 		};
 		2686D85C8ADDF9DD126702539C667A93 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C2AF8BDBFA2B8359254516DCEB56773E /* Amplitude-iOS.xcodeproj */;
+			containerPortal = 61D93FF2C4342713E057C97F35C2C734 /* Amplitude-iOS.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
 			remoteInfo = "Amplitude-iOS";
@@ -1688,7 +1688,7 @@
 		};
 		2CCCEEFAD8F67EF8D514193AB8C8C9DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8638B6472FB9FBD8758FCE745731226D /* Google-Maps-iOS-Utils.xcodeproj */;
+			containerPortal = B06B2089BC66C8D9F51277F91D2D30EE /* Google-Maps-iOS-Utils.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1A622F006CCB28DCB3730A6D10AAB7C2;
 			remoteInfo = "Google-Maps-iOS-Utils";
@@ -1716,7 +1716,7 @@
 		};
 		359ABE7DBAF696423E3AC12412437E00 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 346CF7B20382310EE7BF1B8F0C377C24 /* FBSDKLoginKit.xcodeproj */;
+			containerPortal = 49A5F7BD0C15427122E3843BECC66F3F /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
@@ -1807,7 +1807,7 @@
 		};
 		418B68A0E436A02BB5106E5E6D86C256 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C2AF8BDBFA2B8359254516DCEB56773E /* Amplitude-iOS.xcodeproj */;
+			containerPortal = 61D93FF2C4342713E057C97F35C2C734 /* Amplitude-iOS.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
 			remoteInfo = "Amplitude-iOS";
@@ -1835,7 +1835,7 @@
 		};
 		4EB56A845A22EE52C3591B78BFBD265F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 00245CA0A90DCFB32565D7C1535FE13D /* boost-for-react-native.xcodeproj */;
+			containerPortal = 7839769CFC564DC61126683581ACC8EC /* boost-for-react-native.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
 			remoteInfo = "boost-for-react-native";
@@ -1849,7 +1849,7 @@
 		};
 		5521A4B700EEDAA2747E47A95DAD86A2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5B3E0D08963DE5B27B8A4414D269FCFB /* Analytics.xcodeproj */;
+			containerPortal = D234A9515DC83947C8E1D616D73CD92D /* Analytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
 			remoteInfo = Analytics;
@@ -1891,7 +1891,7 @@
 		};
 		596B36009F3E9BFFAD08D5539658D0B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9E9D268D22F4020F17E8B62DE46B9A0D /* AppAuth.xcodeproj */;
+			containerPortal = FE83369EBFE52BC6F589B607F7EBCF68 /* AppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
 			remoteInfo = AppAuth;
@@ -1961,7 +1961,7 @@
 		};
 		6F2D9417DCEBD588B790E99D47555ECC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 042BB98367330D5EFFF8641AE8A69CF9 /* FBAudienceNetwork.xcodeproj */;
+			containerPortal = 298523E393931D5BB22CE3DCCF24CD60 /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
@@ -1975,7 +1975,7 @@
 		};
 		73BD855C7F8B9951A08D82A802F24402 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 243C22D8C1069F6D7E12144E3185CC8C /* DoubleConversion.xcodeproj */;
+			containerPortal = 2FB5B0C873E24902E6ED07021CDEC4C8 /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
 			remoteInfo = DoubleConversion;
@@ -2010,7 +2010,7 @@
 		};
 		7B13E6E2EC699D5A65D35ADA871051B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5B3E0D08963DE5B27B8A4414D269FCFB /* Analytics.xcodeproj */;
+			containerPortal = D234A9515DC83947C8E1D616D73CD92D /* Analytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 428EE321470913F61A7C253ACF3B4D53;
 			remoteInfo = Analytics;
@@ -2099,13 +2099,6 @@
 			remoteGlobalIDString = 5525AF966AE228479212FF7A78D25C18;
 			remoteInfo = ABI33_0_0UMCore;
 		};
-		8856F8369DA88E43E67D34A9EA580A21 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F1BA7D780D6EA1BEFAE08C15049B77EB /* React.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
-			remoteInfo = React;
-		};
 		8A10BC21CA57791DD3A6DFFB59B4A962 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B0E259F0AAD050E1822A4FA6CEAE1CB7 /* Project object */;
@@ -2122,7 +2115,7 @@
 		};
 		8EE6C7D47007856B6B62A513406038F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 612660A7C14D1CB7DB5F56FD73E0ED8B /* lottie-ios.xcodeproj */;
+			containerPortal = 7B3CE7642730DCF04E6AFCA1D9BF1185 /* lottie-ios.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
 			remoteInfo = "lottie-ios";
@@ -2178,7 +2171,7 @@
 		};
 		9F943817ECF167A7E5667CD10DFC992B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 90CFA69FB1EF4E091715689D5D0BE774 /* FBSDKCoreKit.xcodeproj */;
+			containerPortal = 0D0120167568BBA890C815D7C9660266 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
 			remoteInfo = FBSDKCoreKit;
@@ -2192,7 +2185,7 @@
 		};
 		A334BAF2AFC478399A132ED599399059 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = EF0E0BD81A16A20A1F1383D21CDD0503 /* Branch.xcodeproj */;
+			containerPortal = F91C872B2FB6574C5D6DDC91C4642220 /* Branch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
 			remoteInfo = Branch;
@@ -2213,7 +2206,7 @@
 		};
 		A9459B0D7C813097DBF78FA6891139E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E118E1A809A52AC5E5E1DCD93D0C8FBF /* GoogleSignIn.xcodeproj */;
+			containerPortal = DD01EB3FC21E0225709C0ABE7929F0AD /* GoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
@@ -2262,7 +2255,7 @@
 		};
 		AF297DADC3E3855D5D9E191B8AEAD276 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 881C8805EBC8D95C49C2BB5FCD87C98B /* Folly.xcodeproj */;
+			containerPortal = 50BA6E98EB59422687C68F900997151B /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
 			remoteInfo = Folly;
@@ -2297,7 +2290,7 @@
 		};
 		B86B1B425D64BF5CD713E4B47DEB1F98 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 640665D01EB832EBF431BD3BF33B949F /* Google-Mobile-Ads-SDK.xcodeproj */;
+			containerPortal = EC7EF358649EC1DB4DE4F75D833B9872 /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
 			remoteInfo = "Google-Mobile-Ads-SDK";
@@ -2381,7 +2374,7 @@
 		};
 		CA388E3C07E18762C83F1F25E4F650DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E118E1A809A52AC5E5E1DCD93D0C8FBF /* GoogleSignIn.xcodeproj */;
+			containerPortal = DD01EB3FC21E0225709C0ABE7929F0AD /* GoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
 			remoteInfo = GoogleSignIn;
@@ -2430,7 +2423,7 @@
 		};
 		D6BFA9C0748A8B38B43E744075E46E08 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 346CF7B20382310EE7BF1B8F0C377C24 /* FBSDKLoginKit.xcodeproj */;
+			containerPortal = 49A5F7BD0C15427122E3843BECC66F3F /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
 			remoteInfo = FBSDKLoginKit;
@@ -2521,14 +2514,14 @@
 		};
 		E6FA14303F2ABC5C29D9738E049F2680 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7604A449DE8F6F4D172ED1B3EA421491 /* glog.xcodeproj */;
+			containerPortal = 25E88966946BE0CED873F1E55A5DC0C2 /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
 			remoteInfo = glog;
 		};
 		E741B5138403CD0E4A8DCA14DFF811CE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2566676035A092815E0F76FDDE3E1176 /* EXGL-CPP.xcodeproj */;
+			containerPortal = EEA5AD1D68E12E28C35CB8B93FA5CC5F /* EXGL-CPP.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 348F48833A31FAAF4C3FBBBCAA504BB8;
 			remoteInfo = "EXGL-CPP";
@@ -2668,7 +2661,7 @@
 		};
 		FCF425B15F9FB47CD4ED7BE9E87FE2E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 042BB98367330D5EFFF8641AE8A69CF9 /* FBAudienceNetwork.xcodeproj */;
+			containerPortal = 298523E393931D5BB22CE3DCCF24CD60 /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
 			remoteInfo = FBAudienceNetwork;
@@ -2683,7 +2676,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00245CA0A90DCFB32565D7C1535FE13D /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
 		002583A909DF4C1B98B730FEDC819B1C /* ABI33_0_0EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXReactNativeUserNotificationCenterProxy.m; path = ABI33_0_0EXPermissions/ABI33_0_0EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
 		0028C8BF76AA254713CCB4CA3D8A02A2 /* ABI33_0_0EXMagnetometer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXMagnetometer.h; sourceTree = "<group>"; };
 		0086B96EC954383A8E9534EF56C2F142 /* ABI33_0_0RNPanHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNPanHandler.m; sourceTree = "<group>"; };
@@ -2709,7 +2701,6 @@
 		03C28A2AF6DDF0E056386047C2DA5C02 /* ABI33_0_0JSExecutor.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0JSExecutor.cpp; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0JSExecutor.cpp; sourceTree = "<group>"; };
 		04080A76368196DB3F21F68B63FAC745 /* ABI33_0_0fishhook.c */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0fishhook.c; path = Libraries/fishhook/ABI33_0_0fishhook.c; sourceTree = "<group>"; };
 		04089CA69AA7D4CAA7F1FC5EA729B212 /* ABI33_0_0EXVideoThumbnails-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXVideoThumbnails-prefix.pch"; sourceTree = "<group>"; };
-		042BB98367330D5EFFF8641AE8A69CF9 /* FBAudienceNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBAudienceNetwork; path = FBAudienceNetwork.xcodeproj; sourceTree = "<group>"; };
 		0446D48AF315E5C2D100E3ADA4444E92 /* ABI33_0_0UMLogManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0UMLogManager.m; sourceTree = "<group>"; };
 		0455174958457BD963B29BC39B9EAF4B /* ABI33_0_0RNSVGPatternManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGPatternManager.h; sourceTree = "<group>"; };
 		0476D768C3BA86D02A9D16A3B2DF720D /* ABI33_0_0EXRandom.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXRandom.xcconfig; sourceTree = "<group>"; };
@@ -2728,6 +2719,7 @@
 		05D0FF601D729E1E9DD71FF5336E5236 /* ABI33_0_0RCTPerformanceLogger.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTPerformanceLogger.h; sourceTree = "<group>"; };
 		05E7E1351E1E5B19905C0511D91B6B14 /* ABI33_0_0ARTNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0ARTNode.m; path = Libraries/ART/ABI33_0_0ARTNode.m; sourceTree = "<group>"; };
 		0622293E70789AFA8D1E64A17325A933 /* ABI33_0_0EXTaskManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXTaskManager.m; path = ABI33_0_0EXTaskManager/ABI33_0_0EXTaskManager.m; sourceTree = "<group>"; };
+		0624827FCD3F5DE8CF1A8EEE332C68F0 /* GoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleMaps; path = GoogleMaps.xcodeproj; sourceTree = "<group>"; };
 		064553635E1CD71F29F8B3B98A5DCCCF /* libABI33_0_0EXKeepAwake.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI33_0_0EXKeepAwake.a; path = libABI33_0_0EXKeepAwake.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0677D61672991B2361F2690EF3919CEE /* ABI33_0_0RCTKeyboardObserver.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTKeyboardObserver.m; sourceTree = "<group>"; };
 		06D349373C2CB0036618D86139FE878A /* ABI33_0_0UMExportedModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMExportedModule.h; path = ABI33_0_0UMCore/ABI33_0_0UMExportedModule.h; sourceTree = "<group>"; };
@@ -2763,6 +2755,7 @@
 		0CB2EFD62B9CFD3EFC5296284483BE96 /* ABI33_0_0RNCWKWebViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNCWKWebViewManager.m; sourceTree = "<group>"; };
 		0CF349C13113FC24B30BD2F876E21B8C /* ABI33_0_0RCTInputAccessoryShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTInputAccessoryShadowView.m; sourceTree = "<group>"; };
 		0CFEB2EDDA73E4156C45A0B2B5D47CFB /* ABI33_0_0EXCalendarConverter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXCalendarConverter.h; path = ABI33_0_0EXCalendar/ABI33_0_0EXCalendarConverter.h; sourceTree = "<group>"; };
+		0D0120167568BBA890C815D7C9660266 /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
 		0D1A9012608DA585663BA1E56214B2B3 /* ABI33_0_0EXLocation.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXLocation.xcconfig; sourceTree = "<group>"; };
 		0DF6D0B0FAB930580F5F01E91FF7DC03 /* ABI33_0_0JSIndexedRAMBundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0JSIndexedRAMBundle.h; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0JSIndexedRAMBundle.h; sourceTree = "<group>"; };
 		0E1A572A009D66F91193B1FC65C4E4C5 /* ABI33_0_0UMModuleRegistryDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0UMModuleRegistryDelegate.h; sourceTree = "<group>"; };
@@ -2821,6 +2814,7 @@
 		17400B9F67DB86923BBEF7A291729B0D /* ABI33_0_0RNSVGTSpan.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGTSpan.m; sourceTree = "<group>"; };
 		17488F194551AD33A08CF59EAA7F8B16 /* ABI33_0_0RNSVGFontData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGFontData.h; sourceTree = "<group>"; };
 		177EB3384DB6967C5AE75C52504FEB29 /* ABI33_0_0EXScopedLocalAuthentication.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXScopedLocalAuthentication.h; sourceTree = "<group>"; };
+		17B5B67ACE307C81789740E091F5B7A4 /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
 		17C5B545C48E030B2E63925F17323636 /* ABI33_0_0EXAppLoaderInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXAppLoaderInterface.h; sourceTree = "<group>"; };
 		17E267ACEBA466A0DDCD0769A95834A5 /* ABI33_0_0RCTReloadCommand.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTReloadCommand.m; sourceTree = "<group>"; };
 		17EC25377C604B0FAD38B60FFFCE469F /* ABI33_0_0ModuleRegistry.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0ModuleRegistry.cpp; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0ModuleRegistry.cpp; sourceTree = "<group>"; };
@@ -2888,14 +2882,13 @@
 		240062B433F5A53E5F21938B77799FCC /* ABI33_0_0RCTConvert+Transform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0RCTConvert+Transform.m"; sourceTree = "<group>"; };
 		2403FD2571F3B2592BC41E6C5334AF52 /* ABI33_0_0EXAdsFacebook-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXAdsFacebook-dummy.m"; sourceTree = "<group>"; };
 		240599DA71E1BFA2C586277DB74529C6 /* ABI33_0_0EXAmplitude.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXAmplitude.xcconfig; sourceTree = "<group>"; };
-		243C22D8C1069F6D7E12144E3185CC8C /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
 		248B1D43D8045E5F1A6C0478C89573FB /* ABI33_0_0EXVideoPlayerViewControllerDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXVideoPlayerViewControllerDelegate.h; sourceTree = "<group>"; };
 		24BE4BE7D6D27625CA47787716F14FEE /* ABI33_0_0UMCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0UMCore-dummy.m"; sourceTree = "<group>"; };
 		250DF5321A3D48C6726FE2159AA5B912 /* ABI33_0_0RCTActivityIndicatorView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTActivityIndicatorView.m; sourceTree = "<group>"; };
 		250F4C751E7B7A453F75836BC8455A4F /* ABI33_0_0RCTSRWebSocket.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTSRWebSocket.h; path = Libraries/WebSocket/ABI33_0_0RCTSRWebSocket.h; sourceTree = "<group>"; };
-		2566676035A092815E0F76FDDE3E1176 /* EXGL-CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "EXGL-CPP"; path = "EXGL-CPP.xcodeproj"; sourceTree = "<group>"; };
 		25677B8727F88AAA4F12F3E1C1DBFF87 /* ABI33_0_0EXMailComposer-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXMailComposer-prefix.pch"; sourceTree = "<group>"; };
 		25AA49574BB562AF77B1D4C4AB381EC7 /* ABI33_0_0EXAuthTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXAuthTask.h; path = ABI33_0_0EXGoogleSignIn/ABI33_0_0EXAuthTask.h; sourceTree = "<group>"; };
+		25E88966946BE0CED873F1E55A5DC0C2 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
 		260239D6967B73F570171F92AF01EEC5 /* ReactABI33_0_0Marker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ReactABI33_0_0Marker.h; path = ReactCommon/cxxReactABI33_0_0/ReactABI33_0_0Marker.h; sourceTree = "<group>"; };
 		26152E1A21C92A7FB98BEE22EEE8811B /* ABI33_0_0UMAppDelegateWrapper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0UMAppDelegateWrapper.m; path = ABI33_0_0UMCore/ABI33_0_0UMAppDelegateWrapper.m; sourceTree = "<group>"; };
 		262CD4F04A72699E877B00C2AF47E1D1 /* ABI33_0_0RNSVGUnits.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGUnits.h; sourceTree = "<group>"; };
@@ -2927,6 +2920,7 @@
 		29638BB1908A4162B9AE4C63ECDE8252 /* ABI33_0_0RCTSafeAreaViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTSafeAreaViewManager.m; sourceTree = "<group>"; };
 		296A12F12ADE5705697AB9AB015C30CF /* ABI33_0_0UMImageLoaderInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0UMImageLoaderInterface.xcconfig; sourceTree = "<group>"; };
 		2979BCD6B940A290277958AB82F43C2A /* ABI33_0_0RNSVGClipPath.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGClipPath.h; sourceTree = "<group>"; };
+		298523E393931D5BB22CE3DCCF24CD60 /* FBAudienceNetwork */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBAudienceNetwork; path = FBAudienceNetwork.xcodeproj; sourceTree = "<group>"; };
 		29B5CB995CE70BBD8E2CE9183FAFCECF /* ABI33_0_0UMReactLogHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0UMReactLogHandler.m; sourceTree = "<group>"; };
 		29C2F6751B8613DC5EFED22DDEC4B759 /* ABI33_0_0ARTGroup.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0ARTGroup.h; path = Libraries/ART/ABI33_0_0ARTGroup.h; sourceTree = "<group>"; };
 		29CA600098ABD6FC7E23FE1477C07F3C /* ABI33_0_0REAAlwaysNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0REAAlwaysNode.h; sourceTree = "<group>"; };
@@ -2970,6 +2964,7 @@
 		2F642DD049EE7684EF19AE26219B0E9F /* ABI33_0_0EXDownloadDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXDownloadDelegate.m; path = ABI33_0_0EXFileSystem/ABI33_0_0EXDownloadDelegate.m; sourceTree = "<group>"; };
 		2F874AE80E9A6EBA320A086C6AD89710 /* ABI33_0_0EXAdsAdMobDFPManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXAdsAdMobDFPManager.m; path = ABI33_0_0EXAdsAdMob/ABI33_0_0EXAdsAdMobDFPManager.m; sourceTree = "<group>"; };
 		2F9FFD7F3A7DD5773BD5C2621C63B77D /* ABI33_0_0UMCore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0UMCore.xcconfig; sourceTree = "<group>"; };
+		2FB5B0C873E24902E6ED07021CDEC4C8 /* DoubleConversion */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DoubleConversion; path = DoubleConversion.xcodeproj; sourceTree = "<group>"; };
 		2FC2064A15A88113A9005BA94FDDB83D /* ABI33_0_0AIRGoogleMapCallout.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0AIRGoogleMapCallout.m; sourceTree = "<group>"; };
 		2FC5C38326522C635A6BC916049D771C /* ABI33_0_0BranchLinkProperties+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0BranchLinkProperties+RNBranch.h"; sourceTree = "<group>"; };
 		300357EB3B28EAF3FA7FE936C9DF0947 /* ABI33_0_0EXAppLoaderProvider-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXAppLoaderProvider-dummy.m"; sourceTree = "<group>"; };
@@ -2994,7 +2989,6 @@
 		33D293FB800D98DD92E1E3E73302C23F /* ABI33_0_0Instance.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0Instance.cpp; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0Instance.cpp; sourceTree = "<group>"; };
 		33D8B745E22AEACC7AA2A57BA5B56977 /* ABI33_0_0RCTRedBox.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTRedBox.m; sourceTree = "<group>"; };
 		342ED20625207E5A97BB9A17F7ED97A8 /* ABI33_0_0ARTSolidColor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0ARTSolidColor.m; sourceTree = "<group>"; };
-		346CF7B20382310EE7BF1B8F0C377C24 /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
 		34907140CCB2D6EC8AD13B880DB2DBBF /* ABI33_0_0EXTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXTask.h; path = ABI33_0_0EXTaskManager/ABI33_0_0EXTask.h; sourceTree = "<group>"; };
 		34C4B65EB109150D3F47280BDBEC0B05 /* ABI33_0_0RCTBackedTextInputDelegateAdapter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTBackedTextInputDelegateAdapter.m; sourceTree = "<group>"; };
 		34C4D53F6B5AFE10B28F85A6588EEBB1 /* ABI33_0_0RCTConvert+REATransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0RCTConvert+REATransition.m"; sourceTree = "<group>"; };
@@ -3072,7 +3066,6 @@
 		41F1174BCCBE6E27B15E30A271381322 /* ABI33_0_0EXMailComposer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXMailComposer.m; path = ABI33_0_0EXMailComposer/ABI33_0_0EXMailComposer.m; sourceTree = "<group>"; };
 		42085BD2602892283584782A85DD9ACB /* ABI33_0_0RCTActionSheetManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTActionSheetManager.h; path = Libraries/ActionSheetIOS/ABI33_0_0RCTActionSheetManager.h; sourceTree = "<group>"; };
 		420F4E907F586A3796A195AA6CEC3290 /* ABI33_0_0EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXWKSnapshotPDFRenderer.m; path = ABI33_0_0EXPrint/ABI33_0_0EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
-		4240A24CC9C762CD719F332396C98455 /* JKBigInteger2 */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = JKBigInteger2; path = JKBigInteger2.xcodeproj; sourceTree = "<group>"; };
 		42554C4314B27911F06172FF8E36831C /* ABI33_0_0REAAllTransitions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REAAllTransitions.m; sourceTree = "<group>"; };
 		427B532FA500321A2D4EEF611A9E675D /* ABI33_0_0AIRMapMarker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRMapMarker.h; sourceTree = "<group>"; };
 		4294BD9920124BE556FF850278115629 /* ABI33_0_0EXImageUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXImageUtils.h; sourceTree = "<group>"; };
@@ -3104,6 +3097,7 @@
 		49674A39898AAABA8279A9C178A15248 /* ABI33_0_0instrumentation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0instrumentation.h; path = yoga/ABI33_0_0instrumentation.h; sourceTree = "<group>"; };
 		49797CC4A1D1F3DDDB93CFAB6593A448 /* ABI33_0_0RCTVirtualTextShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTVirtualTextShadowView.m; sourceTree = "<group>"; };
 		49973E819A8811AF371F927D19E4E3DF /* ABI33_0_0RCTScrollContentShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTScrollContentShadowView.m; sourceTree = "<group>"; };
+		49A5F7BD0C15427122E3843BECC66F3F /* FBSDKLoginKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKLoginKit; path = FBSDKLoginKit.xcodeproj; sourceTree = "<group>"; };
 		49BB13EF236E62F5E8312F6EB8941745 /* ABI33_0_0RCTSwitchManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTSwitchManager.m; sourceTree = "<group>"; };
 		49D21FD75E634C4F599A18503B254568 /* ABI33_0_0EXAdSettingsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXAdSettingsManager.m; path = ABI33_0_0EXAdsFacebook/ABI33_0_0EXAdSettingsManager.m; sourceTree = "<group>"; };
 		4A595C9D4D4819D0DE8ACACC4CBEF1A9 /* libABI33_0_0EXFaceDetector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI33_0_0EXFaceDetector.a; path = libABI33_0_0EXFaceDetector.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3139,6 +3133,7 @@
 		4F6276B482BDAFCEA9708B2D0F1348AC /* ABI33_0_0YGConfig.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0YGConfig.cpp; path = yoga/ABI33_0_0YGConfig.cpp; sourceTree = "<group>"; };
 		5026071DD87EC58C5E4E7886E2137FC7 /* ABI33_0_0SampleCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0SampleCxxModule.h; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0SampleCxxModule.h; sourceTree = "<group>"; };
 		509231F6D07D1ADB81A90BDA8742D680 /* ABI33_0_0RNBranchAgingItem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNBranchAgingItem.m; sourceTree = "<group>"; };
+		50BA6E98EB59422687C68F900997151B /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
 		50E61CAE099EA15A4FDD6C4DFFA69E04 /* ABI33_0_0RCTLayoutAnimationGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTLayoutAnimationGroup.m; sourceTree = "<group>"; };
 		512AC19DDF5A7EFF0A260BAD7CA2D739 /* ABI33_0_0RCTCxxUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTCxxUtils.h; sourceTree = "<group>"; };
 		51333DEC28E231F5C67D682DA016C8F8 /* ABI33_0_0RCTTouchEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTTouchEvent.m; sourceTree = "<group>"; };
@@ -3226,7 +3221,6 @@
 		5B1B8E8788DB66C8EB800EEB86AB3D1C /* ABI33_0_0AIRMapCalloutSubview.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRMapCalloutSubview.h; sourceTree = "<group>"; };
 		5B3386039BC6F32C683F09088EB21A7F /* ABI33_0_0Yoga.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0Yoga.h; path = yoga/ABI33_0_0Yoga.h; sourceTree = "<group>"; };
 		5B39440E85702740753C945688A22A70 /* ABI33_0_0RCTImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTImageView.m; path = Libraries/Image/ABI33_0_0RCTImageView.m; sourceTree = "<group>"; };
-		5B3E0D08963DE5B27B8A4414D269FCFB /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
 		5B44AC35D02C1529D5A4F1A87719E7D9 /* ABI33_0_0EXFaceDetectorModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXFaceDetectorModule.m; path = ABI33_0_0EXFaceDetector/ABI33_0_0EXFaceDetectorModule.m; sourceTree = "<group>"; };
 		5B61628681D51A9807CAD63A802A8F16 /* ABI33_0_0EXBlur-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXBlur-prefix.pch"; sourceTree = "<group>"; };
 		5B95725FD9A3DFAC767E77C0941A26D5 /* yogaABI33_0_0.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = yogaABI33_0_0.xcconfig; sourceTree = "<group>"; };
@@ -3267,10 +3261,10 @@
 		60E1FE1405D84035B3DF3718408FE378 /* ABI33_0_0RNSVGEllipse.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGEllipse.m; sourceTree = "<group>"; };
 		60E896C678C54053B71559C86E31EADD /* ABI33_0_0RNSVGNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGNode.m; sourceTree = "<group>"; };
 		60E90B4A4164481F3A03E51969F0FDF4 /* ABI33_0_0EXSensors.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0EXSensors.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		612660A7C14D1CB7DB5F56FD73E0ED8B /* lottie-ios */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "lottie-ios"; path = "lottie-ios.xcodeproj"; sourceTree = "<group>"; };
 		6127959B725885C68B7EB720FC083909 /* ABI33_0_0EXAVPlayerData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXAVPlayerData.h; path = ABI33_0_0EXAV/ABI33_0_0EXAVPlayerData.h; sourceTree = "<group>"; };
 		61789E3A4FDC8335B689865249458621 /* ABI33_0_0EXVideoThumbnailsModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXVideoThumbnailsModule.m; path = ABI33_0_0EXVideoThumbnails/ABI33_0_0EXVideoThumbnailsModule.m; sourceTree = "<group>"; };
 		61AC87BFFDADDAD8F15D9C44AA77369C /* ABI33_0_0EXBlurViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXBlurViewManager.m; path = ABI33_0_0EXBlur/ABI33_0_0EXBlurViewManager.m; sourceTree = "<group>"; };
+		61D93FF2C4342713E057C97F35C2C734 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
 		61FAD2681A5439C799B558AE5AF28292 /* ABI33_0_0RNSVGRadialGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGRadialGradient.m; sourceTree = "<group>"; };
 		622B854E73098422EEE4B244B4708590 /* ABI33_0_0RNCWKWebViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNCWKWebViewManager.h; sourceTree = "<group>"; };
 		624DC10ED293FDE19BB3D3C6B90DB225 /* ABI33_0_0RCTResizeMode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTResizeMode.h; path = Libraries/Image/ABI33_0_0RCTResizeMode.h; sourceTree = "<group>"; };
@@ -3282,7 +3276,6 @@
 		63A8AB9FE8405DCDF6225EC2E435D6E3 /* ABI33_0_0EXModuleRegistryBinding.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXModuleRegistryBinding.h; sourceTree = "<group>"; };
 		63B5DD74631725F8A2C432FDDC28EED3 /* ABI33_0_0RNGestureHandlerRegistry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNGestureHandlerRegistry.m; sourceTree = "<group>"; };
 		63F5DD0A9D049D1740ED10D3B0F3D022 /* ABI33_0_0EXFaceDetector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXFaceDetector.m; path = ABI33_0_0EXFaceDetector/ABI33_0_0EXFaceDetector.m; sourceTree = "<group>"; };
-		640665D01EB832EBF431BD3BF33B949F /* Google-Mobile-Ads-SDK */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Mobile-Ads-SDK"; path = "Google-Mobile-Ads-SDK.xcodeproj"; sourceTree = "<group>"; };
 		640A93E91467BB3C2A7CD1CA50034B4F /* ABI33_0_0RCTInterpolationAnimatedNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTInterpolationAnimatedNode.m; sourceTree = "<group>"; };
 		648B10A1B322DE478A755FCF596E70AC /* ABI33_0_0EXKeepAwake.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXKeepAwake.h; path = ABI33_0_0EXKeepAwake/ABI33_0_0EXKeepAwake.h; sourceTree = "<group>"; };
 		64A08E42E35EDA70418095439A1C6ECE /* ABI33_0_0RNSVGUseManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGUseManager.h; sourceTree = "<group>"; };
@@ -3386,7 +3379,6 @@
 		7599314EE751FC82B347433FEC9430D8 /* ABI33_0_0EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXSQLite-prefix.pch"; sourceTree = "<group>"; };
 		75B148C8B1D07164B4AC503629A626A9 /* ABI33_0_0EXLinearGradient.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXLinearGradient.xcconfig; sourceTree = "<group>"; };
 		75C4DD842D3FA8DC78A22F7347E768D1 /* ABI33_0_0RCTImageShadowView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTImageShadowView.m; path = Libraries/Image/ABI33_0_0RCTImageShadowView.m; sourceTree = "<group>"; };
-		7604A449DE8F6F4D172ED1B3EA421491 /* glog */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = glog; path = glog.xcodeproj; sourceTree = "<group>"; };
 		762EF6824E406C54D7C6E5B90219D0E0 /* ABI33_0_0EXMailComposer-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXMailComposer-dummy.m"; sourceTree = "<group>"; };
 		76300FF0129CAD1ECD978420099E43B6 /* ABI33_0_0RCTSliderManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTSliderManager.h; sourceTree = "<group>"; };
 		764774BC8050BD71B57409DD4E0C7904 /* ABI33_0_0RCTClipboard.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTClipboard.m; sourceTree = "<group>"; };
@@ -3403,6 +3395,7 @@
 		779BEC60E2B78D827C6A4360581122D3 /* ABI33_0_0EXAppLoaderProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXAppLoaderProvider.h; path = ABI33_0_0EXAppLoaderProvider/ABI33_0_0EXAppLoaderProvider.h; sourceTree = "<group>"; };
 		77A8145A18F6BCF77EA4172DC08C3527 /* ABI33_0_0RCTMessageThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTMessageThread.h; sourceTree = "<group>"; };
 		77EBF4B015E04DF2F5EE5882970A1861 /* ABI33_0_0RecoverableError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RecoverableError.h; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0RecoverableError.h; sourceTree = "<group>"; };
+		7839769CFC564DC61126683581ACC8EC /* boost-for-react-native */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "boost-for-react-native"; path = "boost-for-react-native.xcodeproj"; sourceTree = "<group>"; };
 		78489308098566721B91AA0647ED1ACD /* ABI33_0_0RCTTiming.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTTiming.m; sourceTree = "<group>"; };
 		784E899C3B952459525B5F2E52F5BBFA /* ABI33_0_0EXSpeech.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXSpeech.h; path = ABI33_0_0EXSpeech/ABI33_0_0EXSpeech.h; sourceTree = "<group>"; };
 		78603C197E1205A64FEAECC0DDA34622 /* ABI33_0_0EXFacebook.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXFacebook.xcconfig; sourceTree = "<group>"; };
@@ -3420,6 +3413,7 @@
 		7A68191853B74E8A2D3CDF69C7BF5EB2 /* ABI33_0_0EXContainerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0EXContainerView.m; sourceTree = "<group>"; };
 		7AF69E5429ACDB053A0980A9B3335558 /* ABI33_0_0EXAppAuth-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXAppAuth-dummy.m"; sourceTree = "<group>"; };
 		7AFBA05C07B8CE8983C654533DBA4272 /* ABI33_0_0RCTAssetsLibraryRequestHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTAssetsLibraryRequestHandler.m; path = Libraries/CameraRoll/ABI33_0_0RCTAssetsLibraryRequestHandler.m; sourceTree = "<group>"; };
+		7B3CE7642730DCF04E6AFCA1D9BF1185 /* lottie-ios */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "lottie-ios"; path = "lottie-ios.xcodeproj"; sourceTree = "<group>"; };
 		7B3E1CD25BBAD4B6957070E88B596C16 /* ABI33_0_0YGConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0YGConfig.h; path = yoga/ABI33_0_0YGConfig.h; sourceTree = "<group>"; };
 		7B76800BBA5B820D3ED6A876DF63163D /* ABI33_0_0UMDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMDefines.h; path = ABI33_0_0UMCore/ABI33_0_0UMDefines.h; sourceTree = "<group>"; };
 		7BA5FC2252BFB05E67941017BFF6925C /* ABI33_0_0EXConstants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXConstants.h; path = ABI33_0_0EXConstants/ABI33_0_0EXConstants.h; sourceTree = "<group>"; };
@@ -3501,7 +3495,6 @@
 		85DB4DD673E9E6279450AF4AB4774935 /* ABI33_0_0BranchLinkProperties+RNBranch.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0BranchLinkProperties+RNBranch.m"; sourceTree = "<group>"; };
 		8611F6BBECDE38FFA976A3967A462F53 /* ABI33_0_0RCTSubtractionAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTSubtractionAnimatedNode.h; sourceTree = "<group>"; };
 		86150A2D77575AE985C559086590F71B /* ABI33_0_0RCTWrapperViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTWrapperViewController.h; sourceTree = "<group>"; };
-		8638B6472FB9FBD8758FCE745731226D /* Google-Maps-iOS-Utils */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Maps-iOS-Utils"; path = "Google-Maps-iOS-Utils.xcodeproj"; sourceTree = "<group>"; };
 		865368C7ACEC18D2C9CA738EAA266514 /* ABI33_0_0RNSVGPropHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGPropHelper.h; sourceTree = "<group>"; };
 		86A7EC8F30724E6D186E446D3FF304E6 /* ABI33_0_0RCTAdditionAnimatedNode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTAdditionAnimatedNode.h; sourceTree = "<group>"; };
 		86E1014D891C4C2BF8A41D1C12FC0DF2 /* ABI33_0_0BranchEvent+RNBranch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0BranchEvent+RNBranch.h"; sourceTree = "<group>"; };
@@ -3512,7 +3505,6 @@
 		87D2425D7DF76865418355E067827299 /* ABI33_0_0ARTSolidColor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0ARTSolidColor.h; sourceTree = "<group>"; };
 		87DF34568C9B2DCCAC5A7792A4EA5F34 /* ABI33_0_0EXAdsFacebook.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXAdsFacebook.xcconfig; sourceTree = "<group>"; };
 		8818F8D6AFD6C5A7449CA6C1A7D5BC2F /* ABI33_0_0EXScopedModuleRegistryAdapter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0EXScopedModuleRegistryAdapter.m; sourceTree = "<group>"; };
-		881C8805EBC8D95C49C2BB5FCD87C98B /* Folly */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Folly; path = Folly.xcodeproj; sourceTree = "<group>"; };
 		8842EC702A73D5005B048EB3D23048A2 /* ABI33_0_0EXFaceEncoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXFaceEncoder.h; path = ABI33_0_0EXFaceDetector/ABI33_0_0EXFaceEncoder.h; sourceTree = "<group>"; };
 		885E280B7D91641C6C98CFAA7CD04E92 /* ABI33_0_0EXHaptics-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXHaptics-dummy.m"; sourceTree = "<group>"; };
 		887B40B9792051784CC4A29CB2303FA3 /* ABI33_0_0EXKeepAwake-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXKeepAwake-dummy.m"; sourceTree = "<group>"; };
@@ -3573,7 +3565,6 @@
 		8FEA16195DC1447F8FC77042FE1E74CB /* ABI33_0_0EXBackgroundFetch-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXBackgroundFetch-prefix.pch"; sourceTree = "<group>"; };
 		902E40CADBF1193B4354957CECB6ED7A /* ABI33_0_0UMSingletonModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMSingletonModule.h; path = ABI33_0_0UMCore/ABI33_0_0UMSingletonModule.h; sourceTree = "<group>"; };
 		90456AE2C9D6ED3B1217516282392A67 /* ABI33_0_0EXBlurView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXBlurView.m; path = ABI33_0_0EXBlur/ABI33_0_0EXBlurView.m; sourceTree = "<group>"; };
-		90CFA69FB1EF4E091715689D5D0BE774 /* FBSDKCoreKit */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBSDKCoreKit; path = FBSDKCoreKit.xcodeproj; sourceTree = "<group>"; };
 		913E6CD3BB51B243D7041B83A1F99381 /* ABI33_0_0RCTBaseTextInputViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTBaseTextInputViewManager.m; sourceTree = "<group>"; };
 		9182DE7CC81D594F5C6E64AEA18B5A25 /* ABI33_0_0AIRGoogleMapCircle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRGoogleMapCircle.h; sourceTree = "<group>"; };
 		919E8E921B66D0BD7AFE6C671E490286 /* ABI33_0_0RCTProfileTrampoline-i386.S */ = {isa = PBXFileReference; includeInIndex = 1; path = "ABI33_0_0RCTProfileTrampoline-i386.S"; sourceTree = "<group>"; };
@@ -3656,7 +3647,6 @@
 		9E304698C3B24322FE0CB1BC5D4DD396 /* ABI33_0_0EXCalendar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXCalendar.m; path = ABI33_0_0EXCalendar/ABI33_0_0EXCalendar.m; sourceTree = "<group>"; };
 		9E74261A5B84779CDC5ADF3A6DEE2DC2 /* libABI33_0_0EXImageManipulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI33_0_0EXImageManipulator.a; path = libABI33_0_0EXImageManipulator.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E8EB4E7D603B4D037E95989650063E0 /* ABI33_0_0RCTInspector.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI33_0_0RCTInspector.mm; sourceTree = "<group>"; };
-		9E9D268D22F4020F17E8B62DE46B9A0D /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		9EB0730D6814AFAB568ADD2545C74EA4 /* ABI33_0_0RCTErrorInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTErrorInfo.h; sourceTree = "<group>"; };
 		9EB6B553571094225EC356E4C2C741CD /* ABI33_0_0RCTConvert+GMSMapViewType.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0RCTConvert+GMSMapViewType.m"; sourceTree = "<group>"; };
 		9EC82ED4E7AC9639ADA582E87B1CD449 /* ABI33_0_0REANode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REANode.m; sourceTree = "<group>"; };
@@ -3794,6 +3784,7 @@
 		B045FDD2F46EB908271444C81988DB83 /* ABI33_0_0Utils.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0Utils.cpp; path = yoga/ABI33_0_0Utils.cpp; sourceTree = "<group>"; };
 		B05BC10C5663E406F917697C08A9F9A1 /* ABI33_0_0EXFacebookAdHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXFacebookAdHelper.h; path = ABI33_0_0EXAdsFacebook/ABI33_0_0EXFacebookAdHelper.h; sourceTree = "<group>"; };
 		B05C7599A6C32F3275A3BB34456EC054 /* ABI33_0_0RNSVGLinearGradient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGLinearGradient.h; sourceTree = "<group>"; };
+		B06B2089BC66C8D9F51277F91D2D30EE /* Google-Maps-iOS-Utils */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Maps-iOS-Utils"; path = "Google-Maps-iOS-Utils.xcodeproj"; sourceTree = "<group>"; };
 		B1A0E880C4D7820802FCEEBDEA91894C /* ABI33_0_0RCTErrorInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTErrorInfo.m; sourceTree = "<group>"; };
 		B1AEB397CD08E4EE9EF37A11C16A4040 /* ABI33_0_0RCTActivityIndicatorViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTActivityIndicatorViewManager.m; sourceTree = "<group>"; };
 		B1E2EF72ADBC51C57E3C656F4140BD7F /* ABI33_0_0RCTInputAccessoryView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTInputAccessoryView.h; sourceTree = "<group>"; };
@@ -3851,6 +3842,7 @@
 		B7E9CDBA58517633768552CAAA9EE28D /* ABI33_0_0EXGLObjectManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXGLObjectManager.m; path = ABI33_0_0EXGL/ABI33_0_0EXGLObjectManager.m; sourceTree = "<group>"; };
 		B7F1638BB14F0CEF12723467759D43BA /* ABI33_0_0UMAccelerometerInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMAccelerometerInterface.h; path = ABI33_0_0UMSensorsInterface/ABI33_0_0UMAccelerometerInterface.h; sourceTree = "<group>"; };
 		B85655BA9D553AA59FD92AA459C76CA1 /* ABI33_0_0EXLocation-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXLocation-prefix.pch"; sourceTree = "<group>"; };
+		B88514FAE80F025AE29F81C5964EABFD /* JKBigInteger2 */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = JKBigInteger2; path = JKBigInteger2.xcodeproj; sourceTree = "<group>"; };
 		B8E3C4598EF61C25A509A584978CD708 /* ABI33_0_0ARTPattern.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0ARTPattern.h; sourceTree = "<group>"; };
 		B8EAFCC9772D211555AD37538DBCEB85 /* ABI33_0_0ExpoKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0ExpoKit-dummy.m"; sourceTree = "<group>"; };
 		B90C899929E9934BB0A60F3483308853 /* ABI33_0_0ARTCGFloatArray.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0ARTCGFloatArray.h; path = Libraries/ART/ABI33_0_0ARTCGFloatArray.h; sourceTree = "<group>"; };
@@ -3910,7 +3902,6 @@
 		C2579FA68EBD39F0D80942A65D1EAC46 /* libABI33_0_0UMReactNativeAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI33_0_0UMReactNativeAdapter.a; path = libABI33_0_0UMReactNativeAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C260C9A3ECF985D6A9AB5C76D8C6D23C /* ABI33_0_0EXFaceDetectorManagerProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXFaceDetectorManagerProvider.h; path = ABI33_0_0EXFaceDetector/ABI33_0_0EXFaceDetectorManagerProvider.h; sourceTree = "<group>"; };
 		C277DDF34EF37426AFC36D74DAC2A3A6 /* ABI33_0_0MessageQueueThread.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0MessageQueueThread.h; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0MessageQueueThread.h; sourceTree = "<group>"; };
-		C2AF8BDBFA2B8359254516DCEB56773E /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
 		C2B7487FC87D2942882D69C62D2DDD78 /* ABI33_0_0UMTaskInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMTaskInterface.h; path = ABI33_0_0UMTaskManagerInterface/ABI33_0_0UMTaskInterface.h; sourceTree = "<group>"; };
 		C2C853495868960947F749046CA187E8 /* ABI33_0_0EXFont-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXFont-dummy.m"; sourceTree = "<group>"; };
 		C2F19626738C33D81F5C29B20C17A171 /* ABI33_0_0RCTPlatform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTPlatform.h; sourceTree = "<group>"; };
@@ -4012,6 +4003,7 @@
 		D1F17C0B4A9BA7BC03E1007FA3957F0A /* ABI33_0_0EXLocationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXLocationRequester.m; path = ABI33_0_0EXPermissions/ABI33_0_0EXLocationRequester.m; sourceTree = "<group>"; };
 		D1FB8D133D6351C8876843A02515D6C0 /* ABI33_0_0RNGestureHandlerModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNGestureHandlerModule.m; sourceTree = "<group>"; };
 		D215E73D8013DCE62CD7B2FAF33955E5 /* ABI33_0_0RNSVGGlyphContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGGlyphContext.m; sourceTree = "<group>"; };
+		D234A9515DC83947C8E1D616D73CD92D /* Analytics */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Analytics; path = Analytics.xcodeproj; sourceTree = "<group>"; };
 		D27A6463AAEA8D5CFE033F7F9E2A45C8 /* ABI33_0_0JSIDynamic.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0JSIDynamic.h; path = ReactCommon/ABI33_0_0jsi/ABI33_0_0JSIDynamic.h; sourceTree = "<group>"; };
 		D28DA5EA113909ADE906619D0C271515 /* ABI33_0_0NSTextStorage+FontScaling.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0NSTextStorage+FontScaling.h"; sourceTree = "<group>"; };
 		D2D7F608EC724628A7AC71FB608AD142 /* ABI33_0_0RCTModalHostViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTModalHostViewController.m; sourceTree = "<group>"; };
@@ -4051,7 +4043,6 @@
 		D7D8511DCBB19A1169A3954163E34B0C /* ABI33_0_0RCTExceptionsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTExceptionsManager.m; sourceTree = "<group>"; };
 		D808AB1AC392B22B974F39094F0758E8 /* ABI33_0_0EXAR.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXAR.h; path = Expo/Optional/ARKit/ABI33_0_0EXAR.h; sourceTree = "<group>"; };
 		D80B36E9873F9FC315619783D05996C3 /* ABI33_0_0EXAdIconViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXAdIconViewManager.h; path = ABI33_0_0EXAdsFacebook/ABI33_0_0EXAdIconViewManager.h; sourceTree = "<group>"; };
-		D8267F9AA68B96C14DD421918F75941A /* Firebase */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Firebase; path = Firebase.xcodeproj; sourceTree = "<group>"; };
 		D886C2C9F200E8C9C47497916F5A9CC1 /* ABI33_0_0EXWebBrowser.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXWebBrowser.xcconfig; sourceTree = "<group>"; };
 		D89798545FDA225487EA8CDD625B3AB6 /* ABI33_0_0RNSVGTextManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGTextManager.h; sourceTree = "<group>"; };
 		D8F410615B855AB6C1EA4D8267159FC8 /* ABI33_0_0RCTWebSocketExecutor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTWebSocketExecutor.m; path = Libraries/WebSocket/ABI33_0_0RCTWebSocketExecutor.m; sourceTree = "<group>"; };
@@ -4080,6 +4071,7 @@
 		DC5C918889C438518CF9BC5E8A7630F6 /* ABI33_0_0UMGyroscopeInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0UMGyroscopeInterface.h; path = ABI33_0_0UMSensorsInterface/ABI33_0_0UMGyroscopeInterface.h; sourceTree = "<group>"; };
 		DC8BBFA3D5614CFCB12D575ACE349598 /* ABI33_0_0EXWebBrowser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXWebBrowser.m; path = ABI33_0_0EXWebBrowser/ABI33_0_0EXWebBrowser.m; sourceTree = "<group>"; };
 		DCDDC8EC8A8524D43C512B0125DD8842 /* ABI33_0_0REABezierNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REABezierNode.m; sourceTree = "<group>"; };
+		DD01EB3FC21E0225709C0ABE7929F0AD /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		DD42209E4773D9592EF6397894E37BE4 /* ABI33_0_0ExpoKit.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0ExpoKit.xcconfig; sourceTree = "<group>"; };
 		DD8511628B741AA64CEF79FF43F420DA /* ABI33_0_0RNSVGEllipseManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNSVGEllipseManager.h; sourceTree = "<group>"; };
 		DD91FFB47699185EFEDCDD13BF743C19 /* ABI33_0_0ARTNodeManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0ARTNodeManager.m; sourceTree = "<group>"; };
@@ -4109,7 +4101,6 @@
 		E0BADF469C3BE3483DE19C934C2D25CC /* ABI33_0_0RCTVirtualTextViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTVirtualTextViewManager.h; sourceTree = "<group>"; };
 		E0F2BA2A824889A10F1C4892689470DF /* ABI33_0_0RCTConvert+RNSVG.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0RCTConvert+RNSVG.h"; sourceTree = "<group>"; };
 		E0FB81180456F6D1D22E82BD1C164906 /* ABI33_0_0EXBlur-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXBlur-dummy.m"; sourceTree = "<group>"; };
-		E118E1A809A52AC5E5E1DCD93D0C8FBF /* GoogleSignIn */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleSignIn; path = GoogleSignIn.xcodeproj; sourceTree = "<group>"; };
 		E13827BF2A3DB2A576435B27CF96EF1C /* ABI33_0_0AIRGoogleMapPolyline.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRGoogleMapPolyline.h; sourceTree = "<group>"; };
 		E176CB8FCC931E00897DB0C5859F49A5 /* ABI33_0_0EXAdSettingsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXAdSettingsManager.h; path = ABI33_0_0EXAdsFacebook/ABI33_0_0EXAdSettingsManager.h; sourceTree = "<group>"; };
 		E17CA91ED89AF867035D4ACC71BAC189 /* ABI33_0_0EXContacts+Serialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "ABI33_0_0EXContacts+Serialization.m"; path = "ABI33_0_0EXContacts/ABI33_0_0EXContacts+Serialization.m"; sourceTree = "<group>"; };
@@ -4158,7 +4149,6 @@
 		E8CEB9F1AA3ABC2F83F83687C57E1EB2 /* ABI33_0_0RNSVGSolidColorBrush.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNSVGSolidColorBrush.m; sourceTree = "<group>"; };
 		E8E99A2583254BBBFA506F3F61214E83 /* ABI33_0_0RCTJavaScriptLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		E8EA1587AFED386736F05A6DD60CB5E3 /* ABI33_0_0EXScopedReactNativeAdapter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0EXScopedReactNativeAdapter.m; sourceTree = "<group>"; };
-		E8FED488B688610DBECDAC438C3F8470 /* GoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleMaps; path = GoogleMaps.xcodeproj; sourceTree = "<group>"; };
 		E90D8F012E67C1973963CAB1E87E4883 /* ABI33_0_0RNRootViewGestureRecognizer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RNRootViewGestureRecognizer.m; sourceTree = "<group>"; };
 		E9F9860A6B862DC1315C64655FBEBA00 /* ABI33_0_0EXBackgroundFetch.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXBackgroundFetch.xcconfig; sourceTree = "<group>"; };
 		EA0CBC0FE1AED0BEACDECBB834151AE6 /* ABI33_0_0AIRMapLocalTileManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0AIRMapLocalTileManager.h; sourceTree = "<group>"; };
@@ -4179,6 +4169,7 @@
 		EC4AA084C18DDC1BC9A84B51A703BC70 /* ABI33_0_0RCTModuleData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTModuleData.h; sourceTree = "<group>"; };
 		EC5188B2B0CA202AD41B9771A6D7F31C /* ABI33_0_0EXAR.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXAR.m; path = Expo/Optional/ARKit/ABI33_0_0EXAR.m; sourceTree = "<group>"; };
 		EC6DB9802254EE7CF276CEFD9080BD05 /* ABI33_0_0RCTSpringAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTSpringAnimation.m; sourceTree = "<group>"; };
+		EC7EF358649EC1DB4DE4F75D833B9872 /* Google-Mobile-Ads-SDK */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Mobile-Ads-SDK"; path = "Google-Mobile-Ads-SDK.xcodeproj"; sourceTree = "<group>"; };
 		ED5367B3B92FE28F64002F1F61F08666 /* ABI33_0_0EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXPrint-dummy.m"; sourceTree = "<group>"; };
 		ED70FFF88CAB61358BC770580E05E55C /* ABI33_0_0RNBranchConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RNBranchConfig.h; sourceTree = "<group>"; };
 		EDA6B72903E2D58A4EF3AF6AE9070CAC /* ABI33_0_0EXCalendarRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXCalendarRequester.m; path = ABI33_0_0EXPermissions/ABI33_0_0EXCalendarRequester.m; sourceTree = "<group>"; };
@@ -4187,10 +4178,10 @@
 		EE7716CFD76DDDFB567E992E7453AC28 /* ABI33_0_0EXBarCodeScannerUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0EXBarCodeScannerUtils.m; sourceTree = "<group>"; };
 		EE8C07682E7059284606F02ADD2D8A40 /* ABI33_0_0RCTStatusBarManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0RCTStatusBarManager.m; sourceTree = "<group>"; };
 		EE9F895C84D6193DA2E51C6FEDD8E883 /* ABI33_0_0EXMediaLibrary-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI33_0_0EXMediaLibrary-prefix.pch"; sourceTree = "<group>"; };
+		EEA5AD1D68E12E28C35CB8B93FA5CC5F /* EXGL-CPP */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "EXGL-CPP"; path = "EXGL-CPP.xcodeproj"; sourceTree = "<group>"; };
 		EEB9BC3BDB83CD39EB1297473618B1FE /* ABI33_0_0UMCore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0UMCore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		EED5073DFC157533C1EBFC52D734EAE9 /* ABI33_0_0EXDisabledRedBox.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0EXDisabledRedBox.m; sourceTree = "<group>"; };
 		EF02903FED5829F181E8FFDC4CF5663F /* ABI33_0_0JSBundleType.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0JSBundleType.cpp; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0JSBundleType.cpp; sourceTree = "<group>"; };
-		EF0E0BD81A16A20A1F1383D21CDD0503 /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
 		EF744C5183B0E32201E25D3B29B7DD73 /* ABI33_0_0EXDocumentPickerModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXDocumentPickerModule.h; path = ABI33_0_0EXDocumentPicker/ABI33_0_0EXDocumentPickerModule.h; sourceTree = "<group>"; };
 		EF7BABD1CCB14DA1C41913554B84938F /* ABI33_0_0SharedProxyCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0SharedProxyCxxModule.h; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0SharedProxyCxxModule.h; sourceTree = "<group>"; };
 		EFB7CC9532B7CF90381E94AE5A0BC214 /* ABI33_0_0EXConstants.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXConstants.m; path = ABI33_0_0EXConstants/ABI33_0_0EXConstants.m; sourceTree = "<group>"; };
@@ -4209,7 +4200,6 @@
 		F166259FD488364765451EDC5DE9DAE0 /* ABI33_0_0RCTNetworkTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0RCTNetworkTask.h; path = Libraries/Network/ABI33_0_0RCTNetworkTask.h; sourceTree = "<group>"; };
 		F16DF19DD7B54751D7BDB10A70231CF5 /* ABI33_0_0RCTWebSocketModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTWebSocketModule.m; path = Libraries/WebSocket/ABI33_0_0RCTWebSocketModule.m; sourceTree = "<group>"; };
 		F18D332F2038564A2EEF28D5938F66D5 /* ABI33_0_0EXFontLoader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0EXFontLoader.m; path = ABI33_0_0EXFont/ABI33_0_0EXFontLoader.m; sourceTree = "<group>"; };
-		F1BA7D780D6EA1BEFAE08C15049B77EB /* React */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React; path = React.xcodeproj; sourceTree = "<group>"; };
 		F1C01BF4019BFE0B699703969D80CFA5 /* ABI33_0_0EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI33_0_0EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F1F1F07CE7D627D913A80C37C17A63A0 /* ABI33_0_0jsi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0jsi.h; path = ReactCommon/ABI33_0_0jsi/ABI33_0_0jsi.h; sourceTree = "<group>"; };
 		F200C3F3B5A9BD52ECEC66588595C708 /* ABI33_0_0EXTaskService.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0EXTaskService.h; path = ABI33_0_0EXTaskManager/ABI33_0_0EXTaskService.h; sourceTree = "<group>"; };
@@ -4258,6 +4248,7 @@
 		F8BFC1F4DE5E5C3117DE39FA1033AFA0 /* ABI33_0_0REAValueNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI33_0_0REAValueNode.m; sourceTree = "<group>"; };
 		F8FC5B2A685AA9693E0D40DC7E567B26 /* ABI33_0_0EXLinkingManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXLinkingManager.h; sourceTree = "<group>"; };
 		F906FFD2CDD8822C432C12E46A114391 /* ABI33_0_0EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXPermissions-dummy.m"; sourceTree = "<group>"; };
+		F91C872B2FB6574C5D6DDC91C4642220 /* Branch */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Branch; path = Branch.xcodeproj; sourceTree = "<group>"; };
 		F9279C33BE289311B16DAAB99F3B2CA0 /* ABI33_0_0RCTSurfaceHostingProxyRootView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0RCTSurfaceHostingProxyRootView.h; sourceTree = "<group>"; };
 		F9740EA84CA5F732A808F02F7162E2F2 /* ABI33_0_0EXAppState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI33_0_0EXAppState.h; sourceTree = "<group>"; };
 		F9B40A385E71B2140D67A68C9C6B0C19 /* ABI33_0_0CxxNativeModule.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI33_0_0CxxNativeModule.cpp; path = ReactCommon/cxxReactABI33_0_0/ABI33_0_0CxxNativeModule.cpp; sourceTree = "<group>"; };
@@ -4300,6 +4291,7 @@
 		FE28F0085D11DCAF3CCA4C7DAE30FA21 /* ABI33_0_0EXAdsAdMob-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI33_0_0EXAdsAdMob-dummy.m"; sourceTree = "<group>"; };
 		FE596C159C627EAC645445418D13E568 /* libABI33_0_0EXBrightness.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI33_0_0EXBrightness.a; path = libABI33_0_0EXBrightness.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE67C9FECC9CCDEE1DF752856AC5D895 /* ABI33_0_0EXSecureStore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI33_0_0EXSecureStore.xcconfig; sourceTree = "<group>"; };
+		FE83369EBFE52BC6F589B607F7EBCF68 /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
 		FF2BFC1D7A8B2B6A2952100D7B1B3822 /* ABI33_0_0YGStyle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI33_0_0YGStyle.h; path = yoga/ABI33_0_0YGStyle.h; sourceTree = "<group>"; };
 		FF2FA69291376137F7E20642EB409FD4 /* libReactABI33_0_0.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libReactABI33_0_0.a; path = libReactABI33_0_0.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF57E54B975EFC606F2EB12A0852EE1C /* ABI33_0_0RCTCameraRollManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI33_0_0RCTCameraRollManager.m; path = Libraries/CameraRoll/ABI33_0_0RCTCameraRollManager.m; sourceTree = "<group>"; };
@@ -6163,33 +6155,6 @@
 			name = Expo;
 			sourceTree = "<group>";
 		};
-		59A8C75608D7DE75E11C4E0C07119EE0 /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				C2AF8BDBFA2B8359254516DCEB56773E /* Amplitude-iOS */,
-				5B3E0D08963DE5B27B8A4414D269FCFB /* Analytics */,
-				9E9D268D22F4020F17E8B62DE46B9A0D /* AppAuth */,
-				00245CA0A90DCFB32565D7C1535FE13D /* boost-for-react-native */,
-				EF0E0BD81A16A20A1F1383D21CDD0503 /* Branch */,
-				243C22D8C1069F6D7E12144E3185CC8C /* DoubleConversion */,
-				2566676035A092815E0F76FDDE3E1176 /* EXGL-CPP */,
-				042BB98367330D5EFFF8641AE8A69CF9 /* FBAudienceNetwork */,
-				90CFA69FB1EF4E091715689D5D0BE774 /* FBSDKCoreKit */,
-				346CF7B20382310EE7BF1B8F0C377C24 /* FBSDKLoginKit */,
-				D8267F9AA68B96C14DD421918F75941A /* Firebase */,
-				881C8805EBC8D95C49C2BB5FCD87C98B /* Folly */,
-				7604A449DE8F6F4D172ED1B3EA421491 /* glog */,
-				8638B6472FB9FBD8758FCE745731226D /* Google-Maps-iOS-Utils */,
-				640665D01EB832EBF431BD3BF33B949F /* Google-Mobile-Ads-SDK */,
-				E8FED488B688610DBECDAC438C3F8470 /* GoogleMaps */,
-				E118E1A809A52AC5E5E1DCD93D0C8FBF /* GoogleSignIn */,
-				4240A24CC9C762CD719F332396C98455 /* JKBigInteger2 */,
-				612660A7C14D1CB7DB5F56FD73E0ED8B /* lottie-ios */,
-				F1BA7D780D6EA1BEFAE08C15049B77EB /* React */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		59D59DE6817771F3A032BB4D2DA5CDD9 /* Cognito */ = {
 			isa = PBXGroup;
 			children = (
@@ -7831,6 +7796,32 @@
 			path = "../versioned-react-native/ABI33_0_0/EXSMS";
 			sourceTree = "<group>";
 		};
+		C4FB8104BB68A1521FA1E35EEF8029F8 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				61D93FF2C4342713E057C97F35C2C734 /* Amplitude-iOS */,
+				D234A9515DC83947C8E1D616D73CD92D /* Analytics */,
+				FE83369EBFE52BC6F589B607F7EBCF68 /* AppAuth */,
+				7839769CFC564DC61126683581ACC8EC /* boost-for-react-native */,
+				F91C872B2FB6574C5D6DDC91C4642220 /* Branch */,
+				2FB5B0C873E24902E6ED07021CDEC4C8 /* DoubleConversion */,
+				EEA5AD1D68E12E28C35CB8B93FA5CC5F /* EXGL-CPP */,
+				298523E393931D5BB22CE3DCCF24CD60 /* FBAudienceNetwork */,
+				0D0120167568BBA890C815D7C9660266 /* FBSDKCoreKit */,
+				49A5F7BD0C15427122E3843BECC66F3F /* FBSDKLoginKit */,
+				17B5B67ACE307C81789740E091F5B7A4 /* Firebase */,
+				50BA6E98EB59422687C68F900997151B /* Folly */,
+				25E88966946BE0CED873F1E55A5DC0C2 /* glog */,
+				B06B2089BC66C8D9F51277F91D2D30EE /* Google-Maps-iOS-Utils */,
+				EC7EF358649EC1DB4DE4F75D833B9872 /* Google-Mobile-Ads-SDK */,
+				0624827FCD3F5DE8CF1A8EEE332C68F0 /* GoogleMaps */,
+				DD01EB3FC21E0225709C0ABE7929F0AD /* GoogleSignIn */,
+				B88514FAE80F025AE29F81C5964EABFD /* JKBigInteger2 */,
+				7B3CE7642730DCF04E6AFCA1D9BF1185 /* lottie-ios */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
 		C504BF1188C19491BE0770C13E378673 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -8315,7 +8306,7 @@
 				7677A89198F24D41444777BE7B070B39 /* ABI33_0_0UMReactNativeAdapter */,
 				CBE6AEE19FABF2770D08F2DA50B09A72 /* ABI33_0_0UMSensorsInterface */,
 				5A4CA697810E16DFA17140200149E815 /* ABI33_0_0UMTaskManagerInterface */,
-				59A8C75608D7DE75E11C4E0C07119EE0 /* Dependencies */,
+				C4FB8104BB68A1521FA1E35EEF8029F8 /* Dependencies */,
 				0E7C2269A8CD8A8992D9CD8EEEE2ED5F /* Frameworks */,
 				05582BFAEBB667B7887541DFA2D1F762 /* Products */,
 				EB1D5D781098E16FC241E7BF0C549DB2 /* ReactABI33_0_0 */,
@@ -10118,7 +10109,6 @@
 			dependencies = (
 				61BCDAF9B07A5E7655E27E5D43F49331 /* PBXTargetDependency */,
 				1142FAD2A9EF9D93031846EB740C4E52 /* PBXTargetDependency */,
-				A8B7F4D848334D52E89CE18872D2F586 /* PBXTargetDependency */,
 				C394252AC22A210BE5E838548DCA34AC /* PBXTargetDependency */,
 				EDF1DB4B564B11B053E645571583AA7A /* PBXTargetDependency */,
 				403DF84AED2202FDF1DC43BD73276FC1 /* PBXTargetDependency */,
@@ -10786,64 +10776,61 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 640665D01EB832EBF431BD3BF33B949F /* Google-Mobile-Ads-SDK */;
+					ProjectRef = EC7EF358649EC1DB4DE4F75D833B9872 /* Google-Mobile-Ads-SDK */;
 				},
 				{
-					ProjectRef = 042BB98367330D5EFFF8641AE8A69CF9 /* FBAudienceNetwork */;
+					ProjectRef = 298523E393931D5BB22CE3DCCF24CD60 /* FBAudienceNetwork */;
 				},
 				{
-					ProjectRef = C2AF8BDBFA2B8359254516DCEB56773E /* Amplitude-iOS */;
+					ProjectRef = 61D93FF2C4342713E057C97F35C2C734 /* Amplitude-iOS */;
 				},
 				{
-					ProjectRef = 9E9D268D22F4020F17E8B62DE46B9A0D /* AppAuth */;
+					ProjectRef = FE83369EBFE52BC6F589B607F7EBCF68 /* AppAuth */;
 				},
 				{
-					ProjectRef = D8267F9AA68B96C14DD421918F75941A /* Firebase */;
+					ProjectRef = 17B5B67ACE307C81789740E091F5B7A4 /* Firebase */;
 				},
 				{
-					ProjectRef = 90CFA69FB1EF4E091715689D5D0BE774 /* FBSDKCoreKit */;
+					ProjectRef = 0D0120167568BBA890C815D7C9660266 /* FBSDKCoreKit */;
 				},
 				{
-					ProjectRef = 346CF7B20382310EE7BF1B8F0C377C24 /* FBSDKLoginKit */;
+					ProjectRef = 49A5F7BD0C15427122E3843BECC66F3F /* FBSDKLoginKit */;
 				},
 				{
-					ProjectRef = 2566676035A092815E0F76FDDE3E1176 /* EXGL-CPP */;
+					ProjectRef = EEA5AD1D68E12E28C35CB8B93FA5CC5F /* EXGL-CPP */;
 				},
 				{
-					ProjectRef = E118E1A809A52AC5E5E1DCD93D0C8FBF /* GoogleSignIn */;
+					ProjectRef = DD01EB3FC21E0225709C0ABE7929F0AD /* GoogleSignIn */;
 				},
 				{
-					ProjectRef = 5B3E0D08963DE5B27B8A4414D269FCFB /* Analytics */;
+					ProjectRef = D234A9515DC83947C8E1D616D73CD92D /* Analytics */;
 				},
 				{
-					ProjectRef = E8FED488B688610DBECDAC438C3F8470 /* GoogleMaps */;
+					ProjectRef = 0624827FCD3F5DE8CF1A8EEE332C68F0 /* GoogleMaps */;
 				},
 				{
-					ProjectRef = 8638B6472FB9FBD8758FCE745731226D /* Google-Maps-iOS-Utils */;
+					ProjectRef = B06B2089BC66C8D9F51277F91D2D30EE /* Google-Maps-iOS-Utils */;
 				},
 				{
-					ProjectRef = 612660A7C14D1CB7DB5F56FD73E0ED8B /* lottie-ios */;
+					ProjectRef = 7B3CE7642730DCF04E6AFCA1D9BF1185 /* lottie-ios */;
 				},
 				{
-					ProjectRef = 4240A24CC9C762CD719F332396C98455 /* JKBigInteger2 */;
+					ProjectRef = B88514FAE80F025AE29F81C5964EABFD /* JKBigInteger2 */;
 				},
 				{
-					ProjectRef = EF0E0BD81A16A20A1F1383D21CDD0503 /* Branch */;
+					ProjectRef = F91C872B2FB6574C5D6DDC91C4642220 /* Branch */;
 				},
 				{
-					ProjectRef = 881C8805EBC8D95C49C2BB5FCD87C98B /* Folly */;
+					ProjectRef = 50BA6E98EB59422687C68F900997151B /* Folly */;
 				},
 				{
-					ProjectRef = 243C22D8C1069F6D7E12144E3185CC8C /* DoubleConversion */;
+					ProjectRef = 2FB5B0C873E24902E6ED07021CDEC4C8 /* DoubleConversion */;
 				},
 				{
-					ProjectRef = 7604A449DE8F6F4D172ED1B3EA421491 /* glog */;
+					ProjectRef = 25E88966946BE0CED873F1E55A5DC0C2 /* glog */;
 				},
 				{
-					ProjectRef = F1BA7D780D6EA1BEFAE08C15049B77EB /* React */;
-				},
-				{
-					ProjectRef = 00245CA0A90DCFB32565D7C1535FE13D /* boost-for-react-native */;
+					ProjectRef = 7839769CFC564DC61126683581ACC8EC /* boost-for-react-native */;
 				},
 			);
 			projectRoot = "";
@@ -12619,11 +12606,6 @@
 			name = ABI33_0_0EXAppAuth;
 			target = 290574E0C42402A9CBC3B0AB593F6C2D /* ABI33_0_0EXAppAuth */;
 			targetProxy = 57E16FBAF51C19692CF09299C7564E06 /* PBXContainerItemProxy */;
-		};
-		A8B7F4D848334D52E89CE18872D2F586 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = React;
-			targetProxy = 8856F8369DA88E43E67D34A9EA580A21 /* PBXContainerItemProxy */;
 		};
 		A8D078DC1F29DF090CE00B2D350B4FF4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

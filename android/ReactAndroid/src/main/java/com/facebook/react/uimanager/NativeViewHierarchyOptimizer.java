@@ -1,50 +1,47 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.uimanager;
 
 import android.util.SparseBooleanArray;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import javax.annotation.Nullable;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
  * product specified by JS. Basically, JS sends us a hierarchy of nodes that, while easy to reason
  * about in JS, are very inefficient to translate directly to native views. This class sits in
- * between {@link UIManagerModule}, which directly receives view commands from JS, and
- * {@link UIViewOperationQueue}, which enqueues actual operations on the native view hierarchy. It
- * is able to take instructions from UIManagerModule and output instructions to the native view
- * hierarchy that achieve the same displayed UI but with fewer views.
+ * between {@link UIManagerModule}, which directly receives view commands from JS, and {@link
+ * UIViewOperationQueue}, which enqueues actual operations on the native view hierarchy. It is able
+ * to take instructions from UIManagerModule and output instructions to the native view hierarchy
+ * that achieve the same displayed UI but with fewer views.
  *
- * Currently this class is only used to remove layout-only views, that is to say views that only
+ * <p>Currently this class is only used to remove layout-only views, that is to say views that only
  * affect the positions of their children but do not draw anything themselves. These views are
  * fairly common because 1) containers are used to do layouting via flexbox and 2) the return of
  * each Component#render() call in JS must be exactly one view, which means views are often wrapped
  * in a unnecessary layer of hierarchy.
  *
- * This optimization is implemented by keeping track of both the unoptimized JS hierarchy and the
+ * <p>This optimization is implemented by keeping track of both the unoptimized JS hierarchy and the
  * optimized native hierarchy in {@link ReactShadowNode}.
  *
- * This optimization is important for view hierarchy depth (which can cause stack overflows during
- * view traversal for complex apps), memory usage, amount of time spent during GCs,
- * and time-to-display.
+ * <p>This optimization is important for view hierarchy depth (which can cause stack overflows
+ * during view traversal for complex apps), memory usage, amount of time spent during GCs, and
+ * time-to-display.
  *
- * Some examples of the optimizations this class will do based on commands from JS:
- * - Create a view with only layout props: a description of that view is created as a
- *   {@link ReactShadowNode} in UIManagerModule, but this class will not output any commands to
- *   create the view in the native view hierarchy.
- * - Update a layout-only view to have non-layout props: before issuing the updateShadowNode call
- *   to the native view hierarchy, issue commands to create the view we optimized away move it into
- *   the view hierarchy
- * - Manage the children of a view: multiple manageChildren calls for various parent views may be
- *   issued to the native view hierarchy depending on where the views being added/removed are
- *   attached in the optimized hierarchy
+ * <p>Some examples of the optimizations this class will do based on commands from JS: - Create a
+ * view with only layout props: a description of that view is created as a {@link ReactShadowNode}
+ * in UIManagerModule, but this class will not output any commands to create the view in the native
+ * view hierarchy. - Update a layout-only view to have non-layout props: before issuing the
+ * updateShadowNode call to the native view hierarchy, issue commands to create the view we
+ * optimized away move it into the view hierarchy - Manage the children of a view: multiple
+ * manageChildren calls for various parent views may be issued to the native view hierarchy
+ * depending on where the views being added/removed are attached in the optimized hierarchy
  */
 public class NativeViewHierarchyOptimizer {
 
@@ -64,60 +61,58 @@ public class NativeViewHierarchyOptimizer {
   private final ShadowNodeRegistry mShadowNodeRegistry;
   private final SparseBooleanArray mTagsWithLayoutVisited = new SparseBooleanArray();
 
+  public static void assertNodeSupportedWithoutOptimizer(ReactShadowNode node) {
+    // NativeKind.LEAF nodes require the optimizer. They are not ViewGroups so they cannot host
+    // their native children themselves. Their native children need to be hoisted by the optimizer
+    // to an ancestor which is a ViewGroup.
+    Assertions.assertCondition(
+        node.getNativeKind() != NativeKind.LEAF,
+        "Nodes with NativeKind.LEAF are not supported when the optimizer is disabled");
+  }
+
   public NativeViewHierarchyOptimizer(
-      UIViewOperationQueue uiViewOperationQueue,
-      ShadowNodeRegistry shadowNodeRegistry) {
+      UIViewOperationQueue uiViewOperationQueue, ShadowNodeRegistry shadowNodeRegistry) {
     mUIViewOperationQueue = uiViewOperationQueue;
     mShadowNodeRegistry = shadowNodeRegistry;
   }
 
-  /**
-   * Handles a createView call. May or may not actually create a native view.
-   */
+  /** Handles a createView call. May or may not actually create a native view. */
   public void handleCreateView(
       ReactShadowNode node,
       ThemedReactContext themedContext,
       @Nullable ReactStylesDiffMap initialProps) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(node);
       int tag = node.getReactTag();
       mUIViewOperationQueue.enqueueCreateView(
-          themedContext,
-          tag,
-          node.getViewClass(),
-          initialProps);
+          themedContext, tag, node.getViewClass(), initialProps);
       return;
     }
 
-    boolean isLayoutOnly = node.getViewClass().equals(ViewProps.VIEW_CLASS_NAME) &&
-        isLayoutOnlyAndCollapsable(initialProps);
+    boolean isLayoutOnly =
+        node.getViewClass().equals(ViewProps.VIEW_CLASS_NAME)
+            && isLayoutOnlyAndCollapsable(initialProps);
     node.setIsLayoutOnly(isLayoutOnly);
 
-    if (!isLayoutOnly) {
+    if (node.getNativeKind() != NativeKind.NONE) {
       mUIViewOperationQueue.enqueueCreateView(
-          themedContext,
-          node.getReactTag(),
-          node.getViewClass(),
-          initialProps);
+          themedContext, node.getReactTag(), node.getViewClass(), initialProps);
     }
   }
 
-  /**
-   * Handles native children cleanup when css node is removed from hierarchy
-   */
+  /** Handles native children cleanup when css node is removed from hierarchy */
   public static void handleRemoveNode(ReactShadowNode node) {
     node.removeAllNativeChildren();
   }
 
   /**
    * Handles an updateView call. If a view transitions from being layout-only to not (or vice-versa)
-   * this could result in some number of additional createView and manageChildren calls. If the
-   * view is layout only, no updateView call will be dispatched to the native hierarchy.
+   * this could result in some number of additional createView and manageChildren calls. If the view
+   * is layout only, no updateView call will be dispatched to the native hierarchy.
    */
-  public void handleUpdateView(
-      ReactShadowNode node,
-      String className,
-      ReactStylesDiffMap props) {
+  public void handleUpdateView(ReactShadowNode node, String className, ReactStylesDiffMap props) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(node);
       mUIViewOperationQueue.enqueueUpdateProperties(node.getReactTag(), className, props);
       return;
     }
@@ -134,24 +129,23 @@ public class NativeViewHierarchyOptimizer {
    * Handles a manageChildren call. This may translate into multiple manageChildren calls for
    * multiple other views.
    *
-   * NB: the assumption for calling this method is that all corresponding ReactShadowNodes have
-   * been updated **but tagsToDelete have NOT been deleted yet**. This is because we need to use
-   * the metadata from those nodes to figure out the correct commands to dispatch. This is unlike
-   * all other calls on this class where we assume all operations on the shadow hierarchy have
-   * already completed by the time a corresponding method here is called.
+   * <p>NB: the assumption for calling this method is that all corresponding ReactShadowNodes have
+   * been updated **but tagsToDelete have NOT been deleted yet**. This is because we need to use the
+   * metadata from those nodes to figure out the correct commands to dispatch. This is unlike all
+   * other calls on this class where we assume all operations on the shadow hierarchy have already
+   * completed by the time a corresponding method here is called.
    */
   public void handleManageChildren(
       ReactShadowNode nodeToManage,
       int[] indicesToRemove,
       int[] tagsToRemove,
       ViewAtIndex[] viewsToAdd,
-      int[] tagsToDelete) {
+      int[] tagsToDelete,
+      int[] indicesToDelete) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(nodeToManage);
       mUIViewOperationQueue.enqueueManageChildren(
-          nodeToManage.getReactTag(),
-          indicesToRemove,
-          viewsToAdd,
-          tagsToDelete);
+          nodeToManage.getReactTag(), indicesToRemove, viewsToAdd, tagsToDelete, indicesToDelete);
       return;
     }
 
@@ -179,17 +173,13 @@ public class NativeViewHierarchyOptimizer {
   }
 
   /**
-   * Handles a setChildren call.  This is a simplification of handleManagerChildren that only adds
+   * Handles a setChildren call. This is a simplification of handleManagerChildren that only adds
    * children in index order of the childrenTags array
    */
-  public void handleSetChildren(
-    ReactShadowNode nodeToManage,
-    ReadableArray childrenTags
-  ) {
+  public void handleSetChildren(ReactShadowNode nodeToManage, ReadableArray childrenTags) {
     if (!ENABLED) {
-      mUIViewOperationQueue.enqueueSetChildren(
-        nodeToManage.getReactTag(),
-        childrenTags);
+      assertNodeSupportedWithoutOptimizer(nodeToManage);
+      mUIViewOperationQueue.enqueueSetChildren(nodeToManage.getReactTag(), childrenTags);
       return;
     }
 
@@ -200,14 +190,15 @@ public class NativeViewHierarchyOptimizer {
   }
 
   /**
-   * Handles an updateLayout call. All updateLayout calls are collected and dispatched at the end
-   * of a batch because updateLayout calls to layout-only nodes can necessitate multiple
-   * updateLayout calls for all its children.
+   * Handles an updateLayout call. All updateLayout calls are collected and dispatched at the end of
+   * a batch because updateLayout calls to layout-only nodes can necessitate multiple updateLayout
+   * calls for all its children.
    */
   public void handleUpdateLayout(ReactShadowNode node) {
     if (!ENABLED) {
+      assertNodeSupportedWithoutOptimizer(node);
       mUIViewOperationQueue.enqueueUpdateLayout(
-          Assertions.assertNotNull(node.getParent()).getReactTag(),
+          Assertions.assertNotNull(node.getLayoutParent()).getReactTag(),
           node.getReactTag(),
           node.getScreenX(),
           node.getScreenY(),
@@ -219,6 +210,12 @@ public class NativeViewHierarchyOptimizer {
     applyLayoutBase(node);
   }
 
+  public void handleForceViewToBeNonLayoutOnly(ReactShadowNode node) {
+    if (node.isLayoutOnly()) {
+      transitionLayoutOnlyViewToNativeView(node, null);
+    }
+  }
+
   /**
    * Processes the shadow hierarchy to dispatch all necessary updateLayout calls to the native
    * hierarchy. Should be called after all updateLayout calls for a batch have been handled.
@@ -227,16 +224,18 @@ public class NativeViewHierarchyOptimizer {
     mTagsWithLayoutVisited.clear();
   }
 
-  private NodeIndexPair walkUpUntilNonLayoutOnly(
-      ReactShadowNode node,
-      int indexInNativeChildren) {
-    while (node.isLayoutOnly()) {
+  private NodeIndexPair walkUpUntilNativeKindIsParent(
+      ReactShadowNode node, int indexInNativeChildren) {
+    while (node.getNativeKind() != NativeKind.PARENT) {
       ReactShadowNode parent = node.getParent();
       if (parent == null) {
         return null;
       }
 
-      indexInNativeChildren = indexInNativeChildren + parent.getNativeOffsetForChild(node);
+      indexInNativeChildren =
+          indexInNativeChildren
+              + (node.getNativeKind() == NativeKind.LEAF ? 1 : 0)
+              + parent.getNativeOffsetForChild(node);
       node = parent;
     }
 
@@ -245,8 +244,8 @@ public class NativeViewHierarchyOptimizer {
 
   private void addNodeToNode(ReactShadowNode parent, ReactShadowNode child, int index) {
     int indexInNativeChildren = parent.getNativeOffsetForChild(parent.getChildAt(index));
-    if (parent.isLayoutOnly()) {
-      NodeIndexPair result = walkUpUntilNonLayoutOnly(parent, indexInNativeChildren);
+    if (parent.getNativeKind() != NativeKind.PARENT) {
+      NodeIndexPair result = walkUpUntilNativeKindIsParent(parent, indexInNativeChildren);
       if (result == null) {
         // If the parent hasn't been attached to its native parent yet, don't issue commands to the
         // native hierarchy. We'll do that when the parent node actually gets attached somewhere.
@@ -256,60 +255,60 @@ public class NativeViewHierarchyOptimizer {
       indexInNativeChildren = result.index;
     }
 
-    if (!child.isLayoutOnly()) {
-      addNonLayoutNode(parent, child, indexInNativeChildren);
+    if (child.getNativeKind() != NativeKind.NONE) {
+      addNativeChild(parent, child, indexInNativeChildren);
     } else {
-      addLayoutOnlyNode(parent, child, indexInNativeChildren);
+      addNonNativeChild(parent, child, indexInNativeChildren);
     }
   }
 
   /**
-   * For handling node removal from manageChildren. In the case of removing a layout-only node, we
-   * need to instead recursively remove all its children from their native parents.
+   * For handling node removal from manageChildren. In the case of removing a node which isn't
+   * hosting its own children (e.g. layout-only or NativeKind.LEAF), we need to recursively remove
+   * all its children from their native parents.
    */
   private void removeNodeFromParent(ReactShadowNode nodeToRemove, boolean shouldDelete) {
-    ReactShadowNode nativeNodeToRemoveFrom = nodeToRemove.getNativeParent();
+    if (nodeToRemove.getNativeKind() != NativeKind.PARENT) {
+      for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
+        removeNodeFromParent(nodeToRemove.getChildAt(i), shouldDelete);
+      }
+    }
 
+    ReactShadowNode nativeNodeToRemoveFrom = nodeToRemove.getNativeParent();
     if (nativeNodeToRemoveFrom != null) {
       int index = nativeNodeToRemoveFrom.indexOfNativeChild(nodeToRemove);
       nativeNodeToRemoveFrom.removeNativeChildAt(index);
 
       mUIViewOperationQueue.enqueueManageChildren(
           nativeNodeToRemoveFrom.getReactTag(),
-          new int[]{index},
+          new int[] {index},
           null,
-          shouldDelete ? new int[]{nodeToRemove.getReactTag()} : null);
-    } else {
-      for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
-        removeNodeFromParent(nodeToRemove.getChildAt(i), shouldDelete);
-      }
+          shouldDelete ? new int[] {nodeToRemove.getReactTag()} : null,
+          shouldDelete ? new int[] {index} : null);
     }
   }
 
-  private void addLayoutOnlyNode(
-      ReactShadowNode nonLayoutOnlyNode,
-      ReactShadowNode layoutOnlyNode,
-      int index) {
-    addGrandchildren(nonLayoutOnlyNode, layoutOnlyNode, index);
+  private void addNonNativeChild(
+      ReactShadowNode nativeParent, ReactShadowNode nonNativeChild, int index) {
+    addGrandchildren(nativeParent, nonNativeChild, index);
   }
 
-  private void addNonLayoutNode(
-      ReactShadowNode parent,
-      ReactShadowNode child,
-      int index) {
+  private void addNativeChild(ReactShadowNode parent, ReactShadowNode child, int index) {
     parent.addNativeChildAt(child, index);
     mUIViewOperationQueue.enqueueManageChildren(
         parent.getReactTag(),
         null,
-        new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), index)},
+        new ViewAtIndex[] {new ViewAtIndex(child.getReactTag(), index)},
+        null,
         null);
+
+    if (child.getNativeKind() != NativeKind.PARENT) {
+      addGrandchildren(parent, child, index + 1);
+    }
   }
 
-  private void addGrandchildren(
-      ReactShadowNode nativeParent,
-      ReactShadowNode child,
-      int index) {
-    Assertions.assertCondition(!nativeParent.isLayoutOnly());
+  private void addGrandchildren(ReactShadowNode nativeParent, ReactShadowNode child, int index) {
+    Assertions.assertCondition(child.getNativeKind() != NativeKind.PARENT);
 
     // `child` can't hold native children. Add all of `child`'s children to `parent`.
     int currentIndex = index;
@@ -317,16 +316,15 @@ public class NativeViewHierarchyOptimizer {
       ReactShadowNode grandchild = child.getChildAt(i);
       Assertions.assertCondition(grandchild.getNativeParent() == null);
 
-      if (grandchild.isLayoutOnly()) {
-        // Adding this child could result in adding multiple native views
-        int grandchildCountBefore = nativeParent.getNativeChildCount();
-        addLayoutOnlyNode(nativeParent, grandchild, currentIndex);
-        int grandchildCountAfter = nativeParent.getNativeChildCount();
-        currentIndex += grandchildCountAfter - grandchildCountBefore;
+      // Adding this child could result in adding multiple native views
+      int grandchildCountBefore = nativeParent.getNativeChildCount();
+      if (grandchild.getNativeKind() == NativeKind.NONE) {
+        addNonNativeChild(nativeParent, grandchild, currentIndex);
       } else {
-        addNonLayoutNode(nativeParent, grandchild, currentIndex);
-        currentIndex++;
+        addNativeChild(nativeParent, grandchild, currentIndex);
       }
+      int grandchildCountAfter = nativeParent.getNativeChildCount();
+      currentIndex += grandchildCountAfter - grandchildCountBefore;
     }
   }
 
@@ -345,10 +343,16 @@ public class NativeViewHierarchyOptimizer {
     int x = node.getScreenX();
     int y = node.getScreenY();
 
-    while (parent != null && parent.isLayoutOnly()) {
-      // TODO(7854667): handle and test proper clipping
-      x += Math.round(parent.getLayoutX());
-      y += Math.round(parent.getLayoutY());
+    while (parent != null && parent.getNativeKind() != NativeKind.PARENT) {
+      if (!parent.isVirtual()) {
+        // Skip these additions for virtual nodes. This has the same effect as `getLayout*`
+        // returning `0`. Virtual nodes aren't in the Yoga tree so we can't call `getLayout*` on
+        // them.
+
+        // TODO(7854667): handle and test proper clipping
+        x += Math.round(parent.getLayoutX());
+        y += Math.round(parent.getLayoutY());
+      }
 
       parent = parent.getParent();
     }
@@ -357,10 +361,10 @@ public class NativeViewHierarchyOptimizer {
   }
 
   private void applyLayoutRecursive(ReactShadowNode toUpdate, int x, int y) {
-    if (!toUpdate.isLayoutOnly() && toUpdate.getNativeParent() != null) {
+    if (toUpdate.getNativeKind() != NativeKind.NONE && toUpdate.getNativeParent() != null) {
       int tag = toUpdate.getReactTag();
       mUIViewOperationQueue.enqueueUpdateLayout(
-          toUpdate.getNativeParent().getReactTag(),
+          toUpdate.getLayoutParent().getReactTag(),
           tag,
           x,
           y,
@@ -388,8 +392,7 @@ public class NativeViewHierarchyOptimizer {
   }
 
   private void transitionLayoutOnlyViewToNativeView(
-      ReactShadowNode node,
-      @Nullable ReactStylesDiffMap props) {
+      ReactShadowNode node, @Nullable ReactStylesDiffMap props) {
     ReactShadowNode parent = node.getParent();
     if (parent == null) {
       node.setIsLayoutOnly(false);
@@ -407,10 +410,7 @@ public class NativeViewHierarchyOptimizer {
 
     // Create the view since it doesn't exist in the native hierarchy yet
     mUIViewOperationQueue.enqueueCreateView(
-        node.getThemedContext(),
-        node.getReactTag(),
-        node.getViewClass(),
-        props);
+        node.getThemedContext(), node.getReactTag(), node.getViewClass(), props);
 
     // Add the node and all its children as if we are adding a new nodes
     parent.addChildAt(node, childIndex);

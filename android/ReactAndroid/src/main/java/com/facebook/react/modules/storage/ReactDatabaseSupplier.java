@@ -1,16 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.modules.storage;
 
-import javax.annotation.Nullable;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 
@@ -66,9 +66,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
         }
     }
 
-    /**
-   * Verify the database exists and is open.
-   */
+    /** Verify the database exists and is open. */
     /* package */
     synchronized boolean ensureDatabase() {
         if (mDb != null && mDb.isOpen()) {
@@ -104,9 +102,7 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
         return true;
     }
 
-    /**
-   * Create and/or open the database.
-   */
+    /** Create and/or open the database. */
     public synchronized SQLiteDatabase get() {
         ensureDatabase();
         return mDb;
@@ -134,8 +130,8 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
     }
 
     /**
-   * Sets the maximum size the database will grow to. The maximum size cannot
-   * be set below the current size.
+   * Sets the maximum size the database will grow to. The maximum size cannot be set below the
+   * current size.
    */
     public synchronized void setMaximumSize(long size) {
         mMaximumDatabaseSize = size;

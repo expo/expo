@@ -1,8 +1,4 @@
-import { Asset } from 'expo-asset';
-/**
- * A font source can be a URI, a module ID, or an Expo Asset.
- */
-declare type FontSource = string | number | Asset;
+import { FontSource, FontResource } from './Font.types';
 /**
  * Used to transform font family names to the scoped name. This does not need to
  * be called in standalone or bare apps but it will return unscoped font family
@@ -16,4 +12,4 @@ export declare function isLoading(name: string): boolean;
 export declare function loadAsync(nameOrMap: string | {
     [name: string]: FontSource;
 }, source?: FontSource): Promise<void>;
-export {};
+export { FontSource, FontResource };

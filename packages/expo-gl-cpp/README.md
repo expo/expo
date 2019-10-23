@@ -20,7 +20,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 Note: this should be used in conjunction with [expo-gl](https://github.com/expo/expo/tree/master/packages/expo-gl).
 
 ```
-npm install expo-gl-cpp
+expo install expo-gl-cpp
 ```
 
 ### Configure for iOS

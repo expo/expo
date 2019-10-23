@@ -71,20 +71,20 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
-  public static void handleReactNativeError(String errorMessage, Object detailsUnversioned,
+  public static void handleReactNativeError(String errorMessage, Object stackUnversioned,
                                             Integer exceptionId, Boolean isFatal) {
     try {
-      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, errorMessage, detailsUnversioned, exceptionId, isFatal);
+      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, errorMessage, stackUnversioned, exceptionId, isFatal);
     } catch (Exception e) {
       throw new JavascriptException(errorMessage);
     }
   }
 
   @DoNotStrip
-  public static void handleReactNativeError(Throwable throwable, String errorMessage, Object detailsUnversioned,
+  public static void handleReactNativeError(Throwable throwable, String errorMessage, Object stackUnversioned,
                                             Integer exceptionId, Boolean isFatal) {
     try {
-      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, throwable, errorMessage, detailsUnversioned, exceptionId, isFatal);
+      Class.forName("host.exp.exponent.kernel.Kernel").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, throwable, errorMessage, stackUnversioned, exceptionId, isFatal);
     } catch (Exception e) {
       throw new JavascriptException(errorMessage);
     }
