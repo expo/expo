@@ -521,7 +521,7 @@ export function openEventInCalendar(id: string): void {
   return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
 
-export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getCalendarPermissionsAsync(): Promise<PermissionsResponse> {
   if (!ExpoCalendar.getCalendarPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'getPermissionsAsync');
   }
@@ -535,7 +535,7 @@ export async function getRemindersPermissionsAync(): Promise<PermissionsResponse
   return ExpoCalendar.getRemindersPermissionsAync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestCalendarPermissionsAsync(): Promise<PermissionsResponse> {
   if (!ExpoCalendar.requestCalendarPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
   }

@@ -50,11 +50,19 @@ export declare const PermissionsStatus: {
     readonly UNDETERMINED: "undetermined";
     readonly DENIED: "denied";
 };
+export declare type PermissionDetailsLocationIOS = {
+    scope: 'whenInUse' | 'always';
+};
+export declare type PermissionDetailsLocationAndroid = {
+    scope: 'fine' | 'coarse' | 'none';
+};
 export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: "never" | number;
     granted: boolean;
     canAskAgain: boolean;
+    ios?: PermissionDetailsLocationIOS;
+    android?: PermissionDetailsLocationAndroid;
 };
 interface LocationTaskOptions {
     accuracy?: LocationAccuracy;

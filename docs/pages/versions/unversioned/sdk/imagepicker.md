@@ -18,6 +18,30 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 import * as ImagePicker from 'expo-image-picker';
 ```
 
+### `ImagePicker.requestCameraPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+
+### `ImagePicker.requestCameraRollPermissionsAsync()`
+
+Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+
+### `ImagePicker.getCamerPermissionsAsync()`
+
+Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+
+### `ImagePicker.getCamerRollPermissionsAsync()`
+
+Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
 Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only.
@@ -84,3 +108,13 @@ When you run this example and pick an image, you will see the image that you pic
   "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
 }
 ```
+
+## Types
+
+### `PermissionsResponse`
+
+| Field name  | Type      | Description                                                                                                                                                                                    |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
+| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
+| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |

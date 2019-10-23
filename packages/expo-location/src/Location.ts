@@ -62,11 +62,21 @@ export const PermissionsStatus = {
   DENIED: 'denied',
 } as const;
 
+export type PermissionDetailsLocationIOS = {
+  scope: 'whenInUse' | 'always';
+};
+
+export type PermissionDetailsLocationAndroid = {
+  scope: 'fine' | 'coarse' | 'none';
+};
+
 export type PermissionsResponse = {
   status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
   expires: "never" | number;
   granted: boolean;
   canAskAgain: boolean;
+  ios?: PermissionDetailsLocationIOS;
+  android?: PermissionDetailsLocationAndroid;
 };
 
 interface LocationTaskOptions {

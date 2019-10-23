@@ -24,7 +24,7 @@ Asks the user to grant permissions for accessing media in user's media library. 
 
 #### Returns
 
-Returns a promise that resolves to an object of type [PermissionsResult](#permissionsresult).
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
 
 ### `MediaLibrary.getPermissionsAsync()`
 
@@ -32,7 +32,7 @@ Checks user's permissions for accessing media library. Alias for `Permissions.ge
 
 #### Returns
 
-Returns a promise that resolves to an object of type [PermissionsResult](#permissionsresult).
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
 
 ### `MediaLibrary.createAssetAsync(localUri)`
 
@@ -224,33 +224,34 @@ Removes all listeners.
 
 ## Types
 
-### `PermissionsResult`
+### `PermissionsResponse`
 
-| Field name | Type      | Description                                                                  |
-| ---------- | --------- | ---------------------------------------------------------------------------- |
-| status     | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`. |
-| granted    | _boolean_ | Boolean value meaning whether the permission is granted or not.              |
+| Field name  | Type      | Description                                                                                                                                                                                    |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
+| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
+| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
 
 ### `Asset`
 
-| Field name       | Type      | Platforms | Description                             | Possible values                                                                                      |
-| ---------------- | --------- | --------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| id               | _string_  | both      | Internal ID that represents an asset    |                                                                                                      |
-| filename         | _string_  | both      | Filename of the asset                   |                                                                                                      |
-| uri              | _string_  | both      | URI that points to the asset            | `assets://*` (iOS), `file://*` (Android)                                                             |
-| mediaType        | _string_  | both      | Media type                              | `MediaType.audio`, `MediaType.photo`, `MediaType.video`, `MediaType.unknown`                         |
-| width            | _number_  | both      | Width of the image or video             |                                                                                                      |
-| height           | _number_  | both      | Height of the image or video            |                                                                                                      |
-| creationTime     | _number_  | both      | File creation timestamp                 |                                                                                                      |
-| modificationTime | _number_  | both      | Last modification timestamp             |                                                                                                      |
-| duration         | _number_  | both      | Duration of the video or audio asset    |                                                                                                      |
-| mediaSubtypes    | _array_   | iOS       | An array of media subtypes              | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
-| albumId          | _string_  | Android   | Album ID that the asset belongs to      |                                                                                                      |
-| localUri \*      | _string_  | both      | Local URI for the asset                 |                                                                                                      |
-| location \*      | _object_  | both      | GPS location if available               | `latitude: number, longitude: number` or `null`                                                      |
-| exif \*          | _object_  | both      | EXIF metadata associated with the image |                                                                                                      |
+| Field name       | Type      | Platforms | Description                                                                                                   | Possible values                                                                                      |
+| ---------------- | --------- | --------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| id               | _string_  | both      | Internal ID that represents an asset                                                                          |                                                                                                      |
+| filename         | _string_  | both      | Filename of the asset                                                                                         |                                                                                                      |
+| uri              | _string_  | both      | URI that points to the asset                                                                                  | `assets://*` (iOS), `file://*` (Android)                                                             |
+| mediaType        | _string_  | both      | Media type                                                                                                    | `MediaType.audio`, `MediaType.photo`, `MediaType.video`, `MediaType.unknown`                         |
+| width            | _number_  | both      | Width of the image or video                                                                                   |                                                                                                      |
+| height           | _number_  | both      | Height of the image or video                                                                                  |                                                                                                      |
+| creationTime     | _number_  | both      | File creation timestamp                                                                                       |                                                                                                      |
+| modificationTime | _number_  | both      | Last modification timestamp                                                                                   |                                                                                                      |
+| duration         | _number_  | both      | Duration of the video or audio asset                                                                          |                                                                                                      |
+| mediaSubtypes    | _array_   | iOS       | An array of media subtypes                                                                                    | `hdr`, `panorama`, `stream`, `timelapse`, `screenshot`, `highFrameRate`, `livePhoto`, `depthEffect`  |
+| albumId          | _string_  | Android   | Album ID that the asset belongs to                                                                            |                                                                                                      |
+| localUri \*      | _string_  | both      | Local URI for the asset                                                                                       |                                                                                                      |
+| location \*      | _object_  | both      | GPS location if available                                                                                     | `latitude: number, longitude: number` or `null`                                                      |
+| exif \*          | _object_  | both      | EXIF metadata associated with the image                                                                       |                                                                                                      |
 | orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
-| isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite | `true`, `false`                                                                                      |
+| isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite                                                                       | `true`, `false`                                                                                      |
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
 

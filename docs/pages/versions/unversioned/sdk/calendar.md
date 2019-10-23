@@ -40,13 +40,37 @@ An array of [calendar objects](#calendar 'Calendar') matching the provided entit
 
 A promise resolving to [calendar object](#calendar) that is the user's default calendar.
 
-### `Calendar.requestRemindersPermissionsAsync()`
+### `Calendar.requestCalendarPermissionsAsync()`
 
-**iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
+Asks the user to grant permissions for accessing user's calendars. Alias for `Permissions.askAsync(Permissions.CALENDAR)`.
 
 #### Returns
 
-Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+
+### `Calendar.requestRemindersPermissionsAsync()`
+
+**iOS only**. Asks the user to grant permissions for accessing user's reminders. Alias for `Permissions.askAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+
+### `Calendar.getCalendarPermissionsAsync()`
+
+Checks user's permissions for accessing user's calendars. Alias for `Permissions.getAsync(Permissions.CALENDAR)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+
+### `Calendar.getRemindersPermissionsAsync()`
+
+**iOS only**. Checks user's permissions for accessing user's reminders. Alias for `Permissions.getAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
 
 ### `Calendar.createCalendarAsync(details)`
 
@@ -401,6 +425,14 @@ A [source object](#source 'Source') matching the provided ID, if one exists.
 
 ## List of object properties
 
+### PermissionsResponse
+
+| Field name  | Type      | Description                                                                                                                                                                                    |
+| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
+| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
+| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
+
 ### Calendar
 
 A calendar record upon which events (or, on iOS, reminders) can be stored. Settings here apply to the calendar as a whole and how its events are displayed in the OS calendar app.
@@ -413,7 +445,7 @@ A calendar record upon which events (or, on iOS, reminders) can be stored. Setti
 | source                | _Source_  | both      | Object representing the source to be used for the calendar                    |                                                                                                                                                                                                                                                                                                                                                                    |
 | color                 | _string_  | both      | Color used to display this calendar's events                                  |                                                                                                                                                                                                                                                                                                                                                                    |
 | allowsModifications   | _boolean_ | both      | Boolean value that determines whether this calendar can be modified           |                                                                                                                                                                                                                                                                                                                                                                    |
-| type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`, `Calendar.CalendarType.UNKNOWN`                                                                                                                                                              |
+| type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`, `Calendar.CalendarType.UNKNOWN`                                                                                                                                                            |
 | isPrimary             | _boolean_ | Android   | Boolean value indicating whether this is the device's primary calendar        |                                                                                                                                                                                                                                                                                                                                                                    |
 | name                  | _string_  | Android   | Internal system name of the calendar                                          |                                                                                                                                                                                                                                                                                                                                                                    |
 | ownerAccount          | _string_  | Android   | Name for the account that owns this calendar                                  |                                                                                                                                                                                                                                                                                                                                                                    |

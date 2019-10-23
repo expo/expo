@@ -103,7 +103,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   // modules
   private EventEmitter mEventEmitter;
   private UIManager mUIManager;
-  private Permissions mPermissions;
+  private Permissions mPermissionsManager;
   private TaskManagerInterface mTaskManager;
   private ActivityProvider mActivityProvider;
 
@@ -136,7 +136,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mUIManager = moduleRegistry.getModule(UIManager.class);
-    mPermissions = moduleRegistry.getModule(Permissions.class);
+    mPermissionsManager = moduleRegistry.getModule(Permissions.class);
     mTaskManager = moduleRegistry.getModule(TaskManagerInterface.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
 
@@ -149,12 +149,24 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void requestPermissionsAsync(final Promise promise) {
-    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsManager.askForPermissions(result -> {
+      promise.resolve(handleLocationPermissions(result));
+    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
-    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsManager.getPermissions(result -> {
+      promise.resolve(handleLocationPermissions(result));
+    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   @ExpoMethod
@@ -481,10 +493,10 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region private methods
 
   private boolean isMissingPermissions() {
-    return mPermissions == null
+    return mPermissionsManager == null
         || (
-        mPermissions.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-            && mPermissions.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+        mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+            && mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
     );
   }
 
@@ -730,6 +742,35 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     for (Integer requestId : mLocationCallbacks.keySet()) {
       pauseLocationUpdatesForRequest(requestId);
     }
+  }
+
+  private Bundle handleLocationPermissions(Map<String, PermissionsResponse> result) {
+    PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+    PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
+    String status = PermissionsStatus.UNDETERMINED.getStatus();
+    String scope = "none";
+    Boolean canAskAgain = accessCoarseLocation.getCanAskAgain() && accessFineLocation.getCanAskAgain();
+
+    if (accessFineLocation.getStatus() == PermissionsStatus.GRANTED) {
+      scope = "fine";
+      status = PermissionsStatus.GRANTED.getStatus();
+    } else if (accessCoarseLocation.getStatus() == PermissionsStatus.GRANTED) {
+      scope = "coarse";
+      status = PermissionsStatus.GRANTED.getStatus();
+    } else if (accessFineLocation.getStatus() == PermissionsStatus.DENIED && accessCoarseLocation.getStatus() == PermissionsStatus.DENIED) {
+      status = PermissionsStatus.DENIED.getStatus();
+    }
+
+    Bundle resultBundle = new Bundle();
+    Bundle scopeBundle = new Bundle();
+
+    scopeBundle.putString("scope", scope);
+    resultBundle.putString(PermissionsResponse.STATUS_KEY, status);
+    resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
+    resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
+    resultBundle.putBundle("android", scopeBundle);
+
+    return  resultBundle;
   }
 
   //endregion
