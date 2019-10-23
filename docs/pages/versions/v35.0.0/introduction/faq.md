@@ -85,4 +85,4 @@ Expo supports Android 5+ and iOS 10+.
 
 ## Up next
 
-- 👩‍💻 The time as come to write some code. Almost. First we need to install a couple tools. [Continue to "Installation"](../../get-started/installation/).
+- 👩‍💻 The time has come to write some code. Almost. First we need to install a couple tools. [Continue to "Installation"](../../get-started/installation/).
