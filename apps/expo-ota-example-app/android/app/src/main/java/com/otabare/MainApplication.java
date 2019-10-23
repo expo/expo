@@ -73,11 +73,10 @@ public class MainApplication extends Application implements ReactApplication {
         SoLoader.init(this, /* native exopackage */ false);
         Stetho.initializeWithDefaults(this);
         expoOTA = createExpoOTA();
-        expoOTA.init();
     }
 
     private ExpoOTA createExpoOTA() {
-        ExpoOTAConfig otaConfig = ExpoOTAConfigKt.expoHostedOTAConfig("mczernek", "expo-template-bare");
-        return ExpoOTA.create(this, otaConfig, false);
+        ExpoOTAConfig otaConfig = ExpoOTAConfigKt.embeddedManifestExpoConfig(this);
+        return ExpoOTA.init(this, otaConfig, false);
     }
 }

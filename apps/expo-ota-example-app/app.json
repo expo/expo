@@ -5,16 +5,16 @@
     "name": "OTABare",
     "slug": "expo-template-bare",
     "privacy": "unlisted",
-    "sdkVersion": "34.0.0",
-    "version": "1.0.90",
+    "sdkVersion": "35.0.0",
+    "version": "1.0.103",
     "entryPoint": "index.tsx",
     "android": {
-      "package": "com.otabare"
+      "package": "com.otabare",
+      "appDirectory": "./app"
     },
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ]
+    "platforms": ["ios", "android"],
+    "updates": {
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    }
   }
 }
