@@ -662,7 +662,11 @@ public class Exponent {
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
-  public boolean shouldRequestDrawOverOtherAppsPermission() {
+  // TODO: remove once SDK 35 is deprecated
+  public boolean shouldRequestDrawOverOtherAppsPermission(String sdkVersion) {
+    if (sdkVersion != null && ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
+      return false;
+    }
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
 
