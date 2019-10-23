@@ -96,3 +96,9 @@ file by setting the key “privacy” to either `“public”` or `“unlisted�
 These options work similarly to the way they do on YouTube. Unlisted
 project URLs will be secret unless you tell people about them or share
 them. Public projects might be surfaced to other developers.
+
+## How do I remove a Managed Expo project that I published?
+
+The default [privacy setting](../../workflow/configuration/) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
+
+If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../../distribution/advanced-release-channels/), which explains how to roll back.

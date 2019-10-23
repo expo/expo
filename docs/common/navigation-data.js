@@ -4,6 +4,8 @@ const path = require('path');
 const fm = require('front-matter');
 const fs = require('fs-extra');
 
+// TODO(brentvatne): move this to navigation.js so it's all in one place!
+// Map directories in a version directory to a section name
 const DIR_MAPPING = {
   introduction: 'Introduction',
   guides: 'Guides',
@@ -12,12 +14,8 @@ const DIR_MAPPING = {
   tutorials: 'Tutorials',
   sdk: 'Expo SDK',
   'react-native': 'React Native',
-
-  // 'react-native-apis': 'React Native APIs',
-  // 'react-native-components': 'React Native Components',
-  // 'react-native-guides': 'React Native Guides',
-  // 'react-native-basics': 'React Native Basics',
-
+  'get-started': 'Get Started',
+  'next-steps': 'Next Steps',
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
@@ -44,7 +42,7 @@ const generateNavLinks = (path_, arr) => {
       if (name === 'introduction') {
         let rootPath = path_.replace('./pages', '');
         // TODO: find what's eating the final slash
-        initArr.push({ name: 'Getting to know Expo', href: rootPath + '//' });
+        initArr.push({ name: 'What is Expo?', href: rootPath + '//' });
       }
 
       arr.push({

@@ -1,5 +1,2 @@
-declare const _default: {
-    activate(): void;
-    deactivate(): void;
-};
+declare const _default: {};
 export default _default;
