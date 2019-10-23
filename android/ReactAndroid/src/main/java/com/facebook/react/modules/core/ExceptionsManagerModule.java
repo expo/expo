@@ -50,7 +50,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, true);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, id, true);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -72,7 +72,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, id, false);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -112,7 +112,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, title, details, exceptionId, false);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
