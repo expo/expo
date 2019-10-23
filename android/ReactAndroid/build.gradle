@@ -432,4 +432,3 @@ dependencies {
 }
 
 apply(from: "release.gradle")
-apply from: 'expolib-build.gradle'
