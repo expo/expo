@@ -1,6 +1,7 @@
 package expo.modules.ota
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.text.TextUtils
 import org.json.JSONObject
 import java.lang.IllegalStateException

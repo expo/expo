@@ -26,7 +26,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
 
     private fun manifestHandler(promise: Promise): (JSONObject) -> Unit = { manifest ->
         val manifestComparator = persistence.config!!.manifestComparator
-        if (manifestComparator.shouldDownloadBundle(persistence.newestManifest, manifest)) {
+        if (manifestComparator.shouldReplaceBundle(persistence.newestManifest, manifest)) {
             promise.resolve(manifest.toString())
         } else {
             promise.resolve(false)
@@ -64,6 +64,11 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         } else {
             throwUninitializedExpoOtaError()
         }
+    }
+
+    @ExpoMethod
+    fun readCurrentManifestAsync(promise: Promise) {
+        promise.resolve(persistence.manifest?.toString())
     }
 
     private fun handleUpdate(promise: Promise): (manifest: JSONObject, path: String) -> Unit =
