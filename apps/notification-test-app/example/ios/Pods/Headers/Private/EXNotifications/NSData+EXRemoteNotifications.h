@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/NSData+EXRemoteNotifications.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/NSData+EXRemoteNotifications.h

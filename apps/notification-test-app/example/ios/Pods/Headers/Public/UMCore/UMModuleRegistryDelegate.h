@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/UMModuleRegistry/UMModuleRegistryDelegate.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/UMModuleRegistry/UMModuleRegistryDelegate.h

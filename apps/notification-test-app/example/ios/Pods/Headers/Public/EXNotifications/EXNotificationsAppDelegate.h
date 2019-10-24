@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/AppDelegate/EXNotificationsAppDelegate.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/AppDelegate/EXNotificationsAppDelegate.h

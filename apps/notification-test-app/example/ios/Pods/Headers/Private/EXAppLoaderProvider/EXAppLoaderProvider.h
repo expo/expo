@@ -1,1 +1,1 @@
-../../../../../node_modules/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.h
+../../../../../unimodules/expo-app-loader-provider/ios/EXAppLoaderProvider/EXAppLoaderProvider.h

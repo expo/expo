@@ -1,1 +1,1 @@
-../../../../../node_modules/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManager.h
+../../../../../unimodules/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManager.h

@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/PostOffice/EXMailbox.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/PostOffice/EXMailbox.h

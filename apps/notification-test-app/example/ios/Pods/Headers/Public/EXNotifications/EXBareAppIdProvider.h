@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/IdProvider/EXBareAppIdProvider.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/IdProvider/EXBareAppIdProvider.h

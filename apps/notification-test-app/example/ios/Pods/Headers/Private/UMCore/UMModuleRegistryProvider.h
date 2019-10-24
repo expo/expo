@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/UMModuleRegistryProvider/UMModuleRegistryProvider.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/UMModuleRegistryProvider/UMModuleRegistryProvider.h

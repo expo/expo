@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXThreadSafeTokenDispatcher.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXThreadSafeTokenDispatcher.h

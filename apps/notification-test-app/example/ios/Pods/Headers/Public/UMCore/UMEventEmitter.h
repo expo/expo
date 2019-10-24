@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/Protocols/UMEventEmitter.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/Protocols/UMEventEmitter.h

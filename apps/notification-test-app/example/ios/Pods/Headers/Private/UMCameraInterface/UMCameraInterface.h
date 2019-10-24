@@ -1,1 +1,1 @@
-../../../../../node_modules/unimodules-camera-interface/ios/UMCameraInterface/UMCameraInterface.h
+../../../../../unimodules/unimodules-camera-interface/ios/UMCameraInterface/UMCameraInterface.h

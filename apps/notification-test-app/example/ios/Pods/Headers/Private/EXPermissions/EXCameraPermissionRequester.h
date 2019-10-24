@@ -1,1 +1,1 @@
-../../../../../node_modules/expo-permissions/ios/EXPermissions/EXCameraPermissionRequester.h
+../../../../../unimodules/expo-permissions/ios/EXPermissions/EXCameraPermissionRequester.h

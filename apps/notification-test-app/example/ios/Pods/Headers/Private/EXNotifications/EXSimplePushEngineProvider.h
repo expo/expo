@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/Push/EXSimplePushEngineProvider.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/Push/EXSimplePushEngineProvider.h

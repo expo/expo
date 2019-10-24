@@ -1,1 +1,1 @@
-../../../../../node_modules/unimodules-file-system-interface/ios/UMFileSystemInterface/UMFileSystemInterface.h
+../../../../../unimodules/unimodules-file-system-interface/ios/UMFileSystemInterface/UMFileSystemInterface.h

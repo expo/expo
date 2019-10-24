@@ -9,8 +9,8 @@ public class BasePackageList {
     return Arrays.<Package>asList(
         new expo.modules.constants.ConstantsPackage(),
         new expo.modules.filesystem.FileSystemPackage(),
-        new expo.modules.permissions.PermissionsPackage(),
-        new expo.modules.notifications.NotificationsPackage()
+        new expo.modules.notifications.NotificationsPackage(),
+        new expo.modules.permissions.PermissionsPackage()
     );
   }
 }

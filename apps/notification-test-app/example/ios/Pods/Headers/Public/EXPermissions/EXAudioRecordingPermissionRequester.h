@@ -1,1 +1,1 @@
-../../../../../node_modules/expo-permissions/ios/EXPermissions/EXAudioRecordingPermissionRequester.h
+../../../../../unimodules/expo-permissions/ios/EXPermissions/EXAudioRecordingPermissionRequester.h

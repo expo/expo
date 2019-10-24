@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/EXNotificationConverter/EXNotificationConverter.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/EXNotificationConverter/EXNotificationConverter.h

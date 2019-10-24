@@ -139,13 +139,10 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-screens')
-    implementation project(':react-native-reanimated')
-    implementation project(':react-native-gesture-handler')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    addUnimodulesDependencies([modulesPaths:['../../node_modules', '../../../../../packages/bare-only']])
+    addUnimodulesDependencies([modulesPaths:['../../unimodules']])
 }
 
 // Run this once to be able to run the application with BUCK

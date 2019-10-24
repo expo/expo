@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/JSApi/EXNotifications.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/JSApi/EXNotifications.h

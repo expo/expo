@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/EXUserNotificationCenter.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/EXUserNotificationCenter.h

@@ -35,7 +35,7 @@ target 'example' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
   use_unimodules!({
-    modules_paths: ['../node_modules', '../../../../packages/bare-only'],
+    modules_paths: ['../unimodules'],
     exclude: [],
     flags: {
       :inhibit_warnings => false

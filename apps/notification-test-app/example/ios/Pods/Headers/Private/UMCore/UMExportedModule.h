@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/UMExportedModule.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/UMExportedModule.h

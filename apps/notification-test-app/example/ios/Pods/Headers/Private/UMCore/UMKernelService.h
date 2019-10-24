@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/Protocols/UMKernelService.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/Protocols/UMKernelService.h

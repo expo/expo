@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/PostOffice/EXThreadSafePostOffice.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/PostOffice/EXThreadSafePostOffice.h

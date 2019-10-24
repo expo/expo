@@ -1,1 +1,1 @@
-../../../../../node_modules/unimodules-sensors-interface/ios/UMSensorsInterface/UMMagnetometerInterface.h
+../../../../../unimodules/unimodules-sensors-interface/ios/UMSensorsInterface/UMMagnetometerInterface.h

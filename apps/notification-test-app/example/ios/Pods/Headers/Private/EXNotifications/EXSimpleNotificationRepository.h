@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXSimpleNotificationRepository.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXSimpleNotificationRepository.h

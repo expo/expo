@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/UMViewManager.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/UMViewManager.h

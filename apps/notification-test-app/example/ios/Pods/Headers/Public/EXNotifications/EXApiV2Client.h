@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/Api/EXApiV2Client.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/Api/EXApiV2Client.h

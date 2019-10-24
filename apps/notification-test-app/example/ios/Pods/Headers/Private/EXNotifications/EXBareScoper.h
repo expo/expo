@@ -1,1 +1,1 @@
-../../../../../../../../packages/bare-only/expo-notifications/ios/EXNotifications/Scoper/EXBareScoper.h
+../../../../../unimodules/expo-notifications/ios/EXNotifications/Scoper/EXBareScoper.h

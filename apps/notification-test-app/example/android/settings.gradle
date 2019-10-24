@@ -1,13 +1,6 @@
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-include ':react-native-screens'
-project(':react-native-screens').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-screens/android')
-include ':react-native-reanimated'
-project(':react-native-reanimated').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-reanimated/android')
-includeUnimodulesProjects([modulesPaths:['../../node_modules', '../../../../../packages/bare-only']])
-
-include ':react-native-gesture-handler'
-project(':react-native-gesture-handler').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-gesture-handler/android')
-
+apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+includeUnimodulesProjects([modulesPaths:['../../unimodules']])
 rootProject.name = 'example'
 
 include ':app'

@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/Protocols/UMAppLifecycleService.h

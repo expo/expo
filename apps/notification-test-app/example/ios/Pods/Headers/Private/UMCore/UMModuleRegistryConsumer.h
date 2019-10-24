@@ -1,1 +1,1 @@
-../../../../../node_modules/@unimodules/core/ios/UMCore/Protocols/UMModuleRegistryConsumer.h
+../../../../../unimodules/@unimodules/core/ios/UMCore/Protocols/UMModuleRegistryConsumer.h
