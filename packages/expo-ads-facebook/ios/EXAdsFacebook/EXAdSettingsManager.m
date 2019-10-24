@@ -100,7 +100,7 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
 {
   [FBAdSettings setIsChildDirected:_isChildDirected];
   [FBAdSettings setMediationService:_mediationService];
-  // Calling setUrlPrefix always triggers a call to Facebook,
+  // Calling setUrlPrefix always triggers a network request to Facebook,
   // so we don't want to call it without need.
   //
   // If _urlPrefix is empty we have nothing to do (foregrounding app
@@ -118,7 +118,7 @@ UM_EXPORT_METHOD_AS(setUrlPrefix,
   [FBAdSettings setIsChildDirected:NO];
   [FBAdSettings setMediationService:@""];
   _urlPrefix = FBAdSettings.urlPrefix;
-  // Calling setUrlPrefix always triggers a call to Facebook,
+  // Calling setUrlPrefix always triggers a network request to Facebook,
   // so we don't want to call it without need.
   //
   // If FBAdSettings.urlPrefix is empty we have nothing to do (backgrounding app
