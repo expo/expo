@@ -53,13 +53,13 @@
   "detox": {
     "configurations": {
       "ios.sim.debug": {
-        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/BareExpo.app",
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/Bare Expo.app",
         "build": "./scripts/build-detox-ios.sh Debug",
         "type": "ios.simulator",
         "name": "iPhone Xs"
       },
       "ios.sim.release": {
-        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/BareExpo.app",
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/Bare Expo.app",
         "build": "./scripts/build-detox-ios.sh Release YES",
         "type": "ios.simulator",
         "name": "iPhone Xs"
