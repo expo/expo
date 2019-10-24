@@ -9,6 +9,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🛠 Breaking changes
 
 - **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`.
+- Removed GCM entirely from the Android client and standalone apps since the server APIs have been shut down. ([#6071](https://github.com/expo/expo/pull/6071) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 
