@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/imagemanager/platform/ios/RCTImagePrimitivesConversions.h

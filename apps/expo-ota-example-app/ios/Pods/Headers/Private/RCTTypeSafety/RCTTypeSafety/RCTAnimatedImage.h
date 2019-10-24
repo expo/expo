@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/Image/RCTAnimatedImage.h

@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/RNTester/RCTTest/FBSnapshotTestCase/UIImage+Compare.h

@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/CameraRoll/RCTPhotoLibraryImageLoader.h

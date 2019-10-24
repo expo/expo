@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactAndroid/src/main/jni/third-party/glog/config.h

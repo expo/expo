@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/Wrapper/Example/RCTWrapperReactRootViewController.h

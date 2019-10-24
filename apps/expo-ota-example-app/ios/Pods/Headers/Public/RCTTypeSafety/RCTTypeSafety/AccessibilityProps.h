@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/components/view/accessibility/AccessibilityProps.h

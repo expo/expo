@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/uimanager/UIManagerBinding.h

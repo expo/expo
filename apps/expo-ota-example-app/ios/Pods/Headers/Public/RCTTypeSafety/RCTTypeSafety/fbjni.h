@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactAndroid/src/main/jni/first-party/fb/include/fbjni/fbjni.h

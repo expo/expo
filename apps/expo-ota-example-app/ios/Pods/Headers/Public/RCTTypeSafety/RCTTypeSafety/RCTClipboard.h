@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/React/Modules/RCTClipboard.h

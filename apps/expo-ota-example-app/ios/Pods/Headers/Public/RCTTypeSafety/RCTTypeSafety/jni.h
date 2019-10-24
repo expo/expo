@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactAndroid/src/main/jni/first-party/jni-hack/real/jni.h

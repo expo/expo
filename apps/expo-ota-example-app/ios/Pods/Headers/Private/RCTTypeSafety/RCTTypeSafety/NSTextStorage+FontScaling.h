@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/textlayoutmanager/platform/ios/NSTextStorage+FontScaling.h

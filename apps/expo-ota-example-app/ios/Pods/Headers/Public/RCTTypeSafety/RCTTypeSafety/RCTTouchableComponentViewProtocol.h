@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/React/Fabric/RCTTouchableComponentViewProtocol.h

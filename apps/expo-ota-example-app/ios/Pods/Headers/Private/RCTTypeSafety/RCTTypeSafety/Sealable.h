@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/core/primitives/Sealable.h

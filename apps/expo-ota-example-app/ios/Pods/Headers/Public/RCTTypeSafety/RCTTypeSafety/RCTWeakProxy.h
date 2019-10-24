@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/React/Base/RCTWeakProxy.h

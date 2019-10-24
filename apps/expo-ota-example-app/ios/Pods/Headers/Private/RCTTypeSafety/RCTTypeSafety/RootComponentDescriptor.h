@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/components/root/RootComponentDescriptor.h

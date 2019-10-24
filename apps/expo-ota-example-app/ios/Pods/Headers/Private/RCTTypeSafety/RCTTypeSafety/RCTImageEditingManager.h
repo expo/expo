@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/React/CoreModules/RCTImageEditingManager.h

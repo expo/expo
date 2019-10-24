@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/utils/SimpleThreadSafeCache.h

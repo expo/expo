@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/RNTester/RNTester/NativeExampleViews/UpdatePropertiesExampleView.h

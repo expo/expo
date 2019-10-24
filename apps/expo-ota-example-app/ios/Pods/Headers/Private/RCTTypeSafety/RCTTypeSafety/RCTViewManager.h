@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/React/Views/RCTViewManager.h

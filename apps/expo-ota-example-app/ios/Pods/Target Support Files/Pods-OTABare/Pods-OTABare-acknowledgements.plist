@@ -987,7 +987,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT</string>
 			<key>Title</key>
-			<string>React</string>
+			<string>RCTTypeSafety</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

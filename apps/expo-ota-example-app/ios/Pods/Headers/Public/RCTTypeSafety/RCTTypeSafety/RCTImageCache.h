@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/Image/RCTImageCache.h

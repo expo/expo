@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/fabric/components/image/ImageComponentDescriptor.h

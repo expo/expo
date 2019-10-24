@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.h

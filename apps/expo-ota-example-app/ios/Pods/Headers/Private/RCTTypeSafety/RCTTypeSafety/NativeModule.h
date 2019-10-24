@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/cxxreact/NativeModule.h

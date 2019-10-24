@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/SurfaceHostingComponent/RCTSurfaceHostingComponent+Internal.h

@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/Libraries/Vibration/RCTVibration.h

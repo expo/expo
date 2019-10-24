@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/React/Base/RCTComponentEvent.h

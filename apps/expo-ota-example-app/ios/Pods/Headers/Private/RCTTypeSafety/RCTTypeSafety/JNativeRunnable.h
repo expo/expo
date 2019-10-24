@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactAndroid/src/main/jni/react/jni/JNativeRunnable.h

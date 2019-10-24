@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/ReactCommon/jsi/jsi/jsi.h

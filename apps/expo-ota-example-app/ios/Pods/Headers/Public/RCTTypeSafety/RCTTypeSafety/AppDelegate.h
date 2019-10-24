@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/template/ios/HelloWorld/AppDelegate.h

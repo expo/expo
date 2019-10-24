@@ -1,0 +1,1 @@
+../../../../RCTTypeSafety/RNTester/RCTTest/RCTSnapshotManager.h
