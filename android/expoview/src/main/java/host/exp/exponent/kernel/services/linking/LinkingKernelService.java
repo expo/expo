@@ -15,7 +15,7 @@ public class LinkingKernelService {
 
   public void openURI(Uri uri) {
     KernelProvider.getInstance().openExperience(
-        new KernelConstants.ExperienceOptions(uri.toString(), uri.toString(), null)
+        new KernelConstants.ExperienceOptions(Constants.INITIAL_URL.toString(), uri.toString(), null)
     );
   }
 
