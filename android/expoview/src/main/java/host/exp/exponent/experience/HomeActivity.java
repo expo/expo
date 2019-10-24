@@ -81,8 +81,6 @@ public class HomeActivity extends BaseExperienceActivity {
     SoLoader.init(this, false);
 
     Analytics.logEvent("HOME_APPEARED");
-
-    registerForNotifications();
   }
 
   public void onEventMainThread(Kernel.KernelStartedRunningEvent event) {

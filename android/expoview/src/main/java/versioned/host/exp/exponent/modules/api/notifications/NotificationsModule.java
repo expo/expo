@@ -11,14 +11,11 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +40,6 @@ import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.schedulers.CalendarSchedulerModel;
 
-import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
 import static host.exp.exponent.notifications.helpers.ExpoCronParser.createCronInstance;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
@@ -125,20 +121,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
           promise.resolve(params);
         }
       } else {
-        InstanceID instanceID = InstanceID.getInstance(this.getReactApplicationContext());
-        String gcmSenderId = config.getString("gcmSenderId");
-        if (gcmSenderId == null || gcmSenderId.length() == 0) {
-          throw new InvalidParameterException("GCM Sender ID is null/empty");
-        }
-        final String token = instanceID.getToken(gcmSenderId, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-        if (token == null) {
-          promise.reject("GCM token has not been set");
-        } else {
-          WritableMap params = Arguments.createMap();
-          params.putString("type", "gcm");
-          params.putString("data", token);
-          promise.resolve(params);
-        }
+        promise.reject("ERR_NOTIFICATIONS_FCM_NOT_ENABLED", "FCM must be enabled in order to get the device push token");
       }
     } catch (Exception e) {
       EXL.e(TAG, e.getMessage());
@@ -151,7 +134,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     String uuid = mExponentSharedPreferences.getUUID();
     if (uuid == null) {
       // This should have been set by ExponentNotificationIntentService when Activity was created/resumed.
-      promise.reject("Couldn't get GCM token on device.");
+      promise.reject("ERR_NOTIFICATIONS_PUSH_TOKEN_FAILED", "Couldn't get push token on device.");
       return;
     }
 
@@ -165,11 +148,11 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFailure(Exception e) {
-          promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
+          promise.reject("ERR_NOTIFICATIONS_PUSH_TOKEN_FAILED", "Couldn't get push token for device", e);
         }
       });
     } catch (JSONException e) {
-      promise.reject("E_GET_GCM_TOKEN_FAILED", "Couldn't get GCM token for device", e);
+      promise.reject("ERR_NOTIFICATIONS_PUSH_TOKEN_FAILED", "Couldn't get push token for device", e);
       return;
     }
   }

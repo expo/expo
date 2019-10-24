@@ -252,8 +252,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     addNotification(null);
     Analytics.logEventWithManifestUrl(Analytics.EXPERIENCE_APPEARED, mManifestUrl);
-
-    registerForNotifications();
   }
 
   public void soloaderInit() {

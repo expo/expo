@@ -36,7 +36,6 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 public abstract class ExpoApplication extends MultiDexApplication {
 
   // Override me!
-  public abstract String gcmSenderId();
   public abstract boolean isDebug();
 
   private static final String TAG = ExpoApplication.class.getSimpleName();
@@ -76,7 +75,6 @@ public abstract class ExpoApplication extends MultiDexApplication {
 
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
-    Exponent.getInstance().setGCMSenderId(gcmSenderId());
     
     NativeModuleDepsProvider.getInstance().inject(ExpoApplication.class, this);
 
@@ -134,5 +132,11 @@ public abstract class ExpoApplication extends MultiDexApplication {
   // remove the override of shouldUseInternetKernel() their project will still build without errors
   public boolean shouldUseInternetKernel() {
     return !isDebug();
+  }
+
+  // we're leaving this stub in here so that if people don't modify their MainApplication to
+  // remove the override of gcmSenderId() their project will still build without errors
+  public String gcmSenderId() {
+    return "";
   }
 }

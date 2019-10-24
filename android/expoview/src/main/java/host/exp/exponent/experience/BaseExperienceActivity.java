@@ -3,25 +3,19 @@
 package host.exp.exponent.experience;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.fcm.FcmRegistrationIntentService;
-import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.expoview.BuildConfig;
 import host.exp.expoview.Exponent;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
@@ -254,19 +248,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   protected void onError(final ExponentError error) {
     // Called for each JS error
-  }
-
-  protected void registerForNotifications() {
-    int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-    if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-      if (!Constants.FCM_ENABLED) {
-        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-        startService(intent);
-      }
-    } else if (!BuildConfig.DEBUG) {
-      // TODO: should we actually show an error or fail silently?
-      // GoogleApiAvailability.getInstance().getErrorDialog(this, googlePlayServicesCode, 0).show();
-    }
   }
 
   @Override
