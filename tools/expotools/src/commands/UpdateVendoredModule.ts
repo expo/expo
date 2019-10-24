@@ -106,6 +106,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-appearance': {
     repoUrl: 'https://github.com/expo/react-native-appearance.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         sourceIosPath: 'ios/Appearance',
