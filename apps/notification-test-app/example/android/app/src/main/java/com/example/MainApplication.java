@@ -8,6 +8,9 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.example.generated.BasePackageList;
+import com.raizlabs.android.dbflow.config.ExpoNotificationsGeneratedDatabaseHolder;
+import com.raizlabs.android.dbflow.config.FlowConfig;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import org.unimodules.adapters.react.ReactAdapterPackage;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -57,7 +60,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     // init FlowManager [it's used by expo-notifications]
-    FlowManager.init(FlowConfig.builder(context)
+    FlowManager.init(FlowConfig.builder(getApplicationContext())
         .addDatabaseHolder(ExpoNotificationsGeneratedDatabaseHolder.class)
         .build()
     );
