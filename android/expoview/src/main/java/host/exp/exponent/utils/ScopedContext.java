@@ -32,6 +32,7 @@ import android.view.Display;
 
 import com.facebook.react.bridge.Arguments;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -63,8 +64,24 @@ public class ScopedContext extends ContextWrapper {
     mCacheDir = new File(getBaseContext().getCacheDir() + "/ExperienceData/" + scope);
 
     if (Constants.isStandaloneApp()) {
+      if (firstStartAfterUpdate()) {
+        moveOldFiles();
+      }
       mFilesDir = getBaseContext().getFilesDir();
       mCacheDir = getBaseContext().getCacheDir();
+    }
+  }
+
+  boolean firstStartAfterUpdate() {
+      return mFilesDir.exists();
+  }
+
+  void moveOldFiles() {
+    try {
+      FileUtils.copyDirectory(mFilesDir, getBaseContext().getFilesDir());
+      FileUtils.deleteDirectory(mFilesDir);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
