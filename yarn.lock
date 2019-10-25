@@ -6266,10 +6266,10 @@ expo-cli@^3.4.0:
     "@expo/traveling-fastlane-darwin" "1.10.0"
     "@expo/traveling-fastlane-linux" "1.10.0"
 
-expo-three@5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-5.1.0.tgz#39d0e577ec10232b5232f38c85a90cf05c5743f6"
-  integrity sha512-ykdnVL9SBjtiKWK8mD/Xk60Mnjn9vCjB7SvPWQ25MkxI1K8bQG3Rv7TVQuRiOusNtDeDmEkbMLAEPNf52UGczg==
+expo-three@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/expo-three/-/expo-three-5.2.0.tgz#af792eda7561f4508f2d4e9b08fcaa17be34ebe0"
+  integrity sha512-oKh6vU3uGndrpx+/9b9U2EYztzR8YLRs4FvcgQRyqUIYVdbqTXW7Jk8fx2x1fFT984TNgJvh4iDNG4D1e7cscw==
   dependencies:
     "@expo/browser-polyfill" "^0.1.0"
     color-temperature "0.2.7"
