@@ -41,6 +41,7 @@ import versioned.host.exp.exponent.modules.api.SplashScreenModule;
 import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
+import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
@@ -183,8 +184,12 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
+
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
+
+        RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
+        nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
@@ -213,7 +218,8 @@ public class ExponentPackage implements ReactPackage {
         new RNScreensPackage(),
         new RNCWebViewPackage(),
         new SafeAreaContextPackage(),
-        new RNSharedElementPackage()
+        new RNSharedElementPackage(),
+        new RNDateTimePickerPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

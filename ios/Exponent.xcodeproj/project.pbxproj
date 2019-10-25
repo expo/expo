@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -320,6 +319,8 @@
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -991,6 +992,10 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; name = "RNDateTimePicker.h"; path = "RNDateTimePicker.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; name = "RNDateTimePicker.m"; path = "RNDateTimePicker.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; name = "RNDateTimePickerManager.h"; path = "RNDateTimePickerManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; name = "RNDateTimePickerManager.m"; path = "RNDateTimePickerManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1950,6 +1955,7 @@
 				B5FB72E61FF6DADB001C764B /* Maps */,
 				314410BF223BF50E00310599 /* WebView */,
 				65B902B660654403B6731F7E /* SharedElement */,
+				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2211,6 +2217,18 @@
 				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
 			);
 			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
+		E3BD4F6E1BF543B697AFB794 /* DateTimePicker */ = {
+			isa = PBXGroup;
+			children = (
+				10B9AA823F57466698858869 /* RNDateTimePicker.h */,
+				D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */,
+				12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */,
+				D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */,
+			);
+			name = DateTimePicker;
+			path = DateTimePicker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2831,6 +2849,8 @@
 				BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */,
 				09642C2C78D047D0AFCB7C1D /* RNSharedElementTransitionItem.m in Sources */,
 				B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */,
+				88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */,
+				BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
