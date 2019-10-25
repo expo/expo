@@ -1,13 +1,13 @@
 import React from 'react';
 import * as GL from 'expo-gl';
-import { View, StyleProp, ViewStyle } from 'react-native';
+import { View, LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
 
 export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
   title: string,
   onContextCreate:
-    (gl: GL.ExpoWebGLRenderingContext) => Promise<{ onTick?: (gl: GL.ExpoWebGLRenderingContext) => void } | void>
+    (gl: GL.ExpoWebGLRenderingContext) => Promise<{ onLayout?: (event: LayoutChangeEvent) => void; onTick?: (gl: GL.ExpoWebGLRenderingContext) => void } | void>
 ): React.ComponentType<P> & { title: string } =>
   (class extends React.Component<P> {
     static title = title;
@@ -22,9 +22,12 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
       }
     }
 
+    onLayout = (event: LayoutChangeEvent) => {}
+
     render() {
       return (
         <View
+          onLayout={(event) => this.onLayout(event)}
           style={[
             {
               flex: 1,
@@ -40,7 +43,9 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
 
     _onContextCreate = async (gl: GL.ExpoWebGLRenderingContext) => {
       this._gl = gl;
-      const { onTick = () => {} } = await onContextCreate(this._gl) || {};
+      const { onTick = () => {}, onLayout } = await onContextCreate(this._gl) || {};
+
+      if (onLayout) this.onLayout = onLayout;
 
       const animate = () => {
         if (this._gl) {

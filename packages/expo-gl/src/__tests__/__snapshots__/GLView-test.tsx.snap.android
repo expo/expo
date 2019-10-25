@@ -5,13 +5,12 @@ exports[`renders static 1`] = `
   <ViewManagerAdapter_ExponentGLView
     proxiedProperties={
       Object {
-        "msaaSamples": 4,
+        "msaaSamples": undefined,
         "onSurfaceCreate": [Function],
       }
     }
     style={
       Object {
-        "backgroundColor": "transparent",
         "flex": 1,
       }
     }
