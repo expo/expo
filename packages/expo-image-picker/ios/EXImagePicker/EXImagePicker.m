@@ -609,20 +609,29 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
 - (NSString *)mapPreset:(NSString *)preset API_AVAILABLE(ios(11));
 {
-  if ([preset isEqualToString:@"Passthrough"]) return AVAssetExportPresetPassthrough;
-  if ([preset isEqualToString:@"LowQuality"]) return AVAssetExportPresetLowQuality;
-  if ([preset isEqualToString:@"MediumQuality"]) return AVAssetExportPresetMediumQuality;
-  if ([preset isEqualToString:@"HighestQuality"]) return AVAssetExportPresetHighestQuality;
-  if ([preset isEqualToString:@"H_264_640x480"]) return AVAssetExportPreset640x480;
-  if ([preset isEqualToString:@"H_264_960x540"]) return AVAssetExportPreset960x540;
-  if ([preset isEqualToString:@"H_264_1280x720"]) return AVAssetExportPreset1280x720;
-  if ([preset isEqualToString:@"H_264_1920x1080"]) return AVAssetExportPreset1920x1080;
-  if ([preset isEqualToString:@"H_264_3840x2160"]) return AVAssetExportPreset3840x2160;
-  if ([preset isEqualToString:@"H_264_960x540"]) return AVAssetExportPreset960x540;
-  if ([preset isEqualToString:@"H_264_960x540"]) return AVAssetExportPreset960x540;
-  if ([preset isEqualToString:@"HEVC_1920x1080"]) return AVAssetExportPresetHEVC1920x1080;
-  if ([preset isEqualToString:@"HEVC_3840x2160"]) return AVAssetExportPresetHEVC3840x2160;
-  return AVAssetExportPresetPassthrough;
+  static NSDictionary* presetsMap = nil;
+  if (!presetsMap) {
+    presetsMap = @{
+        @"Passthrough": AVAssetExportPresetPassthrough,
+        @"LowQuality": AVAssetExportPresetLowQuality,
+        @"MediumQuality": AVAssetExportPresetMediumQuality,
+        @"HighestQuality": AVAssetExportPresetHighestQuality,
+        @"H264_640x480": AVAssetExportPreset640x480,
+        @"H264_960x540": AVAssetExportPreset960x540,
+        @"H264_1280x720": AVAssetExportPreset1280x720,
+        @"H264_1920x1080": AVAssetExportPreset1920x1080,
+        @"H264_3840x2160": AVAssetExportPreset3840x2160,
+        @"H264_960x540": AVAssetExportPreset960x540,
+        @"HEVC_1920x1080": AVAssetExportPresetHEVC1920x1080,
+        @"HEVC_3840x2160": AVAssetExportPresetHEVC3840x2160
+    };
+  }
+  
+  NSString *presetSystemString = [presetsMap objectForKey:preset];
+  if (presetSystemString == nil) {
+    return AVAssetExportPresetPassthrough;
+  }
+  return presetSystemString;
 }
 
 + (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function 

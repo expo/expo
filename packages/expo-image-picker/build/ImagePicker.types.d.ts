@@ -9,11 +9,11 @@ export declare const ExportPresets: {
     readonly MediumQuality: "MediumQuality";
     readonly HighestQuality: "HighestQuality";
     readonly Passthrough: "Passthrough";
-    readonly H_264_640x480: "Hi_264_640x480";
-    readonly H_264_960x540: "H_264_960x540";
-    readonly H_264_1280x720: "H_264_1280x720";
-    readonly H_264_1920x1080: "H_264_1920x1080";
-    readonly H_264_3840x2160: "H_264_3840x2160";
+    readonly H264_640x480: "H264_640x480";
+    readonly H264_960x540: "H264_960x540";
+    readonly H264_1280x720: "H264_1280x720";
+    readonly H264_1920x1080: "H264_1920x1080";
+    readonly H264_3840x2160: "H264_3840x2160";
     readonly HEVC_1920x1080: "HEVC_1920x1080";
     readonly HEVC_3840x2160: "HEVC_3840x2160";
 };

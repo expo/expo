@@ -60,7 +60,7 @@ Display the system UI for choosing an image or a video from the phone's library.
 
   A map of options for both:
 
-  - **mediaTypes ([ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)])** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
+  - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)]_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image/video after it is picked. Images: On Android the user can crop and rotate the image and on iOS simply crop it. Videos: On iOS user can trim the video. Defaults to `false`.
   - **allowsMultipleSelection (_boolean_)** -- (Web only) Whether or not to allow selecting multiple media files at once.
 
