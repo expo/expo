@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/components/image/ImageEventEmitter.h

@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/core/state/ConcreteState.h

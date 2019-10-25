@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h

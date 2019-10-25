@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/Fabric/Mounting/RCTMountingManagerDelegate.h

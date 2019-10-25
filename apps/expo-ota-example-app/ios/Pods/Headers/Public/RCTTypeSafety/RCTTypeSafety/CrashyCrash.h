@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/RNTester/RNTester/NativeExampleModules/CrashyCrash.h

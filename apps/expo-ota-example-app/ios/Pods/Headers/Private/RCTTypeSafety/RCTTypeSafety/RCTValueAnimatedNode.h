@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.h

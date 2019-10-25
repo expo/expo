@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactAndroid/src/main/java/com/facebook/react/fabric/jni/StateWrapperImpl.h

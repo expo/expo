@@ -1,1 +1,0 @@
-../../../Analytics/Analytics/Classes/Integrations/SEGScreenPayload.h

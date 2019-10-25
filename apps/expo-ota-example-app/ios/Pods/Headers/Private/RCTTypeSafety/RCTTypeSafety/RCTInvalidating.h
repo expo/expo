@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/Base/RCTInvalidating.h

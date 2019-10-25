@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/components/view/accessibility/AccessibilityPrimitives.h

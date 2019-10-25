@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/components/modal/ModalHostViewState.h

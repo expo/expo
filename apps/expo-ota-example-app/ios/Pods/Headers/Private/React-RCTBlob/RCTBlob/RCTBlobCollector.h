@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/Libraries/Blob/RCTBlobCollector.h
+../../../../../../node_modules/react-native/Libraries/Blob/RCTBlobCollector.h

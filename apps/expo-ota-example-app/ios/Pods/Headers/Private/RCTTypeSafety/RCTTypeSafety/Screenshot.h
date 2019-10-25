@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/RNTester/NativeModuleExample/Screenshot.h

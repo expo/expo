@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/Image/RCTGIFImageDecoder.h

@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/yoga/yoga/YGValue.h
+../../../../../../node_modules/react-native/ReactCommon/yoga/yoga/YGValue.h

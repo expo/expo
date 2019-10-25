@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/hermes/inspector/detail/SerialExecutor.h

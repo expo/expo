@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/jsinspector/InspectorInterfaces.h

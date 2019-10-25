@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/Fabric/RCTImageResponseObserverProxy.h

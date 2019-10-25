@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactAndroid/src/main/jni/first-party/yogajni/jni/YGJTypes.h

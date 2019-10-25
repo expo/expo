@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/mounting/MountingCoordinator.h

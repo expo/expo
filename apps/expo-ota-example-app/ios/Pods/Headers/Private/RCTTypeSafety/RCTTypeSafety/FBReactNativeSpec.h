@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h

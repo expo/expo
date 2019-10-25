@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/core/events/EventHandler.h

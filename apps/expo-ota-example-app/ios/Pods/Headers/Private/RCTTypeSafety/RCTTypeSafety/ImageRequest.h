@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/fabric/imagemanager/ImageRequest.h

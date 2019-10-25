@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.h

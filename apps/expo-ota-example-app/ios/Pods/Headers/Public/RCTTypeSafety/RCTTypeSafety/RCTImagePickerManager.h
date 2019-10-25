@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/CameraRoll/RCTImagePickerManager.h

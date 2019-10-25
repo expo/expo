@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/Modules/RCTAppState.h

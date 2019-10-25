@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/ART/ViewManagers/ARTTextManager.h

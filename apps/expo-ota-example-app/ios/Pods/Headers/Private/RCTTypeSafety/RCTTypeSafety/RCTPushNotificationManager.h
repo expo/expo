@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/PushNotificationIOS/RCTPushNotificationManager.h

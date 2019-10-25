@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/Settings/RCTSettingsManager.h

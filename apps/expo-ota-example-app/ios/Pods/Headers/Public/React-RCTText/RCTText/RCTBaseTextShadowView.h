@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h
+../../../../../../node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h

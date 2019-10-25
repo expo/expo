@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/Libraries/WebSocket/RCTSRWebSocket.h

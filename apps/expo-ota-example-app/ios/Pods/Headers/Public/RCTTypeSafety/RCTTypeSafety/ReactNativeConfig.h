@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/config/ReactNativeConfig.h

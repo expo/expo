@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/hermes/inspector/chrome/tests/SyncConnection.h

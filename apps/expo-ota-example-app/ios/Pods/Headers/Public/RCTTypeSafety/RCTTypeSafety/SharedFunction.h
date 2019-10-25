@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactCommon/utils/SharedFunction.h

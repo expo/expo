@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/ReactAndroid/src/main/jni/first-party/fbgloginit/fb/glog_init.h

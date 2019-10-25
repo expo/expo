@@ -1,1 +1,1 @@
-../../../../RCTTypeSafety/Libraries/TypeSafety/RCTConvertHelpers.h
+../../../../../../node_modules/react-native/Libraries/TypeSafety/RCTConvertHelpers.h

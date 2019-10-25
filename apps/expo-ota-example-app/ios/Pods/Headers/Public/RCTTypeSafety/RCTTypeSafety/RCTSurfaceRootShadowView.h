@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/Base/Surface/RCTSurfaceRootShadowView.h

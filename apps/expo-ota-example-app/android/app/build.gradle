@@ -80,7 +80,7 @@ project.ext.react = [
 ]
 
 apply from: '../../../../node_modules/react-native-unimodules/gradle.groovy'
-apply from: "../../../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native/react.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -96,6 +96,10 @@ def enableSeparateBuildPerCPUArchitecture = false
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = false
+
+import groovy.json.JsonSlurper
+def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -165,7 +169,10 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "androidx.appcompat:appcompat:1.0.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    addUnimodulesDependencies()
+    addUnimodulesDependencies([
+        modulesPaths: ['../../../../packages'],
+        exclude: packageJson.excludedUnimodules
+    ])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'

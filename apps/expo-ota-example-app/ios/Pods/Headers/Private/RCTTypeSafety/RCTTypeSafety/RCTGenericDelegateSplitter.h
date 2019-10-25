@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/Fabric/Utils/RCTGenericDelegateSplitter.h

@@ -1,1 +1,1 @@
-../../../../../../../../node_modules/react-native/ReactCommon/yoga/yoga/Yoga.h
+../../../../../../node_modules/react-native/ReactCommon/yoga/yoga/Yoga.h

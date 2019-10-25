@@ -1,1 +1,0 @@
-../../../../RCTTypeSafety/React/CoreModules/RCTImageStoreManager.h
