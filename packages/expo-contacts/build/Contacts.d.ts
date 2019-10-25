@@ -155,7 +155,7 @@ export declare const PermissionsStatus: {
 };
 export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-    expires: "never" | number;
+    expires: 'never' | number;
     granted: boolean;
     canAskAgain: boolean;
 };

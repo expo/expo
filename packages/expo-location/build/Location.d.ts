@@ -58,7 +58,7 @@ export declare type PermissionDetailsLocationAndroid = {
 };
 export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-    expires: "never" | number;
+    expires: 'never' | number;
     granted: boolean;
     canAskAgain: boolean;
     ios?: PermissionDetailsLocationIOS;
