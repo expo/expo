@@ -1,5 +1,11 @@
 # babel-preset-expo
 
+This preset extends the default React Native preset (`metro-react-native-babel-preset`) and adds support for decorators, tree-shaking web packages, and loading font icons with optional native dependencies if they're installed.
+
+You can use this preset in any React Native project as a drop-in replacement for `metro-react-native-babel-preset`. If your project isn't using native font loading or web support then this preset will only add support for decorators with `@babel/plugin-proposal-decorators` - this is mostly used for supporting legacy community libraries.
+
+If you start your **web** project with `@expo/webpack-config` or `expo start:web` and your project doesn't contain a `babel.config.js` or a `.babelrc` then it will default to using `babel-preset-expo` for loading.
+
 If you have problems with the code in this repository, please file issues & bug reports
 at https://github.com/expo/expo. Thanks!
 
@@ -9,7 +15,7 @@ at https://github.com/expo/expo. Thanks!
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.
 
-*Note:* this option has an effect only when the `disableImportExportTransform` option is set to `false`. On Android and iOS, `disableImportExportTransform` defaults to `false`, and on web it defaults to `true` to allow for tree shaking.
+_Note:_ this option has an effect only when the `disableImportExportTransform` option is set to `false`. On Android and iOS, `disableImportExportTransform` defaults to `false`, and on web it defaults to `true` to allow for tree shaking.
 
 This can improve the initial load time of your app because evaluating dependencies up front is sometimes entirely un-necessary, particularly when the dependencies have no side effects.
 
