@@ -113,7 +113,7 @@ Now we need to create the app in the Google Play Console and upload it through t
 
 ### Building and deploying to the web
 
-Run `expo build:web` then upload the `web-build` dirctory to any host capable of serving static files.
+Run `expo build:web` then upload the `web-build` directory to any host capable of serving static files.
 
 <Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
