@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.os.Bundle;
 import android.os.Process;
+import android.util.Log;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -33,7 +34,6 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.PermissionsHelper;
-import host.exp.expoview.BuildConfig;
 import host.exp.expoview.Exponent;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity implements PermissionAwareActivity {

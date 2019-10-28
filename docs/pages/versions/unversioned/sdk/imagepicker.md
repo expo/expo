@@ -34,11 +34,11 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
 
-### `ImagePicker.getCamerPermissionsAsync()`
+### `ImagePicker.getCameraPermissionsAsync()`
 
 Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
 
-### `ImagePicker.getCamerRollPermissionsAsync()`
+### `ImagePicker.getCameraRollPermissionsAsync()`
 
 Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
 
