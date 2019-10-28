@@ -1,1 +1,1 @@
-../../../../../../../packages/expo-ota/ios/EXOta/EXExpoUpdatesConfig.h
+../../../../../../../packages/expo-ota/ios/EXOta/EXOtaConfig/EXExpoUpdatesConfig.h

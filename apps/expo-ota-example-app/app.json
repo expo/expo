@@ -6,7 +6,7 @@
     "slug": "expo-template-bare",
     "privacy": "unlisted",
     "sdkVersion": "35.0.0",
-    "version": "1.0.103",
+    "version": "1.0.104",
     "entryPoint": "index.tsx",
     "android": {
       "package": "com.otabare",

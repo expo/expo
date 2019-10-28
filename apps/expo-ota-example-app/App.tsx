@@ -60,7 +60,7 @@ export default function App() {
       <View style={{ height: 10 }} />
       <Button title={'Current manifest'} onPress={manifest} />
       <View style={{ height: 10 }} />
-      <Text>Version 1.0.103</Text>
+      <Text>Version 1.0.104</Text>
     </View>
   );
 }

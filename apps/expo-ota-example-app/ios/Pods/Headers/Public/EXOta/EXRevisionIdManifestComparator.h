@@ -1,1 +1,1 @@
-../../../../../../../packages/expo-ota/ios/EXOta/EXRevisionIdManifestComparator.h
+../../../../../../../packages/expo-ota/ios/EXOta/EXManifestComparator/EXRevisionIdManifestComparator.h

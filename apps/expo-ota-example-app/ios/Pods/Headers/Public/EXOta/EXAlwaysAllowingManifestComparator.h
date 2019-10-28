@@ -1,1 +1,1 @@
-../../../../../../../packages/expo-ota/ios/EXOta/EXAlwaysAllowingManifestComparator.h
+../../../../../../../packages/expo-ota/ios/EXOta/EXManifestComparator/EXAlwaysAllowingManifestComparator.h

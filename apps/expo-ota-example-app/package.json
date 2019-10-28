@@ -13,7 +13,7 @@
     "expo-cli": "2.19.4",
     "react": "16.9.0",
     "react-dom": "^16.8.6",
-    "react-native": "~/SoftwareMansion/repositiries/expo-ota-example-app/react-native/node_modules/react-native",
+    "react-native": "0.61.2",
     "react-native-unimodules": "0.7.0-rc.1",
     "react-native-web": "^0.11.4"
   },
