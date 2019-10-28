@@ -3,7 +3,6 @@ import React from 'react';
 import {
   ActivityIndicator,
   Alert,
-  DatePickerAndroid,
   DrawerLayoutAndroid,
   Image,
   Picker,
@@ -17,29 +16,24 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TimePickerAndroid,
   TouchableOpacity,
   TouchableHighlight,
   TouchableNativeFeedback,
   View,
-  WebView,
   TouchableOpacityProps,
 } from 'react-native';
 // @ts-ignore
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 // @ts-ignore
 import { ScrollView as NavigationScrollView } from 'react-navigation';
+import WebView from 'react-native-webview';
 
-import { Colors, Layout } from '../constants';
-import ModalExample from './ModalExample';
+import { Colors, Layout } from '../../constants';
+import ModalExample from '../ModalExample';
 
 interface State {
   isRefreshing: boolean;
   timeoutId?: number;
-  sections: Array<{
-    title: string;
-    data: Array<() => JSX.Element>;
-  }>;
 }
 
 export default class ReactNativeCoreScreen extends React.Component<{}, State> {
@@ -47,31 +41,32 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     title: 'React Native Core',
   };
 
+  state: State = {
+    isRefreshing: false,
+  };
+
+  sections: Array<{ title: string, data: Array<() => JSX.Element> }>;
+
   constructor(props: any) {
     super(props);
 
-    this.state = {
-      isRefreshing: false,
-      sections: [
-        { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
-        { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },
-        { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
-        { title: 'Alert', data: [this._renderAlert] },
-        { title: 'DatePickerAndroid', data: [this._renderDatePicker] },
-        { title: 'TimerPickerAndroid', data: [this._renderTimePicker] },
-        { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-        { title: 'Modal', data: [this._renderModal] },
-        { title: 'Picker', data: [this._renderPicker] },
-        { title: 'ProgressBar', data: [this._renderProgressBar] },
-        { title: 'Slider', data: [this._renderSlider] },
-        { title: 'StatusBar', data: [this._renderStatusBar] },
-        { title: 'Switch', data: [this._renderSwitch] },
-        { title: 'Text', data: [this._renderText] },
-        { title: 'TextInput', data: [this._renderTextInput] },
-        { title: 'Touchables', data: [this._renderTouchables] },
-        { title: 'WebView', data: [this._renderWebView] },
-      ],
-    };
+    this.sections = [
+      { title: 'Vertical ScrollView, RefreshControl', data: [this._renderVerticalScrollView] },
+      { title: 'DrawerLayoutAndroid', data: [this._renderDrawerLayout] },
+      { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
+      { title: 'Alert', data: [this._renderAlert] },
+      { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
+      { title: 'Modal', data: [this._renderModal] },
+      { title: 'Picker', data: [this._renderPicker] },
+      { title: 'ProgressBar', data: [this._renderProgressBar] },
+      { title: 'Slider', data: [this._renderSlider] },
+      { title: 'StatusBar', data: [this._renderStatusBar] },
+      { title: 'Switch', data: [this._renderSwitch] },
+      { title: 'Text', data: [this._renderText] },
+      { title: 'TextInput', data: [this._renderTextInput] },
+      { title: 'Touchables', data: [this._renderTouchables] },
+      { title: 'WebView', data: [this._renderWebView] },
+    ];
   }
 
   _onRefresh = () => {
@@ -103,7 +98,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
       <DrawerLayoutAndroid
         drawerWidth={300}
         // @ts-ignore
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        drawerPosition="left"
         renderNavigationView={renderNavigationView}
       >
         <SectionList
@@ -118,7 +113,7 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
           renderScrollComponent={props => <NavigationScrollView {...props} />}
           renderItem={this._renderItem}
           renderSectionHeader={this._renderSectionHeader}
-          sections={this.state.sections}
+          sections={this.sections}
           keyExtractor={(_, index) => `${index}`}
         />
       </DrawerLayoutAndroid>
@@ -198,52 +193,6 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     );
   }
 
-  _renderDatePicker = () => {
-    const showDatePicker = async () => {
-      try {
-        const { action } = await DatePickerAndroid.open({
-          // Use `new Date()` for current date.
-          // May 25 2020. Month 0 is January.
-          date: new Date(2020, 4, 25),
-        });
-        if (action !== DatePickerAndroid.dismissedAction) {
-          // Selected year, month (0-11), day
-        }
-      } catch ({ code, message }) {
-        console.warn('Cannot open date picker', message);
-      }
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={showDatePicker}>Show date picker</Button>
-      </View>
-    );
-  }
-
-  _renderTimePicker = () => {
-    const showTimePicker = async () => {
-      try {
-        const { action } = await TimePickerAndroid.open({
-          hour: 14,
-          minute: 0,
-          is24Hour: false, // Will display '2 PM'
-        });
-        if (action !== TimePickerAndroid.dismissedAction) {
-          // Selected hour (0-23), minute (0-59)
-        }
-      } catch ({ code, message }) {
-        console.warn('Cannot open time picker', message);
-      }
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={showTimePicker}>Show time picker</Button>
-      </View>
-    );
-  }
-
   _renderHorizontalScrollView = () => {
     const imageStyle = {
       width: Layout.window.width,
@@ -253,17 +202,17 @@ export default class ReactNativeCoreScreen extends React.Component<{}, State> {
     return (
       <ScrollView pagingEnabled directionalLockEnabled horizontal>
         <Image
-          source={require('../../assets/images/example1.jpg')}
+          source={require('../../../assets/images/example1.jpg')}
           style={imageStyle}
           resizeMode="cover"
         />
         <Image
-          source={require('../../assets/images/example2.jpg')}
+          source={require('../../../assets/images/example2.jpg')}
           style={imageStyle}
           resizeMode="cover"
         />
         <Image
-          source={require('../../assets/images/example3.jpg')}
+          source={require('../../../assets/images/example3.jpg')}
           style={imageStyle}
           resizeMode="cover"
         />

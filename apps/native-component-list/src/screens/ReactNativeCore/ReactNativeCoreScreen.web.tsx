@@ -1,100 +1,77 @@
 import React from 'react';
 import {
-  ActionSheetIOS,
   ActivityIndicator,
   Alert,
-  AlertIOS,
-  DatePickerIOS,
   Image,
   Picker,
-  ProgressViewIOS,
   RefreshControl,
-  SegmentedControlIOS,
   Slider,
   Switch,
   StatusBar,
-  ListView,
+  SectionList,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   TouchableHighlight,
-  View,
-  WebView,
   TouchableOpacityProps,
+  View,
 } from 'react-native';
-// @ts-ignore
-import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
-// @ts-ignore
-import { NavigationScreenProps } from 'react-navigation';
-import { ScrollView as NavigationScrollView } from 'react-navigation';
 
-import Colors from '../constants/Colors';
-import Layout from '../constants/Layout';
-import ModalExample from './ModalExample';
+import Colors from '../../constants/Colors';
+import Layout from '../../constants/Layout';
+
+import { NavigationScreenProps } from 'react-navigation';
+import WebView from 'react-native-webview';
 
 export default class ReactNativeCoreScreen extends React.Component<NavigationScreenProps> {
+  static path = '';
+
   static navigationOptions = {
     title: 'React Native Core',
   };
 
   state = {
     isRefreshing: false,
-    dataSource: new ListView.DataSource({
-      rowHasChanged: () => false,
-      sectionHeaderHasChanged: () => false,
-    }),
   };
 
-  _listView?: ListView;
-
-  componentDidMount() {
-    const dataSource = this.state.dataSource.cloneWithRowsAndSections({
-      'Vertical ScrollView, RefreshControl': [this._renderRefreshControl],
-      'ActionSheetIOS': [this._renderActionSheet],
-      'ActivityIndicator': [this._renderActivityIndicator],
-      'Alert': [this._renderAlert],
-      'DatePickerIOS': [this._renderDatePicker],
-      'Horizontal ScrollView': [this._renderHorizontalScrollView],
-      'MaskView': [this._renderMaskView],
-      'Modal': [this._renderModal],
-      'Picker': [this._renderPicker],
-      'ProgressView': [this._renderProgressView],
-      'SegmentedControl': [this._renderSegmentedControl],
-      'Slider': [this._renderSlider],
-      'StatusBar': [this._renderStatusBar],
-      'Switch': [this._renderSwitch],
-      'Text': [this._renderText],
-      'TextInput': [this._renderTextInput],
-      'Touchables': [this._renderTouchables],
-      // 'View': [this._renderView],
-      'WebView': [this._renderWebView],
-    });
-
-    this.setState({ dataSource });
-  }
+  _listView?: React.Component;
 
   render() {
     return (
-      <ListView
-        ref={view => {
-          this._listView = view!;
-        }}
+      <SectionList
+        ref={view => (this._listView = view!)}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         refreshControl={
           <RefreshControl refreshing={this.state.isRefreshing} onRefresh={this._onRefresh} />
         }
+        keyExtractor={(item, index) => `${index}`}
         removeClippedSubviews={false}
         contentContainerStyle={{ backgroundColor: '#fff' }}
-        dataSource={this.state.dataSource}
-        renderRow={this._renderRow}
-        renderScrollComponent={props => <NavigationScrollView {...props} />}
+        sections={[
+          { title: 'Vertical ScrollView, RefreshControl', data: [this._renderRefreshControl] },
+          { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
+          { title: 'Alert', data: [this._renderAlert] },
+          { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
+          { title: 'MaskView', data: [this._renderMaskView] },
+          { title: 'Picker', data: [this._renderPicker] },
+          { title: 'Slider', data: [this._renderSlider] },
+          { title: 'StatusBar', data: [this._renderStatusBar] },
+          { title: 'Switch', data: [this._renderSwitch] },
+          { title: 'Text', data: [this._renderText] },
+          { title: 'TextInput', data: [this._renderTextInput] },
+          { title: 'Touchables', data: [this._renderTouchables] },
+          { title: 'WebView', data: [this._renderWebView] },
+        ]}
+        renderItem={this._renderItem}
         renderSectionHeader={this._renderSectionHeader}
       />
     );
   }
+
+  _renderItem = ({ item }: { item: () => JSX.Element }) => item();
 
   _onRefresh = () => {
     this.setState({ isRefreshing: true });
@@ -104,6 +81,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
   }
 
   _scrollToTop = () => {
+    // @ts-ignore
     this._listView!.scrollTo({ x: 0, y: 0 });
   }
 
@@ -120,59 +98,14 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     );
   }
 
-  _renderModal = () => {
-    return <ModalExample />;
-  }
-
-  _renderRefreshControl = () => {
-    return (
-      <View style={{ padding: 10 }}>
-        <Text>
-          This screen is a vertical ScrollView, try the pull to refresh gesture to see the
-          RefreshControl.
-        </Text>
-      </View>
-    );
-  }
-
-  _renderActionSheet = () => {
-    const showActionSheet = () => {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['Option 0', 'Option 1', 'Delete', 'Cancel'],
-          cancelButtonIndex: 3,
-          destructiveButtonIndex: 2,
-        },
-        buttonIndex => {
-          console.log({ buttonIndex });
-        }
-      );
-    };
-
-    const showShareSheet = () => {
-      ActionSheetIOS.showShareActionSheetWithOptions(
-        {
-          url: 'https://expo.io',
-          message: 'message to go with the shared url',
-          subject: 'a subject to go in the email heading',
-        },
-        error => alert(error),
-        (success, method) => {
-          if (success) {
-            alert(`Shared via ${method}`);
-          }
-        }
-      );
-    };
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 10 }}>
-        <Button onPress={showActionSheet}>Action sheet</Button>
-
-        <Button onPress={showShareSheet}>Share sheet</Button>
-      </View>
-    );
-  }
+  _renderRefreshControl = () => (
+    <View style={{ padding: 10 }}>
+      <Text>
+        This screen is a vertical ScrollView, try the pull to refresh gesture to see the
+        RefreshControl.
+      </Text>
+    </View>
+  )
 
   _renderActivityIndicator = () => {
     const Spacer = () => <View style={{ marginRight: 10 }} />;
@@ -194,9 +127,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
   }
 
   _renderAlert = () => {
-    const showPrompt = () => {
-      AlertIOS.prompt('Enter a value', undefined, text => console.log(`You entered ${text}`));
-    };
+    const showPrompt = () => {};
 
     const showAlert = () => {
       Alert.alert('Alert Title', 'My Alert Msg', [
@@ -229,10 +160,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     );
   }
 
-  _renderDatePicker = () => {
-    return <DatePickerExample />;
-  }
-
   _renderHorizontalScrollView = () => {
     const imageStyle = {
       width: Layout.window.width,
@@ -262,21 +189,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
 
   _renderPicker = () => {
     return <PickerExample />;
-  }
-
-  _renderProgressView = () => {
-    return (
-      <View style={{ padding: 10, paddingBottom: 30 }}>
-        <ProgressViewExample initialProgress={0} />
-        <ProgressViewExample progressTintColor="red" initialProgress={0.4} />
-        <ProgressViewExample progressTintColor="orange" initialProgress={0.6} />
-        <ProgressViewExample progressTintColor="yellow" initialProgress={0.8} />
-      </View>
-    );
-  }
-
-  _renderSegmentedControl = () => {
-    return <SegmentedControlExample />;
   }
 
   _renderSlider = () => {
@@ -362,21 +274,9 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <TouchableOpacity style={buttonStyle} onPress={() => {}}>
           <Text style={buttonText}>Opacity!</Text>
         </TouchableOpacity>
-
-        <TouchableBounce style={buttonStyle} onPress={() => {}}>
-          <Text style={buttonText}>Bounce!</Text>
-        </TouchableBounce>
       </View>
     );
   }
-
-  // _renderView = () => {
-  //   // Don't know what to put here
-  //   return (
-  //     <View>
-  //     </View>
-  //   );
-  // }
 
   _renderWebView = () => {
     return (
@@ -399,39 +299,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     );
   }
 
-  _renderRow = (renderRowFn?: () => JSX.Element) => {
-    return <View>{renderRowFn && renderRowFn()}</View>;
-  }
-
-  _renderSectionHeader = (sectionData: any, sectionTitle: string | number) => {
-    return (
-      <View style={styles.sectionHeader}>
-        <Text>{sectionTitle}</Text>
-      </View>
-    );
-  }
-}
-
-class DatePickerExample extends React.Component {
-  state = {
-    date: new Date(),
-    timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
-  };
-
-  render() {
-    return (
-      <DatePickerIOS
-        date={this.state.date}
-        mode="datetime"
-        timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-        onDateChange={this._onDateChange}
-      />
-    );
-  }
-
-  _onDateChange = (date: Date) => {
-    this.setState({ date });
-  }
+  _renderSectionHeader = ({ section }: any) => (
+    <View style={styles.sectionHeader}>
+      <Text>{section.title}</Text>
+    </View>
+  )
 }
 
 class PickerExample extends React.Component {
@@ -441,9 +313,7 @@ class PickerExample extends React.Component {
 
   render() {
     return (
-      // @ts-ignore
       <Picker
-        st
         selectedValue={this.state.language}
         onValueChange={lang => this.setState({ language: lang })}
       >
@@ -452,76 +322,6 @@ class PickerExample extends React.Component {
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" />
       </Picker>
-    );
-  }
-}
-
-interface ProgressViewExampleProps {
-  progressTintColor?: string;
-  initialProgress: number;
-}
-
-interface ProgressViewExampleState {
-  progress: number;
-}
-
-class ProgressViewExample extends React.Component<ProgressViewExampleProps, ProgressViewExampleState> {
-  constructor(props: ProgressViewExampleProps) {
-    super(props);
-
-    this.state = {
-      progress: props.initialProgress,
-    };
-  }
-
-  render() {
-    const progressStyle = { marginTop: 20 };
-
-    return (
-      <ProgressViewIOS
-        style={progressStyle}
-        progressTintColor={this.props.progressTintColor}
-        progress={this.state.progress}
-      />
-    );
-  }
-}
-
-class SegmentedControlExample extends React.Component {
-  state = {
-    selectedIndex: 0,
-  };
-
-  render() {
-    let tintColor;
-    switch (this.state.selectedIndex) {
-      case 0:
-        tintColor = 'black';
-        break;
-      case 1:
-        tintColor = Colors.tintColor;
-        break;
-      case 2:
-        tintColor = 'green';
-        break;
-      case 3:
-        tintColor = 'purple';
-        break;
-    }
-
-    return (
-      <View style={{ margin: 10 }}>
-        <SegmentedControlIOS
-          values={['One', 'Two', 'Three', 'Four']}
-          tintColor={tintColor}
-          selectedIndex={this.state.selectedIndex}
-          onChange={event => {
-            this.setState({
-              selectedIndex: event.nativeEvent.selectedSegmentIndex,
-            });
-          }}
-        />
-      </View>
     );
   }
 }
@@ -555,13 +355,8 @@ class SliderExample extends React.Component<SliderExampleProps, SliderExampleSta
 
     return (
       <View>
-        <View style={{ padding: 10 }}>
-          <Text style={textStyle}>Value: {this.state.value && +this.state.value.toFixed(3)}</Text>
-        </View>
-
+        <Text style={textStyle}>Value: {this.state.value && +this.state.value.toFixed(3)}</Text>
         <Slider {...this.props} onValueChange={value => this.setState({ value })} />
-
-        <View style={{ marginBottom: 10 }} />
       </View>
     );
   }
@@ -632,13 +427,11 @@ class TextInputExample extends React.Component {
   }
 }
 
-const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
-  return (
-    <TouchableOpacity onPress={props.onPress} style={styles.button}>
-      <Text style={styles.buttonText}>{props.children}</Text>
-    </TouchableOpacity>
-  );
-};
+const Button: React.FunctionComponent<TouchableOpacityProps> = props => (
+  <TouchableOpacity onPress={props.onPress} style={styles.button}>
+    <Text style={styles.buttonText}>{props.children}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
