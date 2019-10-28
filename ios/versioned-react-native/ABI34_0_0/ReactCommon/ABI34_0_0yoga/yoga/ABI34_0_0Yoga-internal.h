@@ -24,7 +24,7 @@ WIN_EXPORT float ABI34_0_0YGRoundValueToPixelGrid(
 
 ABI34_0_0YG_EXTERN_C_END
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 
 inline bool isUndefined(float value) {
@@ -32,9 +32,9 @@ inline bool isUndefined(float value) {
 }
 
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook
 
-using namespace facebook;
+using namespace ABI34_0_0facebook;
 
 extern const std::array<ABI34_0_0YGEdge, 4> trailing;
 extern const std::array<ABI34_0_0YGEdge, 4> leading;
@@ -89,7 +89,7 @@ struct ABI34_0_0YGCachedMeasurement {
 // layouts should not require more than 16 entries to fit within the cache.
 #define ABI34_0_0YG_MAX_CACHED_RESULT_COUNT 16
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 namespace detail {
 
@@ -140,7 +140,7 @@ public:
 
 } // namespace detail
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook
 
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
@@ -148,8 +148,8 @@ static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool ABI34_0_0YGFloatsEqual(const float a, const float b);
 extern bool ABI34_0_0YGValueEqual(const ABI34_0_0YGValue a, const ABI34_0_0YGValue b);
-extern facebook::ABI34_0_0yoga::detail::CompactValue ABI34_0_0YGComputedEdgeValue(
-    const facebook::ABI34_0_0yoga::detail::Values<
-        facebook::ABI34_0_0yoga::enums::count<ABI34_0_0YGEdge>()>& edges,
+extern ABI34_0_0facebook::ABI34_0_0yoga::detail::CompactValue ABI34_0_0YGComputedEdgeValue(
+    const ABI34_0_0facebook::ABI34_0_0yoga::detail::Values<
+        ABI34_0_0facebook::ABI34_0_0yoga::enums::count<ABI34_0_0YGEdge>()>& edges,
     ABI34_0_0YGEdge edge,
-    facebook::ABI34_0_0yoga::detail::CompactValue defaultValue);
+    ABI34_0_0facebook::ABI34_0_0yoga::detail::CompactValue defaultValue);

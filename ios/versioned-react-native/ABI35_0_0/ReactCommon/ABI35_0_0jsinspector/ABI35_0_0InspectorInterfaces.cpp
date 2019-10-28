@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <tuple>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 // pure destructors in C++ are odd. You would think they don't want an
@@ -98,4 +98,4 @@ std::unique_ptr<IInspector> makeTestInspectorInstance() {
 }
 
 } // namespace ReactABI35_0_0
-} // namespace facebook
+} // namespace ABI35_0_0facebook

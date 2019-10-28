@@ -18,7 +18,7 @@ namespace folly {
 struct dynamic;
 }
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 class JSBigString;
@@ -90,4 +90,4 @@ private:
 };
 
 } // namespace ReactABI34_0_0
-} // namespace facebook
+} // namespace ABI34_0_0facebook

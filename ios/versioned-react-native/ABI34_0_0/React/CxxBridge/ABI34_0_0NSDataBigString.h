@@ -9,7 +9,7 @@
 
 #include <cxxReactABI34_0_0/ABI34_0_0JSBigString.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 class NSDataBigString : public JSBigString {

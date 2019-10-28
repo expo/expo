@@ -20,7 +20,7 @@
 #import <cxxReactABI33_0_0/ABI33_0_0RAMBundleRegistry.h>
 #import <folly/json.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 namespace {
