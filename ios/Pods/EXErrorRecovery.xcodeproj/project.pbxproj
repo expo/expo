@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 35181B97DC57B0300A7DCA689A168F02 /* EXErrorRecoveryModule.m */; };
+		403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6964907A31E64140D8BECEF94BBDE154 /* EXErrorRecovery-dummy.m */; };
+		C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FDA28065660DBF2B4AF77729917FE07 /* EXErrorRecoveryModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D3AD5FBF4C98CB80F95A5F5FAE3994A2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FDE7E72F4F259D2C8E974C92345D460C /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXErrorRecovery.xcconfig; sourceTree = "<group>"; };
+		2914D17BF504D0A58332842D9F7783C4 /* libEXErrorRecovery.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXErrorRecovery.a; path = libEXErrorRecovery.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		35181B97DC57B0300A7DCA689A168F02 /* EXErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXErrorRecoveryModule.m; path = EXErrorRecovery/EXErrorRecoveryModule.m; sourceTree = "<group>"; };
+		5FDA28065660DBF2B4AF77729917FE07 /* EXErrorRecoveryModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXErrorRecoveryModule.h; path = EXErrorRecovery/EXErrorRecoveryModule.h; sourceTree = "<group>"; };
+		6964907A31E64140D8BECEF94BBDE154 /* EXErrorRecovery-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXErrorRecovery-dummy.m"; sourceTree = "<group>"; };
+		ACC6C32E0E3AE972BF827CB0DDB7B396 /* EXErrorRecovery.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXErrorRecovery.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F2858566E7E636D54285D3963BEB9E17 /* EXErrorRecovery-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXErrorRecovery-prefix.pch"; sourceTree = "<group>"; };
+		FDE7E72F4F259D2C8E974C92345D460C /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FD5E98E35B9E1A3DBF2C807A9876C4FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		240F45DDD11722E477DDE48D57DD7963 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				ACC6C32E0E3AE972BF827CB0DDB7B396 /* EXErrorRecovery.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		3DE9ACAFA799A6723B6D240FF1672274 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		52315E43D65F3ED7D0D6D48C0F6107E4 /* EXErrorRecovery */ = {
+			isa = PBXGroup;
+			children = (
+				5FDA28065660DBF2B4AF77729917FE07 /* EXErrorRecoveryModule.h */,
+				35181B97DC57B0300A7DCA689A168F02 /* EXErrorRecoveryModule.m */,
+				240F45DDD11722E477DDE48D57DD7963 /* Pod */,
+				54A1C764BEDEB2DF98170C95957871AD /* Support Files */,
+			);
+			name = EXErrorRecovery;
+			path = "../../packages/expo-error-recovery/ios";
+			sourceTree = "<group>";
+		};
+		54A1C764BEDEB2DF98170C95957871AD /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */,
+				6964907A31E64140D8BECEF94BBDE154 /* EXErrorRecovery-dummy.m */,
+				F2858566E7E636D54285D3963BEB9E17 /* EXErrorRecovery-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXErrorRecovery";
+			sourceTree = "<group>";
+		};
+		83B79619077DA9140E04AD0D8E37C069 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				FDE7E72F4F259D2C8E974C92345D460C /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		9981103A74279DD2E2D98C54C0E9BD29 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2914D17BF504D0A58332842D9F7783C4 /* libEXErrorRecovery.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E0531714D7095B9CC05AADECCC870F27 = {
+			isa = PBXGroup;
+			children = (
+				83B79619077DA9140E04AD0D8E37C069 /* Dependencies */,
+				52315E43D65F3ED7D0D6D48C0F6107E4 /* EXErrorRecovery */,
+				3DE9ACAFA799A6723B6D240FF1672274 /* Frameworks */,
+				9981103A74279DD2E2D98C54C0E9BD29 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		38003B0E2D40EACBFF42594B5312EE5C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C59B9BFBB963460BABD76766096E1520 /* EXErrorRecoveryModule.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		49603BA4A7FB1CFC9ACD589B8CE05EA2 /* EXErrorRecovery */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 88FE7B3B8211A6769125AF890B5E1CEE /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */;
+			buildPhases = (
+				38003B0E2D40EACBFF42594B5312EE5C /* Headers */,
+				B6DF9E171327743F469EE77A0C817CFD /* Sources */,
+				FD5E98E35B9E1A3DBF2C807A9876C4FF /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				83EB1087705797493F18750D99849CAA /* PBXTargetDependency */,
+			);
+			name = EXErrorRecovery;
+			productName = EXErrorRecovery;
+			productReference = 2914D17BF504D0A58332842D9F7783C4 /* libEXErrorRecovery.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		976527AA82B1173A87216D47C679F248 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 61421EC4653DB8649986CEDA53D60430 /* Build configuration list for PBXProject "EXErrorRecovery" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E0531714D7095B9CC05AADECCC870F27;
+			productRefGroup = 9981103A74279DD2E2D98C54C0E9BD29 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = FDE7E72F4F259D2C8E974C92345D460C /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				49603BA4A7FB1CFC9ACD589B8CE05EA2 /* EXErrorRecovery */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B6DF9E171327743F469EE77A0C817CFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				403C9E40BCAD45DE06535D0806D5A2A6 /* EXErrorRecovery-dummy.m in Sources */,
+				3EC77E602D8791FFCC27053EC13EFE55 /* EXErrorRecoveryModule.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		83EB1087705797493F18750D99849CAA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = D3AD5FBF4C98CB80F95A5F5FAE3994A2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		007B515D5E9F5F67A629F460EC3C3CEF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXErrorRecovery;
+				PRODUCT_NAME = EXErrorRecovery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6D9238E83838AA053287AA04412BABB9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		FA4D138ACE4C5F8D3231A6A29C2D4940 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1DE7536D64B7425C28E3287BF8FB6B3E /* EXErrorRecovery.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXErrorRecovery/EXErrorRecovery-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXErrorRecovery;
+				PRODUCT_NAME = EXErrorRecovery;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FCB107B7DDB712F693667C16A1E7468D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		61421EC4653DB8649986CEDA53D60430 /* Build configuration list for PBXProject "EXErrorRecovery" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCB107B7DDB712F693667C16A1E7468D /* Debug */,
+				6D9238E83838AA053287AA04412BABB9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		88FE7B3B8211A6769125AF890B5E1CEE /* Build configuration list for PBXNativeTarget "EXErrorRecovery" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				007B515D5E9F5F67A629F460EC3C3CEF /* Debug */,
+				FA4D138ACE4C5F8D3231A6A29C2D4940 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 976527AA82B1173A87216D47C679F248 /* Project object */;
+}

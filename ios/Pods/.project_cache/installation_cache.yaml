@@ -4196,6 +4196,16 @@ CACHE_KEYS:
     PROJECT_NAME: EXDocumentPicker
     SPECS:
       - EXDocumentPicker (7.0.0)
+  EXErrorRecovery:
+    BUILD_SETTINGS_CHECKSUM:
+      EXErrorRecovery: 48309e898c838fbfe19683ca23aa1cca
+    CHECKSUM: d36db99ec6a3808f313f01b0890eb443796dd1c2
+    FILES:
+      - "../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.h"
+      - "../../packages/expo-error-recovery/ios/EXErrorRecovery/EXErrorRecoveryModule.m"
+    PROJECT_NAME: EXErrorRecovery
+    SPECS:
+      - EXErrorRecovery (1.0.0)
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook: 6b3825dfac50d3a0fea3f27d8ecdf605
@@ -4905,16 +4915,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d7767f319d1ec8fecad608d613f44624
-      Release: d7767f319d1ec8fecad608d613f44624
+      Debug: 606c7b51cf8a63015b2fb18623b22908
+      Release: 606c7b51cf8a63015b2fb18623b22908
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 838e10a9148eef4d6eed1d816d1dcefc
-      Release: 838e10a9148eef4d6eed1d816d1dcefc
+      Debug: e4b57f9f76a7e235b595f1ee71ebd531
+      Release: e4b57f9f76a7e235b595f1ee71ebd531
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 838e10a9148eef4d6eed1d816d1dcefc
-      Release: 838e10a9148eef4d6eed1d816d1dcefc
+      Debug: e4b57f9f76a7e235b595f1ee71ebd531
+      Release: e4b57f9f76a7e235b595f1ee71ebd531
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
