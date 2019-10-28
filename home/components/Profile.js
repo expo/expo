@@ -59,7 +59,7 @@ export default class Profile extends React.Component {
     const SkipConnectionNotification = true;
     if (!SkipConnectionNotification && !prevProps.data.error && this.props.data.error) {
       // NOTE(brentvatne): sorry for this
-      let isConnectionError = nextProps.data.error.message.includes('No connection available');
+      let isConnectionError = this.props.data.error.message.includes('No connection available');
 
       if (isConnectionError) {
         // Should have some integrated alert banner

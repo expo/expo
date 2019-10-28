@@ -54,13 +54,11 @@ class MenuView extends React.Component {
     this._mounted = false;
   }
 
-  componentDidUpdate(_prevProps) {
+  componentDidUpdate(prevProps) {
     if (!this.state.isLoading) {
       this._loadStateAsync();
     }
-  }
 
-  componentDidUpdate(prevProps) {
     if (prevProps.visible && !this.props.visible) {
       this.restoreStatusBar();
     } else if (!prevProps.visible && this.props.visible) {
