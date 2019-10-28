@@ -37,7 +37,7 @@ In the bare workflow the developer has complete control, along with the complexi
 - 🆕**If you are new to mobile development** or **new to development in general** we recommend that you use the managed workflow. There is a huge amount of complexity that comes along with the native development toolchain and the managed workflow allows you to deal with that complexity only when absolutely necessary.
 - 🧠 **If you are more experienced** it also doesn't hurt to start every new project with the managed workflow and only "eject" if you need to.
 
-Im summary, use the bare workflow when you need it due to limitations, otherwise use the managed workflow, and you most likely want to start with the bare workflow.
+In summary, use the bare workflow when you need it due to limitations, otherwise use the managed workflow, and you most likely want to start with the bare workflow.
 
 ## Up next
 
