@@ -14,7 +14,7 @@ public class LinkingKernelService {
   }
 
   public void openURI(Uri uri) {
-    String manifestUrl = (Constants.INITIAL_URL != null && !Constants.INITIAL_URL.isEmpty()
+    String manifestUrl = (Constants.isStandaloneApp()
         ? Constants.INITIAL_URL.toString()
         : uri.toString());
     KernelProvider.getInstance()
