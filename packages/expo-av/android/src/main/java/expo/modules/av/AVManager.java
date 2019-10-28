@@ -185,22 +185,17 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @Override
   public void onHostDestroy() {
     if (isRegistered) {
-      try {
-        mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
-        isRegistered = false;
-      } catch (final Exception exception) {
-        // Ignore it
-      }
+      mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
+      isRegistered = false;
     }
 
-    // removeSoundForKey() on all remaining sounds
+    // remove all remaining sounds
     Iterator<PlayerData> iter = mSoundMap.values().iterator();
     while(iter.hasNext()) {
       final PlayerData data = iter.next();
       iter.remove();
       if (data != null) {
         data.release();
-        abandonAudioFocusIfUnused();
       }
     }
 
