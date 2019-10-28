@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRevisionIdManifestComparator : NSObject<ManifestComparator>
 
+-(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator;
+
 @end
 
 NS_ASSUME_NONNULL_END

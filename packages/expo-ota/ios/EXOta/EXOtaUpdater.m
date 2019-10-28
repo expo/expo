@@ -11,12 +11,15 @@
 #import "EXOtaApiClient.h"
 #import "EXOtaBundleLoader.h"
 #import "EXOtaPersistanceFactory.h"
+#import "EXEmbeddedManifestAndBundle.h"
 
-@implementation EXOtaUpdater: NSObject
-
-id<EXOtaConfig> _config;
-NSString *_identifier;
-EXOtaPersistance *_persistance;
+@implementation EXOtaUpdater
+{
+    id<EXOtaConfig> _config;
+    NSString *_identifier;
+    EXOtaPersistance *_persistance;
+    EXEmbeddedManifestAndBundle *embedded;
+}
 
 - (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier
 {
@@ -24,6 +27,7 @@ EXOtaPersistance *_persistance;
     _identifier = identifier;
     _persistance = persistance;
     [self ensureBundleExists];
+    [self checkEmbeddedManifestAndBundle];
     [self performEnqueqedReorder];
     return self;
 }
@@ -34,6 +38,16 @@ EXOtaPersistance *_persistance;
     {
         [_persistance clean];
         [self cleanUnusedFiles];
+    }
+}
+
+- (void)checkEmbeddedManifestAndBundle
+{
+    NSDictionary *embeddedManifest = [embedded readManifest];
+    if([[_config manifestComparator] shouldReplaceBundle:embeddedManifest forNew:[_persistance readManifest]])
+    {
+        [self saveDownloadedManifest:embeddedManifest andBundlePath:[embedded readBundlePath]];
+        [self markDownloadedCurrentAndCurrentOutdated];
     }
 }
 
@@ -51,7 +65,7 @@ EXOtaPersistance *_persistance;
 {
     [self downloadManifest:^(NSDictionary * _Nonnull manifest) {
         NSDictionary *oldManifest = [_persistance readNewestManifest];
-        if(oldManifest == nil || [_config.manifestComparator shouldDownloadBundle:oldManifest forNew:manifest])
+        if(oldManifest == nil || [_config.manifestComparator shouldReplaceBundle:oldManifest forNew:manifest])
         {
             [self downloadBundle:manifest success:^(NSString *path) {
                 successBlock(manifest, path);

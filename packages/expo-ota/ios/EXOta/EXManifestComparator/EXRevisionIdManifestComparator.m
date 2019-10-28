@@ -7,12 +7,21 @@
 
 #import "EXRevisionIdManifestComparator.h"
 
-@implementation EXRevisionIdManifestComparator
-
 const NSString *manifestRevisionKey = @"revisionId";
 const NSInteger invalidRevisionKey = 78264;
 
--(BOOL) shouldDownloadBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+@implementation EXRevisionIdManifestComparator
+{
+    id<ManifestComparator> nativeManifestComparator;
+}
+
+-(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
+{
+    nativeManifestComparator = nativeComparator;
+    return self;
+}
+
+-(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
 {
     NSString *newRevision = newManifest[manifestRevisionKey];
     NSString *oldRevision = oldManifest[manifestRevisionKey];
@@ -25,7 +34,7 @@ const NSInteger invalidRevisionKey = 78264;
         {
             return YES;
         } else {
-            return ![newRevision isEqualToString:oldRevision];
+            return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && ![newRevision isEqualToString:oldRevision];
         }
     }
 }
