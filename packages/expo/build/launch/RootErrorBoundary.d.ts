@@ -6,11 +6,8 @@ declare type State = {
     error: Error | null;
 };
 export default class RootErrorBoundary extends React.Component<Props, State> {
-    state: {
-        error: null;
-    };
+    constructor(props: Props);
     _appLoadingIsMounted: boolean;
-    componentWillMount(): void;
     _subscribeToGlobalErrors: () => void;
     _unsubscribeFromGlobalErrors: () => void;
     componentDidCatch(error: Error): void;
