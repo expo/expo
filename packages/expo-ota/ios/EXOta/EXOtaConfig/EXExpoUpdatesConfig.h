@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXExpoUpdatesConfig : NSObject<EXOtaConfig>
 
+- (id)initWithEmbeddedManifest;
+- (id)initWithManifest:(NSDictionary *)manifest;
 - (id)initWithBuilder:(void (^)(EXExpoUpdatesConfigBuilder *))builderBlock;
 - (id)initWithUsername:(NSString*)username
        withProjectName:(NSString*)projectName

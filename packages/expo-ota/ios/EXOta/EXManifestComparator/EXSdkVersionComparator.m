@@ -11,15 +11,6 @@ const NSString *manifestSdkVersionKey = @"sdkVersion";
 const NSInteger invalidSdkVersionKey = 78263;
 
 @implementation EXSdkVersionComparator
-{
-    id<ManifestComparator> nativeManifestComparator;
-}
-
--(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
-{
-    nativeManifestComparator = nativeComparator;
-    return self;
-}
 
 -(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
 {
@@ -34,7 +25,7 @@ const NSInteger invalidSdkVersionKey = 78263;
         {
             return YES;
         } else {
-            return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && [newVersion isEqualToString:oldVersion];
+            return [newVersion isEqualToString:oldVersion];
         }
     }
 }

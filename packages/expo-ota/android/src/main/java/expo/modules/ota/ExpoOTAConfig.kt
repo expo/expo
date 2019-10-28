@@ -4,7 +4,7 @@ import android.content.Context
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 
-val defaultCheckAutomatically = true
+const val defaultCheckAutomatically = true
 
 data class ExpoOTAConfig @JvmOverloads constructor(
         val manifestUrl: String,

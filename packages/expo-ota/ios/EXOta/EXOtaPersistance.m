@@ -116,7 +116,7 @@ NSString *_appId;
     }
 }
 
-- (NSDictionary*)readManifest
+- (nullable NSDictionary*)readManifest
 {
     return [_storage readObject:manifestKey];
 }
