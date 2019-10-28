@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Iterator;
 
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
@@ -89,6 +90,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private long mAudioRecorderDurationAlreadyRecorded = 0L;
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
+  private boolean isRegistered = false;
 
   private ModuleRegistry mModuleRegistry;
 
@@ -108,6 +110,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     };
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
         new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+    isRegistered = true;
   }
 
   @Override
@@ -181,10 +184,26 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostDestroy() {
-    mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
-    for (final Integer key : mSoundMap.keySet()) {
-      removeSoundForKey(key);
+    if (isRegistered) {
+      try {
+        mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
+        isRegistered = false;
+      } catch (final Exception exception) {
+	// Ignore it
+      }
     }
+
+    // removeSoundForKey() on all remaining sounds
+    Iterator<PlayerData> iter = mSoundMap.values().iterator();
+    while(iter.hasNext()) {
+      final PlayerData data = iter.next();
+      iter.remove();
+      if (data != null) {
+	data.release();
+	abandonAudioFocusIfUnused();
+      }
+    }
+
     for (final VideoView videoView : mVideoViewSet) {
       videoView.unloadPlayerAndMediaController();
     }
