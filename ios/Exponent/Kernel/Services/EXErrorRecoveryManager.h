@@ -4,11 +4,17 @@
 //  pass error recovery info to an experience which just reloaded.
 //
 
-#import "EXErrorRecovery.h"
 #import "EXKernelService.h"
+
+@protocol EXErrorRecoveryScopedModuleDelegate
+
+- (void)setDeveloperInfo:(NSDictionary *)developerInfo forScopedModule:(id)scopedModule;
+
+@end
 
 @class EXKernelAppRecord;
 
+// TODO: Remove once SDK34 is phased out
 @interface EXErrorRecoveryManager : NSObject
   <EXKernelService, EXErrorRecoveryScopedModuleDelegate>
 

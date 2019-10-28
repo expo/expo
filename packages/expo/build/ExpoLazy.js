@@ -459,17 +459,13 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.ErrorRecovery = exports.AR = void 0;
+exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
 
 require("./Expo.fx");
 
 var AR = _interopRequireWildcard(require("./AR"));
 
 exports.AR = AR;
-
-var ErrorRecovery = _interopRequireWildcard(require("./ErrorRecovery/ErrorRecovery"));
-
-exports.ErrorRecovery = ErrorRecovery;
 
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 
