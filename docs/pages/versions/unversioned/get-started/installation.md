@@ -44,7 +44,7 @@ When the Expo client is finished installing, open it up. If you created an accou
 
 ### Running the Expo client on your computer
 
-The quickest way to get started is to run the Expo client on your physical iOS or Android device. If at some point you want to install a simulator or emulator to run the app directly on your computer you can find the [iOS simulator instructions here](../../workflow/ios-simulator/) and the [Android emulator instructions here](../../workflow/ios-simulator/). The iOS simulator only runs on macOS, Android emulators run on any major operating system.
+The quickest way to get started is to run the Expo client on your physical iOS or Android device. If at some point you want to install a simulator or emulator to run the app directly on your computer you can find the [iOS simulator instructions here](../../workflow/ios-simulator/) and the [Android emulator instructions here](../../workflow/android-studio-emulator/). The iOS simulator only runs on macOS, Android emulators run on any major operating system.
 
 > 🧐 Apple uses the word "simulator" for their iOS emulator and Google uses the word "emulator". This is one of your first glimpses at how each native platform expresses the same concept in its own unique way, even if the result is the same. Expo does our best to handle these differences for you and present you with a clean cross-platform API. Unfortunately we can't rename "simulator" to "emulator" or we would.
 
