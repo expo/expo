@@ -2,9 +2,18 @@
   "name": "expo-ota",
   "version": "0.1.0",
   "description": "ExpoOta standalone module",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {},
+  "main": "build/ExpoOTA.js",
+  "types": "build/ExpoOTA.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
   "keywords": [
     "react-native",
     "expo",
@@ -12,7 +21,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-ota"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -20,11 +30,7 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-ota",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
-  "gitHead": "f213c9be2a909dae42a0a27d8aa4b9eac8e97be1",
-  "_resolved": "",
-  "_integrity": "",
-  "_from": "expo-ota@latest"
+  "dependencies": {
+    "expo-module-scripts": "^1.1.1"
+  }
 }

@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, Button, View, Text, ToastAndroid, Alert } from 'react-native';
-import { NativeModulesProxy } from '@unimodules/core';
-
-const OTA = NativeModulesProxy.ExpoOta;
+import { StyleSheet, Button, View, Text, Alert } from 'react-native';
+import * as OTA from 'expo-ota';
 
 export default function App() {
   const checkForUpdates = async () => {
+    console.warn(Object.keys(OTA));
     const value = OTA.checkForUpdateAsync();
     value
       .then(result => {
