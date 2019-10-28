@@ -10,7 +10,7 @@
 
 @implementation EXAlwaysAllowingManifestComparator
 
--(BOOL) shouldDownloadBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+-(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
 {
     return YES;
 }

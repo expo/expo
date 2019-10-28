@@ -12,21 +12,30 @@ const NSString *manifestVersionKey = @"version";
 const NSInteger invalidVersionKey = 78263;
 
 @implementation EXVersionNumberManifestComparator
+{
+    id<ManifestComparator> nativeManifestComparator;
+}
 
--(BOOL) shouldDownloadBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+-(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
+{
+    nativeManifestComparator = nativeComparator;
+    return self;
+}
+
+-(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
 {
     NSString *newVersion = newManifest[manifestVersionKey];
     NSString *oldVersion = oldManifest[manifestVersionKey];
     if(newVersion == nil)
     {
-        @throw [NSError errorWithDomain:NSArgumentDomain code:invalidVersionKey userInfo:@{@"vesrion": newVersion}];
+        @throw [NSError errorWithDomain:NSArgumentDomain code:invalidVersionKey userInfo:@{@"version": newVersion}];
     } else
     {
         if(oldVersion == nil)
         {
             return YES;
         } else {
-            return [[EDSemver semverWithString:newVersion] isGreaterThan:[EDSemver semverWithString:oldVersion]];
+            return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && [[EDSemver semverWithString:newVersion] isGreaterThan:[EDSemver semverWithString:oldVersion]];
         }
     }
 }

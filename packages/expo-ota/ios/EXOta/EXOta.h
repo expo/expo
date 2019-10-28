@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ManifestComparator
 
--(BOOL) shouldDownloadBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest;
+-(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest;
 
 @end
 
@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) id<ManifestComparator> manifestComparator;
 @property(readonly) id<ManifestResponseValidator> manifestValidator;
 @property(readonly) NSInteger bundleRequestTimeout;
+@property(readonly) Boolean checkForUpdatesAutomatically;
 
 @end
 

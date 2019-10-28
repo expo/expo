@@ -8,19 +8,21 @@
 #import "EXExpoUpdatesConfig.h"
 #import "EXVersionNumberManifestComparator.h"
 #import "EXExpoPublicKeyManifestValidator.h"
+#import "EXSdkVersionComparator.h"
 
 
 
-@implementation EXExpoUpdatesConfigBuilder: NSObject
+@implementation EXExpoUpdatesConfigBuilder
 - (id) init
 {
     _releaseChannel = @"default";
     _sdkVersion = @"34.0.0";
     _apiVersion = 1;
     _manifestTimeout = 60 * 1000;
-    _manifestComparator = [[EXVersionNumberManifestComparator alloc] init];
+    _manifestComparator = [[EXVersionNumberManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
     _manifestValidator = [[EXExpoPublicKeyManifestValidator alloc] initWithPublicKeyUrl:@"https://exp.host/--/manifest-public-key" andTimeout:60 * 1000];
     _bundleTimeout = 2 * 60 * 1000;
+    _checkForUpdatesAutomatically = YES;
     return self;
 }
 
@@ -35,6 +37,7 @@
 @synthesize channelIdentifier = _channelIdentifier;
 @synthesize manifestComparator = _manifestComparator;
 @synthesize manifestValidator = _manifestValidator;
+@synthesize checkForUpdatesAutomatically = _checkForUpdatesAutomatically;
 
 - (id)initWithBuilder:(void (^)(EXExpoUpdatesConfigBuilder *))builderBlock
 {
@@ -48,7 +51,8 @@
               withManifestTimeout:builder.manifestTimeout
            withManifestComparator:builder.manifestComparator
             withManifestValidator:builder.manifestValidator
-                withBundleTimeout:builder.bundleTimeout];
+                withBundleTimeout:builder.bundleTimeout
+ withCheckForUpdatesAutomatically:builder.checkForUpdatesAutomatically];
 }
 
 - initWithUsername:(NSString*)username
@@ -60,6 +64,7 @@ withManifestTimeout:(NSInteger)manifestTimeout
 withManifestComparator:(id<ManifestComparator>)manifestComparator
 withManifestValidator:(id<ManifestResponseValidator>)manifestValidator
  withBundleTimeout:(NSInteger)bundleTimeout
+withCheckForUpdatesAutomatically:(Boolean)checkForUpdatesAutomatically
 {
     if([username length] == 0 || [projectName length] == 0) {
         @throw (@"You must define username and project!");
@@ -78,6 +83,7 @@ withManifestValidator:(id<ManifestResponseValidator>)manifestValidator
         _channelIdentifier = channel;
         _manifestComparator = manifestComparator;
         _manifestValidator = manifestValidator;
+        _checkForUpdatesAutomatically = checkForUpdatesAutomatically;
         return self;
     }
 }

@@ -6,6 +6,7 @@
 #import "EXOtaPersistanceFactory.h"
 #import <EXOtaUpdater.h>
 #import <EXExpoUpdatesConfig.h>
+#import <EXEmbeddedManifestAndBundle.h>
 
 @interface EXOtaModule ()
 
@@ -61,7 +62,7 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
 
 - (BOOL) isManifestNewer:(NSDictionary * _Nonnull)manifest
 {
-    return [persistance.config.manifestComparator shouldDownloadBundle:[persistance readNewestManifest] forNew:manifest];
+    return [persistance.config.manifestComparator shouldReplaceBundle:[persistance readNewestManifest] forNew:manifest];
 }
 
 UM_EXPORT_METHOD_AS(fetchUpdatesAsync,
@@ -101,6 +102,13 @@ UM_EXPORT_METHOD_AS(reloadFromCache,
                     reject:(UMPromiseRejectBlock)reject)
 {
     [self reload:resolve reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(readCurrentManifestAsync,
+                    readCurrentManifestAsync:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+    resolve([[EXEmbeddedManifestAndBundle alloc] readManifest]);
 }
 
 @end
