@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 
 import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 
@@ -12,13 +11,9 @@ const val RECOVERY_STORE = "expo.modules.errorrecovery.store"
 private const val RECOVERY_STORE_KEY = "recoveredProps"
 
 open class ErrorRecoveryModule(context: Context) : ExportedModule(context) {
-  protected lateinit var mSharedPreferences: SharedPreferences
+  protected open val mSharedPreferences: SharedPreferences = context.applicationContext.getSharedPreferences(RECOVERY_STORE, Context.MODE_PRIVATE)
 
   override fun getName(): String = "ExpoErrorRecovery"
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mSharedPreferences = context.applicationContext.getSharedPreferences(RECOVERY_STORE, Context.MODE_PRIVATE)
-  }
 
   @ExpoMethod
   fun saveRecoveryProps(props: String?, promise: Promise) {
@@ -32,9 +27,8 @@ open class ErrorRecoveryModule(context: Context) : ExportedModule(context) {
     return mapOf("recoveredProps" to consumeRecoveryProps())
   }
 
-
   protected open fun setRecoveryProps(props: String) {
-    mSharedPreferences.edit().putString(RECOVERY_STORE_KEY , props).commit()
+    mSharedPreferences.edit().putString(RECOVERY_STORE_KEY, props).commit()
   }
 
   protected open fun consumeRecoveryProps(): String? {

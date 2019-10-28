@@ -14,7 +14,6 @@
 
 @class EXKernelAppRecord;
 
-// TODO: Remove once SDK34 is phased out
 @interface EXErrorRecoveryManager : NSObject
   <EXKernelService, EXErrorRecoveryScopedModuleDelegate>
 

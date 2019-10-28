@@ -22,7 +22,7 @@
 - (BOOL)setRecoveryProps:(NSString *)props
 {
   NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-  NSDictionary *errorRecoveryStore = [preferences objectForKey:[self userDefaultsKey]] ?: @{};
+  NSDictionary *errorRecoveryStore = [preferences dictionaryForKey:[self userDefaultsKey]] ?: @{};
   NSMutableDictionary *newStore = [errorRecoveryStore mutableCopy];
   newStore[_experienceId] = props;
   [preferences setObject:newStore forKey:[self userDefaultsKey]];
@@ -32,9 +32,9 @@
 - (NSString *)consumeRecoveryProps
 {
   NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-  NSDictionary *errorRecoveryStore = [preferences objectForKey:[self userDefaultsKey]];
+  NSDictionary *errorRecoveryStore = [preferences dictionaryForKey:[self userDefaultsKey]];
   if (errorRecoveryStore) {
-    NSString *props = [errorRecoveryStore objectForKey:_experienceId];
+    NSString *props = errorRecoveryStore[_experienceId];
     if (props) {
       NSMutableDictionary *storeWithRemovedProps = [errorRecoveryStore mutableCopy];
       [storeWithRemovedProps removeObjectForKey:_experienceId];
