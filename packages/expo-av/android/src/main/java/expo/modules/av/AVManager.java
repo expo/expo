@@ -189,7 +189,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
         mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
         isRegistered = false;
       } catch (final Exception exception) {
-	// Ignore it
+        // Ignore it
       }
     }
 
@@ -199,8 +199,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       final PlayerData data = iter.next();
       iter.remove();
       if (data != null) {
-	data.release();
-	abandonAudioFocusIfUnused();
+        data.release();
+        abandonAudioFocusIfUnused();
       }
     }
 
