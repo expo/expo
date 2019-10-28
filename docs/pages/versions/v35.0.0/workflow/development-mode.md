@@ -13,7 +13,7 @@ The difference between these is pretty simple- production mode minifies your cod
 
 ## Development Mode
 
-React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. If you want to see how to use those tools, see our [debugging documentation](../debugging/). Development mode also performs a bunch of validations while your app is running to give you warnings if, for example, you're using a deprecated property or if you forgot to pass a required property into a component.
+React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. If you want to see how to use those tools, see our [debugging documentation](../debugging/). Development mode also performs a bunch of validations while your app is running to give you warnings if, for example, you're using a deprecated property or if you forgot to pass a required property into a component. This video shows the Element Inspector and Performance Monitor in action, on both Android and iOS simulators:
 
 <Video file="dev-prod/devMode.mp4" />
 
