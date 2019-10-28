@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.security.Provider;
 import java.security.Security;
@@ -592,13 +593,19 @@ public class Exponent {
         emulatorField.setAccessible(true);
         emulatorField.set(null, debuggerHostHostname);
 
-        // Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-        // debugServerHostPortField.setAccessible(true);
-        // debugServerHostPortField.set(null, debuggerHostPort);
+        // TODO: remove when SDK 35 is phased out
+        if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
+          Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
+          debugServerHostPortField.setAccessible(true);
+          debugServerHostPortField.set(null, debuggerHostPort);
 
-        // Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-        // inspectorProxyPortField.setAccessible(true);
-        // inspectorProxyPortField.set(null, debuggerHostPort);
+          Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
+          inspectorProxyPortField.setAccessible(true);
+          inspectorProxyPortField.set(null, debuggerHostPort);
+        } else {
+          fieldObject.callStatic("setDevServerPort", debuggerHostPort);
+          fieldObject.callStatic("setInspectorProxyPort", debuggerHostPort);
+        }
 
         builder.callRecursive("setUseDeveloperSupport", true);
         builder.callRecursive("setJSMainModulePath", mainModuleName);
