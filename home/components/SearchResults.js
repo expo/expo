@@ -34,8 +34,8 @@ export default class SearchResults extends React.Component {
     this._maybeUpdateSections(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this._maybeUpdateSections(nextProps);
+  componentDidUpdate(_prevProps) {
+    this._maybeUpdateSections(this.props);
   }
 
   render() {

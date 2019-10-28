@@ -55,9 +55,9 @@ export default class Profile extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps: any) {
+  componentDidUpdate(prevProps: any) {
     const SkipConnectionNotification = true;
-    if (!SkipConnectionNotification && !this.props.data.error && nextProps.data.error) {
+    if (!SkipConnectionNotification && !prevProps.data.error && this.props.data.error) {
       // NOTE(brentvatne): sorry for this
       let isConnectionError = nextProps.data.error.message.includes('No connection available');
 

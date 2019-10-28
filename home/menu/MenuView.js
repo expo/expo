@@ -54,7 +54,7 @@ class MenuView extends React.Component {
     this._mounted = false;
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(_prevProps) {
     if (!this.state.isLoading) {
       this._loadStateAsync();
     }
