@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary*)readNewestManifest;
 
-- (NSDictionary*)readManifest;
+- (nullable NSDictionary*)readManifest;
 
 - (NSString*)readBundlePath;
 

@@ -9,26 +9,17 @@
 #import "EXOtaPersistanceFactory.h"
 #import "EXOtaPersistance.h"
 #import "EXOtaUpdater.h"
+#import "EXExpoUpdatesConfig.h"
 
 @implementation EXOta
 
 EXOtaUpdater *updater;
 EXOtaPersistance *persistance;
 
--(void)start
+- (id)init
 {
-    [updater removeOutdatedBundle];
-    [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {
-        [updater saveDownloadedManifest:manifest andBundlePath:filePath];
-        [updater scheduleForExchangeAtNextBoot];
-    } updateUnavailable:^{} error:^(NSError * _Nonnull error) {
-        NSLog(@"EXOta: error while fetching update! %@ %@", error, [error userInfo]);
-    }];
-}
-
-- (NSString*) bundlePath
-{
-    return [persistance readBundlePath];
+    EXExpoUpdatesConfig *config = [[EXExpoUpdatesConfig alloc] initWithEmbeddedManifest];
+    return [self initWithConfig:config];
 }
 
 -(id)initWithConfig:(id<EXOtaConfig>)config;
@@ -42,7 +33,27 @@ EXOtaPersistance *persistance;
     persistance.config = config;
     persistance.appId = appId;
     updater =[[EXOtaUpdater alloc] initWithConfig:config withPersistance:persistance withId:appId];
+    if(config.checkForUpdatesAutomatically)
+    {
+        [self start];
+    }
     return self;
+}
+
+- (void)start
+{
+    [updater removeOutdatedBundle];
+    [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {
+        [updater saveDownloadedManifest:manifest andBundlePath:filePath];
+        [updater scheduleForExchangeAtNextBoot];
+    } updateUnavailable:^{} error:^(NSError * _Nonnull error) {
+        NSLog(@"EXOta: error while fetching update! %@ %@", error, [error userInfo]);
+    }];
+}
+
+- (NSString*) bundlePath
+{
+    return [persistance readBundlePath];
 }
 
 @end

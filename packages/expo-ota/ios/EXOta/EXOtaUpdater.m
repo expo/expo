@@ -18,7 +18,7 @@
     id<EXOtaConfig> _config;
     NSString *_identifier;
     EXOtaPersistance *_persistance;
-    EXEmbeddedManifestAndBundle *embedded;
+    EXEmbeddedManifestAndBundle *_embedded;
 }
 
 - (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier
@@ -26,6 +26,7 @@
     _config = config;
     _identifier = identifier;
     _persistance = persistance;
+    _embedded = [EXEmbeddedManifestAndBundle new];
     [self ensureBundleExists];
     [self checkEmbeddedManifestAndBundle];
     [self performEnqueqedReorder];
@@ -43,10 +44,10 @@
 
 - (void)checkEmbeddedManifestAndBundle
 {
-    NSDictionary *embeddedManifest = [embedded readManifest];
+    NSDictionary *embeddedManifest = [_embedded readManifest];
     if([[_config manifestComparator] shouldReplaceBundle:embeddedManifest forNew:[_persistance readManifest]])
     {
-        [self saveDownloadedManifest:embeddedManifest andBundlePath:[embedded readBundlePath]];
+        [self saveDownloadedManifest:embeddedManifest andBundlePath:[_embedded readBundlePath]];
         [self markDownloadedCurrentAndCurrentOutdated];
     }
 }
@@ -64,8 +65,8 @@
 - (void)checkAndDownloadUpdate:(nonnull EXUpdateSuccessBlock)successBlock updateUnavailable:(void (^)(void))unavailableBlock error:(nonnull EXErrorBlock)errorBlock
 {
     [self downloadManifest:^(NSDictionary * _Nonnull manifest) {
-        NSDictionary *oldManifest = [_persistance readNewestManifest];
-        if(oldManifest == nil || [_config.manifestComparator shouldReplaceBundle:oldManifest forNew:manifest])
+        NSDictionary *oldManifest = [self->_persistance readNewestManifest];
+        if(oldManifest == nil || [self->_config.manifestComparator shouldReplaceBundle:oldManifest forNew:manifest])
         {
             [self downloadBundle:manifest success:^(NSString *path) {
                 successBlock(manifest, path);

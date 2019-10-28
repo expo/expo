@@ -9,6 +9,15 @@
 #import "EXOtaUpdater.h"
 
 @implementation EXAlwaysAllowingManifestComparator
+{
+    id<ManifestComparator> nativeManifestComparator;
+}
+
+-(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
+{
+    nativeManifestComparator = nativeComparator;
+    return self;
+}
 
 -(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
 {

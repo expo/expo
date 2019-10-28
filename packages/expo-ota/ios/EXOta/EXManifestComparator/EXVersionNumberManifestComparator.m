@@ -24,6 +24,14 @@ const NSInteger invalidVersionKey = 78263;
 
 -(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
 {
+    if(newManifest == nil)
+    {
+        return NO;
+    }
+    if(oldManifest == nil)
+    {
+        return YES;
+    }
     NSString *newVersion = newManifest[manifestVersionKey];
     NSString *oldVersion = oldManifest[manifestVersionKey];
     if(newVersion == nil)
