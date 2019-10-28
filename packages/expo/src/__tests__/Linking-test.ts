@@ -2,10 +2,20 @@ import Linking from '../Linking/Linking';
 
 describe('Linking', () => {
   describe('parse', () => {
-    it('parses a full url into path and query params', async () => {
-      let { path, queryParams } = Linking.parse('https://expo.com/test/path?query=param');
-      expect(path).toEqual('test/path');
-      expect(queryParams).toEqual({ query: 'param' });
+    test.each<string>([
+      'exp://exp.host/@test/test/--/test/path?query=param',
+      'exp://exp.host/@test/test/--/test/path',
+      'https://example.com/test/path?query=param',
+      'https://example.com/test/path',
+      'https://example.com:8000/test/path',
+      'https://example.com:8000/test/path+with+plus',
+      'custom:///test/path?foo=bar',
+      'custom:///',
+      'custom://',
+      'custom://?hello=bar',
+      'invalid',
+    ])('test %p', url => {
+      expect(Linking.parse(url)).toMatchSnapshot();
     });
   });
 });

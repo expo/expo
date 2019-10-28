@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
 import { LinkingStatic } from 'react-native';
+import URL from 'url-parse';
 import { ParsedURL, QueryParams } from './Linking.types';
 import Linking from './LinkingModule';
 
@@ -19,23 +20,23 @@ const IS_EXPO_HOSTED =
   (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(HOST_URI) ||
     manifest.developer);
 
-function _removeScheme(url) {
+function _removeScheme(url: string) {
   return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
 }
 
-function _removePort(url) {
+function _removePort(url: string) {
   return url.replace(/(?=([a-zA-Z0-9+.-]+:\/\/)?[^/]):\d+/, '');
 }
 
-function _removeLeadingSlash(url) {
+function _removeLeadingSlash(url: string) {
   return url.replace(/^\//, '');
 }
 
-function _removeTrailingSlash(url) {
+function _removeTrailingSlash(url: string) {
   return url.replace(/\/$/, '');
 }
 
-function _removeTrailingSlashAndQueryString(url) {
+function _removeTrailingSlashAndQueryString(url: string) {
   return url.replace(/\/?\?.*$/, '');
 }
 
@@ -100,44 +101,54 @@ function parse(url: string): ParsedURL {
   if (!url) {
     throw new Error('parse cannot be called with a null value');
   }
-  // iOS client sometimes strips out the port from the initial URL
-  // even when it's included in the hostUri.
-  // This function should be able to handle both cases, so we strip off the port
-  // both here and from the hostUri.
-  let decodedUrl = _removePort(decodeURI(url));
-  let path: string;
-  let queryParams = {};
 
-  let queryStringMatchResult = decodedUrl.match(/(.*)\?(.+)/);
-  if (queryStringMatchResult) {
-    decodedUrl = queryStringMatchResult[1];
-    queryParams = qs.parse(queryStringMatchResult[2]);
-  }
+  const parsed = URL(url, /* parseQueryString */ true);
 
-  // strip off the hostUri from the host and path
+  let queryParams = parsed.query;
+
   let hostUri = HOST_URI || '';
   let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
-  if (hostUriStripped && decodedUrl.indexOf(hostUriStripped) > -1) {
-    path = decodedUrl.substr(decodedUrl.indexOf(hostUriStripped) + hostUriStripped.length);
-  } else {
-    path = _removeScheme(decodedUrl);
+
+  let path = parsed.pathname || null;
+  let hostname = parsed.hostname || null;
+  let scheme = parsed.protocol || null;
+
+  if (scheme) {
+    // Remove colon at end
+    scheme = scheme.substring(0, scheme.length - 1);
   }
 
-  path = _removeLeadingSlash(path);
+  if (path) {
+    path = _removeLeadingSlash(path);
 
-  if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && path.startsWith('--/')) {
-    path = path.substr(3);
-  } else if (path.indexOf('+') > -1) {
-    path = path.substr(path.indexOf('+') + 1);
+    let expoPrefix: string | null = null;
+    if (hostUriStripped) {
+      const parts = hostUriStripped.split('/');
+      expoPrefix = `${parts.slice(1).join('/')}/--/`;
+    }
+
+    if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
+      path = path.substring(expoPrefix.length);
+      hostname = null;
+    } else if (path.indexOf('+') > -1) {
+      path = path.substring(path.indexOf('+') + 1);
+    }
   }
 
-  return { path, queryParams };
+  return {
+    hostname,
+    path,
+    queryParams,
+    scheme,
+  };
 }
 
 async function parseInitialURLAsync(): Promise<ParsedURL> {
   const initialUrl = await Linking.getInitialURL();
   if (!initialUrl) {
     return {
+      scheme: null,
+      hostname: null,
       path: null,
       queryParams: null,
     };
