@@ -20,5 +20,6 @@ Pod::Spec.new do |s|
   s.dependency 'UMImageLoaderInterface'
   s.dependency 'UMPermissionsInterface'
   s.dependency 'ZXingObjC/PDF417'
+  s.dependency 'ZXingObjC/OneD'
 
 end

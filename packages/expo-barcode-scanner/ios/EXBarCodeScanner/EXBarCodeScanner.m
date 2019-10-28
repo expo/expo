@@ -6,6 +6,7 @@
 #import <UMCore/UMDefines.h>
 #import <ZXingObjC/ZXingObjCCore.h>
 #import <ZXingObjC/ZXingObjCPDF417.h>
+#import <ZXingObjC/ZXingObjCOneD.h>
 
 @interface EXBarCodeScanner() <AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -16,10 +17,11 @@
 @property (nonatomic, assign, getter=isScanningBarCodes) BOOL barCodesScanning;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *settings;
 
-@property (nonatomic, strong) ZXPDF417Reader *zxingBarcodeReader;
+@property (nonatomic, strong) NSDictionary<NSString *, id<ZXReader>> *zxingBarcodeReaders;
 @property (nonatomic, assign) CGFloat zxingFPSProcessed;
 @property (nonatomic, strong) AVCaptureVideoDataOutput* videoDataOutput;
 @property (nonatomic, strong) dispatch_queue_t zxingCaptureQueue;
+@property (nonatomic, assign) BOOL zxingEnabled;
 
 @end
 
@@ -32,10 +34,16 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
   if (self = [super init]) {
     _settings = [[NSMutableDictionary alloc] initWithDictionary:[[self class] _getDefaultSettings]];
 
-    // zxing only handles PDF417 barcodes reading
-    _zxingBarcodeReader = [ZXPDF417Reader new];
+    // zxing handles barcodes reading of following types:
+    _zxingBarcodeReaders = @{
+      // PDF417 - built-in PDF417 reader doesn't handle u'\0' (null) character - https://github.com/expo/expo/issues/4817
+      AVMetadataObjectTypePDF417Code: [ZXPDF417Reader new],
+      // Code39 - built-in Code39 reader doesn't read non-ideal (slightly rotated) images like this - https://github.com/expo/expo/pull/5976#issuecomment-545001008
+      AVMetadataObjectTypeCode39Code: [ZXCode39Reader new],
+    };
     _zxingFPSProcessed = 6;
     _zxingCaptureQueue = dispatch_queue_create("com.zxing.captureQueue", NULL);
+    _zxingEnabled = YES;
   }
   return self;
 }
@@ -53,6 +61,8 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
         NSMutableDictionary<NSString *, id> *nextSettings = [[NSMutableDictionary alloc] initWithDictionary:_settings];
         nextSettings[EX_BARCODE_TYPES_KEY] = value;
         _settings = nextSettings;
+        NSSet *zxingCoveredTypes = [NSSet setWithArray:[_zxingBarcodeReaders allKeys]];
+        _zxingEnabled = [zxingCoveredTypes intersectsSet:newTypes];
         UM_WEAKIFY(self);
         [self _runBlockIfQueueIsPresent:^{
           UM_ENSURE_STRONGIFY(self);
@@ -197,8 +207,8 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
     if ([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
       AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
-        // PDF417 is not reading '\0' (null) character correctly producing malformed results -> zxing handles it in separate flow
-        if ([barcodeType isEqualToString:AVMetadataObjectTypePDF417Code]) {
+        // some barcodes aren't handled properly by iOS SDK build-in reader -> zxing handles it in separate flow
+        if ([_zxingBarcodeReaders objectForKey:barcodeType]) {
           continue;
         }
         if (codeMetadata.stringValue && [codeMetadata.type isEqualToString:barcodeType]) {
@@ -227,8 +237,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   if (!_settings || !_settings[EX_BARCODE_TYPES_KEY] || !_metadataOutput) {
     return;
   }
-  // do not use ZXing library if not scannnig PDF417 barcodes
-  if (![_settings[EX_BARCODE_TYPES_KEY] containsObject:AVMetadataObjectTypePDF417Code]) {
+  // do not use ZXing library if not scanning for predefined barcodes
+  if (!_zxingEnabled) {
     return;
   }
 
@@ -279,15 +289,23 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   ZXBinaryBitmap *bitmap = [[ZXBinaryBitmap alloc] initWithBinarizer:binarizer];
 
   NSError *error = nil;
-  ZXResult *result = [_zxingBarcodeReader decode:bitmap
-                                           hints:nil
-                                           error:&error];
-  // additionally zxing rotates bitmap by 180° internally
+  ZXResult *result;
+  
+  for (id<ZXReader> reader in [_zxingBarcodeReaders allValues]) {
+    result = [reader decode:bitmap hints:nil error:&error];
+    if (result) {
+      break;
+    }
+  }
+  // rotate bitmap by 90° only, becasue zxing rotates bitmap by 180° internally, so that each possible orientation is covered
   if (!result && [bitmap rotateSupported]) {
     ZXBinaryBitmap *rotatedBitmap = [bitmap rotateCounterClockwise];
-    result = [_zxingBarcodeReader decode:rotatedBitmap
-                                   hints:nil
-                                   error:&error];
+    for (id<ZXReader> reader in [_zxingBarcodeReaders allValues]) {
+      result = [reader decode:rotatedBitmap hints:nil error:&error];
+      if (result) {
+        break;
+      }
+    }
   }
 
   if (result) {
@@ -299,9 +317,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 + (NSString *)zxingFormatToString:(ZXBarcodeFormat)format
 {
   switch (format) {
-    /** PDF417 format. */
     case kBarcodeFormatPDF417:
       return AVMetadataObjectTypePDF417Code;
+    case kBarcodeFormatCode39:
+      return AVMetadataObjectTypeCode39Code;
     default:
       return @"unknown";
   }
