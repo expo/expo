@@ -8,7 +8,7 @@
 #include "ABI34_0_0YGMarker.h"
 #include "ABI34_0_0YGNode.h"
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 namespace marker {
 
@@ -57,4 +57,4 @@ private:
 
 } // namespace marker
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook

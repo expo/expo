@@ -5,7 +5,7 @@
 
 #pragma once
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace jsi {
 namespace detail {
 
@@ -306,4 +306,4 @@ inline Value Function::callAsConstructor(Runtime& runtime, Args&&... args)
 }
 
 } // namespace jsi
-} // namespace facebook
+} // namespace ABI34_0_0facebook

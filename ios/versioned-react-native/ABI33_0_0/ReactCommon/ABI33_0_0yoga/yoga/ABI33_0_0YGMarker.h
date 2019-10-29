@@ -51,7 +51,7 @@ ABI33_0_0YG_EXTERN_C_END
 
 #ifdef __cplusplus
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ABI33_0_0yoga {
 namespace marker {
 namespace detail {
@@ -89,6 +89,6 @@ typename detail::MarkerData<M>::type* data(ABI33_0_0YGMarkerData d) {
 
 } // namespace marker
 } // namespace ABI33_0_0yoga
-} // namespace facebook
+} // namespace ABI33_0_0facebook
 
 #endif // __cplusplus

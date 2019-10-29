@@ -8,7 +8,7 @@
 #include <folly/json.h>
 #include <stdexcept>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 #define REQUEST_MODULE_IDS 0

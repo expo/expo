@@ -11,7 +11,7 @@
 
 #include <folly/Conv.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 class JSModulesUnbundle {

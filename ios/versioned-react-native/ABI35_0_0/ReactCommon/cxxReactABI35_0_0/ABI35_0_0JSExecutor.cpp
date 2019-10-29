@@ -9,7 +9,7 @@
 
 #include <folly/Conv.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 std::string JSExecutor::getSyntheticBundlePath(

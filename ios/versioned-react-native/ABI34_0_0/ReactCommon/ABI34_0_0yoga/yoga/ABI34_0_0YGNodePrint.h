@@ -9,7 +9,7 @@
 
 #include "ABI34_0_0Yoga.h"
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 
 void ABI34_0_0YGNodeToString(
@@ -19,4 +19,4 @@ void ABI34_0_0YGNodeToString(
     uint32_t level);
 
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook
