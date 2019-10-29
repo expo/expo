@@ -15,6 +15,7 @@
 #import "EXScopedSegment.h"
 #import "EXScopedLocalAuthentication.h"
 #import "EXScopedBranch.h"
+#import "EXScopedErrorRecoveryModule.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -100,6 +101,11 @@
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
 
+#if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
+  EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:errorRecovery];
+#endif
+  
   return moduleRegistry;
 }
 

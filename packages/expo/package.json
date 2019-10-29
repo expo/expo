@@ -62,6 +62,7 @@
     "expo-app-loader-provider": "~7.0.0",
     "expo-asset": "~7.0.0",
     "expo-constants": "~8.0.0-rc.1",
+    "expo-error-recovery": "~1.0.0",
     "expo-file-system": "~8.0.0-rc.0",
     "expo-font": "~7.0.0",
     "expo-keep-awake": "~7.0.0",
