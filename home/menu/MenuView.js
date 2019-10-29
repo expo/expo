@@ -29,6 +29,16 @@ import LocalStorage from '../storage/LocalStorage';
 
 let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 
+// These are defined in EXVersionManager.m in a dictionary, ordering needs to be
+// done here.
+const DEV_MENU_ORDER = [
+  'dev-reload',
+  'dev-hmr',
+  'dev-remote-debug',
+  'dev-perf-monitor',
+  'dev-inspector',
+];
+
 class MenuView extends React.Component {
   _scrollPosition = new Animated.Value(0);
 
@@ -54,15 +64,19 @@ class MenuView extends React.Component {
     this._mounted = false;
   }
 
-  componentDidUpdate(prevProps) {
+  // NOTE(brentvatne): moving this to didmount, didupdate, or constructor does not work
+  UNSAFE_componentWillReceiveProps() {
     if (!this.state.isLoading) {
       this._loadStateAsync();
     }
+  }
 
+  componentDidUpdate(prevProps) {
     if (prevProps.visible && !this.props.visible) {
       this.restoreStatusBar();
     } else if (!prevProps.visible && this.props.visible) {
       this.forceStatusBarUpdateAsync();
+      this._scrollPosition.setValue(0);
     }
   }
 
@@ -141,7 +155,7 @@ class MenuView extends React.Component {
     return (
       <StyledView style={[styles.container, screenStyles]} darkBackgroundColor="#000">
         <Animated.View style={{ flex: 1, opacity }}>
-          <StatusBar barStyle={theme === 'light' ? 'default' : 'light-content'} />
+          <StatusBar barStyle={theme === 'light' ? 'dark-content' : 'light-content'} />
           <StyledScrollView
             style={styles.overlay}
             onScroll={this._handleScroll}
@@ -151,14 +165,14 @@ class MenuView extends React.Component {
             <View style={styles.buttonContainer}>
               {this._renderButton({
                 key: 'refresh',
-                text: 'Reload Manifest and JS Bundle',
+                text: 'Reload',
                 onPress: () => Kernel.selectRefresh(),
                 iconSource: require('../assets/ios-menu-refresh.png'),
               })}
               {copyUrlButton}
               {this._renderButton({
                 key: 'home',
-                text: 'Go to Expo Home',
+                text: 'Go to Home',
                 onPress: this._goToHome,
                 iconSource: require('../assets/ios-menu-home.png'),
               })}
@@ -259,12 +273,16 @@ class MenuView extends React.Component {
   }
 
   _maybeRenderDevMenuTools() {
+    let devMenuItems = Object.keys(this.state.devMenuItems).sort(
+      (a, b) => DEV_MENU_ORDER.indexOf(a) > DEV_MENU_ORDER.indexOf(b)
+    );
+
     if (this.state.enableDevMenuTools && this.state.devMenuItems) {
       return (
         <View>
           <StyledView style={styles.separator} />
           <View style={styles.buttonContainer}>
-            {Object.keys(this.state.devMenuItems).map(key => {
+            {devMenuItems.map(key => {
               return this._renderDevMenuItem(key, this.state.devMenuItems[key]);
             })}
           </View>
