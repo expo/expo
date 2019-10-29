@@ -88,7 +88,7 @@ async function getPermissionWithQueryAsync(name: PermissionName): Promise<Permis
 
   const { state } = await navigator.permissions.query({ name });
   if (state === 'prompt') {
-    return PermissionStatus.UNDETERMINED
+    return PermissionStatus.UNDETERMINED;
   } else if (state === 'granted') {
     return PermissionStatus.GRANTED;
   } else if (state === 'denied') {
@@ -97,13 +97,28 @@ async function getPermissionWithQueryAsync(name: PermissionName): Promise<Permis
   return null;
 }
 
+async function enumerateDevices(): Promise<MediaDeviceInfo[] | null> {
+  if (navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+    return await navigator.mediaDevices.enumerateDevices();
+  }
+
+  // @ts-ignore: This is deprecated but we should still attempt to use it.
+  if (window.MediaStreamTrack && typeof window.MediaStreamTrack.getSources === 'function') {
+    // @ts-ignore
+    return await MediaStreamTrack.getSources();
+  }
+  return null;
+}
+
 async function getMediaMaybeGrantedAsync(targetKind: MediaDeviceKind): Promise<boolean> {
-  if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return false;
-  const devices = await navigator.mediaDevices.enumerateDevices();
+  const devices = await enumerateDevices();
+  if (!devices) {
+    return false;
+  }
   const result = await devices
     .filter(({ kind }) => kind === targetKind)
     .some(({ label }) => label !== '');
-  // Granted or denied or undetermined or no devices  
+  // Granted or denied or undetermined or no devices
   return result;
 }
 
@@ -118,10 +133,10 @@ async function getPermissionAsync(
         if (!shouldAsk) {
           const status = await getPermissionWithQueryAsync('notifications');
           if (status) {
-            return { status, expires: 'never' }
+            return { status, expires: 'never' };
           }
         }
-        
+
         const { Notification = {} } = window as any;
         if (Notification.requestPermission) {
           let status = Notification.permission;
@@ -168,24 +183,24 @@ async function getPermissionAsync(
         }
       }
       break;
-      case 'camera':
-        {
-          const maybeStatus = await getPermissionWithQueryAsync('camera');
-          if (maybeStatus) {
-            if (maybeStatus === PermissionStatus.UNDETERMINED && shouldAsk) {
-              return await askForCameraPermissionAsync();
-            }
-            return { status: maybeStatus, expires: 'never' };
-          } else if (shouldAsk) {
+    case 'camera':
+      {
+        const maybeStatus = await getPermissionWithQueryAsync('camera');
+        if (maybeStatus) {
+          if (maybeStatus === PermissionStatus.UNDETERMINED && shouldAsk) {
             return await askForCameraPermissionAsync();
-          } else {
-            const maybeGranted = await getMediaMaybeGrantedAsync('videoinput');
-            if (maybeGranted) {
-              return { status: PermissionStatus.GRANTED, expires: 'never' };
-            }
-            // TODO: Bacon: Get denied or undetermined...
           }
+          return { status: maybeStatus, expires: 'never' };
+        } else if (shouldAsk) {
+          return await askForCameraPermissionAsync();
+        } else {
+          const maybeGranted = await getMediaMaybeGrantedAsync('videoinput');
+          if (maybeGranted) {
+            return { status: PermissionStatus.GRANTED, expires: 'never' };
+          }
+          // TODO: Bacon: Get denied or undetermined...
         }
+      }
       break;
     default:
       break;

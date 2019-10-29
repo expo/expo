@@ -80,14 +80,26 @@ async function getPermissionWithQueryAsync(name) {
     }
     return null;
 }
+async function enumerateDevices() {
+    if (navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+        return await navigator.mediaDevices.enumerateDevices();
+    }
+    // @ts-ignore: This is deprecated but we should still attempt to use it.
+    if (window.MediaStreamTrack && typeof window.MediaStreamTrack.getSources === 'function') {
+        // @ts-ignore
+        return await MediaStreamTrack.getSources();
+    }
+    return null;
+}
 async function getMediaMaybeGrantedAsync(targetKind) {
-    if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices)
+    const devices = await enumerateDevices();
+    if (!devices) {
         return false;
-    const devices = await navigator.mediaDevices.enumerateDevices();
+    }
     const result = await devices
         .filter(({ kind }) => kind === targetKind)
         .some(({ label }) => label !== '');
-    // Granted or denied or undetermined or no devices  
+    // Granted or denied or undetermined or no devices
     return result;
 }
 async function getPermissionAsync(permission, shouldAsk) {
