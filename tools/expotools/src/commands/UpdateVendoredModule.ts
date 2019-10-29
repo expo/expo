@@ -34,6 +34,7 @@ interface VendoredModuleConfig {
   repoUrl: string;
   packageName?: string;
   installableInManagedApps?: boolean;
+  semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
   warnings?: string[];
@@ -48,6 +49,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
     repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         sourceIosPath: 'ios',
@@ -68,6 +70,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-reanimated': {
     repoUrl: 'https://github.com/kmagiera/react-native-reanimated.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         recursive: true,
@@ -88,6 +91,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-screens': {
     repoUrl: 'https://github.com/kmagiera/react-native-screens.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         sourceIosPath: 'ios',
@@ -102,6 +106,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-appearance': {
     repoUrl: 'https://github.com/expo/react-native-appearance.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         sourceIosPath: 'ios/Appearance',
@@ -601,7 +606,7 @@ async function action(options: ActionOptions) {
     };
 
     if (moduleConfig.installableInManagedApps) {
-      bundledNativeModules[name] = `~${version}`;
+      bundledNativeModules[name] = `${moduleConfig.semverPrefix || ''}${version}`;
       console.log(
         `Updated ${chalk.green(name)} version number in ${chalk.magenta(
           'bundledNativeModules.json'

@@ -249,23 +249,24 @@ Removes all listeners.
 | localUri \*      | _string_  | both      | Local URI for the asset                 |                                                                                                      |
 | location \*      | _object_  | both      | GPS location if available               | `latitude: number, longitude: number` or `null`                                                      |
 | exif \*          | _object_  | both      | EXIF metadata associated with the image |                                                                                                      |
-| orientation \*   | _number_  | iOS       | Display orientation of the image        | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
+| orientation \*   | _number_  | iOS       | Display orientation of the image. Orientation is available only for assets whose mediaType is MediaType.photo | Numbers 1-8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html) |
 | isFavorite \*    | _boolean_ | iOS       | Whether the asset is marked as favorite | `true`, `false`                                                                                      |
 
 > \* These fields can be obtained only by calling `getAssetInfoAsync` method
 
 ### `Album`
 
-| Field name             | Type     | Platforms | Description                                             | Possible values                                 |
-| ---------------------- | -------- | --------- | ------------------------------------------------------- | ----------------------------------------------- |
-| id                     | _string_ | both      |                                                         |                                                 |
-| title                  | _string_ | both      |                                                         |                                                 |
-| assetCount             | _number_ | both      | Estimated number of assets in the album                 |                                                 |
-| type                   | _string_ | iOS       | The type of the assets album                            | `album`, `moment`, `smartAlbum`                 |
-| startTime \*           | _number_ | iOS       | Earliest creation timestamp of all assets in the moment |                                                 |
-| endTime \*             | _number_ | iOS       | Latest creation timestamp of all assets in the moment   |                                                 |
-| approximateLocation \* | _object_ | iOS       | Approximated location of all assets in the moment       | `latitude: number, longitude: number` or `null` |
-| locationNames \*       | _array_  | iOS       | Names of locations grouped in the moment                |                                                 |
+| Field name             | Type     | Platforms | Description                                                                                 | Possible values                                 |
+| ---------------------- | -------- | --------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| id                     | _string_ | both      |                                                                                             |                                                 |
+| title                  | _string_ | both      |                                                                                             |                                                 |
+| assetCount             | _number_ | both      | Estimated number of assets in the album                                                     |                                                 |
+| folderName             | _string_ | iOS       | Name of folder that the album belongs to. Can be null if the album is in the root directory |                                                 |
+| type                   | _string_ | iOS       | The type of the assets album                                                                | `album`, `moment`, `smartAlbum`                 |
+| startTime \*           | _number_ | iOS       | Earliest creation timestamp of all assets in the moment                                     |                                                 |
+| endTime \*             | _number_ | iOS       | Latest creation timestamp of all assets in the moment                                       |                                                 |
+| approximateLocation \* | _object_ | iOS       | Approximated location of all assets in the moment                                           | `latitude: number, longitude: number` or `null` |
+| locationNames \*       | _array_  | iOS       | Names of locations grouped in the moment                                                    |                                                 |
 
 > \* These fields apply only to albums whose type is `moment`
 

@@ -9,7 +9,7 @@
 
 #include <ABI34_0_0jsi/ABI34_0_0jsi.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace jsi {
 
 /// Methods for starting and collecting instrumentation, an \c Instrumentation
@@ -73,4 +73,4 @@ class Instrumentation {
 };
 
 } // namespace jsi
-} // namespace facebook
+} // namespace ABI34_0_0facebook

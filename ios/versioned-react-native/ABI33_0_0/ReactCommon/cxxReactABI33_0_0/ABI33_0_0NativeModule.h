@@ -11,7 +11,7 @@
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 struct MethodDescriptor {

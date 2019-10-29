@@ -23,7 +23,7 @@ async function getTemplateSubstitutionsFromSecrets() {
   }
 }
 
-async function getTemplateSubstitutions() {
+async function getTemplateSubstitutionsAsync() {
   const defaultKeys = await getTemplateSubstitutionsFromSecrets();
 
   try {
@@ -69,7 +69,7 @@ function getMacrosGeneratorForPlatform(platform) {
 async function generateDynamicMacrosAsync(args) {
   try {
     const { platform } = args;
-    const templateSubstitutions = await getTemplateSubstitutions();
+    const templateSubstitutions = await getTemplateSubstitutionsAsync();
 
     const macros = await generateMacrosAsync(platform, args.configuration);
     const macrosGenerator = getMacrosGeneratorForPlatform(platform);
@@ -142,8 +142,23 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
     path.join(templateFilesPath, `${platform}-paths.json`)
   ).readAsync();
   const promises: Promise<any>[] = [];
+  const skipTemplates: Array<string> = args.skipTemplates || [];
 
   for (const [source, dest] of Object.entries(templatePaths)) {
+    if (skipTemplates.includes(source)){
+      console.log(
+        'Skipping template %s ...',
+        chalk.cyan(path.join(templateFilesPath, platform, source))
+      );
+      continue;
+    }
+
+    console.log(
+      'Rendering %s from template %s ...',
+      chalk.cyan(path.join(EXPO_DIR, dest as string, source)),
+      chalk.cyan(path.join(templateFilesPath, platform, source))
+    );
+
     promises.push(
       copyTemplateFileAsync(
         path.join(templateFilesPath, platform, source),
@@ -157,4 +172,4 @@ async function copyTemplateFilesAsync(platform, args, templateSubstitutions) {
   await Promise.all(promises);
 }
 
-export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutions };
+export { generateDynamicMacrosAsync, cleanupDynamicMacrosAsync, getTemplateSubstitutionsAsync };

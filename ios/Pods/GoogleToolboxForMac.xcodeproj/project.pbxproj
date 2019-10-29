@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27F6037F297F3B925BF91B8648B2DD1E /* GoogleToolboxForMac-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B1792006CE9FF8A5E00D7F5AEFBCB2A /* GoogleToolboxForMac-dummy.m */; };
-		4B58DE100EB4114D06267BB1F26E78B5 /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = EB460AF5CE44C7A3321EC58E1982CC6D /* GTMNSData+zlib.m */; };
 		4EE33763B0EC31A35CA68E6789F6B8F6 /* GTMNSData+zlib.h in Headers */ = {isa = PBXBuildFile; fileRef = A76CE337B033A5A7D0BC8C703469FC03 /* GTMNSData+zlib.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		572E499C88E391B6FB4C6F94C94DFC80 /* GTMLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 55462438AC8FB4B773E0FCAC1BD7AC74 /* GTMLogger.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		78451CC9DEA895808A8559EFBE4C33A2 /* GoogleToolboxForMac-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B1792006CE9FF8A5E00D7F5AEFBCB2A /* GoogleToolboxForMac-dummy.m */; };
 		79D25BB351D288832A2A9D8115543B4C /* GTMDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 45862D49B89E1C27081218A4DC06A028 /* GTMDefines.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8D88BC31754505ABB647C56D6F458A15 /* GTMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = BE385D21F6CBF863D9C0D21FCDCFC641 /* GTMLogger.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7B455148F33D428404635E128FD7DF31 /* GTMNSData+zlib.m in Sources */ = {isa = PBXBuildFile; fileRef = EB460AF5CE44C7A3321EC58E1982CC6D /* GTMNSData+zlib.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9647327D30D33FF4FECF9F8D150F9544 /* GTMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = BE385D21F6CBF863D9C0D21FCDCFC641 /* GTMLogger.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -132,7 +132,7 @@
 			buildConfigurationList = 309FA25F3EB4697BEC09D5461043F2F1 /* Build configuration list for PBXNativeTarget "GoogleToolboxForMac" */;
 			buildPhases = (
 				9FB97A23CA176F1196B901AEE39D9DFF /* Headers */,
-				9CBAD460EA272F8C260BCFD968686C1D /* Sources */,
+				B0BDEA9F2B6745508E9CFF0C306F1C0F /* Sources */,
 				5DB6604BCCF8BA5FAC44B7EDE26F1226 /* Frameworks */,
 			);
 			buildRules = (
@@ -171,13 +171,13 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9CBAD460EA272F8C260BCFD968686C1D /* Sources */ = {
+		B0BDEA9F2B6745508E9CFF0C306F1C0F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27F6037F297F3B925BF91B8648B2DD1E /* GoogleToolboxForMac-dummy.m in Sources */,
-				8D88BC31754505ABB647C56D6F458A15 /* GTMLogger.m in Sources */,
-				4B58DE100EB4114D06267BB1F26E78B5 /* GTMNSData+zlib.m in Sources */,
+				78451CC9DEA895808A8559EFBE4C33A2 /* GoogleToolboxForMac-dummy.m in Sources */,
+				9647327D30D33FF4FECF9F8D150F9544 /* GTMLogger.m in Sources */,
+				7B455148F33D428404635E128FD7DF31 /* GTMNSData+zlib.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

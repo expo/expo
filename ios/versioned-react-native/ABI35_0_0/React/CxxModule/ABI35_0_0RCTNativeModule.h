@@ -8,7 +8,7 @@
 #import <ReactABI35_0_0/ABI35_0_0RCTModuleData.h>
 #import <cxxReactABI35_0_0/ABI35_0_0NativeModule.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class ABI35_0_0RCTNativeModule : public NativeModule {

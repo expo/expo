@@ -19,7 +19,7 @@
 # endif
 #endif
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 // JSExecutor functions sometimes take large strings, on the order of

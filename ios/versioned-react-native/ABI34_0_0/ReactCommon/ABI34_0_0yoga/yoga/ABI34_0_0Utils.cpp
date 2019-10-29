@@ -6,7 +6,7 @@
  */
 #include "ABI34_0_0Utils.h"
 
-using namespace facebook;
+using namespace ABI34_0_0facebook;
 
 ABI34_0_0YGFlexDirection ABI34_0_0YGFlexDirectionCross(
     const ABI34_0_0YGFlexDirection flexDirection,

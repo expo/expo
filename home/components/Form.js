@@ -90,8 +90,8 @@ export class FormInput extends React.Component {
     this.setState({ isFocused: false });
   };
 
-  componentWillReceiveProps(nextProps) {
-    this._updateLabel(nextProps.value, this.props.value);
+  componentDidUpdate(prevProps) {
+    this._updateLabel(this.props.value, prevProps.value);
   }
 
   _updateLabel(nextValue, previousValue) {

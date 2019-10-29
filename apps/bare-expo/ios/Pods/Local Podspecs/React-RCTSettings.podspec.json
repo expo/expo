@@ -1,0 +1,29 @@
+{
+  "name": "React-RCTSettings",
+  "version": "0.61.2",
+  "summary": "A wrapper for NSUserDefaults, a persistent key-value store available only on iOS.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "documentation_url": "https://facebook.github.io/react-native/docs/settings",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.61.2"
+  },
+  "source_files": "*.{m}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "RCTSettings",
+  "dependencies": {
+    "React-Core/RCTSettingsHeaders": [
+      "0.61.2"
+    ]
+  }
+}

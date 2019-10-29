@@ -30,12 +30,12 @@ export default class SearchResults extends React.Component {
     sections: [],
   };
 
-  componentWillMount() {
+  componentDidMount() {
     this._maybeUpdateSections(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this._maybeUpdateSections(nextProps);
+  componentDidUpdate(_prevProps) {
+    this._maybeUpdateSections(this.props);
   }
 
   render() {

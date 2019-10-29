@@ -8,14 +8,14 @@
 #include <folly/dynamic.h>
 #include <ABI33_0_0jsi/ABI33_0_0jsi.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace jsi {
 
-facebook::jsi::Value valueFromDynamic(
-  facebook::jsi::Runtime& runtime, const folly::dynamic& dyn);
+ABI33_0_0facebook::jsi::Value valueFromDynamic(
+  ABI33_0_0facebook::jsi::Runtime& runtime, const folly::dynamic& dyn);
 
-folly::dynamic dynamicFromValue(facebook::jsi::Runtime& runtime,
-                                const facebook::jsi::Value& value);
+folly::dynamic dynamicFromValue(ABI33_0_0facebook::jsi::Runtime& runtime,
+                                const ABI33_0_0facebook::jsi::Value& value);
 
 }
 }

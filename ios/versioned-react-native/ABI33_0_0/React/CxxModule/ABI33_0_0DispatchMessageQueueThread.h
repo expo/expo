@@ -8,7 +8,7 @@
 #include <ReactABI33_0_0/ABI33_0_0RCTLog.h>
 #include <cxxReactABI33_0_0/ABI33_0_0MessageQueueThread.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 // ABI33_0_0RCTNativeModule arranges for native methods to be invoked on a queue which

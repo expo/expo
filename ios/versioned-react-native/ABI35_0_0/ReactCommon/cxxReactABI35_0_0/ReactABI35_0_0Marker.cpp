@@ -5,7 +5,7 @@
 
 #include "ReactABI35_0_0Marker.h"
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 namespace ReactABI35_0_0Marker {
 

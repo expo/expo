@@ -592,13 +592,13 @@ public class Exponent {
         emulatorField.setAccessible(true);
         emulatorField.set(null, debuggerHostHostname);
 
-        Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
-        debugServerHostPortField.setAccessible(true);
-        debugServerHostPortField.set(null, debuggerHostPort);
+        // Field debugServerHostPortField = fieldObject.rnClass().getDeclaredField("DEBUG_SERVER_HOST_PORT");
+        // debugServerHostPortField.setAccessible(true);
+        // debugServerHostPortField.set(null, debuggerHostPort);
 
-        Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
-        inspectorProxyPortField.setAccessible(true);
-        inspectorProxyPortField.set(null, debuggerHostPort);
+        // Field inspectorProxyPortField = fieldObject.rnClass().getDeclaredField("INSPECTOR_PROXY_PORT");
+        // inspectorProxyPortField.setAccessible(true);
+        // inspectorProxyPortField.set(null, debuggerHostPort);
 
         builder.callRecursive("setUseDeveloperSupport", true);
         builder.callRecursive("setJSMainModulePath", mainModuleName);
@@ -662,7 +662,11 @@ public class Exponent {
     void handleUnreadNotifications(JSONArray unreadNotifications);
   }
 
-  public boolean shouldRequestDrawOverOtherAppsPermission() {
+  // TODO: remove once SDK 35 is deprecated
+  public boolean shouldRequestDrawOverOtherAppsPermission(String sdkVersion) {
+    if (sdkVersion != null && ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
+      return false;
+    }
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
 

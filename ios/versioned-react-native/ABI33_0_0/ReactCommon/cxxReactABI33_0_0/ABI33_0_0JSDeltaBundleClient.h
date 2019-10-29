@@ -14,7 +14,7 @@
 #include <cxxReactABI33_0_0/ABI33_0_0JSModulesUnbundle.h>
 #include <folly/dynamic.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 class JSDeltaBundleClient {
@@ -44,4 +44,4 @@ private:
 };
 
 } // namespace ReactABI33_0_0
-} // namespace facebook
+} // namespace ABI33_0_0facebook

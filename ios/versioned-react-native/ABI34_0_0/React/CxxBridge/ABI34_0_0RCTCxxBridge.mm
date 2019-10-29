@@ -56,8 +56,8 @@ static NSString *const ABI34_0_0RCTJSThreadName = @"com.facebook.ReactABI34_0_0.
 
 typedef void (^ABI34_0_0RCTPendingCall)();
 
-using namespace facebook::jsi;
-using namespace facebook::ReactABI34_0_0;
+using namespace ABI34_0_0facebook::jsi;
+using namespace ABI34_0_0facebook::ReactABI34_0_0;
 
 /**
  * Must be kept in sync with `MessageQueue.js`.

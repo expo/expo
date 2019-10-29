@@ -14,7 +14,7 @@
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
-    "facebook::ABI34_0_0yoga::detail::CompactValue only works with IEEE754 floats");
+    "ABI34_0_0facebook::ABI34_0_0yoga::detail::CompactValue only works with IEEE754 floats");
 
 #ifdef YOGA_COMPACT_VALUE_TEST
 #define VISIBLE_FOR_TESTING public:
@@ -22,7 +22,7 @@ static_assert(
 #define VISIBLE_FOR_TESTING private:
 #endif
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 namespace detail {
 
@@ -184,4 +184,4 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
 
 } // namespace detail
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook

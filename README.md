@@ -1,6 +1,6 @@
 <!-- Banner Image -->
-[![Expo](/style/header.png)](https://expo.io)
 
+[![Expo](/style/header.png)](https://expo.io)
 
 <p align="center">
  
@@ -43,6 +43,7 @@
 
 - [📚 Documentation](#-documentation)
 - [🗺 Project Layout](#-project-layout)
+- [🏅 Badges](#-badges)
 - [👏 Contributing](#-contributing)
 - [❓ FAQ](#-faq)
 - [💙 The Team](#-the-team)
@@ -75,6 +76,21 @@ Expo is an open-source platform for making universal native apps that run on And
 - [`tools-public`](/tools-public) contains build and configuration tools.
 - [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.
+
+## 🏅 Badges
+
+Let everyone know your app is universal with _Expo_!
+<br/>
+
+[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+
+[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+
+```md
+[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+
+[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+```
 
 ## 👏 Contributing
 
