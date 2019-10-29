@@ -352,7 +352,7 @@ function MenuDetailButton({ label, detail, onPress }) {
 
 const LabelNameOverrides = {
   'Reload JS Bundle': 'Reload JS Bundle only',
-}
+};
 
 function MenuButton({ label, onPress, iconSource, withSeparator, isEnabled, detail }) {
   if (typeof isEnabled === 'undefined') {
@@ -390,22 +390,30 @@ function MenuButton({ label, onPress, iconSource, withSeparator, isEnabled, deta
       <StyledView style={[styles.button, { flexDirection: 'column' }]}>
         <View style={{ flexDirection: 'row' }}>
           <View style={styles.buttonIcon} />
-          <StyledText style={styles.buttonText} lightColor="#9ca0a6">
+          <StyledText
+            style={styles.buttonText}
+            lightColor="#9ca0a6"
+            darkColor="rgba(255,255,255,0.7)">
             {label}
           </StyledText>
+          {/* We may want to use a button to conceal details in the future if we have more options
           <MenuDetailButton
             detail={detail}
             label={label}
             onPress={() => setShowDetails(!showDetails)}
-          />
+          /> */}
         </View>
         {showDetails ? (
           <View style={{ flexDirection: 'row' }}>
             <View style={[styles.buttonIcon, { marginTop: -5, marginBottom: 15 }]} />
             <StyledText
-              style={[styles.buttonText, { marginTop: -5, marginBottom: 15, fontWeight: 'normal', marginRight: 15, flex: 1}]}
+              style={[
+                styles.buttonText,
+                { marginTop: -5, marginBottom: 15, fontWeight: 'normal', marginRight: 15, flex: 1 },
+              ]}
+              darkColor="rgba(255,255,255,0.7)"
               lightColor="#9ca0a6">
-              {detail}
+              {detail ? detail : 'Only available in development mode'}
             </StyledText>
           </View>
         ) : null}
