@@ -90,7 +90,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private long mAudioRecorderDurationAlreadyRecorded = 0L;
   private boolean mAudioRecorderIsRecording = false;
   private boolean mAudioRecorderIsPaused = false;
-  private boolean isRegistered = false;
+  private boolean mIsRegistered = false;
 
   private ModuleRegistry mModuleRegistry;
 
@@ -110,7 +110,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     };
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
         new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-    isRegistered = true;
+    mIsRegistered = true;
   }
 
   @Override
@@ -184,14 +184,14 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostDestroy() {
-    if (isRegistered) {
+    if (mIsRegistered) {
       mContext.unregisterReceiver(mNoisyAudioStreamReceiver);
-      isRegistered = false;
+      mIsRegistered = false;
     }
 
     // remove all remaining sounds
     Iterator<PlayerData> iter = mSoundMap.values().iterator();
-    while(iter.hasNext()) {
+    while (iter.hasNext()) {
       final PlayerData data = iter.next();
       iter.remove();
       if (data != null) {
