@@ -5,6 +5,7 @@ import android.os.Bundle
 import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.EXPIRES_KEY
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.CAN_ASK_AGAIN_KEY
+import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.GRANTED_KEY
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.PERMISSION_EXPIRES_NEVER
 import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.STATUS_KEY
 import org.unimodules.interfaces.permissions.PermissionsStatus
@@ -21,6 +22,7 @@ class LocationRequester : PermissionRequester {
       val accessFineLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_FINE_LOCATION)
       val accessCoarseLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_COARSE_LOCATION)
       val canAskAgain = accessCoarseLocation.canAskAgain && accessCoarseLocation.canAskAgain
+      val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED;
 
       putString(STATUS_KEY, when {
         accessFineLocation.status == PermissionsStatus.GRANTED -> {
@@ -40,6 +42,7 @@ class LocationRequester : PermissionRequester {
       })
       putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER)
       putBoolean(CAN_ASK_AGAIN_KEY, canAskAgain)
+      putBoolean(GRANTED_KEY, isGranted)
       putBundle("android", Bundle().apply { putString("scope", scope) })
     }
   }

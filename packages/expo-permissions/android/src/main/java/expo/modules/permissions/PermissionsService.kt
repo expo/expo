@@ -31,22 +31,20 @@ private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
 
 internal const val ERROR_TAG = "E_PERMISSIONS"
 
-typealias PermissionsListener = (result: IntArray) -> Unit
-
 class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null
 
 
   // state holders for asking for writing permissions
   private var mWritingPermissionBeingAsked = false // change this directly before calling corresponding startActivity
-  private var mAskAsyncListener: PermissionsListener? = null
-  private var mAskAsyncRequestedPermissions: Array<String>? = null
+  private var mAskAsyncListener: PermissionsResponseListener? = null
+  private var mAskAsyncRequestedPermissions: Array<out String>? = null
 
   private lateinit var mAskedPermissionsCache: SharedPreferences
 
   private fun didAsk(permission: String): Boolean = mAskedPermissionsCache.getBoolean(permission, false)
 
-  private fun addToAskedPreferences(permissions: List<String>) {
+  private fun addToAskedPermissionsCache(permissions: List<String>) {
     with(mAskedPermissionsCache.edit()) {
       permissions.forEach { putBoolean(it, true) }
       apply()
@@ -90,28 +88,44 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
 
   override fun getPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
-    val permissionsMap = HashMap<String, PermissionsResponse>()
-    permissions.forEach {
-      val status = when {
-        isPermissionGranted(it) -> PermissionsStatus.GRANTED
-        didAsk(it) -> PermissionsStatus.DENIED
-        else -> PermissionsStatus.UNDETERMINED
-      }
-
-      val canAskAgain = if (status == PermissionsStatus.DENIED) {
-        canAskAgain(it)
+    responseListener.onResult(paresNativeResult(permissions, permissions.map {
+      if (isPermissionGranted(it)) {
+        PackageManager.PERMISSION_GRANTED
       } else {
-        true
+        PackageManager.PERMISSION_DENIED
       }
-      permissionsMap[it] = PermissionsResponse(status, canAskAgain)
-    }
-    responseListener.onResult(permissionsMap)
+    }.toIntArray()))
   }
 
+  @Throws(IllegalStateException::class)
   override fun askForPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
-    val permissionsToAsk = permissions.filter { !isPermissionGranted(it) }
-    askForManifestPermissions(permissionsToAsk.toTypedArray()) {
-      getPermissions(responseListener, *permissions)
+    if (permissions.contains(Manifest.permission.WRITE_SETTINGS) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      val permissionsToAks = permissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
+      val newListener = PermissionsResponseListener {
+        val status = if (hasWritePermission()) {
+          PackageManager.PERMISSION_GRANTED
+        } else {
+          PackageManager.PERMISSION_DENIED
+        }
+
+        it[Manifest.permission.WRITE_SETTINGS] = getPermissionResponseFromNativeResponse(Manifest.permission.WRITE_SETTINGS, status)
+        responseListener.onResult(it)
+      }
+
+      if (!hasWritePermission()) {
+        if (mAskAsyncListener != null) {
+          throw IllegalStateException("Different asking for permissions in progress. Await the old request and then try again.")
+        }
+        mAskAsyncListener = newListener
+        mAskAsyncRequestedPermissions = permissionsToAks
+
+        addToAskedPermissionsCache(listOf(Manifest.permission.WRITE_SETTINGS))
+        askForWriteSettingsPermissionFirst()
+      } else {
+        askForManifestPermissions(permissionsToAks, newListener)
+      }
+    } else {
+      askForManifestPermissions(permissions, responseListener)
     }
   }
 
@@ -166,42 +180,51 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     } ?: false
   }
 
+  private fun paresNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {
+    return HashMap<String, PermissionsResponse>().apply {
+      grantResults.zip(permissionsString).forEach { (result, permission) ->
+        this[permission] = getPermissionResponseFromNativeResponse(permission, result)
+      }
+    }
+  }
+
+  private fun getPermissionResponseFromNativeResponse(permission: String, result: Int): PermissionsResponse {
+    return PermissionsResponse(
+        status = when {
+          result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
+          didAsk(permission) -> PermissionsStatus.DENIED
+          else -> PermissionsStatus.UNDETERMINED
+        },
+        canAskAgain = if (result == PackageManager.PERMISSION_DENIED) {
+          canAskAgain(permission)
+        } else {
+          true
+        }
+    )
+  }
+
   /**
    * Asks for Android built-in permission
    * According to Android documentation [android.Manifest.permission.WRITE_SETTINGS] need to be handled in different way
    *
-   * @param permission [android.Manifest.permission]
+   * @param permissions [android.Manifest.permission]
    */
-  private fun askForManifestPermissions(permissions: Array<String>, listener: PermissionsListener) {
-    addToAskedPreferences(permissions.toList())
-
-    if (permissions.contains(Manifest.permission.WRITE_SETTINGS) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (mAskAsyncListener != null) {
-        throw IllegalStateException("Different asking for permissions in progress. Await the old request and then try again.")
-      }
-
-      mAskAsyncListener = listener
-      mAskAsyncRequestedPermissions = permissions
-      askForWriteSettingsPermissionFirst()
-      return
-    }
+  private fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
+    addToAskedPermissionsCache(permissions.toList())
 
     mActivityProvider?.currentActivity?.run {
       if (this is PermissionAwareActivity) {
         this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
-          when (PERMISSIONS_REQUEST) {
-            requestCode -> {
-              listener(grantResults)
-              true
-            }
-            else -> {
-              listener(IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED })
-              false
-            }
+          return@requestPermissions if (requestCode == PERMISSIONS_REQUEST) {
+            listener.onResult(paresNativeResult(receivePermissions, grantResults))
+            true
+          } else {
+            listener.onResult(paresNativeResult(receivePermissions, IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED }))
+            false
           }
         }
       } else {
-        listener(IntArray(permissions.size) { PackageManager.PERMISSION_DENIED })
+        listener.onResult(paresNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
       }
     }
   }
@@ -248,14 +271,8 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     mAskAsyncListener = null
     mAskAsyncRequestedPermissions = null
 
-    val permissionsToAsk = askAsyncRequestedPermissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
-
-
     // invoke actual asking for permissions
-    askForManifestPermissions(permissionsToAsk) {
-      // add to result WRITE_SETTINGS result
-      askAsyncListener(it + getManifestPermission(Manifest.permission.WRITE_SETTINGS))
-    }
+    askForManifestPermissions(askAsyncRequestedPermissions, askAsyncListener)
   }
 
   override fun onHostPause() = Unit

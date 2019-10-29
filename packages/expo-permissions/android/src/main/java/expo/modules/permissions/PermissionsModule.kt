@@ -15,6 +15,7 @@ import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.interfaces.permissions.Permissions
+import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 
 class PermissionsModule(context: Context) : ExportedModule(context) {
@@ -58,7 +59,9 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
-      promise.resolve(getPermissionsBundle(requestedPermissionsTypes))
+      mPermissions.getPermissions(PermissionsResponseListener {
+        promise.resolve(parePermissionsResponse(requestedPermissionsTypes, it))
+      }, *getAndroidPermissionsFromList(requestedPermissionsTypes))
     } catch (e: IllegalStateException) {
       promise.reject(ERROR_TAG + "_UNKNOWN", e)
     }
@@ -68,7 +71,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   fun askAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
       mPermissions.askForPermissions(PermissionsResponseListener {
-        promise.resolve(getPermissionsBundle(requestedPermissionsTypes))
+        promise.resolve(parePermissionsResponse(requestedPermissionsTypes, it))
       }, *getAndroidPermissionsFromList(requestedPermissionsTypes))
 
     } catch (e: IllegalStateException) {
@@ -77,14 +80,11 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   }
 
   @Throws(IllegalStateException::class)
-  private fun getPermissionsBundle(requestedPermissionsTypes: List<String>): Bundle {
+  private fun parePermissionsResponse(requestedPermissionsTypes: List<String>, permissionMap: Map<String, PermissionsResponse>): Bundle {
     return Bundle().apply {
-      mPermissions.getPermissions(PermissionsResponseListener { permissionsMap ->
-        requestedPermissionsTypes.forEach {
-          putBundle(it, getRequester(it).parseAndroidPermissions(permissionsMap))
-        }
-
-      }, *getAndroidPermissionsFromList(requestedPermissionsTypes))
+      requestedPermissionsTypes.forEach {
+        putBundle(it, getRequester(it).parseAndroidPermissions(permissionMap))
+      }
     }
   }
 

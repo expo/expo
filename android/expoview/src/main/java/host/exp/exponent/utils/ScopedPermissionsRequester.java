@@ -9,133 +9,104 @@ import android.os.Build;
 
 import com.facebook.react.modules.core.PermissionListener;
 
-import androidx.core.content.ContextCompat;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 
-// TODO: remove once SDK 35 is deprecated
-public class PermissionsHelper {
+public class ScopedPermissionsRequester {
 
   @Inject
   ExpoKernelServiceRegistry mExpoKernelServiceRegistry;
 
-  private static final int EXPONENT_PERMISSIONS_REQUEST = 13;
-  private Exponent.PermissionsListener mPermissionsListener;
+  public static final int EXPONENT_PERMISSIONS_REQUEST = 13;
+  private PermissionListener mPermissionListener;
   private ExperienceId mExperienceId;
   private String mExperienceName;
-
-  private boolean mExperiencePermissionsGranted = true;
-  private List<String> mPermissionsToRequestGlobally = new ArrayList<>();
+  private Map<String, Integer> mPermissionsResult = new HashMap<>();
   private List<String> mPermissionsToRequestPerExperience = new ArrayList<>();
+  private List<String> mPermissionsToRequestGlobally = new ArrayList<>();
   private int mPermissionsAskedCount = 0;
 
-  public PermissionsHelper(ExperienceId experienceId) {
-    NativeModuleDepsProvider.getInstance().inject(PermissionsHelper.class, this);
+  public ScopedPermissionsRequester(ExperienceId experienceId) {
+    NativeModuleDepsProvider.getInstance().inject(ScopedPermissionsRequester.class, this);
     mExperienceId = experienceId;
   }
 
-  public boolean getPermissions(String permissions) {
-    Activity activity = Exponent.getInstance().getCurrentActivity();
-    return (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ContextCompat.checkSelfPermission(activity, permissions) == PackageManager.PERMISSION_GRANTED) &&
-        mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permissions, mExperienceId);
-  }
-
-  public boolean requestPermissions(Exponent.PermissionsListener listener, String[] permissions,
-                                    String experienceName) {
-    Activity activity = Exponent.getInstance().getCurrentActivity();
-    if (activity == null) {
-      return false;
-    }
-
-    boolean isGranted = true;
+  public void requestPermissions(BaseExperienceActivity currentActivity, final String experienceName, final String[] permissions, final PermissionListener listener) {
+    mPermissionListener = listener;
     mExperienceName = experienceName;
-    List<String> permissionsToExplain = new ArrayList<>();
-    for (String permission : permissions) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-          /* check for global permission */ activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-        isGranted = false;
-        mPermissionsToRequestGlobally.add(permission);
+    mPermissionsResult = new HashMap<>();
 
-        if (activity.shouldShowRequestPermissionRationale(permission)) {
-          permissionsToExplain.add(permission);
-        }
+    for (String permission : permissions) {
+      int globalStatus = currentActivity.checkSelfPermission(permission);
+      if (globalStatus == PackageManager.PERMISSION_DENIED) {
+        mPermissionsToRequestGlobally.add(permission);
       } else if (mExperienceId != null &&
           !mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
-        isGranted = false;
         mPermissionsToRequestPerExperience.add(permission);
+      } else {
+        mPermissionsResult.put(permission, PackageManager.PERMISSION_GRANTED);
       }
     }
 
-    if (isGranted) {
-      listener.permissionsGranted();
-      return true;
+    if (mPermissionsToRequestPerExperience.isEmpty() && mPermissionsToRequestGlobally.isEmpty()) {
+      callPermissionsListener();
+      return;
     }
 
-    // TODO: explain why this experience needs permissionsToExplain
-
     mPermissionsAskedCount = mPermissionsToRequestPerExperience.size();
-    mPermissionsListener = listener;
 
     if (!mPermissionsToRequestPerExperience.isEmpty()) {
       showPermissionsDialogForExperience(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
-    } else if (!mPermissionsToRequestGlobally.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      activity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[mPermissionsToRequestGlobally.size()]),
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // mPermissionsToRequestGlobally isn't empty
+      currentActivity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
           EXPONENT_PERMISSIONS_REQUEST);
     }
-
-    return true;
   }
 
-  public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      if (mPermissionsListener == null) {
-        // sometimes onRequestPermissionsResult is called multiple times if the first permission
-        // is rejected...
-        return;
-      }
+  public void onRequestPermissionsResult(final String[] permissions, final int[] grantResults) {
+    if (mPermissionListener == null) {
+      // sometimes onRequestPermissionsResult is called multiple times if the first permission
+      // is rejected...
+      return;
+    }
 
-      boolean isGranted = false;
-      if (grantResults.length > 0) {
-        isGranted = true;
-        for (int i = 0; i < grantResults.length; i++) {
-          int result = grantResults[i];
-          if (result != PackageManager.PERMISSION_GRANTED) {
-            isGranted = false;
-            break;
-          } else if (mExperienceId != null) {
-            mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(permissions[i], mExperienceId);
-          }
+    if (grantResults.length > 0) {
+      for (int i = 0; i < grantResults.length; i++) {
+        if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mExperienceId != null) {
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(permissions[i], mExperienceId);
         }
-      }
-
-      if (isGranted && mExperiencePermissionsGranted) {
-        mPermissionsListener.permissionsGranted();
-      } else {
-        mPermissionsListener.permissionsDenied();
-      }
-      mPermissionsListener = null;
-    } else {
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-        Exponent.getInstance().getCurrentActivity()
-            .onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mPermissionsResult.put(permissions[i], grantResults[i]);
       }
     }
+
+    callPermissionsListener();
+  }
+
+  private void callPermissionsListener() {
+    String[] permissions = mPermissionsResult.keySet().toArray(new String[0]);
+    int[] result = new int[permissions.length];
+    for (int i = 0; i < permissions.length; i++) {
+      result[i] = mPermissionsResult.get(permissions[i]);
+    }
+    mPermissionListener.onRequestPermissionsResult(EXPONENT_PERMISSIONS_REQUEST, permissions, result);
   }
 
   private void showPermissionsDialogForExperience(String permission) {
     Activity activity = Exponent.getInstance().getCurrentActivity();
 
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-    PermissionsDialogOnClickListener onClickListener = new PermissionsDialogOnClickListener(permission);
+    ScopedPermissionsRequester.PermissionsDialogOnClickListener onClickListener = new ScopedPermissionsRequester.PermissionsDialogOnClickListener(permission);
     builder.setMessage(activity.getString(
         R.string.experience_needs_permissions,
         mExperienceName,
@@ -188,25 +159,23 @@ public class PermissionsHelper {
       switch (which) {
         case DialogInterface.BUTTON_POSITIVE:
           mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(mPermission, mExperienceId);
+          mPermissionsResult.put(mPermission, PackageManager.PERMISSION_GRANTED);
           break;
 
         case DialogInterface.BUTTON_NEGATIVE:
           mExpoKernelServiceRegistry.getPermissionsKernelService().revokePermissions(mPermission, mExperienceId);
-          mExperiencePermissionsGranted = false;
+          mPermissionsResult.put(mPermission, PackageManager.PERMISSION_DENIED);
           break;
       }
 
       if (mPermissionsAskedCount > 0) {
         showPermissionsDialogForExperience(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
-        // hello compiler - second part of 'if' is necessary
       } else if (!mPermissionsToRequestGlobally.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         Exponent.getInstance().getCurrentActivity()
-            .requestPermissions(mPermissionsToRequestGlobally.toArray(new String[mPermissionsToRequestGlobally.size()]),
+            .requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
                 EXPONENT_PERMISSIONS_REQUEST);
-      } else if (mExperiencePermissionsGranted) {
-        mPermissionsListener.permissionsGranted();
       } else {
-        mPermissionsListener.permissionsDenied();
+        callPermissionsListener();
       }
     }
   }

@@ -5,6 +5,7 @@ package host.exp.exponent.experience;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import android.util.Log;
@@ -15,6 +16,8 @@ import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+
+import org.json.JSONException;
 
 import androidx.annotation.NonNull;
 
@@ -33,8 +36,10 @@ import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.PermissionsHelper;
+import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
+
+import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity implements PermissionAwareActivity {
   private static String TAG = BaseExperienceActivity.class.getSimpleName();
@@ -80,7 +85,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   @Inject
   protected ExpoKernelServiceRegistry mKernelServiceRegistry;
 
-  private PermissionsHelper mPermissionsHelper;
+  private ScopedPermissionsRequester mScopedPermissionsRequester;
 
   private long mOnResumeTime;
 
@@ -314,13 +319,13 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // for getting scoped permission
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
-    int globalResult = super.checkPermission(permission, pid, uid);
+   int globalResult = super.checkPermission(permission, pid, uid);
 
     // only these permissions, which show a dialog to the user should be scoped.
     boolean isDangerousPermission;
     try {
       PermissionInfo permissionInfo = getPackageManager().getPermissionInfo(permission, PackageManager.GET_META_DATA);
-      isDangerousPermission = permissionInfo.protectionLevel == PermissionInfo.PROTECTION_DANGEROUS;
+      isDangerousPermission = (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_DANGEROUS) != 0;
     } catch (PackageManager.NameNotFoundException e) {
       return PackageManager.PERMISSION_DENIED;
     }
@@ -355,33 +360,40 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
 
   @Override
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
-    if (permissions.length > 0 && grantResults.length > 0 && mPermissionsHelper != null) {
-      mPermissionsHelper.onRequestPermissionsResult(requestCode, permissions, grantResults);
-      mPermissionsHelper = null;
+    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
+      // TODO: remove once SDK 35 is deprecated
+      int sdkVersion = 0;
+      try {
+        String sdkVersionString = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+        if (RNObject.UNVERSIONED.equals(sdkVersionString)) {
+          sdkVersion = Integer.MAX_VALUE;
+        } else {
+          sdkVersion = Integer.valueOf(sdkVersionString.substring(0, 2));
+        }
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+      if (sdkVersion <= 35) {
+        Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
+      } else {
+        if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
+          mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
+          mScopedPermissionsRequester = null;
+        }
+      }
+    } else {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
   }
 
   @Override
   public void requestPermissions(final String[] permissions, final int requestCode, final PermissionListener listener) {
-    mPermissionsHelper = new PermissionsHelper(mExperienceId);
-    mPermissionsHelper.requestPermissions(new Exponent.PermissionsListener() {
-      @Override
-      public void permissionsGranted() {
-        listener.onRequestPermissionsResult(requestCode, permissions, arrayFilled(PackageManager.PERMISSION_GRANTED, permissions.length));
-      }
-
-      @Override
-      public void permissionsDenied() {
-        listener.onRequestPermissionsResult(requestCode, permissions, arrayFilled(PackageManager.PERMISSION_DENIED, permissions.length));
-      }
-    }, permissions, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY));
-  }
-
-  private static int[] arrayFilled(final int with, final int length) {
-    int[] array = new int[length];
-    for (int i = 0; i < length; i++) {
-      array[i] = with;
+    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
+      mScopedPermissionsRequester = new ScopedPermissionsRequester(mExperienceId);
+      mScopedPermissionsRequester.requestPermissions(this, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY), permissions, listener);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      super.requestPermissions(permissions, requestCode);
     }
-    return array;
   }
 }
