@@ -8,6 +8,7 @@ import {
 } from '@unimodules/core';
 
 import {
+  ComponentOrHandle,
   SurfaceCreateEvent,
   GLSnapshot,
   ExpoWebGLRenderingContext,
@@ -39,7 +40,6 @@ type GLViewProps = {
   nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null);
 } & BaseGLViewProps;
 
-type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
 const NativeView = requireNativeViewManager('ExponentGLView');
 
 /**
