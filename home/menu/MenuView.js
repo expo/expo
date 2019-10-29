@@ -133,12 +133,14 @@ class MenuView extends React.Component {
 
     let copyUrlButton;
     if (this.props.task && this.props.task.manifestUrl) {
-      copyUrlButton = this._renderButton({
-        key: 'copy',
-        text: 'Copy Link',
-        onPress: this._copyTaskUrl,
-        iconSource: require('../assets/ios-menu-copy.png'),
-      });
+      copyUrlButton = (
+        <MenuButton
+          key="copy"
+          label="Copy Link"
+          onPress={this._copyTaskUrl}
+          iconSource={require('../assets/ios-menu-copy.png')}
+        />
+      );
     }
 
     const screenStyles = {
@@ -164,19 +166,19 @@ class MenuView extends React.Component {
             {this.state.isNuxFinished ? this._renderTaskInfoRow() : this._renderNUXRow()}
             <StyledView style={styles.separator} />
             <View style={styles.buttonContainer}>
-              {this._renderButton({
-                key: 'refresh',
-                text: 'Reload',
-                onPress: () => Kernel.selectRefresh(),
-                iconSource: require('../assets/ios-menu-refresh.png'),
-              })}
+              <MenuButton
+                key="reload"
+                label={'Reload' /* todo: Reload Manifest and JS Bundle on old versions */}
+                onPress={Kernel.selectRefresh}
+                iconSource={require('../assets/ios-menu-refresh.png')}
+              />
               {copyUrlButton}
-              {this._renderButton({
-                key: 'home',
-                text: 'Go to Home',
-                onPress: this._goToHome,
-                iconSource: require('../assets/ios-menu-home.png'),
-              })}
+              <MenuButton
+                key="home"
+                label="Go to Home"
+                onPress={this._goToHome}
+                iconSource={require('../assets/ios-menu-home.png')}
+              />
             </View>
             {this._maybeRenderDevMenuTools()}
             <TouchableHighlight
@@ -259,10 +261,6 @@ class MenuView extends React.Component {
     let devServerName =
       task.manifest && task.manifest.developer ? task.manifest.developer.tool : null;
     if (devServerName) {
-      // XDE is upper
-      if (devServerName === 'xde') {
-        devServerName = devServerName.toUpperCase();
-      }
       return (
         <View style={{ flexDirection: 'row' }}>
           <DevIndicator style={{ marginTop: 4.5, marginRight: 7 }} />
@@ -295,65 +293,16 @@ class MenuView extends React.Component {
 
   _renderDevMenuItem(key, item) {
     let { label, isEnabled, detail } = item;
-    if (isEnabled) {
-      return this._renderButton({
-        key,
-        text: label,
-        onPress: () => {
-          this._onPressDevMenuButton(key);
-        },
-        iconSource: null,
-        withSeperator: true,
-      });
-    } else {
-      const detailButton = detail ? this._renderDevMenuDetailButton(label, detail) : null;
-      return (
-        <StyledView style={[styles.button, styles.buttonWithSeparator]} key={key}>
-          <View style={styles.buttonIcon} />
-          <StyledText style={styles.buttonText} lightColor="#9ca0a6">
-            {label}
-          </StyledText>
-          {detailButton}
-        </StyledView>
-      );
-    }
-  }
-
-  _renderDevMenuDetailButton(title, detail) {
     return (
-      <TouchableOpacity
-        onPress={() => {
-          Alert.alert(title, detail);
-        }}>
-        <Image
-          style={{ width: 16, height: 20, marginVertical: 10 }}
-          source={require('../assets/ios-menu-information-circle.png')}
-        />
-      </TouchableOpacity>
-    );
-  }
-
-  _renderButton(options) {
-    const { key, text, onPress, iconSource, withSeparator } = options;
-
-    let icon;
-    if (iconSource) {
-      icon = <Image style={styles.buttonIcon} source={iconSource} />;
-    } else {
-      icon = <View style={styles.buttonIcon} />;
-    }
-
-    const buttonStyles = withSeparator
-      ? [styles.button, styles.buttonWithSeparator]
-      : styles.button;
-
-    return (
-      <TouchableOpacity key={key} style={buttonStyles} onPress={onPress}>
-        {icon}
-        <StyledText style={styles.buttonText} lightColor="#595c68">
-          {text}
-        </StyledText>
-      </TouchableOpacity>
+      <MenuButton
+        key={key}
+        label={label}
+        onPress={() => this._onPressDevMenuButton(key)}
+        iconSource={null}
+        withSeparator={false}
+        isEnabled={isEnabled}
+        detail={detail}
+      />
     );
   }
 
@@ -386,6 +335,110 @@ class MenuView extends React.Component {
     Kernel.selectDevMenuItemWithKey(key);
   };
 }
+
+function MenuDetailButton({ label, detail, onPress }) {
+  if (!detail) {
+    return null;
+  }
+
+  return (
+    <TouchableOpacity onPress={onPress} hitSlop={{ top: 30, left: 30, bottom: 30, right: 30 }}>
+      <Image
+        style={{ width: 16, height: 20, marginLeft: -8, marginVertical: 10 }}
+        source={require('../assets/ios-menu-information-circle.png')}
+      />
+    </TouchableOpacity>
+  );
+}
+
+function MenuButton({ label, onPress, iconSource, withSeparator, isEnabled, detail }) {
+  if (typeof isEnabled === 'undefined') {
+    isEnabled = true;
+  }
+
+  let [showDetails, setShowDetails] = React.useState(false);
+
+  let icon;
+  if (iconSource) {
+    icon = <Image style={styles.buttonIcon} source={iconSource} />;
+  } else {
+    icon = <View style={styles.buttonIcon} />;
+  }
+
+  if (isEnabled) {
+    const buttonStyles = withSeparator
+      ? [styles.button, styles.buttonWithSeparator]
+      : styles.button;
+
+    return (
+      <TouchableOpacity style={buttonStyles} onPress={onPress}>
+        {icon}
+        <StyledText style={styles.buttonText} lightColor="#595c68">
+          {label}
+        </StyledText>
+      </TouchableOpacity>
+    );
+  } else {
+    return (
+      <StyledView style={[styles.button, styles.buttonWithSeparator, { flexDirection: 'column' }]}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={styles.buttonIcon} />
+          <StyledText style={styles.buttonText} lightColor="#9ca0a6">
+            {label}
+          </StyledText>
+          <MenuDetailButton
+            detail={detail}
+            label={label}
+            onPress={() => setShowDetails(!showDetails)}
+          />
+        </View>
+        {showDetails ? (
+          <View style={{ flexDirection: 'row' }}>
+            <View style={[styles.buttonIcon, { marginTop: -5, marginBottom: 15 }]} />
+            <StyledText
+              style={[styles.buttonText, { marginTop: -5, marginBottom: 15, fontWeight: 'normal' }]}
+              lightColor="#9ca0a6">
+              {detail}
+            </StyledText>
+          </View>
+        ) : null}
+      </StyledView>
+    );
+  }
+}
+
+function useUserSettings(renderId) {
+  let [settings, setSettings] = React.useState({});
+
+  React.useEffect(() => {
+    async function getUserSettings() {
+      let settings = await LocalStorage.getSettingsAsync();
+      setSettings(settings);
+    }
+
+    getUserSettings();
+  }, [renderId]);
+
+  return settings;
+}
+
+const HomeMenu = props => {
+  let colorScheme = useColorScheme();
+  let { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
+
+  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
+  if (theme === 'no-preference') {
+    theme = 'light';
+  }
+
+  return (
+    <AppearanceProvider>
+      <ThemeContext.Provider value={theme}>
+        <MenuView {...props} theme={theme} />
+      </ThemeContext.Provider>
+    </AppearanceProvider>
+  );
+};
 
 let styles = StyleSheet.create({
   container: {},
@@ -517,38 +570,5 @@ let styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-function useUserSettings(renderId) {
-  let [settings, setSettings] = React.useState({});
-
-  React.useEffect(() => {
-    async function getUserSettings() {
-      let settings = await LocalStorage.getSettingsAsync();
-      setSettings(settings);
-    }
-
-    getUserSettings();
-  }, [renderId]);
-
-  return settings;
-}
-
-const HomeMenu = props => {
-  let colorScheme = useColorScheme();
-  let { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
-
-  let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
-  if (theme === 'no-preference') {
-    theme = 'light';
-  }
-
-  return (
-    <AppearanceProvider>
-      <ThemeContext.Provider value={theme}>
-        <MenuView {...props} theme={theme} />
-      </ThemeContext.Provider>
-    </AppearanceProvider>
-  );
-};
 
 AppRegistry.registerComponent('HomeMenu', () => HomeMenu);
