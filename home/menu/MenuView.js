@@ -33,6 +33,7 @@ let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 // done here.
 const DEV_MENU_ORDER = [
   'dev-reload',
+  'dev-live-reload',
   'dev-hmr',
   'dev-remote-debug',
   'dev-perf-monitor',

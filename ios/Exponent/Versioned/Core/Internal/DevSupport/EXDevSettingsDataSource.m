@@ -13,6 +13,7 @@ NSString *const EXDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 NSString *const EXDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 NSString *const EXDevSettingIsInspectorShown = @"showInspector";
 NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+NSString *const EXDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
 
 @interface EXDevSettingsDataSource ()
 
@@ -40,6 +41,7 @@ NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
       EXDevSettingLiveReloadEnabled,
       EXDevSettingIsInspectorShown,
       EXDevSettingIsDebuggingRemotely,
+      EXDevSettingIsPerfMonitorShown,
     ]];
     if (defaultValues) {
       [self _reloadWithDefaults:defaultValues];
@@ -66,6 +68,13 @@ NSString *const EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
 
 - (id)settingForKey:(NSString *)key
 {
+  // live reload is always disabled in react-native@>=0.61 due to fast refresh
+  // we can remove this when live reload is completely removed from the
+  // react-native runtime
+  if ([key isEqualToString:EXDevSettingLiveReloadEnabled]) {
+    return @NO;
+  }
+
   // prohibit these settings if not serving the experience as a developer
   if (!_isDevelopment && [_settingsDisabledInProduction containsObject:key]) {
     return @NO;
