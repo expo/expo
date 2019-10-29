@@ -2,7 +2,6 @@ import Constants from 'expo-constants';
 import React from 'react';
 import {
   Animated,
-  Alert,
   AppRegistry,
   Clipboard,
   Dimensions,
@@ -32,10 +31,10 @@ let MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 // These are defined in EXVersionManager.m in a dictionary, ordering needs to be
 // done here.
 const DEV_MENU_ORDER = [
-  'dev-reload',
   'dev-live-reload',
   'dev-hmr',
   'dev-remote-debug',
+  'dev-reload',
   'dev-perf-monitor',
   'dev-inspector',
 ];
@@ -168,7 +167,7 @@ class MenuView extends React.Component {
             <View style={styles.buttonContainer}>
               <MenuButton
                 key="reload"
-                label={'Reload' /* todo: Reload Manifest and JS Bundle on old versions */}
+                label="Reload"
                 onPress={Kernel.selectRefresh}
                 iconSource={require('../assets/ios-menu-refresh.png')}
               />
@@ -351,12 +350,20 @@ function MenuDetailButton({ label, detail, onPress }) {
   );
 }
 
+const LabelNameOverrides = {
+  'Reload JS Bundle': 'Reload JS Bundle only',
+}
+
 function MenuButton({ label, onPress, iconSource, withSeparator, isEnabled, detail }) {
   if (typeof isEnabled === 'undefined') {
     isEnabled = true;
   }
 
-  let [showDetails, setShowDetails] = React.useState(false);
+  if (LabelNameOverrides[label]) {
+    label = LabelNameOverrides[label];
+  }
+
+  let [showDetails, setShowDetails] = React.useState(true);
 
   let icon;
   if (iconSource) {
@@ -380,7 +387,7 @@ function MenuButton({ label, onPress, iconSource, withSeparator, isEnabled, deta
     );
   } else {
     return (
-      <StyledView style={[styles.button, styles.buttonWithSeparator, { flexDirection: 'column' }]}>
+      <StyledView style={[styles.button, { flexDirection: 'column' }]}>
         <View style={{ flexDirection: 'row' }}>
           <View style={styles.buttonIcon} />
           <StyledText style={styles.buttonText} lightColor="#9ca0a6">
@@ -396,7 +403,7 @@ function MenuButton({ label, onPress, iconSource, withSeparator, isEnabled, deta
           <View style={{ flexDirection: 'row' }}>
             <View style={[styles.buttonIcon, { marginTop: -5, marginBottom: 15 }]} />
             <StyledText
-              style={[styles.buttonText, { marginTop: -5, marginBottom: 15, fontWeight: 'normal' }]}
+              style={[styles.buttonText, { marginTop: -5, marginBottom: 15, fontWeight: 'normal', marginRight: 15, flex: 1}]}
               lightColor="#9ca0a6">
               {detail}
             </StyledText>
