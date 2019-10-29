@@ -122,7 +122,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [@{
-    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
+    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": isDevModeEnabled ? @YES : @NO },
   } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
@@ -142,7 +142,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     NSMutableDictionary *hmrItem = [@{
       @"label": @"Fast Refresh Unavailable",
       @"isEnabled": @NO,
-      @"detail": @"Enable development mode to use Fast Refresh."
+      @"detail": @"Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh."
     } mutableCopy];
     items[@"dev-hmr"] =  hmrItem;
   }
@@ -151,7 +151,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   if (perfMonitor) {
     items[@"dev-perf-monitor"] = @{
       @"label": devSettings.isPerfMonitorShown ? @"Hide Performance Monitor" : @"Show Performance Monitor",
-      @"isEnabled": @YES,
+      @"isEnabled": isDevModeEnabled ? @YES : @NO,
     };
   }
 

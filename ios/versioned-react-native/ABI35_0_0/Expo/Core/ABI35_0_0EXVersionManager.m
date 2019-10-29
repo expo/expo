@@ -123,7 +123,7 @@ void ABI35_0_0EXRegisterScopedModule(Class moduleClass, ...)
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [@{
     @"dev-reload": @{ @"label": @"Reload JS Bundle", @"isEnabled": @YES },
-    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
+    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": isDevModeEnabled ? @YES : @NO },
   } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
@@ -146,7 +146,7 @@ void ABI35_0_0EXRegisterScopedModule(Class moduleClass, ...)
 #endif
   } else {
     NSMutableDictionary *liveReloadItem = [@{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO } mutableCopy];
-    if (devSettings.isHotLoadingEnabled) {
+    if (devSettings.isHotLoadingEnabled && isDevModeEnabled) {
       liveReloadItem[@"detail"] = @"You can't use Live Reload and Hot Reloading at the same time. Disable Hot Reloading to use Live Reload.";
     }
     items[@"dev-live-reload"] =  liveReloadItem;
@@ -158,7 +158,7 @@ void ABI35_0_0EXRegisterScopedModule(Class moduleClass, ...)
     };
   } else {
     NSMutableDictionary *hmrItem = [@{ @"label": @"Hot Reloading Unavailable", @"isEnabled": @NO } mutableCopy];
-    if (devSettings.isLiveReloadEnabled) {
+    if (devSettings.isLiveReloadEnabled && isDevModeEnabled) {
       hmrItem[@"detail"] = @"You can't use Live Reload and Hot Reloading at the same time. Disable Live Reload to use Hot Reloading.";
     }
     items[@"dev-hmr"] =  hmrItem;
