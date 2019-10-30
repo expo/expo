@@ -21,6 +21,7 @@ class CameraModule {
             return PictureSizes;
         };
         this.unmount = () => {
+            this.pausePreview();
             this.settings = null;
             this.stream = null;
         };
