@@ -66,6 +66,9 @@ export function speak(text: string, options: SpeechOptions = {}) {
 }
 
 export async function getAvailableVoicesAsync(): Promise<Voice[]> {
+  if (!ExponentSpeech.getVoices) {
+    throw new UnavailabilityError('Speech', 'getVoices');
+  }
   return ExponentSpeech.getVoices();
 }
 
