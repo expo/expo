@@ -16,9 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'UMReactNativeAdapter/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'React'
+  s.dependency 'React-Core'
   s.dependency 'UMCore'
   s.dependency 'UMFontInterface'
 end
-
-  
