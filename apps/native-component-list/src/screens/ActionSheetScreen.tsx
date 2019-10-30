@@ -13,6 +13,10 @@ const ActionSheetScreen = () => (
   </ActionSheetProvider>
 );
 
+ActionSheetScreen.navigationOptions = {
+  title: 'Action Sheet',
+}
+
 export default ActionSheetScreen;
 
 interface State {
@@ -23,10 +27,6 @@ interface State {
 @connectActionSheet
 class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
   readonly state: State = {};
-
-  static navigationOptions = {
-    title: 'Action Sheet',
-  };
 
   _updateSelectionText = (selectedIndex: number) => {
     this.setState({ selectedIndex });
