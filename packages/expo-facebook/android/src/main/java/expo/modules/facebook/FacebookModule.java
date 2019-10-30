@@ -14,10 +14,6 @@ import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
@@ -27,14 +23,18 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class FacebookModule extends ExportedModule implements ActivityEventListener {
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
+  protected String mAppId;
+  protected String mAppName;
 
   public FacebookModule(Context context) {
     super(context);
-    //noinspection deprecation
-    FacebookSdk.sdkInitialize(context);
     mCallbackManager = CallbackManager.Factory.create();
   }
 
@@ -44,10 +44,59 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @ExpoMethod
-  public void logInWithReadPermissionsAsync(final String appId, final ReadableArguments config, final Promise promise) {
-    AccessToken.setCurrentAccessToken(null);
-    FacebookSdk.setApplicationId(appId);
+  public void setAutoLogAppEventsEnabledAsync(final Boolean enabled, Promise promise) {
+    FacebookSdk.setAutoLogAppEventsEnabled(enabled);
+    promise.resolve(null);
+  }
 
+  @ExpoMethod
+  public void setAutoInitEnabledAsync(final Boolean enabled, final Promise promise) {
+    FacebookSdk.setAutoInitEnabled(enabled);
+    if (enabled) {
+      FacebookSdk.fullyInitialize();
+    }
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void setAdvertiserIDCollectionEnabledAsync(final Boolean enabled, Promise promise) {
+    FacebookSdk.setAdvertiserIDCollectionEnabled(enabled);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void initializeAsync(final String appId, final String appName, final Promise promise) {
+    try {
+      if (appId != null) {
+        mAppId = appId;
+        FacebookSdk.setApplicationId(appId);
+      }
+      if (appName != null) {
+        mAppName = appName;
+        FacebookSdk.setApplicationName(appName);
+      }
+      FacebookSdk.sdkInitialize(getContext(), new FacebookSdk.InitializeCallback() {
+        @Override
+        public void onInitialized() {
+          FacebookSdk.fullyInitialize();
+          mAppId = FacebookSdk.getApplicationId();
+          mAppName = FacebookSdk.getApplicationName();
+          promise.resolve(null);
+        }
+      });
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void logInWithReadPermissionsAsync(final ReadableArguments config, final Promise promise) {
+    if (FacebookSdk.getApplicationId() == null) {
+      promise.reject("E_CONF_ERROR", "No appId configured, required for initialization. " +
+          "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml.");
+    }
+
+    AccessToken.setCurrentAccessToken(null);
     List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
 
     if (config.containsKey("behavior")) {
@@ -70,7 +119,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
 
         // This is the only route through which we send an access token back. Make sure the
         // application ID is correct.
-        if (!appId.equals(loginResult.getAccessToken().getApplicationId())) {
+        if (!mAppId.equals(loginResult.getAccessToken().getApplicationId())) {
           promise.reject(new IllegalStateException("Logged into wrong app, try again?"));
           return;
         }
