@@ -22,7 +22,7 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
     }
 
     private val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
-    private val updater = OtaUpdater(context, persistence, config, id)
+    private val updater = OtaUpdater.createUpdater(context, persistence, config, id)
 
     init {
         persistence.config = config

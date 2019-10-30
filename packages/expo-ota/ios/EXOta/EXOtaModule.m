@@ -65,8 +65,8 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     return [persistance.config.manifestComparator shouldReplaceBundle:[persistance readNewestManifest] forNew:manifest];
 }
 
-UM_EXPORT_METHOD_AS(fetchUpdatesAsync,
-                    fetchUpdatesAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(fetchUpdateAsync,
+                    fetchUpdateAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
     [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {

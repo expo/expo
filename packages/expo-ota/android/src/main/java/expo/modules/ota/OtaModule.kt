@@ -10,6 +10,7 @@ import org.unimodules.core.interfaces.ExpoMethod
 class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, private val updater: OtaUpdater) : ExportedModule(context) {
 
     private var moduleRegistry: ModuleRegistry? = null
+    private var eventEmitter: UpdatesEventEmitter? = null
 
     override fun getName(): String {
         return NAME
@@ -17,8 +18,11 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
 
     override fun onCreate(moduleRegistry: ModuleRegistry) {
         this.moduleRegistry = moduleRegistry
+        this.eventEmitter = createUpdatesEventEmitter(moduleRegistry)
+        updater.updateEvents = eventEmitter
     }
 
+    @Suppress("unused")
     @ExpoMethod
     fun checkForUpdateAsync(promise: Promise) {
         updater.downloadManifest(manifestHandler(promise)) { e -> promise.reject("E_FETCH_MANIFEST_FAILED", e) }
@@ -33,6 +37,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         }
     }
 
+    @Suppress("unused")
     @ExpoMethod
     fun reload(promise: Promise) {
         try {
@@ -43,6 +48,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         }
     }
 
+    @Suppress("unused")
     @ExpoMethod
     fun reloadFromCache(promise: Promise) {
         reload(promise)
@@ -55,8 +61,9 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         promise.resolve(true)
     }
 
+    @Suppress("unused")
     @ExpoMethod
-    fun fetchUpdatesAsync(promise: Promise) {
+    fun fetchUpdateAsync(promise: Promise) {
         if (persistence.config != null) {
             updater.checkAndDownloadUpdate(handleUpdate(promise),
                     { promise.resolve(null) },
@@ -68,7 +75,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
 
     @ExpoMethod
     fun readCurrentManifestAsync(promise: Promise) {
-        promise.resolve(persistence.manifest?.toString())
+        promise.resolve(persistence.manifest.toString())
     }
 
     private fun handleUpdate(promise: Promise): (manifest: JSONObject, path: String) -> Unit =

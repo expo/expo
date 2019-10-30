@@ -7,9 +7,23 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class OtaUpdater(private val context: Context, private val persistence: ExpoOTAPersistence, private val config: ExpoOTAConfig, private val id: String) {
+class OtaUpdater private constructor(private val context: Context, private val persistence: ExpoOTAPersistence, private val config: ExpoOTAConfig, private val id: String) {
+
+    companion object {
+        val updatersMap = HashMap<String, OtaUpdater>()
+
+        @JvmStatic fun createUpdater(context: Context, persistence: ExpoOTAPersistence, config: ExpoOTAConfig, id: String): OtaUpdater
+        {
+            if(!updatersMap.containsKey(id)) {
+                updatersMap.put(id, OtaUpdater(context, persistence, config, id));
+            }
+            return updatersMap[id]!!
+        }
+
+    }
 
     private val embeddedManifestAndBundle = EmbeddedManifestAndBundle(context)
+    var updateEvents: UpdatesEventEmitter? = null
 
     init {
         checkAssetsBundleAndManifest()
@@ -25,13 +39,19 @@ class OtaUpdater(private val context: Context, private val persistence: ExpoOTAP
                                error: (Exception?) -> Unit) {
         downloadManifest({ manifest ->
             if (shouldReplaceBundle(persistence.newestManifest, manifest)) {
+                updateEvents?.emitDownloadStarted()
                 downloadBundle(manifest, {
+                    updateEvents?.emitDownloadFinished()
                     success(manifest, it)
                 }) { error(it) }
             } else {
+                updateEvents?.emitDownloadNotAvailable()
                 updateUnavailable(manifest)
             }
-        }) { error(it) }
+        }) {
+            updateEvents?.emitError()
+            error(it)
+        }
     }
 
     private fun shouldReplaceBundle(currentManifest: JSONObject, manifestToReplace: JSONObject) =

@@ -17,7 +17,7 @@ class VersionNumberManifestComparator(private val nativeComparator: ManifestComp
         val newVersion = newManifest.optString(MANIFEST_VERSION_KEY, "")
         val lastVersion = lastManifest.optString(MANIFEST_VERSION_KEY, "")
         return when {
-            TextUtils.isEmpty(newVersion) -> throw IllegalArgumentException("Manifest must provide version parameter!")
+            TextUtils.isEmpty(newVersion) -> false
             TextUtils.isEmpty(lastVersion) -> true
             else -> nativeComparator.shouldReplaceBundle(lastManifest, newManifest) && compareVersions(newVersion, lastVersion) > 0
         }

@@ -9,7 +9,7 @@ class OtaPackage @JvmOverloads constructor(private var id: String? = null) : Bas
 
     override fun createExportedModules(context: Context): List<ExportedModule> {
         val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
-        val updater = OtaUpdater(context, persistence, persistence.config!!, persistence.id!!)
+        val updater = OtaUpdater.createUpdater(context, persistence, persistence.config!!, persistence.id!!)
         return singletonList<ExportedModule>(OtaModule(context, persistence, updater) as ExportedModule)
     }
 
