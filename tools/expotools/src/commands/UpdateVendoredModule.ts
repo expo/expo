@@ -52,16 +52,17 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     semverPrefix: '~',
     steps: [
       {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/GestureHandler',
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-        targetAndroidPath: 'modules/api/components/gesturehandler/react',
+        sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {
-        sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
-        targetAndroidPath: 'modules/api/components/gesturehandler',
+        recursive: true,
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/GestureHandler',
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
+        targetAndroidPath: 'modules/api/components/gesturehandler/react',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
