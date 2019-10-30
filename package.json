@@ -31,7 +31,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "eslint": "^6.5.1",
     "eslint-config-universe": "^2.0.0",
-    "expo-cli": "^3.4.0",
+    "expo-cli": "^3.5.0",
     "expo-yarn-workspaces": "*",
     "prettier": "^1.18.2"
   },
