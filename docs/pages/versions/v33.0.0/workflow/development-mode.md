@@ -1,5 +1,5 @@
 ---
-title: Development and Production Modes
+title: Development and Production Mode
 old_permalink: /versions/v12.0.0/guides/development-mode.html
 previous___FILE: ./up-and-running.md
 next___FILE: ./configuration.md
@@ -9,15 +9,15 @@ import Video from '../../../../components/plugins/Video'
 
 Your project will always run in one of two modes: development or production. By default, running your project locally with `expo start` runs it in development mode, whereas a published project (via `expo publish`), or any standalone apps, will run in production mode.
 
-The difference between these is pretty simple- production mode minifies your code and better represents the performance your app will have on end users' devices, whereas development mode gives you have access to tools that make development and **especially** debugging a lot easier. We go through those tools and how to use them in the [debugging documention](../debugging/), so here we'll just describe some of the use cases and differences, as well as how to switch between the two modes.
+Production mode [minifies your code](https://www.imperva.com/learn/performance/minification/) and better represents the performance your app will have on end users' devices. Development mode includes useful warnings and gives you access to tools that make development and debugging easier. Let's look at each of these modes more in detail and learn how you can toggle between them.
 
 ## Development Mode
 
-React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. If you want to see how to use those tools, see our [debugging documentation](../debugging/). Development mode also performs a bunch of validations while your app is running to give you warnings if, for example, you're using a deprecated property or if you forgot to pass a required property into a component. This video shows the Element Inspector and Performance Monitor in action, on both Android and iOS simulators:
+React Native includes some very useful tools for development: remote JavaScript debugging in Chrome, live reload, hot reloading, and an element inspector similar to the beloved inspector that you use in Chrome. If you want to see how to use those tools, see our [debugging documentation](../debugging/). Development mode also performs validations while your app is running to give you warnings if, for example, you're using a deprecated property or if you forgot to pass a required property into a component. This video shows the Element Inspector and Performance Monitor in action, on both Android and iOS simulators:
 
 <Video file="dev-prod/devMode.mp4" />
 
-**This comes at a cost: your app runs slower in development mode.** You can toggle it on and off from Expo Dev Tools and Expo CLI. When you switch it, just close and re-open your app for the change to take effect. **Any time you are testing the performance of your app, be sure to disable development mode**.
+> **This comes at a cost: your app runs slower in development mode.** You can toggle it on and off from Expo Dev Tools and Expo CLI. When you switch it, just close and re-open your app for the change to take effect. **Any time you are testing the performance of your app, be sure to disable development mode**.
 
 ### Toggling Development Mode in Expo Dev Tools
 
