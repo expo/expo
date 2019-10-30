@@ -72,6 +72,7 @@ function _emitEvent(params) {
     if (!_emitter) {
         throw new Error(`EventEmitter must be initialized to use from its listener`);
     }
+    console.log('They say we emit event. Do we?');
     _emitter.emit('Exponent.updatesEvent', newParams);
 }
 function _getEmitter() {
