@@ -607,6 +607,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
         // Manually restarting the session since it must
         // have been stopped due to an error.
         [self.session startRunning];
+        [self ensureConfiguration];
         [self onReady:nil];
       });
     }]];
@@ -621,6 +622,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       }
 
       [self.session startRunning];
+      [self ensureConfiguration];
       [self onReady:nil];
     });
   });
@@ -693,7 +695,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       [self.session addInput:captureDeviceInput];
       
       self.videoCaptureDeviceInput = captureDeviceInput;
-      [self updateFlashMode];
       [self updateZoom];
       [self updateFocusMode];
       [self updateFocusDepth];
@@ -702,6 +703,17 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     }
     
     [self.session commitConfiguration];
+  });
+}
+
+// Some configuration need to be applied on session after it's started
+// - torchMode: https://stackoverflow.com/a/53666293/4337317
+- (void)ensureSessionConfiguration
+{
+  UM_WEAKIFY(self);
+  dispatch_async(_sessionQueue, ^{
+    UM_ENSURE_STRONGIFY(self);
+    [self updateFlashMode];
   });
 }
 
@@ -769,6 +781,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     dispatch_async(_sessionQueue, ^{
       UM_ENSURE_STRONGIFY(self);
       [self.session startRunning];
+      [self ensureConfiguration];
     });
   }
 }
