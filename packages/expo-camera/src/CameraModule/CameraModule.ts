@@ -257,6 +257,7 @@ class CameraModule {
   };
 
   unmount = () => {
+    this.pausePreview();
     this.settings = null;
     this.stream = null;
   };
