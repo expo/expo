@@ -385,8 +385,13 @@
 
     <!-- ADD BRANCH CONFIG HERE -->
 
-    <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->
-    <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb0"/>
+    <!-- ADD FACEBOOK APP ID CONFIG HERE -->
+    <!-- ADD FACEBOOK APP DISPLAY NAME CONFIG HERE -->
+    <!-- Tags below need to be in one line with no whitespace after android:value -->
+    <!-- in order for XDL to be able to replace values in them -->
+    <meta-data android:name="com.facebook.sdk.AutoLogAppEventsEnabled" android:value="false"/>
+    <meta-data android:name="com.facebook.sdk.AutoInitEnabled" android:value="false"/>
+    <meta-data android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled" android:value="false"/>
 
     <!-- ADD HERE STRIPE SCHEME META DATA -->
   </application>

@@ -1,5 +1,3 @@
-
-#import <EXAdsFacebook/EXFacebookAdHelper.h>
 #import <EXAdsFacebook/EXNativeAdManager.h>
 #import <EXAdsFacebook/EXNativeAdView.h>
 
@@ -113,9 +111,6 @@ UM_EXPORT_METHOD_AS(init,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![EXFacebookAdHelper facebookAppIdFromNSBundle]) {
-    UMLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
-  }
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
                                                                 forNumAdsRequested:[adsToRequest intValue]];
 
