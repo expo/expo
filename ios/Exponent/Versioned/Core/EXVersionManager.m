@@ -122,8 +122,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   RCTDevSettings *devSettings = [self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   BOOL isDevModeEnabled = [self _isDevModeEnabledForBridge:bridge];
   NSMutableDictionary *items = [@{
-    @"dev-reload": @{ @"label": @"Reload JS Bundle", @"isEnabled": @YES },
-    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": @YES },
+    @"dev-inspector": @{ @"label": @"Toggle Element Inspector", @"isEnabled": isDevModeEnabled ? @YES : @NO },
   } mutableCopy];
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
@@ -133,42 +132,26 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   } else {
     items[@"dev-remote-debug"] =  @{ @"label": @"Remote Debugger Unavailable", @"isEnabled": @NO };
   }
-  if (devSettings.isLiveReloadAvailable && !devSettings.isHotLoadingEnabled && isDevModeEnabled) {
-    items[@"dev-live-reload"] = @{
-      @"label": (devSettings.isLiveReloadEnabled) ? @"Disable Live Reload" : @"Enable Live Reload",
-      @"isEnabled": @YES,
-    };
-#ifdef EX_ENABLE_UNSAFE_SYSTRACE
-    items[@"dev-profiler"] = @{
-      @"label": (devSettings.isProfilingEnabled) ? @"Stop Systrace" : @"Start Systrace",
-      @"isEnabled": @YES,
-    };
-#endif
-  } else {
-    NSMutableDictionary *liveReloadItem = [@{ @"label": @"Live Reload Unavailable", @"isEnabled": @NO } mutableCopy];
-    if (devSettings.isHotLoadingEnabled) {
-      liveReloadItem[@"detail"] = @"You can't use Live Reload and Hot Reloading at the same time. Disable Hot Reloading to use Live Reload.";
-    }
-    items[@"dev-live-reload"] =  liveReloadItem;
-  }
-  if (devSettings.isHotLoadingAvailable && !devSettings.isLiveReloadEnabled && isDevModeEnabled) {
+
+  if (devSettings.isHotLoadingAvailable && isDevModeEnabled) {
     items[@"dev-hmr"] = @{
-      @"label": (devSettings.isHotLoadingEnabled) ? @"Disable Hot Reloading" : @"Enable Hot Reloading",
+      @"label": (devSettings.isHotLoadingEnabled) ? @"Disable Fast Refresh" : @"Enable Fast Refresh",
       @"isEnabled": @YES,
     };
   } else {
-    NSMutableDictionary *hmrItem = [@{ @"label": @"Hot Reloading Unavailable", @"isEnabled": @NO } mutableCopy];
-    if (devSettings.isLiveReloadEnabled) {
-      hmrItem[@"detail"] = @"You can't use Live Reload and Hot Reloading at the same time. Disable Live Reload to use Hot Reloading.";
-    }
+    NSMutableDictionary *hmrItem = [@{
+      @"label": @"Fast Refresh Unavailable",
+      @"isEnabled": @NO,
+      @"detail": @"Use the Reload button above to reload when in production mode. Switch back to development mode to use Fast Refresh."
+    } mutableCopy];
     items[@"dev-hmr"] =  hmrItem;
   }
 
   id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
   if (perfMonitor) {
     items[@"dev-perf-monitor"] = @{
-      @"label": devSettings.isPerfMonitorShown ? @"Hide Perf Monitor" : @"Show Perf Monitor",
-      @"isEnabled": @YES,
+      @"label": devSettings.isPerfMonitorShown ? @"Hide Performance Monitor" : @"Show Performance Monitor",
+      @"isEnabled": isDevModeEnabled ? @YES : @NO,
     };
   }
 
@@ -185,8 +168,6 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     [(RCTBridgeHack *)bridge reload];
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
     devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-  } else if ([key isEqualToString:@"dev-live-reload"]) {
-    devSettings.isLiveReloadEnabled = !devSettings.isLiveReloadEnabled;
   } else if ([key isEqualToString:@"dev-profiler"]) {
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
