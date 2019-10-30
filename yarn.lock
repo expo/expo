@@ -6215,10 +6215,10 @@ expo-asset-utils@^1.0.0:
   resolved "https://registry.yarnpkg.com/expo-asset-utils/-/expo-asset-utils-1.2.0.tgz#df52f8e8c836c343ad713a0044db79be69cfe64b"
   integrity sha512-06zVi5aXzyMq7SFiawxu2FUbpbVlxnE9W44cG4K5HyhLaqyRqss+o5MZMEGn8Ibd+008UiK7yCPy/bSpx2hVag==
 
-expo-cli@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-3.4.0.tgz#03e34894582662689ba8e2894d6420a10e94e55a"
-  integrity sha512-Vq3IkQOFBGI20ylEtn55ZqqYBDpqM2+N73p7HC/VKdZ9x0q1UTR9mMQDewwKzroPIIZrcG8QJOvSC/T2RVWoYQ==
+expo-cli@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/expo-cli/-/expo-cli-3.4.1.tgz#e3619434c252c4132d1f9ee869f7d1f52a447d7d"
+  integrity sha512-9v+vzVy1zfdKaWfDCaofrdvZAmHUwBg6eCpzd7XT6sW7tsJsgt5fKRHG26+yHR4QLFcK1ILdKwgmsKDlvPfssw==
   dependencies:
     "@expo/bunyan" "3.0.2"
     "@expo/config" "^2.3.0"
