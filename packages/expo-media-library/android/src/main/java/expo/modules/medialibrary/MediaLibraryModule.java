@@ -283,7 +283,7 @@ public class MediaLibraryModule extends ExportedModule {
       return false;
     }
 
-    return permissionsManager.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+    return !permissionsManager.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
   }
 
   private boolean isMissingWritePermission() {
@@ -292,7 +292,7 @@ public class MediaLibraryModule extends ExportedModule {
       return false;
     }
 
-    return permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
+    return !permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
   }
 
   private class MediaStoreContentObserver extends ContentObserver {

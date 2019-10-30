@@ -248,12 +248,12 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
 
   @ExpoMethod
   public void requestCameraRollPermissionsAsync(final Promise promise) {
-    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
   }
 
   @ExpoMethod
   public void getCameraRollPermissionsAsync(final Promise promise) {
-    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
   }
 
   @ExpoMethod

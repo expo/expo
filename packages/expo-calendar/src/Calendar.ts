@@ -521,9 +521,19 @@ export function openEventInCalendar(id: string): void {
   return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
 
+/**
+ * @deprecated Use requestCalendarPermissionsAsync()
+ */
+export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+  console.warn(
+    'requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.'
+  );
+  return requestCalendarPermissionsAsync();
+}
+
 export async function getCalendarPermissionsAsync(): Promise<PermissionsResponse> {
   if (!ExpoCalendar.getCalendarPermissionsAsync) {
-    throw new UnavailabilityError('Calendar', 'getPermissionsAsync');
+    throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
   }
   return ExpoCalendar.getCalendarPermissionsAsync();
 }

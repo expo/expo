@@ -17,7 +17,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
+
 import android.util.Log;
 
 import com.google.android.gms.common.api.ApiException;
@@ -54,6 +56,7 @@ import org.unimodules.interfaces.permissions.Permissions;
 import org.unimodules.interfaces.permissions.PermissionsResponse;
 import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationRequestTimeoutException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
@@ -493,11 +496,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region private methods
 
   private boolean isMissingPermissions() {
-    return mPermissionsManager == null
-        || (
-        mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-            && mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
-    );
+    return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   private void getLastKnownLocation(final Double maximumAge, final OnSuccessListener<Location> callback) {
@@ -770,7 +769,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
     resultBundle.putBundle("android", scopeBundle);
 
-    return  resultBundle;
+    return resultBundle;
   }
 
   //endregion
@@ -806,7 +805,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   }
 
   @Override
-  public void onNewIntent(Intent intent) {}
+  public void onNewIntent(Intent intent) {
+  }
 
   //endregion
   //region LifecycleEventListener

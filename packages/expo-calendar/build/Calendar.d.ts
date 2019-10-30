@@ -140,9 +140,13 @@ export declare function deleteReminderAsync(id: string): Promise<void>;
 export declare function getSourcesAsync(): Promise<Source[]>;
 export declare function getSourceAsync(id: string): Promise<Source>;
 export declare function openEventInCalendar(id: string): void;
-export declare function getPermissionsAsync(): Promise<PermissionsResponse>;
-export declare function getRemindersPermissionsAync(): Promise<PermissionsResponse>;
+/**
+ * @deprecated Use requestCalendarPermissionsAsync()
+ */
 export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function getCalendarPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function getRemindersPermissionsAync(): Promise<PermissionsResponse>;
+export declare function requestCalendarPermissionsAsync(): Promise<PermissionsResponse>;
 export declare function requestRemindersPermissionsAsync(): Promise<PermissionsResponse>;
 export declare const EntityTypes: {
     EVENT: string;

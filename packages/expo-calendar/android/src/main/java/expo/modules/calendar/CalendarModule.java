@@ -252,12 +252,12 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
 
   @ExpoMethod
   public void requestCalendarPermissionsAsync(final Promise promise) {
-    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.CAMERA);
+    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
   }
 
   @ExpoMethod
   public void getCalendarPermissionsAsync(final Promise promise) {
-    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.CAMERA);
+    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
   }
 
   //endregion

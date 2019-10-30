@@ -284,9 +284,16 @@ export function openEventInCalendar(id) {
     }
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
-export async function getPermissionsAsync() {
+/**
+ * @deprecated Use requestCalendarPermissionsAsync()
+ */
+export async function requestPermissionsAsync() {
+    console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');
+    return requestCalendarPermissionsAsync();
+}
+export async function getCalendarPermissionsAsync() {
     if (!ExpoCalendar.getCalendarPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'getPermissionsAsync');
+        throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
     }
     return ExpoCalendar.getCalendarPermissionsAsync();
 }
@@ -296,7 +303,7 @@ export async function getRemindersPermissionsAync() {
     }
     return ExpoCalendar.getRemindersPermissionsAync();
 }
-export async function requestPermissionsAsync() {
+export async function requestCalendarPermissionsAsync() {
     if (!ExpoCalendar.requestCalendarPermissionsAsync) {
         throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
     }
