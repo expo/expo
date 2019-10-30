@@ -517,6 +517,19 @@ Alias: `expo r`
 </p>
 </details>
 
+<details><summary><h3>expo upgrade</h3><p>Upgrade your project to a newer SDK version.
+</p></summary>
+<p>
+
+| Option         | Description             |
+| ------------ | ----------------------- |
+| `--npm` | Use npm to install updated packages. |
+| `--yarn` | Use yarn to install updated packages. |
+
+</p>
+</details>
+
+
 <details><summary><h3>expo upload:android</h3><p>Uploads a standalone Android app to Google Play (works on macOS only). Uploads the latest build by default.</p></summary>
 <p>
 
@@ -648,9 +661,9 @@ Alias: `expo u`
 
 </details>
 
-## Universal Options
+## Global command flags
 
-These options will work with any command.
+These options will work with any command, eg: `expo build:ios --help` will provide help information relevant to the `expo build:ios` command.
 
 | Option         | Description             |
 | ------------ | ----------------------- |
