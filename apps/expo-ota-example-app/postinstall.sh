@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 mkdir react-native
 cp postinstall.package.json react-native/package.json
