@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Button, View, Text, Alert } from 'react-native';
 import * as OTA from 'expo-ota';
 
 export default function App() {
+  useEffect(() => {
+    console.log('They say it is registered. Is it?');
+    OTA.addListener(event => {
+      console.log('OTA Event: ', event);
+    });
+  }, []);
+
   const checkForUpdates = async () => {
     console.warn(Object.keys(OTA));
     const value = OTA.checkForUpdateAsync();
@@ -16,7 +23,7 @@ export default function App() {
   };
 
   const fetchUpdates = () => {
-    OTA.fetchUpdatesAsync()
+    OTA.fetchUpdateAsync()
       .then(result => {
         Alert.alert('Result: ', `${JSON.stringify(result)}`);
       })
@@ -59,7 +66,7 @@ export default function App() {
       <View style={{ height: 10 }} />
       <Button title={'Current manifest'} onPress={manifest} />
       <View style={{ height: 10 }} />
-      <Text>Version 1.0.104</Text>
+      <Text>Version 1.0.109</Text>
     </View>
   );
 }
