@@ -226,6 +226,7 @@ const RENAMED_PAGES = {
   '/versions/latest/expokit/': '/versions/latest/expokit/overview/',
   '/versions/latest/guides/detach/': '/versions/latest/expokit/eject/',
   '/versions/latest/expokit/detach/': '/versions/latest/expokit/eject/',
+
   // Lots of old links pointing to guides when they have moved elsewhere
   '/versions/latest/guides/configuration/': '/versions/latest/workflow/configuration/',
   '/versions/latest/guides/expokit/': '/versions/latest/expokit/overview/',
@@ -238,4 +239,14 @@ const RENAMED_PAGES = {
     '/versions/latest/guides/troubleshooting-proxies/',
   '/versions/latest/introduction/running-in-the-browser/':
     '/versions/latest/guides/running-in-the-browser/',
+
+  // Changes from redoing the getting started workflow, SDK35+
+  '/versions/latest/workflow/up-and-running/': '/versions/latest/get-started/installation/',
+  '/versions/latest/introduction/additional-resources/':
+    '/versions/latest/next-steps/additional-resources/',
+  '/versions/latest/introduction/already-used-react-native/':
+    '/versions/latest/workflow/already-used-react-native/',
+  '/versions/latest/introduction/community/': '/versions/latest/next-steps/community/',
+  '/versions/latest/introduction/installation/': '/versions/latest/next-steps/installation/',
+  '/versions/latest/workflow/exploring-managed-workflow/': '/versions/latest/introduction/walkthrough/',
 };

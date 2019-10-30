@@ -20,7 +20,7 @@
 // particular, the sync functions are only used for bridge setup and
 // teardown, and quitSynchronous is guaranteed to be called.
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 ABI33_0_0RCTMessageThread::ABI33_0_0RCTMessageThread(NSRunLoop *runLoop, ABI33_0_0RCTJavaScriptCompleteBlock errorBlock)

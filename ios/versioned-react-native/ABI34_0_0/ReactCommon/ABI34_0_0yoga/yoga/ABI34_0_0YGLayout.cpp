@@ -7,7 +7,7 @@
 #include "ABI34_0_0YGLayout.h"
 #include "ABI34_0_0Utils.h"
 
-using namespace facebook;
+using namespace ABI34_0_0facebook;
 
 bool ABI34_0_0YGLayout::operator==(ABI34_0_0YGLayout layout) const {
   bool isEqual = ABI34_0_0YGFloatArrayEqual(position, layout.position) &&

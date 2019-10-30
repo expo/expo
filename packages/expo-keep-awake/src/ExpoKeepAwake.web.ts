@@ -1,4 +1,1 @@
-export default {
-  activate() {},
-  deactivate() {},
-};
+export default {};

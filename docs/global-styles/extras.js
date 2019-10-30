@@ -14,6 +14,9 @@ export const globalExtras = `
     outline: none;
   }
 
+  blockquote {
+    background: #fbfbfb;
+  }
 
   details {
     margin-bottom: 20px;
@@ -28,6 +31,12 @@ export const globalExtras = `
 
   details summary h3 {
     font-size: 1.2rem;
+    font-family: expo-brand-bold,sans-serif;
+    display: inline;
+  }
+
+  details summary h4 {
+    font-size: 1.1rem;
     font-family: expo-brand-bold,sans-serif;
     display: inline;
   }
@@ -47,3 +56,4 @@ export const globalExtras = `
     margin-left: 15px;
   }
 `;
+

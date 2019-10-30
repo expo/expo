@@ -1040,6 +1040,16 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/[Rr]eact/${reactPodName}/g`,
     },
     {
+      // Prefixes all direct references to objects under `facebook` namespace.
+      // It must be applied before versioning `namespace facebook` so
+      // `using namespace facebook::` don't get versioned twice.
+      pattern: `s/facebook::/${versionPrefix}facebook::/g`,
+    },
+    {
+      // Prefixes facebook namespace.
+      pattern: `s/namespace facebook/namespace ${versionPrefix}facebook/g`,
+    },
+    {
       // For UMReactNativeAdapter
       pattern: `s/${versionPrefix}UM${reactPodName}/${versionPrefix}UMReact/g`,
     },

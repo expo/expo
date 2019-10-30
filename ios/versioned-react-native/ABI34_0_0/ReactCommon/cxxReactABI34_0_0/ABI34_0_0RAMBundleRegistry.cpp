@@ -8,7 +8,7 @@
 #include <folly/Memory.h>
 #include <folly/String.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
@@ -72,4 +72,4 @@ JSModulesUnbundle* RAMBundleRegistry::getBundle(uint32_t bundleId) const {
 }
 
 }  // namespace ReactABI34_0_0
-}  // namespace facebook
+}  // namespace ABI34_0_0facebook

@@ -45,12 +45,12 @@ A short description of what your app is and why it is great.
 
 ### `"owner"`
 
-The primary user to use for publishing and creating builds.  If not provided, defaults to the username of the current user.
+The primary user to use for publishing and creating builds. If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
 Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
- Valid values: `public`, `unlisted`
+Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
@@ -73,7 +73,7 @@ If you would like to share the source code of your app on Github, enter the URL 
 ### `"orientation"`
 
 Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- Valid values: 'default', 'portrait', 'landscape'
+Valid values: 'default', 'portrait', 'landscape'
 
 ### `"primaryColor"`
 
@@ -121,13 +121,33 @@ Any extra fields you want to pass to your experience. Values are accessible via 
 
 Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
 
-> **ExpoKit**: To change this field, edit `Info.plist`.
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAutoInitEnabled"`
+
+Whether the Facebook SDK should be initialized automatically. The default in Expo (Client and in standalone apps) is `false`.
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAutoLogAppEventsEnabled"`
+
+Whether the Facebook SDK log app events automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.)
+
+> Note that Facebook SDK must be initialized for app events to work. You may autoinitialize Facebook SDK by setting `facebookAutoInitEnabled` to `true`.
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAdvertiserIDCollectionEnabled"`
+
+Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
 ### `"facebookDisplayName"`
 
 Used for native Facebook login.
 
-> **ExpoKit**: To change this field, edit `Info.plist`.
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
 ### `"facebookScheme"`
 
@@ -346,10 +366,10 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Corresponds to `CFBundleVersion` 
+      Build number for your iOS standalone app. Corresponds to `CFBundleVersion`
       and must match Apple's specified format.
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
-      
+
       Note- Application loader will pull the value for "Version Number" from `expo.version` and NOT from `expo.ios.buildNumber`
 
       ExpoKit: use Xcode to set this.
@@ -400,6 +420,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration.
+      Must be customized if your app requests system permissions.
 
       No other validation is performed, so use this at your own risk of rejection from the App Store.
     */
@@ -407,7 +428,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
-      
+
       Entries must follow the format "applinks:<fully qualified domain>[:port number]". See Apple's docs for details -> https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains
 
       ExpoKit: use Xcode to set this.

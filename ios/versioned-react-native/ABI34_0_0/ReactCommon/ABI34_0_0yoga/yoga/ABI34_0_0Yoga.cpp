@@ -24,7 +24,7 @@ __forceinline const float fmaxf(const float a, const float b) {
 #endif
 #endif
 
-using namespace facebook::ABI34_0_0yoga;
+using namespace ABI34_0_0facebook::ABI34_0_0yoga;
 
 #ifdef ANDROID
 static int ABI34_0_0YGAndroidLog(
@@ -102,7 +102,7 @@ static int ABI34_0_0YGDefaultLog(
 #endif
 
 bool ABI34_0_0YGFloatIsUndefined(const float value) {
-  return facebook::ABI34_0_0yoga::isUndefined(value);
+  return ABI34_0_0facebook::ABI34_0_0yoga::isUndefined(value);
 }
 
 detail::CompactValue ABI34_0_0YGComputedEdgeValue(
@@ -1027,7 +1027,7 @@ static void ABI34_0_0YGNodePrintInternal(
     const ABI34_0_0YGNodeRef node,
     const ABI34_0_0YGPrintOptions options) {
   std::string str;
-  facebook::ABI34_0_0yoga::ABI34_0_0YGNodeToString(str, node, options, 0);
+  ABI34_0_0facebook::ABI34_0_0yoga::ABI34_0_0YGNodeToString(str, node, options, 0);
   ABI34_0_0YGLog(node, ABI34_0_0YGLogLevelDebug, str.c_str());
 }
 

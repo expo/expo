@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ColorPropType, View, ViewPropTypes, processColor } from 'react-native';
+import { ColorPropType, Platform, View, ViewPropTypes, processColor } from 'react-native';
 
 import NativeLinearGradient from './NativeLinearGradient';
 
@@ -33,7 +33,10 @@ export default class LinearGradient extends React.Component<Props> {
     return (
       <NativeLinearGradient
         {...props}
-        colors={colors.map(processColor)}
+        colors={Platform.select({
+          web: colors as any,
+          default: colors.map(processColor),
+        })}
         locations={locations}
         startPoint={_normalizePoint(start)}
         endPoint={_normalizePoint(end)}

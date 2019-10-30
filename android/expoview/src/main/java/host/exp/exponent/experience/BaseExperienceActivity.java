@@ -3,8 +3,8 @@
 package host.exp.exponent.experience;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -16,12 +16,10 @@ import javax.inject.Inject;
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.fcm.FcmRegistrationIntentService;
 import host.exp.exponent.gcm.GcmRegistrationIntentService;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.expoview.BuildConfig;
 import host.exp.expoview.Exponent;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.kernel.ExponentError;
@@ -29,6 +27,9 @@ import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
 
 public abstract class BaseExperienceActivity extends MultipleVersionReactNativeActivity {
+
+  private static String TAG = BaseExperienceActivity.class.getSimpleName();
+
   private static abstract class ExperienceEvent {
     private ExperienceId mExperienceId;
     ExperienceEvent(ExperienceId experienceId) {
@@ -257,15 +258,21 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   }
 
   protected void registerForNotifications() {
-    int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-    if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-      if (!Constants.FCM_ENABLED) {
-        Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-        startService(intent);
+    try {
+      int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+      if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
+        if (!Constants.FCM_ENABLED) {
+          Intent intent = new Intent(this, GcmRegistrationIntentService.class);
+          startService(intent);
+        }
       }
-    } else if (!BuildConfig.DEBUG) {
-      // TODO: should we actually show an error or fail silently?
-      // GoogleApiAvailability.getInstance().getErrorDialog(this, googlePlayServicesCode, 0).show();
+    } catch (IllegalStateException e) {
+      // This is pretty hacky but we need to prevent crashes when trying to start this service in
+      // the background, which fails on Android 9 and above.
+      // TODO(eric): find a better fix for this.
+      // Probably we need to either remove GCM entirely from the clients, or update the
+      // implementation to ensure we only try to register in the foreground (like we do with FCM).
+      Log.e(TAG, "Failed to register for GCM notifications", e);
     }
   }
 

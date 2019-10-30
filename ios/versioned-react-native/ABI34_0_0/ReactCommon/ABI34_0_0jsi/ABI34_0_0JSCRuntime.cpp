@@ -14,7 +14,7 @@
 #include <sstream>
 #include <thread>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace jsc {
 
 namespace detail {
@@ -1227,4 +1227,4 @@ std::unique_ptr<jsi::Runtime> makeJSCRuntime() {
 }
 
 } // namespace jsc
-} // namespace facebook
+} // namespace ABI34_0_0facebook

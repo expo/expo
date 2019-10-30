@@ -100,7 +100,7 @@ export default class BarcodeScannerExample extends React.Component {
 
 > Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
 
-[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example).
+[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example?platform=ios).
 
 ## API
 

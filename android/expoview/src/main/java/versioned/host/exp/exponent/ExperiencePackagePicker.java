@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.unimodules.core.interfaces.Package;
+
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;
 import expo.modules.analytics.amplitude.AmplitudePackage;
@@ -20,6 +21,7 @@ import expo.modules.brightness.BrightnessPackage;
 import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
+import expo.modules.errorrecovery.ErrorRecoveryPackage;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -77,6 +79,7 @@ public class ExperiencePackagePicker {
       new CryptoPackage(),
       new DevicePackage(),
       new DocumentPickerPackage(),
+      new ErrorRecoveryPackage(),
       new FacebookPackage(),
       new FaceDetectorPackage(),
       new FileSystemPackage(),

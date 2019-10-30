@@ -22,12 +22,12 @@
 
 struct ABI33_0_0YGStyle {
 private:
-  using CompactValue = facebook::ABI33_0_0yoga::detail::CompactValue;
+  using CompactValue = ABI33_0_0facebook::ABI33_0_0yoga::detail::CompactValue;
 
 public:
-  using Dimensions = facebook::ABI33_0_0yoga::detail::Values<2>;
+  using Dimensions = ABI33_0_0facebook::ABI33_0_0yoga::detail::Values<2>;
   using Edges =
-      facebook::ABI33_0_0yoga::detail::Values<facebook::ABI33_0_0yoga::enums::count<ABI33_0_0YGEdge>()>;
+      ABI33_0_0facebook::ABI33_0_0yoga::detail::Values<ABI33_0_0facebook::ABI33_0_0yoga::enums::count<ABI33_0_0YGEdge>()>;
 
   /* Some platforms don't support enum bitfields,
      so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */

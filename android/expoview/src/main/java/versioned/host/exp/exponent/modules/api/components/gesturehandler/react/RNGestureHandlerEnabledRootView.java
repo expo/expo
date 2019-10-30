@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactRootView;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class RNGestureHandlerEnabledRootView extends ReactRootView {
 

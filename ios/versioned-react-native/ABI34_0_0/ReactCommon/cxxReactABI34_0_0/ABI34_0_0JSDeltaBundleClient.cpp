@@ -9,7 +9,7 @@
 
 #include <folly/Memory.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 namespace {
@@ -96,4 +96,4 @@ void JSDeltaBundleClient::clear() {
 }
 
 } // namespace ReactABI34_0_0
-} // namespace facebook
+} // namespace ABI34_0_0facebook

@@ -34,6 +34,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
@@ -88,7 +89,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   protected boolean mIsCrashed = false;
-  protected boolean mShouldDestroyRNInstanceOnExit = true;
 
   protected String mManifestUrl;
   protected String mExperienceIdString;
@@ -328,7 +328,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("destroy");
     }
 
@@ -358,7 +358,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
     mJSBundlePath = jsBundlePath;
 
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+    // TODO: remove once SDK 35 is deprecated
+    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
       new AlertDialog.Builder(this)
           .setTitle("Please enable \"Permit drawing over other apps\"")
           .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
@@ -426,6 +427,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+
+    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
+      builder.call("setCurrentActivity", this);
+    }
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {

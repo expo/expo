@@ -45,7 +45,12 @@ def safeExtGet(prop, fallback) {
 buildscript {
   repositories {
     maven { url 'https://maven.fabric.io/public' }
-    maven { url "https://jitpack.io" }
+    // If you have maven { url "https://jitpack.io" } as your resolving url,
+    // then Jitpack will only return the POM for the Android dependency causing the Gradle sync to fail.
+    // However, when you change url to "https://www.jitpack.io", Jitpack returns POM, AAR, and sources.jar.
+    // That is why we were adding www even though jitpacks docs don't say so.
+    // See https://github.com/jitpack/jitpack.io/issues/4002.
+    maven { url "https://www.jitpack.io" }
     mavenCentral()
     google()
     jcenter()
@@ -57,7 +62,7 @@ buildscript {
 
 repositories {
   maven { url 'https://maven.fabric.io/public' }
-  maven { url "https://jitpack.io" }
+  maven { url "https://www.jitpack.io" }
   mavenCentral()
 }
 

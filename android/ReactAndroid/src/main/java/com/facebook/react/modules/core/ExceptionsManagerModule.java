@@ -1,19 +1,23 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseJavaModule;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.JavascriptException;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.util.ExceptionDataHelper;
 import com.facebook.react.util.JSStackTrace;
 
 @ReactModule(name = ExceptionsManagerModule.NAME)
@@ -33,15 +37,20 @@ public class ExceptionsManagerModule extends BaseJavaModule {
     }
 
     @ReactMethod
-    public void reportFatalException(String title, ReadableArray details, int exceptionId) {
+    public void reportFatalException(String message, ReadableArray stack, int id) {
         if (mDevSupportManager.getDevSupportEnabled()) {
             {
-                showOrThrowError(title, details, exceptionId);
+                JavaOnlyMap data = new JavaOnlyMap();
+                data.putString("message", message);
+                data.putArray("stack", stack);
+                data.putInt("id", id);
+                data.putBoolean("isFatal", true);
+                reportException(data);
             }
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, true);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, id, true);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -50,19 +59,20 @@ public class ExceptionsManagerModule extends BaseJavaModule {
     }
 
     @ReactMethod
-    public void reportSoftException(String title, ReadableArray details, int exceptionId) {
+    public void reportSoftException(String message, ReadableArray stack, int id) {
         if (mDevSupportManager.getDevSupportEnabled()) {
             {
-                if (mDevSupportManager.getDevSupportEnabled()) {
-                    mDevSupportManager.showNewJSError(title, details, exceptionId);
-                } else {
-                    FLog.e(ReactConstants.TAG, JSStackTrace.format(title, details));
-                }
+                JavaOnlyMap data = new JavaOnlyMap();
+                data.putString("message", message);
+                data.putArray("stack", stack);
+                data.putInt("id", id);
+                data.putBoolean("isFatal", false);
+                reportException(data);
             }
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, id, false);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -70,11 +80,24 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         }
     }
 
-    private void showOrThrowError(String title, ReadableArray details, int exceptionId) {
+    @ReactMethod
+    public void reportException(ReadableMap data) {
+        String message = data.hasKey("message") ? data.getString("message") : "";
+        ReadableArray stack = data.hasKey("stack") ? data.getArray("stack") : Arguments.createArray();
+        int id = data.hasKey("id") ? data.getInt("id") : -1;
+        boolean isFatal = data.hasKey("isFatal") ? data.getBoolean("isFatal") : false;
         if (mDevSupportManager.getDevSupportEnabled()) {
-            mDevSupportManager.showNewJSError(title, details, exceptionId);
+            mDevSupportManager.showNewJSError(message, stack, id);
         } else {
-            throw new JavascriptException(JSStackTrace.format(title, details));
+            String extraDataAsJson = ExceptionDataHelper.getExtraDataAsJson(data);
+            if (isFatal) {
+                throw new JavascriptException(JSStackTrace.format(message, stack)).setExtraDataAsJson(extraDataAsJson);
+            } else {
+                FLog.e(ReactConstants.TAG, JSStackTrace.format(message, stack));
+                if (extraDataAsJson != null) {
+                    FLog.d(ReactConstants.TAG, "extraData: %s", extraDataAsJson);
+                }
+            }
         }
     }
 
@@ -89,7 +112,7 @@ public class ExceptionsManagerModule extends BaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", Throwable.class, String.class, Object.class, Integer.class, Boolean.class).invoke(null, null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, title, details, exceptionId, false);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
