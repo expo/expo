@@ -50,51 +50,40 @@ const STYLES_CLOSE_BUTTON = css`
 `;
 
 export default class Banner extends React.Component {
-  constructor(props) {
-    super(props);
-    let isHidden;
-    if (typeof window !== 'undefined') {
-      isHidden = localStorage.getItem('isBannerHidden');
-    } else {
-      isHidden = false;
-    }
-    this.state = {
-      isHidden,
-    };
-  }
+  state = {
+    isHidden: true,
+  };
 
   componentDidMount() {
     this._setBannerVisibility();
   }
 
   _setBannerVisibility = () => {
-    if (typeof window !== 'undefined') {
-      if (Date.parse(localStorage.getItem('hideDate')) <= this._sevenDaysAgo(new Date())) {
-        this._showBannerAgain();
-      } else {
-        this.setState({ isHidden: localStorage.getItem('isBannerHidden') });
-      }
+    let hideDate =
+      localStorage.getItem('hideDate') && new Date(parseInt(localStorage.getItem('hideDate'), 10));
+    let isBannerHidden = !!localStorage.getItem('isBannerHidden');
+    let sevenDaysAgo = this._sevenDaysAgo();
+
+    if (hideDate && hideDate <= sevenDaysAgo) {
+      this._showBannerAgain();
     } else {
-      this.setState({ isHidden: false });
+      this.setState({ isHidden: isBannerHidden });
     }
   };
 
-  _sevenDaysAgo = day => {
-    let pastDate = day.getDate() - 7;
-    day.setDate(pastDate);
-    return day;
+  _sevenDaysAgo = () => {
+    return new Date(new Date() - 60 * 60 * 24 * 7 * 1000);
   };
 
   _showBannerAgain = () => {
-    localStorage.setItem('isBannerHidden', false);
+    localStorage.removeItem('hideDate');
+    localStorage.removeItem('isBannerHidden');
     this.setState({ isHidden: false });
   };
 
   _handleHideBanner = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('isBannerHidden', true);
-      localStorage.setItem('hideDate', new Date());
-    }
+    localStorage.setItem('isBannerHidden', true);
+    localStorage.setItem('hideDate', new Date().getTime());
     this.setState({ isHidden: true });
   };
 
