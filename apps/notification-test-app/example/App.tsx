@@ -61,7 +61,7 @@ export default class App extends React.Component {
   }
 
   _getInitialUserInteraction = async () => {
-    const userInteraction = await Notifications.getInitialUserInteractionAsync();
+    const userInteraction = await Notifications.popInitialUserInteractionAsync();
     console.log(userInteraction);
     console.log(JSON.stringify(userInteraction));
     this.setState({
