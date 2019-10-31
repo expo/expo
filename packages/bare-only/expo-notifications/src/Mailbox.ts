@@ -21,15 +21,15 @@ export class Mailbox {
     this.onForegroundNotificationListeners = new Map();
     this.onTokenChangeListener = null;
     DeviceEventEmitter.addListener(
-      'Exponent.onUserInteraction',
+      'Expo.onUserInteraction',
       this.onUserInteraction.bind(this)
     );
     DeviceEventEmitter.addListener(
-      'Exponent.onForegroundNotification',
+      'Expo.onForegroundNotification',
       this.onForegroundNotification.bind(this)
     );
     DeviceEventEmitter.addListener(
-      'Exponent.onTokenChange',
+      'Expo.onTokenChange',
       this.onTokenChange.bind(this)
     );
   }
