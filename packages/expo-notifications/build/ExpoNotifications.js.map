@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoNotifications.js","sourceRoot":"","sources":["../src/ExpoNotifications.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,iBAAiB,CAAA","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoNotifications\n"]}
