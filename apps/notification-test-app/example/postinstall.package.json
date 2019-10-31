@@ -1,0 +1,7 @@
+{
+    "name": "react-native-hack",
+    "version": "0.0.1",
+    "dependencies": {
+        "react-native": "0.61.2"
+    }
+}

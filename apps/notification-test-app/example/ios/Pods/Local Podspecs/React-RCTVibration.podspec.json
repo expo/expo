@@ -1,6 +1,6 @@
 {
   "name": "React-RCTVibration",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "An API for controlling the vibration hardware of the device.",
   "homepage": "http://facebook.github.io/react-native/",
   "documentation_url": "https://facebook.github.io/react-native/docs/vibration",
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "source_files": "*.{m}",
   "preserve_paths": [
@@ -23,7 +23,7 @@
   "header_dir": "RCTVibration",
   "dependencies": {
     "React-Core/RCTVibrationHeaders": [
-      "0.61.1"
+      "0.61.2"
     ]
   }
 }

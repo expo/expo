@@ -11,7 +11,7 @@
   "authors": "Facebook",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "module_name": "yoga",
   "header_dir": "yoga",

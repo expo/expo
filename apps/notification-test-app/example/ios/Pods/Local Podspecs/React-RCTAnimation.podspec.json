@@ -1,6 +1,6 @@
 {
   "name": "React-RCTAnimation",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "A native driver for the Animated API.",
   "homepage": "http://facebook.github.io/react-native/",
   "license": "MIT",
@@ -11,7 +11,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "source_files": "{Drivers/*,Nodes/*,*}.{m}",
   "preserve_paths": [
@@ -22,7 +22,7 @@
   "header_dir": "RCTAnimation",
   "dependencies": {
     "React-Core/RCTAnimationHeaders": [
-      "0.61.1"
+      "0.61.2"
     ]
   }
 }

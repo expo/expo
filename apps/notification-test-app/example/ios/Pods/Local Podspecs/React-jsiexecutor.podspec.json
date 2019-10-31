@@ -1,6 +1,6 @@
 {
   "name": "React-jsiexecutor",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "-",
   "homepage": "http://facebook.github.io/react-native/",
   "license": "MIT",
@@ -11,7 +11,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "source_files": "jsireact/*.{cpp,h}",
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
@@ -21,10 +21,10 @@
   "header_dir": "jsireact",
   "dependencies": {
     "React-cxxreact": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-jsi": [
-      "0.61.1"
+      "0.61.2"
     ],
     "Folly": [
       "2018.10.22.00"

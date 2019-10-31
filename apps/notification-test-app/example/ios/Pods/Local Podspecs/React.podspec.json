@@ -1,6 +1,6 @@
 {
   "name": "React",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "A framework for building native apps using React",
   "description": "React Native apps are built using the React JS\nframework, and render directly to native UIKit\nelements using a fully asynchronous architecture.\nThere is no browser and no HTML. We have picked what\nwe think is the best set of features from these and\nother technologies to build what we hope to become\nthe best product development framework available,\nwith an emphasis on iteration speed, developer\ndelight, continuity of technology, and absolutely\nbeautiful and fast products with no compromises in\nquality or capability.",
   "homepage": "http://facebook.github.io/react-native/",
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "preserve_paths": [
     "package.json",
@@ -22,40 +22,40 @@
   "cocoapods_version": ">= 1.2.0",
   "dependencies": {
     "React-Core": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-Core/DevSupport": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-Core/RCTWebSocket": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTActionSheet": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTAnimation": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTBlob": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTImage": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTLinking": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTNetwork": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTSettings": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTText": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTVibration": [
-      "0.61.1"
+      "0.61.2"
     ]
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "React-jsinspector",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "-",
   "homepage": "http://facebook.github.io/react-native/",
   "license": "MIT",
@@ -11,7 +11,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "source_files": "*.{cpp,h}",
   "header_dir": "jsinspector"

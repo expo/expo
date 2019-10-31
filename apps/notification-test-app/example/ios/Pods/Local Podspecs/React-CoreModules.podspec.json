@@ -1,6 +1,6 @@
 {
   "name": "React-CoreModules",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "-",
   "homepage": "http://facebook.github.io/react-native/",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness",
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "source_files": "**/*.{c,m,mm,cpp}",
   "header_dir": "CoreModules",
@@ -23,22 +23,22 @@
   },
   "dependencies": {
     "FBReactNativeSpec": [
-      "0.61.1"
+      "0.61.2"
     ],
     "RCTTypeSafety": [
-      "0.61.1"
+      "0.61.2"
     ],
     "React-RCTImage": [
-      "0.61.1"
+      "0.61.2"
     ],
     "Folly": [
       "2018.10.22.00"
     ],
     "React-Core/CoreModulesHeaders": [
-      "0.61.1"
+      "0.61.2"
     ],
     "ReactCommon/turbomodule/core": [
-      "0.61.1"
+      "0.61.2"
     ]
   }
 }

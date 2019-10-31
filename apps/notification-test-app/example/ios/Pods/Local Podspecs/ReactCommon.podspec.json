@@ -1,7 +1,7 @@
 {
   "name": "ReactCommon",
   "module_name": "ReactCommon",
-  "version": "0.61.1",
+  "version": "0.61.2",
   "summary": "-",
   "homepage": "http://facebook.github.io/react-native/",
   "license": "MIT",
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.61.1"
+    "tag": "v0.61.2"
   },
   "header_dir": "ReactCommon",
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
@@ -27,7 +27,7 @@
       "source_files": "jscallinvoker/**/*.{cpp,h}",
       "dependencies": {
         "React-cxxreact": [
-          "0.61.1"
+          "0.61.2"
         ],
         "DoubleConversion": [
 
@@ -44,16 +44,16 @@
       "name": "turbomodule",
       "dependencies": {
         "ReactCommon/jscallinvoker": [
-          "0.61.1"
+          "0.61.2"
         ],
         "React-Core": [
-          "0.61.1"
+          "0.61.2"
         ],
         "React-cxxreact": [
-          "0.61.1"
+          "0.61.2"
         ],
         "React-jsi": [
-          "0.61.1"
+          "0.61.2"
         ],
         "Folly": [
           "2018.10.22.00"
@@ -81,7 +81,7 @@
           ],
           "dependencies": {
             "ReactCommon/turbomodule/core": [
-              "0.61.1"
+              "0.61.2"
             ]
           }
         }
