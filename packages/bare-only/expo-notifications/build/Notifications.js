@@ -2,7 +2,7 @@ import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 import { CodedError, UnavailabilityError } from '@unimodules/core';
-import ExponentNotifications from './ExponentNotifications';
+import ExpoNotifications from './ExpoNotifications';
 import { Mailbox } from './Mailbox';
 const _mailbox = new Mailbox();
 function _processNotification(notification) {
@@ -46,34 +46,34 @@ function _validateNotification(notification) {
     }
 }
 export async function getInitialUserInteractionAsync() {
-    return ExponentNotifications.getInitialUserInteractionAsync();
+    return ExpoNotifications.getInitialUserInteractionAsync();
 }
 // User passes set of actions titles.
 export async function createCategoryAsync(categoryId, actions) {
-    return ExponentNotifications.createCategoryAsync(categoryId, actions);
+    return ExpoNotifications.createCategoryAsync(categoryId, actions);
 }
 export async function deleteCategoryAsync(categoryId) {
-    return ExponentNotifications.deleteCategoryAsync(categoryId);
+    return ExpoNotifications.deleteCategoryAsync(categoryId);
 }
 export async function createChannelAsync(id, channel) {
     if (Platform.OS !== 'android') {
         console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
         return Promise.resolve();
     }
-    return ExponentNotifications.createChannel(id, channel);
+    return ExpoNotifications.createChannel(id, channel);
 }
 export async function deleteChannelAsync(id) {
     if (Platform.OS !== 'android') {
         console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
         return Promise.resolve();
     }
-    return ExponentNotifications.deleteChannel(id);
+    return ExpoNotifications.deleteChannel(id);
 }
 export async function createChannelGroupAsync(groupId, groupName) {
-    return ExponentNotifications.createChannelGroup(groupId, groupName);
+    return ExpoNotifications.createChannelGroup(groupId, groupName);
 }
 export async function deleteChannelGroupAsync(groupId) {
-    return ExponentNotifications.deleteChannelGroup(groupId);
+    return ExpoNotifications.deleteChannelGroup(groupId);
 }
 /**
  * @remarks
@@ -82,51 +82,51 @@ export async function deleteChannelGroupAsync(groupId) {
 export async function presentLocalNotificationAsync(notification) {
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
-    return await ExponentNotifications.presentLocalNotification(nativeNotification);
+    return await ExpoNotifications.presentLocalNotification(nativeNotification);
 }
 /**
  * @remarks
  * Dismiss currently shown notification with ID (Android only)
  */
 export async function dismissNotificationAsync(notificationId) {
-    if (!ExponentNotifications.dismissNotification) {
+    if (!ExpoNotifications.dismissNotification) {
         throw new UnavailabilityError('Expo.Notifications', 'dismissNotification');
     }
-    return await ExponentNotifications.dismissNotification(notificationId);
+    return await ExpoNotifications.dismissNotification(notificationId);
 }
 /**
  * @remarks
  * Dismiss all currently shown notifications (Android only)
  */
 export async function dismissAllNotificationsAsync() {
-    if (!ExponentNotifications.dismissAllNotifications) {
+    if (!ExpoNotifications.dismissAllNotifications) {
         throw new UnavailabilityError('Expo.Notifications', 'dismissAllNotifications');
     }
-    return await ExponentNotifications.dismissAllNotifications();
+    return await ExpoNotifications.dismissAllNotifications();
 }
 /**
  * @remarks
  * Cancel scheduled notification notification with ID
  */
 export async function cancelScheduledNotificationAsync(notificationId) {
-    return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
+    return ExpoNotifications.cancelScheduledNotificationAsync(notificationId);
 }
 /**
  * @remarks
  * Cancel all scheduled notifications
  */
 export async function cancelAllScheduledNotificationsAsync() {
-    return ExponentNotifications.cancelAllScheduledNotificationsAsync();
+    return ExpoNotifications.cancelAllScheduledNotificationsAsync();
 }
 export async function setBadgeNumberAsync(number) {
-    if (!ExponentNotifications.setBadgeNumberAsync) {
+    if (!ExpoNotifications.setBadgeNumberAsync) {
         throw new UnavailabilityError('Expo.Notifications', 'setBadgeNumberAsync');
     }
-    return ExponentNotifications.setBadgeNumberAsync(number);
+    return ExpoNotifications.setBadgeNumberAsync(number);
 }
 export async function setOnTokenChangeListener(listener) {
     _mailbox.setOnTokenChangeListener(listener);
-    await ExponentNotifications.registerForPushNotificationsAsync();
+    await ExpoNotifications.registerForPushNotificationsAsync();
 }
 export function addOnUserInteractionListener(listenerName, listener) {
     _mailbox.addOnUserInteractionListener(listenerName, listener);
@@ -153,7 +153,7 @@ export async function scheduleNotificationWithCalendarAsync(notification, option
     }
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
-    return ExponentNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
+    return ExpoNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
 }
 export async function scheduleNotificationWithTimerAsync(notification, options) {
     if (options.interval < 1) {
@@ -161,7 +161,7 @@ export async function scheduleNotificationWithTimerAsync(notification, options) 
     }
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
-    return ExponentNotifications.scheduleNotificationWithTimer(nativeNotification, options);
+    return ExpoNotifications.scheduleNotificationWithTimer(nativeNotification, options);
 }
 function isInRangeInclusive(variable, min, max) {
     return variable >= min && variable <= max;

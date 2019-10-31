@@ -82,4 +82,4 @@ export default {
         this.dismissNotification();
     },
 };
-//# sourceMappingURL=ExponentNotifications.web.js.map
+//# sourceMappingURL=ExpoNotifications.web.js.map

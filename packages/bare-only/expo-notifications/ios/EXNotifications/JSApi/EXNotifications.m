@@ -25,7 +25,7 @@ UM_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
-    return @"ExponentNotifications";
+    return @"ExpoNotifications";
 }
 
 - (instancetype)init

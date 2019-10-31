@@ -76,7 +76,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @Override
   public String getName() {
-    return "ExponentNotifications";
+    return "ExpoNotifications";
   }
 
   @ExpoMethod

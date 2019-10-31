@@ -8,8 +8,8 @@ import {
   TokenMessage,
 } from './Notifications.types';
 
-const { ExponentNotifications } = NativeModulesProxy;
-const DeviceEventEmitter = new NativeEventEmitter(ExponentNotifications);
+const { ExpoNotifications } = NativeModulesProxy;
+const DeviceEventEmitter = new NativeEventEmitter(ExpoNotifications);
 
 export class Mailbox {
   private onUserInteractionListeners: Map<string, OnUserInteractionListener>;
