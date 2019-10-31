@@ -61,8 +61,8 @@ UM_REGISTER_MODULE();
   }
 }
 
-UM_EXPORT_METHOD_AS(getInitialUserInteractionAsync,
-                    getInitialUserInteractionAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(popInitialUserInteractionAsync,
+                    popInitialUserInteractionAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve(_initialUserInteraction);

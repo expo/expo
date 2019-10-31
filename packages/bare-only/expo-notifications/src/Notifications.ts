@@ -69,8 +69,8 @@ function _validateNotification(notification) {
   }
 }
 
-export async function getInitialUserInteractionAsync(): Promise<UserInteraction | null> {
-  return ExpoNotifications.getInitialUserInteractionAsync();
+export async function popInitialUserInteractionAsync(): Promise<UserInteraction | null> {
+  return ExpoNotifications.popInitialUserInteractionAsync();
 }
 
 // User passes set of actions titles.
