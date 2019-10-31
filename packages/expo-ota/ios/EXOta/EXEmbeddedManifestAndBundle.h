@@ -11,8 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXEmbeddedManifestAndBundle : NSObject
 
--(NSDictionary*) readManifest;
--(NSString*) readBundlePath;
+- (NSDictionary*) readManifest;
+- (NSString*) readBundlePath;
+- (Boolean) isEmbeddedManifestCompatibleWith:(NSDictionary*)manifest;
 
 @end
 

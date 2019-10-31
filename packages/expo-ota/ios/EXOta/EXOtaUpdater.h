@@ -11,6 +11,7 @@
 #import <Foundation/Foundation.h>
 #import "EXOta.h"
 #import "EXOtaPersistance.h"
+#import "EXOtaEvents.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +20,8 @@ typedef void (^EXUpdateSuccessBlock)(NSDictionary* manifest, NSString *filePath)
 typedef void (^EXErrorBlock)(NSError* error);
 
 @interface EXOtaUpdater: NSObject<NSURLSessionTaskDelegate>
+
+@property (nullable) EXOtaEvents *eventsEmitter;
 
 - (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier;
 

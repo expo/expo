@@ -8,7 +8,7 @@
 #import "EXOta.h"
 #import "EXOtaPersistanceFactory.h"
 #import "EXOtaPersistance.h"
-#import "EXOtaUpdater.h"
+#import "EXOtaUpdaterFactory.h"
 #import "EXExpoUpdatesConfig.h"
 
 @implementation EXOta
@@ -32,7 +32,7 @@ EXOtaPersistance *persistance;
     persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
     persistance.config = config;
     persistance.appId = appId;
-    updater =[[EXOtaUpdater alloc] initWithConfig:config withPersistance:persistance withId:appId];
+    updater =[[EXOtaUpdaterFactory sharedFactory] updaterForId:appId initWithConfig:config withPersistance:persistance];
     if(config.checkForUpdatesAutomatically)
     {
         [self start];

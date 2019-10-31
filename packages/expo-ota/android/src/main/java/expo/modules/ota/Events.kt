@@ -4,7 +4,7 @@ import android.os.Bundle
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.interfaces.services.EventEmitter
 
-private const val UPDATES_EVENT = "Exponent.nativeUpdatesEvent"
+private const val UPDATES_EVENT = "Exponent.updatesEvent"
 
 private const val DOWNLOAD_STARTED = "downloadStart"
 private const val DOWNLOAD_FINISHED = "downloadFinished"
