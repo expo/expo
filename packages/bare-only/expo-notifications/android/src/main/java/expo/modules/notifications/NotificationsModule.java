@@ -80,7 +80,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void getInitialUserInteractionAsync(final Promise promise) {
+  public void popInitialUserInteractionAsync(final Promise promise) {
     promise.resolve(mInitialUserInteraction);
     mInitialUserInteraction = null;
   }
