@@ -58,9 +58,9 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   private static final String TAG = NotificationsModule.class.getSimpleName();
 
-  private static final String ON_USER_INTERACTION_EVENT = "Exponent.onUserInteraction";
-  private static final String ON_FOREGROUND_NOTIFICATION_EVENT = "Exponent.onForegroundNotification";
-  private static final String ON_TOKEN_CHANGE = "Exponent.onTokenChange";
+  private static final String ON_USER_INTERACTION_EVENT = "Expo.onUserInteraction";
+  private static final String ON_FOREGROUND_NOTIFICATION_EVENT = "Expo.onForegroundNotification";
+  private static final String ON_TOKEN_CHANGE = "Expo.onTokenChange";
 
   private Context mContext;
   private String mAppId;

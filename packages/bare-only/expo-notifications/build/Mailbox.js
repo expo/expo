@@ -6,9 +6,9 @@ export class Mailbox {
         this.onUserInteractionListeners = new Map();
         this.onForegroundNotificationListeners = new Map();
         this.onTokenChangeListener = null;
-        DeviceEventEmitter.addListener('Exponent.onUserInteraction', this.onUserInteraction.bind(this));
-        DeviceEventEmitter.addListener('Exponent.onForegroundNotification', this.onForegroundNotification.bind(this));
-        DeviceEventEmitter.addListener('Exponent.onTokenChange', this.onTokenChange.bind(this));
+        DeviceEventEmitter.addListener('Expo.onUserInteraction', this.onUserInteraction.bind(this));
+        DeviceEventEmitter.addListener('Expo.onForegroundNotification', this.onForegroundNotification.bind(this));
+        DeviceEventEmitter.addListener('Expo.onTokenChange', this.onTokenChange.bind(this));
     }
     addOnUserInteractionListener(listenerName, listener) {
         this.onUserInteractionListeners.set(listenerName, listener);

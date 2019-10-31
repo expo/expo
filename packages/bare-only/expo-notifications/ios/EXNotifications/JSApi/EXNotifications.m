@@ -343,26 +343,26 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 {
   id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
   notification = [EXMessageUnscoper getUnscopedMessage:notification scoper:scoper];
-  [_eventEmitter sendEventWithName:@"Exponent.onForegroundNotification" body:notification];
+  [_eventEmitter sendEventWithName:@"Expo.onForegroundNotification" body:notification];
 }
 
 - (void)onUserInteraction:(NSDictionary *)userInteraction
 {
   id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
   userInteraction = [EXMessageUnscoper getUnscopedMessage:userInteraction scoper:scoper];
-  [_eventEmitter sendEventWithName:@"Exponent.onUserInteraction" body:userInteraction];
+  [_eventEmitter sendEventWithName:@"Expo.onUserInteraction" body:userInteraction];
 }
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"Exponent.onUserInteraction", @"Exponent.onForegroundNotification", @"Exponent.onTokenChange"];
+  return @[@"Expo.onUserInteraction", @"Expo.onForegroundNotification", @"Expo.onTokenChange"];
 }
 
 - (void)startObserving {}
 - (void)stopObserving {}
 
 - (void)onTokenChange:(NSString *)token {
-  [_eventEmitter sendEventWithName:@"Exponent.onTokenChange" body:@{@"token":token}];
+  [_eventEmitter sendEventWithName:@"Expo.onTokenChange" body:@{@"token":token}];
 }
 
 @end
