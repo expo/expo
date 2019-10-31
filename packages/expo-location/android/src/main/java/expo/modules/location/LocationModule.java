@@ -746,27 +746,28 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private Bundle handleLocationPermissions(Map<String, PermissionsResponse> result) {
     PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
     PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
-    String status = PermissionsStatus.UNDETERMINED.getStatus();
+    PermissionsStatus status = PermissionsStatus.UNDETERMINED;
     String scope = "none";
     Boolean canAskAgain = accessCoarseLocation.getCanAskAgain() && accessFineLocation.getCanAskAgain();
 
     if (accessFineLocation.getStatus() == PermissionsStatus.GRANTED) {
       scope = "fine";
-      status = PermissionsStatus.GRANTED.getStatus();
+      status = PermissionsStatus.GRANTED;
     } else if (accessCoarseLocation.getStatus() == PermissionsStatus.GRANTED) {
       scope = "coarse";
-      status = PermissionsStatus.GRANTED.getStatus();
+      status = PermissionsStatus.GRANTED;
     } else if (accessFineLocation.getStatus() == PermissionsStatus.DENIED && accessCoarseLocation.getStatus() == PermissionsStatus.DENIED) {
-      status = PermissionsStatus.DENIED.getStatus();
+      status = PermissionsStatus.DENIED;
     }
 
     Bundle resultBundle = new Bundle();
     Bundle scopeBundle = new Bundle();
 
     scopeBundle.putString("scope", scope);
-    resultBundle.putString(PermissionsResponse.STATUS_KEY, status);
+    resultBundle.putString(PermissionsResponse.STATUS_KEY, status.getStatus());
     resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
     resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
+    resultBundle.putBoolean(PermissionsResponse.GRANTED_KEY, status == PermissionsStatus.GRANTED);
     resultBundle.putBundle("android", scopeBundle);
 
     return resultBundle;

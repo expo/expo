@@ -60,10 +60,10 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   fun getAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
       mPermissions.getPermissions(PermissionsResponseListener {
-        promise.resolve(parePermissionsResponse(requestedPermissionsTypes, it))
+        promise.resolve(parsePermissionsResponse(requestedPermissionsTypes, it))
       }, *getAndroidPermissionsFromList(requestedPermissionsTypes))
     } catch (e: IllegalStateException) {
-      promise.reject(ERROR_TAG + "_UNKNOWN", e)
+      promise.reject(ERROR_TAG + "_UNKNOWN", "Failed to get permissions", e)
     }
   }
 
@@ -71,16 +71,16 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
   fun askAsync(requestedPermissionsTypes: ArrayList<String>, promise: Promise) {
     try {
       mPermissions.askForPermissions(PermissionsResponseListener {
-        promise.resolve(parePermissionsResponse(requestedPermissionsTypes, it))
+        promise.resolve(parsePermissionsResponse(requestedPermissionsTypes, it))
       }, *getAndroidPermissionsFromList(requestedPermissionsTypes))
 
     } catch (e: IllegalStateException) {
-      promise.reject(ERROR_TAG + "_UNKNOWN", e)
+      promise.reject(ERROR_TAG + "_UNKNOWN", "Failed to get permissions", e)
     }
   }
 
   @Throws(IllegalStateException::class)
-  private fun parePermissionsResponse(requestedPermissionsTypes: List<String>, permissionMap: Map<String, PermissionsResponse>): Bundle {
+  private fun parsePermissionsResponse(requestedPermissionsTypes: List<String>, permissionMap: Map<String, PermissionsResponse>): Bundle {
     return Bundle().apply {
       requestedPermissionsTypes.forEach {
         putBundle(it, getRequester(it).parseAndroidPermissions(permissionMap))

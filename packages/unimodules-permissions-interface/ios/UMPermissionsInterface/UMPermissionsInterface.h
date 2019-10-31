@@ -25,13 +25,13 @@ typedef enum UMPermissionStatus {
 - (void)registerRequesters:(NSArray<id<UMPermissionsRequester>> *)newRequesters;
 
 - (void)getPermissionUsingRequesterClass:(Class)requesterClass
-                              withResult:(UMPromiseResolveBlock)onResult
-                            withRejecter:(UMPromiseRejectBlock)reject;
+                                 resolve:(UMPromiseResolveBlock)resolve
+                                  reject:(UMPromiseRejectBlock)reject;
 
 - (BOOL)hasGrantedPermissionUsingRequesterClass:(Class)requesterClass;
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                 withResult:(UMPromiseResolveBlock)onResult
-                               withRejecter:(UMPromiseRejectBlock)reject;
+                                    resolve:(UMPromiseResolveBlock)resolve
+                                     reject:(UMPromiseRejectBlock)reject;
 
 @end

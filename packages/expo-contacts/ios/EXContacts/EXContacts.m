@@ -3,7 +3,7 @@
 #import <EXContacts/EXContacts.h>
 #import <EXContacts/EXContactsViewController.h>
 #import <EXContacts/EXContacts+Serialization.h>
-#import <EXContacts/EXContactsRequester.h>
+#import <EXContacts/EXContactsPermissionRequester.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 
@@ -90,7 +90,7 @@ UM_EXPORT_MODULE(ExpoContacts);
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXContactsRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXContactsPermissionRequester new]] withPermissionsManager:_permissionsManager];
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
 }
 
@@ -512,9 +512,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
-                                                     withRequester:[EXContactsRequester class]
-                                                        withResult:resolve
-                                                      withRejecter:reject];
+                                                      withRequester:[EXContactsPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
@@ -522,9 +522,9 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                       withRequester:[EXContactsRequester class]
-                                                          withResult:resolve
-                                                        withRejecter:reject];
+                                                         withRequester:[EXContactsPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 - (void)_serializeContactPayload:(NSDictionary *)payload
@@ -837,7 +837,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
         if(!store.defaultContainerIdentifier) {
             //APPL says: If the caller lacks Contacts authorization or an error occurs, nil is returned.
           
-            if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXContactsRequester class]]) {
+            if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXContactsPermissionRequester class]]) {
                 reject(@"E_MISSING_PERMISSION", @"Missing contacts permission.", nil);
                 return nil;
             } else {

@@ -3991,8 +3991,8 @@ CACHE_KEYS:
       EXAV: 427dcf81d85a448fa6dd2b84e127ecd8
     CHECKSUM: 2fead9acfc39b4946ba9228d3a199e0704aec65d
     FILES:
-      - "../../packages/expo-av/ios/EXAV/EXAudioRecordingRequester.h"
-      - "../../packages/expo-av/ios/EXAV/EXAudioRecordingRequester.m"
+      - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
+      - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
       - "../../packages/expo-av/ios/EXAV/EXAudioSessionManager.h"
       - "../../packages/expo-av/ios/EXAV/EXAudioSessionManager.m"
       - "../../packages/expo-av/ios/EXAV/EXAV.h"
@@ -4105,8 +4105,8 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-brightness/ios/EXBrightness/EXBrightness.h"
       - "../../packages/expo-brightness/ios/EXBrightness/EXBrightness.m"
-      - "../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessRequester.h"
-      - "../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessRequester.m"
+      - "../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessPermissionRequester.h"
+      - "../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessPermissionRequester.m"
     PROJECT_NAME: EXBrightness
     SPECS:
       - EXBrightness (7.0.0)
@@ -4119,10 +4119,10 @@ CACHE_KEYS:
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarConverter.h"
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarConverter.m"
-      - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarRequester.h"
-      - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarRequester.m"
-      - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersRequester.h"
-      - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersRequester.m"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarPermissionRequester.h"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarPermissionRequester.m"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.h"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.m"
     PROJECT_NAME: EXCalendar
     SPECS:
       - EXCalendar (7.0.0)
@@ -4135,8 +4135,8 @@ CACHE_KEYS:
       - "../../packages/expo-camera/ios/EXCamera/EXCamera.m"
       - "../../packages/expo-camera/ios/EXCamera/EXCameraManager.h"
       - "../../packages/expo-camera/ios/EXCamera/EXCameraManager.m"
-      - "../../packages/expo-camera/ios/EXCamera/EXCameraRequester.h"
-      - "../../packages/expo-camera/ios/EXCamera/EXCameraRequester.m"
+      - "../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.h"
+      - "../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.m"
       - "../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.h"
       - "../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.m"
     PROJECT_NAME: EXCamera
@@ -4173,8 +4173,8 @@ CACHE_KEYS:
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.m"
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts.h"
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts.m"
-      - "../../packages/expo-contacts/ios/EXContacts/EXContactsRequester.h"
-      - "../../packages/expo-contacts/ios/EXContacts/EXContactsRequester.m"
+      - "../../packages/expo-contacts/ios/EXContacts/EXContactsPermissionRequester.h"
+      - "../../packages/expo-contacts/ios/EXContacts/EXContactsPermissionRequester.m"
       - "../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.h"
       - "../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.m"
     PROJECT_NAME: EXContacts
@@ -4375,10 +4375,10 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
-      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRequester.h"
-      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRequester.m"
-      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollRequester.h"
-      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollRequester.m"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.h"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.m"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.h"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (7.0.0)
@@ -4435,8 +4435,8 @@ CACHE_KEYS:
       - "../../packages/expo-location/ios/EXLocation/EXLocation.m"
       - "../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h"
       - "../../packages/expo-location/ios/EXLocation/EXLocationDelegate.m"
-      - "../../packages/expo-location/ios/EXLocation/EXLocationRequester.h"
-      - "../../packages/expo-location/ios/EXLocation/EXLocationRequester.m"
+      - "../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.h"
+      - "../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.m"
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.h"
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.m"
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.h"
@@ -4487,8 +4487,8 @@ CACHE_KEYS:
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationRequester.m"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.h"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.0.0-rc.0)

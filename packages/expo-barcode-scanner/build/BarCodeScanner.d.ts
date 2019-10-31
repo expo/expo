@@ -19,6 +19,7 @@ export declare type PermissionsResponse = {
     status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
     expires: 'never' | number;
     granted: boolean;
+    canAskAgain: boolean;
 };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;

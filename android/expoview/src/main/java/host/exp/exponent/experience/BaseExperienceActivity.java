@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
@@ -319,7 +320,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // for getting scoped permission
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
-   int globalResult = super.checkPermission(permission, pid, uid);
+    int globalResult = super.checkPermission(permission, pid, uid);
 
     // only these permissions, which show a dialog to the user should be scoped.
     boolean isDangerousPermission;
@@ -362,18 +363,13 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
       // TODO: remove once SDK 35 is deprecated
-      int sdkVersion = 0;
+      String sdkVersion = "0.0.0";
       try {
-        String sdkVersionString = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
-        if (RNObject.UNVERSIONED.equals(sdkVersionString)) {
-          sdkVersion = Integer.MAX_VALUE;
-        } else {
-          sdkVersion = Integer.valueOf(sdkVersionString.substring(0, 2));
-        }
+        sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
       } catch (JSONException e) {
         e.printStackTrace();
       }
-      if (sdkVersion <= 35) {
+      if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
         Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
       } else {
         if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {

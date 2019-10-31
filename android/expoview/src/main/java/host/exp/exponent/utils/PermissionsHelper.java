@@ -1,13 +1,10 @@
 package host.exp.exponent.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
-import com.facebook.react.modules.core.PermissionListener;
 
 import androidx.core.content.ContextCompat;
 
@@ -151,7 +148,7 @@ public class PermissionsHelper {
         return R.string.perm_camera;
       case android.Manifest.permission.READ_CONTACTS:
         return R.string.perm_contacts_read;
-      case Manifest.permission.WRITE_CONTACTS:
+      case android.Manifest.permission.WRITE_CONTACTS:
         return R.string.perm_contacts_write;
       case android.Manifest.permission.READ_EXTERNAL_STORAGE:
         return R.string.perm_camera_roll_read;

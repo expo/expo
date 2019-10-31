@@ -43,9 +43,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
-                                                     withRequester:[EXBareCodeCameraRequester class]
-                                                        withResult:resolve
-                                                      withRejecter:reject];
+                                                      withRequester:[EXBareCodeCameraRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
@@ -53,9 +53,9 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                       withRequester:[EXBareCodeCameraRequester class]
-                                                          withResult:resolve
-                                                        withRejecter:reject];
+                                                         withRequester:[EXBareCodeCameraRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(scanFromURLAsync,

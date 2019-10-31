@@ -32,9 +32,11 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Returns
 
-Returns a `Promise` that is resolved with the information about the permissions, including status, expiration and scope (if it applies to the permission type).
-Top-level `status`, `expires` and `canAskAgain` keys stores combined info of each component permission that is asked for.
-If any permission resulted in a negative result, then that negative result is propagated here; that means top-level values are positive only if all component values are positive. The same rule is applied to `canAskAgain` value.
+A `Promise` that is resolved with information about the permissions, including status, expiration, and scope (if applicable).
+The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
+If any single permission has a `status` of `'denied'`, then that negative result is propagated to the top level; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. `Status` can also be `undetermined` if there is permission with `undetermined` status and there isn't permission with `denied` status.
+If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
+Top-level `expires` has value of the earliest expirated permission.
 
 Examples `[...componentsValues] => topLevelStatus`:
 
@@ -46,11 +48,13 @@ Examples `[...componentsValues] => topLevelStatus`:
   status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
   expires, // combined expires of all permissions being asked for, same as status
   canAskAgain,
+  granted,
   permissions: { // an object with an entry for each permission requested
     [Permissions.TYPE]: {
       status,
       expires,
       canAskAgain,
+      granted,
       ... // any additional permission-specific fields
     },
     ...

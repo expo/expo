@@ -32,7 +32,7 @@
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
 }
 
-# pragma mark - permission requsters / getters
+# pragma mark - permission requesters / getters
 
 // overriding EXPermission to inject scoped permission logic
 - (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass
@@ -56,11 +56,11 @@
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                 withResult:(UMPromiseResolveBlock)onResult
-                               withRejecter:(UMPromiseRejectBlock)reject
+                                    resolve:(UMPromiseResolveBlock)resolve
+                                     reject:(UMPromiseRejectBlock)reject
 {
-  NSDictionary* globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
-  NSString* permissionType = [requesterClass permissionType];
+  NSDictionary *globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
+  NSString *permissionType = [requesterClass permissionType];
   UM_WEAKIFY(self)
   if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
     // first group
@@ -68,7 +68,7 @@
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
       UM_ENSURE_STRONGIFY(self)
       [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
-      onResult(permission);
+      resolve(permission);
     };
     
     return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
@@ -84,7 +84,7 @@
         permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
         permission[@"granted"] = @(NO);
       }
-      onResult(permission);
+      resolve(permission);
     }];
     
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -92,13 +92,13 @@
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
       permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
       permission[@"granted"] = @(NO);
-      onResult([NSDictionary dictionaryWithDictionary:permission]);
+      resolve([NSDictionary dictionaryWithDictionary:permission]);
     }];
     
     return [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
   }
   
-  onResult([self getPermissionUsingRequesterClass:requesterClass]); // third group
+  resolve([self getPermissionUsingRequesterClass:requesterClass]); // third group
 }
 
 # pragma mark - helpers

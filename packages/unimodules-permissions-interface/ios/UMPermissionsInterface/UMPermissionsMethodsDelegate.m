@@ -5,29 +5,29 @@
 @implementation UMPermissionsMethodsDelegate
 
 + (void)askForPermissionWithPermissionsManager:(id<UMPermissionsInterface>)permissionsManager
-                                withRequester:(Class)requesterClass
-                                   withResult:(UMPromiseResolveBlock)resolve
-                                 withRejecter:(UMPromiseRejectBlock)reject
+                                 withRequester:(Class)requesterClass
+                                       resolve:(UMPromiseResolveBlock)resolve
+                                        reject:(UMPromiseRejectBlock)reject
 {
   if (!permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
   [permissionsManager askForPermissionUsingRequesterClass:requesterClass
-                                               withResult:resolve
-                                             withRejecter:reject];
+                                                  resolve:resolve
+                                                   reject:reject];
 }
 
 + (void)getPermissionWithPermissionsManager:(id<UMPermissionsInterface>)permissionsManager
                               withRequester:(Class)requesterClass
-                                 withResult:(UMPromiseResolveBlock)resolve
-                               withRejecter:(UMPromiseRejectBlock)reject
+                                    resolve:(UMPromiseResolveBlock)resolve
+                                     reject:(UMPromiseRejectBlock)reject
 {
   if (!permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
   }
   [permissionsManager getPermissionUsingRequesterClass:requesterClass
-                                            withResult:resolve
-                                          withRejecter:reject];
+                                               resolve:resolve
+                                                reject:reject];
 }
 
 + (void)registerRequesters:(NSArray<id<UMPermissionsRequester>> *)newRequesters

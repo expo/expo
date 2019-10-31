@@ -1,6 +1,5 @@
 package host.exp.exponent.utils;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -67,8 +66,8 @@ public class ScopedPermissionsRequester {
     mPermissionsAskedCount = mPermissionsToRequestPerExperience.size();
 
     if (!mPermissionsToRequestPerExperience.isEmpty()) {
-      showPermissionsDialogForExperience(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // mPermissionsToRequestGlobally isn't empty
+      requestExperienceAndGlobalPermissions(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
+    } else if (!mPermissionsToRequestGlobally.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       currentActivity.requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),
           EXPONENT_PERMISSIONS_REQUEST);
     }
@@ -102,7 +101,7 @@ public class ScopedPermissionsRequester {
     mPermissionListener.onRequestPermissionsResult(EXPONENT_PERMISSIONS_REQUEST, permissions, result);
   }
 
-  private void showPermissionsDialogForExperience(String permission) {
+  private void requestExperienceAndGlobalPermissions(String permission) {
     Activity activity = Exponent.getInstance().getCurrentActivity();
 
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -122,7 +121,7 @@ public class ScopedPermissionsRequester {
         return R.string.perm_camera;
       case android.Manifest.permission.READ_CONTACTS:
         return R.string.perm_contacts_read;
-      case Manifest.permission.WRITE_CONTACTS:
+      case android.Manifest.permission.WRITE_CONTACTS:
         return R.string.perm_contacts_write;
       case android.Manifest.permission.READ_EXTERNAL_STORAGE:
         return R.string.perm_camera_roll_read;
@@ -169,7 +168,7 @@ public class ScopedPermissionsRequester {
       }
 
       if (mPermissionsAskedCount > 0) {
-        showPermissionsDialogForExperience(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
+        requestExperienceAndGlobalPermissions(mPermissionsToRequestPerExperience.get(mPermissionsAskedCount - 1));
       } else if (!mPermissionsToRequestGlobally.isEmpty() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         Exponent.getInstance().getCurrentActivity()
             .requestPermissions(mPermissionsToRequestGlobally.toArray(new String[0]),

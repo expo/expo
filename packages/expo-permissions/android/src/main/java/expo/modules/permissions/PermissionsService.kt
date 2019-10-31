@@ -36,7 +36,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
 
   // state holders for asking for writing permissions
-  private var mWritingPermissionBeingAsked = false // change this directly before calling corresponding startActivity
+  private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
   private var mAskAsyncListener: PermissionsResponseListener? = null
   private var mAskAsyncRequestedPermissions: Array<out String>? = null
 
@@ -88,7 +88,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
 
   override fun getPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
-    responseListener.onResult(paresNativeResult(permissions, permissions.map {
+    responseListener.onResult(parseNativeResult(permissions, permissions.map {
       if (isPermissionGranted(it)) {
         PackageManager.PERMISSION_GRANTED
       } else {
@@ -100,9 +100,9 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   @Throws(IllegalStateException::class)
   override fun askForPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
     if (permissions.contains(Manifest.permission.WRITE_SETTINGS) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      val permissionsToAks = permissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
+      val permissionsToAsk = permissions.toMutableList().apply { remove(Manifest.permission.WRITE_SETTINGS) }.toTypedArray()
       val newListener = PermissionsResponseListener {
-        val status = if (hasWritePermission()) {
+        val status = if (hasWriteSettingsPermission()) {
           PackageManager.PERMISSION_GRANTED
         } else {
           PackageManager.PERMISSION_DENIED
@@ -112,17 +112,17 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
         responseListener.onResult(it)
       }
 
-      if (!hasWritePermission()) {
+      if (!hasWriteSettingsPermission()) {
         if (mAskAsyncListener != null) {
-          throw IllegalStateException("Different asking for permissions in progress. Await the old request and then try again.")
+          throw IllegalStateException("Another permissions request is in progress. Await the old request and then try again.")
         }
         mAskAsyncListener = newListener
-        mAskAsyncRequestedPermissions = permissionsToAks
+        mAskAsyncRequestedPermissions = permissionsToAsk
 
         addToAskedPermissionsCache(listOf(Manifest.permission.WRITE_SETTINGS))
         askForWriteSettingsPermissionFirst()
       } else {
-        askForManifestPermissions(permissionsToAks, newListener)
+        askForManifestPermissions(permissionsToAsk, newListener)
       }
     } else {
       askForManifestPermissions(permissions, responseListener)
@@ -155,7 +155,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   private fun isPermissionGranted(permission: String): Boolean {
     return when (permission) {
       // we need to handle this permission in different way
-      Manifest.permission.WRITE_SETTINGS -> hasWritePermission()
+      Manifest.permission.WRITE_SETTINGS -> hasWriteSettingsPermission()
       else -> getManifestPermission(permission) == PackageManager.PERMISSION_GRANTED
     }
   }
@@ -180,7 +180,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     } ?: false
   }
 
-  private fun paresNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {
+  private fun parseNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {
     return HashMap<String, PermissionsResponse>().apply {
       grantResults.zip(permissionsString).forEach { (result, permission) ->
         this[permission] = getPermissionResponseFromNativeResponse(permission, result)
@@ -216,15 +216,15 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
       if (this is PermissionAwareActivity) {
         this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
           return@requestPermissions if (requestCode == PERMISSIONS_REQUEST) {
-            listener.onResult(paresNativeResult(receivePermissions, grantResults))
+            listener.onResult(parseNativeResult(receivePermissions, grantResults))
             true
           } else {
-            listener.onResult(paresNativeResult(receivePermissions, IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED }))
+            listener.onResult(parseNativeResult(receivePermissions, IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED }))
             false
           }
         }
       } else {
-        listener.onResult(paresNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
+        listener.onResult(parseNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
       }
     }
   }
@@ -245,12 +245,12 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
       data = Uri.parse("package:${context.packageName}")
       addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }.let {
-      mWritingPermissionBeingAsked = true
+      mWriteSettingsPermissionBeingAsked = true
       context.startActivity(it)
     }
   }
 
-  private fun hasWritePermission(): Boolean {
+  private fun hasWriteSettingsPermission(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext)
     } else {
@@ -259,10 +259,10 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   }
 
   override fun onHostResume() {
-    if (!mWritingPermissionBeingAsked) {
+    if (!mWriteSettingsPermissionBeingAsked) {
       return
     }
-    mWritingPermissionBeingAsked = false
+    mWriteSettingsPermissionBeingAsked = false
 
     // cleanup
     val askAsyncListener = mAskAsyncListener!!

@@ -1,7 +1,7 @@
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraUtils.h>
-#import <EXCamera/EXCameraRequester.h>
+#import <EXCamera/EXCameraPermissionRequester.h>
 
 #import <UMCore/UMUIManager.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
@@ -31,7 +31,7 @@ UM_EXPORT_MODULE(ExponentCameraManager);
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (UIView *)view
@@ -335,9 +335,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
-                                                     withRequester:[EXCameraRequester class]
-                                                        withResult:resolve
-                                                      withRejecter:reject];
+                                                      withRequester:[EXCameraPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
@@ -345,9 +345,9 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                       withRequester:[EXCameraRequester class]
-                                                          withResult:resolve
-                                                        withRejecter:reject];
+                                                         withRequester:[EXCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 @end

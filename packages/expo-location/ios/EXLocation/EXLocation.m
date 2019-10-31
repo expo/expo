@@ -4,7 +4,7 @@
 #import <EXLocation/EXLocationDelegate.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
-#import <EXLocation/EXLocationRequester.h>
+#import <EXLocation/EXLocationPermissionRequester.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -60,7 +60,7 @@ UM_EXPORT_MODULE(ExpoLocation);
 
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationPermissionRequester new]] withPermissionsManager:_permissionsManager];
   _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 
@@ -177,7 +177,7 @@ UM_EXPORT_METHOD_AS(watchDeviceHeading,
                     watchHeadingWithWatchId:(nonnull NSNumber *)watchId
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject) {
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationRequester class]]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
@@ -318,9 +318,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
-                                                     withRequester:[EXLocationRequester class]
-                                                        withResult:resolve
-                                                      withRejecter:reject];
+                                                      withRequester:[EXLocationPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestPermissionsAsync,
@@ -328,9 +328,9 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
-                                                       withRequester:[EXLocationRequester class]
-                                                          withResult:resolve
-                                                        withRejecter:reject];
+                                                         withRequester:[EXLocationPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(hasServicesEnabledAsync,
@@ -469,7 +469,7 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
     return NO;
   }
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationRequester class]]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
     reject(@"E_NO_PERMISSIONS", @"LOCATION permission is required to do this operation.", nil);
     return NO;
   }
