@@ -235,10 +235,6 @@
     <!-- END OF STRIPE SCHEMES -->
 
     <activity
-      android:name=".chrometabs.ChromeTabsManagerActivity">
-    </activity>
-
-    <activity
       android:name=".experience.ErrorActivity"
       android:theme="@style/Theme.Exponent.Dark"
       android:screenOrientation="portrait">
