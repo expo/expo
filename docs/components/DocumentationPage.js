@@ -15,6 +15,7 @@ import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
+import Banner from './Banner';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 32px;
@@ -27,21 +28,6 @@ const STYLES_DOCUMENT = css`
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     padding: 32px 16px 48px 16px;
   }
-`;
-
-const STYLES_ALERT = css`
-  padding: 16px;
-  border-radius: 4px;
-  margin-bottom: 24px;
-  line-height: 1.4;
-  color: ${Constants.colors.white};
-  background: ${Constants.colors.black};
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-`;
-
-const STYLES_ALERT_BOLD = css`
-  color: ${Constants.colors.white};
-  font-family: ${Constants.fontFamilies.demi};
 `;
 
 const mutateRouteDataForRender = data => {
@@ -162,18 +148,7 @@ export default class DocumentationPage extends React.Component {
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
-            <div className={STYLES_ALERT}>
-              <strong className={STYLES_ALERT_BOLD}>Hey friend!</strong> We are co-hosting a
-              conference with <strong className={STYLES_ALERT_BOLD}>Software Mansion</strong>,{' '}
-              <a
-                className={STYLES_ALERT_BOLD}
-                style={{ color: Constants.colors.lila }}
-                href="https://appjs.co/?utm_source=organic%20traffic&utm_medium=expo%20website&utm_campaign=docs.expo.io"
-                target="blank">
-                learn more
-              </a>
-              .
-            </div>
+            <Banner />
             <H1>{this.props.title}</H1>
             {this.props.children}
             <DocumentationFooter title={this.props.title} asPath={this.props.asPath} />
