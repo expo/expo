@@ -4,14 +4,13 @@ import * as OTA from 'expo-ota';
 
 export default function App() {
   useEffect(() => {
-    console.log('They say it is registered. Is it?');
+    console.warn('They say it is registered. Is it?');
     OTA.addListener(event => {
-      console.log('OTA Event: ', event);
+      Alert.alert('Event: ', `${JSON.stringify(event)}`);
     });
   }, []);
 
   const checkForUpdates = async () => {
-    console.warn(Object.keys(OTA));
     const value = OTA.checkForUpdateAsync();
     value
       .then(result => {
@@ -66,7 +65,7 @@ export default function App() {
       <View style={{ height: 10 }} />
       <Button title={'Current manifest'} onPress={manifest} />
       <View style={{ height: 10 }} />
-      <Text>Version 1.0.109</Text>
+      <Text>Version 1.0.121</Text>
     </View>
   );
 }

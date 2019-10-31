@@ -76,7 +76,6 @@ public class MainApplication extends Application implements ReactApplication {
     }
 
     private ExpoOTA createExpoOTA() {
-        ExpoOTAConfig otaConfig = ExpoOTAConfigKt.embeddedManifestExpoConfig(this);
-        return ExpoOTA.init(this, otaConfig, false);
+        return ExpoOTA.init(this, false);
     }
 }

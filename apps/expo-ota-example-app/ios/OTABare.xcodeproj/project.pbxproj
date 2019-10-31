@@ -13,7 +13,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2C0122344374BB377AEFF7D7 /* libPods-OTABareTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20A79D5012CFAE195E19C238 /* libPods-OTABareTests.a */; };
-		7004CA05236320C500EE0162 /* Supporting in Resources */ = {isa = PBXBuildFile; fileRef = 7004CA04236320C500EE0162 /* Supporting */; };
+		70756CBC2369D60F00B18E67 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 70756CBA2369D60E00B18E67 /* shell-app-manifest.json */; };
+		70756CBD2369D60F00B18E67 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 70756CBB2369D60E00B18E67 /* shell-app.bundle */; };
 		D6CB89222DA265352A23A173 /* libPods-OTABare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A121FB98B43D2E77DDB4A1C /* libPods-OTABare.a */; };
 /* End PBXBuildFile section */
 
@@ -43,9 +44,8 @@
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3536FA9D85F76FF9273E0A24 /* Pods-OTABareTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OTABareTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-OTABareTests/Pods-OTABareTests.release.xcconfig"; sourceTree = "<group>"; };
 		4A121FB98B43D2E77DDB4A1C /* libPods-OTABare.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-OTABare.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		7004CA00236320AB00EE0162 /* shell-app-manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "shell-app-manifest.json"; path = "OTABare/Supporting/shell-app-manifest.json"; sourceTree = "<group>"; };
-		7004CA01236320AB00EE0162 /* shell-app.bundle */ = {isa = PBXFileReference; lastKnownFileType = text; name = "shell-app.bundle"; path = "OTABare/Supporting/shell-app.bundle"; sourceTree = "<group>"; };
-		7004CA04236320C500EE0162 /* Supporting */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Supporting; path = OTABare/Supporting; sourceTree = "<group>"; };
+		70756CBA2369D60E00B18E67 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = "shell-app-manifest.json"; path = "OTABare/Supporting/shell-app-manifest.json"; sourceTree = "<group>"; };
+		70756CBB2369D60E00B18E67 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "shell-app.bundle"; path = "OTABare/Supporting/shell-app.bundle"; sourceTree = "<group>"; };
 		A220BF95E0B55D440B33D21E /* Pods-OTABare.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OTABare.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OTABare/Pods-OTABare.debug.xcconfig"; sourceTree = "<group>"; };
 		DC663BFAA9AE0FD290646A7E /* Pods-OTABareTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OTABareTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-OTABareTests/Pods-OTABareTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EC34598861AC54B8B4C4FB51 /* Pods-OTABare.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OTABare.release.xcconfig"; path = "Pods/Target Support Files/Pods-OTABare/Pods-OTABare.release.xcconfig"; sourceTree = "<group>"; };
@@ -93,6 +93,8 @@
 		13B07FAE1A68108700A75B9A /* OTABare */ = {
 			isa = PBXGroup;
 			children = (
+				70756CBA2369D60E00B18E67 /* shell-app-manifest.json */,
+				70756CBB2369D60E00B18E67 /* shell-app.bundle */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -126,9 +128,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				7004CA04236320C500EE0162 /* Supporting */,
-				7004CA00236320AB00EE0162 /* shell-app-manifest.json */,
-				7004CA01236320AB00EE0162 /* shell-app.bundle */,
 				13B07FAE1A68108700A75B9A /* OTABare */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* OTABareTests */,
@@ -253,8 +252,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7004CA05236320C500EE0162 /* Supporting in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				70756CBC2369D60F00B18E67 /* shell-app-manifest.json in Resources */,
+				70756CBD2369D60F00B18E67 /* shell-app.bundle in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,7 +274,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		0E0B32B34018EDF2D81AB1A8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
