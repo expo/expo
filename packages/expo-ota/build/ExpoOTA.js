@@ -1,6 +1,6 @@
-import { NativeModulesProxy, UnavailabilityError, RCTDeviceEventEmitter } from '@unimodules/core';
-import { EventEmitter } from 'fbemitter';
+import { EventEmitter, NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
 const OTA = NativeModulesProxy.ExpoOta;
+const OTAEventEmitter = new EventEmitter(OTA);
 export async function checkForUpdateAsync() {
     if (!OTA.checkForUpdateAsync) {
         throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
@@ -53,34 +53,10 @@ export async function readCurrentManifestAsync() {
     if (!OTA.readCurrentManifestAsync) {
         throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
     }
-    return OTA.readCurrentManifestAsync();
+    return OTA.readCurrentManifestAsync().then(result => typeof result === 'string' ? JSON.parse(result) : result);
 }
 export function addListener(listener) {
-    let emitter = _getEmitter();
-    return emitter.addListener('Exponent.updatesEvent', listener);
-}
-let _emitter;
-function _emitEvent(params) {
-    let newParams = params;
-    if (typeof params === 'string') {
-        newParams = JSON.parse(params);
-    }
-    if (newParams.manifestString) {
-        newParams.manifest = JSON.parse(newParams.manifestString);
-        delete newParams.manifestString;
-    }
-    if (!_emitter) {
-        throw new Error(`EventEmitter must be initialized to use from its listener`);
-    }
-    console.log('They say we emit event. Do we?');
-    _emitter.emit('Exponent.updatesEvent', newParams);
-}
-function _getEmitter() {
-    if (!_emitter) {
-        _emitter = new EventEmitter();
-        RCTDeviceEventEmitter.addListener('Exponent.nativeUpdatesEvent', _emitEvent);
-    }
-    return _emitter;
+    return OTAEventEmitter.addListener('Exponent.updatesEvent', listener);
 }
 export const EventType = {
     DOWNLOAD_STARTED: 'downloadStart',

@@ -1,9 +1,12 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <UMCore/UMEventEmitterService.h>
 #import <EXOta/EXOtaModule.h>
 #import <EXOta/EXKeyValueStorage.h>
 #import <EXOta/EXOtaPersistance.h>
 #import "EXOtaPersistanceFactory.h"
+#import "EXOtaEvents.h"
+#import "EXOtaUpdaterFactory.h"
 #import <EXOtaUpdater.h>
 #import <EXExpoUpdatesConfig.h>
 #import <EXEmbeddedManifestAndBundle.h>
@@ -11,19 +14,22 @@
 @interface EXOtaModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 
 @end
 
 @implementation EXOtaModule {
     EXOtaUpdater *updater;
     EXOtaPersistance *persistance;
+    NSString *appId;
+    EXOtaEvents *events;
 }
 
 UM_EXPORT_MODULE(ExpoOta);
 
 - (id)init
 {
-    return [self configure:nil];
+    return [self configure:@"defaultId"];
 }
 
 - (id)initWithId:(NSString *)appId
@@ -33,14 +39,18 @@ UM_EXPORT_MODULE(ExpoOta);
 
 - (id)configure:(NSString* _Nullable)appId
 {
+    self->appId = appId;
     persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
-    updater = [[EXOtaUpdater alloc] initWithConfig:persistance.config withPersistance:persistance withId:persistance.appId];
+    updater = [[EXOtaUpdaterFactory sharedFactory] updaterForId:appId initWithConfig:persistance.config withPersistance:persistance];
     return self;
 }
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
     _moduleRegistry = moduleRegistry;
+    _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+    events = [[EXOtaEvents alloc] initWithEmitter:_eventEmitter];
+    updater.eventsEmitter = events;
 }
 
 UM_EXPORT_METHOD_AS(checkForUpdateAsync,
@@ -72,7 +82,7 @@ UM_EXPORT_METHOD_AS(fetchUpdateAsync,
     [updater checkAndDownloadUpdate:^(NSDictionary * _Nonnull manifest, NSString * _Nonnull filePath) {
         [self->updater saveDownloadedManifest:manifest andBundlePath:filePath];
         resolve(@{
-            @"bundle": filePath
+            @"manifest": manifest
         });
     } updateUnavailable:^{
         resolve(nil);
@@ -110,5 +120,17 @@ UM_EXPORT_METHOD_AS(readCurrentManifestAsync,
 {
     resolve([[EXEmbeddedManifestAndBundle alloc] readManifest]);
 }
+
+# pragma mark - UMEventEmitter
+
+- (NSArray<NSString *> *)supportedEvents
+{
+    return [events supportedEvents];
+}
+
+- (void)startObserving {}
+
+
+- (void)stopObserving {}
 
 @end

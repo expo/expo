@@ -1,5 +1,4 @@
 import Constants from 'expo-constants';
-import { EventSubscription } from 'fbemitter';
 declare type Manifest = typeof Constants.manifest;
 declare type UpdateEvent = {
     type: 'downloadStart' | 'downloadProgress' | 'noUpdateAvailable';
@@ -17,6 +16,9 @@ declare type UpdateCheckResult = {
     manifest: Manifest;
 };
 declare type UpdateEventListener = (event: UpdateEvent) => void;
+export interface PedometerEventSubscribtion {
+    remove: () => void;
+}
 declare type UpdateFetchResult = {
     isNew: false;
 } | {
@@ -30,7 +32,7 @@ export declare function fetchUpdateAsync({ eventListener, }?: {
 export declare function reload(): Promise<any>;
 export declare function clearUpdateCacheAsync(): Promise<any>;
 export declare function readCurrentManifestAsync(): Promise<any>;
-export declare function addListener(listener: Function): EventSubscription;
+export declare function addListener(listener: UpdateEventListener): PedometerEventSubscribtion;
 export declare const EventType: {
     DOWNLOAD_STARTED: string;
     DOWNLOAD_PROGRESS: string;

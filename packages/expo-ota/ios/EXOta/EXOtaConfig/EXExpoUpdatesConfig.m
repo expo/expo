@@ -52,7 +52,7 @@
 {
     NSString *releaseChannel = manifest[@"releaseChannel"];
     NSString *sdkVersion = manifest[@"sdkVersion"];
-    NSDictionary *updatesConfig = manifest[@"updatesConfig"];
+    NSDictionary *updatesConfig = manifest[@"updates"];
     _checkForUpdatesAutomatically = YES;
     _manifestComparator = [self defaultManifestComparator];
     

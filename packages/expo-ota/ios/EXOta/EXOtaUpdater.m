@@ -21,6 +21,8 @@
     EXEmbeddedManifestAndBundle *_embedded;
 }
 
+@synthesize eventsEmitter = _eventsEmitter;
+
 - (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier
 {
     _config = config;
@@ -44,12 +46,24 @@
 
 - (void)checkEmbeddedManifestAndBundle
 {
-    NSDictionary *embeddedManifest = [_embedded readManifest];
-    if([[_config manifestComparator] shouldReplaceBundle:embeddedManifest forNew:[_persistance readManifest]])
+    if([self shouldCopyEmbeddedManifestAndBundle])
     {
-        [self saveDownloadedManifest:embeddedManifest andBundlePath:[_embedded readBundlePath]];
-        [self markDownloadedCurrentAndCurrentOutdated];
+        NSDictionary *embeddedManifest = [_embedded readManifest];
+        EXOtaBundleLoader *bundleLoader = [[EXOtaBundleLoader alloc] initWithTimeout:_config.bundleRequestTimeout];
+        NSData *bundle = [NSData dataWithContentsOfFile:[_embedded readBundlePath] options:NSMappedRead error:nil];
+        [bundleLoader saveResponseToFile:bundle inDirectory:[self bundlesDir] withFilename:[self bundleFilenameFromManifest:embeddedManifest] success:^(NSString * _Nonnull path) {
+            [self saveDownloadedManifest:embeddedManifest andBundlePath:path];
+            [self markDownloadedCurrentAndCurrentOutdated];
+        } error:^(NSError * _Nonnull error) {
+        }];
     }
+}
+
+- (Boolean)shouldCopyEmbeddedManifestAndBundle
+{
+    NSDictionary *embeddedManifest = [_embedded readManifest];
+    return ![_embedded isEmbeddedManifestCompatibleWith:[_persistance readNewestManifest]] ||
+    [[_config manifestComparator] shouldReplaceBundle:[_persistance readManifest] forNew:embeddedManifest];
 }
 
 - (void)performEnqueqedReorder
@@ -68,11 +82,17 @@
         NSDictionary *oldManifest = [self->_persistance readNewestManifest];
         if(oldManifest == nil || [self->_config.manifestComparator shouldReplaceBundle:oldManifest forNew:manifest])
         {
+            [self->_eventsEmitter emitDownloadStart];
             [self downloadBundle:manifest success:^(NSString *path) {
+                [self->_eventsEmitter emitDownloadFinished];
                 successBlock(manifest, path);
-            } error:errorBlock];
+            } error:^(NSError * _Nonnull error) {
+                [self->_eventsEmitter emitError];
+                errorBlock(error);
+            }];
         } else
         {
+            [self->_eventsEmitter emitNoUpdateAvailable];
             unavailableBlock();
         }
     } error:errorBlock];
@@ -83,7 +103,7 @@
     EXOtaApiClient *api = [[EXOtaApiClient alloc] init];
     [api performRequest:_config.manifestUrl withHeaders:_config.manifestRequestHeaders withTimeout:_config.manifestRequestTimeout success:^(NSData * _Nonnull response) {
         NSDictionary *responseJson = [NSJSONSerialization JSONObjectWithData:response options:kNilOptions error:nil];
-        [_config.manifestValidator verifyManifest:responseJson success:^(NSDictionary * _Nonnull originalResponse) {
+        [self->_config.manifestValidator verifyManifest:responseJson success:^(NSDictionary * _Nonnull originalResponse) {
             successBlock([self extractManifestFromResponse:originalResponse]);
         } error:^(NSError * _Nonnull error) {
             

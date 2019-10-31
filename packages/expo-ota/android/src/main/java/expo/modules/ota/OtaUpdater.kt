@@ -130,13 +130,19 @@ class OtaUpdater private constructor(private val context: Context, private val p
     }
 
     private fun checkAssetsBundleAndManifest() {
-        val embeddedManifest: JSONObject = embeddedManifestAndBundle.readManifest()
-        if (!shouldReplaceBundle(embeddedManifest, persistence.newestManifest)) {
+        if (shouldCopyAssetsManifestAndBundle()) {
+            val embeddedManifest: JSONObject = embeddedManifestAndBundle.readManifest()
             saveResponseToFile(bundleDir(), bundleFilename(embeddedManifest)) (embeddedManifestAndBundle.readBundle(), {
                 saveDownloadedManifestAndBundlePath(embeddedManifest, it)
                 markDownloadedCurrentAndCurrentOutdated()
             }, {})
         }
+    }
+
+    private fun shouldCopyAssetsManifestAndBundle(): Boolean {
+        val embeddedManifest: JSONObject = embeddedManifestAndBundle.readManifest()
+        return !embeddedManifestAndBundle.isEmbeddedManifestCompatibleWith(persistence.newestManifest)
+                || shouldReplaceBundle(persistence.newestManifest, embeddedManifest)
     }
 
     private val validFilesSet: Set<String>

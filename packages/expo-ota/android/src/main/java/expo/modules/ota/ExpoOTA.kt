@@ -12,6 +12,11 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
 
     companion object {
 
+        @JvmStatic @JvmOverloads fun init(context: Context, loadFromBundler: Boolean = true): ExpoOTA {
+            val config = embeddedManifestExpoConfig(context)
+            return init(context, config, loadFromBundler)
+        }
+
         @JvmStatic @JvmOverloads fun init(context: Context, config: ExpoOTAConfig, loadFromBundler: Boolean, id: String = DEFAULT_EXPO_OTA_ID): ExpoOTA {
             val ota = ExpoOTA(context, config, loadFromBundler, id)
             if(config.checkForUpdatesAutomatically) {

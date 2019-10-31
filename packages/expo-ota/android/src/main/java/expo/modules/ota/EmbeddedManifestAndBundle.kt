@@ -20,4 +20,14 @@ class EmbeddedManifestAndBundle(val context: Context) {
         return context.assets.open("shell-app.bundle")
     }
 
+    fun isEmbeddedManifestCompatibleWith(manifest: JSONObject): Boolean {
+        val sdkVersion = manifest.optString("sdkVersion")
+        val releaseChannel = manifest.optString("releaseChannel")
+        if (sdkVersion == null || releaseChannel == null) {
+            return false
+        }
+        return readManifest().getString("sdkVersion") == sdkVersion
+                && readManifest().getString("releaseChannel") == releaseChannel
+    }
+
 }
