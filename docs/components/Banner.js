@@ -49,19 +49,17 @@ const STYLES_CLOSE_BUTTON = css`
   }
 `;
 
-if (typeof window !== 'undefined' && !window.hasOwnProperty('isBannerVisible')) {
-  window.isBannerVisible = true;
-}
-
 export default class Banner extends React.Component {
   constructor(props) {
     super(props);
-    let isVisible = true;
+    let isHidden;
     if (typeof window !== 'undefined') {
-      isVisible = window.isBannerVisible;
+      isHidden = localStorage.getItem('isBannerHidden');
+    } else {
+      isHidden = false;
     }
     this.state = {
-      isVisible,
+      isHidden,
     };
   }
 
@@ -71,19 +69,37 @@ export default class Banner extends React.Component {
 
   _setBannerVisibility = () => {
     if (typeof window !== 'undefined') {
-      this.setState({ isVisible: window.isBannerVisible });
+      if (Date.parse(localStorage.getItem('hideDate')) <= this._sevenDaysAgo(new Date())) {
+        this._showBannerAgain();
+      } else {
+        this.setState({ isHidden: localStorage.getItem('isBannerHidden') });
+      }
+    } else {
+      this.setState({ isHidden: false });
     }
   };
 
-  _handleCloseBanner = () => {
+  _sevenDaysAgo = day => {
+    let pastDate = day.getDate() - 7;
+    day.setDate(pastDate);
+    return day;
+  };
+
+  _showBannerAgain = () => {
+    localStorage.setItem('isBannerHidden', false);
+    this.setState({ isHidden: false });
+  };
+
+  _handleHideBanner = () => {
     if (typeof window !== 'undefined') {
-      window.isBannerVisible = false;
+      localStorage.setItem('isBannerHidden', true);
+      localStorage.setItem('hideDate', new Date());
     }
-    this.setState({ isVisible: false });
+    this.setState({ isHidden: true });
   };
 
   render() {
-    if (!this.state.isVisible) {
+    if (this.state.isHidden) {
       return null;
     } else {
       return (
@@ -98,7 +114,7 @@ export default class Banner extends React.Component {
             learn more
           </a>
           .
-          <button type="button" className={STYLES_CLOSE_BUTTON} onClick={this._handleCloseBanner} />
+          <button type="button" className={STYLES_CLOSE_BUTTON} onClick={this._handleHideBanner} />
         </div>
       );
     }
