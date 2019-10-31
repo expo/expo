@@ -5,22 +5,22 @@ import {
   ImagePickerResult,
   MediaTypeOptions,
   ImagePickerOptions,
-  PermissionsResponse,
+  PermissionResponse
 } from './ImagePicker.types';
 
-export async function getCameraPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getCameraPermissionsAsync(): Promise<PermissionResponse {
   return ExponentImagePicker.getCameraPermissionsAsync();
 }
 
-export async function getCameraRollPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getCameraRollPermissionsAsync(): Promise<PermissionResponse {
   return ExponentImagePicker.getCameraRollPermissionsAsync();
 }
 
-export async function requestCameraPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestCameraPermissionsAsync(): Promise<PermissionResponse {
   return ExponentImagePicker.requestCameraPermissionsAsync();
 }
 
-export async function requestCameraRollPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestCameraRollPermissionsAsync(): Promise<PermissionResponse {
   return ExponentImagePicker.requestCameraRollPermissionsAsync();
 }
 

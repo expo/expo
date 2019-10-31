@@ -1,3 +1,5 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+
 export enum MediaTypeOptions {
   All = 'All',
   Videos = 'Videos',
@@ -29,15 +31,4 @@ export type OpenFileBrowserOptions = {
   allowsMultipleSelection: boolean;
 };
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export {PermissionResponse, PermissionStatus};

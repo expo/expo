@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBrightness from './ExpoBrightness';
 export var BrightnessMode;
 (function (BrightnessMode) {
@@ -7,11 +8,7 @@ export var BrightnessMode;
     BrightnessMode[BrightnessMode["AUTOMATIC"] = 1] = "AUTOMATIC";
     BrightnessMode[BrightnessMode["MANUAL"] = 2] = "MANUAL";
 })(BrightnessMode || (BrightnessMode = {}));
-export const PermissionsStatus = {
-    GRANTED: 'granted',
-    UNDETERMINED: 'undetermined',
-    DENIED: 'denied',
-};
+export { PermissionStatus };
 export async function getBrightnessAsync() {
     if (!ExpoBrightness.getBrightnessAsync) {
         throw new UnavailabilityError('expo-brightness', 'getBrightnessAsync');

@@ -1,4 +1,5 @@
 import { EventEmitter, Subscription, Platform } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -154,27 +155,16 @@ export type RecordingStatus = {
   durationMillis: number;
 };
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };
 
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
 
-export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.requestPermissionsAsync();
 }
 

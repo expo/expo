@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 export type PictureOptions = {
   quality?: number;
@@ -75,15 +76,4 @@ export type NativeProps = {
   useCamera2Api?: boolean;
 };
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };

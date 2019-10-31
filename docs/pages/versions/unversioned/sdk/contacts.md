@@ -21,7 +21,7 @@ Asks the user to grant permissions for accessing contacts data. Alias for `Permi
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `getPermissionsAsync()`
 
@@ -29,7 +29,7 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 
 ### getContactsAsync
@@ -502,7 +502,7 @@ A set of fields that define information about a single entity.
 | thumbnail | `Image` | **Deprecated**: Use `image` | ❌ | ❌ |
 | previousLastName | `string` | **Deprecated**: Use maidenName | ❌ | ❌ |
 
-### `PermissionsResponse`
+### `PermissionResponse`
 
 | Field name  | Type      | Description                                                                                                                                                                                    |
 | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

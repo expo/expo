@@ -31,4 +31,7 @@ export function coalesceExpirations(permissions) {
 export function coalesceCanAskAgain(permissions) {
     return Object.keys(permissions).reduce((canAskAgain, type) => canAskAgain && permissions[type].canAskAgain, true);
 }
+export function coalesceGranted(permissions) {
+    return Object.keys(permissions).reduce((granted, type) => granted && permissions[type].granted, true);
+}
 //# sourceMappingURL=CoalescedPermissions.js.map

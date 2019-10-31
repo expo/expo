@@ -1,12 +1,9 @@
+import { PermissionStatus } from 'unimodules-permissions-interface';
 export var MediaTypeOptions;
 (function (MediaTypeOptions) {
     MediaTypeOptions["All"] = "All";
     MediaTypeOptions["Videos"] = "Videos";
     MediaTypeOptions["Images"] = "Images";
 })(MediaTypeOptions || (MediaTypeOptions = {}));
-export const PermissionsStatus = {
-    GRANTED: 'granted',
-    UNDETERMINED: 'undetermined',
-    DENIED: 'denied',
-};
+export { PermissionStatus };
 //# sourceMappingURL=ImagePicker.types.js.map

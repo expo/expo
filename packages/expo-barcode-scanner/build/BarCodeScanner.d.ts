@@ -1,3 +1,4 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ViewProps } from 'react-native';
@@ -10,17 +11,7 @@ export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
 export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
-export declare const PermissionsStatus: {
-    readonly GRANTED: "granted";
-    readonly UNDETERMINED: "undetermined";
-    readonly DENIED: "denied";
-};
-export declare type PermissionsResponse = {
-    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-    expires: 'never' | number;
-    granted: boolean;
-    canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
@@ -106,8 +97,8 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: unknown[];
     };
-    static getPermissionsAsync(): Promise<PermissionsResponse>;
-    static requestPermissionsAsync(): Promise<PermissionsResponse>;
+    static getPermissionsAsync(): Promise<PermissionResponse>;
+    static requestPermissionsAsync(): Promise<PermissionResponse>;
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<{
         type: string;
         data: string;
@@ -177,4 +168,3 @@ export declare const Constants: {
     BarCodeType: any;
     Type: any;
 }, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync;
-export {};

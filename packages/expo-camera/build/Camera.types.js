@@ -1,6 +1,3 @@
-export const PermissionsStatus = {
-    GRANTED: 'granted',
-    UNDETERMINED: 'undetermined',
-    DENIED: 'denied',
-};
+import { PermissionStatus } from 'unimodules-permissions-interface';
+export { PermissionStatus };
 //# sourceMappingURL=Camera.types.js.map

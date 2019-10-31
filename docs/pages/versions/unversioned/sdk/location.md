@@ -38,7 +38,7 @@ Asks the user to grant permissions for location. Alias for `Permissions.askAsync
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `Location.getPermissionsAsync()`
 
@@ -46,7 +46,7 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 #### Returns
 
-Returns a promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+Returns a promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `Location.getCurrentPositionAsync(options)`
 
@@ -377,7 +377,7 @@ Object of type `Region` includes following fields:
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
 - **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
 
-### `PermissionsResponse`
+### `PermissionResponse`
 
 | Field name  | Type                                                                   | Description                                                                                                                                                                                    |
 | ----------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

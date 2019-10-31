@@ -24,7 +24,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
@@ -32,7 +32,7 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -111,7 +111,7 @@ When you run this example and pick an image, you will see the image that you pic
 
 ## Types
 
-### `PermissionsResponse`
+### `PermissionResponse`
 
 | Field name  | Type      | Description                                                                                                                                                                                    |
 | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

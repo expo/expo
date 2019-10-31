@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExponentImagePicker from './ExponentImagePicker';
-import { MediaTypeOptions, } from './ImagePicker.types';
+import { MediaTypeOptions } from './ImagePicker.types';
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
 }

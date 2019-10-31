@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { coalesceExpirations, coalesceStatuses, coalesceCanAskAgain } from './CoalescedPermissions';
+import { coalesceExpirations, coalesceStatuses, coalesceCanAskAgain, coalesceGranted, } from './CoalescedPermissions';
 import Permissions from './ExpoPermissions';
 import { PermissionStatus, } from './Permissions.types';
 export { PermissionStatus, };
@@ -40,6 +40,7 @@ async function _handleMultiPermissionsRequestIOSAsync(types, handlePermission) {
         status: coalesceStatuses(permissions),
         expires: coalesceExpirations(permissions),
         canAskAgain: coalesceCanAskAgain(permissions),
+        granted: coalesceGranted(permissions),
         permissions,
     };
 }
@@ -52,6 +53,7 @@ async function _handlePermissionsRequestAsync(types, handlePermissions) {
         status: coalesceStatuses(permissions),
         expires: coalesceExpirations(permissions),
         canAskAgain: coalesceCanAskAgain(permissions),
+        granted: coalesceGranted(permissions),
         permissions,
     };
 }

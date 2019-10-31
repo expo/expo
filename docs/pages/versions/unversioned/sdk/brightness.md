@@ -45,7 +45,7 @@ Asks the user to grant permissions for accessing system brightness. Alias for `P
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `Brightness.getPermissionsAsync()`
 
@@ -53,7 +53,7 @@ Checks user's permissions for accessing system brightness. Alias for `Permission
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionsResponse](#permissionsresponse).
+A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
 
 ### `Brightness.getBrightnessAsync()`
 
@@ -204,7 +204,7 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 ## Types
 
-### `PermissionsResponse`
+### `PermissionResponse`
 
 | Field name  | Type      | Description                                                                                                                                                                                    |
 | ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

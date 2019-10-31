@@ -9,7 +9,7 @@ import {
   PictureOptions,
   Props,
   RecordingOptions,
-  PermissionsResponse,
+  PermissionResponse
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
@@ -157,11 +157,11 @@ export default class Camera extends React.Component<Props> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
-  static async getPermissionsAsync(): Promise<PermissionsResponse> {
+  static async getPermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.getPermissionsAsync();
   }
 
-  static async requestPermissionsAsync(): Promise<PermissionsResponse> {
+  static async requestPermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.requestPermissionsAsync();
   }
 

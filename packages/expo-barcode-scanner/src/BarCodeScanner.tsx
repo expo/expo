@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -23,18 +24,7 @@ export type BarCodeEventCallbackArguments = {
 
 export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };
 
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
@@ -67,11 +57,11 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     barCodeTypes: Object.values(BarCodeType),
   };
 
-  static async getPermissionsAsync(): Promise<PermissionsResponse> {
+  static async getPermissionsAsync(): Promise<PermissionResponse> {
     return ExpoBarCodeScannerModule.getPermissionsAsync();
   }
 
-  static async requestPermissionsAsync(): Promise<PermissionsResponse> {
+  static async requestPermissionsAsync(): Promise<PermissionResponse> {
     return ExpoBarCodeScannerModule.requestPermissionsAsync();
   }
 

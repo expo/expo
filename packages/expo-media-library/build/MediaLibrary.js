@@ -1,12 +1,9 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
-export const PermissionsStatus = {
-    GRANTED: 'granted',
-    UNDETERMINED: 'undetermined',
-    DENIED: 'denied',
-};
+export { PermissionStatus };
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;

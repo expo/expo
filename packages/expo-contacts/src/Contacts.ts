@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
 import UUID from 'uuid-js';
 
@@ -232,18 +233,7 @@ export type Container = {
   type: ContainerType;
 };
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export { PermissionStatus, PermissionResponse };
 
 export async function shareContactAsync(
   contactId: string,
@@ -461,7 +451,7 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
   return await ExpoContacts.getContainersAsync(containerQuery);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExpoContacts.getPermissionsAsync) {
     throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
   }
@@ -469,7 +459,7 @@ export async function getPermissionsAsync(): Promise<PermissionsResponse> {
   return ExpoContacts.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExpoContacts.requestPermissionsAsync) {
     throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
   }

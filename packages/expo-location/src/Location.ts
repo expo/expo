@@ -1,4 +1,9 @@
 import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import {
+  PermissionResponse as UMPermissionResponse,
+  PermissionStatus,
+} from 'unimodules-permissions-interface';
+
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
@@ -56,11 +61,7 @@ export interface Address {
   name: string;
 }
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
+export { PermissionStatus };
 
 export type PermissionDetailsLocationIOS = {
   scope: 'whenInUse' | 'always';
@@ -70,14 +71,10 @@ export type PermissionDetailsLocationAndroid = {
   scope: 'fine' | 'coarse' | 'none';
 };
 
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
+export interface PermissionResponse extends UMPermissionResponse {
   ios?: PermissionDetailsLocationIOS;
   android?: PermissionDetailsLocationAndroid;
-};
+}
 
 interface LocationTaskOptions {
   accuracy?: LocationAccuracy;
@@ -495,11 +492,11 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return await ExpoLocation.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return await ExpoLocation.requestPermissionsAsync();
 }
 

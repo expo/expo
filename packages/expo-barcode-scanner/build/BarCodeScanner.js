@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,11 +8,7 @@ import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
-export const PermissionsStatus = {
-    GRANTED: 'granted',
-    UNDETERMINED: 'undetermined',
-    DENIED: 'denied',
-};
+export { PermissionStatus };
 export class BarCodeScanner extends React.Component {
     constructor() {
         super(...arguments);

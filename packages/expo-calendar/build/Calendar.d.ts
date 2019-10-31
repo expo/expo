@@ -1,3 +1,4 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type RecurringEventOptions = {
     futureEvents?: boolean;
     instanceStartDate?: string | Date;
@@ -104,17 +105,7 @@ export declare type RecurrenceRule = {
     endDate?: string;
     occurrence?: number;
 };
-export declare const PermissionsStatus: {
-    readonly GRANTED: "granted";
-    readonly UNDETERMINED: "undetermined";
-    readonly DENIED: "denied";
-};
-export declare type PermissionsResponse = {
-    status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-    expires: 'never' | number;
-    granted: boolean;
-    canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };
 declare type OptionalKeys<T> = {
     [P in keyof T]?: T[P];
 };
@@ -143,11 +134,11 @@ export declare function openEventInCalendar(id: string): void;
 /**
  * @deprecated Use requestCalendarPermissionsAsync()
  */
-export declare function requestPermissionsAsync(): Promise<PermissionsResponse>;
-export declare function getCalendarPermissionsAsync(): Promise<PermissionsResponse>;
-export declare function getRemindersPermissionsAync(): Promise<PermissionsResponse>;
-export declare function requestCalendarPermissionsAsync(): Promise<PermissionsResponse>;
-export declare function requestRemindersPermissionsAsync(): Promise<PermissionsResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getCalendarPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getRemindersPermissionsAync(): Promise<PermissionResponse>;
+export declare function requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
 export declare const EntityTypes: {
     EVENT: string;
     REMINDER: string;
@@ -249,4 +240,3 @@ export declare const ReminderStatus: {
     COMPLETED: string;
     INCOMPLETE: string;
 };
-export {};

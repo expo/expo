@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, processColor } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
@@ -118,18 +119,7 @@ export type RecurrenceRule = {
   occurrence?: number;
 };
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };
 
 type OptionalKeys<T> = {
   [P in keyof T]?: T[P];
@@ -524,35 +514,35 @@ export function openEventInCalendar(id: string): void {
 /**
  * @deprecated Use requestCalendarPermissionsAsync()
  */
-export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   console.warn(
     'requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.'
   );
   return requestCalendarPermissionsAsync();
 }
 
-export async function getCalendarPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getCalendarPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExpoCalendar.getCalendarPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
   }
   return ExpoCalendar.getCalendarPermissionsAsync();
 }
 
-export async function getRemindersPermissionsAync(): Promise<PermissionsResponse> {
+export async function getRemindersPermissionsAync(): Promise<PermissionResponse> {
   if (!ExpoCalendar.getRemindersPermissionsAync) {
     throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAync');
   }
   return ExpoCalendar.getRemindersPermissionsAync();
 }
 
-export async function requestCalendarPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestCalendarPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExpoCalendar.requestCalendarPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
   }
   return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
 
-export async function requestRemindersPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestRemindersPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExpoCalendar.requestRemindersPermissionsAsync) {
     throw new UnavailabilityError('Calendar', 'requestRemindersPermissionsAsync');
   }

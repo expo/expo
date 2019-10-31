@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBrightness from './ExpoBrightness';
 
 export enum BrightnessMode {
@@ -8,18 +9,7 @@ export enum BrightnessMode {
   MANUAL = 2,
 }
 
-export const PermissionsStatus = {
-  GRANTED: 'granted',
-  UNDETERMINED: 'undetermined',
-  DENIED: 'denied',
-} as const;
-
-export type PermissionsResponse = {
-  status: typeof PermissionsStatus[keyof typeof PermissionsStatus];
-  expires: 'never' | number;
-  granted: boolean;
-  canAskAgain: boolean;
-};
+export { PermissionResponse, PermissionStatus };
 
 export async function getBrightnessAsync(): Promise<number> {
   if (!ExpoBrightness.getBrightnessAsync) {
@@ -85,10 +75,10 @@ export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMod
   return await ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
 }
 
-export async function getPermissionsAsync(): Promise<PermissionsResponse> {
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return ExpoBrightness.getPermissionsAsync();
 }
 
-export async function requestPermissionsAsync(): Promise<PermissionsResponse> {
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExpoBrightness.requestPermissionsAsync();
 }
