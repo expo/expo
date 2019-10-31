@@ -1,6 +1,6 @@
 import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from '@unimodules/core';
-const { ExponentNotifications } = NativeModulesProxy;
-const DeviceEventEmitter = new NativeEventEmitter(ExponentNotifications);
+const { ExpoNotifications } = NativeModulesProxy;
+const DeviceEventEmitter = new NativeEventEmitter(ExpoNotifications);
 export class Mailbox {
     constructor() {
         this.onUserInteractionListeners = new Map();
