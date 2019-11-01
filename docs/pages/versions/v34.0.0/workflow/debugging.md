@@ -4,34 +4,36 @@ title: Debugging
 
 import Video from '../../../../components/plugins/Video'
 
-Contrary to popular belief, there are more efficient ways of debugging than just putting `console.log` all over your code (or at least that's what I've heard). There are plenty of tools and libraries that can improve the debugging experience. Plus, the Expo community, as well as the greater React and React Native communities, are great resources for help. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [Expo forums](https://forums.expo.io/), [Github](https://github.com/expo/expo), and [StackOverflow](https://stackoverflow.com/).
+Contrary to popular belief, there are sometimes better ways to debug than putting `console.log` all over your code. There are plenty of tools and libraries that can improve the debugging experience. This document will explain how to use some of the most commonly useful tools.
 
-## Set Up
+## Prerequisites
 
-As long as you've followed our [installation guide](../../introduction/installation), you should be good to go. It's also usually a lot easier to test and debug using a simulator, so check out our setup guides for the [iOS Simulator](../../workflow/ios-simulator/) and the [Android Emulator](../../workflow/android-studio-emulator/).
+- You should have Expo CLI and the Expo client installed as described on the ["Installation" page](../../introduction/installation/).
+- It's usually easier to test and debug using a simulator, so we recommend setting up the [iOS Simulator](../../workflow/ios-simulator/) and/or the [Android Emulator](../../workflow/android-studio-emulator/) before continuing.
 
-## Errors & Warnings
+## Errors and warnings
 
-In development, you'll either see Redbox errors, or Yellowbox warnings. Redbox errors will show when a fatal error has occurred that prevents your app from running. Warnings will show to let you know of a _possible_ issue that you should probably look into before shipping your app.
-You can also create warnings and errors on your own (commonly referred to as "throwing" an error) via `console.warn("Warning message")` and `console.error("Error message")`. Or, you can also just `throw Error("Error message")`.
+In development it won't be long before you encounter a "Redbox" error or "Yellowbox" warning.
 
-### Redbox Errors and the Stack Trace
+Redbox errors will show when a fatal error has occurred that prevents your app from running. Warnings will show to let you know of a _possible_ issue that you should probably look into before shipping your app.
 
-When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal, as well as on the simulator or device you're running your project on. When you run your app it is transformed through Babel and your code will no longer look the same as it does in your editor.
+You can also create warnings and errors on your own with `console.warn("Warning message")` and `console.error("Error message")`. Another way to trigger the redbox is to throw an error and not catch it: `throw Error("Error message")`.
+
+### Redbox errors and stack traces
+
+When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal and in the Expo client app.
 
 This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file `LinksScreen.js` on line 10 and column (character) 15.
 
 <Video file="debugging/stacktrace.mp4" />
 
-## Developer Menu
+## Developer menu
 
-This menu gives you access to several functions which are useful for debugging.
-It is also known as the Debug Menu.
-Invoking it depends on the device where you are running your application:
+This menu gives you access to several functions which are useful for debugging. The way you open it is a bit different depending on where you're running the Expo client:
 
 - iOS Device: Shake the device a little bit.
 - iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
-- Android Device: Shake the device vertically a little bit.
+- Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
 - Android Emulator: Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
@@ -63,25 +65,22 @@ The React Native Debugger includes a lot of the tools listed later in this page,
 
 We'll give a quick look at it here, but check out their [documentation](https://github.com/jhen0409/react-native-debugger#documentation) for a more in-depth look.
 
-You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on a mac just use:
+You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on a mac you can run:
 
 ```sh
 brew cask install react-native-debugger
 ```
 
-To start up your project and start `react-native-debugger` at the same time, navigate to your project's root directory and run
+### Startup
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: `Command+T` on macOS, `Ctrl+T` on Linux/Windows) to `19001`. After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
-```sh
-REACT_DEBUGGER="unset ELECTRON_RUN_AS_NODE && open -g 'rndebugger://set-debugger-loc?port=19001' ||" expo start
-```
-
-This automatically starts your app in "Remote Debugging" mode, and will launch the React Native Debugger console. In this console, you can see the Element tree, the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
+In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 
 If you right-click anywhere in the React Native Debugger, you'll get some handy short-cuts to reload your JS, enable/disable the element inspector, network inspector, and to log and clear your `AsyncStorage` content.
 
 <Video file="debugging/react-native-debugger.mp4" />
 
-### Network Inspecting
+### Inspecting network traffic
 
 It's easy to use the React Native Debugger to debug your network requests. Simple right-click to `Enable Network Inspect`, which allows you to open the Network tab and inspect requests of `fetch` and `XMLHttpRequest`. There are [some limitations](https://github.com/jhen0409/react-native-debugger/blob/master/docs/network-inspect-of-chrome-devtools.md#limitations), so there are a few other alternatives, all require using a proxy. The following options will all work:
 
@@ -110,15 +109,15 @@ React DevTools is a great way to get a look at each of your components' props an
 npm install -g react-devtools@^3
 ```
 
-(if you don't want to install it globally, you can just run `npm install --dev react-devtools@^3` to install it as a project dependency).
+(if you don't want to install it globally, run `npm install --dev react-devtools@^3` to install it as a project dependency).
 
-Then, after running `expo start` in your project's root directory, in a separate terminal tab run `react-devtools`. This will open up the React Devtools console (for it to connect, just refresh the project via the Developer Menu). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
+After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Client). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
 
 <Video file="debugging/react-devtools.mp4" />
 
 React DevTools can also be paired with remote debugging, allowing you to inspect props, state, and instance properties in the Chrome console. If you have any questions on setting that up, give the next section a look!
 
-## Remote Debugging with Chrome Developer Tools
+## Remote debugging with Chrome Developer Tools
 
 You can debug Expo apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
 
@@ -138,12 +137,16 @@ When you start a project with Expo CLI and when you press `Run on Android device
 
 Source maps and async functions aren't 100% reliable. React Native doesn't play well with Chrome's source mapping in every case, so if you want to make sure you're breakpointing in the correct place, you should use the `debugger` call directly from your code.
 
-## Other Debugging Tips
+## Other debugging tips
 
 Dotan Nahum outlined in his ["Debugging React Native Applications" Medium post](https://medium.com/reactnativeacademy/debugging-react-native-applications-6bff3f28c375) other useful tools such as spying on bridge messages and JSEventLoopWatchdog.
 
-## Debugging Production Apps with Sentry
+## Debugging production apps with Sentry
 
 In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's usually a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
 
 Expo provides a wrapper called [sentry-expo](../../guides/using-sentry/) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.
+
+## Stuck?
+
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
