@@ -8,7 +8,7 @@ Contrary to popular belief, there are sometimes better ways to debug than puttin
 
 ## Prerequisites
 
-- You should have Expo CLI and Expo client installed as described on the ["Installation" page](../../get-started/installation).
+- You should have Expo CLI and the Expo client installed as described on the ["Installation" page](../../introduction/installation/).
 - It's usually easier to test and debug using a simulator, so we recommend setting up the [iOS Simulator](../../workflow/ios-simulator/) and/or the [Android Emulator](../../workflow/android-studio-emulator/) before continuing.
 
 ## Errors and warnings
