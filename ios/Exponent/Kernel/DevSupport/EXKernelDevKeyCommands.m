@@ -202,11 +202,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
 
   // This reloads manifest and JS
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController refreshVisibleApp];
-    });
-  }
+  [[EXKernel sharedInstance] reloadVisibleApp];
 }
 
 - (void)_handleDisableDebuggingCommand

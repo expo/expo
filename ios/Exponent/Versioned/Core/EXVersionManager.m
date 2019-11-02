@@ -105,14 +105,11 @@ void EXRegisterScopedModule(Class moduleClass, ...)
 - (void)bridgeWillStartLoading:(id)bridge
 {
   // Override the "Reload" button from Redbox to reload the app from manifest
+  // Keep in mind that it is possible this will return a EXDisabledRedBox
   RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
-  redBox.overrideReloadAction = ^{
-    if ([EXKernel sharedInstance].browserController) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [[EXKernel sharedInstance].browserController refreshVisibleApp];
-      });
-    }
-  };
+  [redBox setOverrideReloadAction:^{
+    [[EXKernel sharedInstance] reloadVisibleApp];
+  }];
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
   [[NSNotificationCenter defaultCenter]

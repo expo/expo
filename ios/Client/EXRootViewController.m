@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // this is different from Util.reload()
 // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
-- (void)refreshVisibleApp
+- (void)reloadVisibleApp
 {
   if (_isMenuVisible) {
     [self setIsMenuVisible:NO completion:nil];
