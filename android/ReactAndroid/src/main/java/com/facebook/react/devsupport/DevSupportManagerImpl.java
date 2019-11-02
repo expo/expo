@@ -406,7 +406,8 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         });
     }
 
-    private void reloadExpoApp() {
+    @Override
+    public void reloadExpoApp() {
       try {
         int activityId = mDevServerHelper.mSettings.exponentActivityId;
         Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("reloadFromManifest", int.class).invoke(null, activityId);
