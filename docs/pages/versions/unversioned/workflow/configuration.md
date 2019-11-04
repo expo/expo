@@ -452,6 +452,14 @@ Configuration for how and when the app should request OTA JavaScript updates
     "usesAppleSignIn": BOOLEAN,
 
     /*
+      A boolean value indicating if the app may access the notes stored in contacts.
+      See Contacts docs for details.
+
+      ExpoKit: use Xcode to set this.
+    */
+    "accessesContactNotes": BOOLEAN,
+
+    /*
       Extra module configuration to be added to your app's native Info.plist.
 
       For ExpoKit apps, just add these to the Info.plist file directly.
