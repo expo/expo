@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary<NSString *, NSString *> *)getMethodsTable:(NSArray<NSString *> *)prefixes
                                                frameworks:(NSArray<NSString *> * _Nullable)frameworks;
-+ (NSArray<NSString *> *)symbolicateCallstack:(NSArray<NSString *> *)callstack
-                                methodMapping:(NSDictionary<NSString *,id> *)methodMapping;
++ (nullable NSArray<NSString *> *)symbolicateCallstack:(NSArray<NSString *> *)callstack
+                                         methodMapping:(NSDictionary<NSString *,id> *)methodMapping;
 
 @end
 

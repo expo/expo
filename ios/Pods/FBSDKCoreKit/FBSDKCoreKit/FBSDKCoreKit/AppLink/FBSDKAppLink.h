@@ -47,13 +47,13 @@ NS_SWIFT_NAME(AppLink)
  from App Link metadata.
  @param webURL the fallback web URL, if any, for the app link.
  */
-+ (instancetype)appLinkWithSourceURL:(NSURL *)sourceURL
++ (instancetype)appLinkWithSourceURL:(nullable NSURL *)sourceURL
                              targets:(NSArray<FBSDKAppLinkTarget *> *)targets
                               webURL:(nullable NSURL *)webURL
 NS_SWIFT_NAME(init(sourceURL:targets:webURL:));
 
 /** The URL from which this FBSDKAppLink was derived */
-@property (nonatomic, strong, readonly) NSURL *sourceURL;
+@property (nonatomic, strong, readonly, nullable) NSURL *sourceURL;
 
 /**
  The ordered list of targets applicable to this platform that will be used

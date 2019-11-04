@@ -16,14 +16,13 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKProfile.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FBSDKProfile(Internal)
+@interface FBSDKMetadataIndexer : NSObject
 
-+ (void)cacheProfile:(nullable FBSDKProfile *)profile;
-+ (nullable FBSDKProfile *)fetchCachedProfile;
++ (void)enable;
 
 @end
 

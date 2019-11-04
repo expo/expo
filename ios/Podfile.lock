@@ -521,8 +521,8 @@ PODS:
   - ABI35_0_0EXFacebook (6.0.0):
     - ABI35_0_0UMConstantsInterface
     - ABI35_0_0UMCore
-    - FBSDKCoreKit (~> 5.5)
-    - FBSDKLoginKit (~> 5.5)
+    - FBSDKCoreKit
+    - FBSDKLoginKit
   - ABI35_0_0EXFaceDetector (6.0.1):
     - ABI35_0_0UMCore
     - ABI35_0_0UMFaceDetectorInterface
@@ -794,8 +794,8 @@ PODS:
   - EXErrorRecovery (1.0.0):
     - UMCore
   - EXFacebook (7.0.0):
-    - FBSDKCoreKit (~> 5.6.0)
-    - FBSDKLoginKit (~> 5.6.0)
+    - FBSDKCoreKit (~> 5.8.0)
+    - FBSDKLoginKit (~> 5.8.0)
     - UMConstantsInterface
     - UMCore
   - EXFaceDetector (7.0.0):
@@ -904,15 +904,15 @@ PODS:
     - React-Core (= 0.61.2)
     - React-jsi (= 0.61.2)
     - ReactCommon/turbomodule/core (= 0.61.2)
-  - FBSDKCoreKit (5.6.0):
-    - FBSDKCoreKit/Basics (= 5.6.0)
-    - FBSDKCoreKit/Core (= 5.6.0)
-  - FBSDKCoreKit/Basics (5.6.0)
-  - FBSDKCoreKit/Core (5.6.0):
+  - FBSDKCoreKit (5.8.0):
+    - FBSDKCoreKit/Basics (= 5.8.0)
+    - FBSDKCoreKit/Core (= 5.8.0)
+  - FBSDKCoreKit/Basics (5.8.0)
+  - FBSDKCoreKit/Core (5.8.0):
     - FBSDKCoreKit/Basics
-  - FBSDKLoginKit (5.6.0):
-    - FBSDKLoginKit/Login (= 5.6.0)
-  - FBSDKLoginKit/Login (5.6.0):
+  - FBSDKLoginKit (5.8.0):
+    - FBSDKLoginKit/Login (= 5.8.0)
+  - FBSDKLoginKit/Login (5.8.0):
     - FBSDKCoreKit (~> 5.0)
   - Firebase/Core (6.7.0):
     - Firebase/CoreOnly
@@ -2580,7 +2580,7 @@ SPEC CHECKSUMS:
   ABI35_0_0EXCrypto: 0a9dbfb33a2a97517071f5d9cc3632583390ea9e
   ABI35_0_0EXDevice: 37c75f9bea44b4fc7cb0c3f5b773a5d6764d4dc6
   ABI35_0_0EXDocumentPicker: c42500441c1359f3794e1957f14b36baf369fc06
-  ABI35_0_0EXFacebook: 52dbeb10a9345696cfc5e37dc88ec332d1d44a3f
+  ABI35_0_0EXFacebook: 7c98f8a027e52a58bd9e834bf0f701b394063e99
   ABI35_0_0EXFaceDetector: d309d0d01bfa4aa078ec3bf5a2f5bbe5c08d90a2
   ABI35_0_0EXFileSystem: 024a8182e92bccfee3129fb8614fcb9416ff54b2
   ABI35_0_0EXFont: 93d0c858473e8407cb44bba89c327664bbec287f
@@ -2655,7 +2655,7 @@ SPEC CHECKSUMS:
   EXDevice: fd3b1b55f2547b7d51e5e093569a1fb678cce946
   EXDocumentPicker: 15acaac45e3c4060eff044cddceb6a8494fb58c1
   EXErrorRecovery: d36db99ec6a3808f313f01b0890eb443796dd1c2
-  EXFacebook: 165670d591c87e48aa31faf73eedab5eaae5c7ef
+  EXFacebook: b8f3513f1c8593ce475d244380088a0985900e40
   EXFaceDetector: c436467d9f3f892fbffa6f471d46431bcbae2788
   EXFileSystem: 6ecb14b5c5557a5208d4474487d2eb1edef6892c
   EXFont: 71d07dc5d2153db7d1a23f1e0cc1b6341d55c432
@@ -2691,8 +2691,8 @@ SPEC CHECKSUMS:
   FBAudienceNetwork: 1ea26a004014ee6700dce1b7beb5e853887f498e
   FBLazyVector: 68b6a76960fbd8ecd9fb7ce0aadd3329c3340a99
   FBReactNativeSpec: 5a764c60abdc3336a213e5310c40b74741f32839
-  FBSDKCoreKit: d6655a343868d4bb5c29a60859bab07c3be14a0b
-  FBSDKLoginKit: c5a623de88a6b0cda35b35582921f6cec2efcc36
+  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+  FBSDKLoginKit: 1b0cf04df0370b37404213157b060d6666ede814
   Firebase: 291d7b0a7b393f252358083b5d224884126fa46d
   FirebaseAnalytics: 843c7f64a8f9c79f0d03281197ebe7bb1d58d477
   FirebaseCore: 32b48f41c84a56fbde73b35ed01a830b3b6dc048

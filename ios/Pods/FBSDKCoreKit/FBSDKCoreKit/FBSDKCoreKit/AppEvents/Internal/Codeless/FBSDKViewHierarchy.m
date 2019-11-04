@@ -270,6 +270,11 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
 
 + (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj
 {
+  return [self getDetailAttributesOf:obj WithHash:YES];
+}
+
++ (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj WithHash:(BOOL)hash
+{
   if (!obj) {
     return nil;
   }
@@ -309,9 +314,11 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
     result[CODELESS_VIEW_TREE_TEXT_STYLE_KEY] = textStyle;
   }
 
-  // hash text and hint
-  result[CODELESS_VIEW_TREE_TEXT_KEY] = [FBSDKUtility SHA256Hash:result[CODELESS_VIEW_TREE_TEXT_KEY]];
-  result[CODELESS_VIEW_TREE_HINT_KEY] = [FBSDKUtility SHA256Hash:result[CODELESS_VIEW_TREE_HINT_KEY]];
+  if (hash) {
+    // hash text and hint
+    result[CODELESS_VIEW_TREE_TEXT_KEY] = [FBSDKUtility SHA256Hash:result[CODELESS_VIEW_TREE_TEXT_KEY]];
+    result[CODELESS_VIEW_TREE_HINT_KEY] = [FBSDKUtility SHA256Hash:result[CODELESS_VIEW_TREE_HINT_KEY]];
+  }
 
   return result;
 }
