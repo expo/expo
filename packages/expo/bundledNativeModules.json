@@ -74,7 +74,7 @@
   "expo-video-thumbnails": "~3.0.0",
   "expo-in-app-purchases": "~7.0.0",
   "expo-branch": "~1.0.2",
-  "react-native-appearance": "~0.1.0",
+  "react-native-appearance": "~0.2.0-rc.0",
   "react-native-safe-area-context": "0.6.0",
   "react-native-shared-element": "~0.5.1",
   "expo-application": "~1.0.0",

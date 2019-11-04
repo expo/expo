@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentActivity;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -139,6 +141,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
     mLayout = new FrameLayout(this);
     setContentView(mLayout);
