@@ -166,12 +166,6 @@
     </activity>
 
     <activity
-      android:name=".oauth.OAuthWebViewActivity"
-      android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Light">
-    </activity>
-
-    <activity
         android:name="net.openid.appauth.RedirectUriReceiverActivity"
         tools:node="replace">
       <intent-filter>
@@ -180,10 +174,6 @@
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="host.exp.exponent" android:path="oauthredirect"/>
       </intent-filter>
-    </activity>
-
-    <activity
-      android:name=".oauth.OAuthResultActivity">
     </activity>
 
     <!-- START OF STRIPE SCHEMES -->
@@ -243,10 +233,6 @@
     </activity>
     <!-- END_SDK_33 -->
     <!-- END OF STRIPE SCHEMES -->
-
-    <activity
-      android:name=".chrometabs.ChromeTabsManagerActivity">
-    </activity>
 
     <activity
       android:name=".experience.ErrorActivity"
