@@ -4481,12 +4481,14 @@ CACHE_KEYS:
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
-    CHECKSUM: f0c4a520c644ed85b71bd95e58b395a1a7611709
+    CHECKSUM: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
     FILES:
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.h"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.m"
       - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.h"
       - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: EXPermissions

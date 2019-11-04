@@ -61,18 +61,16 @@
            @"allowsSound": @(allowsSound),
            @"allowsAlert": @(allowsAlert),
            @"allowsBadge": @(allowsBadge),
-           @"expires": EXPermissionExpiresNever,
            };
 }
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
-  
   UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound + UNAuthorizationOptionBadge;
+  UM_WEAKIFY(self)
   [_notificationCenter requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
     UM_STRONGIFY(self)
-    NSAssert(self->_methodQueue, @"Permissions module is required to properly consume result.");
+    NSAssert(self->_methodQueue, @"Method queue is required to properly consume result.");
     dispatch_async(self->_methodQueue, ^{
       if (error) {
         reject(@"E_PERM_REQ", error.description, error);

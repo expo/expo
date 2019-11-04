@@ -1,40 +1,51 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXPermissions/EXRemoteNotificationRequester.h>
+#import <EXPermissions/EXRemoteNotificationPermissionRequester.h>
 #import <UMCore/UMUtilities.h>
-#import <EXPermissions/EXUserNotificationRequester.h>
 
 NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXAppDidRegisterForRemoteNotificationsNotification";
 
-@interface EXRemoteNotificationRequester ()
+@interface EXRemoteNotificationPermissionRequester ()
 
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
-@property (nonatomic, strong) EXUserNotificationRequester *localNotificationRequester;
+@property (nonatomic, weak) EXUserNotificationPermissionRequester* userNotificationPermissionRequester;
+@property (nonatomic, weak) dispatch_queue_t methodQueue;
+
 @end
 
-@implementation EXRemoteNotificationRequester
+@implementation EXRemoteNotificationPermissionRequester
 
-- (instancetype)init {
++ (NSString *)permissionType
+{
+  return @"notifications";
+}
+
+- (instancetype)initWithUserNotificationPermissionRequester:(EXUserNotificationPermissionRequester *)userNotificationPermissionRequester
+                                            withMethodQueue:(dispatch_queue_t)methodQueue
+{
   if (self = [super init]) {
     _remoteNotificationsRegistrationIsPending = NO;
+    _userNotificationPermissionRequester = userNotificationPermissionRequester;
+    _methodQueue = methodQueue;
   }
   return self;
 }
 
-- (NSDictionary *)permissions
+- (NSDictionary *)getPermissions
 {
-  __block EXPermissionStatus status;
+  __block UMPermissionStatus status;
   [UMUtilities performSynchronouslyOnMainThread:^{
     status = (UMSharedApplication().isRegisteredForRemoteNotifications) ?
-    EXPermissionStatusGranted :
-    EXPermissionStatusUndetermined;
+    UMPermissionStatusGranted :
+    UMPermissionStatusUndetermined;
   }];
-  NSMutableDictionary *permissions = [[self.permissionsModule getPermissionsForResource:@"userFacingNotifications"] mutableCopy]; // get permissions for user notifications
+  NSMutableDictionary *permissions = [[_userNotificationPermissionRequester getPermissions] mutableCopy];
+  
   [permissions setValuesForKeysWithDictionary:@{
-                                                @"status": [EXPermissions permissionStringForStatus:status],
-                                                @"expires": EXPermissionExpiresNever,
+                                                @"status": @(status),
+
                                                 }];
   return permissions;
 }
@@ -62,12 +73,10 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
                                              selector:@selector(_handleDidRegisterForRemoteNotifications:)
                                                  name:EXAppDidRegisterForRemoteNotificationsNotificationName
                                                object:nil];
-    id<EXPermissionRequester> requester = [self.permissionsModule getPermissionRequesterForType:@"userFacingNotifications"];
-    UM_WEAKIFY(self)
-    [requester requestPermissionsWithResolver:^(NSDictionary *permission){
+     UM_WEAKIFY(self)
+    [_userNotificationPermissionRequester requestPermissionsWithResolver:^(NSDictionary *permission){
       UM_STRONGIFY(self)
-      self->_localNotificationRequester = nil;
-      NSString *localNotificationsStatus = [permission objectForKey:@"status"];
+      UMPermissionStatus localNotificationsStatus = [[permission objectForKey:@"status"] intValue];
       // We may assume that `EXLocalNotificationRequester`'s permission request will always finish
       // when the user responds to the dialog or has already responded in the past.
       // However, `UIApplication.registerForRemoteNotification` results in calling
@@ -75,15 +84,21 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
       // `application:didFailToRegisterForRemoteNotificationsWithError:` on the application delegate
       // ONLY when the notifications are enabled in settings (by allowing sound, alerts or app badge).
       // So, when the local notifications are disabled, the application delegate's callbacks will not be called instantly.
-      if ([localNotificationsStatus isEqualToString:[EXPermissions permissionStringForStatus:EXPermissionStatusDenied]]) {
+      if (localNotificationsStatus == UMPermissionStatusDenied) {
         [self _clearObserver];
+        [self _maybeConsumeResolverWithCurrentPermissions];
+      } else {
+        self.remoteNotificationsRegistrationIsPending = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [UMSharedApplication() registerForRemoteNotifications];
+        });
       }
-      [self _maybeConsumeResolverWithCurrentPermissions];
-    } rejecter:nil];
-    _remoteNotificationsRegistrationIsPending = YES;
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [UMSharedApplication() registerForRemoteNotifications];
-    });
+    } rejecter:^(NSString *code, NSString *message, NSError *error){
+      [self _clearObserver];
+      if (self.reject) {
+        self.reject(code, message, error);
+      }
+    }];
   }
 }
 
@@ -95,9 +110,8 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 - (void)_handleDidRegisterForRemoteNotifications:(__unused NSNotification *)notif
 {
   [self _clearObserver];
-  NSAssert(self.permissionsModule, @"Permissions module is required to properly consume result.");
   UM_WEAKIFY(self)
-  dispatch_async(self.permissionsModule.methodQueue, ^{
+  dispatch_async(_methodQueue, ^{
     UM_STRONGIFY(self)
     [self _maybeConsumeResolverWithCurrentPermissions];
   });
@@ -111,9 +125,9 @@ NSString * const EXAppDidRegisterForRemoteNotificationsNotificationName = @"kEXA
 
 - (void)_maybeConsumeResolverWithCurrentPermissions
 {
-  if (_localNotificationRequester == nil && !_remoteNotificationsRegistrationIsPending) {
+  if (!_remoteNotificationsRegistrationIsPending) {
     if (_resolve) {
-      _resolve([self permissions]);
+      _resolve([self getPermissions]);
       _resolve = nil;
       _reject = nil;
     }

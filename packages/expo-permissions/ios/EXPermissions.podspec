@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.platform        = :ios, '10.0'
   s.source          = { git: 'https://github.com/expo/expo.git' }
   s.source_files    = "EXPermissions/*.{h,m}",
-                      "EXPermissions/Requesters/UserNotification/*.{h,m}"
-                      #"EXPermissions/Requesters/RemoteNotification/*.{h,m}"
+                      "EXPermissions/Requesters/UserNotification/*.{h,m}",
+                      "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
                       
   s.requires_arc    = true
 

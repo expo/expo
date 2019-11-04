@@ -6,6 +6,7 @@
 #import <EXPermissions/EXPermissions.h>
 
 #import <EXPermissions/EXUserNotificationPermissionRequester.h>
+#import <EXPermissions/EXRemoteNotificationPermissionRequester.h>
 
 NSString * const EXStatusKey = @"status";
 NSString * const EXExpiresKey = @"expires";
@@ -52,8 +53,9 @@ UM_EXPORT_MODULE(ExpoPermissions);
   _moduleRegistry = moduleRegistry;
   
   id<UMPermissionsRequester> userNotificationRequester = [[EXUserNotificationPermissionRequester alloc] initWithNotificationProxy:[moduleRegistry getModuleImplementingProtocol:@protocol(UMUserNotificationCenterProxyInterface)] withMethodQueue:self.methodQueue];
+  id<UMPermissionsRequester> remoteNotificationRequester = [[EXRemoteNotificationPermissionRequester alloc] initWithUserNotificationPermissionRequester:userNotificationRequester withMethodQueue:self.methodQueue];
 
-  [self registerRequesters:@[userNotificationRequester]];
+  [self registerRequesters:@[userNotificationRequester, remoteNotificationRequester]];
 }
 
 # pragma mark - Exported methods
@@ -93,12 +95,12 @@ UM_EXPORT_METHOD_AS(askAsync,
                                  resolve:(UMPromiseResolveBlock)resolve
                                   reject:(UMPromiseRejectBlock)reject
 {
-  id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
-  if (requester == nil) {
+  NSDictionary *permission = [self getPermissionUsingRequesterClass:requesterClass];
+  if (permission == nil) {
     return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized requester: %@", NSStringFromClass(requesterClass)], nil);
   }
   
-  return resolve([self getPermissionUsingRequester:requester]);
+  return resolve(permission);
 }
 
 - (NSDictionary *)getPermissionUsingRequesterClass:(Class)requesterClass
@@ -149,8 +151,7 @@ UM_EXPORT_METHOD_AS(askAsync,
     return onResult(permission);
   }
   
-  id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
-  [self askForGlobalPermissionUsingRequester:requester resolver:onResult rejecter:reject];
+  [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:onResult withRejecter:reject];
 }
    
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
@@ -158,13 +159,6 @@ UM_EXPORT_METHOD_AS(askAsync,
                                      withRejecter:(UMPromiseRejectBlock)reject
 {
   id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
-  [self askForGlobalPermissionUsingRequester:requester resolver:resolver rejecter:reject];
-}
-
-- (void)askForGlobalPermissionUsingRequester:(id<UMPermissionsRequester>)requester
-                                    resolver:(UMPromiseResolveBlock)resolver
-                                    rejecter:(UMPromiseRejectBlock)reject
-{
   if (requester == nil) {
     return reject(@"E_PERMISSIONS_UNSUPPORTED", @"Cannot find requester", nil);
   }
@@ -175,6 +169,7 @@ UM_EXPORT_METHOD_AS(askAsync,
   
   [requester requestPermissionsWithResolver:permissionParser rejecter:reject];
 }
+
 
 # pragma mark - helpers
 

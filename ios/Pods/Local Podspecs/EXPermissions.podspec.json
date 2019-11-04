@@ -14,7 +14,8 @@
   },
   "source_files": [
     "EXPermissions/*.{h,m}",
-    "EXPermissions/Requesters/UserNotification/*.{h,m}"
+    "EXPermissions/Requesters/UserNotification/*.{h,m}",
+    "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
   ],
   "requires_arc": true,
   "dependencies": {

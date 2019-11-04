@@ -41,14 +41,17 @@
   return [self getScopedPermissionForType:[requesterClass permissionType] withGlobalPermission:globalPermission];
 }
 
-
 - (NSString *)getScopedPermissionStatus:(NSString *)permissionType {
+  if (!_permissionsService) {
+    return [[self class] permissionStringForStatus:UMPermissionStatusGranted];
+  }
+  
   return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_experienceId]];
 }
 
 - (BOOL)hasGrantedScopedPermission:(NSString *)permissionType
 {
-  if (!_permissionsService) {
+  if (!_permissionsService || ![self shouldVerifyScopedPermission:permissionType]) {
     return YES;
   }
   
@@ -98,7 +101,7 @@
     return [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
   }
   
-  resolve([self getPermissionUsingRequesterClass:requesterClass]); // third group
+  resolve(globalPermissions); // third group
 }
 
 # pragma mark - helpers
