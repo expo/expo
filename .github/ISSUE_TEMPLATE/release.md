@@ -9,35 +9,47 @@ assignees: ''
 
 ## 🎢 SDK Release
 
-### Versioning
+### 1. Versioning
 
-- [ ] [1. Dropping old SDKs](#1-dropping-old-sdks)
-- [ ] [2. Update React Native](#2-update-react-native)
-- [ ] [3. Versioning code for the new SDK](#3-versioning-code-for-the-new-sdk)
+- [ ] [1.1. Dropping old SDKs](#1-1-dropping-old-sdks)
+- [ ] [1.2. Update React Native](#1-2-update-react-native)
+- [ ] [1.3. Versioning code for the new SDK](#1-3-versioning-code-for-the-new-sdk)
 
-### Quality Assurance and prerelease
+### 2. Quality Assurance
 
-- [ ] [4. Quality Assurance](#4-quality-assurance)
-- [ ] [5. Tag React Native fork](#5-tag-react-native-fork)
-- [ ] [6. Publishing prerelease packages](#6-publishing-prerelease-packages)
-- [ ] [7. Publishing prerelease project templates](#7-publishing-prerelease-project-templates)
+- [ ] [2.1. Quality Assurance](#2-1-quality-assurance)
+- [ ] [2.2. Publish demo apps](#2-2-publish-demo-apps)
 
-### Expo client
+### 3. Prerelease
 
-- [ ] [8. Cutting off release branch](#8-cutting-off-release-branch)
-- [ ] [9. Releasing beta version](#9-releasing-beta-version)
-- [ ] [10. Making a simulator build](#10-making-a-simulator-build)
-- [ ] [11. Submitting to the stores](#11-submitting-to-the-stores)
+- [ ] [3.1. Tag React Native fork](#3-1-tag-react-native-fork)
+- [ ] [3.2. Publishing prerelease packages](#3-2-publishing-prerelease-packages)
+- [ ] [3.3. Publishing prerelease project templates](#3-3-publishing-prerelease-project-templates)
 
-### ExpoKit and standalone apps
+### 4. Expo client
 
-- [ ] [12. Update versions endpoint](#12-update-versions-endpoint)
-- [ ] [13. Updating ExpoKit](#13-updating-expokit)
-- [ ] [14. Make shell app build](#14-make-shell-app-build)
-- [ ] [15. Make adhoc client shell app](#15-make-adhoc-client-shell-app)
-- [ ] [16. Deploy Turtle with new shell tarballs](#16-deploy-turtle-with-new-shell-tarballs)
+- [ ] [4.1. Cutting off release branch](#4-1-cutting-off-release-branch)
+- [ ] [4.2. Releasing beta version](#4-2-releasing-beta-version)
+- [ ] [4.3. Making a simulator build](#4-3-making-a-simulator-build)
+- [ ] [4.4. Submitting to the stores](#4-4-submitting-to-the-stores)
 
-### Final touches
+### 5. ExpoKit and standalone apps
 
-- [ ] [17. Publishing final packages to NPM registry](#17-publishing-final-packages-to-npm-registry)
-- [ ] [18. Publishing final project templates](#18-publishing-final-project-templates)
+- [ ] [5.1. Updating ExpoKit](#5-1-updating-expokit)
+- [ ] [5.2. Make shell app build](#5-2-make-shell-app-build)
+- [ ] [5.3. Make adhoc client shell app](#5-3-make-adhoc-client-shell-app)
+- [ ] [5.4. Deploy Turtle with new shell tarballs](#5-4-deploy-turtle-with-new-shell-tarballs)
+
+### 6. Final release
+
+- [ ] [6.1. Publishing final packages to NPM registry](#6-1-publishing-final-packages-to-npm-registry)
+- [ ] [6.2. Publishing final project templates](#6-2-publishing-final-project-templates)
+
+### 7. Snack
+
+- [ ] [7.1. Add SDK support to Snack](#7-1-add-sdk-support-to-snack)
+
+### 8. Press release
+
+- [ ] [8.1. Publish a blog post](#8-1-publish-a-blog-post)
+- [ ] [8.2. Post on Twitter](#8-2-post-on-twitter)
