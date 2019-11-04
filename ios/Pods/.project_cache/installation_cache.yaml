@@ -3876,7 +3876,7 @@ CACHE_KEYS:
   EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
-    CHECKSUM: 8d73d7b6bedebd53990f388dc1bd382599a78e43
+    CHECKSUM: a3433ceb447dc6d9b1d821694ed8d179aed2e004
     FILES:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerView.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerView.m"
@@ -3908,8 +3908,6 @@ CACHE_KEYS:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXBannerView.m"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXBannerViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXBannerViewManager.m"
-      - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXFacebookAdHelper.h"
-      - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXFacebookAdHelper.m"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXInterstitialAdManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXInterstitialAdManager.m"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXNativeAdManager.h"
@@ -4794,10 +4792,10 @@ CACHE_KEYS:
   Google-Mobile-Ads-SDK:
     BUILD_SETTINGS_CHECKSUM:
       Google-Mobile-Ads-SDK: 539b9663c2ef324f98d2a11315beaf88
-    CHECKSUM: df315e371b29cf935f7ea872e7bdec39462a100e
+    CHECKSUM: 5c625884f0788d22b48e3bb641e1d65c673dc7a5
     PROJECT_NAME: Google-Mobile-Ads-SDK
     SPECS:
-      - Google-Mobile-Ads-SDK (7.49.0)
+      - Google-Mobile-Ads-SDK (7.51.0)
   GoogleAPIClientForREST:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAPIClientForREST: 7bc2e43d860f0a8b8d74967265f714d1

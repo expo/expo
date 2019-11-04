@@ -19,8 +19,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Unified native ad. To request this ad type, pass kGADAdLoaderAdTypeUnifiedNative
 /// (see GADAdLoaderAdTypes.h) to the |adTypes| parameter in GADAdLoader's initializer method. If
 /// you request this ad type, your delegate must conform to the GADUnifiedNativeAdLoaderDelegate
@@ -81,11 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param clickableAssetViews Dictionary of asset views that are clickable, keyed by asset IDs.
 /// @param nonclickableAssetViews Dictionary of asset views that are not clickable, keyed by asset
 ///        IDs.
-- (void)registerAdView:(UIView *)adView
+- (void)registerAdView:(nonnull UIView *)adView
        clickableAssetViews:
-           (NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)clickableAssetViews
+           (nonnull NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)clickableAssetViews
     nonclickableAssetViews:
-        (NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)nonclickableAssetViews;
+        (nonnull NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)nonclickableAssetViews;
 
 /// Unregisters ad view from this native ad. The corresponding asset views will also be
 /// unregistered.
@@ -116,7 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// The delegate of a GADAdLoader object implements this protocol to receive GADUnifiedNativeAd ads.
 @protocol GADUnifiedNativeAdLoaderDelegate <GADAdLoaderDelegate>
 /// Called when a unified native ad is received.
-- (void)adLoader:(GADAdLoader *)adLoader didReceiveUnifiedNativeAd:(GADUnifiedNativeAd *)nativeAd;
+- (void)adLoader:(nonnull GADAdLoader *)adLoader
+    didReceiveUnifiedNativeAd:(nonnull GADUnifiedNativeAd *)nativeAd;
 @end
 
 #pragma mark - Unified Native Ad View
@@ -154,5 +153,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, weak, nullable) IBOutlet GADAdChoicesView *adChoicesView;
 
 @end
-
-NS_ASSUME_NONNULL_END
