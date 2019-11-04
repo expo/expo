@@ -13,10 +13,7 @@ To learn how to build native binaries, see [Building Standalone Apps](../buildin
 
 ## 2. Start the upload
 
-> Note: The `expo upload:ios` command is temporarily unavailable due to changes in Xcode 11. Until this is resolved, please use the following steps to upload to the Apple App Store:
-> - Download your standalone app build that resulted from running `expo build:ios`
-> - Create an application password on https://appleid.apple.com/ (requires two-factor authentication)
-> - Upload the standalone app by running `xcrun altool --upload-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`
+> Note: The `expo upload:ios` command is temporarily unavailable due to changes in Xcode 11. Until this is resolved, please refer to the [Manually uploading your app for the first time](#manually-uploading-your-app) section for instructions.
 > If you encounter any issues, please refer to [this thread](https://github.com/expo/expo-cli/issues/927).
 
 To upload the previously built standalone app to the appropriate app store, you simply run `expo upload:android` or `expo upload:ios`. However, you have a few options for choosing which app binary you want to upload (remember to choose one at the time):
@@ -76,14 +73,11 @@ In order to see your app on Testflight, you will first need to submit your .IPA 
 1. Make sure you have logged into iTunes connect at least once with your Apple ID and accepted the terms.
 2. Login to https://appleid.apple.com
 3. Generate an app specific password by going to Accounts > Manage > Generate App Specific Password. Make a note of this password as it will be needed later.
-4. Start XCode but do not load any project
-5. From the XCode menu in the menu bar, select 'Open Developer Tool' and then 'Application Loader'
-6. Once Application Loader launches, login with your Apple ID and the app specific password generated in step 3
-7. Follow the steps to agree to the necessary terms.
-8. Once you have agreed to all terms, double-click on the light-grey panel in the center (above the words 'Deliver Your App').
-9. Follow the steps to upload your IPA to Apple.
+4. *(optional)* Previously, Application Loader would validate your IPA submission prior to uploading it. If you want to validate the application submission, run `xcrun altool --validate-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`
+5. Run `xcrun altool --upload-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`.
+6. You will be prompted for the app specific password generated in step 3.
 
-You can check the status of your app submission to TestFlight in App Store Connect (http://appstoreconnect.apple.com):
+This process can take a few minutes. If you're concerned the process is hung up, you can pass the `--verbose` flag to see it working. After this process is complete, you can check the status of your app submission to TestFlight in App Store Connect (http://appstoreconnect.apple.com):
 
 1. Login to http://appstoreconnect.apple.com with your Apple ID and regular password (NOT your app specific password)
 2. Select 'My Apps' and you should see your app listed.

@@ -35,7 +35,7 @@ import SmallProjectCard from '../components/SmallProjectCard';
 import Connectivity from '../api/Connectivity';
 import getSnackId from '../utils/getSnackId';
 import { SectionLabelContainer, GenericCardBody, GenericCardContainer } from '../components/Views';
-import { SectionLabelText } from '../components/Text';
+import { SectionLabelText, StyledText } from '../components/Text';
 
 import extractReleaseChannel from '../utils/extractReleaseChannel';
 
@@ -315,19 +315,30 @@ export default class ProjectsScreen extends React.Component {
   _renderConstants = () => {
     return (
       <View style={styles.constantsContainer}>
-        <Text style={styles.deviceIdText} onPress={this._copySnackIdToClipboard}>
+        <StyledText
+          style={styles.deviceIdText}
+          onPress={this._copySnackIdToClipboard}
+          lightColor="rgba(0,0,0,0.3)"
+          darkColor="rgba(255,255,255,0.6)">
           Device ID: {getSnackId()}
-        </Text>
-        <Text style={styles.expoVersionText} onPress={this._copyClientVersionToClipboard}>
+        </StyledText>
+        <StyledText
+          style={styles.expoVersionText}
+          onPress={this._copyClientVersionToClipboard}
+          lightColor="rgba(0,0,0,0.3)"
+          darkColor="rgba(255,255,255,0.6)">
           Client version: {Constants.expoVersion}
-        </Text>
-        <Text style={styles.supportSdksText}>
+        </StyledText>
+        <StyledText
+          style={styles.supportSdksText}
+          lightColor="rgba(0,0,0,0.3)"
+          darkColor="rgba(255,255,255,0.6)">
           Supported SDK
           {SupportedExpoSdks.length === 1 ? ': ' : 's: '}
           {SupportedExpoSdks.map(semver.major)
             .sort((a, b) => a - b)
             .join(', ')}
-        </Text>
+        </StyledText>
       </View>
     );
   };
@@ -415,17 +426,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deviceIdText: {
-    color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
     marginBottom: 5,
   },
   expoVersionText: {
-    color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
     marginBottom: 5,
   },
   supportSdksText: {
-    color: 'rgba(0,0,0,0.3)',
     fontSize: 11,
   },
 });

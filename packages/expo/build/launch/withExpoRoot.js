@@ -1,3 +1,4 @@
+import * as ErrorRecovery from 'expo-error-recovery';
 import * as Font from 'expo-font';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
@@ -16,13 +17,17 @@ export default function withExpoRoot(AppRootComponent) {
             }
             didInitialize.current = true;
         }
+        const combinedProps = {
+            ...props,
+            exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
+        };
         if (__DEV__) {
             return (<RootErrorBoundary>
-          <AppRootComponent {...props}/>
+          <AppRootComponent {...combinedProps}/>
         </RootErrorBoundary>);
         }
         else {
-            return <AppRootComponent {...props}/>;
+            return <AppRootComponent {...combinedProps}/>;
         }
     };
 }

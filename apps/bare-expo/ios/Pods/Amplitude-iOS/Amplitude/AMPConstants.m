@@ -18,16 +18,11 @@ const int kAMPEventUploadThreshold = 1;
 const int kAMPEventMaxCount = 100;
 NSString *const kAMPPlatform = @"tvOS";
 NSString *const kAMPOSName = @"tvos";
-#else  // macOS/iOS
+#else  // iOS
 const int kAMPEventUploadThreshold = 30;
 const int kAMPEventMaxCount = 1000;
-#if TARGET_OS_MACCATALYST
-NSString *const kAMPPlatform = @"mac";
-NSString *const kAMPOSName = @"mac";
-#else
 NSString *const kAMPPlatform = @"iOS";
 NSString *const kAMPOSName = @"ios";
-#endif
 #endif
 
 const int kAMPEventUploadMaxBatchSize = 100;

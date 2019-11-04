@@ -14,14 +14,14 @@
 
 using namespace std::placeholders;
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class Instance;
 
 }}
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace xplat {
 namespace module {
 

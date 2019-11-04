@@ -27,7 +27,7 @@ This document will guide you through the process of creating a versioned snapsho
 
     **Why:** Those folders hold the code that is used to build the Client, to build packages for ejected projects, to test unimodules and `expoview`. It is a copy of `react-native` code with some Expo-specific modifications to it (eg. to exception handling, to HTTP client fetching). See `android/tools/…/ReactAndroidCodeTransformer.java` for more details.
 
-    **How:** Run `gulp android-update-rn` in `tools`. The gulp task will execute the `CodeTransformer` mentioned, which, in turn, copies files from `react-native` submodule and applies modifications.
+    **How:** Run `et update-react-native` that will execute the `ReactAndroidCodeTransformer` mentioned, which, in turn, copies files from `react-native` submodule and applies modifications.
 
 5. **Build a custom version of React Native for the new SDK to be included in Expo client**
 

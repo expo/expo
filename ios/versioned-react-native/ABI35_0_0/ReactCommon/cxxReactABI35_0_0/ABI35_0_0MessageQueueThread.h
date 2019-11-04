@@ -9,7 +9,7 @@
 #include <functional>
 #include <mutex>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class MessageQueueThread {

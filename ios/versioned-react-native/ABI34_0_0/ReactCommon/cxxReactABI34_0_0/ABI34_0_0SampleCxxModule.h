@@ -10,7 +10,7 @@
 
 #include <cxxReactABI34_0_0/ABI34_0_0CxxModule.h>
 
-namespace facebook { namespace xplat { namespace samples {
+namespace ABI34_0_0facebook { namespace xplat { namespace samples {
 
 // In a less contrived example, Sample would be part of a traditional
 // C++ library.
@@ -50,4 +50,4 @@ private:
 
 }}}
 
-extern "C" facebook::xplat::module::CxxModule *SampleCxxModule();
+extern "C" ABI34_0_0facebook::xplat::module::CxxModule *SampleCxxModule();

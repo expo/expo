@@ -25,10 +25,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "05rgxg4pz4bc4xk34w5grv0yp1j94wf571w84lf3xgqcbs42ip2f";
+      sha256 = "10nn9bw63i4awpzn5vrx6kmpx1sg7z8r3fhw9r8bvg9pz2wh489g";
       type = "gem";
     };
-    version = "1.0.2";
+    version = "1.0.3";
   };
   CFPropertyList = {
     groups = ["default"];
@@ -147,10 +147,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "05qmrx7l8abpbvp0z01fdpc731c4k6akk67l424vdp5dywhachpr";
+      sha256 = "1v272gh4ifk26bb3vq22x55i6v1pspnw3w3b5rg1z2wanppdcr72";
       type = "gem";
     };
-    version = "0.66.0";
+    version = "0.67.0";
   };
   faraday = {
     dependencies = ["multipart-post"];
@@ -158,10 +158,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0s72m05jvzc1pd6cw1i289chas399q0a14xrwg4rvkdwy7bgzrh0";
+      sha256 = "0l0qa53lpxq3cwa6a4790jgisg93206k0arrjrqz1q9w337r09xw";
       type = "gem";
     };
-    version = "0.15.4";
+    version = "0.16.2";
   };
   faraday-cookie_jar = {
     dependencies = ["faraday" "http-cookie"];
@@ -479,10 +479,10 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0i5dhyiavmk2yc7xyfwzp3m476f7d9mhigibsw37jqpdq4vmi4cv";
+      sha256 = "1qxc2zxwwipm6kviiar4gfhcakpx1jdcs89v6lvzivn5hq1xk78l";
       type = "gem";
     };
-    version = "1.2.4";
+    version = "1.3.0";
   };
   security = {
     groups = ["default"];

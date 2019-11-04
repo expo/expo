@@ -4,6 +4,4 @@
 
 @interface EXFacebook : UMExportedModule
 
-+ (id)facebookAppIdFromNSBundle;
-
 @end

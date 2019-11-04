@@ -93,7 +93,7 @@ implementation project(':expo-payments-stripe')
     allprojects {
       repositories {
         ...
-        maven { url "https://jitpack.io" }
+        maven { url "https://www.jitpack.io" }
         ...
       }
     }

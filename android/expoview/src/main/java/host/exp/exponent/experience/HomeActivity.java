@@ -42,11 +42,10 @@ public class HomeActivity extends BaseExperienceActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mShouldDestroyRNInstanceOnExit = false;
     mSDKVersion = RNObject.UNVERSIONED;
 
     EventBus.getDefault().registerSticky(this);
-    mKernel.startJSKernel();
+    mKernel.startJSKernel(this);
     showLoadingScreen(null);
 
     tryInstallLeakCanary(true);

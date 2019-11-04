@@ -19,7 +19,7 @@
 // jsArgAs... methods at the end simple to use should be most common, but any
 // non-detail method can be used when needed.
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace xplat {
 
 class JsArgumentException : public std::logic_error {

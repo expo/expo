@@ -12,7 +12,7 @@
 #import <ReactABI33_0_0/ABI33_0_0RCTJavaScriptExecutor.h>
 #import <cxxReactABI33_0_0/ABI33_0_0MessageQueueThread.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 class ABI33_0_0RCTMessageThread : public MessageQueueThread {

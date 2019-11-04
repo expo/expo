@@ -7,7 +7,7 @@
 
 #import "ABI34_0_0NSDataBigString.h"
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 static NSData *ensureNullTerminated(NSData *source)

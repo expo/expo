@@ -1,6 +1,6 @@
 {
   "name": "unimodules-image-loader-interface",
-  "version": "4.0.0",
+  "version": "5.0.0-rc.0",
   "description": "Interface for ImageLoader",
   "main": "index.js",
   "keywords": [
@@ -18,5 +18,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-image-loader-interface",
-  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
+  "gitHead": "c93271fac3b0e9e8874be0f7a2cfc8f5a47562b9"
 }

@@ -9,6 +9,8 @@ plugins {
     id("de.undercouch.download")
 }
 
+import java.nio.file.Paths
+
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -32,6 +34,9 @@ def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
 // and the build will use that.
 def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
+
+// Setup build type for NDK, supported values: {debug, release}
+def nativeBuildType = System.getenv("NATIVE_BUILD_TYPE") ?: "release"
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -88,6 +93,26 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     into("$thirdPartyNdkDir/folly")
 }
 
+task prepareHermes() {
+    def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
+    if (!hermesPackagePath) {
+        throw new GradleScriptException("Could not find the hermes-engine npm package")
+    }
+
+    def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
+    if (!hermesAAR.exists()) {
+        throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"")
+    }
+
+    def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+
+    copy {
+        from soFiles
+        from "src/main/jni/first-party/hermes/Android.mk"
+        into "$thirdPartyNdkDir/hermes"
+    }
+}
+
 task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfNewer(true)
@@ -126,28 +151,30 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 
     doLast {
         copy {
-            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files)
+            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
             includeEmptyDirs = false
             into("$thirdPartyNdkDir/glog/exported/glog")
         }
     }
 }
 
-task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://registry.npmjs.org/jsc-android/-/jsc-android-${JSC_VERSION}.tgz")
-    onlyIfNewer(true)
-    overwrite(false)
-    dest(new File(downloadsDir, "jsc-${JSC_VERSION}.tar.gz"))
-}
-
 // Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: downloadJSC) {
+task prepareJSC {
     doLast {
-        def jscTar = tarTree(downloadJSC.dest)
-        def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def jscPackagePath = findNodeModulePath(projectDir, "jsc-android")
+        if (!jscPackagePath) {
+            throw new GradleScriptException("Could not find the jsc-android npm package")
+        } 
+
+        def jscDist = file("$jscPackagePath/dist")
+        if (!jscDist.exists()) {
+            throw new GradleScriptException("The jsc-android npm package is missing its \"dist\" directory")
+        }
+
+        def jscAAR = fileTree(jscDist).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
         def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-        def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+        def headerFiles = fileTree(jscDist).matching({ it.include "**/include/*.h" })
 
         copy {
             from(soFiles)
@@ -168,7 +195,41 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadDoubleConversion)
     dependsOn(downloadFolly)
     dependsOn(downloadGlog)
-    dependsOn(downloadJSC)
+}
+
+/**
+ * Finds the path of the installed npm package with the given name using Node's
+ * module resolution algorithm, which searches "node_modules" directories up to
+ * the file system root. This handles various cases, including:
+ *
+ *   - Working in the open-source RN repo:
+ *       Gradle: /path/to/react-native/ReactAndroid
+ *       Node module: /path/to/react-native/node_modules/[package]
+ *
+ *   - Installing RN as a dependency of an app and searching for hoisted
+ *     dependencies:
+ *       Gradle: /path/to/app/node_modules/react-native/ReactAndroid
+ *       Node module: /path/to/app/node_modules/[package]
+ *
+ *   - Working in a larger repo (e.g., Facebook) that contains RN:
+ *       Gradle: /path/to/repo/path/to/react-native/ReactAndroid
+ *       Node module: /path/to/repo/node_modules/[package]
+ *
+ * The search begins at the given base directory (a File object). The returned
+ * path is a string.
+ */
+def findNodeModulePath(baseDir, packageName) {
+    def basePath = baseDir.toPath().normalize()
+    // Node's module resolution algorithm searches up to the root directory,
+    // after which the base path will be null 
+    while (basePath) {
+        def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
+        if (candidatePath.toFile().exists()) {
+            return candidatePath.toString()
+        }
+        basePath = basePath.getParent()
+    }
+    return null
 }
 
 def getNdkBuildName() {
@@ -203,6 +264,16 @@ def findNdkBuildFullPath() {
     return null
 }
 
+def reactNativeDevServerPort() {
+    def value = project.getProperties().get("reactNativeDevServerPort")
+    return value != null ? value : "8081"
+}
+
+def reactNativeInspectorProxyPort() {
+    def value = project.getProperties().get("reactNativeInspectorProxyPort")
+    return value != null ? value : reactNativeDevServerPort()
+}
+
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
     if (ndkBuildFullPath == null) {
@@ -223,10 +294,13 @@ def getNdkBuildFullPath() {
 }
 
 def buildReactNdkLib = tasks.register("buildReactNdkLib", Exec) {
-    dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
-    inputs.dir("src/main/jni/react")
+    dependsOn(prepareJSC, prepareHermes, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
+    inputs.dir("$projectDir/../ReactCommon")
+    inputs.dir("src/main/jni")
+    inputs.dir("src/main/java/com/facebook/react/modules/blob")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
+            "NDK_DEBUG=" + (nativeBuildType.equalsIgnoreCase("debug") ? "1" : "0"),
             "NDK_PROJECT_PATH=null",
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "NDK_OUT=" + temporaryDir,
@@ -257,8 +331,9 @@ def cleanReactNdkLib = tasks.register("cleanReactNdkLib", Exec) {
 def packageReactNdkLibs = tasks.register("packageReactNdkLibs", Copy) {
     dependsOn(buildReactNdkLib)
     from("$buildDir/react-ndk/all")
-    from("$thirdPartyNdkDir/jsc/jni")
     into("$buildDir/react-ndk/exported")
+    exclude("**/libjsc.so")
+    exclude("**/libhermes.so")
 }
 
 def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Copy) {
@@ -269,6 +344,8 @@ def packageReactNdkLibsForBuck = tasks.register("packageReactNdkLibsForBuck", Co
 
 android {
     compileSdkVersion 28
+
+    resourcePrefix 'reactandroid_'
 
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_1_8)
@@ -289,6 +366,10 @@ android {
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+
+        resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort()
+        resValue "integer", "react_native_inspector_proxy_port", reactNativeInspectorProxyPort()
+
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
     }
@@ -322,7 +403,7 @@ android {
 dependencies {
     api("com.facebook.infer.annotation:infer-annotation:0.11.2")
     api("javax.inject:javax.inject:1")
-    api('androidx.appcompat:appcompat:1.0.0')
+    api("androidx.appcompat:appcompat:1.0.2")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
@@ -340,10 +421,16 @@ dependencies {
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
-    androidTestImplementation('androidx.test:runner:1.1.0')
-    androidTestImplementation('androidx.test:rules:1.1.0')
+    //TODO: Refactor to extract versions of androidx dependencies
+    androidTestImplementation("androidx.test:runner:1.1.0")
+    androidTestImplementation("androidx.test:rules:1.1.0")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+        exclude group:'com.facebook.yoga'
+        exclude group:'com.facebook.flipper', module: 'fbjni'
+        exclude group:'com.facebook.litho', module: 'litho-annotations'
+    }
 }
 
 apply(from: "release.gradle")
-apply from: 'maven-build.gradle'

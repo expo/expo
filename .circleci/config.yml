@@ -276,6 +276,8 @@ executors:
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
       # fastlane complains if these are not set
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
@@ -307,7 +309,7 @@ workflows:
       - expo_sdk
       # E2E SDK testing
       - web_test_suite
-      - ios_test_suite
+      # - ios_test_suite
 
   # Android and iOS clients
   client:
@@ -477,15 +479,15 @@ jobs:
       - run:
           name: Pull Detox
           working_directory: ~/project/apps/bare-expo
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew
+          command: brew tap wix/brew
       - run:
           name: Install iOS simulators
           working_directory: ~/project/apps/bare-expo
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils
+          command: brew install applesimutils
       - run:
           name: Install Watchman
           working_directory: ~/project/apps/bare-expo
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman
+          command: brew install watchman
 
       ## Yarn takes a while to run
       - restore_yarn_cache

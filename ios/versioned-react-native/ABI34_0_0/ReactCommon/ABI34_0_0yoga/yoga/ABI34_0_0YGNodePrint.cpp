@@ -10,7 +10,7 @@
 #include "ABI34_0_0YGNode.h"
 #include "ABI34_0_0Yoga-internal.h"
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 typedef std::string string;
 
@@ -232,4 +232,4 @@ void ABI34_0_0YGNodeToString(
   appendFormatedString(str, "</div>");
 }
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook

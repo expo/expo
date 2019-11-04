@@ -111,23 +111,11 @@ typedef enum _logs_proto_mobilesdk_ios_ICoreConfiguration_DeploymentType {
 typedef struct _logs_proto_mobilesdk_ios_ICoreConfiguration {
     bool has_configuration_type;
     logs_proto_mobilesdk_ios_ICoreConfiguration_ConfigurationType configuration_type;
-    pb_bytes_array_t *version_name;
-    bool has_build_number;
-    int64_t build_number;
-    bool has_build_type;
-    logs_proto_mobilesdk_ios_ICoreConfiguration_BuildType build_type;
-    pb_bytes_array_t *plist_version;
-    pb_size_t sdk_service_enabled_count;
-    logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType *sdk_service_enabled;
     pb_size_t sdk_service_installed_count;
     logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType *sdk_service_installed;
     pb_bytes_array_t *device_model;
     pb_bytes_array_t *app_id;
-    bool has_project_number;
-    int64_t project_number;
     pb_bytes_array_t *bundle_id;
-    pb_bytes_array_t *client_id;
-    pb_bytes_array_t *install;
     bool has_pod_name;
     logs_proto_mobilesdk_ios_ICoreConfiguration_PodName pod_name;
     pb_bytes_array_t *icore_version;
@@ -137,7 +125,6 @@ typedef struct _logs_proto_mobilesdk_ios_ICoreConfiguration {
     bool has_app_count;
     int32_t app_count;
     pb_bytes_array_t *os_version;
-    pb_bytes_array_t *itunes_id;
     pb_bytes_array_t *min_supported_ios_version;
     bool has_use_default_app;
     bool use_default_app;
@@ -151,14 +138,8 @@ typedef struct _logs_proto_mobilesdk_ios_ICoreConfiguration {
     bool has_deployment_type;
     logs_proto_mobilesdk_ios_ICoreConfiguration_DeploymentType deployment_type;
     pb_bytes_array_t *platform_info;
-    bool has_app_extensions;
-    int64_t app_extensions;
     bool has_swizzling_enabled;
     bool swizzling_enabled;
-    bool has_log_error_count;
-    int32_t log_error_count;
-    bool has_log_warning_count;
-    int32_t log_warning_count;
     bool has_using_gdt;
     bool using_gdt;
 /* @@protoc_insertion_point(struct:logs_proto_mobilesdk_ios_ICoreConfiguration) */
@@ -167,30 +148,21 @@ typedef struct _logs_proto_mobilesdk_ios_ICoreConfiguration {
 /* Default values for struct fields */
 
 /* Initializer values for message structs */
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_init_default {false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ConfigurationType_MIN, NULL, false, 0, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_BuildType_MIN, NULL, 0, NULL, 0, NULL, NULL, NULL, false, 0, NULL, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_PodName_MIN, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType_MIN, false, 0, NULL, NULL, NULL, false, 0, false, 0, false, 0, NULL, false, 0, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_DeploymentType_MIN, NULL, false, 0, false, 0, false, 0, false, 0, false, 0}
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_init_zero {false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ConfigurationType_MIN, NULL, false, 0, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_BuildType_MIN, NULL, 0, NULL, 0, NULL, NULL, NULL, false, 0, NULL, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_PodName_MIN, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType_MIN, false, 0, NULL, NULL, NULL, false, 0, false, 0, false, 0, NULL, false, 0, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_DeploymentType_MIN, NULL, false, 0, false, 0, false, 0, false, 0, false, 0}
+#define logs_proto_mobilesdk_ios_ICoreConfiguration_init_default {false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ConfigurationType_MIN, 0, NULL, NULL, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_PodName_MIN, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType_MIN, false, 0, NULL, NULL, false, 0, false, 0, false, 0, NULL, false, 0, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_DeploymentType_MIN, NULL, false, 0, false, 0}
+#define logs_proto_mobilesdk_ios_ICoreConfiguration_init_zero {false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ConfigurationType_MIN, 0, NULL, NULL, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_PodName_MIN, NULL, NULL, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_ServiceType_MIN, false, 0, NULL, NULL, false, 0, false, 0, false, 0, NULL, false, 0, false, _logs_proto_mobilesdk_ios_ICoreConfiguration_DeploymentType_MIN, NULL, false, 0, false, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_pod_name_tag 16
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_configuration_type_tag 1
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_version_name_tag 2
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_icore_version_tag 18
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_sdk_version_tag 19
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_build_number_tag 3
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_build_type_tag 4
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_plist_version_tag 5
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_sdk_service_enabled_tag 6
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_sdk_service_installed_tag 7
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_sdk_name_tag 20
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_device_model_tag 9
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_os_version_tag 22
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_app_id_tag 10
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_project_number_tag 11
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_bundle_id_tag 12
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_client_id_tag 13
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_itunes_id_tag 23
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_min_supported_ios_version_tag 24
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_install_tag 14
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_use_default_app_tag 25
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_app_count_tag 21
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_deployed_in_app_store_tag 26
@@ -199,14 +171,11 @@ typedef struct _logs_proto_mobilesdk_ios_ICoreConfiguration {
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_using_zip_file_tag 29
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_deployment_type_tag 30
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_platform_info_tag 31
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_app_extensions_tag 32
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_swizzling_enabled_tag 33
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_log_error_count_tag 34
-#define logs_proto_mobilesdk_ios_ICoreConfiguration_log_warning_count_tag 35
 #define logs_proto_mobilesdk_ios_ICoreConfiguration_using_gdt_tag 36
 
 /* Struct field encoding specification for nanopb */
-extern const pb_field_t logs_proto_mobilesdk_ios_ICoreConfiguration_fields[34];
+extern const pb_field_t logs_proto_mobilesdk_ios_ICoreConfiguration_fields[22];
 
 /* Maximum encoded size of messages (where known) */
 /* logs_proto_mobilesdk_ios_ICoreConfiguration_size depends on runtime parameters */

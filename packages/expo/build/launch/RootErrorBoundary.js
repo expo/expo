@@ -8,11 +8,8 @@ async function finishedAsync() {
     }
 }
 export default class RootErrorBoundary extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.state = {
-            error: null,
-        };
+    constructor(props) {
+        super(props);
         this._appLoadingIsMounted = false;
         this._subscribeToGlobalErrors = () => {
             this._appLoadingIsMounted = true;
@@ -37,8 +34,6 @@ export default class RootErrorBoundary extends React.Component {
             // instead we just gate the call
             this._appLoadingIsMounted = false;
         };
-    }
-    componentWillMount() {
         // In production the app will just hard crash on errors, unless the developer decides to handle
         // them by overriding the global error handler and swallowing the error, in which case they are
         // responsible for determining how to recover from this state.
@@ -46,6 +41,9 @@ export default class RootErrorBoundary extends React.Component {
             getAppLoadingLifecycleEmitter().once('componentDidMount', this._subscribeToGlobalErrors);
             getAppLoadingLifecycleEmitter().once('componentWillUnmount', this._unsubscribeFromGlobalErrors);
         }
+        this.state = {
+            error: null,
+        };
     }
     // Test this by adding `throw new Error('example')` to your root component
     componentDidCatch(error) {

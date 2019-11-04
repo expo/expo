@@ -15,7 +15,7 @@
 #import "ABI34_0_0RCTSRWebSocket.h"
 #import "ABI34_0_0RCTUtils.h"
 
-using namespace facebook::ReactABI34_0_0;
+using namespace ABI34_0_0facebook::ReactABI34_0_0;
 
 // This is a port of the Android impl, at
 // ReactABI34_0_0-native-github/ReactABI34_0_0Android/src/main/java/com/facebook/ReactABI34_0_0/bridge/Inspector.java
@@ -56,7 +56,7 @@ private:
 
 static IInspector *getInstance()
 {
-  return &facebook::ReactABI34_0_0::getInspectorInstance();
+  return &ABI34_0_0facebook::ReactABI34_0_0::getInspectorInstance();
 }
 
 @implementation ABI34_0_0RCTInspector

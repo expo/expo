@@ -1,3 +1,4 @@
+import { Component, ComponentClass } from 'react';
 import { ViewProps } from 'react-native';
 import WebGL2RenderingContext from './WebGL2RenderingContext';
 export declare type SurfaceCreateEvent = {
@@ -27,6 +28,7 @@ export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
     __exglCtxId: number;
     endFrameEXP(): void;
 }
+export declare type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
 /**
  *
  * A View that acts as an OpenGL ES render target. On mounting, an OpenGL ES

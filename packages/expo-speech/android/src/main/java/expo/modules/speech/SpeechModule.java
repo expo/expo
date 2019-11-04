@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -77,6 +79,15 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
     if (options.containsKey("rate")) {
       textToSpeech.setSpeechRate(((Number) options.get("rate")).floatValue());
     }
+    if (options.containsKey("voice")) {
+      for (Voice voice : textToSpeech.getVoices()) {
+        if (voice.getName().equals(options.get("voice"))) {
+          textToSpeech.setVoice(voice);
+
+          break;
+        }
+      }
+    }
 
     textToSpeech.speak(
         text,
@@ -89,6 +100,30 @@ public class SpeechModule extends ExportedModule implements LifecycleEventListen
   @ExpoMethod
   public void isSpeaking(Promise promise) {
     promise.resolve(getTextToSpeech().isSpeaking());
+  }
+
+  @ExpoMethod
+  public void getVoices(Promise promise) {
+    TextToSpeech textToSpeech = getTextToSpeech();
+    ArrayList voices = new ArrayList();
+    for (Voice voice : textToSpeech.getVoices()) {
+        Bundle voiceMap = new Bundle();
+
+        String quality = "Default";
+
+        if (voice.getQuality() > Voice.QUALITY_NORMAL) {
+          quality = "Enhanced";
+        }
+
+        voiceMap.putString("identifier", voice.getName());
+        voiceMap.putString("name", voice.getName());
+        voiceMap.putString("quality", quality);
+        voiceMap.putString("language", voice.getLocale().toLanguageTag());
+
+        voices.add(voiceMap);
+    }
+
+    promise.resolve(voices);
   }
 
   @ExpoMethod

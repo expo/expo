@@ -15,7 +15,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
@@ -65,4 +65,4 @@ private:
 };
 
 }  // namespace ReactABI34_0_0
-}  // namespace facebook
+}  // namespace ABI34_0_0facebook
