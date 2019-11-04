@@ -141,8 +141,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
-    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-
+    
     mLayout = new FrameLayout(this);
     setContentView(mLayout);
 
