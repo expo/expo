@@ -57,6 +57,7 @@ public class AmplitudeModule extends ExportedModule {
       return;
     }
     mClient.setUserProperties(new JSONObject(properties));
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -66,6 +67,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.clearUserProperties();
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -75,6 +77,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.logEvent(eventName);
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -84,6 +87,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.logEvent(eventName, new JSONObject(properties));
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -93,6 +97,7 @@ public class AmplitudeModule extends ExportedModule {
     }
 
     mClient.setGroup(groupType, new JSONArray(groupNames));
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -150,6 +155,8 @@ public class AmplitudeModule extends ExportedModule {
     } else {
       mPendingTrackingOptions = trackingOptions;
     }
+
+    promise.resolve(null);
   }
 
   private boolean rejectUnlessInitialized(Promise promise) {
