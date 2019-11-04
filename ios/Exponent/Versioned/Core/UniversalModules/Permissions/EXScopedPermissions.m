@@ -117,6 +117,7 @@
       && [self shouldVerifyScopedPermission:permissionType]
       && [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
+    permission[@"granted"] = @(NO);
   }
   return permission;
 }

@@ -294,11 +294,11 @@ export async function getCalendarPermissionsAsync() {
     }
     return ExpoCalendar.getCalendarPermissionsAsync();
 }
-export async function getRemindersPermissionsAync() {
-    if (!ExpoCalendar.getRemindersPermissionsAync) {
-        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAync');
+export async function getRemindersPermissionsAsync() {
+    if (!ExpoCalendar.getRemindersPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAsync');
     }
-    return ExpoCalendar.getRemindersPermissionsAync();
+    return ExpoCalendar.getRemindersPermissionsAsync();
 }
 export async function requestCalendarPermissionsAsync() {
     if (!ExpoCalendar.requestCalendarPermissionsAsync) {

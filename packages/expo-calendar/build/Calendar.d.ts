@@ -136,7 +136,7 @@ export declare function openEventInCalendar(id: string): void;
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getCalendarPermissionsAsync(): Promise<PermissionResponse>;
-export declare function getRemindersPermissionsAync(): Promise<PermissionResponse>;
+export declare function getRemindersPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
 export declare const EntityTypes: {

@@ -189,13 +189,14 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   }
 
   private fun getPermissionResponseFromNativeResponse(permission: String, result: Int): PermissionsResponse {
+    val status = when {
+      result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
+      didAsk(permission) -> PermissionsStatus.DENIED
+      else -> PermissionsStatus.UNDETERMINED
+    }
     return PermissionsResponse(
-        status = when {
-          result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
-          didAsk(permission) -> PermissionsStatus.DENIED
-          else -> PermissionsStatus.UNDETERMINED
-        },
-        canAskAgain = if (result == PackageManager.PERMISSION_DENIED) {
+        status,
+        if (status == PermissionsStatus.DENIED) {
           canAskAgain(permission)
         } else {
           true
