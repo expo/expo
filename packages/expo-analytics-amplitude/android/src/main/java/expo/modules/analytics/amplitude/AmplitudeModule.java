@@ -19,7 +19,7 @@ import org.unimodules.core.interfaces.ExpoMethod;
 
 public class AmplitudeModule extends ExportedModule {
   private AmplitudeClient mClient;
-  private TrackingOptions trackingOptions = new TrackingOptions();
+  private TrackingOptions mPendingTrackingOptions;
 
   public AmplitudeModule(Context context) {
     super(context);
@@ -34,7 +34,9 @@ public class AmplitudeModule extends ExportedModule {
   public void initialize(final String apiKey, Promise promise) {
     resetAmplitudeDatabaseHelper();
     mClient = new AmplitudeClient();
-    mClient.setTrackingOptions(trackingOptions);
+    if (mPendingTrackingOptions != null) {
+      mClient.setTrackingOptions(mPendingTrackingOptions);
+    }
     mClient.initialize(getContext(), apiKey);
     promise.resolve(null);
   }
@@ -95,54 +97,58 @@ public class AmplitudeModule extends ExportedModule {
 
   @ExpoMethod
   public void setTrackingOptions(final ReadableArguments options, Promise promise) {
-    if (options.get('disableAdid') == true) {
+    TrackingOptions trackingOptions = new TrackingOptions();
+
+    if (options.getBoolean("disableAdid")) {
       trackingOptions.disableAdid();
     }
-    if (options.get('disableCarrier') == true) {
+    if (options.getBoolean("disableCarrier")) {
       trackingOptions.disableCarrier();
     }
-    if (options.get('disableCity') == true) {
+    if (options.getBoolean("disableCity")) {
       trackingOptions.disableCity();
     }
-    if (options.get('disableCountry') == true) {
+    if (options.getBoolean("disableCountry")) {
       trackingOptions.disableCountry();
     }
-    if (options.get('disableDeviceBrand') == true) {
+    if (options.getBoolean("disableDeviceBrand")) {
       trackingOptions.disableDeviceBrand();
     }
-    if (options.get('disableDeviceModel') == true) {
+    if (options.getBoolean("disableDeviceModel")) {
       trackingOptions.disableDeviceModel();
     }
-    if (options.get('disableDMA') == true) {
+    if (options.getBoolean("disableDMA")) {
       trackingOptions.disableDma();
     }
-    if (options.get('disableIPAddress') == true) {
+    if (options.getBoolean("disableIPAddress")) {
       trackingOptions.disableIpAddress();
     }
-    if (options.get('disableLanguage') == true) {
+    if (options.getBoolean("disableLanguage")) {
       trackingOptions.disableLanguage();
     }
-    if (options.get('disableLatLng') == true) {
+    if (options.getBoolean("disableLatLng")) {
       trackingOptions.disableLatLng();
     }
-    if (options.get('disableOSName') == true) {
+    if (options.getBoolean("disableOSName")) {
       trackingOptions.disableOsName();
     }
-    if (options.get('disableOSVersion') == true) {
+    if (options.getBoolean("disableOSVersion")) {
       trackingOptions.disableOsVersion();
     }
-    if (options.get('disablePlatform') == true) {
+    if (options.getBoolean("disablePlatform")) {
       trackingOptions.disablePlatform();
     }
-    if (options.get('disableRegion') == true) {
+    if (options.getBoolean("disableRegion")) {
       trackingOptions.disableRegion();
     }
-    if (options.get('disableVersionName') == true) {
+    if (options.getBoolean("disableVersionName")) {
       trackingOptions.disableVersionName();
     }
 
     if (mClient != null) {
       mClient.setTrackingOptions(trackingOptions);
+    } else {
+      mPendingTrackingOptions = trackingOptions;
     }
   }
 
