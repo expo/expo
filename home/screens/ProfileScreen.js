@@ -1,9 +1,6 @@
 /* @flow */
 import React from 'react';
 import {
-  findNodeHandle,
-  NativeModules,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,24 +14,16 @@ import OptionsButton from '../components/OptionsButton';
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import MyProfileContainer from '../containers/MyProfileContainer';
 import OtherProfileContainer from '../containers/OtherProfileContainer';
-import SessionActions from '../redux/SessionActions';
-import SettingsActions from '../redux/SettingsActions';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import onlyIfAuthenticated from '../utils/onlyIfAuthenticated';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
-import { MaterialIcons } from '../components/Icons';
-
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
-  static navigationOptions = ({ navigation, theme }) => {
+  static navigationOptions = ({ navigation }) => {
     return {
       title: navigation.getParam('username', 'Profile'),
-      headerRight: navigation.getParam('username') ? (
-        <OptionsButton />
-      ) : (
-        Platform.select({ ios: <UserSettingsButtonIOS />, default: <OptionsButtonAndroid /> })
-      ),
+      headerRight: navigation.getParam('username') ? <OptionsButton /> : <UserSettingsButton />,
     };
   };
 
@@ -90,62 +79,9 @@ export default class ProfileScreen extends React.Component {
   }
 }
 
-@connect((data, props) => OptionsButtonAndroid.getDataProps(data, props))
-class OptionsButtonAndroid extends React.Component {
-  _anchor: View;
-
-  static getDataProps(data, props) {
-    let { settings } = data;
-
-    return {
-      isAuthenticated: isUserAuthenticated(data.session),
-      preferredAppearance: settings.preferredAppearance,
-    };
-  }
-
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <View
-          collapsable={false}
-          ref={view => {
-            this._anchor = view;
-          }}
-          style={{ position: 'absolute', top: 5, left: 0 }}
-        />
-        <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-          <MaterialIcons name="more-vert" size={27} lightColor="#000" />
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  _handlePress = () => {
-    let handle = findNodeHandle(this._anchor);
-    let options = ['Toggle dark mode'];
-    if (this.props.isAuthenticated) {
-      options.push('Sign out');
-    }
-
-    NativeModules.UIManager.showPopupMenu(
-      handle,
-      options,
-      () => {},
-      (action, selectedIndex) => {
-        if (selectedIndex === 0) {
-          let preferredAppearance = this.props.preferredAppearance === 'dark' ? 'light' : 'dark';
-          this.props.dispatch(SettingsActions.setPreferredAppearance(preferredAppearance));
-        } else if (selectedIndex === 1) {
-          this.props.dispatch(SessionActions.signOut());
-        }
-      }
-    );
-  };
-}
-
 @onlyIfAuthenticated
 @withNavigation
-class UserSettingsButtonIOS extends React.Component {
+class UserSettingsButton extends React.Component {
   render() {
     return (
       <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
