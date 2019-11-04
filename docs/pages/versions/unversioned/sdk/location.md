@@ -38,7 +38,7 @@ Asks the user to grant permissions for location. Alias for `Permissions.askAsync
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
 ### `Location.getPermissionsAsync()`
 
@@ -46,7 +46,7 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 #### Returns
 
-Returns a promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
 ### `Location.getCurrentPositionAsync(options)`
 
@@ -376,16 +376,6 @@ Object of type `Region` includes following fields:
 - **longitude (_number_)** -- The longitude in degress of region's center point.
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
 - **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
-
-### `PermissionResponse`
-
-| Field name  | Type                                                                   | Description                                                                                                                                                                                    |
-| ----------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_                                                               | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_                                                              | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_                                                              | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
-| ios         | _[PermissionDetailsLocationIOS](permissiondetailslocationios)_         | Additional detail on iOS                                                                                                                                                                       |
-| android     | _[PermissionDetailsLocationAndroid](permissiondetailslocationandroid)_ | Additional detail on Android                                                                                                                                                                   |
 
 ### `PermissionDetailsLocationIOS`
 

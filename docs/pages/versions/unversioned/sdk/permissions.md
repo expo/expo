@@ -34,7 +34,7 @@ Determines whether your app has already been granted access to the provided perm
 
 A `Promise` that is resolved with information about the permissions, including status, expiration, and scope (if applicable).
 The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
-If any single permission has a `status` of `'denied'`, then that negative result is propagated to the top level; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. `Status` can also be `undetermined` if there is permission with `undetermined` status and there isn't permission with `denied` status.
+If all single permissions have a `status` of `'denied'`, then that the top level `status` is `denied`; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. Otherwise, `status` is`undetermined`.
 If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
 Top-level `expires` has value of the earliest expirated permission.
 
@@ -194,3 +194,15 @@ In order to request permissions in a standalone Android app (Managed Workflow on
 For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
 
 > **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
+
+## Types
+
+### `PermissionResponse`
+
+| Field name  | Type                       | Description                                                                                                                                                                                    |
+| ----------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| status      | _string_                   | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
+| granted     | _boolean_                  | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
+| canAskAgain | _boolean_                  | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
+| ios         | depends on permission type | Additional detail on iOS (**optional**)                                                                                                                                                        |
+| android     | depends on permission type | Additional detail on Android (**optional**)                                                                                                                                                    |

@@ -21,7 +21,7 @@ Asks the user to grant permissions for accessing contacts data. Alias for `Permi
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `getPermissionsAsync()`
 
@@ -29,7 +29,7 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 
 ### getContactsAsync
@@ -501,14 +501,6 @@ A set of fields that define information about a single entity.
 | socialProfiles | `SocialProfile[]` | Social networks | ✅ | ❌ |
 | thumbnail | `Image` | **Deprecated**: Use `image` | ❌ | ❌ |
 | previousLastName | `string` | **Deprecated**: Use maidenName | ❌ | ❌ |
-
-### `PermissionResponse`
-
-| Field name  | Type      | Description                                                                                                                                                                                    |
-| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
 
 ### Group
 

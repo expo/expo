@@ -46,7 +46,7 @@ Asks the user to grant permissions for accessing user's calendars. Alias for `Pe
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
@@ -54,7 +54,7 @@ A promise that resolves to an object of type [PermissionResponse](#PermissionRes
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
@@ -62,7 +62,7 @@ Checks user's permissions for accessing user's calendars. Alias for `Permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
@@ -70,7 +70,7 @@ A promise that resolves to an object of type [PermissionResponse](#PermissionRes
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Calendar.createCalendarAsync(details)`
 
@@ -424,14 +424,6 @@ A [source object](#source 'Source') matching the provided ID, if one exists.
 - **id (_string_)** -- ID of the event to open. Required.
 
 ## List of object properties
-
-### PermissionResponse
-
-| Field name  | Type      | Description                                                                                                                                                                                    |
-| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
 
 ### Calendar
 

@@ -24,7 +24,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
@@ -32,15 +32,23 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
 Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
 
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
 ### `ImagePicker.getCameraRollPermissionsAsync()`
 
 Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
@@ -108,13 +116,3 @@ When you run this example and pick an image, you will see the image that you pic
   "uri":"file:///data/user/0/host.exp.exponent/cache/cropped1814158652.jpg"
 }
 ```
-
-## Types
-
-### `PermissionResponse`
-
-| Field name  | Type      | Description                                                                                                                                                                                    |
-| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |

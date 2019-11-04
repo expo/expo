@@ -1,3 +1,7 @@
+/*
+  We need this class to ensure back compatibility.
+  It's only used in Exponent class.
+ */
 package host.exp.exponent.utils;
 
 import android.app.Activity;

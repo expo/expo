@@ -26,7 +26,7 @@ Asks the user to grant permissions for audio recording. Alias for `Permissions.a
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Audio.getPermissionsAsync()`
 
@@ -34,7 +34,7 @@ Checks user's permissions for audio recording. Alias for `Permissions.getAsync(P
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](#PermissionResponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ## Enabling Audio and customizing Audio Mode
 
@@ -356,14 +356,6 @@ try {
 
   - `sound` : the newly created and loaded `Sound` object.
   - `status` : the `PlaybackStatus` of the `Sound` object. See the [AV documentation](../av/) for further information.
-
-### `PermissionResponse`
-
-| Field name  | Type      | Description                                                                                                                                                                                    |
-| ----------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_  | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_ | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_ | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
 
 ### `RecordingOptions`
 
