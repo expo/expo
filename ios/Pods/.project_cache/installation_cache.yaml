@@ -4921,8 +4921,8 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 52c31aff6422e7d3dd740e98b7e1535d
-      Release: 52c31aff6422e7d3dd740e98b7e1535d
+      Debug: 2badc316141e407f94338e969af78bd1
+      Release: 2badc316141e407f94338e969af78bd1
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
       Debug: e4b57f9f76a7e235b595f1ee71ebd531

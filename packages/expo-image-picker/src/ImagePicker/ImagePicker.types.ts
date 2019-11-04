@@ -31,4 +31,4 @@ export type OpenFileBrowserOptions = {
   allowsMultipleSelection: boolean;
 };
 
-export {PermissionResponse, PermissionStatus};
+export { PermissionResponse, PermissionStatus };

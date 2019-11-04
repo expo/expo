@@ -9,7 +9,7 @@ import {
   PictureOptions,
   Props,
   RecordingOptions,
-  PermissionResponse
+  PermissionResponse,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
