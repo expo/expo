@@ -78,7 +78,8 @@ private fun manifestComparatorByVersionComparisonValue(versionComparison: String
     return when (versionComparison) {
         "ANY" -> AllAcceptingManifestComparator(SdkVersionMustBeEqualNativeComparator())
         "VERSION" -> VersionNumberManifestComparator(SdkVersionMustBeEqualNativeComparator())
-        "NEWEST" -> RevisionIdManifestCompoarator(SdkVersionMustBeEqualNativeComparator())
+        "REVISION" -> RevisionIdManifestComparator(SdkVersionMustBeEqualNativeComparator())
+        "NEWEST" -> CommitTimeManifestComparator(SdkVersionMustBeEqualNativeComparator())
         else -> defaultManifestComparator
     }
 }
