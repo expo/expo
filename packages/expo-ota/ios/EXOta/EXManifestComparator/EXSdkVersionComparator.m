@@ -12,22 +12,22 @@ const NSInteger invalidSdkVersionKey = 78263;
 
 @implementation EXSdkVersionComparator
 
--(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+-(BOOL) shouldReplaceBundle:(NSDictionary *)oldManifest forNew:(NSDictionary *)newManifest
 {
-    NSString *newVersion = newManifest[manifestSdkVersionKey];
-    NSString *oldVersion = oldManifest[manifestSdkVersionKey];
-    if(newVersion == nil)
+  NSString *newVersion = newManifest[manifestSdkVersionKey];
+  NSString *oldVersion = oldManifest[manifestSdkVersionKey];
+  if(newVersion == nil)
+  {
+    @throw [NSError errorWithDomain:NSArgumentDomain code:invalidSdkVersionKey userInfo:@{@"sdkVersion": newVersion}];
+  } else
+  {
+    if(oldVersion == nil)
     {
-        @throw [NSError errorWithDomain:NSArgumentDomain code:invalidSdkVersionKey userInfo:@{@"sdkVersion": newVersion}];
-    } else
-    {
-        if(oldVersion == nil)
-        {
-            return YES;
-        } else {
-            return [newVersion isEqualToString:oldVersion];
-        }
+      return YES;
+    } else {
+      return [newVersion isEqualToString:oldVersion];
     }
+  }
 }
 
 @end

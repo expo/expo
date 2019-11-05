@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXOtaEvents : NSObject
 
-- (NSArray<NSString*>*)supportedEvents;
+- (NSArray<NSString *> *)supportedEvents;
 - (id)initWithEmitter:(id<UMEventEmitterService>)emitter;
 - (void)emitError;
 - (void)emitNoUpdateAvailable;

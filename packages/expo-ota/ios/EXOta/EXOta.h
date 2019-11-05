@@ -11,13 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ManifestComparator
 
--(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest;
+-(BOOL) shouldReplaceBundle:(NSDictionary *)oldManifest forNew:(NSDictionary *)newManifest;
 
 @end
 
 @protocol ManifestResponseValidator
 
--(void) verifyManifest:(NSDictionary*)response success:(void (^)(NSDictionary*))successBlock error:(void (^)(NSError*))errorBlock;
+-(void) verifyManifest:(NSDictionary *)response success:(void (^)(NSDictionary *))successBlock error:(void (^)(NSError *))errorBlock;
 
 @end
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithConfig:(id<EXOtaConfig>)config;
 
-- (id)initWithId:(NSString*)appId withConfig:(id<EXOtaConfig>)config;
+- (id)initWithId:(NSString *)appId withConfig:(id<EXOtaConfig>)config;
 
 - (void)start;
 

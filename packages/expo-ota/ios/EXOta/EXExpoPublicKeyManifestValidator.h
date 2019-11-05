@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXExpoPublicKeyManifestValidator: NSObject<ManifestResponseValidator>
 
-- (id)initWithPublicKeyUrl:(NSString*)publicKeyUrl andTimeout:(NSInteger)timeout;
+- (id)initWithPublicKeyUrl:(NSString *)publicKeyUrl andTimeout:(NSInteger)timeout;
 
 @end
 

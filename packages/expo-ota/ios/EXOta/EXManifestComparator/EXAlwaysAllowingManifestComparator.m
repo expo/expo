@@ -10,18 +10,18 @@
 
 @implementation EXAlwaysAllowingManifestComparator
 {
-    id<ManifestComparator> nativeManifestComparator;
+  id<ManifestComparator> nativeManifestComparator;
 }
 
 -(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
 {
-    nativeManifestComparator = nativeComparator;
-    return self;
+  nativeManifestComparator = nativeComparator;
+  return self;
 }
 
--(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+-(BOOL) shouldReplaceBundle:(NSDictionary *)oldManifest forNew:(NSDictionary *)newManifest
 {
-    return YES;
+  return YES;
 }
 
 @end

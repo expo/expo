@@ -16,17 +16,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) id<EXOtaConfig> config;
 @property (strong) NSString *appId;
 
-- (id)initWithStorage:(EXKeyValueStorage*)storage;
+- (id)initWithStorage:(EXKeyValueStorage *)storage;
 
-- (void)storeManifest:(NSDictionary*)manifest;
+- (void)storeManifest:(NSDictionary *)manifest;
 
-- (void)storeBundle:(NSString*)bundlePath;
+- (void)storeBundle:(NSString *)bundlePath;
 
-- (void)storeDownloadedManifest:(nullable NSDictionary*)manifest;
+- (void)storeDownloadedManifest:(nullable NSDictionary *)manifest;
 
-- (void)storeDownloadedBundle:(nullable NSString*)bundlePath;
+- (void)storeDownloadedBundle:(nullable NSString *)bundlePath;
 
-- (void)storeOutdatedBundle:(nullable NSString*)bundlePath;
+- (void)storeOutdatedBundle:(nullable NSString *)bundlePath;
 
 - (void)markDownloadedCurrentAndCurrentOutdated;
 
@@ -36,17 +36,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isReorderAtNextBootEnqueued;
 
-- (NSDictionary*)readNewestManifest;
+- (NSDictionary *)readNewestManifest;
 
-- (nullable NSDictionary*)readManifest;
+- (nullable NSDictionary *)readManifest;
 
-- (NSString*)readBundlePath;
+- (NSString *)readBundlePath;
 
-- (NSDictionary*)readDownloadedManifest;
+- (NSDictionary *)readDownloadedManifest;
 
-- (NSString*)readDownloadedBundlePath;
+- (NSString *)readDownloadedBundlePath;
 
-- (NSString*)readOutdatedBundlePath;
+- (NSString *)readOutdatedBundlePath;
 
 - (void)clean;
 
