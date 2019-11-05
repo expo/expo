@@ -9,7 +9,7 @@
 #import "EXVersionNumberManifestComparator.h"
 
 const NSString *manifestVersionKey = @"version";
-const NSInteger invalidVersionKey = 78263;
+const NSInteger invalidManifestKey = 78263;
 
 @implementation EXVersionNumberManifestComparator
 {
@@ -36,7 +36,7 @@ const NSInteger invalidVersionKey = 78263;
   NSString *oldVersion = oldManifest[manifestVersionKey];
   if(newVersion == nil)
   {
-    @throw [NSError errorWithDomain:NSArgumentDomain code:invalidVersionKey userInfo:@{@"version": newVersion}];
+    @throw [NSError errorWithDomain:NSArgumentDomain code:invalidManifestKey userInfo:@{@"version": newVersion}];
   } else
   {
     if(oldVersion == nil)

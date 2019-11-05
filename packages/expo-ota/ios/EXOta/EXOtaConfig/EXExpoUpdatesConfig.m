@@ -11,6 +11,7 @@
 #import "EXSdkVersionComparator.h"
 #import "EXEmbeddedManifestAndBundle.h"
 #import "EXAlwaysAllowingManifestComparator.h"
+#import "EXCommitTimeManifestComparator.h"
 #import "EXRevisionIdManifestComparator.h"
 
 @implementation EXExpoUpdatesConfigBuilder
@@ -134,6 +135,8 @@ withCheckForUpdatesAutomatically:(BOOL)checkForUpdatesAutomatically
   } else if([@"VERSION" isEqualToString:manifestComparisonValue]) {
     return [[EXVersionNumberManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
   }  else if([@"NEWEST" isEqualToString:manifestComparisonValue]) {
+    return [[EXCommitTimeManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
+  } else if([@"REVISION" isEqualToString:manifestComparisonValue]) {
     return [[EXRevisionIdManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
   } else {
     return [self defaultManifestComparator];
