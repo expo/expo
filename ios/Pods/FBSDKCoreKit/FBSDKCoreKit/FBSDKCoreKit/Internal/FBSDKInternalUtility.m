@@ -496,7 +496,7 @@ static NSMapTable *_transientObjects;
   }
 
   // Find active key window from UIScene
-  if (@available(iOS 13.0, *)) {
+  if (@available(iOS 13.0, tvOS 13, *)) {
     NSSet *scenes = [[UIApplication sharedApplication] valueForKey:@"connectedScenes"];
     for (id scene in scenes) {
       if (window) {
@@ -531,7 +531,7 @@ static NSMapTable *_transientObjects;
 {
   UIWindow *keyWindow = [self findWindow];
   // SDK expects a key window at this point, if it is not, make it one
-  if (keyWindow !=  nil && !keyWindow.isKeyWindow) {
+  if (keyWindow != nil && !keyWindow.isKeyWindow) {
     [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
                        formatString:@"Unable to obtain a key window, marking %@ as keyWindow", keyWindow.description];
     [keyWindow makeKeyWindow];
