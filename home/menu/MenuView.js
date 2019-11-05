@@ -135,7 +135,7 @@ class MenuView extends React.Component {
       copyUrlButton = (
         <MenuButton
           key="copy"
-          label="Copy Link"
+          label="Copy link to clipboard"
           onPress={this._copyTaskUrl}
           iconSource={require('../assets/ios-menu-copy.png')}
         />
