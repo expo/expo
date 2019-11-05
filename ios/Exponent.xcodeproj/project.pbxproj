@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -327,6 +326,8 @@
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -993,6 +994,10 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */ = {isa = PBXFileReference; name = "RNCConnectionState.h"; path = "RNCConnectionState.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */ = {isa = PBXFileReference; name = "RNCConnectionState.m"; path = "RNCConnectionState.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; name = "RNCConnectionStateWatcher.h"; path = "RNCConnectionStateWatcher.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */ = {isa = PBXFileReference; name = "RNCConnectionStateWatcher.m"; path = "RNCConnectionStateWatcher.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1093,6 +1098,10 @@
 			children = (
 				317306062242459A006D1BC0 /* RNCNetInfo.h */,
 				317306072242459A006D1BC0 /* RNCNetInfo.m */,
+				9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */,
+				5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */,
+				EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */,
+				0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */,
 			);
 			path = NetInfo;
 			sourceTree = "<group>";
@@ -2834,6 +2843,8 @@
 				0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */,
 				4FA89DFCDD9842F7AAFC1CAF /* RNSVGPathMeasure.m in Sources */,
 				B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */,
+				B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */,
+				49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
