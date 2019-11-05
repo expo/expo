@@ -70,7 +70,7 @@ If you make any of the following changes in `app.json`, you will need to
 re-build the binaries for your app for the change to take effect:
 
 - Increment the Expo SDK Version
-- Change anything under the `ios` or `android` keys
+- Change anything under the `ios`, `android`, or `notification` keys
 - Change your app `splash`
 - Change your app `icon`
 - Change your app `name`
