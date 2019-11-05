@@ -27,7 +27,7 @@
   return [[NSBundle mainBundle] pathForResource:@"shell-app" ofType:@"bundle"];
 }
 
-- (Boolean) isEmbeddedManifestCompatibleWith:(NSDictionary*)manifest
+- (BOOL) isEmbeddedManifestCompatibleWith:(NSDictionary*)manifest
 {
   NSDictionary *embeddedManifest = [self readManifest];
   if(manifest == nil)

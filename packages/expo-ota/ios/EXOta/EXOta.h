@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) id<ManifestComparator> manifestComparator;
 @property(readonly) id<ManifestResponseValidator> manifestValidator;
 @property(readonly) NSInteger bundleRequestTimeout;
-@property(readonly) Boolean checkForUpdatesAutomatically;
+@property(readonly) BOOL checkForUpdatesAutomatically;
 
 @end
 

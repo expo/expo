@@ -16,7 +16,7 @@ type UpdateCheckResult = { isAvailable: false } | { isAvailable: true; manifest:
 
 type UpdateEventListener = (event: UpdateEvent) => void;
 
-export interface PedometerEventSubscribtion {
+export interface UpdatesEventSubscribtion {
   remove: () => void;
 }
 
@@ -66,26 +66,31 @@ export async function fetchUpdateAsync({
 
 export async function reload() {
   if (!OTA.reload) {
-    throw new UnavailabilityError('WebBrowser', 'reload');
+    throw new UnavailabilityError('Updates', 'reload');
   }
   return OTA.reload();
 }
 
+export async function reloadFromCache() {
+  console.warn('reloadFromCache is deprecated! Please use reload method instead!');
+  return reload();
+}
+
 export async function clearUpdateCacheAsync() {
   if (!OTA.clearUpdateCacheAsync) {
-    throw new UnavailabilityError('WebBrowser', 'clearUpdateCacheAsync');
+    throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
   }
   return OTA.clearUpdateCacheAsync();
 }
 
 export async function readCurrentManifestAsync() {
   if (!OTA.readCurrentManifestAsync) {
-    throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
+    throw new UnavailabilityError('Updates', 'getCustomTabsSupportingBrowsersAsync');
   }
   return OTA.readCurrentManifestAsync().then(result => typeof result === 'string' ? JSON.parse(result) : result);
 }
 
-export function addListener(listener: UpdateEventListener): PedometerEventSubscribtion {
+export function addListener(listener: UpdateEventListener): UpdatesEventSubscribtion {
   return OTAEventEmitter.addListener('Exponent.updatesEvent', listener);
 }
 

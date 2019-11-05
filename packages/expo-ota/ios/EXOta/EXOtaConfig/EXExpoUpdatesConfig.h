@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<ManifestComparator> manifestComparator;
 @property (nonatomic) id<ManifestResponseValidator> manifestValidator;
 @property (nonatomic) NSInteger bundleTimeout;
-@property (nonatomic) Boolean checkForUpdatesAutomatically;
+@property (nonatomic) BOOL checkForUpdatesAutomatically;
 
 @end
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 withManifestComparator:(id<ManifestComparator>)manifestComparator
  withManifestValidator:(id<ManifestResponseValidator>)manifestValidator
      withBundleTimeout:(NSInteger)bundleTimeout
-withCheckForUpdatesAutomatically:(Boolean)checkForUpdatesAutomatically;
+withCheckForUpdatesAutomatically:(BOOL)checkForUpdatesAutomatically;
 
 @end
 

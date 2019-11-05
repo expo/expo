@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary *) readManifest;
 - (NSString *) readBundlePath;
-- (Boolean) isEmbeddedManifestCompatibleWith:(NSDictionary*)manifest;
+- (BOOL) isEmbeddedManifestCompatibleWith:(NSDictionary*)manifest;
 
 @end
 
