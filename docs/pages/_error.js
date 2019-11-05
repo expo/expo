@@ -79,12 +79,6 @@ export default class Error extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.redirectPath !== this.state.redirectPath && typeof window !== 'undefined') {
-      Sentry.configureScope(scope => {
-        scope.setExtra('originalPath', window.location.pathname);
-        scope.setExtra('redirectPath', this.state.redirectPath);
-      });
-      Sentry.captureMessage(`Redirect handled`);
-
       // Let people actually read the carefully crafted message and absorb the
       // cool emoji selection, they can just click through if they want speed
       setTimeout(() => {
