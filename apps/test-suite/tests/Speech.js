@@ -48,10 +48,10 @@ export function test(t) {
       });
 
       t.it("speaks with voice and doesn't throw", async () => {
-        const voices = await Speech.getAvailableVoicesAsync();
+        const [voice] = await Speech.getAvailableVoicesAsync();
+        expect(voice).toBeDefined();
 
         const onError = t.jasmine.createSpy('onError');
-        const [voice] = voices.filter(m => m.language === 'en-US');
 
         await new Promise((resolve, reject) => {
           try {
