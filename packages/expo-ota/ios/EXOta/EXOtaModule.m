@@ -107,13 +107,6 @@ UM_EXPORT_METHOD_AS(reload,
   resolve(@YES);
 }
 
-UM_EXPORT_METHOD_AS(reloadFromCache,
-                    reloadFromCache:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
-{
-  [self reload:resolve reject:reject];
-}
-
 UM_EXPORT_METHOD_AS(readCurrentManifestAsync,
                     readCurrentManifestAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)

@@ -48,12 +48,6 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         }
     }
 
-    @Suppress("unused")
-    @ExpoMethod
-    fun reloadFromCache(promise: Promise) {
-        reload(promise)
-    }
-
     @ExpoMethod
     fun clearUpdateCacheAsync(promise: Promise) {
         updater.removeOutdatedBundle()

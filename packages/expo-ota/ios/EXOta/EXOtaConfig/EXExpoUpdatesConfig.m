@@ -98,7 +98,7 @@ withManifestTimeout:(NSInteger)manifestTimeout
 withManifestComparator:(id<ManifestComparator>)manifestComparator
 withManifestValidator:(id<ManifestResponseValidator>)manifestValidator
  withBundleTimeout:(NSInteger)bundleTimeout
-withCheckForUpdatesAutomatically:(Boolean)checkForUpdatesAutomatically
+withCheckForUpdatesAutomatically:(BOOL)checkForUpdatesAutomatically
 {
   if([username length] == 0 || [projectName length] == 0) {
     @throw (@"You must define username and project!");

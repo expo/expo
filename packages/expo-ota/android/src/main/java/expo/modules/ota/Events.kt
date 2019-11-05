@@ -30,15 +30,15 @@ class UpdatesUnimoduleEventEmitter(private val eventEmitter: EventEmitter): Upda
     }
 
     override fun emitDownloadFinished() {
-        emitEventWithType(DOWNLOAD_FINISHED) //To change body of created functions use File | Settings | File Templates.
+        emitEventWithType(DOWNLOAD_FINISHED)
     }
 
     override fun emitDownloadNotAvailable() {
-        emitEventWithType(NO_UPDATE_AVAILABLE) //To change body of created functions use File | Settings | File Templates.
+        emitEventWithType(NO_UPDATE_AVAILABLE)
     }
 
     override fun emitError() {
-        emitEventWithType(ERROR) //To change body of created functions use File | Settings | File Templates.
+        emitEventWithType(ERROR)
     }
 
     private fun emitEventWithType(type: String){

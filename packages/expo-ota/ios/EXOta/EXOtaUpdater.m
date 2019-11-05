@@ -59,7 +59,7 @@
   }
 }
 
-- (Boolean)shouldCopyEmbeddedManifestAndBundle
+- (BOOL)shouldCopyEmbeddedManifestAndBundle
 {
   NSDictionary *embeddedManifest = [_embedded readManifest];
   return ![_embedded isEmbeddedManifestCompatibleWith:[_persistance readNewestManifest]] ||
