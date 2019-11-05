@@ -151,10 +151,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Mutable version of GMSCameraPosition. */
 @interface GMSMutableCameraPosition : GMSCameraPosition
-@property(nonatomic, assign) CLLocationCoordinate2D target;
-@property(nonatomic, assign) float zoom;
-@property(nonatomic, assign) CLLocationDirection bearing;
-@property(nonatomic, assign) double viewingAngle;
+@property(nonatomic) CLLocationCoordinate2D target;
+@property(nonatomic) float zoom;
+@property(nonatomic) CLLocationDirection bearing;
+@property(nonatomic) double viewingAngle;
 @end
 
 /** The maximum zoom (closest to the Earth's surface) permitted by the map camera. */

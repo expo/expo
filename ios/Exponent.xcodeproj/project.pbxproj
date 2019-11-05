@@ -101,6 +101,7 @@
 		31E6D47E20B8451B0082B09F /* EXSensorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47D20B8451B0082B09F /* EXSensorManager.m */; };
 		31E6D48020B845830082B09F /* EXSensorsManagerBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */; };
 		3C3C339520E24EC0000F8B92 /* EXSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */; };
+		50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DF762283303800272D74 /* RNSVGPainterBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DEFF2283303800272D74 /* RNSVGPainterBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DF772283303800272D74 /* RNSVGBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF012283303800272D74 /* RNSVGBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -308,6 +309,7 @@
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
 		BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C7AB1A74D650FCF755E54086 /* libPods-Exponent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */; };
 		CD4BAD342092A30A009A1287 /* EXAR.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4BAD332092A30A009A1287 /* EXAR.m */; };
 		E396BB759F55EA40EB120B5A /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BEBABA2BA15649492989E40A /* libPods-ExponentIntegrationTests.a */; };
@@ -531,7 +533,9 @@
 		3C3C339320E24E7D000F8B92 /* EXSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreen.h; sourceTree = "<group>"; };
 		3C3C339420E24EC0000F8B92 /* EXSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreen.m; sourceTree = "<group>"; };
 		4A9955E33AC4A6A878EF5A17 /* libPods-Exponent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Exponent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNode.h; sourceTree = "<group>"; };
+		65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmap.m; sourceTree = "<group>"; };
 		7043DEFB2283303800272D74 /* RNSVGPainter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGPainter.h; sourceTree = "<group>"; };
 		7043DEFC2283303800272D74 /* RNSVGSolidColorBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGSolidColorBrush.h; sourceTree = "<group>"; };
 		7043DEFD2283303800272D74 /* RNSVGBrush.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGBrush.h; sourceTree = "<group>"; };
@@ -752,6 +756,7 @@
 		80F51F42EE852A05B015A15E /* Pods-Exponent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.debug.xcconfig"; sourceTree = "<group>"; };
 		929FABE1C395FB3FECB8B2DE /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9A44375C5408A1FBD7D682FA /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
+		A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmapManager.m; sourceTree = "<group>"; };
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
@@ -932,6 +937,7 @@
 		B5FB74261FF6DADB001C764B /* EXScopedBridgeModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedBridgeModule.m; sourceTree = "<group>"; };
 		B5FB74271FF6DADB001C764B /* EXScopedEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedEventEmitter.h; sourceTree = "<group>"; };
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
+		B683FEF12A9E4E4D9CFCC5A1 /* AIRGoogleMapHeatmap.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmap.h; sourceTree = "<group>"; };
 		BB36BC5D2135C98D00AFFD58 /* RNSScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreen.h; sourceTree = "<group>"; };
 		BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSScreenContainer.m; sourceTree = "<group>"; };
 		BB36BC602135C98D00AFFD58 /* RNSScreenContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSScreenContainer.h; sourceTree = "<group>"; };
@@ -1998,6 +2004,10 @@
 				31AD99C52285B50F00F19090 /* AIRGoogleMapWMSTileManager.m */,
 				31AD99B52285B50D00F19090 /* RCTConvert+GMSMapViewType.h */,
 				31AD99CC2285B51000F19090 /* RCTConvert+GMSMapViewType.m */,
+				B683FEF12A9E4E4D9CFCC5A1 /* AIRGoogleMapHeatmap.h */,
+				65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */,
+				5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */,
+				A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */,
 			);
 			path = GoogleMaps;
 			sourceTree = "<group>";
@@ -2793,6 +2803,8 @@
 				B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */,
 				88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */,
 				BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */,
+				C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */,
+				50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

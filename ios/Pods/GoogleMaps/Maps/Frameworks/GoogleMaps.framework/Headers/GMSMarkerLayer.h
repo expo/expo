@@ -26,16 +26,16 @@ NS_ASSUME_NONNULL_BEGIN
 @interface GMSMarkerLayer : GMSOverlayLayer
 
 /** Latitude, part of |position| on GMSMarker. */
-@property(nonatomic, assign) CLLocationDegrees latitude;
+@property(nonatomic) CLLocationDegrees latitude;
 
 /** Longitude, part of |position| on GMSMarker. */
-@property(nonatomic, assign) CLLocationDegrees longitude;
+@property(nonatomic) CLLocationDegrees longitude;
 
 /** Rotation, as per GMSMarker. */
-@property(nonatomic, assign) CLLocationDegrees rotation;
+@property(nonatomic) CLLocationDegrees rotation;
 
 /** Opacity, as per GMSMarker. */
-@property(atomic, assign) float opacity;
+@property(atomic) float opacity;
 
 @end
 

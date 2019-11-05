@@ -4828,12 +4828,12 @@ CACHE_KEYS:
   GoogleMaps:
     BUILD_SETTINGS_CHECKSUM:
       GoogleMaps: 42a96a2d50272809286aa8f523d12d1a
-    CHECKSUM: 67f4a604f80dd6a22d09c2a507a3a395b9f23060
+    CHECKSUM: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
     PROJECT_NAME: GoogleMaps
     SPECS:
-      - GoogleMaps (3.4.0)
-      - GoogleMaps/Base (3.4.0)
-      - GoogleMaps/Maps (3.4.0)
+      - GoogleMaps (3.6.0)
+      - GoogleMaps/Base (3.6.0)
+      - GoogleMaps/Maps (3.6.0)
   GoogleMobileVision:
     BUILD_SETTINGS_CHECKSUM:
       GoogleMobileVision: ee531036155757f3e475f0009d8d4377

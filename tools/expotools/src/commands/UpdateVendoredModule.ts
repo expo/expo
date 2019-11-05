@@ -196,6 +196,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetIosPath: 'Api/Components/GoogleMaps',
       },
       {
+        recursive: true,
         sourceIosPath: 'lib/ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
         sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
