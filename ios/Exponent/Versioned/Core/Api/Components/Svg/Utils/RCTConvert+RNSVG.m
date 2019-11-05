@@ -10,6 +10,7 @@
 
 #import "RNSVGPainterBrush.h"
 #import "RNSVGSolidColorBrush.h"
+#import "RNSVGContextBrush.h"
 #import <React/RCTLog.h>
 #import <React/RCTFont.h>
 
@@ -65,6 +66,10 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
             return [[RNSVGPainterBrush alloc] initWithArray:arr];
         case 2: // currentColor
             return [[RNSVGBrush alloc] initWithArray:nil];
+        case 3: // context-fill
+            return [[RNSVGContextBrush alloc] initFill];
+        case 4: // context-stroke
+            return [[RNSVGContextBrush alloc] initStroke];
         default:
             RCTLogError(@"Unknown brush type: %zd", (unsigned long)type);
             return nil;
