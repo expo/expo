@@ -10,12 +10,13 @@
     "entryPoint": "index.tsx",
     "android": {
       "package": "com.otabare",
-      "appDirectory": "./app"
+      "appDirectory": "./app",
     },
     "platforms": ["ios", "android"],
     "updates": {
       "enabled": true,
-      "checkAutomatically": "ON_ERROR_RECOVERY"
+      "checkAutomatically": "ON_ERROR_RECOVERY",
+      "versionComparison": "NEWEST",
     }
   }
 }
