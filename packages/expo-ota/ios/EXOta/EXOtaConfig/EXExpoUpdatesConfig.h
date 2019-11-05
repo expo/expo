@@ -31,10 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithEmbeddedManifest;
 - (id)initWithManifest:(NSDictionary *)manifest;
 - (id)initWithBuilder:(void (^)(EXExpoUpdatesConfigBuilder *))builderBlock;
-- (id)initWithUsername:(NSString*)username
-       withProjectName:(NSString*)projectName
-    withReleaseChannel:(NSString*)channel
-    withExpoSdkVersion:(NSString*)sdkVersion
+- (id)initWithUsername:(NSString *)username
+       withProjectName:(NSString *)projectName
+    withReleaseChannel:(NSString *)channel
+    withExpoSdkVersion:(NSString *)sdkVersion
         withApiVersion:(NSInteger)apiVersion
    withManifestTimeout:(NSInteger)manifestTimeout
 withManifestComparator:(id<ManifestComparator>)manifestComparator

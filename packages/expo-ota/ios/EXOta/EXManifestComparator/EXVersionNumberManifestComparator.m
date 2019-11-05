@@ -13,39 +13,39 @@ const NSInteger invalidVersionKey = 78263;
 
 @implementation EXVersionNumberManifestComparator
 {
-    id<ManifestComparator> nativeManifestComparator;
+  id<ManifestComparator> nativeManifestComparator;
 }
 
 -(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
 {
-    nativeManifestComparator = nativeComparator;
-    return self;
+  nativeManifestComparator = nativeComparator;
+  return self;
 }
 
--(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+-(BOOL) shouldReplaceBundle:(NSDictionary *)oldManifest forNew:(NSDictionary *)newManifest
 {
-    if(newManifest == nil)
+  if(newManifest == nil)
+  {
+    return NO;
+  }
+  if(oldManifest == nil)
+  {
+    return YES;
+  }
+  NSString *newVersion = newManifest[manifestVersionKey];
+  NSString *oldVersion = oldManifest[manifestVersionKey];
+  if(newVersion == nil)
+  {
+    @throw [NSError errorWithDomain:NSArgumentDomain code:invalidVersionKey userInfo:@{@"version": newVersion}];
+  } else
+  {
+    if(oldVersion == nil)
     {
-        return NO;
+      return YES;
+    } else {
+      return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && [[EDSemver semverWithString:newVersion] isGreaterThan:[EDSemver semverWithString:oldVersion]];
     }
-    if(oldManifest == nil)
-    {
-        return YES;
-    }
-    NSString *newVersion = newManifest[manifestVersionKey];
-    NSString *oldVersion = oldManifest[manifestVersionKey];
-    if(newVersion == nil)
-    {
-        @throw [NSError errorWithDomain:NSArgumentDomain code:invalidVersionKey userInfo:@{@"version": newVersion}];
-    } else
-    {
-        if(oldVersion == nil)
-        {
-            return YES;
-        } else {
-            return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && [[EDSemver semverWithString:newVersion] isGreaterThan:[EDSemver semverWithString:oldVersion]];
-        }
-    }
+  }
 }
 
 @end

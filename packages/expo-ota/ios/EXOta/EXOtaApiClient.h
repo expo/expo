@@ -14,7 +14,7 @@ typedef void (^EXRequestErrorBlock)(NSError* error);
 
 @interface EXOtaApiClient : NSObject<NSURLSessionTaskDelegate>
 
-- (void)performRequest:(nonnull NSString*)url withHeaders:(nullable NSDictionary*)headers withTimeout:(NSInteger)timeout success:(nonnull EXRequestSuccessBlock)successBlock error:(nonnull EXRequestErrorBlock)errorBlock;
+- (void)performRequest:(nonnull NSString *)url withHeaders:(nullable NSDictionary *)headers withTimeout:(NSInteger)timeout success:(nonnull EXRequestSuccessBlock)successBlock error:(nonnull EXRequestErrorBlock)errorBlock;
 
 @end
 

@@ -9,7 +9,7 @@
 
 @implementation EXOtaEvents
 {
-    id<UMEventEmitterService> eventEmitter;
+  id<UMEventEmitterService> eventEmitter;
 }
 
 NSString * const EXUpdatesEventName = @"Exponent.updatesEvent";
@@ -21,38 +21,38 @@ NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 
 - (id)initWithEmitter:(id<UMEventEmitterService>)emitter;
 {
-    eventEmitter = emitter;
-    return self;
+  eventEmitter = emitter;
+  return self;
 }
 
-- (NSArray<NSString*>*)supportedEvents
+- (NSArray<NSString *> *)supportedEvents
 {
-    return @[EXUpdatesEventName];
+  return @[EXUpdatesEventName];
 }
 
-- (void)emitEventWithType:(NSString*)type
+- (void)emitEventWithType:(NSString *)type
 {
-    [eventEmitter sendEventWithName:EXUpdatesEventName body:@{@"type": type}];
+  [eventEmitter sendEventWithName:EXUpdatesEventName body:@{@"type": type}];
 }
 
 - (void)emitError
 {
-    [self emitEventWithType:EXUpdatesErrorEventType];
+  [self emitEventWithType:EXUpdatesErrorEventType];
 }
 
 - (void)emitNoUpdateAvailable
 {
-    [self emitEventWithType:EXUpdatesNotAvailableEventType];
+  [self emitEventWithType:EXUpdatesNotAvailableEventType];
 }
 
 - (void)emitDownloadStart
 {
-    [self emitEventWithType:EXUpdatesDownloadStartEventType];
+  [self emitEventWithType:EXUpdatesDownloadStartEventType];
 }
 
 - (void)emitDownloadFinished
 {
-    [self emitEventWithType:EXUpdatesDownloadFinishedEventType];
+  [self emitEventWithType:EXUpdatesDownloadFinishedEventType];
 }
 
 @end

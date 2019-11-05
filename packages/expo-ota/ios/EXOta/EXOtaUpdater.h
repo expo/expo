@@ -15,15 +15,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^EXManifestSuccessBlock)(NSDictionary* manifest);
-typedef void (^EXUpdateSuccessBlock)(NSDictionary* manifest, NSString *filePath);
-typedef void (^EXErrorBlock)(NSError* error);
+typedef void (^EXManifestSuccessBlock)(NSDictionary * manifest);
+typedef void (^EXUpdateSuccessBlock)(NSDictionary * manifest, NSString *filePath);
+typedef void (^EXErrorBlock)(NSError * error);
 
 @interface EXOtaUpdater: NSObject<NSURLSessionTaskDelegate>
 
 @property (nullable) EXOtaEvents *eventsEmitter;
 
-- (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance*)persistance withId:(NSString*)identifier;
+- (id)initWithConfig:(id<EXOtaConfig>)config withPersistance:(EXOtaPersistance *)persistance withId:(NSString *)identifier;
 
 - (void)downloadManifest:(nonnull EXManifestSuccessBlock)success error:(nonnull EXErrorBlock)error;
 

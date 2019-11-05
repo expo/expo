@@ -12,31 +12,31 @@ const NSInteger invalidRevisionKey = 78264;
 
 @implementation EXRevisionIdManifestComparator
 {
-    id<ManifestComparator> nativeManifestComparator;
+  id<ManifestComparator> nativeManifestComparator;
 }
 
 -(id) initWithNativeComparator:(id<ManifestComparator>)nativeComparator
 {
-    nativeManifestComparator = nativeComparator;
-    return self;
+  nativeManifestComparator = nativeComparator;
+  return self;
 }
 
--(BOOL) shouldReplaceBundle:(NSDictionary*)oldManifest forNew:(NSDictionary*)newManifest
+-(BOOL) shouldReplaceBundle:(NSDictionary *)oldManifest forNew:(NSDictionary *)newManifest
 {
-    NSString *newRevision = newManifest[manifestRevisionKey];
-    NSString *oldRevision = oldManifest[manifestRevisionKey];
-    if(newRevision == nil)
+  NSString *newRevision = newManifest[manifestRevisionKey];
+  NSString *oldRevision = oldManifest[manifestRevisionKey];
+  if(newRevision == nil)
+  {
+    @throw [NSError errorWithDomain:NSArgumentDomain code:invalidRevisionKey userInfo:@{@"vesrion": newRevision}];
+  } else
+  {
+    if(oldRevision == nil)
     {
-        @throw [NSError errorWithDomain:NSArgumentDomain code:invalidRevisionKey userInfo:@{@"vesrion": newRevision}];
-    } else
-    {
-        if(oldRevision == nil)
-        {
-            return YES;
-        } else {
-            return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && ![newRevision isEqualToString:oldRevision];
-        }
+      return YES;
+    } else {
+      return [nativeManifestComparator shouldReplaceBundle:oldManifest forNew:newManifest] && ![newRevision isEqualToString:oldRevision];
     }
+  }
 }
 
 @end

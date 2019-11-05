@@ -7,6 +7,6 @@
 @interface EXOtaModule :  UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer>
 
 -(id)init;
--(id)initWithId:(NSString*)appId;
+-(id)initWithId:(NSString *)appId;
 
 @end

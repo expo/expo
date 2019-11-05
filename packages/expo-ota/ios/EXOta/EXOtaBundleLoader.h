@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithTimeout:(NSInteger) timeout;
 
-- (void)loadJSBundleFromUrl:(NSString *)url withDirectory:(NSURL *)directory withFileName:(NSString*)fileName success:(void (^)(NSString *path))successBlock error:(void (^)(NSError *error))errorBlock;
+- (void)loadJSBundleFromUrl:(NSString *)url withDirectory:(NSURL *)directory withFileName:(NSString *)fileName success:(void (^)(NSString *path))successBlock error:(void (^)(NSError *error))errorBlock;
 
-- (void)saveResponseToFile:(NSData*)response inDirectory:(NSURL*)directory withFilename:(NSString*)filename success:(void (^)(NSString *path))successBlock error:(void (^)(NSError *error))errorBlock;
+- (void)saveResponseToFile:(NSData *)response inDirectory:(NSURL *)directory withFilename:(NSString *)filename success:(void (^)(NSString *path))successBlock error:(void (^)(NSError *error))errorBlock;
 
 @end
 
