@@ -139,8 +139,7 @@ export function test(t) {
 
         t.expect(voices.length).toBeGreaterThan(0);
 
-        // TODO(Bacon): This is broken
-        // t.expect(voices.map(voice => voice.language)).toContain('en-US');
+        t.expect(voices.map(voice => voice.language)).toContain('en-US');
       });
     });
   });
