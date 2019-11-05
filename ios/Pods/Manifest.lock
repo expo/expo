@@ -760,7 +760,7 @@ PODS:
   - EXBlur (7.0.0):
     - UMCore
   - EXBranch (1.0.2):
-    - Branch (~> 0.28)
+    - Branch (= 0.29.0)
     - React
     - UMCore
   - EXBrightness (7.0.0):
@@ -2644,7 +2644,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 2443883e2a0a8075fc323dad136a73384ab71cde
   EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
   EXBlur: eb1cf2d78e94894e0406a8df47d1c2ea1136da17
-  EXBranch: 208240bc7b68bd1a5ec5684c94bb299c030b6e71
+  EXBranch: 582656658e6245f6799fb3797de1403b7386b6ea
   EXBrightness: 8b4827452309499d547f7887a2f0988a10234921
   EXCalendar: bf85bd9ced7ff032ccd7a2a952e18d8536b99a6a
   EXCamera: 8ad7012d4e0fef09ff35de14fcb41b410357e9be

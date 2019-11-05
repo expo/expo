@@ -4063,7 +4063,7 @@ CACHE_KEYS:
   EXBranch:
     BUILD_SETTINGS_CHECKSUM:
       EXBranch: 782d411f7fbc655e2ece800c76a55292
-    CHECKSUM: 208240bc7b68bd1a5ec5684c94bb299c030b6e71
+    CHECKSUM: 582656658e6245f6799fb3797de1403b7386b6ea
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
