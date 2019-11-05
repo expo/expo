@@ -133,7 +133,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     steps: [
       {
         sourceIosPath: 'ios',
-        targetIosPath: 'Api',
+        targetIosPath: 'Api/ViewShot',
         sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
         targetAndroidPath: 'modules/api/viewshot',
         sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',

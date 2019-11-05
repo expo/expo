@@ -4,3 +4,4 @@
 @interface RNViewShot : NSObject <RCTBridgeModule>
 
 @end
+  
