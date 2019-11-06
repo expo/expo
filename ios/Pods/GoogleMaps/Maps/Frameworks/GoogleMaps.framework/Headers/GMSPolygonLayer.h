@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface GMSPolygonLayer : GMSOverlayLayer
 
 /** The width of the polygon outline in screen points. */
-@property(nonatomic, assign) CGFloat strokeWidth;
+@property(nonatomic) CGFloat strokeWidth;
 
 /**
  * The color of the polygon outline. This is an assign property, there is an expectation for the

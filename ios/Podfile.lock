@@ -760,7 +760,7 @@ PODS:
   - EXBlur (7.0.0):
     - UMCore
   - EXBranch (1.0.2):
-    - Branch (~> 0.28)
+    - Branch (= 0.29.0)
     - React
     - UMCore
   - EXBrightness (7.0.0):
@@ -1005,10 +1005,10 @@ PODS:
   - GoogleDataTransportCCTSupport (1.1.0):
     - GoogleDataTransport (~> 2.0)
     - nanopb
-  - GoogleMaps (3.4.0):
-    - GoogleMaps/Maps (= 3.4.0)
-  - GoogleMaps/Base (3.4.0)
-  - GoogleMaps/Maps (3.4.0):
+  - GoogleMaps (3.6.0):
+    - GoogleMaps/Maps (= 3.6.0)
+  - GoogleMaps/Base (3.6.0)
+  - GoogleMaps/Maps (3.6.0):
     - GoogleMaps/Base
   - GoogleMobileVision/Detector (1.6.0):
     - GoogleToolboxForMac/Logger (~> 2.1)
@@ -1694,7 +1694,7 @@ DEPENDENCIES:
   - Folly (from `../react-native-lab/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
-  - GoogleMaps (~> 3.3)
+  - GoogleMaps (~> 3.6)
   - JKBigInteger2 (= 0.0.5)
   - lottie-ios (~> 2.5.0)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
@@ -2644,7 +2644,7 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 2443883e2a0a8075fc323dad136a73384ab71cde
   EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
   EXBlur: eb1cf2d78e94894e0406a8df47d1c2ea1136da17
-  EXBranch: 208240bc7b68bd1a5ec5684c94bb299c030b6e71
+  EXBranch: 582656658e6245f6799fb3797de1403b7386b6ea
   EXBrightness: 8b4827452309499d547f7887a2f0988a10234921
   EXCalendar: bf85bd9ced7ff032ccd7a2a952e18d8536b99a6a
   EXCamera: 8ad7012d4e0fef09ff35de14fcb41b410357e9be
@@ -2710,7 +2710,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 86a82f0e1f20b8eedf8e20326530138fd71409de
   GoogleDataTransport: c8617c00e4f3eb9418e42ac0e8ac5241a9d555dd
   GoogleDataTransportCCTSupport: 9f352523e8785a71f6754f51eeff09f49ec19268
-  GoogleMaps: 67f4a604f80dd6a22d09c2a507a3a395b9f23060
+  GoogleMaps: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
   GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
   GoogleSignIn: a62edd0516721d2a3db1259a5681b91f9b41c06a
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
@@ -2760,6 +2760,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 0b97c2b68ca7458bee47a62af54a8c9d3b897929
+PODFILE CHECKSUM: c8c5cf8dffe5c6bad3821247c4ae5c24cc32d73c
 
 COCOAPODS: 1.8.1

@@ -1,4 +1,4 @@
-#import "EXViewShot.h"
+#import "RNViewShot.h"
 #import <AVFoundation/AVFoundation.h>
 #import <React/RCTLog.h>
 #import <React/UIView+React.h>
@@ -11,9 +11,9 @@
 #endif
 #import <React/RCTBridge.h>
 
-@implementation EXViewShot
+@implementation RNViewShot
 
-RCT_EXPORT_MODULE(RNViewShot)
+RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
