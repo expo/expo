@@ -790,7 +790,9 @@ UM_EXPORT_METHOD_AS(startAudioRecording,
     return;
   }
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
-    if (!_audioRecorder.recording) {
+    if (!_allowsAudioRecording) {
+      reject(@"E_AUDIO_AUDIOMODE", nil, UMErrorWithMessage(@"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync"));
+    } else if (!_audioRecorder.recording) {
       _audioRecorderShouldBeginRecording = true;
       NSError *error = [self promoteAudioSessionIfNecessary];
       if (!error) {
