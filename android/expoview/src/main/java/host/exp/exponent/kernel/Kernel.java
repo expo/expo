@@ -15,6 +15,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
@@ -60,6 +62,7 @@ import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -170,13 +173,15 @@ public class Kernel extends KernelInterface {
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
-  public void startJSKernel(Activity activity) {
+  public void startJSKernel(AppCompatActivity activity) {
     if (Constants.isStandaloneApp()) {
       return;
     }
     setActivityContext(activity);
 
     SoLoader.init(mContext, false);
+
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), activity);
 
     synchronized (this) {
       if (mIsStarted && !mHasError) {

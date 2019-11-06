@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RNCApperancePackage implements ReactPackage {
+public class RNCAppearancePackage implements ReactPackage {
     @NonNull
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List modules = new ArrayList();
-        modules.add(new RNCApperanceModule(reactContext));
+        modules.add(new RNCAppearanceModule(reactContext));
         return modules;
     }
 

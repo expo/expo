@@ -24,11 +24,11 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RNCApperanceModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class RNCAppearanceModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
     public static final String REACT_CLASS = "RNCAppearance";
     private BroadcastReceiver mBroadcastReceiver = null;
 
-    public RNCApperanceModule(@NonNull ReactApplicationContext reactContext) {
+    public RNCAppearanceModule(@NonNull ReactApplicationContext reactContext) {
         super(reactContext);
         // Only Android 10+ supports dark mode
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
@@ -51,7 +51,7 @@ public class RNCApperanceModule extends ReactContextBaseJavaModule implements Li
     }
 
 
-    private String getColorScheme(Configuration config) {
+    protected String getColorScheme(Configuration config) {
         String colorScheme = "no-preference";
 
         // Only Android 10+ support dark mode
@@ -79,7 +79,7 @@ public class RNCApperanceModule extends ReactContextBaseJavaModule implements Li
         return preferences;
     }
 
-    @androidx.annotation.Nullable
+    @Nullable
     @Override
     public Map<String, Object> getConstants() {
         HashMap<String, Object> constants = new HashMap();
