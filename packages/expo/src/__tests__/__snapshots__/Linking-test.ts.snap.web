@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parse parses "custom://" 1`] = `
+Object {
+  "hostname": null,
+  "path": null,
+  "queryParams": Object {},
+  "scheme": "custom",
+}
+`;
+
+exports[`parse parses "custom:///" 1`] = `
+Object {
+  "hostname": null,
+  "path": "",
+  "queryParams": Object {},
+  "scheme": "custom",
+}
+`;
+
+exports[`parse parses "custom:///test/path?foo=bar" 1`] = `
+Object {
+  "hostname": null,
+  "path": "test/path",
+  "queryParams": Object {
+    "foo": "bar",
+  },
+  "scheme": "custom",
+}
+`;
+
+exports[`parse parses "custom://?hello=bar" 1`] = `
+Object {
+  "hostname": null,
+  "path": null,
+  "queryParams": Object {
+    "hello": "bar",
+  },
+  "scheme": "custom",
+}
+`;
+
+exports[`parse parses "exp://exp.host/@test/test/--/test/path" 1`] = `
+Object {
+  "hostname": "exp.host",
+  "path": "@test/test/--/test/path",
+  "queryParams": Object {},
+  "scheme": "exp",
+}
+`;
+
+exports[`parse parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `
+Object {
+  "hostname": "exp.host",
+  "path": "@test/test/--/test/path",
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "exp",
+}
+`;
+
+exports[`parse parses "https://example.com/test/path" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`parse parses "https://example.com/test/path?query=param" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "https",
+}
+`;
+
+exports[`parse parses "https://example.com:8000/test/path" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`parse parses "https://example.com:8000/test/path+with+plus" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "with+plus",
+  "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`parse parses "invalid" 1`] = `
+Object {
+  "hostname": "localhost",
+  "path": "invalid",
+  "queryParams": Object {},
+  "scheme": "http",
+}
+`;

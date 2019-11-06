@@ -25,7 +25,6 @@ import io.branch.indexing.*;
 
 import org.json.*;
 
-import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -72,6 +71,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
 
     private static final String IDENT_FIELD_NAME = "ident";
     public static final String UNIVERSAL_OBJECT_NOT_FOUND_ERROR_CODE = "RNBranch::Error::BUONotFound";
+    public static final String GENERIC_ERROR = "RNBranch::Error";
     private static final long AGING_HASH_TTL = 3600000;
 
     private static JSONObject initSessionResult = null;
@@ -84,6 +84,8 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
     private static JSONObject mRequestMetadata = new JSONObject();
 
     private AgingHash<String, BranchUniversalObject> mUniversalObjectMap = new AgingHash<>(AGING_HASH_TTL);
+
+    private static Branch.BranchReferralInitListener referralInitListener = null;
 
     public static void getAutoInstance(Context context) {
         RNBranchConfig config = new RNBranchConfig(context);
@@ -106,6 +108,11 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         }
     }
 
+    public static void reInitSession(Activity reactActivity) {
+        Branch branch = Branch.getInstance();
+        branch.reInitSession(reactActivity, referralInitListener);
+    }
+
     public static void initSession(final Uri uri, Activity reactActivity, Branch.BranchUniversalReferralInitListener anInitListener) {
         initListener = anInitListener;
         initSession(uri, reactActivity);
@@ -115,7 +122,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
         Branch branch = setupBranch(reactActivity.getApplicationContext());
 
         mActivity = reactActivity;
-        branch.initSession(new Branch.BranchReferralInitListener(){
+        referralInitListener = new Branch.BranchReferralInitListener(){
 
             private Activity mmActivity = null;
 
@@ -208,7 +215,9 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
 
                 LocalBroadcastManager.getInstance(mmActivity).sendBroadcast(broadcastIntent);
             }
-        }.init(reactActivity), uri, reactActivity);
+        }.init(reactActivity);
+        
+        branch.initSession(referralInitListener, uri, reactActivity);
     }
 
     public static void setDebug() {
@@ -247,13 +256,13 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
 
         // Constants for use with userCompletedAction (deprecated)
 
-        constants.put(ADD_TO_CART_EVENT, BranchEvent.ADD_TO_CART);
-        constants.put(ADD_TO_WISHLIST_EVENT, BranchEvent.ADD_TO_WISH_LIST);
-        constants.put(PURCHASED_EVENT, BranchEvent.PURCHASED);
-        constants.put(PURCHASE_INITIATED_EVENT, BranchEvent.PURCHASE_STARTED);
-        constants.put(REGISTER_VIEW_EVENT, BranchEvent.VIEW);
-        constants.put(SHARE_COMPLETED_EVENT, BranchEvent.SHARE_COMPLETED);
-        constants.put(SHARE_INITIATED_EVENT, BranchEvent.SHARE_STARTED);
+        // constants.put(ADD_TO_CART_EVENT, BranchEvent.ADD_TO_CART);
+        // constants.put(ADD_TO_WISHLIST_EVENT, BranchEvent.ADD_TO_WISH_LIST);
+        // constants.put(PURCHASED_EVENT, BranchEvent.PURCHASED);
+        // constants.put(PURCHASE_INITIATED_EVENT, BranchEvent.PURCHASE_STARTED);
+        // constants.put(REGISTER_VIEW_EVENT, BranchEvent.VIEW);
+        // constants.put(SHARE_COMPLETED_EVENT, BranchEvent.SHARE_COMPLETED);
+        // constants.put(SHARE_INITIATED_EVENT, BranchEvent.SHARE_STARTED);
 
         // constants for use with BranchEvent
 
@@ -545,7 +554,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
                         promise.reject("RNBranch::Error::DuplicateResourceError", error.getMessage());
                     }
                     else {
-                        promise.reject("RNBranch::Error", error.getMessage());
+                        promise.reject(GENERIC_ERROR, error.getMessage());
                     }
                     return;
                 }
@@ -924,12 +933,12 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
                     ReadableArray result = convertJsonToArray(list);
                     this._promise.resolve(result);
                 } catch (JSONException err) {
-                    this._promise.reject(err.getMessage());
+                    this._promise.reject(GENERIC_ERROR, err.getMessage());
                 }
             } else {
                 String errorMessage = error.getMessage();
                 Log.d(REACT_CLASS, errorMessage);
-                this._promise.reject(errorMessage);
+                this._promise.reject(GENERIC_ERROR, errorMessage);
             }
         }
     }
@@ -951,7 +960,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
             } else {
                 String errorMessage = error.getMessage();
                 Log.d(REACT_CLASS, errorMessage);
-                this._promise.reject(errorMessage);
+                this._promise.reject(GENERIC_ERROR, errorMessage);
             }
         }
     }
@@ -981,7 +990,7 @@ public class RNBranchModule extends ReactContextBaseJavaModule {
             } else {
                 String errorMessage = error.getMessage();
                 Log.d(REACT_CLASS, errorMessage);
-                this._promise.reject(errorMessage);
+                this._promise.reject(GENERIC_ERROR, errorMessage);
             }
         }
     }

@@ -64,11 +64,11 @@ static NSString *const kNightType = @"Night";
 
 - (UIAlertAction *_Nonnull)actionWithTitle:(nonnull NSString *)title
                                      style:(nullable GMSMapStyle *)style {
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof__(self) weakSelf = self;
   return [UIAlertAction actionWithTitle:title
                                   style:UIAlertActionStyleDefault
                                 handler:^(UIAlertAction *_Nonnull action) {
-                                  __strong typeof(self) strongSelf = weakSelf;
+                                  __strong __typeof__(self) strongSelf = weakSelf;
                                   if (strongSelf) {
                                     strongSelf->_mapView.mapStyle = style;
                                   }

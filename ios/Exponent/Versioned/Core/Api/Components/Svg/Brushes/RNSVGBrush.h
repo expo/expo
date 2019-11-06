@@ -8,7 +8,6 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-#import "RNSVGPercentageConverter.h"
 #import "RNSVGPainter.h"
 
 @interface RNSVGBrush : NSObject
