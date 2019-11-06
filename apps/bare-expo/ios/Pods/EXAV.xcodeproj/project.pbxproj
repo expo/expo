@@ -8,20 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		186323331747046EACE25E087C697689 /* EXVideoView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DD775161BFA4FF6E70AC5CD327823BA /* EXVideoView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		187284CC943EF861E8D6EE084FEA3035 /* EXAVPlayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = D79E9B74F0DAFADDD6DF769F8C043C27 /* EXAVPlayerData.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1BB96A2A50E5E9AA3887B37BEA0BEAC2 /* EXVideoPlayerViewControllerDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C0511E45771638F9EC2A6AE4A71FB85 /* EXVideoPlayerViewControllerDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		216E189F8C0944BE99B11E7B4E459E1F /* EXAV-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C19B705A738255E965BB33D2EA79B9C /* EXAV-dummy.m */; };
-		2FE818EB2BE9A4C16688F1219C828191 /* EXAV.m in Sources */ = {isa = PBXBuildFile; fileRef = 295A61E3772756A322336DCE636DA59A /* EXAV.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		32F212BF4831BA35FCAC23120D9496A6 /* EXAV.m in Sources */ = {isa = PBXBuildFile; fileRef = 295A61E3772756A322336DCE636DA59A /* EXAV.m */; };
 		3774AABCDCE9E3D14FCE26EE74A40CE0 /* EXAVObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A092122A46891CDB486B68FD0F1D26A /* EXAVObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		52DA483178715AC7F879D7C789585F4D /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5239639A6BCDB5CED180CEE31CD47 /* EXVideoManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		47188A4DB18DE7C70BADCF6362CB9341 /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F69092E19148734E6D25A7440F2D1AF /* EXVideoPlayerViewController.m */; };
 		579130E227C28E90246A8278DAA4E3E6 /* EXVideoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E5C83A0CF64DAAA8E6E8F48C8E5C1A03 /* EXVideoManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		59D4465ED180EAE21D2A3A325F0A28F6 /* EXAV.h in Headers */ = {isa = PBXBuildFile; fileRef = FE5F48A02ACB9E6F889FDF365DD8C46A /* EXAV.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7EC8C8EB49ED20A3A49990B9D316E3D3 /* EXVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F69092E19148734E6D25A7440F2D1AF /* EXVideoPlayerViewController.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8ED999C64A3C34DDB38461DF90BDBC60 /* EXAudioSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 16196357E50BA78656584EA6536A8F10 /* EXAudioSessionManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A661D70A0CFF2D180412903E0894DA84 /* EXVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8891BF950B11A6C74430CCD3ADCF0624 /* EXVideoView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9E6887ECE5AD62B563A57194DB9753C9 /* EXVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C1E5239639A6BCDB5CED180CEE31CD47 /* EXVideoManager.m */; };
+		B36FC184DDC9A52A1E5F45077B588CE1 /* EXAVPlayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = D79E9B74F0DAFADDD6DF769F8C043C27 /* EXAVPlayerData.m */; };
+		C32CECFFD5783EFC5A0C47E24E9C74D2 /* EXVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8891BF950B11A6C74430CCD3ADCF0624 /* EXVideoView.m */; };
 		CDFAA741D4169C26A53510EA6F1825AA /* EXAVPlayerData.h in Headers */ = {isa = PBXBuildFile; fileRef = 512B428AA492D28D845D2D9FB74105D0 /* EXAVPlayerData.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D66D063B4929DAED296F4555703E7AF6 /* EXAudioSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E7A6176F308659944F7BA52BD19FEC /* EXAudioSessionManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DF8765C4A1561932198A63DA23DBE82D /* EXAV-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C19B705A738255E965BB33D2EA79B9C /* EXAV-dummy.m */; };
 		F04EFA2AC69D93D43A747E7953CAE05F /* EXVideoPlayerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 52FD9FB7A51BD0E46F0AC681DCDA1BB9 /* EXVideoPlayerViewController.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F4934D283701C4B1ECC9F68650FBCF2F /* EXAudioSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E7A6176F308659944F7BA52BD19FEC /* EXAudioSessionManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -188,7 +188,7 @@
 			buildConfigurationList = 3BD886D23D92C58AF12818E8CF7A4D96 /* Build configuration list for PBXNativeTarget "EXAV" */;
 			buildPhases = (
 				2CBE04B55FDA51F2321F7B6E7E600D68 /* Headers */,
-				92694EA85DC0347A4B632ADBD4F1A86F /* Sources */,
+				FAD1456C67DB0507B29467BA0749B37C /* Sources */,
 				7AF4D331C0813719569FD6623388611F /* Frameworks */,
 			);
 			buildRules = (
@@ -237,17 +237,17 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		92694EA85DC0347A4B632ADBD4F1A86F /* Sources */ = {
+		FAD1456C67DB0507B29467BA0749B37C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D66D063B4929DAED296F4555703E7AF6 /* EXAudioSessionManager.m in Sources */,
-				216E189F8C0944BE99B11E7B4E459E1F /* EXAV-dummy.m in Sources */,
-				2FE818EB2BE9A4C16688F1219C828191 /* EXAV.m in Sources */,
-				187284CC943EF861E8D6EE084FEA3035 /* EXAVPlayerData.m in Sources */,
-				52DA483178715AC7F879D7C789585F4D /* EXVideoManager.m in Sources */,
-				7EC8C8EB49ED20A3A49990B9D316E3D3 /* EXVideoPlayerViewController.m in Sources */,
-				A661D70A0CFF2D180412903E0894DA84 /* EXVideoView.m in Sources */,
+				F4934D283701C4B1ECC9F68650FBCF2F /* EXAudioSessionManager.m in Sources */,
+				DF8765C4A1561932198A63DA23DBE82D /* EXAV-dummy.m in Sources */,
+				32F212BF4831BA35FCAC23120D9496A6 /* EXAV.m in Sources */,
+				B36FC184DDC9A52A1E5F45077B588CE1 /* EXAVPlayerData.m in Sources */,
+				9E6887ECE5AD62B563A57194DB9753C9 /* EXVideoManager.m in Sources */,
+				47188A4DB18DE7C70BADCF6362CB9341 /* EXVideoPlayerViewController.m in Sources */,
+				C32CECFFD5783EFC5A0C47E24E9C74D2 /* EXVideoView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
