@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Linking parse test "custom://" 1`] = `
+Object {
+  "hostname": null,
+  "path": null,
+  "queryParams": Object {},
+  "scheme": "custom",
+}
+`;
+
+exports[`Linking parse test "custom:///" 1`] = `
+Object {
+  "hostname": null,
+  "path": "",
+  "queryParams": Object {},
+  "scheme": "custom",
+}
+`;
+
+exports[`Linking parse test "custom:///test/path?foo=bar" 1`] = `
+Object {
+  "hostname": null,
+  "path": "test/path",
+  "queryParams": Object {
+    "foo": "bar",
+  },
+  "scheme": "custom",
+}
+`;
+
+exports[`Linking parse test "custom://?hello=bar" 1`] = `
+Object {
+  "hostname": null,
+  "path": null,
+  "queryParams": Object {
+    "hello": "bar",
+  },
+  "scheme": "custom",
+}
+`;
+
+exports[`Linking parse test "exp://exp.host/@test/test/--/test/path" 1`] = `
+Object {
+  "hostname": "exp.host",
+  "path": "@test/test/--/test/path",
+  "queryParams": Object {},
+  "scheme": "exp",
+}
+`;
+
+exports[`Linking parse test "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `
+Object {
+  "hostname": "exp.host",
+  "path": "@test/test/--/test/path",
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "exp",
+}
+`;
+
+exports[`Linking parse test "https://example.com/test/path" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`Linking parse test "https://example.com/test/path?query=param" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {
+    "query": "param",
+  },
+  "scheme": "https",
+}
+`;
+
+exports[`Linking parse test "https://example.com:8000/test/path" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "test/path",
+  "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`Linking parse test "https://example.com:8000/test/path+with+plus" 1`] = `
+Object {
+  "hostname": "example.com",
+  "path": "with+plus",
+  "queryParams": Object {},
+  "scheme": "https",
+}
+`;
+
+exports[`Linking parse test "invalid" 1`] = `
+Object {
+  "hostname": null,
+  "path": "invalid",
+  "queryParams": Object {},
+  "scheme": null,
+}
+`;
