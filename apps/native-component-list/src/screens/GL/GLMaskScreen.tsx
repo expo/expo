@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, MaskedViewIOS, View } from 'react-native';
+import { Text, View } from 'react-native';
+import MaskedView from '@react-native-community/masked-view';
 import * as GL from 'expo-gl';
 
 const vertSrc = `
@@ -21,14 +22,16 @@ interface Props {
   speed?: number;
 }
 
-export default class MaskGLScreen extends React.Component<Props> {
+export default class GLMaskScreen extends React.Component<Props> {
+  static title = 'MaskedView integration';
+
   static navigationOptions = {
     title: 'Mask GLView Example',
   };
 
   render() {
     return (
-      <MaskedViewIOS
+      <MaskedView
         style={{ flex: 1 }}
         maskElement={
           <View
@@ -53,7 +56,7 @@ export default class MaskGLScreen extends React.Component<Props> {
         }
       >
         <GL.GLView style={{ flex: 1 }} onContextCreate={this._onContextCreate} />
-      </MaskedViewIOS>
+      </MaskedView>
     );
   }
 

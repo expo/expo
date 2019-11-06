@@ -326,6 +326,10 @@
 		F1545BF920877E39002DAC67 /* EXMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F1545BF820877E39002DAC67 /* EXMenuWindow.m */; };
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B4FF3D8631BB48D290E44742 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		49B1BDE9E1424AADB8DBE3FC /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F5FE9D9529842FCA057BE5A /* RNCConnectionStateWatcher.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
@@ -994,6 +998,14 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; name = "RNDateTimePicker.h"; path = "RNDateTimePicker.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; name = "RNDateTimePicker.m"; path = "RNDateTimePicker.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; name = "RNDateTimePickerManager.h"; path = "RNDateTimePickerManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; name = "RNDateTimePickerManager.m"; path = "RNDateTimePickerManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; name = "RNCMaskedView.h"; path = "RNCMaskedView.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */ = {isa = PBXFileReference; name = "RNCMaskedView.m"; path = "RNCMaskedView.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; name = "RNCMaskedViewManager.h"; path = "RNCMaskedViewManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */ = {isa = PBXFileReference; name = "RNCMaskedViewManager.m"; path = "RNCMaskedViewManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		9A34C4ECEE0D49B6AD86972D /* RNCConnectionState.h */ = {isa = PBXFileReference; name = "RNCConnectionState.h"; path = "RNCConnectionState.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		5FE9493F87604B4B8CBB87C8 /* RNCConnectionState.m */ = {isa = PBXFileReference; name = "RNCConnectionState.m"; path = "RNCConnectionState.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		EF26CAC6602D46B3B6C94E66 /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; name = "RNCConnectionStateWatcher.h"; path = "RNCConnectionStateWatcher.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
@@ -1981,6 +1993,7 @@
 				314410BF223BF50E00310599 /* WebView */,
 				65B902B660654403B6731F7E /* SharedElement */,
 				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
+				6999211AF26A46738FB9E106 /* MaskedView */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2247,6 +2260,30 @@
 				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
 			);
 			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
+		E3BD4F6E1BF543B697AFB794 /* DateTimePicker */ = {
+			isa = PBXGroup;
+			children = (
+				10B9AA823F57466698858869 /* RNDateTimePicker.h */,
+				D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */,
+				12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */,
+				D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */,
+			);
+			name = DateTimePicker;
+			path = DateTimePicker;
+			sourceTree = "<group>";
+		};
+		6999211AF26A46738FB9E106 /* MaskedView */ = {
+			isa = PBXGroup;
+			children = (
+				EE5757442E5343FAAC728C45 /* RNCMaskedView.h */,
+				35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */,
+				476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */,
+				78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */,
+			);
+			name = MaskedView;
+			path = MaskedView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2836,6 +2873,8 @@
 				B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */,
 				88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */,
 				BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */,
+				78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */,
+				D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */,
 				C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */,
 				50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */,
 				4E3532555D7C4B0392A6AE9D /* RNSVGContextBrush.m in Sources */,

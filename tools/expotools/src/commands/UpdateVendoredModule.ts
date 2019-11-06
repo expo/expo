@@ -279,6 +279,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'react-native-masked-view': {
+    repoUrl: 'https://github.com/react-native-community/react-native-masked-view',
+    packageName: '@react-native-community/masked-view',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/MaskedView',
+        sourceAndroidPath: 'android/src/main/java/org/reactnative/maskedview',
+        targetAndroidPath: 'modules/api/components/maskedview',
+        sourceAndroidPackage: 'org.reactnative.maskedview',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
+      }
+    ],
+  },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
     packageName: 'react-native-shared-element',

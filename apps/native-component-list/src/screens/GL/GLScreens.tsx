@@ -12,6 +12,7 @@ import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 import { Renderer, TextureLoader, THREE } from 'expo-three';
 import GLWrap from './GLWrap';
 import GLCameraScreen from './GLCameraScreen';
+import GLMaskScreen from './GLMaskScreen';
 import GLSnapshotsScreen from './GLSnapshotsScreen';
 import GLHeadlessRenderingScreen from './GLHeadlessRenderingScreen';
 import ProcessingWrap from './ProcessingWrap';
@@ -113,6 +114,10 @@ const GLScreens: Screens = {
         },
       };
     }),
+  },
+
+  Mask: {
+    screen: GLMaskScreen,
   },
 
   Snapshots: {
