@@ -322,6 +322,8 @@
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -974,6 +976,10 @@
 		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; name = "RNDateTimePicker.m"; path = "RNDateTimePicker.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; name = "RNDateTimePickerManager.h"; path = "RNDateTimePickerManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; name = "RNDateTimePickerManager.m"; path = "RNDateTimePickerManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; name = "RNCMaskedView.h"; path = "RNCMaskedView.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */ = {isa = PBXFileReference; name = "RNCMaskedView.m"; path = "RNCMaskedView.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; name = "RNCMaskedViewManager.h"; path = "RNCMaskedViewManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */ = {isa = PBXFileReference; name = "RNCMaskedViewManager.m"; path = "RNCMaskedViewManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1935,6 +1941,7 @@
 				314410BF223BF50E00310599 /* WebView */,
 				65B902B660654403B6731F7E /* SharedElement */,
 				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
+				6999211AF26A46738FB9E106 /* MaskedView */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -2198,6 +2205,18 @@
 			);
 			name = DateTimePicker;
 			path = DateTimePicker;
+			sourceTree = "<group>";
+		};
+		6999211AF26A46738FB9E106 /* MaskedView */ = {
+			isa = PBXGroup;
+			children = (
+				EE5757442E5343FAAC728C45 /* RNCMaskedView.h */,
+				35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */,
+				476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */,
+				78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */,
+			);
+			name = MaskedView;
+			path = MaskedView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2788,6 +2807,8 @@
 				B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */,
 				88BC3929071B49F2AAC8CAA5 /* RNDateTimePicker.m in Sources */,
 				BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */,
+				78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */,
+				D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,6 +19,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 }
 
 const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
+const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen'));
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
@@ -30,6 +31,7 @@ const GLScreens = optionalRequire(
   () => require('../screens/GL/GLScreens')
 ) as unknown as { [key: string]: React.ComponentType };
 const Lottie = optionalRequire(() => require('../screens/LottieScreen'));
+const MaskGLScreen =  optionalRequire(() => require('../screens/MaskGLScreen'));
 const ReanimatedImagePreview = optionalRequire(() =>
   require('../screens/Reanimated/ReanimatedImagePreviewScreen')
 );
@@ -43,11 +45,13 @@ const SharedElement = optionalRequire(() => require('../screens/SharedElementScr
 const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   AdMob,
   BarCodeScanner,
+  MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
   DateTimePicker,
   GL,
   ...GLScreens,
+  MaskGLScreen,
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,

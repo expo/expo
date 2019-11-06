@@ -1735,6 +1735,11 @@
   dependencies:
     invariant "^2.2.4"
 
+"@react-native-community/masked-view@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.4.tgz#e0f8952a30014922929d7742a0809bc108e66549"
+  integrity sha512-bP6FWEa1qaRJb1aKA9ni/2/D8NoBZU54oFyEeGnxkax80No4YCHFGmRW8xcFwgZ2TXWuRSoI1xpGzuWfspHs/g==
+
 "@react-native-community/netinfo@~3.2.1":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-3.2.1.tgz#cd073b81a4b978f7f55f1a960a0b56c462813e02"
