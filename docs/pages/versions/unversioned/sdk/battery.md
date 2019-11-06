@@ -16,6 +16,9 @@ import * as Battery from 'expo-battery';
 
 Note: On iOS simulators, battery monitoring is not possible. You can confirm by checking [`Battery.isSupported`](#batteryissupported).
 
+### Properties
+- [`Battery.isSupported`](#batteryissupported)
+
 ### Methods
 
 - [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
@@ -32,11 +35,16 @@ Note: On iOS simulators, battery monitoring is not possible. You can confirm by 
 ### Enum Types
 
 - [`Battery.BatteryState`](#batterybatterystate)
-- [`Battery.isSupported`](#batteryissupported)
 
 ### Errors
 
 - [Error Codes](#error-codes)
+
+## Properties
+
+### `Battery.isSupported`
+
+Shows whether this battery API is supported on the current device. The value of this property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web, it depends on whether the browser supports the web battery API.
 
 ## Methods
 
@@ -217,8 +225,3 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
-### `Battery.isSupported`
-
-- **`TRUE`** - for Android or iOS devices.
-- **`FALSE`** - for iOS simulators.
