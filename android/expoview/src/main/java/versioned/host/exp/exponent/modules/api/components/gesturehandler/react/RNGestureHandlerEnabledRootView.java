@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.facebook.react.ReactInstanceManager;
@@ -16,6 +17,10 @@ public class RNGestureHandlerEnabledRootView extends ReactRootView {
 
   public RNGestureHandlerEnabledRootView(Context context) {
     super(context);
+  }
+
+  public RNGestureHandlerEnabledRootView(Context context, AttributeSet attrs) {
+    super(context, attrs);
   }
 
   @Override
