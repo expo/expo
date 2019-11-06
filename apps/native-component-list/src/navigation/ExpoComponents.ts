@@ -31,7 +31,6 @@ const GLScreens = optionalRequire(
   () => require('../screens/GL/GLScreens')
 ) as unknown as { [key: string]: React.ComponentType };
 const Lottie = optionalRequire(() => require('../screens/LottieScreen'));
-const MaskGLScreen =  optionalRequire(() => require('../screens/MaskGLScreen'));
 const ReanimatedImagePreview = optionalRequire(() =>
   require('../screens/Reanimated/ReanimatedImagePreviewScreen')
 );
@@ -51,7 +50,6 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   DateTimePicker,
   GL,
   ...GLScreens,
-  MaskGLScreen,
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,

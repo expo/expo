@@ -22,7 +22,9 @@ interface Props {
   speed?: number;
 }
 
-export default class MaskGLScreen extends React.Component<Props> {
+export default class GLMaskScreen extends React.Component<Props> {
+  static title = 'MaskedView integration';
+
   static navigationOptions = {
     title: 'Mask GLView Example',
   };
