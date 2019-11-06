@@ -15,6 +15,7 @@ export type RecordingOptions = {
   maxDuration?: number;
   maxFileSize?: number;
   quality?: number | string;
+  mute?: boolean;
 };
 
 export type CapturedPicture = {
