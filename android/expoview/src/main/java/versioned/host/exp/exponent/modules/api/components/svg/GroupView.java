@@ -224,7 +224,9 @@ class GroupView extends RenderableView {
         if (clipPath != null) {
             if (mClipRegionPath != clipPath) {
                 mClipRegionPath = clipPath;
-                mClipRegion = getRegion(clipPath);
+                mClipBounds = new RectF();
+                clipPath.computeBounds(mClipBounds, true);
+                mClipRegion = getRegion(clipPath, mClipBounds);
             }
             if (!mClipRegion.contains(x, y)) {
                 return -1;

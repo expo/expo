@@ -133,6 +133,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     private final Map<String, VirtualView> mDefinedClipPaths = new HashMap<>();
     private final Map<String, VirtualView> mDefinedTemplates = new HashMap<>();
+    private final Map<String, VirtualView> mDefinedMarkers = new HashMap<>();
     private final Map<String, VirtualView> mDefinedMasks = new HashMap<>();
     private final Map<String, Brush> mDefinedBrushes = new HashMap<>();
     private Canvas mCanvas;
@@ -146,7 +147,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     private SVGLength mbbHeight;
     private String mAlign;
     private int mMeetOrSlice;
-    private final Matrix mInvViewBoxMatrix = new Matrix();
+    final Matrix mInvViewBoxMatrix = new Matrix();
     private boolean mInvertible = true;
     private boolean mRendered = false;
     int mTintColor = 0;
@@ -169,7 +170,7 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         }
     }
 
-    @ReactProp(name = "tintColor", customType = "Color")
+    @ReactProp(name = "tintColor")
     public void setTintColor(@Nullable Integer tintColor) {
         if (tintColor == null) {
             mTintColor = 0;
@@ -411,5 +412,13 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
 
     VirtualView getDefinedMask(String maskRef) {
         return mDefinedMasks.get(maskRef);
+    }
+
+    void defineMarker(VirtualView marker, String markerRef) {
+        mDefinedMarkers.put(markerRef, marker);
+    }
+
+    VirtualView getDefinedMarker(String markerRef) {
+        return mDefinedMarkers.get(markerRef);
     }
 }

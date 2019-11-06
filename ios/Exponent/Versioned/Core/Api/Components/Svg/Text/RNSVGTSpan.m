@@ -9,6 +9,7 @@
 #import "RNSVGText.h"
 #import "RNSVGTextPath.h"
 #import "RNSVGTextProperties.h"
+#import "RNSVGPathMeasure.h"
 #import "RNSVGFontData.h"
 
 static NSCharacterSet *RNSVGTSpan_separators = nil;
@@ -38,18 +39,14 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 @implementation RNSVGTSpan
 {
     CGFloat startOffset;
-    CGFloat _pathLength;
     RNSVGTextPath *textPath;
-    NSArray *lengths;
-    NSArray *lines;
-    NSUInteger lineCount;
-    BOOL isClosed;
     NSMutableArray *emoji;
     NSMutableArray *emojiTransform;
     CGFloat cachedAdvance;
     CTFontRef fontRef;
     CGFloat firstX;
     CGFloat firstY;
+    RNSVGPathMeasure *measure;
 }
 
 - (id)init
@@ -62,6 +59,7 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
 
     emoji = [NSMutableArray arrayWithCapacity:0];
     emojiTransform = [NSMutableArray arrayWithCapacity:0];
+    measure = [[RNSVGPathMeasure alloc]init];
 
     return self;
 }
@@ -275,6 +273,10 @@ TopAlignedLabel *label;
     CGRect textBounds = CTLineGetBoundsWithOptions(line, 0);
     CGFloat textMeasure = CGRectGetWidth(textBounds);
     cachedAdvance = textMeasure;
+
+    CFRelease(attrString);
+    CFRelease(line);
+
     return textMeasure;
 }
 
@@ -476,7 +478,7 @@ TopAlignedLabel *label;
 
     int side = 1;
     CGFloat startOfRendering = 0;
-    CGFloat endOfRendering = _pathLength;
+    CGFloat endOfRendering = measure.pathLength;
     CGFloat fontSize = [gc getFontSize];
     //bool sharpMidLine = false;
     if (hasTextPath) {
@@ -541,13 +543,13 @@ TopAlignedLabel *label;
          the path is reached.
          */
         CGFloat absoluteStartOffset = [RNSVGPropHelper fromRelative:textPath.startOffset
-                                                          relative:_pathLength
+                                                          relative:measure.pathLength
                                                           fontSize:fontSize];
         offset += absoluteStartOffset;
-        if (isClosed) {
-            CGFloat halfPathDistance = _pathLength / 2;
+        if (measure.isClosed) {
+            CGFloat halfPathDistance = measure.pathLength / 2;
             startOfRendering = absoluteStartOffset + (textAnchor == RNSVGTextAnchorMiddle ? -halfPathDistance : 0);
-            endOfRendering = startOfRendering + _pathLength;
+            endOfRendering = startOfRendering + measure.pathLength;
         }
         /*
          RNSVGTextPathSpacing spacing = textPath.getSpacing();
@@ -958,39 +960,10 @@ TopAlignedLabel *label;
                     continue;
                 }
 
-                // Investigation suggests binary search is faster at lineCount >= 16
-                // https://gist.github.com/msand/4c7993319425f9d7933be58ad9ada1a4
-                NSUInteger i = lineCount < 16 ?
-                [lengths
-                 indexOfObjectPassingTest:^(NSNumber* length, NSUInteger index, BOOL * _Nonnull stop) {
-                     BOOL contains = midPoint <= [length doubleValue];
-                     return contains;
-                 }]
-                :
-                [lengths
-                 indexOfObject:[NSNumber numberWithDouble:midPoint]
-                 inSortedRange:NSMakeRange(0, lineCount)
-                 options:NSBinarySearchingInsertionIndex
-                 usingComparator:^(NSNumber* obj1, NSNumber* obj2) {
-                     return [obj1 compare:obj2];
-                 }];
-
-                CGFloat totalLength = (CGFloat)[lengths[i] doubleValue];
-                CGFloat prevLength = i == 0 ? 0 : (CGFloat)[lengths[i - 1] doubleValue];
-
-                CGFloat length = totalLength - prevLength;
-                CGFloat percent = (midPoint - prevLength) / length;
-
-                NSArray * points = [lines objectAtIndex: i];
-                CGPoint p1 = [[points objectAtIndex: 0] CGPointValue];
-                CGPoint p2 = [[points objectAtIndex: 1] CGPointValue];
-
-                CGFloat ldx = p2.x - p1.x;
-                CGFloat ldy = p2.y - p1.y;
-                CGFloat angle = atan2(ldy, ldx);
-
-                CGFloat px = p1.x + ldx * percent;
-                CGFloat py = p1.y + ldy * percent;
+                CGFloat angle;
+                CGFloat px;
+                CGFloat py;
+                [measure getPosAndTan:&angle midPoint:midPoint x:&px y:&py];
 
                 transform = CGAffineTransformConcat(CGAffineTransformMakeTranslation(px, py), transform);
                 transform = CGAffineTransformConcat(CGAffineTransformMakeRotation(angle + r), transform);
@@ -1061,25 +1034,23 @@ TopAlignedLabel *label;
 
 - (void)setupTextPath:(CGContextRef)context
 {
-    lines = nil;
-    lengths = nil;
     textPath = nil;
     RNSVGText *parent = (RNSVGText*)[self superview];
-
+    CGPathRef path = nil;
     while (parent) {
         if ([parent class] == [RNSVGTextPath class]) {
             textPath = (RNSVGTextPath*) parent;
-            [textPath getPathLength:&_pathLength
-                          lineCount:&lineCount
-                            lengths:&lengths
-                              lines:&lines
-                           isClosed:&isClosed];
+            RNSVGNode *template = [self.svgView getDefinedTemplate:textPath.href];
+            path = [template getPath:context];
+            [measure extractPathData:path];
             break;
         } else if (![parent isKindOfClass:[RNSVGText class]]) {
             break;
         }
-
         parent = (RNSVGText*)[parent superview];
+    }
+    if (!path) {
+        [measure reset];
     }
 }
 

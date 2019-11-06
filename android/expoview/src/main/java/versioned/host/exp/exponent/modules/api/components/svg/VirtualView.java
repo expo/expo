@@ -22,6 +22,8 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.util.ArrayList;
+
 import javax.annotation.Nullable;
 
 import static versioned.host.exp.exponent.modules.api.components.svg.FontData.DEFAULT_FONT_SIZE;
@@ -65,6 +67,9 @@ abstract public class VirtualView extends ReactViewGroup {
     int mClipRule;
     private @Nullable String mClipPath;
     @Nullable String mMask;
+    @Nullable String mMarkerStart;
+    @Nullable String mMarkerMid;
+    @Nullable String mMarkerEnd;
 
     private static final int CLIP_RULE_EVENODD = 0;
     static final int CLIP_RULE_NONZERO = 1;
@@ -86,11 +91,18 @@ abstract public class VirtualView extends ReactViewGroup {
     Path mPath;
     Path mFillPath;
     Path mStrokePath;
+    Path mMarkerPath;
+    Path mClipRegionPath;
     RectF mBox;
+    RectF mFillBounds;
+    RectF mStrokeBounds;
+    RectF mMarkerBounds;
+    RectF mClipBounds;
     Region mRegion;
+    Region mMarkerRegion;
     Region mStrokeRegion;
     Region mClipRegion;
-    Path mClipRegionPath;
+    ArrayList<PathElement> elements;
 
     @Override
     public void invalidate() {
@@ -108,6 +120,7 @@ abstract public class VirtualView extends ReactViewGroup {
         canvasWidth = -1;
         fontSize = -1;
         mStrokeRegion = null;
+        mMarkerRegion = null;
         mRegion = null;
         mPath = null;
     }
@@ -202,7 +215,7 @@ abstract public class VirtualView extends ReactViewGroup {
      * drawing code should apply opacity recursively.
      *
      * @param canvas the canvas to set up
-     * @param ctm
+     * @param ctm current transformation matrix
      */
     int saveAndSetupCanvas(Canvas canvas, Matrix ctm) {
         int count = canvas.save();
@@ -238,6 +251,24 @@ abstract public class VirtualView extends ReactViewGroup {
     @ReactProp(name = "mask")
     public void setMask(String mask) {
         mMask = mask;
+        invalidate();
+    }
+
+    @ReactProp(name = "markerStart")
+    public void setMarkerStart(String markerStart) {
+        mMarkerStart = markerStart;
+        invalidate();
+    }
+
+    @ReactProp(name = "markerMid")
+    public void setMarkerMid(String markerMid) {
+        mMarkerMid = markerMid;
+        invalidate();
+    }
+
+    @ReactProp(name = "markerEnd")
+    public void setMarkerEnd(String markerEnd) {
+        mMarkerEnd = markerEnd;
         invalidate();
     }
 
@@ -302,6 +333,8 @@ abstract public class VirtualView extends ReactViewGroup {
             if (mClipNode != null) {
                 Path clipPath = mClipNode.mClipRule == CLIP_RULE_EVENODD ? mClipNode.getPath(canvas, paint) :
                         mClipNode.getPath(canvas, paint, Region.Op.UNION);
+                clipPath.transform(mClipNode.mMatrix);
+                clipPath.transform(mClipNode.mTransform);
                 switch (mClipNode.mClipRule) {
                     case CLIP_RULE_EVENODD:
                         clipPath.setFillType(Path.FillType.EVEN_ODD);
