@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Linking parse test "custom://" 1`] = `
+exports[`parse parses "custom://" 1`] = `
 Object {
   "hostname": null,
   "path": null,
@@ -9,7 +9,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "custom:///" 1`] = `
+exports[`parse parses "custom:///" 1`] = `
 Object {
   "hostname": null,
   "path": "",
@@ -18,7 +18,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "custom:///test/path?foo=bar" 1`] = `
+exports[`parse parses "custom:///test/path?foo=bar" 1`] = `
 Object {
   "hostname": null,
   "path": "test/path",
@@ -29,7 +29,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "custom://?hello=bar" 1`] = `
+exports[`parse parses "custom://?hello=bar" 1`] = `
 Object {
   "hostname": null,
   "path": null,
@@ -40,7 +40,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "exp://exp.host/@test/test/--/test/path" 1`] = `
+exports[`parse parses "exp://exp.host/@test/test/--/test/path" 1`] = `
 Object {
   "hostname": null,
   "path": "test/path",
@@ -49,7 +49,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `
+exports[`parse parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `
 Object {
   "hostname": null,
   "path": "test/path",
@@ -60,7 +60,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "https://example.com/test/path" 1`] = `
+exports[`parse parses "https://example.com/test/path" 1`] = `
 Object {
   "hostname": "example.com",
   "path": "test/path",
@@ -69,7 +69,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "https://example.com/test/path?query=param" 1`] = `
+exports[`parse parses "https://example.com/test/path?query=param" 1`] = `
 Object {
   "hostname": "example.com",
   "path": "test/path",
@@ -80,7 +80,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "https://example.com:8000/test/path" 1`] = `
+exports[`parse parses "https://example.com:8000/test/path" 1`] = `
 Object {
   "hostname": "example.com",
   "path": "test/path",
@@ -89,7 +89,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "https://example.com:8000/test/path+with+plus" 1`] = `
+exports[`parse parses "https://example.com:8000/test/path+with+plus" 1`] = `
 Object {
   "hostname": "example.com",
   "path": "with+plus",
@@ -98,7 +98,7 @@ Object {
 }
 `;
 
-exports[`Linking parse test "invalid" 1`] = `
+exports[`parse parses "invalid" 1`] = `
 Object {
   "hostname": null,
   "path": "invalid",
