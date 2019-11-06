@@ -19,6 +19,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 }
 
 const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
+const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen'));
 const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
 const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
@@ -43,6 +44,7 @@ const SharedElement = optionalRequire(() => require('../screens/SharedElementScr
 const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   AdMob,
   BarCodeScanner,
+  MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
   DateTimePicker,
