@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { AdMobRewarded } from 'expo-ads-admob';
+import { AdMobRewarded, setTestDeviceID } from 'expo-ads-admob';
 import { waitFor } from './helpers';
 
 export const name = 'AdMobRewarded';
@@ -14,7 +14,7 @@ export function test(t) {
   t.describe('AdMobRewarded', () => {
     t.describe('setTestDeviceID', () => {
       t.it('successfully sets Test Device ID for rewarded ads', () => {
-        t.expect(AdMobRewarded.setTestDeviceID('EMULATOR')).not.toBeNull();
+        t.expect(setTestDeviceID('EMULATOR')).not.toBeNull();
       });
     });
 

@@ -3878,6 +3878,8 @@ CACHE_KEYS:
       EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
     CHECKSUM: a3433ceb447dc6d9b1d821694ed8d179aed2e004
     FILES:
+      - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.h"
+      - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.m"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerView.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerView.m"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobBannerViewManager.h"
@@ -3888,6 +3890,8 @@ CACHE_KEYS:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobInterstitial.m"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobRewarded.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobRewarded.m"
+      - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobUtils.h"
+      - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobUtils.m"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsDFPBannerView.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsDFPBannerView.m"
     PROJECT_NAME: EXAdsAdMob

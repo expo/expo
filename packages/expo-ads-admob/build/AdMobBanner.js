@@ -2,6 +2,8 @@ import { requireNativeViewManager } from '@unimodules/core';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
+import { _getTestDeviceID } from './AdMob';
+let _hasWarnedAboutTestDeviceID = false;
 export default class AdMobBanner extends React.Component {
     constructor() {
         super(...arguments);
@@ -20,8 +22,12 @@ export default class AdMobBanner extends React.Component {
         if (!this.props.servePersonalizedAds) {
             additionalRequestParams.npa = '1';
         }
+        if (this.props.testDeviceID && !_hasWarnedAboutTestDeviceID) {
+            console.warn('The `testDeviceID` prop of AdMobBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.');
+            _hasWarnedAboutTestDeviceID = true;
+        }
         return (<View style={this.props.style}>
-        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} testDeviceID={this.props.testDeviceID} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}/>
+        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} testDeviceID={this.props.testDeviceID || _getTestDeviceID()} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}/>
       </View>);
     }
 }

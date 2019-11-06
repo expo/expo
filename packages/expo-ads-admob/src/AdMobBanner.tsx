@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 
+import { _getTestDeviceID } from './AdMob';
+
 type PropsType = React.ComponentProps<typeof View> & {
   /**
    * AdMob iOS library banner size constants
@@ -64,6 +66,8 @@ type StateType = {
   style: { width?: number; height?: number };
 };
 
+let _hasWarnedAboutTestDeviceID = false;
+
 export default class AdMobBanner extends React.Component<PropsType, StateType> {
   static propTypes = {
     bannerSize: PropTypes.oneOf([
@@ -108,13 +112,19 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     if (!this.props.servePersonalizedAds) {
       additionalRequestParams.npa = '1';
     }
+    if (this.props.testDeviceID && !_hasWarnedAboutTestDeviceID) {
+      console.warn(
+        'The `testDeviceID` prop of AdMobBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.'
+      );
+      _hasWarnedAboutTestDeviceID = true;
+    }
     return (
       <View style={this.props.style}>
         <ExpoBannerView
           style={this.state.style}
           adUnitID={this.props.adUnitID}
           bannerSize={this.props.bannerSize}
-          testDeviceID={this.props.testDeviceID}
+          testDeviceID={this.props.testDeviceID || _getTestDeviceID()}
           onSizeChange={this._handleSizeChange}
           additionalRequestParams={additionalRequestParams}
           onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}

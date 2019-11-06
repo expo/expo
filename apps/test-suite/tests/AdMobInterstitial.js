@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { AdMobInterstitial } from 'expo-ads-admob';
+import { AdMobInterstitial, setTestDeviceID } from 'expo-ads-admob';
 
 export const name = 'AdMobInterstitial';
 
@@ -7,15 +7,15 @@ export function test(t) {
   t.describe('AdMobInterstitial', () => {
     t.describe('setTestDeviceID', () => {
       t.it('successfully sets Test Device ID for interstitial ads', () => {
-        t.expect(AdMobInterstitial.setTestDeviceID('EMULATOR')).not.toBeNull();
+        t.expect(setTestDeviceID('EMULATOR')).not.toBeNull();
       });
     });
 
     t.describe('setAdUnitID', () => {
       t.it('successfully sets Ad Unit ID for interstitial ads', () => {
-        t
-          .expect(AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'))
-          .not.toBeNull();
+        t.expect(
+          AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712')
+        ).not.toBeNull();
       });
     });
 

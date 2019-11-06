@@ -1,4 +1,5 @@
 #import <EXAdsAdMob/EXAdsAdMobBannerView.h>
+#import <EXAdsAdMob/EXAdsAdMobUtils.h>
 #import <UMCore/UMEventEmitterService.h>
 
 @implementation EXAdsAdMobBannerView {
@@ -40,14 +41,10 @@
     _bannerView.delegate = self;
     _bannerView.adUnitID = _adUnitID;
     _bannerView.rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    GADRequest *request = [GADRequest request];
     if (_testDeviceID) {
-      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
-        request.testDevices = @[kGADSimulatorID];
-      } else {
-        request.testDevices = @[_testDeviceID];
-      }
+      [EXAdsAdMobUtils setGlobalTestDeviceIdentifier:_testDeviceID];
     }
+    GADRequest *request = [GADRequest request];
     GADExtras *extras = [[GADExtras alloc] init];
     extras.additionalParameters = _additionalRequestParams;
     [request registerAdNetworkExtras:extras];
@@ -98,6 +95,7 @@
   }
 }
 
+// TODO: remove in SDK 37
 - (void)setTestDeviceID:(NSString *)testDeviceID {
   if (![testDeviceID isEqual:_testDeviceID]) {
     _testDeviceID = testDeviceID;
