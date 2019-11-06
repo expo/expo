@@ -1745,11 +1745,6 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-4.6.0.tgz#fc0b79a226da78371158f885a2f798ff07c926be"
   integrity sha512-wz39BUpExDU1kTpLlBkDwwb0Efg+uuwixToosTSarZgpzG/CmcRvWdD786TMiE5tLDd+Mpi2xh3w4FrVM8zjoA==
 
-"@react-native-community/netinfo@~3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-3.2.1.tgz#cd073b81a4b978f7f55f1a960a0b56c462813e02"
-  integrity sha512-A2qANOnlRDVe+8kMbKMwy3/0bOlOA2+y8DyWg2Rv2KHICIfin+oxixbG0ewAOLQdLkSEyyumZXRmIVl7VI/KJg==
-
 "@react-navigation/core@^3.5.0":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-3.5.1.tgz#7a2339fca3496979305fb3a8ab88c2ca8d8c214d"
@@ -5850,6 +5845,11 @@ escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
+
+escape-string-regexp@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
 
 escodegen@^1.9.1:
   version "1.12.0"
@@ -12336,11 +12336,6 @@ react-native-branch@4.2.1:
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-4.2.1.tgz#3ed1a071c053b420d11af8aa368142b19e2d5129"
   integrity sha512-wwBCsj3VslS0zG8UAZjx+nNrWgd3CuA24r5muFDzS38oQ4S9oB0NJPafEcWcUT7TPxw/rfpdPLb+JccGvS2/Lg==
 
-react-native-branch@~3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-3.1.1.tgz#41926463a05e6e94d76e2346051f0fc374e77596"
-  integrity sha512-q3Jz2vFWnxjmRWiMFo2PqOrh9TNPrPgt4xntWUMNUmE4860D4i6esOZ/e+JIE7ym//bvki1tQgucTyntSFRrKQ==
-
 react-native-fade-in-image@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/react-native-fade-in-image/-/react-native-fade-in-image-1.5.0.tgz#efface43f9846b1d1ffd6c6894576cede710617d"
@@ -12349,16 +12344,6 @@ react-native-fade-in-image@^1.5.0:
     react-clone-referenced-element "^1.0.1"
     react-mixin "^3.0.5"
     react-timer-mixin "^0.13.3"
-
-react-native-gesture-handler@~1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-1.4.1.tgz#c38d9e57637b95e221722a79f2bafac62e3aeb21"
-  integrity sha512-Ffcs+SbEbkGaal0CClYL+v7A9y4OA5G5lW01qrzjxaqASp5C8BfnWSKuqYKE00s6bLwE5L4xnlHkG0yIxAtbrQ==
-  dependencies:
-    hammerjs "^2.0.8"
-    hoist-non-react-statics "^2.3.1"
-    invariant "^2.2.4"
-    prop-types "^15.7.2"
 
 react-native-gesture-handler@~1.5.0:
   version "1.5.0"
@@ -12389,11 +12374,6 @@ react-native-maps@0.26.1:
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.26.1.tgz#6ec316259b38d259c8974448d894bd7a23101da4"
   integrity sha512-p4VTB8YB5ZmOmDRCUpoHZkm05amZwhIo04AJMBbB9+JAR2PNNfpo0vceoWX0Mag4wnePkdzPomeWMplr/wimTg==
 
-react-native-maps@~0.25.0:
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.25.0.tgz#81bc51eb50e33811a9e1c345cc48869413ead67d"
-  integrity sha512-PFJuW1pt+HnnnN0m0OGk29RSvICFVkK/DScX6cUk0SuCSN2DAHx0y6y57lZyYXcYqU4J4usNpfxgp/ccjASDiw==
-
 "react-native-paper@github:brentvatne/react-native-paper#@brent/fix-bottom-navigation-rn-57":
   version "2.1.3"
   resolved "https://codeload.github.com/brentvatne/react-native-paper/tar.gz/c3d2a6637f2507bc0f6c0a16220aac4cacd5b6d7"
@@ -12409,20 +12389,10 @@ react-native-platform-touchable@^1.1.1:
   resolved "https://registry.yarnpkg.com/react-native-platform-touchable/-/react-native-platform-touchable-1.1.1.tgz#fde4acc65eea585d28b164d0c3716a42129a68e4"
   integrity sha1-/eSsxl7qWF0osWTQw3FqQhKaaOQ=
 
-react-native-reanimated@~1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.3.0.tgz#581cdb0bd1ff05e7304b116af712ded0c7665ede"
-  integrity sha512-KFno6D0q09kx71IDuPa4qeC1t1msALsCMuli3/EN3YDf8XoM2CG53yzhVHMFtmcW0IUCySugHgxQiuT5BzwOPA==
-
 react-native-reanimated@~1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.4.0.tgz#7f1acbf9be08492d834f512700570978052be2f9"
   integrity sha512-tO7nSNNP+iRLVbkcSS5GXyDBb7tSI02+XuRL3/S39EAr35rnvUy2JfeLUQG+fWSObJjnMVhasUDEUwlENk8IXw==
-
-react-native-safe-area-context@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-0.5.0.tgz#2185519ad6296dd7bd4ecc79864c02ca3a7f40b5"
-  integrity sha512-ukg9gO9jCdQIkYYwQf0/mp+67XiFSJH7BOxthoBbJq0x3f61Q/6U6E2v5MkcHO0vJg1Ul4/Pq77V+nR5eY/9fA==
 
 react-native-safe-area-context@0.6.0:
   version "0.6.0"
@@ -12480,10 +12450,10 @@ react-native-tab-view@^2.9.0:
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.10.0.tgz#5e249e5650502010013449ffd4e5edc18a95364b"
   integrity sha512-qgexVz5eO4yaFjdkmn/sURXgVvaBo6pZD/q1eoca96SbPVbaH3WzVhF3bRUfeTHwZkXwznFTpS3JURqIFU8vQA==
 
-react-native-view-shot@2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-2.6.0.tgz#3b23675826f67658366352c4b97b59a6aded2f43"
-  integrity sha512-yO9vWi/11m2hEJl8FrW1SMeVzFfPtMKh20MUInGqlsL0H8Ya2JGGlFfrBzx1KiFR2hFb5OdsTLYNtcVZtJ6pLQ==
+react-native-view-shot@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.0.2.tgz#daccaec5b8038a680b17533ff7e72876e68c7d0d"
+  integrity sha512-JZOkGo2jzSX2b7N6N2uDr0wQjSz+QmBtY8jzeo0XJY6bLOfaY5nmWyYxDmDRoSpKiFkGTCkyhUqNnjo6lXOtEw==
 
 react-native-web@^0.11.0, react-native-web@^0.11.4:
   version "0.11.7"
@@ -12501,11 +12471,12 @@ react-native-web@^0.11.0, react-native-web@^0.11.4:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-"react-native-webview@https://github.com/expo/react-native-webview/archive/2cd7005.tar.gz":
-  version "7.0.5"
-  resolved "https://github.com/expo/react-native-webview/archive/2cd7005.tar.gz#892d965988fafa6d142f50e4e45c0db81e8f0bc4"
+react-native-webview@7.4.3:
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-7.4.3.tgz#e00e92e17f7389d84d09f5900652501ff2665915"
+  integrity sha512-4n72B2D7n1xOQSoCSD1qk9D7JksyT4d6nk8QG9guZKZn3KXQL5EejwE2yhh1TxZRQpr+OD3a96rb+rA/UEnvrQ==
   dependencies:
-    escape-string-regexp "1.0.5"
+    escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
 react-navigation-header-buttons@^1.2.1:
