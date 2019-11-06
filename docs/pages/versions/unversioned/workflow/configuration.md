@@ -121,13 +121,33 @@ Any extra fields you want to pass to your experience. Values are accessible via 
 
 Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
 
-> **ExpoKit**: To change this field, edit `Info.plist`.
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAutoInitEnabled"`
+
+Whether the Facebook SDK should be initialized automatically. The default in Expo (Client and in standalone apps) is `false`.
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAutoLogAppEventsEnabled"`
+
+Whether the Facebook SDK log app events automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.)
+
+> Note that Facebook SDK must be initialized for app events to work. You may autoinitialize Facebook SDK by setting `facebookAutoInitEnabled` to `true`.
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAdvertiserIDCollectionEnabled"`
+
+Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
 ### `"facebookDisplayName"`
 
 Used for native Facebook login.
 
-> **ExpoKit**: To change this field, edit `Info.plist`.
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
 ### `"facebookScheme"`
 
@@ -430,6 +450,14 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "usesAppleSignIn": BOOLEAN,
+
+    /*
+      A boolean value indicating if the app may access the notes stored in contacts.
+      See Contacts docs for details.
+
+      ExpoKit: use Xcode to set this.
+    */
+    "accessesContactNotes": BOOLEAN,
 
     /*
       Extra module configuration to be added to your app's native Info.plist.

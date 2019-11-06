@@ -16,6 +16,7 @@
 #import "EXScopedLocalAuthentication.h"
 #import "EXScopedBranch.h"
 #import "EXScopedErrorRecoveryModule.h"
+#import "EXScopedFacebook.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXModuleRegistryBinding.h"
@@ -34,6 +35,14 @@
 #if __has_include(<EXConstants/EXConstantsService.h>)
   EXConstantsBinding *constantsBinding = [[EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
   [moduleRegistry registerInternalModule:constantsBinding];
+#endif
+
+#if __has_include(<EXFacebook/EXFacebook.h>)
+  // only override in Expo client
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithExperienceId:experienceId andParams:params];
+    [moduleRegistry registerExportedModule:scopedFacebook];
+  }
 #endif
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)

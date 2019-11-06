@@ -128,8 +128,8 @@
 
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
-    [self clip:context];
     CGContextSaveGState(context);
+    [self clip:context];
     [self setupGlyphContext:context];
     [self pushGlyphContext];
     [super renderGroupTo:context rect:rect];

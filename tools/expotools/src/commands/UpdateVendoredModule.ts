@@ -134,7 +134,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     steps: [
       {
         sourceIosPath: 'ios',
-        targetIosPath: 'Api',
+        targetIosPath: 'Api/ViewShot',
         sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
         targetAndroidPath: 'modules/api/viewshot',
         sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
@@ -197,6 +197,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetIosPath: 'Api/Components/GoogleMaps',
       },
       {
+        recursive: true,
         sourceIosPath: 'lib/ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
         sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
@@ -222,7 +223,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'react-native-webview': {
-    repoUrl: 'https://github.com/expo/react-native-webview.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
     installableInManagedApps: true,
     steps: [
       {

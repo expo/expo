@@ -47,6 +47,24 @@ export function test(t) {
         Speech.stop();
       });
 
+      t.it("speaks with voice and doesn't throw", async () => {
+        const [voice] = await Speech.getAvailableVoicesAsync();
+        t.expect(voice).toBeDefined();
+
+        const onError = t.jasmine.createSpy('onError');
+
+        await new Promise((resolve, reject) => {
+          try {
+            Speech.speak(shortTextToSpeak, { onError, onDone: resolve, voice: voice.identifier });
+          } catch (error) {
+            reject(error);
+          }
+        });
+
+        t.expect(onError).not.toHaveBeenCalled();
+        Speech.stop();
+      });
+
       if (Platform.OS !== 'ios') {
         t.it("doesn't call onError if not needed", async () => {
           const onError = t.jasmine.createSpy('onError');
@@ -113,6 +131,16 @@ export function test(t) {
         t.expect(isSpeaking).toBe(true);
         Speech.stop();
       });*/
+    });
+
+    t.describe('Speech.getAvailableVoicesAsync()', () => {
+      t.it('has voice with language tag', async () => {
+        const voices = await Speech.getAvailableVoicesAsync();
+
+        t.expect(voices.length).toBeGreaterThan(0);
+
+        t.expect(voices.map(voice => voice.language)).toContain('en-US');
+      });
     });
   });
 }

@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
+import URL from 'url-parse';
 import Linking from './LinkingModule';
 const { manifest } = Constants;
 const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
@@ -84,40 +85,45 @@ function parse(url) {
     if (!url) {
         throw new Error('parse cannot be called with a null value');
     }
-    // iOS client sometimes strips out the port from the initial URL
-    // even when it's included in the hostUri.
-    // This function should be able to handle both cases, so we strip off the port
-    // both here and from the hostUri.
-    let decodedUrl = _removePort(decodeURI(url));
-    let path;
-    let queryParams = {};
-    let queryStringMatchResult = decodedUrl.match(/(.*)\?(.+)/);
-    if (queryStringMatchResult) {
-        decodedUrl = queryStringMatchResult[1];
-        queryParams = qs.parse(queryStringMatchResult[2]);
-    }
-    // strip off the hostUri from the host and path
+    const parsed = URL(url, /* parseQueryString */ true);
+    let queryParams = parsed.query;
     let hostUri = HOST_URI || '';
     let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
-    if (hostUriStripped && decodedUrl.indexOf(hostUriStripped) > -1) {
-        path = decodedUrl.substr(decodedUrl.indexOf(hostUriStripped) + hostUriStripped.length);
+    let path = parsed.pathname || null;
+    let hostname = parsed.hostname || null;
+    let scheme = parsed.protocol || null;
+    if (scheme) {
+        // Remove colon at end
+        scheme = scheme.substring(0, scheme.length - 1);
     }
-    else {
-        path = _removeScheme(decodedUrl);
+    if (path) {
+        path = _removeLeadingSlash(path);
+        let expoPrefix = null;
+        if (hostUriStripped) {
+            const parts = hostUriStripped.split('/');
+            expoPrefix = `${parts.slice(1).join('/')}/--/`;
+        }
+        if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
+            path = path.substring(expoPrefix.length);
+            hostname = null;
+        }
+        else if (path.indexOf('+') > -1) {
+            path = path.substring(path.indexOf('+') + 1);
+        }
     }
-    path = _removeLeadingSlash(path);
-    if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && path.startsWith('--/')) {
-        path = path.substr(3);
-    }
-    else if (path.indexOf('+') > -1) {
-        path = path.substr(path.indexOf('+') + 1);
-    }
-    return { path, queryParams };
+    return {
+        hostname,
+        path,
+        queryParams,
+        scheme,
+    };
 }
 async function parseInitialURLAsync() {
     const initialUrl = await Linking.getInitialURL();
     if (!initialUrl) {
         return {
+            scheme: null,
+            hostname: null,
             path: null,
             queryParams: null,
         };

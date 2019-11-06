@@ -1,6 +1,8 @@
-export type QueryParams = { [key: string]: string };
+export type QueryParams = { [key: string]: string | undefined };
 
 export type ParsedURL = {
+  scheme: string | null;
+  hostname: string | null;
   path: string | null;
   queryParams: QueryParams | null;
 };

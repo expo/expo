@@ -2782,7 +2782,7 @@ CACHE_KEYS:
   ABI35_0_0EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       ABI35_0_0EXFacebook: 25b454f484c184abc64852f21448098e
-    CHECKSUM: 52dbeb10a9345696cfc5e37dc88ec332d1d44a3f
+    CHECKSUM: 7c98f8a027e52a58bd9e834bf0f701b394063e99
     FILES:
       - "../versioned-react-native/ABI35_0_0/EXFacebook/ABI35_0_0EXFacebook/ABI35_0_0EXFacebook.h"
       - "../versioned-react-native/ABI35_0_0/EXFacebook/ABI35_0_0EXFacebook/ABI35_0_0EXFacebook.m"
@@ -3908,8 +3908,6 @@ CACHE_KEYS:
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXBannerView.m"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXBannerViewManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXBannerViewManager.m"
-      - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXFacebookAdHelper.h"
-      - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXFacebookAdHelper.m"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXInterstitialAdManager.h"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXInterstitialAdManager.m"
       - "../../packages/expo-ads-facebook/ios/EXAdsFacebook/EXNativeAdManager.h"
@@ -4065,7 +4063,7 @@ CACHE_KEYS:
   EXBranch:
     BUILD_SETTINGS_CHECKSUM:
       EXBranch: 782d411f7fbc655e2ece800c76a55292
-    CHECKSUM: 208240bc7b68bd1a5ec5684c94bb299c030b6e71
+    CHECKSUM: 582656658e6245f6799fb3797de1403b7386b6ea
     FILES:
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.h"
       - "../../packages/expo-branch/ios/EXBranch/EXBranchManager.m"
@@ -4209,7 +4207,7 @@ CACHE_KEYS:
   EXFacebook:
     BUILD_SETTINGS_CHECKSUM:
       EXFacebook: 6b3825dfac50d3a0fea3f27d8ecdf605
-    CHECKSUM: 165670d591c87e48aa31faf73eedab5eaae5c7ef
+    CHECKSUM: b8f3513f1c8593ce475d244380088a0985900e40
     FILES:
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.h"
       - "../../packages/expo-facebook/ios/EXFacebook/EXFacebook.m"
@@ -4685,20 +4683,20 @@ CACHE_KEYS:
   FBSDKCoreKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKCoreKit: 60d69dde3e50d94f5f39949c424b03c5
-    CHECKSUM: d6655a343868d4bb5c29a60859bab07c3be14a0b
+    CHECKSUM: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
     PROJECT_NAME: FBSDKCoreKit
     SPECS:
-      - FBSDKCoreKit (5.6.0)
-      - FBSDKCoreKit/Basics (5.6.0)
-      - FBSDKCoreKit/Core (5.6.0)
+      - FBSDKCoreKit (5.8.0)
+      - FBSDKCoreKit/Basics (5.8.0)
+      - FBSDKCoreKit/Core (5.8.0)
   FBSDKLoginKit:
     BUILD_SETTINGS_CHECKSUM:
       FBSDKLoginKit: 0df82783c4955cafdce54ee3f9243823
-    CHECKSUM: c5a623de88a6b0cda35b35582921f6cec2efcc36
+    CHECKSUM: 1b0cf04df0370b37404213157b060d6666ede814
     PROJECT_NAME: FBSDKLoginKit
     SPECS:
-      - FBSDKLoginKit (5.6.0)
-      - FBSDKLoginKit/Login (5.6.0)
+      - FBSDKLoginKit (5.8.0)
+      - FBSDKLoginKit/Login (5.8.0)
   Firebase:
     BUILD_SETTINGS_CHECKSUM:
       Firebase: b69d174309b2171c3a652f5c16389725
@@ -4830,12 +4828,12 @@ CACHE_KEYS:
   GoogleMaps:
     BUILD_SETTINGS_CHECKSUM:
       GoogleMaps: 42a96a2d50272809286aa8f523d12d1a
-    CHECKSUM: 67f4a604f80dd6a22d09c2a507a3a395b9f23060
+    CHECKSUM: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
     PROJECT_NAME: GoogleMaps
     SPECS:
-      - GoogleMaps (3.4.0)
-      - GoogleMaps/Base (3.4.0)
-      - GoogleMaps/Maps (3.4.0)
+      - GoogleMaps (3.6.0)
+      - GoogleMaps/Base (3.6.0)
+      - GoogleMaps/Maps (3.6.0)
   GoogleMobileVision:
     BUILD_SETTINGS_CHECKSUM:
       GoogleMobileVision: ee531036155757f3e475f0009d8d4377

@@ -129,6 +129,15 @@ static dispatch_queue_t serialQueue;
   return hashedUserDataString;
 }
 
++ (NSString *)getHashedDataForType:(FBSDKAppEventUserDataType)type
+{
+  __block NSString *hashedData;
+  dispatch_sync(serialQueue, ^{
+    hashedData = [hashedUserData objectForKey:type];
+  });
+  return hashedData;
+}
+
 + (NSString *)stringByHashedData:(id)hashedData
 {
   NSError *error;

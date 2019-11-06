@@ -413,70 +413,57 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         }
         LinkedHashMap<String, DevOptionHandler> options = new LinkedHashMap<>();
         /* register standard options */
-        options.put(mApplicationContext.getString(R.string.catalyst_reload), new DevOptionHandler() {
+        options.put(mApplicationContext.getString(R.string.reactandroid_catalyst_reload), new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
                 if (!mDevSettings.isJSDevModeEnabled() && mDevSettings.isHotModuleReplacementEnabled()) {
-                    Toast.makeText(mApplicationContext, mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_disable), Toast.LENGTH_LONG).show();
+                    Toast.makeText(mApplicationContext, mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_disable), Toast.LENGTH_LONG).show();
                     mDevSettings.setHotModuleReplacementEnabled(false);
                 }
                 handleReloadJS();
             }
         });
-        options.put(mDevSettings.isNuclideJSDebugEnabled() ? mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.catalyst_debug_chrome_stop) : mApplicationContext.getString(R.string.catalyst_debug_chrome) : mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.catalyst_debug_stop) : mApplicationContext.getString(R.string.catalyst_debug), new DevOptionHandler() {
 
-            @Override
-            public void onOptionSelected() {
-                mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
-                handleReloadJS();
-            }
-        });
-        if (mDevSettings.isNuclideJSDebugEnabled()) {
-            options.put(mApplicationContext.getString(R.string.catalyst_debug_nuclide), new DevOptionHandler() {
+//        if (mDevSettings.isNuclideJSDebugEnabled()) {
+//            options.put(mApplicationContext.getString(R.string.reactandroid_catalyst_debug_nuclide), new DevOptionHandler() {
+//
+//                @Override
+//                public void onOptionSelected() {
+//                    mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
+//                }
+//            });
+//        }
 
-                @Override
-                public void onOptionSelected() {
-                    mDevServerHelper.attachDebugger(mApplicationContext, "ReactNative");
-                }
-            });
-        }
-        options.put(mApplicationContext.getString(R.string.catalyst_change_bundle_location), new DevOptionHandler() {
+        // NOTE(brentvatne): This option does not make sense for Expo
+//        options.put(mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location), new DevOptionHandler() {
+//
+//            @Override
+//            public void onOptionSelected() {
+//                Activity context = mReactInstanceManagerHelper.getCurrentActivity();
+//                if (context == null || context.isFinishing()) {
+//                    FLog.e(ReactConstants.TAG, "Unable to launch change bundle location because react activity is not available");
+//                    return;
+//                }
+//                final EditText input = new EditText(context);
+//                input.setHint("localhost:8081");
+//                AlertDialog bundleLocationDialog = new AlertDialog.Builder(context).setTitle(mApplicationContext.getString(R.string.reactandroid_catalyst_change_bundle_location)).setView(input).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String host = input.getText().toString();
+//                        mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
+//                        handleReloadJS();
+//                    }
+//                }).create();
+//                bundleLocationDialog.show();
+//            }
+//        });
 
-            @Override
-            public void onOptionSelected() {
-                Activity context = mReactInstanceManagerHelper.getCurrentActivity();
-                if (context == null || context.isFinishing()) {
-                    FLog.e(ReactConstants.TAG, "Unable to launch change bundle location because react activity is not available");
-                    return;
-                }
-                final EditText input = new EditText(context);
-                input.setHint("localhost:8081");
-                AlertDialog bundleLocationDialog = new AlertDialog.Builder(context).setTitle(mApplicationContext.getString(R.string.catalyst_change_bundle_location)).setView(input).setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String host = input.getText().toString();
-                        mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
-                        handleReloadJS();
-                    }
-                }).create();
-                bundleLocationDialog.show();
-            }
-        });
-        options.put(// NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
-        mApplicationContext.getString(R.string.catalyst_inspector), new DevOptionHandler() {
-
-            @Override
-            public void onOptionSelected() {
-                mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
-                mReactInstanceManagerHelper.toggleElementInspector();
-            }
-        });
         // "Live reload" which refreshes on every edit was removed in favor of "Fast Refresh".
         // While native code for "Live reload" is still there, please don't add the option back.
         // See D15958697 for more context.
-        options.put(mDevSettings.isHotModuleReplacementEnabled() ? mApplicationContext.getString(R.string.catalyst_hot_reloading_stop) : mApplicationContext.getString(R.string.catalyst_hot_reloading), new DevOptionHandler() {
+        options.put(mDevSettings.isHotModuleReplacementEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading), new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
@@ -489,21 +476,34 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                         mCurrentContext.getJSModule(HMRClient.class).disable();
                     }
                 }
-                if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
-                    Toast.makeText(mApplicationContext, mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable), Toast.LENGTH_LONG).show();
-                    mDevSettings.setJSDevModeEnabled(true);
-                    handleReloadJS();
-                }
+//                if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
+//                    Toast.makeText(mApplicationContext, mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_enable), Toast.LENGTH_LONG).show();
+//                    mDevSettings.setJSDevModeEnabled(true);
+//                    handleReloadJS();
+//                }
             }
         });
-        options.put(mIsSamplingProfilerEnabled ? mApplicationContext.getString(R.string.catalyst_sample_profiler_disable) : mApplicationContext.getString(R.string.catalyst_sample_profiler_enable), new DevOptionHandler() {
 
-            @Override
-            public void onOptionSelected() {
-                toggleJSSamplingProfiler();
-            }
-        });
-        options.put(mDevSettings.isFpsDebugEnabled() ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop) : mApplicationContext.getString(R.string.catalyst_perf_monitor), new DevOptionHandler() {
+
+      options.put(mDevSettings.isNuclideJSDebugEnabled() ? mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_debug_chrome_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_debug_chrome) : mDevSettings.isRemoteJSDebugEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_debug_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_debug), new DevOptionHandler() {
+
+        @Override
+        public void onOptionSelected() {
+          mDevSettings.setRemoteJSDebugEnabled(!mDevSettings.isRemoteJSDebugEnabled());
+          handleReloadJS();
+        }
+      });
+
+
+
+//        options.put(mIsSamplingProfilerEnabled ? mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_disable) : mApplicationContext.getString(R.string.reactandroid_catalyst_sample_profiler_enable), new DevOptionHandler() {
+//
+//            @Override
+//            public void onOptionSelected() {
+//                toggleJSSamplingProfiler();
+//            }
+//        });
+        options.put(mDevSettings.isFpsDebugEnabled() ? mApplicationContext.getString(R.string.reactandroid_catalyst_perf_monitor_stop) : mApplicationContext.getString(R.string.reactandroid_catalyst_perf_monitor), new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
@@ -519,15 +519,28 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
             }
         });
-        options.put(mApplicationContext.getString(R.string.catalyst_settings), new DevOptionHandler() {
+
+      options.put(// NOTE: `isElementInspectorEnabled` is not guaranteed to be accurate.
+          mApplicationContext.getString(R.string.reactandroid_catalyst_inspector), new DevOptionHandler() {
 
             @Override
             public void onOptionSelected() {
-                Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mApplicationContext.startActivity(intent);
+              mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
+              mReactInstanceManagerHelper.toggleElementInspector();
             }
-        });
+          });
+
+
+//        options.put(mApplicationContext.getString(R.string.reactandroid_catalyst_settings), new DevOptionHandler() {
+//
+//            @Override
+//            public void onOptionSelected() {
+//                Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                mApplicationContext.startActivity(intent);
+//            }
+//        });
+
         if (mCustomDevOptions.size() > 0) {
             options.putAll(mCustomDevOptions);
         }
@@ -877,7 +890,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                 mDevLoadingViewController.hide();
                 mDevLoadingViewVisible = false;
                 FLog.e(ReactConstants.TAG, "Failed to connect to debugger!", cause);
-                future.setException(new IOException(mApplicationContext.getString(R.string.catalyst_debug_error), cause));
+                future.setException(new IOException(mApplicationContext.getString(R.string.reactandroid_catalyst_debug_error), cause));
             }
         };
     }
@@ -937,7 +950,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                             DebugServerException debugServerException = (DebugServerException) cause;
                             showNewJavaError(debugServerException.getMessage(), cause);
                         } else {
-                            showNewJavaError(mApplicationContext.getString(R.string.catalyst_reload_error), cause);
+                            showNewJavaError(mApplicationContext.getString(R.string.reactandroid_catalyst_reload_error), cause);
                         }
                     }
                 });

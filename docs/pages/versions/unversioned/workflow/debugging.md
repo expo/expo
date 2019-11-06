@@ -33,7 +33,7 @@ This menu gives you access to several functions which are useful for debugging. 
 
 - iOS Device: Shake the device a little bit.
 - iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
-- Android Device: Shake the device vertically a little bit.
+- Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
 - Android Emulator: Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
@@ -65,19 +65,16 @@ The React Native Debugger includes a lot of the tools listed later in this page,
 
 We'll give a quick look at it here, but check out their [documentation](https://github.com/jhen0409/react-native-debugger#documentation) for a more in-depth look.
 
-You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on a mac just use:
+You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on a mac you can run:
 
 ```sh
 brew cask install react-native-debugger
 ```
 
-To start up your project and start `react-native-debugger` at the same time, navigate to your project's root directory and run
+### Startup
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: `Command+T` on macOS, `Ctrl+T` on Linux/Windows) to `19001`. After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
-```sh
-REACT_DEBUGGER="unset ELECTRON_RUN_AS_NODE && open -g 'rndebugger://set-debugger-loc?port=19001' ||" expo start
-```
-
-This automatically starts your app in "Remote Debugging" mode, and will launch the React Native Debugger console. In this console, you can see the Element tree, the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
+In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 
 If you right-click anywhere in the React Native Debugger, you'll get some handy short-cuts to reload your JS, enable/disable the element inspector, network inspector, and to log and clear your `AsyncStorage` content.
 
@@ -112,9 +109,9 @@ React DevTools is a great way to get a look at each of your components' props an
 npm install -g react-devtools@^3
 ```
 
-(if you don't want to install it globally, you can just run `npm install --dev react-devtools@^3` to install it as a project dependency).
+(if you don't want to install it globally, run `npm install --dev react-devtools@^3` to install it as a project dependency).
 
-Then, after running `expo start` in your project's root directory, in a separate terminal tab run `react-devtools`. This will open up the React Devtools console (for it to connect, just refresh the project via the Developer Menu). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
+After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Client). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
 
 <Video file="debugging/react-devtools.mp4" />
 

@@ -38,9 +38,6 @@ ABI33_0_0UM_EXPORT_METHOD_AS(showAd,
     reject(@"E_BACKGROUNDED", @"`showAd` can be called only when experience is running in foreground", nil);
     return;
   }
-  if (![ABI33_0_0EXFacebookAdHelper facebookAppIdFromNSBundle]) {
-    ABI33_0_0UMLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
-  }
   
   _resolve = resolve;
   _reject = reject;
