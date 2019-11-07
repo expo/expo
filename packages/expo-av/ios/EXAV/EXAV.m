@@ -755,6 +755,10 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
   }
+  if (!_allowsAudioRecording) {
+    reject(@"E_AUDIO_AUDIOMODE", nil, UMErrorWithMessage(@"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync"));
+    return;
+  }
 
   [self _setNewAudioRecorderFilenameAndSettings:options];
   NSError *error = [self _createNewAudioRecorder];
@@ -787,7 +791,7 @@ UM_EXPORT_METHOD_AS(startAudioRecording,
   }
   if ([self _checkAudioRecorderExistsOrReject:reject]) {
     if (!_allowsAudioRecording) {
-      reject(@"E_AUDIO_AUDIOMODE", nil, UMErrorWithMessage(@"Recording not allowed on iOS."));
+      reject(@"E_AUDIO_AUDIOMODE", nil, UMErrorWithMessage(@"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync"));
     } else if (!_audioRecorder.recording) {
       _audioRecorderShouldBeginRecording = true;
       NSError *error = [self promoteAudioSessionIfNecessary];
