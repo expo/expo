@@ -21,16 +21,6 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-font
 ```
 
-### Configure for JavaScript
-
-We're planning on handling this automatically in the future, but for now you'll need to set `Font.processFontFamily` as a preprocessor for `StyleSheet`. Add the following code to the top of your `App.js`:
-
-```js
-import * as Font from 'expo-font';
-import { StyleSheet } from 'react-native';
-StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
-```
-
 ### Configure for iOS
 
 Run `pod install` in the ios directory after installing the npm package.
