@@ -294,6 +294,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       }
     ],
   },
+  'react-native-viewpager': {
+    repoUrl: 'https://github.com/react-native-community/react-native-viewpager',
+    packageName: '@react-native-community/viewpager',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/ViewPager',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/viewpager',
+        targetAndroidPath: 'modules/api/components/viewpager',
+        sourceAndroidPackage: 'com.reactnativecommunity.viewpager',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.viewpager',
+      }
+    ],
+  },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
     packageName: 'react-native-shared-element',
