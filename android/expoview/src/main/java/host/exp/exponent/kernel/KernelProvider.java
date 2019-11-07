@@ -21,8 +21,6 @@ public class KernelProvider {
     sFactory = factory;
   }
 
-
-
   public static KernelInterface getInstance() {
     if (sInstance == null) {
       sInstance = sFactory.create();
