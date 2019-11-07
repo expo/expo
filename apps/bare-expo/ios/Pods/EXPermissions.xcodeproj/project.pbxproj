@@ -7,30 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		17340A54A9B157ABB08CB0433E483DB3 /* EXCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = FBCFE85B7EAE3FD62DC98180D7282F35 /* EXCameraRollRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1BBC72D8593D2E37AFAA8E62BAA130FE /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC8FEF221543306DD2830BB37075375 /* EXLocationRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		06B3B055E72E5FA652C8F277FEA6029E /* EXCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = FBCFE85B7EAE3FD62DC98180D7282F35 /* EXCameraRollRequester.m */; };
 		1DF401A375780777E89480D0CFC4377D /* EXRemindersRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E0C9B8EC6E41A5608B53DD3C25F07DC /* EXRemindersRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		21DD9A35AC680F3CB21D15F45437A043 /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = CE02726B3A50597F5718681561232A4B /* EXRemoteNotificationRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		289AD92F0DC980923D23A211880FE997 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC4FF9CF01668940983638895E29AD7 /* EXPermissions-dummy.m */; };
+		2D24955AFD11AC96EC6F62E47A4BDE2F /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC8FEF221543306DD2830BB37075375 /* EXLocationRequester.m */; };
 		2E09EB263856F01AC7C6D57F409297F0 /* EXCalendarRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD0703977EB61B3AD647E89737CE155 /* EXCalendarRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		343AC9CAF2934C53F19122AC50A5D23F /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = E4269984132EC09ACDA0FA03D8327C5E /* EXPermissions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		37470F45E5BD7DDCCF8FCA4FCDC7A7AF /* EXRemindersRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 362BDF8C0DBE2AEA0FD51037293B67E5 /* EXRemindersRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		503D408353FD21DB9853293829042942 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC4FF9CF01668940983638895E29AD7 /* EXPermissions-dummy.m */; };
+		37225E2335C1790AE8CB49C452D3864E /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E55C0EFB4E2FF4EC44D389104D721A8 /* EXContactsRequester.m */; };
+		3EFE9D6B7908D54933CBC261CA6CC90B /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C0B23D3BCB920CBF0C7C2BDE72C963D /* EXAudioRecordingPermissionRequester.m */; };
+		55E725C6AC804E53C22B4204C543FA76 /* EXSystemBrightnessRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2055FCC860916172D325B527D2837C47 /* EXSystemBrightnessRequester.m */; };
+		59FEEF282269D05D529369D4B0DF6DEA /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = E4269984132EC09ACDA0FA03D8327C5E /* EXPermissions.m */; };
 		5CB02654960758ECEFCEE0D129569BAF /* EXLocationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = BB90A6F628C769A04999758FFDF81CBF /* EXLocationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8302F196D3EA55766B0B2C5CBE60DFD3 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 9657271B34D4B7F60AC8E766DD09DCFA /* EXCameraPermissionRequester.m */; };
 		83F317DA8C5F14D4E5FD50B8DA3F9042 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = DA1C5AA9A8C7F47E52087248FDA8EA53 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8B480763B36D14852205E950FEF399A1 /* EXUserNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 606552BA66ACBE586195B19F95F304D9 /* EXUserNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8DFD384BA128B0C3AD4419E474F18ABB /* EXSystemBrightnessRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = EF1708633737E08D26E9B22BE4D276DF /* EXSystemBrightnessRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9918C6437B8E407A9ED7DD9A63769FF7 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 976B16EDEFE1EA87BD95E3E1A3E88C9F /* EXReactNativeUserNotificationCenterProxy.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9A09746CEA7F8F9F1AC72EE2E2050FB3 /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = A82F3E53C071DB68223EE9C5DAC505D8 /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9F7B63CACD12A2C97E5094C47D6DD6DB /* EXAudioRecordingPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 81682034A02571C443AA832A85D498DA /* EXAudioRecordingPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A20593B5D571C2978D9551621ED227F5 /* EXRemoteNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E7000C01BF750D4BFC1F24FCF555CE3 /* EXRemoteNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A8E5DCF2F284BC061E5B4E76C02DC468 /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C0B23D3BCB920CBF0C7C2BDE72C963D /* EXAudioRecordingPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		AC661BD2A9FA1E3C41FDA944947D63DF /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 9657271B34D4B7F60AC8E766DD09DCFA /* EXCameraPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		B0FE32A592F3E86BA8A442F807D7BE4C /* EXSystemBrightnessRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2055FCC860916172D325B527D2837C47 /* EXSystemBrightnessRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BD2A18828759B2824DA3CA2E9A588D87 /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AF2749CFDDAA9B5AE5CEAB840CD59B1 /* EXCalendarRequester.m */; };
+		C0BA279ADE65BF8F4576557E5A218490 /* EXRemindersRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 362BDF8C0DBE2AEA0FD51037293B67E5 /* EXRemindersRequester.m */; };
 		C7BA7D111B7100FA89AFA908F378D330 /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = DB40333E822461CA504C40D731A482F3 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CD3C58468AAAA19438071703F19AB0BE /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = CE02726B3A50597F5718681561232A4B /* EXRemoteNotificationRequester.m */; };
+		D11D5D51BF0D85E02CCBA89400671166 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 976B16EDEFE1EA87BD95E3E1A3E88C9F /* EXReactNativeUserNotificationCenterProxy.m */; };
 		D2BBEDDFC4BCDBA245A88607634B8A2E /* EXContactsRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B914D055D8CBD8F72E5A1EF6ED4027C /* EXContactsRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DAC6BE216F64C49FC8EB3FDF8250E3CA /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AF2749CFDDAA9B5AE5CEAB840CD59B1 /* EXCalendarRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E63B22A4F5F7435757958361FA0FF8B3 /* EXUserNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 061AB586F46D6EF6A1B2EBB30A88754C /* EXUserNotificationRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F8CE3CA8A28DF820254F496E9128AF2A /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E55C0EFB4E2FF4EC44D389104D721A8 /* EXContactsRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		E222ACFC1FF757D3DFDD9FE98E2C814F /* EXUserNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 061AB586F46D6EF6A1B2EBB30A88754C /* EXUserNotificationRequester.m */; };
 		FD150C6EEF7883C56149D43A8E783360 /* EXCameraRollRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EF2B9008DF81B1BA73F06EE3076DC7A /* EXCameraRollRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -213,7 +213,7 @@
 			buildConfigurationList = E63A2BBBDA228AB5130B1514F562D08C /* Build configuration list for PBXNativeTarget "EXPermissions" */;
 			buildPhases = (
 				B17FE3A295D1665969393331C5B7FE20 /* Headers */,
-				61E516922F0E0B0346B25A7DB01ECFA3 /* Sources */,
+				FA6A4874FC55C97ED36D69C13DC2B752 /* Sources */,
 				2F9D1F7DA9298AC772F26245582E1880 /* Frameworks */,
 			);
 			buildRules = (
@@ -262,23 +262,23 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		61E516922F0E0B0346B25A7DB01ECFA3 /* Sources */ = {
+		FA6A4874FC55C97ED36D69C13DC2B752 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A8E5DCF2F284BC061E5B4E76C02DC468 /* EXAudioRecordingPermissionRequester.m in Sources */,
-				DAC6BE216F64C49FC8EB3FDF8250E3CA /* EXCalendarRequester.m in Sources */,
-				AC661BD2A9FA1E3C41FDA944947D63DF /* EXCameraPermissionRequester.m in Sources */,
-				17340A54A9B157ABB08CB0433E483DB3 /* EXCameraRollRequester.m in Sources */,
-				F8CE3CA8A28DF820254F496E9128AF2A /* EXContactsRequester.m in Sources */,
-				1BBC72D8593D2E37AFAA8E62BAA130FE /* EXLocationRequester.m in Sources */,
-				503D408353FD21DB9853293829042942 /* EXPermissions-dummy.m in Sources */,
-				343AC9CAF2934C53F19122AC50A5D23F /* EXPermissions.m in Sources */,
-				9918C6437B8E407A9ED7DD9A63769FF7 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
-				37470F45E5BD7DDCCF8FCA4FCDC7A7AF /* EXRemindersRequester.m in Sources */,
-				21DD9A35AC680F3CB21D15F45437A043 /* EXRemoteNotificationRequester.m in Sources */,
-				B0FE32A592F3E86BA8A442F807D7BE4C /* EXSystemBrightnessRequester.m in Sources */,
-				E63B22A4F5F7435757958361FA0FF8B3 /* EXUserNotificationRequester.m in Sources */,
+				3EFE9D6B7908D54933CBC261CA6CC90B /* EXAudioRecordingPermissionRequester.m in Sources */,
+				BD2A18828759B2824DA3CA2E9A588D87 /* EXCalendarRequester.m in Sources */,
+				8302F196D3EA55766B0B2C5CBE60DFD3 /* EXCameraPermissionRequester.m in Sources */,
+				06B3B055E72E5FA652C8F277FEA6029E /* EXCameraRollRequester.m in Sources */,
+				37225E2335C1790AE8CB49C452D3864E /* EXContactsRequester.m in Sources */,
+				2D24955AFD11AC96EC6F62E47A4BDE2F /* EXLocationRequester.m in Sources */,
+				289AD92F0DC980923D23A211880FE997 /* EXPermissions-dummy.m in Sources */,
+				59FEEF282269D05D529369D4B0DF6DEA /* EXPermissions.m in Sources */,
+				D11D5D51BF0D85E02CCBA89400671166 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
+				C0BA279ADE65BF8F4576557E5A218490 /* EXRemindersRequester.m in Sources */,
+				CD3C58468AAAA19438071703F19AB0BE /* EXRemoteNotificationRequester.m in Sources */,
+				55E725C6AC804E53C22B4204C543FA76 /* EXSystemBrightnessRequester.m in Sources */,
+				E222ACFC1FF757D3DFDD9FE98E2C814F /* EXUserNotificationRequester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

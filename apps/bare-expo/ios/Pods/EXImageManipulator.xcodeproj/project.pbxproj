@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A8F8EE5C8244D2AF6B69A0EB95C29650 /* EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 322709F867ACA6C636E8C6241B0B0BD9 /* EXImageManipulatorModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		899CF8E043C063CBD826287A8699760F /* EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 322709F867ACA6C636E8C6241B0B0BD9 /* EXImageManipulatorModule.m */; };
 		B8887956EC7B1C1FF170B37F14E65932 /* EXImageManipulatorModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E381BD4A6EF21A1C1C7E766136114CBF /* EXImageManipulatorModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DB2A1A0054859A8D322300D1499BCA27 /* EXImageManipulator-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B1B5F638F469E6409894EEB2A0FC369 /* EXImageManipulator-dummy.m */; };
+		D64405A24E00BCE8A96A3C279927E699 /* EXImageManipulator-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B1B5F638F469E6409894EEB2A0FC369 /* EXImageManipulator-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,7 +145,7 @@
 			buildConfigurationList = 2F4CBBF731762860365A1831451A1CE6 /* Build configuration list for PBXNativeTarget "EXImageManipulator" */;
 			buildPhases = (
 				FA0F25BAAFD6BBBD0762DA9FD50A2BE5 /* Headers */,
-				61D26D83E21B586B655E1F944A896983 /* Sources */,
+				CD524E018ED44ACA4FB8471EB6D0D696 /* Sources */,
 				4B4C1CC273D0E3BEBB13D45B020CF0FA /* Frameworks */,
 			);
 			buildRules = (
@@ -198,12 +198,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		61D26D83E21B586B655E1F944A896983 /* Sources */ = {
+		CD524E018ED44ACA4FB8471EB6D0D696 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB2A1A0054859A8D322300D1499BCA27 /* EXImageManipulator-dummy.m in Sources */,
-				A8F8EE5C8244D2AF6B69A0EB95C29650 /* EXImageManipulatorModule.m in Sources */,
+				D64405A24E00BCE8A96A3C279927E699 /* EXImageManipulator-dummy.m in Sources */,
+				899CF8E043C063CBD826287A8699760F /* EXImageManipulatorModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
