@@ -81,9 +81,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   Kernel mKernel;
 
   @Inject
-  ExponentManifest mExponentManifest;
-
-  @Inject
   protected ExpoKernelServiceRegistry mKernelServiceRegistry;
 
   private ScopedPermissionsRequester mScopedPermissionsRequester;
@@ -115,14 +112,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     mReactRootView = new RNObject("com.facebook.react.ReactRootView");
 
     NativeModuleDepsProvider.getInstance().inject(BaseExperienceActivity.class, this);
-
-    if (mManifest == null) {
-      mManifest = mExponentManifest.getKernelManifest();
-    }
-
-    if (mExperienceId == null) {
-      mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
-    }
   }
 
   @Override
