@@ -11,6 +11,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 ### 🛠 Breaking changes
 
 - **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`.
+- **`expo`**: Removed Branch export from `expo/Branch`. ([#6190](https://github.com/expo/expo/pull/6190)).
 
 ### 🎉 New features
 
