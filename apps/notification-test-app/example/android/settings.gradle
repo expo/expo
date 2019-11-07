@@ -1,5 +1,5 @@
 apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+//apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 includeUnimodulesProjects([modulesPaths:['../../unimodules']])
 rootProject.name = 'example'
 

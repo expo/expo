@@ -143,7 +143,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
+    implementation "androidx.appcompat:appcompat:1.0.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     addUnimodulesDependencies([modulesPaths:['../../unimodules']])
 
