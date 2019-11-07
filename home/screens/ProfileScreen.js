@@ -5,9 +5,11 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
 import OptionsButton from '../components/OptionsButton';
@@ -20,10 +22,14 @@ import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 @connect((data, props) => ProfileScreen.getDataProps(data, props))
 export default class ProfileScreen extends React.Component {
-  static navigationOptions = ({ navigation }) => {
+  static navigationOptions = ({ navigation, theme }) => {
     return {
       title: navigation.getParam('username', 'Profile'),
-      headerRight: navigation.getParam('username') ? <OptionsButton /> : <UserSettingsButton />,
+      headerRight: navigation.getParam('username') ? (
+        <OptionsButton />
+      ) : (
+        <UserSettingsButton theme={theme} />
+      ),
     };
   };
 
@@ -85,7 +91,10 @@ class UserSettingsButton extends React.Component {
   render() {
     return (
       <TouchableOpacity style={styles.buttonContainer} onPress={this._handlePress}>
-        <Text style={{ fontSize: 17, color: Colors.light.tintColor }}>Options</Text>
+        {Platform.select({
+          ios: <Text style={{ fontSize: 17, color: Colors.light.tintColor }}>Options</Text>,
+          android: <Ionicons name="md-options" size={27} color={Colors[this.props.theme].text} />,
+        })}
       </TouchableOpacity>
     );
   }
