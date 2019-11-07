@@ -37,6 +37,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'Screens',
       'SharedElement',
       'SVG',
+      'ViewPager',
       'Video',
       'WebView',
     ];
