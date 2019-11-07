@@ -212,8 +212,7 @@ dependencies {
   // END_SDK_33
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
-  // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
-  implementation 'com.amplitude:android-sdk:2.9.2'
+  implementation 'com.amplitude:android-sdk:2.23.2'
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE

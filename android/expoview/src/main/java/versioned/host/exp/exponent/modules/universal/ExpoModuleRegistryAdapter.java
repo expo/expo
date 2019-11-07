@@ -67,6 +67,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-facebook
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 
+    // Scoping Amplitude
+    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {

@@ -68,6 +68,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  api 'com.amplitude:android-sdk:2.9.2'
+  api 'com.amplitude:android-sdk:2.23.2'
 }
