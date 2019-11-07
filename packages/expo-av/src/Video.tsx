@@ -314,6 +314,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
   setProgressUpdateIntervalAsync!: (
     progressUpdateIntervalMillis: number
   ) => Promise<PlaybackStatus>;
+  setOnPlaybackUpdateStatus!: (progressUpdateIntervalMillis: number) => Promise<PlaybackStatus>;
 
   // ### Callback wrappers ###
 
