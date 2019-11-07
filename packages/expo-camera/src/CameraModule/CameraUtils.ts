@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'invariant';
 
 import { PictureOptions } from './../Camera.types';
@@ -101,12 +102,12 @@ export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOpt
 function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     return navigator.mediaDevices.getUserMedia(constraints);
-  } else {
-    let _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'];
-    return new Promise((resolve, reject) =>
-      _getUserMedia.call(navigator, constraints, resolve, reject)
-    );
   }
+
+  const _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'] || navigator['msGetUserMedia'];
+  return new Promise((resolve, reject) =>
+    _getUserMedia.call(navigator, constraints, resolve, reject)
+  );
 }
 
 function getSupportedConstraints() {
@@ -142,10 +143,16 @@ export function getIdealConstraints(
     };
   }
 
-  (preferredConstraints.video as MediaTrackConstraints).width = width;
-  (preferredConstraints.video as MediaTrackConstraints).height = height;
+  if (isMediaTrackConstraints(preferredConstraints.video)) {
+    preferredConstraints.video.width = width;
+    preferredConstraints.video.height = height;
+  }
 
   return preferredConstraints;
+}
+
+function isMediaTrackConstraints(input: any): input is MediaTrackConstraints {
+  return input && typeof input.video !== 'boolean';
 }
 
 export async function getStreamDevice(
@@ -160,4 +167,16 @@ export async function getStreamDevice(
   );
   const stream: MediaStream = await getUserMedia(constraints);
   return stream;
+}
+
+export function canGetUserMedia(): boolean {
+  return (
+    // SSR
+    canUseDOM &&
+    // Has any form of media API
+    !!((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
+      navigator['mozGetUserMedia'] || 
+      navigator['webkitGetUserMedia'] ||
+      navigator['msGetUserMedia'])
+  );
 }

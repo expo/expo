@@ -1,2 +1,4 @@
-declare const CameraManager: Object;
+declare const CameraManager: {
+    [key: string]: any;
+};
 export default CameraManager;

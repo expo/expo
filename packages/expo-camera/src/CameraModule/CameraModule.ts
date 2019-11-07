@@ -168,7 +168,7 @@ class CameraModule {
       this.videoElement.srcObject = stream;
     } else {
       // TODO: Bacon: Check if needed
-      (this.videoElement['src'] as any) = window.URL.createObjectURL(stream);
+      (this.videoElement['src'] as string) = window.URL.createObjectURL(stream);      
     }
   }
 
@@ -247,7 +247,16 @@ class CameraModule {
     if (!this.stream) {
       return;
     }
-    this.stream.getTracks().forEach(track => track.stop());
+
+    if (this.stream.getAudioTracks) this.stream.getAudioTracks().forEach(track => track.stop());
+    if (this.stream.getVideoTracks) this.stream.getVideoTracks().forEach(track => track.stop());
+    if (isMediaStreamTrack(this.stream)) this.stream.stop();
+
+    // Full revoke stream
+    if (typeof this.videoElement.src === 'string') {
+      window.URL.revokeObjectURL(this.videoElement.src);
+    }
+
     this.setStream(null);
   }
 
@@ -259,8 +268,11 @@ class CameraModule {
   unmount = () => {
     this.pausePreview();
     this.settings = null;
-    this.stream = null;
   };
+}
+
+function isMediaStreamTrack(input: any): input is MediaStreamTrack {
+  return (typeof input.stop === 'function');
 }
 
 export default CameraModule;

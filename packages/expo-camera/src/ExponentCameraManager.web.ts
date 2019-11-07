@@ -1,5 +1,6 @@
 import { CapturedPicture, PictureOptions } from './Camera.types';
 import ExponentCamera from './ExponentCamera.web';
+import { canGetUserMedia } from './CameraModule/CameraUtils';
 
 export default {
   get name(): string {
@@ -36,6 +37,9 @@ export default {
   },
   get VideoQuality() {
     return {};
+  },
+  async isAvailableAsync(): Promise<boolean> {
+    return canGetUserMedia();
   },
 
   // TODO: Bacon: Is video possible?

@@ -1,3 +1,4 @@
+import { canGetUserMedia } from './CameraModule/CameraUtils';
 export default {
     get name() {
         return 'ExponentCameraManager';
@@ -33,6 +34,9 @@ export default {
     },
     get VideoQuality() {
         return {};
+    },
+    async isAvailableAsync() {
+        return canGetUserMedia();
     },
     // TODO: Bacon: Is video possible?
     // record(options): Promise

@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
@@ -64,10 +65,8 @@ function getUserMedia(constraints) {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         return navigator.mediaDevices.getUserMedia(constraints);
     }
-    else {
-        let _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'];
-        return new Promise((resolve, reject) => _getUserMedia.call(navigator, constraints, resolve, reject));
-    }
+    const _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'] || navigator['msGetUserMedia'];
+    return new Promise((resolve, reject) => _getUserMedia.call(navigator, constraints, resolve, reject));
 }
 function getSupportedConstraints() {
     if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
@@ -92,13 +91,28 @@ export function getIdealConstraints(preferredCameraType, width, height) {
             ideal: CameraTypeToFacingMode[preferredCameraType],
         };
     }
-    preferredConstraints.video.width = width;
-    preferredConstraints.video.height = height;
+    if (isMediaTrackConstraints(preferredConstraints.video)) {
+        preferredConstraints.video.width = width;
+        preferredConstraints.video.height = height;
+    }
     return preferredConstraints;
+}
+function isMediaTrackConstraints(input) {
+    return input && typeof input.video !== 'boolean';
 }
 export async function getStreamDevice(preferredCameraType, preferredWidth, preferredHeight) {
     const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
     const stream = await getUserMedia(constraints);
     return stream;
+}
+export function canGetUserMedia() {
+    return (
+    // SSR
+    canUseDOM &&
+        // Has any form of media API
+        !!((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
+            navigator['mozGetUserMedia'] ||
+            navigator['webkitGetUserMedia'] ||
+            navigator['msGetUserMedia']));
 }
 //# sourceMappingURL=CameraUtils.js.map
