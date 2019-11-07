@@ -20,12 +20,12 @@ export default class App extends React.Component {
     };
 
     Notifications.addOnForegroundNotificationListener('testScreen',
-      (userInteraction: UserInteraction) => {
+      (userInteraction: Notifications.UserInteraction) => {
         console.log(userInteraction);
       }
     );
     Notifications.addOnUserInteractionListener('testScreen',
-      (foregroundNotification: ForegroundNotififcation) => {
+      (foregroundNotification: Notifications.LocalNotification) => {
         console.log(foregroundNotification);
       }
     );
