@@ -741,6 +741,7 @@ public class Kernel extends KernelInterface {
     killOrphanedLauncherActivities();
   }
 
+  @DoNotStrip
   public static void reloadVisibleExperience(final int activityId) {
     String manifestUrl = getManifestUrlForActivityId(activityId);
 

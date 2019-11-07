@@ -45,17 +45,6 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
-  public static String getManifestUrlForActivityId(final int activityId) {
-    try {
-      return (String) Class.forName("host.exp.exponent.kernel.Kernel")
-          .getMethod("getManifestUrlForActivityId", int.class)
-          .invoke(null, activityId);
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String mainModuleId,
                                                  String bundleTypeId, String host, boolean devMode,
                                                  boolean jsMinify) {
