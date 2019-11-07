@@ -15,7 +15,6 @@
 @property (strong) NSString *appId;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (atomic, strong) NSDictionary *initialUserInteraction;
 
 @end
 
@@ -42,31 +41,24 @@ UM_REGISTER_MODULE();
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  bool isItFirstTime = _moduleRegistry == nil;
   _moduleRegistry = moduleRegistry;
   _appId = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppIdProvider)] getAppId];
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  
-  __weak EXNotifications *weakSelf = self;
-  __weak id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  
-  if (isItFirstTime) {
-    [[EXThreadSafePostOffice sharedInstance] registerModuleAndGetInitialNotificationWithAppId:_appId
-                                                 mailbox:self
-                                      completionHandler:^(NSDictionary *initialUserInteraction)
-      {
-        weakSelf.initialUserInteraction = [EXMessageUnscoper getUnscopedMessage:initialUserInteraction scoper:scoper];
-      }
-    ];
-  }
 }
 
 UM_EXPORT_METHOD_AS(popInitialUserInteractionAsync,
                     popInitialUserInteractionAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve(_initialUserInteraction);
-  _initialUserInteraction = nil;
+    __weak id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
+
+    [[EXThreadSafePostOffice sharedInstance] registerModuleAndGetInitialNotificationWithAppId:_appId
+                                                 mailbox:self
+                                      completionHandler:^(NSDictionary *initialUserInteraction)
+      {
+         resolve([EXMessageUnscoper getUnscopedMessage:initialUserInteraction scoper:scoper]);
+      }
+    ];
 }
 
 UM_EXPORT_METHOD_AS(presentLocalNotification,
@@ -335,6 +327,7 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 
 - (void)dealloc
 {
+  NSLog(@"koniec");
   [[EXThreadSafePostOffice sharedInstance] unregisterModuleWithAppId:_appId];
   [[EXThreadSafeTokenDispatcher sharedInstance] unregisterWithAppId:_appId];
 }

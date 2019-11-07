@@ -39,6 +39,11 @@
                                                mailbox:(id<EXMailbox>)mailbox
                                      completionHandler:(void (^)(NSDictionary*))completionHandler
 {
+  if (self.mailboxes[appId]) {
+    completionHandler(nil);
+    return;
+  }
+  
   self.mailboxes[appId] = mailbox;
   
   NSDictionary *initialUserInteraction = [_notificationRepository getUserInterationForAppId:appId];
