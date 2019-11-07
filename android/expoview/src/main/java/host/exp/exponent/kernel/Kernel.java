@@ -7,20 +7,17 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.RemoteInput;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -62,7 +59,6 @@ import host.exp.exponent.headless.HeadlessAppLoader;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
-import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.expoview.BuildConfig;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
@@ -180,8 +176,6 @@ public class Kernel extends KernelInterface {
     setActivityContext(activity);
 
     SoLoader.init(mContext, false);
-
-    ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), activity);
 
     synchronized (this) {
       if (mIsStarted && !mHasError) {
