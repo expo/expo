@@ -12336,11 +12336,6 @@ react-native-branch@4.2.1:
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-4.2.1.tgz#3ed1a071c053b420d11af8aa368142b19e2d5129"
   integrity sha512-wwBCsj3VslS0zG8UAZjx+nNrWgd3CuA24r5muFDzS38oQ4S9oB0NJPafEcWcUT7TPxw/rfpdPLb+JccGvS2/Lg==
 
-react-native-branch@~3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-3.0.1.tgz#5b07b61cbd290168cd3c3662e017ebe0f356d2ca"
-  integrity sha512-vbcYxPZlpF5f39GAEUF8kuGQqCNeD3E6zEdvtOq8oCGZunHXlWlKgAS6dgBKCvsHvXgHuMtpvs39VgOp8DaKig==
-
 react-native-branch@~3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-3.1.1.tgz#41926463a05e6e94d76e2346051f0fc374e77596"
