@@ -30,17 +30,18 @@ declare class CameraModule {
     setZoomAsync(value: number): Promise<void>;
     setPictureSize(value: string): void;
     constructor(videoElement: HTMLVideoElement);
-    onCapabilitiesReady(track: MediaStreamTrack): Promise<void>;
-    _syncTrackCapabilities(): Promise<void>;
-    setVideoSource(stream: MediaStream | MediaSource | Blob | null): void;
-    setSettings(stream: MediaStream | null): void;
+    isTorchAvailable(): boolean;
+    isZoomAvailable(): boolean;
+    private onCapabilitiesReady;
+    private applyVideoConstraints;
+    private applyAudioConstraints;
+    private syncTrackCapabilities;
     setStream(stream: MediaStream | null): void;
     getActualCameraType(): CameraType | null;
     ensureCameraIsRunningAsync(): Promise<void>;
     resumePreview(): Promise<MediaStream | null>;
     takePicture(config: PictureOptions): CapturedPicture;
-    pausePreview(): void;
+    stopAsync(): void;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
-    unmount: () => void;
 }
 export default CameraModule;

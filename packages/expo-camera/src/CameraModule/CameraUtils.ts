@@ -1,10 +1,10 @@
 /* eslint-env browser */
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import invariant from 'invariant';
 
 import { PictureOptions } from './../Camera.types';
 import { CameraType, CaptureOptions, ImageSize, ImageType } from './CameraModule.types';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
+import { requestUserMediaAsync } from './UserMediaManager';
 
 interface ConstrainLongRange {
   max?: number;
@@ -99,17 +99,6 @@ export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOpt
   return base64;
 }
 
-function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia(constraints);
-  }
-
-  const _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'] || navigator['msGetUserMedia'];
-  return new Promise((resolve, reject) =>
-    _getUserMedia.call(navigator, constraints, resolve, reject)
-  );
-}
-
 function getSupportedConstraints() {
   if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
     return navigator.mediaDevices.getSupportedConstraints();
@@ -137,10 +126,18 @@ export function getIdealConstraints(
   }
 
   if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
-    (preferredConstraints.video as MediaTrackConstraints).facingMode = {
-      ideal: CameraTypeToFacingMode[preferredCameraType],
-      // exact: CameraTypeToFacingMode[preferredCameraType],
-    };
+
+    const facingMode = CameraTypeToFacingMode[preferredCameraType];
+    if (isWebKit()) {
+      const key = facingMode === 'user' ? 'exact' : 'ideal';
+      (preferredConstraints.video as MediaTrackConstraints).facingMode = {
+        [key]: facingMode,
+      };
+    } else {
+      (preferredConstraints.video as MediaTrackConstraints).facingMode = {
+        ideal: CameraTypeToFacingMode[preferredCameraType],
+      };
+    }
   }
 
   if (isMediaTrackConstraints(preferredConstraints.video)) {
@@ -165,18 +162,10 @@ export async function getStreamDevice(
     preferredWidth,
     preferredHeight
   );
-  const stream: MediaStream = await getUserMedia(constraints);
+  const stream: MediaStream = await requestUserMediaAsync(constraints);
   return stream;
 }
 
-export function canGetUserMedia(): boolean {
-  return (
-    // SSR
-    canUseDOM &&
-    // Has any form of media API
-    !!((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
-      navigator['mozGetUserMedia'] || 
-      navigator['webkitGetUserMedia'] ||
-      navigator['msGetUserMedia'])
-  );
+export function isWebKit(): boolean {
+  return (/WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent))
 }

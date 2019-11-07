@@ -1,6 +1,7 @@
-import React, { CSSProperties, forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
-import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
+
+import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 
@@ -12,7 +13,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
 
   componentWillUnmount() {
     if (this.camera) {
-      this.camera.unmount();
+      this.camera.stopAsync();
     }
   }
 
@@ -74,9 +75,9 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     await camera.resumePreview();
   };
 
-  pausePreview = (): void => {
+  pausePreview = async (): Promise<void> => {
     const camera = this.getCamera();
-    camera.pausePreview();
+    await camera.stopAsync();
   };
 
   onCameraReady = () => {
@@ -95,12 +96,15 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     if (!ref) {
       this.video = null;
       if (this.camera) {
-        this.camera.unmount();
+        this.camera.stopAsync();
         this.camera = undefined;
       }
       return;
     }
     this.video = findNodeHandle(ref);
+
+    (this.video as any).webkitPlaysinline = true;
+
     this.camera = new CameraModule(ref);
     this.camera.onCameraReady = this.onCameraReady;
     this.camera.onMountError = this.onMountError;

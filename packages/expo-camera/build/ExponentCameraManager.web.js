@@ -1,4 +1,4 @@
-import { canGetUserMedia } from './CameraModule/CameraUtils';
+import { canGetUserMedia } from './CameraModule/UserMediaManager';
 export default {
     get name() {
         return 'ExponentCameraManager';
@@ -45,7 +45,7 @@ export default {
         return await camera.takePicture(options);
     },
     async pausePreview(camera) {
-        camera.pausePreview();
+        await camera.pausePreview();
     },
     async resumePreview(camera) {
         return await camera.resumePreview();

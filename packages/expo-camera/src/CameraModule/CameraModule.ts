@@ -42,7 +42,7 @@ class CameraModule {
       return;
     }
     this._autoFocus = value;
-    await this._syncTrackCapabilities();
+    await this.syncTrackCapabilities();
   }
 
   _flashMode: string = 'off';
@@ -54,7 +54,7 @@ class CameraModule {
       return;
     }
     this._flashMode = value;
-    await this._syncTrackCapabilities();
+    await this.syncTrackCapabilities();
   }
 
   _whiteBalance: string = 'continuous';
@@ -68,7 +68,7 @@ class CameraModule {
       return;
     }
     this._whiteBalance = value;
-    await this._syncTrackCapabilities();
+    await this.syncTrackCapabilities();
   }
 
   _cameraType: CameraType = CameraType.front;
@@ -82,6 +82,7 @@ class CameraModule {
       return;
     }
     this._cameraType = value;
+
     await this.resumePreview();
   }
 
@@ -97,7 +98,7 @@ class CameraModule {
     }
     //TODO: Bacon: IMP on non-android devices
     this._zoom = value;
-    await this._syncTrackCapabilities();
+    await this.syncTrackCapabilities();
   }
 
   setPictureSize(value: string) {
@@ -123,13 +124,21 @@ class CameraModule {
     this.videoElement = videoElement;
     if (this.videoElement) {
       this.videoElement.addEventListener('loadedmetadata', () => {
-        this._syncTrackCapabilities();
+        this.syncTrackCapabilities();
       });
     }
   }
 
-  async onCapabilitiesReady(track: MediaStreamTrack): Promise<void> {
-    const capabilities = track.getCapabilities() as any;
+  public isTorchAvailable(): boolean {
+    return isCapabilityAvailable(this.videoElement, 'torch');
+  }
+
+  public isZoomAvailable(): boolean {
+    return isCapabilityAvailable(this.videoElement, 'zoom');
+  }
+
+  private async onCapabilitiesReady(track: MediaStreamTrack): Promise<void> {
+    const capabilities: any = track.getCapabilities();
 
     // Create an empty object because if you set a constraint that isn't available an error will be thrown.
     const constraints: {
@@ -137,16 +146,20 @@ class CameraModule {
       torch?: boolean;
       whiteBalance?: string;
       focusMode?: string;
+      height?: number;
+      aspectRatio?: number;
     } = {};
 
     if (capabilities.zoom) {
-      // TODO: Bacon: We should have some async method for getting the (min, max, step) externally
       const { min, max } = capabilities.zoom;
-      constraints.zoom = Math.min(max, Math.max(min, this._zoom));
+      const converted = convertRange(this._zoom, [min, max]);
+      constraints.zoom = Math.min(max, Math.max(min, converted));
     }
+
     if (capabilities.focusMode) {
       constraints.focusMode = CapabilityUtils.convertAutoFocusJSONToNative(this.autoFocus);
     }
+
     if (capabilities.torch) {
       constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
     }
@@ -154,35 +167,42 @@ class CameraModule {
       constraints.whiteBalance = this.whiteBalance;
     }
 
+    // Create max-res camera
+    if (capabilities.height && capabilities.height.max) {
+      constraints.height = capabilities.height.max;
+    }
+
+    if (capabilities.aspectRatio && capabilities.aspectRatio.max) {
+      constraints.aspectRatio = capabilities.aspectRatio.max;
+    }
+
     await track.applyConstraints({ advanced: [constraints] as any });
   }
 
-  async _syncTrackCapabilities(): Promise<void> {
-    if (this.stream) {
-      await Promise.all(this.stream.getTracks().map(track => this.onCapabilitiesReady(track)));
+  private async applyVideoConstraints(constraints: { [key: string]: any }): Promise<boolean> {
+    if (!this.stream || !this.stream.getVideoTracks) {
+      return false;
     }
+    return await applyConstraints(this.stream.getVideoTracks(), constraints);
   }
-
-  setVideoSource(stream: MediaStream | MediaSource | Blob | null): void {
-    if ('srcObject' in this.videoElement) {
-      this.videoElement.srcObject = stream;
-    } else {
-      // TODO: Bacon: Check if needed
-      (this.videoElement['src'] as string) = window.URL.createObjectURL(stream);      
+  
+  private async applyAudioConstraints(constraints: { [key: string]: any }): Promise<boolean> {
+    if (!this.stream || !this.stream.getAudioTracks) {
+      return false;
     }
+    return await applyConstraints(this.stream.getAudioTracks(), constraints);
   }
-
-  setSettings(stream: MediaStream | null): void {
-    this.settings = null;
-    if (stream && this.stream) {
-      this.settings = this.stream.getTracks()[0].getSettings();
+  
+  private async syncTrackCapabilities(): Promise<void> {
+    if (this.stream && this.stream.getVideoTracks) {
+      await Promise.all(this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track)));
     }
   }
 
   setStream(stream: MediaStream | null): void {
     this.stream = stream;
-    this.setSettings(stream);
-    this.setVideoSource(stream);
+    this.settings = stream ? stream.getTracks()[0].getSettings() : null;
+    setVideoSource(this.videoElement, stream);
   }
 
   getActualCameraType(): CameraType | null {
@@ -206,7 +226,7 @@ class CameraModule {
     }
     this._isStartingCamera = true;
     try {
-      this.pausePreview();
+      this.stopAsync();
       const stream = await Utils.getStreamDevice(this.type);
       this.setStream(stream);
       this._isStartingCamera = false;
@@ -243,20 +263,8 @@ class CameraModule {
     return capturedPicture;
   }
 
-  pausePreview(): void {
-    if (!this.stream) {
-      return;
-    }
-
-    if (this.stream.getAudioTracks) this.stream.getAudioTracks().forEach(track => track.stop());
-    if (this.stream.getVideoTracks) this.stream.getVideoTracks().forEach(track => track.stop());
-    if (isMediaStreamTrack(this.stream)) this.stream.stop();
-
-    // Full revoke stream
-    if (typeof this.videoElement.src === 'string') {
-      window.URL.revokeObjectURL(this.videoElement.src);
-    }
-
+  stopAsync(): void {
+    stopMediaStream(this.stream);
     this.setStream(null);
   }
 
@@ -264,15 +272,62 @@ class CameraModule {
   getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
     return PictureSizes;
   };
+}
 
-  unmount = () => {
-    this.pausePreview();
-    this.settings = null;
-  };
+function stopMediaStream(stream: MediaStream | null) {
+  if (!stream) return;
+  if (stream.getAudioTracks) stream.getAudioTracks().forEach(track => track.stop());
+  if (stream.getVideoTracks) stream.getVideoTracks().forEach(track => track.stop());
+  if (isMediaStreamTrack(stream)) stream.stop();
+}
+
+function setVideoSource(video: HTMLVideoElement, stream: MediaStream | MediaSource | Blob | null): void {
+  try {
+    video.srcObject = stream;
+  } catch (_) {
+    if (stream) {
+      video.src = window.URL.createObjectURL(stream);      
+    } else if (typeof video.src === 'string') {
+      window.URL.revokeObjectURL(video.src);
+    }
+  }
+}
+
+async function applyConstraints(tracks: MediaStreamTrack[], constraints: { [key: string]: any }): Promise<boolean> {
+  try {
+    await Promise.all(tracks.map(async track => {
+      await track.applyConstraints({ advanced: [constraints] as any });
+    }));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolean {
+  const stream = video.srcObject;
+
+  if (stream instanceof MediaStream) {
+    const videoTrack = stream.getVideoTracks()[0];
+
+    if (typeof videoTrack.getCapabilities === 'undefined') {
+      return false;
+    }
+
+    const capabilities: any = videoTrack.getCapabilities();
+
+    return !!capabilities[keyName];
+  }
+
+  return false;
 }
 
 function isMediaStreamTrack(input: any): input is MediaStreamTrack {
   return (typeof input.stop === 'function');
+}
+
+function convertRange( value: number, r2: number[], r1: number[] = [0, 1] ): number { 
+  return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
 }
 
 export default CameraModule;

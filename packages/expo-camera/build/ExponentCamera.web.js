@@ -49,9 +49,9 @@ export default class ExponentCamera extends React.Component {
             const camera = this.getCamera();
             await camera.resumePreview();
         };
-        this.pausePreview = () => {
+        this.pausePreview = async () => {
             const camera = this.getCamera();
-            camera.pausePreview();
+            await camera.stopAsync();
         };
         this.onCameraReady = () => {
             if (this.props.onCameraReady) {
@@ -67,12 +67,13 @@ export default class ExponentCamera extends React.Component {
             if (!ref) {
                 this.video = null;
                 if (this.camera) {
-                    this.camera.unmount();
+                    this.camera.stopAsync();
                     this.camera = undefined;
                 }
                 return;
             }
             this.video = findNodeHandle(ref);
+            this.video.webkitPlaysinline = true;
             this.camera = new CameraModule(ref);
             this.camera.onCameraReady = this.onCameraReady;
             this.camera.onMountError = this.onMountError;
@@ -81,7 +82,7 @@ export default class ExponentCamera extends React.Component {
     }
     componentWillUnmount() {
         if (this.camera) {
-            this.camera.unmount();
+            this.camera.stopAsync();
         }
     }
     componentWillReceiveProps(nextProps) {

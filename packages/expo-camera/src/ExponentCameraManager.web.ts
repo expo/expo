@@ -1,6 +1,6 @@
 import { CapturedPicture, PictureOptions } from './Camera.types';
 import ExponentCamera from './ExponentCamera.web';
-import { canGetUserMedia } from './CameraModule/CameraUtils';
+import { canGetUserMedia } from './CameraModule/UserMediaManager';
 
 export default {
   get name(): string {
@@ -49,7 +49,7 @@ export default {
     return await camera.takePicture(options);
   },
   async pausePreview(camera: ExponentCamera): Promise<void> {
-    camera.pausePreview();
+    await camera.pausePreview();
   },
   async resumePreview(camera: ExponentCamera): Promise<any> {
     return await camera.resumePreview();

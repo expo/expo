@@ -1,5 +1,5 @@
 import React from 'react';
-import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
+import { CapturedPicture, MountError, NativeProps, PictureOptions } from './Camera.types';
 import CameraModule from './CameraModule/CameraModule';
 export default class ExponentCamera extends React.Component<NativeProps> {
     video?: number | null;
@@ -14,7 +14,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: PictureOptions) => Promise<CapturedPicture>;
     resumePreview: () => Promise<void>;
-    pausePreview: () => void;
+    pausePreview: () => Promise<void>;
     onCameraReady: () => void;
     onMountError: ({ nativeEvent }: {
         nativeEvent: MountError;

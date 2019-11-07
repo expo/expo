@@ -20,14 +20,10 @@ class CameraModule {
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
         };
-        this.unmount = () => {
-            this.pausePreview();
-            this.settings = null;
-        };
         this.videoElement = videoElement;
         if (this.videoElement) {
             this.videoElement.addEventListener('loadedmetadata', () => {
-                this._syncTrackCapabilities();
+                this.syncTrackCapabilities();
             });
         }
     }
@@ -39,7 +35,7 @@ class CameraModule {
             return;
         }
         this._autoFocus = value;
-        await this._syncTrackCapabilities();
+        await this.syncTrackCapabilities();
     }
     get flashMode() {
         return this._flashMode;
@@ -49,7 +45,7 @@ class CameraModule {
             return;
         }
         this._flashMode = value;
-        await this._syncTrackCapabilities();
+        await this.syncTrackCapabilities();
     }
     get whiteBalance() {
         return this._whiteBalance;
@@ -59,7 +55,7 @@ class CameraModule {
             return;
         }
         this._whiteBalance = value;
-        await this._syncTrackCapabilities();
+        await this.syncTrackCapabilities();
     }
     get type() {
         return this._cameraType;
@@ -80,7 +76,7 @@ class CameraModule {
         }
         //TODO: Bacon: IMP on non-android devices
         this._zoom = value;
-        await this._syncTrackCapabilities();
+        await this.syncTrackCapabilities();
     }
     setPictureSize(value) {
         if (value === this._pictureSize) {
@@ -93,14 +89,20 @@ class CameraModule {
         const aspectRatio = parseFloat(width) / parseFloat(height);
         this._pictureSize = value;
     }
+    isTorchAvailable() {
+        return isCapabilityAvailable(this.videoElement, 'torch');
+    }
+    isZoomAvailable() {
+        return isCapabilityAvailable(this.videoElement, 'zoom');
+    }
     async onCapabilitiesReady(track) {
         const capabilities = track.getCapabilities();
         // Create an empty object because if you set a constraint that isn't available an error will be thrown.
         const constraints = {};
         if (capabilities.zoom) {
-            // TODO: Bacon: We should have some async method for getting the (min, max, step) externally
             const { min, max } = capabilities.zoom;
-            constraints.zoom = Math.min(max, Math.max(min, this._zoom));
+            const converted = convertRange(this._zoom, [min, max]);
+            constraints.zoom = Math.min(max, Math.max(min, converted));
         }
         if (capabilities.focusMode) {
             constraints.focusMode = CapabilityUtils.convertAutoFocusJSONToNative(this.autoFocus);
@@ -111,32 +113,36 @@ class CameraModule {
         if (capabilities.whiteBalance) {
             constraints.whiteBalance = this.whiteBalance;
         }
+        // Create max-res camera
+        if (capabilities.height && capabilities.height.max) {
+            constraints.height = capabilities.height.max;
+        }
+        if (capabilities.aspectRatio && capabilities.aspectRatio.max) {
+            constraints.aspectRatio = capabilities.aspectRatio.max;
+        }
         await track.applyConstraints({ advanced: [constraints] });
     }
-    async _syncTrackCapabilities() {
-        if (this.stream) {
-            await Promise.all(this.stream.getTracks().map(track => this.onCapabilitiesReady(track)));
+    async applyVideoConstraints(constraints) {
+        if (!this.stream || !this.stream.getVideoTracks) {
+            return false;
         }
+        return await applyConstraints(this.stream.getVideoTracks(), constraints);
     }
-    setVideoSource(stream) {
-        if ('srcObject' in this.videoElement) {
-            this.videoElement.srcObject = stream;
+    async applyAudioConstraints(constraints) {
+        if (!this.stream || !this.stream.getAudioTracks) {
+            return false;
         }
-        else {
-            // TODO: Bacon: Check if needed
-            this.videoElement['src'] = window.URL.createObjectURL(stream);
-        }
+        return await applyConstraints(this.stream.getAudioTracks(), constraints);
     }
-    setSettings(stream) {
-        this.settings = null;
-        if (stream && this.stream) {
-            this.settings = this.stream.getTracks()[0].getSettings();
+    async syncTrackCapabilities() {
+        if (this.stream && this.stream.getVideoTracks) {
+            await Promise.all(this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track)));
         }
     }
     setStream(stream) {
         this.stream = stream;
-        this.setSettings(stream);
-        this.setVideoSource(stream);
+        this.settings = stream ? stream.getTracks()[0].getSettings() : null;
+        setVideoSource(this.videoElement, stream);
     }
     getActualCameraType() {
         if (this.settings) {
@@ -157,7 +163,7 @@ class CameraModule {
         }
         this._isStartingCamera = true;
         try {
-            this.pausePreview();
+            this.stopAsync();
             const stream = await Utils.getStreamDevice(this.type);
             this.setStream(stream);
             this._isStartingCamera = false;
@@ -190,25 +196,62 @@ class CameraModule {
         }
         return capturedPicture;
     }
-    pausePreview() {
-        if (!this.stream) {
-            return;
-        }
-        if (this.stream.getAudioTracks)
-            this.stream.getAudioTracks().forEach(track => track.stop());
-        if (this.stream.getVideoTracks)
-            this.stream.getVideoTracks().forEach(track => track.stop());
-        if (isMediaStreamTrack(this.stream))
-            this.stream.stop();
-        // Full revoke stream
-        if (typeof this.videoElement.src === 'string') {
-            window.URL.revokeObjectURL(this.videoElement.src);
-        }
+    stopAsync() {
+        stopMediaStream(this.stream);
         this.setStream(null);
     }
 }
+function stopMediaStream(stream) {
+    if (!stream)
+        return;
+    if (stream.getAudioTracks)
+        stream.getAudioTracks().forEach(track => track.stop());
+    if (stream.getVideoTracks)
+        stream.getVideoTracks().forEach(track => track.stop());
+    if (isMediaStreamTrack(stream))
+        stream.stop();
+}
+function setVideoSource(video, stream) {
+    try {
+        video.srcObject = stream;
+    }
+    catch (_) {
+        if (stream) {
+            video.src = window.URL.createObjectURL(stream);
+        }
+        else if (typeof video.src === 'string') {
+            window.URL.revokeObjectURL(video.src);
+        }
+    }
+}
+async function applyConstraints(tracks, constraints) {
+    try {
+        await Promise.all(tracks.map(async (track) => {
+            await track.applyConstraints({ advanced: [constraints] });
+        }));
+        return true;
+    }
+    catch (_) {
+        return false;
+    }
+}
+function isCapabilityAvailable(video, keyName) {
+    const stream = video.srcObject;
+    if (stream instanceof MediaStream) {
+        const videoTrack = stream.getVideoTracks()[0];
+        if (typeof videoTrack.getCapabilities === 'undefined') {
+            return false;
+        }
+        const capabilities = videoTrack.getCapabilities();
+        return !!capabilities[keyName];
+    }
+    return false;
+}
 function isMediaStreamTrack(input) {
     return (typeof input.stop === 'function');
+}
+function convertRange(value, r2, r1 = [0, 1]) {
+    return (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
 }
 export default CameraModule;
 //# sourceMappingURL=CameraModule.js.map
