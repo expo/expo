@@ -51,6 +51,7 @@ export type Props = React.ComponentProps<typeof View> & {
 };
 
 export type NativeProps = {
+  pointerEvents?: any;
   style?: any;
   ref?: Function;
   onCameraReady?: Function;

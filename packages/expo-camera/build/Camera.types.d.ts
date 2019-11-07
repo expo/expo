@@ -49,6 +49,7 @@ export declare type Props = React.ComponentProps<typeof View> & {
     onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
 export declare type NativeProps = {
+    pointerEvents?: any;
     style?: any;
     ref?: Function;
     onCameraReady?: Function;

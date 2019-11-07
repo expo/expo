@@ -1,5 +1,5 @@
-import React, { CSSProperties } from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
+import React, { CSSProperties, forwardRef } from 'react';
+import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
 import { CapturedPicture, NativeProps, PictureOptions, MountError } from './Camera.types';
 import CameraModule, { CameraType } from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
@@ -108,31 +108,44 @@ export default class ExponentCamera extends React.Component<NativeProps> {
   };
 
   render() {
-    const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
-    const style: CSSProperties = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      transform,
+    const { pointerEvents } = this.props;
+
+    // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos. 
+    // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
+    const isMuted = true;
+
+    const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
+    const style = {
+      // Flip the camera
+      transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
     };
 
     return (
-      <View style={[styles.videoWrapper, this.props.style]}>
-        <video ref={this._setRef} style={style} autoPlay playsInline />
+      <View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
+        <Video 
+          autoPlay 
+          playsInline 
+          muted={isMuted} 
+          pointerEvents={pointerEvents} 
+          ref={this._setRef} 
+          style={[StyleSheet.absoluteFill, styles.video, style]} 
+          />
         {this.props.children}
       </View>
     );
   }
 }
 
+const Video: any = forwardRef((props, ref) => createElement('video', { ...props, ref }));
+
 const styles = StyleSheet.create({
   videoWrapper: {
     flex: 1,
     alignItems: 'stretch',
   },
+  video: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  }
 });

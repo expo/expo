@@ -1,5 +1,5 @@
-import React from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
+import React, { forwardRef } from 'react';
+import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 export default class ExponentCamera extends React.Component {
@@ -88,28 +88,31 @@ export default class ExponentCamera extends React.Component {
         this._updateCameraProps(nextProps);
     }
     render() {
-        const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
+        const { pointerEvents } = this.props;
+        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos. 
+        // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
+        const isMuted = true;
+        const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
         const style = {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform,
+            // Flip the camera
+            transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
         };
-        return (<View style={[styles.videoWrapper, this.props.style]}>
-        <video ref={this._setRef} style={style} autoPlay playsInline/>
+        return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
+        <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
         {this.props.children}
       </View>);
     }
 }
+const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
 const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,
         alignItems: 'stretch',
     },
+    video: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+    }
 });
 //# sourceMappingURL=ExponentCamera.web.js.map
