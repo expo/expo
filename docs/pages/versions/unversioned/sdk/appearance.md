@@ -2,7 +2,7 @@
 title: Appearance
 ---
 
-Detect preferred color scheme (`light`, `dark`, `automatic` or `no-preference`) on iOS 13+ and Android 10+.
+Detect preferred color scheme (`light`, `dark` or `no-preference`) on iOS 13+ and Android 10+.
 
 ## Installation
 
@@ -30,8 +30,8 @@ Example `app.json` configuration:
 ```
 
 In bare apps:
-- on iOS: you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`.
-- on Android: please follow steps from [`react-native-appearance` repo](https://github.com/expo/react-native-appearance#configuration).
+- **iOS**: you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`.
+- **Android**: please follow steps from [`react-native-appearance` repo](https://github.com/expo/react-native-appearance#configuration).
 
 ## API
 
