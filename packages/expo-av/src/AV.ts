@@ -219,16 +219,20 @@ export function getUnloadedStatus(error: string | null = null): PlaybackStatus {
 
 export interface AV {
   setStatusAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
+  getStatusAsync(): Promise<PlaybackStatus>;
 }
 
 export interface Playback extends AV {
   playAsync(): Promise<PlaybackStatus>;
+  loadAsync(source: PlaybackSource, initialStatus: PlaybackStatusToSet, downloadAsync: boolean);
+  unloadAsync(): Promise<PlaybackStatus>;
   playFromPositionAsync(
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
   ): Promise<PlaybackStatus>;
   pauseAsync(): Promise<PlaybackStatus>;
   stopAsync(): Promise<PlaybackStatus>;
+  replayAsync(status: PlaybackStatusToSet): Promise<PlaybackStatus>;
   setPositionAsync(
     positionMillis: number,
     tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
@@ -250,14 +254,14 @@ export interface Playback extends AV {
  */
 export const PlaybackMixin = {
   async playAsync(): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ shouldPlay: true });
+    return ((this as any) as Playback).setStatusAsync({ shouldPlay: true });
   },
 
   async playFromPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
   ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({
+    return ((this as any) as Playback).setStatusAsync({
       positionMillis,
       shouldPlay: true,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
@@ -266,18 +270,18 @@ export const PlaybackMixin = {
   },
 
   async pauseAsync(): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ shouldPlay: false });
+    return ((this as any) as Playback).setStatusAsync({ shouldPlay: false });
   },
 
   async stopAsync(): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ positionMillis: 0, shouldPlay: false });
+    return ((this as any) as Playback).setStatusAsync({ positionMillis: 0, shouldPlay: false });
   },
 
   async setPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
   ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({
+    return ((this as any) as Playback).setStatusAsync({
       positionMillis,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
       seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
@@ -289,7 +293,7 @@ export const PlaybackMixin = {
     shouldCorrectPitch: boolean = false,
     pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
   ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({
+    return ((this as any) as Playback).setStatusAsync({
       rate,
       shouldCorrectPitch,
       pitchCorrectionQuality,
@@ -297,20 +301,20 @@ export const PlaybackMixin = {
   },
 
   async setVolumeAsync(volume: number): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ volume });
+    return ((this as any) as Playback).setStatusAsync({ volume });
   },
 
   async setIsMutedAsync(isMuted: boolean): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ isMuted });
+    return ((this as any) as Playback).setStatusAsync({ isMuted });
   },
 
   async setIsLoopingAsync(isLooping: boolean): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ isLooping });
+    return ((this as any) as Playback).setStatusAsync({ isLooping });
   },
 
   async setProgressUpdateIntervalAsync(
     progressUpdateIntervalMillis: number
   ): Promise<PlaybackStatus> {
-    return ((this as any) as AV).setStatusAsync({ progressUpdateIntervalMillis });
+    return ((this as any) as Playback).setStatusAsync({ progressUpdateIntervalMillis });
   },
 };
