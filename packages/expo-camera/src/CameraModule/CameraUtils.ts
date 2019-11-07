@@ -99,7 +99,7 @@ export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOpt
   return base64;
 }
 
-function getSupportedConstraints() {
+function getSupportedConstraints(): MediaTrackSupportedConstraints {
   if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
     return navigator.mediaDevices.getSupportedConstraints();
   }

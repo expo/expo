@@ -1,8 +1,9 @@
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
-import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
+import { FacingModeToCameraType, PictureSizes } from './constants';
+import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
 export { ImageType, CameraType };
 class CameraModule {
     constructor(videoElement) {
@@ -19,6 +20,17 @@ class CameraModule {
         // TODO: Bacon: we don't even use ratio in native...
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
+        };
+        this.getAvailableCameraTypesAsync = async () => {
+            if (!navigator.mediaDevices.enumerateDevices) {
+                return [];
+            }
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const types = await Promise.all([
+                ((await isFrontCameraAvailableAsync(devices)) && CameraType.front),
+                ((await isBackCameraAvailableAsync()) && CameraType.back)
+            ]);
+            return types.filter(Boolean);
         };
         this.videoElement = videoElement;
         if (this.videoElement) {
@@ -109,17 +121,15 @@ class CameraModule {
         }
         if (capabilities.torch) {
             constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
+            console.log('constraints.torch', constraints.torch);
         }
         if (capabilities.whiteBalance) {
             constraints.whiteBalance = this.whiteBalance;
         }
         // Create max-res camera
-        if (capabilities.height && capabilities.height.max) {
-            constraints.height = capabilities.height.max;
-        }
-        if (capabilities.aspectRatio && capabilities.aspectRatio.max) {
-            constraints.aspectRatio = capabilities.aspectRatio.max;
-        }
+        // if (capabilities.aspectRatio && capabilities.aspectRatio.max) {
+        //   constraints.aspectRatio = capabilities.aspectRatio.max;
+        // }
         await track.applyConstraints({ advanced: [constraints] });
     }
     async applyVideoConstraints(constraints) {

@@ -13,6 +13,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     getCamera: () => CameraModule;
     getAvailablePictureSizes: (ratio: string) => Promise<string[]>;
     takePicture: (options: PictureOptions) => Promise<CapturedPicture>;
+    getAvailableCameraTypesAsync: () => Promise<string[]>;
     resumePreview: () => Promise<void>;
     pausePreview: () => Promise<void>;
     onCameraReady: () => void;

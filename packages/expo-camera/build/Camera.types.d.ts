@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 export declare type PictureOptions = {
     quality?: number;
     base64?: boolean;
@@ -30,7 +30,7 @@ export declare type BarCodeScanningResult = {
 export declare type FaceDetectionResult = {
     faces: any[];
 };
-export declare type Props = React.ComponentProps<typeof View> & {
+export declare type Props = ViewProps & {
     zoom?: number;
     ratio?: string;
     focusDepth?: number;

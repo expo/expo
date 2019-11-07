@@ -94,11 +94,11 @@ export function canGetUserMedia() {
             navigator['webkitGetUserMedia'] ||
             navigator['msGetUserMedia']));
 }
-export async function supportsFrontCamera(devices) {
-    return supportsCameraType(['front', 'user'], 'user', devices);
+export async function isFrontCameraAvailableAsync(devices) {
+    return await supportsCameraType(['front', 'user'], 'user', devices);
 }
-export async function supportsBackCamera(devices) {
-    return supportsCameraType(['back', 'rear'], 'environment', devices);
+export async function isBackCameraAvailableAsync(devices) {
+    return await supportsCameraType(['back', 'rear'], 'environment', devices);
 }
 async function supportsCameraType(labels, type, devices) {
     if (!devices) {

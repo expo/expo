@@ -50,6 +50,11 @@ export default {
     async resumePreview(camera) {
         return await camera.resumePreview();
     },
+    async getAvailableCameraTypesAsync(camera) {
+        if (!canGetUserMedia())
+            return [];
+        return await camera.getAvailableCameraTypesAsync();
+    },
     async getAvailablePictureSizes(ratio, camera) {
         return await camera.getAvailablePictureSizes(ratio);
     },

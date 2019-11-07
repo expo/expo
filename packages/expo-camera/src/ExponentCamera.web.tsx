@@ -70,6 +70,11 @@ export default class ExponentCamera extends React.Component<NativeProps> {
     });
   };
 
+  getAvailableCameraTypesAsync = async (): Promise<string[]> => {
+    const camera = this.getCamera();
+    return await camera.getAvailableCameraTypesAsync();
+  }
+
   resumePreview = async (): Promise<void> => {
     const camera = this.getCamera();
     await camera.resumePreview();

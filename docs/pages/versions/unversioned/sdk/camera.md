@@ -92,6 +92,28 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 import { Camera } from 'expo-camera';
 ```
 
+## static methods
+
+- **Camera.isAvailableAsync(): boolean**
+
+Does the current device have a camera, this is useful for web and simulators cases. This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser). You will still need to check if the native permission has been accepted.
+
+```js
+import { Camera } from 'expo-camera';
+
+if (await Camera.isAvailableAsync()) {}
+```
+
+- **Camera.getAvailableCameraTypesAsync(): string[]**
+
+Returns a list of camera types `['front', 'back']`, this is useful for desktop browsers which only have front-facing cameras.
+
+```js
+import { Camera } from 'expo-camera';
+
+const types = await Camera.getAvailableCameraTypesAsync();
+```
+
 ### props
 
 - **type**

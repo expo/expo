@@ -54,6 +54,10 @@ export default {
   async resumePreview(camera: ExponentCamera): Promise<any> {
     return await camera.resumePreview();
   },
+  async getAvailableCameraTypesAsync(camera: ExponentCamera): Promise<string[]> {
+    if (!canGetUserMedia()) return [];
+    return await camera.getAvailableCameraTypesAsync();
+  },
   async getAvailablePictureSizes(ratio: string, camera: ExponentCamera): Promise<string[]> {
     return await camera.getAvailablePictureSizes(ratio);
   },

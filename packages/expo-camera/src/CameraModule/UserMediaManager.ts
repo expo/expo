@@ -115,12 +115,12 @@ export function canGetUserMedia(): boolean {
   );
 }
 
-export async function supportsFrontCamera(devices?: MediaDeviceInfo[]): Promise<null | string> {  
-    return supportsCameraType(['front', 'user'], 'user', devices);
+export async function isFrontCameraAvailableAsync(devices?: MediaDeviceInfo[]): Promise<null | string> {  
+    return await supportsCameraType(['front', 'user'], 'user', devices);
 }
 
-export async function supportsBackCamera(devices?: MediaDeviceInfo[]): Promise<null | string> {  
-    return supportsCameraType(['back', 'rear'], 'environment', devices);
+export async function isBackCameraAvailableAsync(devices?: MediaDeviceInfo[]): Promise<null | string> {  
+    return await supportsCameraType(['back', 'rear'], 'environment', devices);
 }
 
 async function supportsCameraType(labels: string[], type: string, devices?: MediaDeviceInfo[]): Promise<null | string> {
