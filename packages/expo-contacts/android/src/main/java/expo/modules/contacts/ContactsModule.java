@@ -97,7 +97,7 @@ public class ContactsModule extends ExportedModule {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CALENDAR)) {
+    if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
       permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS);
     } else {
       permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS);
