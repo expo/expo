@@ -27,6 +27,9 @@ public class AdMobModule extends ExportedModule {
 
   @ExpoMethod
   public void setTestDeviceIDAsync(String testDeviceID, Promise promise) {
+    // TODO: use RequestConfiguration.Builder.setTestDeviceIds() and
+    // MobileAds.setRequestConfiguration(configuration) instead of a static field
+    // after upgrading to play-services-ads:18.3.0 or later
     if (testDeviceID == null || "".equals(testDeviceID)) {
       sTestDeviceID = null;
     } else if ("EMULATOR".equals(testDeviceID)) {
