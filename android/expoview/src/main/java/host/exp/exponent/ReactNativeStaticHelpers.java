@@ -34,6 +34,17 @@ public class ReactNativeStaticHelpers {
   }
 
   @DoNotStrip
+  public static void reloadFromManifest(final int activityId) {
+    try {
+      Class.forName("host.exp.exponent.kernel.Kernel")
+          .getMethod("reloadVisibleExperience", int.class)
+          .invoke(null, activityId);
+    } catch(Exception e) {
+      Log.e("reloadFromManifest", "Unable to reload visible experience", e);
+    }
+  }
+
+  @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String mainModuleId,
                                                  String bundleTypeId, String host, boolean devMode,
                                                  boolean jsMinify) {
@@ -62,6 +73,7 @@ public class ReactNativeStaticHelpers {
   @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host, String jsModulePath, boolean devMode, boolean hmr, boolean jsMinify) {
     try {
+
       return (String) Class.forName("host.exp.exponent.kernel.Kernel")
           .getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, boolean.class, boolean.class, boolean.class)
           .invoke(null, activityId, host, jsModulePath, devMode, hmr, jsMinify);

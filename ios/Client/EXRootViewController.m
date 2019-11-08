@@ -145,11 +145,14 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 }
 
-- (void)refreshVisibleApp
+// this is different from Util.reload()
+// because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
+- (void)reloadVisibleApp
 {
-  // this is different from Util.reload()
-  // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
-  [self setIsMenuVisible:NO completion:nil];
+  if (_isMenuVisible) {
+    [self setIsMenuVisible:NO completion:nil];
+  }
+
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;

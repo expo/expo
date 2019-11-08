@@ -677,6 +677,16 @@ public class Exponent {
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
 
+  // TODO: remove once SDK 35 is deprecated
+  public boolean shouldAlwaysReloadFromManifest(String sdkVersion) {
+    if (sdkVersion == null || ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
+      return true;
+    }
+
+    return false;
+  }
+
+
   public void preloadManifestAndBundle(final String manifestUrl) {
     try {
       mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {

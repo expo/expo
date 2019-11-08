@@ -279,11 +279,17 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, getCurrentFocus());
-        if (didDoubleTapR) {
+
+        // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
+        boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
+        if (didDoubleTapR && !shouldReloadFromManifest) {
           // The loading screen is hidden by versioned code when reloading JS so we can't show it
           // on older sdks.
           showLoadingScreen(mManifest);
           devSupportManager.call("handleReloadJS");
+          return true;
+        } else if (didDoubleTapR && shouldReloadFromManifest) {
+          devSupportManager.call("reloadExpoApp");
           return true;
         }
       }

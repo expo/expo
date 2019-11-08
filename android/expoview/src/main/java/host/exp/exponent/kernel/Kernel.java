@@ -741,6 +741,27 @@ public class Kernel extends KernelInterface {
     killOrphanedLauncherActivities();
   }
 
+  @DoNotStrip
+  public static void reloadVisibleExperience(final int activityId) {
+    String manifestUrl = getManifestUrlForActivityId(activityId);
+
+    if (manifestUrl != null) {
+      sInstance.reloadVisibleExperience(manifestUrl, false);
+    }
+  }
+
+  // Called from DevServerHelper via ReactNativeStaticHelpers
+  @DoNotStrip
+  public static String getManifestUrlForActivityId(final int activityId) {
+    for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
+      if (task.activityId == activityId) {
+        return task.manifestUrl;
+      }
+    }
+
+    return null;
+  }
+
   // Called from DevServerHelper via ReactNativeStaticHelpers
   @DoNotStrip
   public static String getBundleUrlForActivityId(final int activityId, String host,
