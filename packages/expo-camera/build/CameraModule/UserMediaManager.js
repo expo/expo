@@ -53,11 +53,8 @@ export async function requestUserMediaAsync(props, isMuted = true) {
     if (canGetUserMedia()) {
         return await sourceSelectedAsync(isMuted, props.audio, props.video);
     }
-    else {
-        const [audio, video] = await requestLegacyUserMediaAsync(props);
-        return await sourceSelectedAsync(isMuted, audio, video);
-    }
-    //   userMediaRequested = true;
+    const [audio, video] = await requestLegacyUserMediaAsync(props);
+    return await sourceSelectedAsync(isMuted, audio, video);
 }
 export async function getAnyUserMediaAsync(constraints, ignoreConstraints = false) {
     try {

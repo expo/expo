@@ -166,7 +166,6 @@ class CameraModule {
 
     if (capabilities.torch) {
       constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
-      console.log('constraints.torch', constraints.torch);
     }
     if (capabilities.whiteBalance) {
       constraints.whiteBalance = this.whiteBalance;

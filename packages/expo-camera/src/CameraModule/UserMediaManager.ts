@@ -76,11 +76,9 @@ export async function requestUserMediaAsync(
 ): Promise<MediaStream> {
   if (canGetUserMedia()) {
     return await sourceSelectedAsync(isMuted, props.audio, props.video);
-  } else {
-    const [audio, video] = await requestLegacyUserMediaAsync(props);
-    return await sourceSelectedAsync(isMuted, audio, video);
   }
-  //   userMediaRequested = true;
+  const [audio, video] = await requestLegacyUserMediaAsync(props);
+  return await sourceSelectedAsync(isMuted, audio, video);
 }
 
 export async function getAnyUserMediaAsync(
