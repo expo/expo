@@ -65,7 +65,7 @@ function getSupportedConstraints() {
     if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
         return navigator.mediaDevices.getSupportedConstraints();
     }
-    return {};
+    return null;
 }
 export function getIdealConstraints(preferredCameraType, width, height) {
     let preferredConstraints = {
@@ -76,9 +76,9 @@ export function getIdealConstraints(preferredCameraType, width, height) {
         return MinimumConstraints;
     }
     const supports = getSupportedConstraints();
-    if (!supports.facingMode || !supports.width || !supports.height) {
+    // TODO: Bacon: Test this
+    if (!supports || !supports.facingMode || !supports.width || !supports.height)
         return MinimumConstraints;
-    }
     if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
         const facingMode = CameraTypeToFacingMode[preferredCameraType];
         if (isWebKit()) {

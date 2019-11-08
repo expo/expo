@@ -6,22 +6,15 @@ export default class ExponentCamera extends React.Component {
     constructor() {
         super(...arguments);
         this.state = { type: null };
-        this._updateCameraProps = async ({ type, zoom, pictureSize, flashMode, autoFocus, 
-        // focusDepth,
-        whiteBalance, }) => {
+        this._updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }) => {
             const { camera } = this;
             if (!camera) {
                 return;
             }
-            await Promise.all([
-                camera.setTypeAsync(type),
-                camera.setPictureSize(pictureSize),
-                camera.setZoomAsync(zoom),
-                camera.setAutoFocusAsync(autoFocus),
-                camera.setWhiteBalanceAsync(whiteBalance),
-                camera.setFlashModeAsync(flashMode),
-                camera.ensureCameraIsRunningAsync(),
-            ]);
+            await camera.setTypeAsync(type);
+            await camera.updateWebCameraSettingsAsync(webCameraSettings);
+            // await camera.setPictureSize(pictureSize as string);
+            await camera.ensureCameraIsRunningAsync();
             const actualCameraType = camera.getActualCameraType();
             if (actualCameraType !== this.state.type) {
                 this.setState({ type: actualCameraType });

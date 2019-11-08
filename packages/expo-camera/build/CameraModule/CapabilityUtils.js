@@ -12,6 +12,19 @@ export function convertFlashModeJSONToNative(input) {
             return false;
     }
 }
+export function convertWhiteBalanceJSONToNative(input) {
+    switch (input) {
+        case 'on':
+        case 'auto':
+            return 'continuous';
+        case 'off':
+            return 'none';
+        case 'singleShot':
+            return 'single-shot';
+        default:
+            return undefined;
+    }
+}
 export function convertAutoFocusJSONToNative(input) {
     switch (input) {
         case 'on':
@@ -22,7 +35,7 @@ export function convertAutoFocusJSONToNative(input) {
         case 'singleShot':
             return 'single-shot';
         default:
-            return input;
+            return undefined;
     }
 }
 //# sourceMappingURL=CapabilityUtils.js.map

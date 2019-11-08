@@ -99,11 +99,11 @@ export function captureImage(video: HTMLVideoElement, pictureOptions: PictureOpt
   return base64;
 }
 
-function getSupportedConstraints(): MediaTrackSupportedConstraints {
+function getSupportedConstraints(): MediaTrackSupportedConstraints | null {
   if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
     return navigator.mediaDevices.getSupportedConstraints();
   }
-  return {};
+  return null;
 }
 
 export function getIdealConstraints(
@@ -121,9 +121,9 @@ export function getIdealConstraints(
   }
 
   const supports = getSupportedConstraints();
-  if (!supports.facingMode || !supports.width || !supports.height) {
+  // TODO: Bacon: Test this
+  if (!supports || !supports.facingMode || !supports.width || !supports.height)
     return MinimumConstraints;
-  }
 
   if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
     const facingMode = CameraTypeToFacingMode[preferredCameraType];
