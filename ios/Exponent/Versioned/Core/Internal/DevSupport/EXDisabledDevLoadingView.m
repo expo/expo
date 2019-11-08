@@ -10,12 +10,18 @@
 
 RCT_EXPORT_METHOD(hide)
 {
-  return;
+  [self sendEventWithName:@"devLoadingView:hide" body:@{}];
 }
 
 RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor)
 {
-  return;
+  [self sendEventWithName:@"devLoadingView:showMessage" body:@{@"message":message}];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"devLoadingView:showMessage", @"devLoadingView:hide"];
 }
 
 @end
+

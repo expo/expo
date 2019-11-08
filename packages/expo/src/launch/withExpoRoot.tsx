@@ -4,6 +4,7 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 
 import Notifications from '../Notifications/Notifications';
+import DevLoadingView from '../environment/DevLoadingView';
 import RootErrorBoundary from './RootErrorBoundary';
 import { InitialProps } from './withExpoRoot.types';
 
@@ -33,6 +34,7 @@ export default function withExpoRoot<P extends InitialProps>(
       return (
         <RootErrorBoundary>
           <AppRootComponent {...combinedProps} />
+          <DevLoadingView />
         </RootErrorBoundary>
       );
     } else {
