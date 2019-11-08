@@ -106,7 +106,7 @@ if (await Camera.isAvailableAsync()) {}
 
 - **Camera.getAvailableCameraTypesAsync(): string[]**
 
-Returns a list of camera types `['front', 'back']`, this is useful for desktop browsers which only have front-facing cameras.
+Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
 
 ```js
 import { Camera } from 'expo-camera';
