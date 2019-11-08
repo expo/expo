@@ -108,22 +108,21 @@ function _onPictureSaved({ nativeEvent }: { nativeEvent: { data: CapturedPicture
 }
 
 export default class Camera extends React.Component<Props> {
-
   static async isAvailableAsync(): Promise<boolean> {
     if (!CameraManager.isAvailableAsync) {
-        throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
+      throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
     }
-    
+
     return await CameraManager.isAvailableAsync();
-}
+  }
 
   static async getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]> {
     if (!CameraManager.getAvailableCameraTypesAsync) {
-        throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
+      throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
     }
-    
+
     return await CameraManager.getAvailableCameraTypesAsync();
-}
+  }
 
   static Constants = {
     Type: CameraManager.Type,

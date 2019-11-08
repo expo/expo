@@ -1,3 +1,5 @@
+/* eslint-env browser */
+
 import invariant from 'invariant';
 
 import { PictureOptions } from '../Camera.types';
@@ -164,7 +166,7 @@ class CameraModule {
 
     if (capabilities.torch) {
       constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
-      console.log('constraints.torch', constraints.torch)
+      console.log('constraints.torch', constraints.torch);
     }
     if (capabilities.whiteBalance) {
       constraints.whiteBalance = this.whiteBalance;
@@ -184,14 +186,14 @@ class CameraModule {
     }
     return await applyConstraints(this.stream.getVideoTracks(), constraints);
   }
-  
+
   private async applyAudioConstraints(constraints: { [key: string]: any }): Promise<boolean> {
     if (!this.stream || !this.stream.getAudioTracks) {
       return false;
     }
     return await applyConstraints(this.stream.getAudioTracks(), constraints);
   }
-  
+
   private async syncTrackCapabilities(): Promise<void> {
     if (this.stream && this.stream.getVideoTracks) {
       await Promise.all(this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track)));
@@ -273,18 +275,18 @@ class CameraModule {
   };
 
   getAvailableCameraTypesAsync = async (): Promise<string[]> => {
-      if (!navigator.mediaDevices.enumerateDevices) {
-          return [];
-      }
-      const devices = await navigator.mediaDevices.enumerateDevices();
+    if (!navigator.mediaDevices.enumerateDevices) {
+      return [];
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices();
 
-      const types: (string | null)[] = await Promise.all([
-        ((await isFrontCameraAvailableAsync(devices)) && CameraType.front),
-        ((await isBackCameraAvailableAsync()) && CameraType.back)
-      ])
+    const types: (string | null)[] = await Promise.all([
+      (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+      (await isBackCameraAvailableAsync()) && CameraType.back,
+    ]);
 
-      return types.filter(Boolean) as string[];
-  }
+    return types.filter(Boolean) as string[];
+  };
 }
 
 function stopMediaStream(stream: MediaStream | null) {
@@ -294,23 +296,31 @@ function stopMediaStream(stream: MediaStream | null) {
   if (isMediaStreamTrack(stream)) stream.stop();
 }
 
-function setVideoSource(video: HTMLVideoElement, stream: MediaStream | MediaSource | Blob | null): void {
+function setVideoSource(
+  video: HTMLVideoElement,
+  stream: MediaStream | MediaSource | Blob | null
+): void {
   try {
     video.srcObject = stream;
   } catch (_) {
     if (stream) {
-      video.src = window.URL.createObjectURL(stream);      
+      video.src = window.URL.createObjectURL(stream);
     } else if (typeof video.src === 'string') {
       window.URL.revokeObjectURL(video.src);
     }
   }
 }
 
-async function applyConstraints(tracks: MediaStreamTrack[], constraints: { [key: string]: any }): Promise<boolean> {
+async function applyConstraints(
+  tracks: MediaStreamTrack[],
+  constraints: { [key: string]: any }
+): Promise<boolean> {
   try {
-    await Promise.all(tracks.map(async track => {
-      await track.applyConstraints({ advanced: [constraints] as any });
-    }));
+    await Promise.all(
+      tracks.map(async track => {
+        await track.applyConstraints({ advanced: [constraints] as any });
+      })
+    );
     return true;
   } catch (_) {
     return false;
@@ -336,11 +346,11 @@ function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolea
 }
 
 function isMediaStreamTrack(input: any): input is MediaStreamTrack {
-  return (typeof input.stop === 'function');
+  return typeof input.stop === 'function';
 }
 
-function convertRange( value: number, r2: number[], r1: number[] = [0, 1] ): number { 
-  return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
+function convertRange(value: number, r2: number[], r1: number[] = [0, 1]): number {
+  return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
 }
 
 export default CameraModule;

@@ -10,7 +10,7 @@ async function requestLegacyUserMediaAsync(props): Promise<any[]> {
   const constraintToSourceId = constraint => {
     const { deviceId } = constraint;
 
-    if (typeof deviceId === "string") {
+    if (typeof deviceId === 'string') {
       return deviceId;
     }
 
@@ -18,23 +18,25 @@ async function requestLegacyUserMediaAsync(props): Promise<any[]> {
       return deviceId[0];
     }
 
-    if (typeof deviceId === "object" && deviceId.ideal) {
+    if (typeof deviceId === 'object' && deviceId.ideal) {
       return deviceId.ideal;
     }
 
     return null;
   };
 
-  // @ts-ignore: https://caniuse.com/#search=getSources Chrome for Android (78) & Samsung Internet (10.1) use this
-  const sources: any[] = await (new Promise((resolve) => MediaStreamTrack.getSources(sources => resolve(sources))))
+  const sources: any[] = await new Promise(resolve =>
+    // @ts-ignore: https://caniuse.com/#search=getSources Chrome for Android (78) & Samsung Internet (10.1) use this
+    MediaStreamTrack.getSources(sources => resolve(sources))
+  );
 
   let audioSource = null;
   let videoSource = null;
 
   sources.forEach(source => {
-    if (source.kind === "audio") {
+    if (source.kind === 'audio') {
       audioSource = source.id;
-    } else if (source.kind === "video") {
+    } else if (source.kind === 'video') {
       videoSource = source.id;
     }
   });
@@ -49,47 +51,53 @@ async function requestLegacyUserMediaAsync(props): Promise<any[]> {
     videoSource = videoSourceId;
   }
 
-  return [
-    optionalSource(audioSource),
-    optionalSource(videoSource)
-  ]
+  return [optionalSource(audioSource), optionalSource(videoSource)];
 }
 
-async function sourceSelectedAsync(isMuted: boolean, audioConstraints?: MediaTrackConstraints | boolean, videoConstraints?: MediaTrackConstraints | boolean): Promise<MediaStream> {
+async function sourceSelectedAsync(
+  isMuted: boolean,
+  audioConstraints?: MediaTrackConstraints | boolean,
+  videoConstraints?: MediaTrackConstraints | boolean
+): Promise<MediaStream> {
   const constraints: MediaStreamConstraints = {
-    video: typeof videoConstraints !== "undefined" ? videoConstraints : true
+    video: typeof videoConstraints !== 'undefined' ? videoConstraints : true,
   };
 
   if (!isMuted) {
-    constraints.audio =
-      typeof audioConstraints !== "undefined" ? audioConstraints : true;
+    constraints.audio = typeof audioConstraints !== 'undefined' ? audioConstraints : true;
   }
 
   return await getAnyUserMediaAsync(constraints);
-};
+}
 
-export async function requestUserMediaAsync(props: { audio?: any; video?: any }, isMuted: boolean = true): Promise<MediaStream> {
+export async function requestUserMediaAsync(
+  props: { audio?: any; video?: any },
+  isMuted: boolean = true
+): Promise<MediaStream> {
   if (canGetUserMedia()) {
     return await sourceSelectedAsync(isMuted, props.audio, props.video);
   } else {
     const [audio, video] = await requestLegacyUserMediaAsync(props);
     return await sourceSelectedAsync(isMuted, audio, video);
   }
-//   userMediaRequested = true;
+  //   userMediaRequested = true;
 }
 
-export async function getAnyUserMediaAsync(constraints: MediaStreamConstraints, ignoreConstraints: boolean = false): Promise<MediaStream> {
-    try {
-        return await getUserMediaAsync({
-            ...constraints,
-            video: ignoreConstraints || constraints.video
-        });
-    } catch (error) {
-        if (!ignoreConstraints && error.name === 'ConstraintNotSatisfiedError') {
-            return await getAnyUserMediaAsync(constraints, true)
-        }
-        throw error;
+export async function getAnyUserMediaAsync(
+  constraints: MediaStreamConstraints,
+  ignoreConstraints: boolean = false
+): Promise<MediaStream> {
+  try {
+    return await getUserMediaAsync({
+      ...constraints,
+      video: ignoreConstraints || constraints.video,
+    });
+  } catch (error) {
+    if (!ignoreConstraints && error.name === 'ConstraintNotSatisfiedError') {
+      return await getAnyUserMediaAsync(constraints, true);
     }
+    throw error;
+  }
 }
 
 export async function getUserMediaAsync(constraints: MediaStreamConstraints): Promise<MediaStream> {
@@ -97,7 +105,8 @@ export async function getUserMediaAsync(constraints: MediaStreamConstraints): Pr
     return navigator.mediaDevices.getUserMedia(constraints);
   }
 
-  const _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'] || navigator['msGetUserMedia'];
+  const _getUserMedia =
+    navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'] || navigator['msGetUserMedia'];
   return new Promise((resolve, reject) =>
     _getUserMedia.call(navigator, constraints, resolve, reject)
   );
@@ -108,42 +117,52 @@ export function canGetUserMedia(): boolean {
     // SSR
     canUseDOM &&
     // Has any form of media API
-    !!((navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
-      navigator['mozGetUserMedia'] || 
+    !!(
+      (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ||
+      navigator['mozGetUserMedia'] ||
       navigator['webkitGetUserMedia'] ||
-      navigator['msGetUserMedia'])
+      navigator['msGetUserMedia']
+    )
   );
 }
 
-export async function isFrontCameraAvailableAsync(devices?: MediaDeviceInfo[]): Promise<null | string> {  
-    return await supportsCameraType(['front', 'user'], 'user', devices);
+export async function isFrontCameraAvailableAsync(
+  devices?: MediaDeviceInfo[]
+): Promise<null | string> {
+  return await supportsCameraType(['front', 'user'], 'user', devices);
 }
 
-export async function isBackCameraAvailableAsync(devices?: MediaDeviceInfo[]): Promise<null | string> {  
-    return await supportsCameraType(['back', 'rear'], 'environment', devices);
+export async function isBackCameraAvailableAsync(
+  devices?: MediaDeviceInfo[]
+): Promise<null | string> {
+  return await supportsCameraType(['back', 'rear'], 'environment', devices);
 }
 
-async function supportsCameraType(labels: string[], type: string, devices?: MediaDeviceInfo[]): Promise<null | string> {
-    if (!devices) {
-        if (!navigator.mediaDevices.enumerateDevices) {
-            return null;
-        }
-        devices = await navigator.mediaDevices.enumerateDevices()
+async function supportsCameraType(
+  labels: string[],
+  type: string,
+  devices?: MediaDeviceInfo[]
+): Promise<null | string> {
+  if (!devices) {
+    if (!navigator.mediaDevices.enumerateDevices) {
+      return null;
     }
-    const cameras = devices.filter(t => t.kind === 'videoinput');
-    const [hasCamera] = cameras.filter((camera) => labels.includes(camera.label.toLowerCase()));
-    const [isCapable] = cameras.filter((camera) => {
-      if (!('getCapabilities' in camera)) {
-        return null;
-      }
-  
-      const capabilities = (camera as any).getCapabilities();
-      if (!capabilities.facingMode) {
-        return null;
-      }
-  
-      return capabilities.facingMode.find((_: string) => type);
-    });
-  
-    return isCapable.deviceId || hasCamera.deviceId || null;
+    devices = await navigator.mediaDevices.enumerateDevices();
   }
+  const cameras = devices.filter(t => t.kind === 'videoinput');
+  const [hasCamera] = cameras.filter(camera => labels.includes(camera.label.toLowerCase()));
+  const [isCapable] = cameras.filter(camera => {
+    if (!('getCapabilities' in camera)) {
+      return null;
+    }
+
+    const capabilities = (camera as any).getCapabilities();
+    if (!capabilities.facingMode) {
+      return null;
+    }
+
+    return capabilities.facingMode.find((_: string) => type);
+  });
+
+  return isCapable.deviceId || hasCamera.deviceId || null;
+}

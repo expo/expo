@@ -6,26 +6,27 @@ async function requestLegacyUserMediaAsync(props) {
     const optionalSource = id => ({ optional: [{ sourceId: id }] });
     const constraintToSourceId = constraint => {
         const { deviceId } = constraint;
-        if (typeof deviceId === "string") {
+        if (typeof deviceId === 'string') {
             return deviceId;
         }
         if (Array.isArray(deviceId) && deviceId.length > 0) {
             return deviceId[0];
         }
-        if (typeof deviceId === "object" && deviceId.ideal) {
+        if (typeof deviceId === 'object' && deviceId.ideal) {
             return deviceId.ideal;
         }
         return null;
     };
+    const sources = await new Promise(resolve => 
     // @ts-ignore: https://caniuse.com/#search=getSources Chrome for Android (78) & Samsung Internet (10.1) use this
-    const sources = await (new Promise((resolve) => MediaStreamTrack.getSources(sources => resolve(sources))));
+    MediaStreamTrack.getSources(sources => resolve(sources)));
     let audioSource = null;
     let videoSource = null;
     sources.forEach(source => {
-        if (source.kind === "audio") {
+        if (source.kind === 'audio') {
             audioSource = source.id;
         }
-        else if (source.kind === "video") {
+        else if (source.kind === 'video') {
             videoSource = source.id;
         }
     });
@@ -37,22 +38,17 @@ async function requestLegacyUserMediaAsync(props) {
     if (videoSourceId) {
         videoSource = videoSourceId;
     }
-    return [
-        optionalSource(audioSource),
-        optionalSource(videoSource)
-    ];
+    return [optionalSource(audioSource), optionalSource(videoSource)];
 }
 async function sourceSelectedAsync(isMuted, audioConstraints, videoConstraints) {
     const constraints = {
-        video: typeof videoConstraints !== "undefined" ? videoConstraints : true
+        video: typeof videoConstraints !== 'undefined' ? videoConstraints : true,
     };
     if (!isMuted) {
-        constraints.audio =
-            typeof audioConstraints !== "undefined" ? audioConstraints : true;
+        constraints.audio = typeof audioConstraints !== 'undefined' ? audioConstraints : true;
     }
     return await getAnyUserMediaAsync(constraints);
 }
-;
 export async function requestUserMediaAsync(props, isMuted = true) {
     if (canGetUserMedia()) {
         return await sourceSelectedAsync(isMuted, props.audio, props.video);
@@ -67,7 +63,7 @@ export async function getAnyUserMediaAsync(constraints, ignoreConstraints = fals
     try {
         return await getUserMediaAsync({
             ...constraints,
-            video: ignoreConstraints || constraints.video
+            video: ignoreConstraints || constraints.video,
         });
     }
     catch (error) {
@@ -108,8 +104,8 @@ async function supportsCameraType(labels, type, devices) {
         devices = await navigator.mediaDevices.enumerateDevices();
     }
     const cameras = devices.filter(t => t.kind === 'videoinput');
-    const [hasCamera] = cameras.filter((camera) => labels.includes(camera.label.toLowerCase()));
-    const [isCapable] = cameras.filter((camera) => {
+    const [hasCamera] = cameras.filter(camera => labels.includes(camera.label.toLowerCase()));
+    const [isCapable] = cameras.filter(camera => {
         if (!('getCapabilities' in camera)) {
             return null;
         }

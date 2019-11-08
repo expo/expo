@@ -108,6 +108,6 @@ export async function getStreamDevice(preferredCameraType, preferredWidth, prefe
     return stream;
 }
 export function isWebKit() {
-    return (/WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent));
+    return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 }
 //# sourceMappingURL=CameraUtils.js.map

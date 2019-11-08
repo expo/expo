@@ -73,7 +73,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
   getAvailableCameraTypesAsync = async (): Promise<string[]> => {
     const camera = this.getCamera();
     return await camera.getAvailableCameraTypesAsync();
-  }
+  };
 
   resumePreview = async (): Promise<void> => {
     const camera = this.getCamera();
@@ -119,7 +119,7 @@ export default class ExponentCamera extends React.Component<NativeProps> {
   render() {
     const { pointerEvents } = this.props;
 
-    // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos. 
+    // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
     // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
     const isMuted = true;
 
@@ -131,14 +131,14 @@ export default class ExponentCamera extends React.Component<NativeProps> {
 
     return (
       <View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
-        <Video 
-          autoPlay 
-          playsInline 
-          muted={isMuted} 
-          pointerEvents={pointerEvents} 
-          ref={this._setRef} 
-          style={[StyleSheet.absoluteFill, styles.video, style]} 
-          />
+        <Video
+          autoPlay
+          playsInline
+          muted={isMuted}
+          pointerEvents={pointerEvents}
+          ref={this._setRef}
+          style={[StyleSheet.absoluteFill, styles.video, style]}
+        />
         {this.props.children}
       </View>
     );
@@ -156,5 +156,5 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-  }
+  },
 });

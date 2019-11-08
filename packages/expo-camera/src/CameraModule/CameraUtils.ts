@@ -126,7 +126,6 @@ export function getIdealConstraints(
   }
 
   if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
-
     const facingMode = CameraTypeToFacingMode[preferredCameraType];
     if (isWebKit()) {
       const key = facingMode === 'user' ? 'exact' : 'ideal';
@@ -167,5 +166,5 @@ export async function getStreamDevice(
 }
 
 export function isWebKit(): boolean {
-  return (/WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent))
+  return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 }

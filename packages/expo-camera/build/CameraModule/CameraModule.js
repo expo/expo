@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
@@ -27,8 +28,8 @@ class CameraModule {
             }
             const devices = await navigator.mediaDevices.enumerateDevices();
             const types = await Promise.all([
-                ((await isFrontCameraAvailableAsync(devices)) && CameraType.front),
-                ((await isBackCameraAvailableAsync()) && CameraType.back)
+                (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+                (await isBackCameraAvailableAsync()) && CameraType.back,
             ]);
             return types.filter(Boolean);
         };
@@ -258,10 +259,10 @@ function isCapabilityAvailable(video, keyName) {
     return false;
 }
 function isMediaStreamTrack(input) {
-    return (typeof input.stop === 'function');
+    return typeof input.stop === 'function';
 }
 function convertRange(value, r2, r1 = [0, 1]) {
-    return (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
+    return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
 }
 export default CameraModule;
 //# sourceMappingURL=CameraModule.js.map

@@ -94,7 +94,7 @@ export default class ExponentCamera extends React.Component {
     }
     render() {
         const { pointerEvents } = this.props;
-        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos. 
+        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
         // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
         const isMuted = true;
         const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
@@ -118,6 +118,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         objectFit: 'cover',
-    }
+    },
 });
 //# sourceMappingURL=ExponentCamera.web.js.map
