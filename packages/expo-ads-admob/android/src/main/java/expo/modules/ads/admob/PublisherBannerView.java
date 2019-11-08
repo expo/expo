@@ -16,7 +16,6 @@ import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class PublisherBannerView extends FrameLayout implements AppEventListener {
-  private String testDeviceID = null;
   private Bundle mAdditionalRequestParams;
 
   private EventEmitter mEventEmitter;
@@ -129,21 +128,14 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
     }
   }
 
-  public void setPropTestDeviceID(final String testDeviceID) {
-    this.testDeviceID = testDeviceID;
-  }
-
   private void loadAd(final PublisherAdView adView) {
     if (adView.getAdSizes() != null && adView.getAdUnitId() != null && mAdditionalRequestParams != null) {
       PublisherAdRequest.Builder adRequestBuilder =
           new PublisherAdRequest.Builder()
               .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams);
+      String testDeviceID = AdMobModule.getTestDeviceID();
       if (testDeviceID != null) {
-        if (testDeviceID.equals("EMULATOR")) {
-          adRequestBuilder = adRequestBuilder.addTestDevice(PublisherAdRequest.DEVICE_ID_EMULATOR);
-        } else {
-          adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
-        }
+        adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
       }
       PublisherAdRequest adRequest = adRequestBuilder.build();
       adView.loadAd(adRequest);

@@ -1,6 +1,5 @@
 #import <UMCore/UMEventEmitterService.h>
 #import <EXAdsAdMob/EXAdsDFPBannerView.h>
-#import <EXAdsAdMob/EXAdsAdMobUtils.h>
 
 @implementation EXAdsDFPBannerView {
   DFPBannerView *_bannerView;
@@ -43,9 +42,6 @@
     _bannerView.delegate = self;
     _bannerView.adUnitID = _adUnitID;
     _bannerView.rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    if (_testDeviceID) {
-      [EXAdsAdMobUtils setGlobalTestDeviceIdentifier:_testDeviceID];
-    }
     GADRequest *request = [GADRequest request];
     GADExtras *extras = [[GADExtras alloc] init];
     extras.additionalParameters = _additionalRequestParams;
@@ -97,17 +93,6 @@
 {
   if (![additionalRequestParams isEqual:_additionalRequestParams]) {
     _additionalRequestParams = additionalRequestParams;
-    if (_bannerView) {
-      [_bannerView removeFromSuperview];
-    }
-    [self loadBanner];
-  }
-}
-
-// TODO: remove in SDK 37
-- (void)setTestDeviceID:(NSString *)testDeviceID {
-  if (![testDeviceID isEqual:_testDeviceID]) {
-    _testDeviceID = testDeviceID;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
     }

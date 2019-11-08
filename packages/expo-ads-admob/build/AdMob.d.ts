@@ -1,2 +1,1 @@
-export declare function _getTestDeviceID(): string | null;
-export declare function setTestDeviceID(testDeviceID: string | null): Promise<void>;
+export declare function setTestDeviceIDAsync(testDeviceID: string | null): Promise<void>;

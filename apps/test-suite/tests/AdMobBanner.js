@@ -1,5 +1,5 @@
 'use strict';
-import { AdMobBanner, setTestDeviceID } from 'expo-ads-admob';
+import { AdMobBanner, setTestDeviceIDAsync } from 'expo-ads-admob';
 import { forEach } from 'lodash';
 import React from 'react';
 
@@ -22,7 +22,7 @@ const sizes = [
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('AdMobBanner', () => {
-    t.beforeAll(async () => await setTestDeviceID('EMULATOR'));
+    t.beforeAll(async () => await setTestDeviceIDAsync('EMULATOR'));
     t.afterEach(async () => await cleanupPortal());
 
     const mountAndWaitFor = (child, propName = 'onAdViewDidReceiveAd') =>

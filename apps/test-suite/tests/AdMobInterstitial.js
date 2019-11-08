@@ -1,13 +1,13 @@
 import { Platform } from 'react-native';
-import { AdMobInterstitial, setTestDeviceID } from 'expo-ads-admob';
+import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
 
 export const name = 'AdMobInterstitial';
 
 export function test(t) {
   t.describe('AdMobInterstitial', () => {
-    t.describe('setTestDeviceID', () => {
+    t.describe('setTestDeviceIDAsync', () => {
       t.it('successfully sets Test Device ID for interstitial ads', () => {
-        t.expect(setTestDeviceID('EMULATOR')).not.toBeNull();
+        t.expect(setTestDeviceIDAsync('EMULATOR')).not.toBeNull();
       });
     });
 

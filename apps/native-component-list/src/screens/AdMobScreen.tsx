@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Platform, Switch, Text } from 'react-native';
-import { AdMobBanner, AdMobInterstitial, AdMobRewarded, setTestDeviceID } from 'expo-ads-admob';
+import { AdMobBanner, AdMobInterstitial, AdMobRewarded, setTestDeviceIDAsync } from 'expo-ads-admob';
 import Button from '../components/Button';
 
 export default class AdMobScreen extends React.Component {
@@ -16,7 +16,7 @@ export default class AdMobScreen extends React.Component {
 
   constructor(props: object) {
     super(props);
-    setTestDeviceID('EMULATOR');
+    setTestDeviceIDAsync('EMULATOR');
     AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
     AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
   }

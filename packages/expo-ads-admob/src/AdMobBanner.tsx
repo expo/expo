@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
 
-import { _getTestDeviceID } from './AdMob';
-
 type PropsType = React.ComponentProps<typeof View> & {
   /**
    * AdMob iOS library banner size constants
@@ -31,11 +29,6 @@ type PropsType = React.ComponentProps<typeof View> & {
    * AdMob ad unit ID
    */
   adUnitID?: string;
-
-  /**
-   * Test device ID
-   */
-  testDeviceID?: string;
 
   /**
    * Additional request params added to underlying request for the ad.
@@ -80,7 +73,6 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
       'smartBannerLandscape',
     ]),
     adUnitID: PropTypes.string,
-    testDeviceID: PropTypes.string,
     servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
     additionalRequestParams: PropTypes.object,
@@ -112,9 +104,9 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
     if (!this.props.servePersonalizedAds) {
       additionalRequestParams.npa = '1';
     }
-    if (this.props.testDeviceID && !_hasWarnedAboutTestDeviceID) {
+    if ((this.props as any).testDeviceID && !_hasWarnedAboutTestDeviceID) {
       console.warn(
-        'The `testDeviceID` prop of AdMobBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.'
+        'The `testDeviceID` prop of AdMobBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.'
       );
       _hasWarnedAboutTestDeviceID = true;
     }
@@ -124,7 +116,6 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
           style={this.state.style}
           adUnitID={this.props.adUnitID}
           bannerSize={this.props.bannerSize}
-          testDeviceID={this.props.testDeviceID || _getTestDeviceID()}
           onSizeChange={this._handleSizeChange}
           additionalRequestParams={additionalRequestParams}
           onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}

@@ -2,7 +2,6 @@ import { requireNativeViewManager } from '@unimodules/core';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
-import { _getTestDeviceID } from './AdMob';
 let _hasWarnedAboutTestDeviceID = false;
 export default class PublisherBanner extends React.Component {
     constructor() {
@@ -27,7 +26,7 @@ export default class PublisherBanner extends React.Component {
             _hasWarnedAboutTestDeviceID = true;
         }
         return (<View style={this.props.style}>
-        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} testDeviceID={this.props.testDeviceID || _getTestDeviceID()} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication} onAdmobDispatchAppEvent={this.props.onAdMobDispatchAppEvent}/>
+        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication} onAdmobDispatchAppEvent={this.props.onAdMobDispatchAppEvent}/>
       </View>);
     }
 }
@@ -42,7 +41,6 @@ PublisherBanner.propTypes = {
         'smartBannerLandscape',
     ]),
     adUnitID: PropTypes.string,
-    testDeviceID: PropTypes.string,
     servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
     additionalRequestParams: PropTypes.object,

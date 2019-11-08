@@ -70,14 +70,6 @@ UM_EXPORT_METHOD_AS(setAdUnitID,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setTestDeviceID,
-                    setTestDeviceID:(NSString *)testDeviceID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  // stub for jest-expo-mock-generator
-}
-
 UM_EXPORT_METHOD_AS(requestAd,
                     requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
                     resolver:(UMPromiseResolveBlock)resolve

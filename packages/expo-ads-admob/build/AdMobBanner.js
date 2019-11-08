@@ -2,7 +2,6 @@ import { requireNativeViewManager } from '@unimodules/core';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { View, ViewPropTypes } from 'react-native';
-import { _getTestDeviceID } from './AdMob';
 let _hasWarnedAboutTestDeviceID = false;
 export default class AdMobBanner extends React.Component {
     constructor() {
@@ -23,11 +22,11 @@ export default class AdMobBanner extends React.Component {
             additionalRequestParams.npa = '1';
         }
         if (this.props.testDeviceID && !_hasWarnedAboutTestDeviceID) {
-            console.warn('The `testDeviceID` prop of AdMobBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.');
+            console.warn('The `testDeviceID` prop of AdMobBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.');
             _hasWarnedAboutTestDeviceID = true;
         }
         return (<View style={this.props.style}>
-        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} testDeviceID={this.props.testDeviceID || _getTestDeviceID()} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}/>
+        <ExpoBannerView style={this.state.style} adUnitID={this.props.adUnitID} bannerSize={this.props.bannerSize} onSizeChange={this._handleSizeChange} additionalRequestParams={additionalRequestParams} onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd} onDidFailToReceiveAdWithError={this._handleDidFailToReceiveAdWithError} onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen} onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen} onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen} onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}/>
       </View>);
     }
 }
@@ -42,7 +41,6 @@ AdMobBanner.propTypes = {
         'smartBannerLandscape',
     ]),
     adUnitID: PropTypes.string,
-    testDeviceID: PropTypes.string,
     servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
     additionalRequestParams: PropTypes.object,

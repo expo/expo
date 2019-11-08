@@ -1,7 +1,7 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
-import { setTestDeviceID } from './AdMob';
+import { setTestDeviceIDAsync } from './AdMob';
 
 const moduleName = 'AdMobRewarded';
 
@@ -44,9 +44,9 @@ export default {
   },
   async setTestDeviceID(id: string): Promise<void> {
     console.warn(
-      'AdMobRewarded.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.'
+      'AdMobRewarded.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.'
     );
-    setTestDeviceID(id);
+    await setTestDeviceIDAsync(id);
   },
   async requestAdAsync(
     options: {

@@ -3890,8 +3890,6 @@ CACHE_KEYS:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobInterstitial.m"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobRewarded.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobRewarded.m"
-      - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobUtils.h"
-      - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMobUtils.m"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsDFPBannerView.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsDFPBannerView.m"
     PROJECT_NAME: EXAdsAdMob

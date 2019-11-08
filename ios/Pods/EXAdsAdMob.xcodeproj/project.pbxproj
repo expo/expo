@@ -7,77 +7,66 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		070FEBA32370FB1200FED60E /* EXAdsAdMob.m in Sources */ = {isa = PBXBuildFile; fileRef = 070FEBA22370FB1200FED60E /* EXAdsAdMob.m */; };
-		070FEBA52370FB2500FED60E /* EXAdsAdMob.h in Headers */ = {isa = PBXBuildFile; fileRef = 070FEBA42370FB2500FED60E /* EXAdsAdMob.h */; };
-		0AFF2DB4D9F846C55CA537A7A28FF8BA /* EXAdsAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = C8CAFBF3127237728FC780196E6D11F4 /* EXAdsAdMobInterstitial.m */; };
-		14D34DFE540AD3B03342CB1E70699178 /* EXAdsAdMobBannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 267E81F0C23FFA4C6B451BFBC5ABBAE1 /* EXAdsAdMobBannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1ED95FD8AA17D870645FEE3E95AC992A /* EXAdsAdMobDFPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 620FDBCA7583F9F124755A77BB5AC2AF /* EXAdsAdMobDFPManager.m */; };
-		30D5B8C1FC9448201747B7A3780C5D08 /* EXAdsAdMobBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 895D4FEBF2AD0758B3079EEBF16B58C6 /* EXAdsAdMobBannerViewManager.m */; };
-		37275C7116623BE548EF5CC8606E8199 /* EXAdsAdMobRewarded.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AD7E94FBBBEBB667BF391E8F126748 /* EXAdsAdMobRewarded.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		41850E60A805A378520C88B64B1D34B9 /* EXAdsAdMobRewarded.m in Sources */ = {isa = PBXBuildFile; fileRef = 10A71FC66CC1BE16CDE974EF75774E92 /* EXAdsAdMobRewarded.m */; };
-		4DE6E39CC04FB846A8AA4E29BB722541 /* EXAdsDFPBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 888A7BFDDA4869D8180FD89C5408B07C /* EXAdsDFPBannerView.m */; };
-		5DF12FD9983B5FCB670FC56D0F9F4A20 /* EXAdsAdMob-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C29307A10C29869701A15E3F5A9F3AA /* EXAdsAdMob-dummy.m */; };
-		666B7C77B5429CCEA2FB816101618831 /* EXAdsDFPBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = CBED4A1CC2B8961EB7E6FD5CEAE56FF7 /* EXAdsDFPBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6BBBED8DF40EA8E6F605FB55E2AA35CB /* EXAdsAdMobUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 91C316AEC060160CC61F400EE70EED18 /* EXAdsAdMobUtils.m */; };
-		8018FE79719BDFE96A9AC9BB421FBBC1 /* EXAdsAdMobInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = C4E0B46E7AFF867AA6B0FF61288F1167 /* EXAdsAdMobInterstitial.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8FCA4EC9398C106CFB9BC5086DA5C5E5 /* EXAdsAdMobUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 003D3805D5132A7E8FBDB41C7F746697 /* EXAdsAdMobUtils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9014D92A3EC38B25D398D14A22681FA9 /* EXAdsAdMobDFPManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 741B89BBBBCB73AA7FA915B691F9AA10 /* EXAdsAdMobDFPManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A52AC535A60CCE8F0E56F25368AF33C7 /* EXAdsAdMobBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 761FF8F0317844E4EE9BF9F0CE71CAEA /* EXAdsAdMobBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B17F319893B5D95565FF8459BC1552AF /* EXAdsAdMobBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4013493966CC44C66D452CDFF3E2767E /* EXAdsAdMobBannerView.m */; };
+		1CA7E5134A89D3EA8FB74D64F1E78C23 /* EXAdsAdMob-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 15CEEABBC656C52EA3840AB92F2E8BA5 /* EXAdsAdMob-dummy.m */; };
+		3786A5F706F3B974A18B6388C061A71F /* EXAdsDFPBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAED73026F573C9BA61945E2B8CEC20 /* EXAdsDFPBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		42B35862269CA8421EA6828E95B591BB /* EXAdsAdMobDFPManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A56690D8BF10380BBC356327371C8F7 /* EXAdsAdMobDFPManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		56F73D5CBB4195411971C5146BB2DBFC /* EXAdsAdMobInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 110DF293E9AE933D17EF6EAEDFB56D13 /* EXAdsAdMobInterstitial.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		57B5472A47D3E6B506EC3C50A7155D5F /* EXAdsAdMobDFPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DA50B13A6CF97CDE879223DAA0B01D65 /* EXAdsAdMobDFPManager.m */; };
+		5B5DD4A58627182D435AA67FB24CF609 /* EXAdsAdMobBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E02FD67AAF1C6F905BE7E77071CB9AD /* EXAdsAdMobBannerViewManager.m */; };
+		7C2906FB4D7F13F3558056A1F7162935 /* EXAdsAdMobRewarded.h in Headers */ = {isa = PBXBuildFile; fileRef = 29FF911D051EC7D9DCE991BA6A1CDDA5 /* EXAdsAdMobRewarded.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		89CB699E0E112F3ACEBE4BB12364CB00 /* EXAdsAdMobBannerViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E4BBFEC4F6B98BA60CD3EC1BB519FE5E /* EXAdsAdMobBannerViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		944C4BE9E41BAD08FFCE979F1249AC14 /* EXAdsAdMob.m in Sources */ = {isa = PBXBuildFile; fileRef = 44A4DF8C9AEC6E2DF939026FCF56DEC1 /* EXAdsAdMob.m */; };
+		BCAC6888F93746DB887B0BA0FE6CC730 /* EXAdsAdMobRewarded.m in Sources */ = {isa = PBXBuildFile; fileRef = 3466A9D5AF89F095D3514168C4D8F856 /* EXAdsAdMobRewarded.m */; };
+		C85027E4BCB8AB0E8FEB9DFF4502BB11 /* EXAdsDFPBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 867C70D87E80689AEF6EF584ECC3A3C9 /* EXAdsDFPBannerView.m */; };
+		CEC502E6CE36B3AAAFF207524671BE08 /* EXAdsAdMobBannerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BCCB1EF3EC7F55485F4C1073BCF9A80 /* EXAdsAdMobBannerView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E2515D72F28B205FC2905B0C0024FDB2 /* EXAdsAdMob.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A04B47FE98A460B2D0C6D74A60C46C4 /* EXAdsAdMob.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EF56AF60AF47AD814C6F18D93B7E178D /* EXAdsAdMobBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E74C924582A742EAC436BBBF4A750F1 /* EXAdsAdMobBannerView.m */; };
+		FA7BE33CECF6A6A4C304828963A57865 /* EXAdsAdMobInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = D0EA9F701369B5BDE5B2AB1C8B8DD362 /* EXAdsAdMobInterstitial.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		070FEB9F2370F84A00FED60E /* PBXContainerItemProxy */ = {
+		0E081DC952F7F7EA50F8716EB14349E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore */;
-			proxyType = 2;
-			remoteGlobalIDString = B028FE6A90DCDB619E0BA9877EB50D3B;
-			remoteInfo = UMCore;
-		};
-		27F3DAADC1BACE77CF7F830DFD1FDB08 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		52C027FAE063564C6745CC1E40A1EBC1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0202F16D9BF6CB3D361825B358C03E54 /* Google-Mobile-Ads-SDK */;
+			containerPortal = 0202F16D9BF6CB3D361825B358C03E54 /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
 			remoteInfo = "Google-Mobile-Ads-SDK";
 		};
+		1D6D6EAC59EA831CCB0DF47EF869DF50 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		003D3805D5132A7E8FBDB41C7F746697 /* EXAdsAdMobUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobUtils.h; path = EXAdsAdMob/EXAdsAdMobUtils.h; sourceTree = "<group>"; };
 		0202F16D9BF6CB3D361825B358C03E54 /* Google-Mobile-Ads-SDK */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Mobile-Ads-SDK"; path = "Google-Mobile-Ads-SDK.xcodeproj"; sourceTree = "<group>"; };
-		070FEBA22370FB1200FED60E /* EXAdsAdMob.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMob.m; path = EXAdsAdMob/EXAdsAdMob.m; sourceTree = "<group>"; };
-		070FEBA42370FB2500FED60E /* EXAdsAdMob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMob.h; path = EXAdsAdMob/EXAdsAdMob.h; sourceTree = "<group>"; };
-		10A71FC66CC1BE16CDE974EF75774E92 /* EXAdsAdMobRewarded.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobRewarded.m; path = EXAdsAdMob/EXAdsAdMobRewarded.m; sourceTree = "<group>"; };
-		13882DE288161133E0D4136CD7B8C9B9 /* EXAdsAdMob-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAdsAdMob-prefix.pch"; sourceTree = "<group>"; };
-		267E81F0C23FFA4C6B451BFBC5ABBAE1 /* EXAdsAdMobBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobBannerViewManager.h; path = EXAdsAdMob/EXAdsAdMobBannerViewManager.h; sourceTree = "<group>"; };
-		4013493966CC44C66D452CDFF3E2767E /* EXAdsAdMobBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobBannerView.m; path = EXAdsAdMob/EXAdsAdMobBannerView.m; sourceTree = "<group>"; };
-		5C29307A10C29869701A15E3F5A9F3AA /* EXAdsAdMob-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAdsAdMob-dummy.m"; sourceTree = "<group>"; };
-		620FDBCA7583F9F124755A77BB5AC2AF /* EXAdsAdMobDFPManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobDFPManager.m; path = EXAdsAdMob/EXAdsAdMobDFPManager.m; sourceTree = "<group>"; };
-		63AD7E94FBBBEBB667BF391E8F126748 /* EXAdsAdMobRewarded.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobRewarded.h; path = EXAdsAdMob/EXAdsAdMobRewarded.h; sourceTree = "<group>"; };
-		6C49EDA064966922BCF6B23B02C8FA9C /* EXAdsAdMob.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAdsAdMob.xcconfig; sourceTree = "<group>"; };
-		741B89BBBBCB73AA7FA915B691F9AA10 /* EXAdsAdMobDFPManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobDFPManager.h; path = EXAdsAdMob/EXAdsAdMobDFPManager.h; sourceTree = "<group>"; };
-		761FF8F0317844E4EE9BF9F0CE71CAEA /* EXAdsAdMobBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobBannerView.h; path = EXAdsAdMob/EXAdsAdMobBannerView.h; sourceTree = "<group>"; };
-		888A7BFDDA4869D8180FD89C5408B07C /* EXAdsDFPBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsDFPBannerView.m; path = EXAdsAdMob/EXAdsDFPBannerView.m; sourceTree = "<group>"; };
-		895D4FEBF2AD0758B3079EEBF16B58C6 /* EXAdsAdMobBannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobBannerViewManager.m; path = EXAdsAdMob/EXAdsAdMobBannerViewManager.m; sourceTree = "<group>"; };
+		110DF293E9AE933D17EF6EAEDFB56D13 /* EXAdsAdMobInterstitial.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobInterstitial.h; path = EXAdsAdMob/EXAdsAdMobInterstitial.h; sourceTree = "<group>"; };
+		15CEEABBC656C52EA3840AB92F2E8BA5 /* EXAdsAdMob-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAdsAdMob-dummy.m"; sourceTree = "<group>"; };
+		1A56690D8BF10380BBC356327371C8F7 /* EXAdsAdMobDFPManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobDFPManager.h; path = EXAdsAdMob/EXAdsAdMobDFPManager.h; sourceTree = "<group>"; };
+		29FF911D051EC7D9DCE991BA6A1CDDA5 /* EXAdsAdMobRewarded.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobRewarded.h; path = EXAdsAdMob/EXAdsAdMobRewarded.h; sourceTree = "<group>"; };
+		3466A9D5AF89F095D3514168C4D8F856 /* EXAdsAdMobRewarded.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobRewarded.m; path = EXAdsAdMob/EXAdsAdMobRewarded.m; sourceTree = "<group>"; };
+		3E74C924582A742EAC436BBBF4A750F1 /* EXAdsAdMobBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobBannerView.m; path = EXAdsAdMob/EXAdsAdMobBannerView.m; sourceTree = "<group>"; };
+		44A4DF8C9AEC6E2DF939026FCF56DEC1 /* EXAdsAdMob.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMob.m; path = EXAdsAdMob/EXAdsAdMob.m; sourceTree = "<group>"; };
+		6BCCB1EF3EC7F55485F4C1073BCF9A80 /* EXAdsAdMobBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobBannerView.h; path = EXAdsAdMob/EXAdsAdMobBannerView.h; sourceTree = "<group>"; };
+		867C70D87E80689AEF6EF584ECC3A3C9 /* EXAdsDFPBannerView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsDFPBannerView.m; path = EXAdsAdMob/EXAdsDFPBannerView.m; sourceTree = "<group>"; };
 		8D089FF9D6EA9507F9F204CFAE372317 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		91C316AEC060160CC61F400EE70EED18 /* EXAdsAdMobUtils.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobUtils.m; path = EXAdsAdMob/EXAdsAdMobUtils.m; sourceTree = "<group>"; };
-		C4E0B46E7AFF867AA6B0FF61288F1167 /* EXAdsAdMobInterstitial.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobInterstitial.h; path = EXAdsAdMob/EXAdsAdMobInterstitial.h; sourceTree = "<group>"; };
-		C8CAFBF3127237728FC780196E6D11F4 /* EXAdsAdMobInterstitial.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobInterstitial.m; path = EXAdsAdMob/EXAdsAdMobInterstitial.m; sourceTree = "<group>"; };
-		CBED4A1CC2B8961EB7E6FD5CEAE56FF7 /* EXAdsDFPBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsDFPBannerView.h; path = EXAdsAdMob/EXAdsDFPBannerView.h; sourceTree = "<group>"; };
-		DE275A9F7A0F8ED476B5B97072D0120C /* EXAdsAdMob.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = EXAdsAdMob.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		F552DCA22AF6F6A8BF31C9610BEC3D98 /* libEXAdsAdMob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEXAdsAdMob.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E02FD67AAF1C6F905BE7E77071CB9AD /* EXAdsAdMobBannerViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobBannerViewManager.m; path = EXAdsAdMob/EXAdsAdMobBannerViewManager.m; sourceTree = "<group>"; };
+		9A04B47FE98A460B2D0C6D74A60C46C4 /* EXAdsAdMob.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMob.h; path = EXAdsAdMob/EXAdsAdMob.h; sourceTree = "<group>"; };
+		A4D470D2ABB94008EEB6856D6430CD9B /* EXAdsAdMob.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAdsAdMob.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D0EA9F701369B5BDE5B2AB1C8B8DD362 /* EXAdsAdMobInterstitial.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobInterstitial.m; path = EXAdsAdMob/EXAdsAdMobInterstitial.m; sourceTree = "<group>"; };
+		DA50B13A6CF97CDE879223DAA0B01D65 /* EXAdsAdMobDFPManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAdsAdMobDFPManager.m; path = EXAdsAdMob/EXAdsAdMobDFPManager.m; sourceTree = "<group>"; };
+		E4BBFEC4F6B98BA60CD3EC1BB519FE5E /* EXAdsAdMobBannerViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsAdMobBannerViewManager.h; path = EXAdsAdMob/EXAdsAdMobBannerViewManager.h; sourceTree = "<group>"; };
+		ECEB960EEFA5ED9BA361A701CA5DEC45 /* EXAdsAdMob.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAdsAdMob.xcconfig; sourceTree = "<group>"; };
+		F552DCA22AF6F6A8BF31C9610BEC3D98 /* libEXAdsAdMob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAdsAdMob.a; path = libEXAdsAdMob.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAAED73026F573C9BA61945E2B8CEC20 /* EXAdsDFPBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAdsDFPBannerView.h; path = EXAdsAdMob/EXAdsDFPBannerView.h; sourceTree = "<group>"; };
+		FE2FFC6229FFDDB1A03000882036B818 /* EXAdsAdMob-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAdsAdMob-prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0F89F19F3524501BCE8EA6A2AE9E7809 /* Frameworks */ = {
+		2727ACF3F5E084D95AF350EE4364A61C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -87,21 +76,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		070FEAF72370F7F400FED60E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				070FEBA02370F84A00FED60E /* libUMCore.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		070FEAF92370F7F400FED60E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		230A7C7D12F40C2ED21F869302A9DFFD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,15 +83,36 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		2F2858D459C1CDFB90288B0C3826D81A /* Support Files */ = {
+		2A935FEBA3DB287417D5FDC278504518 /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				6C49EDA064966922BCF6B23B02C8FA9C /* EXAdsAdMob.xcconfig */,
-				5C29307A10C29869701A15E3F5A9F3AA /* EXAdsAdMob-dummy.m */,
-				13882DE288161133E0D4136CD7B8C9B9 /* EXAdsAdMob-prefix.pch */,
+				A4D470D2ABB94008EEB6856D6430CD9B /* EXAdsAdMob.podspec */,
 			);
-			name = "Support Files";
-			path = "../../../ios/Pods/Target Support Files/EXAdsAdMob";
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		353D878970A31BCB981D03FA9E121EB3 /* EXAdsAdMob */ = {
+			isa = PBXGroup;
+			children = (
+				9A04B47FE98A460B2D0C6D74A60C46C4 /* EXAdsAdMob.h */,
+				44A4DF8C9AEC6E2DF939026FCF56DEC1 /* EXAdsAdMob.m */,
+				6BCCB1EF3EC7F55485F4C1073BCF9A80 /* EXAdsAdMobBannerView.h */,
+				3E74C924582A742EAC436BBBF4A750F1 /* EXAdsAdMobBannerView.m */,
+				E4BBFEC4F6B98BA60CD3EC1BB519FE5E /* EXAdsAdMobBannerViewManager.h */,
+				8E02FD67AAF1C6F905BE7E77071CB9AD /* EXAdsAdMobBannerViewManager.m */,
+				1A56690D8BF10380BBC356327371C8F7 /* EXAdsAdMobDFPManager.h */,
+				DA50B13A6CF97CDE879223DAA0B01D65 /* EXAdsAdMobDFPManager.m */,
+				110DF293E9AE933D17EF6EAEDFB56D13 /* EXAdsAdMobInterstitial.h */,
+				D0EA9F701369B5BDE5B2AB1C8B8DD362 /* EXAdsAdMobInterstitial.m */,
+				29FF911D051EC7D9DCE991BA6A1CDDA5 /* EXAdsAdMobRewarded.h */,
+				3466A9D5AF89F095D3514168C4D8F856 /* EXAdsAdMobRewarded.m */,
+				FAAED73026F573C9BA61945E2B8CEC20 /* EXAdsDFPBannerView.h */,
+				867C70D87E80689AEF6EF584ECC3A3C9 /* EXAdsDFPBannerView.m */,
+				2A935FEBA3DB287417D5FDC278504518 /* Pod */,
+				D66598D8DE765FC8BF1298F32297408A /* Support Files */,
+			);
+			name = EXAdsAdMob;
+			path = "../../packages/expo-ads-admob/ios";
 			sourceTree = "<group>";
 		};
 		5ACE806C1B316CE59A9D0EC1BEA0E3A7 /* Dependencies */ = {
@@ -129,19 +124,11 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		650B7DD0D7001E98FE3B3E00BB7A15A0 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				DE275A9F7A0F8ED476B5B97072D0120C /* EXAdsAdMob.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		7160589CF38671D92258C60905958843 = {
 			isa = PBXGroup;
 			children = (
 				5ACE806C1B316CE59A9D0EC1BEA0E3A7 /* Dependencies */,
-				C8D7DBA29324BE2BE002AB7D4CD98D84 /* EXAdsAdMob */,
+				353D878970A31BCB981D03FA9E121EB3 /* EXAdsAdMob */,
 				230A7C7D12F40C2ED21F869302A9DFFD /* Frameworks */,
 				A0AC8CC5066FC0CCC610DA2D64C6E5F5 /* Products */,
 			);
@@ -155,47 +142,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C8D7DBA29324BE2BE002AB7D4CD98D84 /* EXAdsAdMob */ = {
+		D66598D8DE765FC8BF1298F32297408A /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				070FEBA42370FB2500FED60E /* EXAdsAdMob.h */,
-				070FEBA22370FB1200FED60E /* EXAdsAdMob.m */,
-				761FF8F0317844E4EE9BF9F0CE71CAEA /* EXAdsAdMobBannerView.h */,
-				4013493966CC44C66D452CDFF3E2767E /* EXAdsAdMobBannerView.m */,
-				267E81F0C23FFA4C6B451BFBC5ABBAE1 /* EXAdsAdMobBannerViewManager.h */,
-				895D4FEBF2AD0758B3079EEBF16B58C6 /* EXAdsAdMobBannerViewManager.m */,
-				741B89BBBBCB73AA7FA915B691F9AA10 /* EXAdsAdMobDFPManager.h */,
-				620FDBCA7583F9F124755A77BB5AC2AF /* EXAdsAdMobDFPManager.m */,
-				C4E0B46E7AFF867AA6B0FF61288F1167 /* EXAdsAdMobInterstitial.h */,
-				C8CAFBF3127237728FC780196E6D11F4 /* EXAdsAdMobInterstitial.m */,
-				63AD7E94FBBBEBB667BF391E8F126748 /* EXAdsAdMobRewarded.h */,
-				10A71FC66CC1BE16CDE974EF75774E92 /* EXAdsAdMobRewarded.m */,
-				003D3805D5132A7E8FBDB41C7F746697 /* EXAdsAdMobUtils.h */,
-				91C316AEC060160CC61F400EE70EED18 /* EXAdsAdMobUtils.m */,
-				CBED4A1CC2B8961EB7E6FD5CEAE56FF7 /* EXAdsDFPBannerView.h */,
-				888A7BFDDA4869D8180FD89C5408B07C /* EXAdsDFPBannerView.m */,
-				650B7DD0D7001E98FE3B3E00BB7A15A0 /* Pod */,
-				2F2858D459C1CDFB90288B0C3826D81A /* Support Files */,
+				ECEB960EEFA5ED9BA361A701CA5DEC45 /* EXAdsAdMob.xcconfig */,
+				15CEEABBC656C52EA3840AB92F2E8BA5 /* EXAdsAdMob-dummy.m */,
+				FE2FFC6229FFDDB1A03000882036B818 /* EXAdsAdMob-prefix.pch */,
 			);
-			name = EXAdsAdMob;
-			path = "../../packages/expo-ads-admob/ios";
+			name = "Support Files";
+			path = "../../../ios/Pods/Target Support Files/EXAdsAdMob";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		7A1346ED81EC92C349C02D692EE471AA /* Headers */ = {
+		EC3FBEEFBB5E4B20AE69C8495003D614 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A52AC535A60CCE8F0E56F25368AF33C7 /* EXAdsAdMobBannerView.h in Headers */,
-				14D34DFE540AD3B03342CB1E70699178 /* EXAdsAdMobBannerViewManager.h in Headers */,
-				070FEBA52370FB2500FED60E /* EXAdsAdMob.h in Headers */,
-				9014D92A3EC38B25D398D14A22681FA9 /* EXAdsAdMobDFPManager.h in Headers */,
-				8018FE79719BDFE96A9AC9BB421FBBC1 /* EXAdsAdMobInterstitial.h in Headers */,
-				37275C7116623BE548EF5CC8606E8199 /* EXAdsAdMobRewarded.h in Headers */,
-				8FCA4EC9398C106CFB9BC5086DA5C5E5 /* EXAdsAdMobUtils.h in Headers */,
-				666B7C77B5429CCEA2FB816101618831 /* EXAdsDFPBannerView.h in Headers */,
+				E2515D72F28B205FC2905B0C0024FDB2 /* EXAdsAdMob.h in Headers */,
+				CEC502E6CE36B3AAAFF207524671BE08 /* EXAdsAdMobBannerView.h in Headers */,
+				89CB699E0E112F3ACEBE4BB12364CB00 /* EXAdsAdMobBannerViewManager.h in Headers */,
+				42B35862269CA8421EA6828E95B591BB /* EXAdsAdMobDFPManager.h in Headers */,
+				56F73D5CBB4195411971C5146BB2DBFC /* EXAdsAdMobInterstitial.h in Headers */,
+				7C2906FB4D7F13F3558056A1F7162935 /* EXAdsAdMobRewarded.h in Headers */,
+				3786A5F706F3B974A18B6388C061A71F /* EXAdsDFPBannerView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,17 +175,17 @@
 /* Begin PBXNativeTarget section */
 		BEF6CFDFF87395C99BA42B4CFF868EAA /* EXAdsAdMob */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 960AD416B7BF294FBD19C60F43A6C590 /* Build configuration list for PBXNativeTarget "EXAdsAdMob" */;
+			buildConfigurationList = 107AA49E7321C05C63787E6582332930 /* Build configuration list for PBXNativeTarget "EXAdsAdMob" */;
 			buildPhases = (
-				7A1346ED81EC92C349C02D692EE471AA /* Headers */,
-				54CC42A7A5AEC397222291993F1A9B21 /* Sources */,
-				0F89F19F3524501BCE8EA6A2AE9E7809 /* Frameworks */,
+				EC3FBEEFBB5E4B20AE69C8495003D614 /* Headers */,
+				60791FB8693DFFBA0F47F39DC0851E8C /* Sources */,
+				2727ACF3F5E084D95AF350EE4364A61C /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8EE7CB0F365DBFEFBEFE5E83150C2DEF /* PBXTargetDependency */,
-				4DE2029B4488C9310EC7E8F3B317A528 /* PBXTargetDependency */,
+				F53A5F628654E01A4F9A77C23C467B7E /* PBXTargetDependency */,
+				ABB43EF11DADC6D5150A979C86D211DF /* PBXTargetDependency */,
 			);
 			name = EXAdsAdMob;
 			productName = EXAdsAdMob;
@@ -242,12 +213,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 070FEAF92370F7F400FED60E /* Products */;
-					ProjectRef = 0202F16D9BF6CB3D361825B358C03E54 /* Google-Mobile-Ads-SDK */;
+					ProjectRef = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore */;
 				},
 				{
-					ProductGroup = 070FEAF72370F7F400FED60E /* Products */;
-					ProjectRef = 8D089FF9D6EA9507F9F204CFAE372317 /* UMCore */;
+					ProjectRef = 0202F16D9BF6CB3D361825B358C03E54 /* Google-Mobile-Ads-SDK */;
 				},
 			);
 			projectRoot = "";
@@ -257,52 +226,41 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXReferenceProxy section */
-		070FEBA02370F84A00FED60E /* libUMCore.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libUMCore.a;
-			remoteRef = 070FEB9F2370F84A00FED60E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
-
 /* Begin PBXSourcesBuildPhase section */
-		54CC42A7A5AEC397222291993F1A9B21 /* Sources */ = {
+		60791FB8693DFFBA0F47F39DC0851E8C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DF12FD9983B5FCB670FC56D0F9F4A20 /* EXAdsAdMob-dummy.m in Sources */,
-				B17F319893B5D95565FF8459BC1552AF /* EXAdsAdMobBannerView.m in Sources */,
-				30D5B8C1FC9448201747B7A3780C5D08 /* EXAdsAdMobBannerViewManager.m in Sources */,
-				1ED95FD8AA17D870645FEE3E95AC992A /* EXAdsAdMobDFPManager.m in Sources */,
-				0AFF2DB4D9F846C55CA537A7A28FF8BA /* EXAdsAdMobInterstitial.m in Sources */,
-				41850E60A805A378520C88B64B1D34B9 /* EXAdsAdMobRewarded.m in Sources */,
-				070FEBA32370FB1200FED60E /* EXAdsAdMob.m in Sources */,
-				6BBBED8DF40EA8E6F605FB55E2AA35CB /* EXAdsAdMobUtils.m in Sources */,
-				4DE6E39CC04FB846A8AA4E29BB722541 /* EXAdsDFPBannerView.m in Sources */,
+				1CA7E5134A89D3EA8FB74D64F1E78C23 /* EXAdsAdMob-dummy.m in Sources */,
+				944C4BE9E41BAD08FFCE979F1249AC14 /* EXAdsAdMob.m in Sources */,
+				EF56AF60AF47AD814C6F18D93B7E178D /* EXAdsAdMobBannerView.m in Sources */,
+				5B5DD4A58627182D435AA67FB24CF609 /* EXAdsAdMobBannerViewManager.m in Sources */,
+				57B5472A47D3E6B506EC3C50A7155D5F /* EXAdsAdMobDFPManager.m in Sources */,
+				FA7BE33CECF6A6A4C304828963A57865 /* EXAdsAdMobInterstitial.m in Sources */,
+				BCAC6888F93746DB887B0BA0FE6CC730 /* EXAdsAdMobRewarded.m in Sources */,
+				C85027E4BCB8AB0E8FEB9DFF4502BB11 /* EXAdsDFPBannerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4DE2029B4488C9310EC7E8F3B317A528 /* PBXTargetDependency */ = {
+		ABB43EF11DADC6D5150A979C86D211DF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 27F3DAADC1BACE77CF7F830DFD1FDB08 /* PBXContainerItemProxy */;
+			targetProxy = 1D6D6EAC59EA831CCB0DF47EF869DF50 /* PBXContainerItemProxy */;
 		};
-		8EE7CB0F365DBFEFBEFE5E83150C2DEF /* PBXTargetDependency */ = {
+		F53A5F628654E01A4F9A77C23C467B7E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Google-Mobile-Ads-SDK";
-			targetProxy = 52C027FAE063564C6745CC1E40A1EBC1 /* PBXContainerItemProxy */;
+			targetProxy = 0E081DC952F7F7EA50F8716EB14349E3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		5BCCD52F16FF5609E863583520AED5C7 /* Release */ = {
+		1080764B32F179E11B2CBF0CAD4C9619 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C49EDA064966922BCF6B23B02C8FA9C /* EXAdsAdMob.xcconfig */;
+			baseConfigurationReference = ECEB960EEFA5ED9BA361A701CA5DEC45 /* EXAdsAdMob.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -321,9 +279,8 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Debug;
 		};
 		728A7C2D6238EFBB5CFE0849CB541CCC /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -389,9 +346,9 @@
 			};
 			name = Debug;
 		};
-		DC6517D96FA268D6D75314D63CF93B58 /* Debug */ = {
+		B1102571D6F1DF3337556AF6C159F1D2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C49EDA064966922BCF6B23B02C8FA9C /* EXAdsAdMob.xcconfig */;
+			baseConfigurationReference = ECEB960EEFA5ED9BA361A701CA5DEC45 /* EXAdsAdMob.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -410,8 +367,9 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Debug;
+			name = Release;
 		};
 		FE4020A41115753457B8D804A9006D45 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -466,7 +424,8 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -475,20 +434,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		107AA49E7321C05C63787E6582332930 /* Build configuration list for PBXNativeTarget "EXAdsAdMob" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1080764B32F179E11B2CBF0CAD4C9619 /* Debug */,
+				B1102571D6F1DF3337556AF6C159F1D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		891851D2515A01310BF83317FB28B587 /* Build configuration list for PBXProject "EXAdsAdMob" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				728A7C2D6238EFBB5CFE0849CB541CCC /* Debug */,
 				FE4020A41115753457B8D804A9006D45 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		960AD416B7BF294FBD19C60F43A6C590 /* Build configuration list for PBXNativeTarget "EXAdsAdMob" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DC6517D96FA268D6D75314D63CF93B58 /* Debug */,
-				5BCCD52F16FF5609E863583520AED5C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
