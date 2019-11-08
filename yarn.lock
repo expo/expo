@@ -12087,10 +12087,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-appearance@0.2.0-rc.0:
-  version "0.2.0-rc.0"
-  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.2.0-rc.0.tgz#cd430b5d2adebbb0e99781c3454f59bb64b9936e"
-  integrity sha512-JHxmiq5AZ+b6cxS4L8suXTa8tFGGRvJ8RwWupkwTfs28+AeFKa0xxtfziGLHVWEKIBR4+1PyDWvpckfCocXqCQ==
+react-native-appearance@0.2.1, react-native-appearance@~0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.2.1.tgz#b8c08cbd6ea92533591c247a4a154b95fd8e31c8"
+  integrity sha512-eaNIVd3CPfDs4/10i0YxCYTx0FcbmaPcUh5xrzfHsgluPJJjHbJEV2MSHqukrNsQ9cQBMNvTSEaBrO9N16L7ZA==
   dependencies:
     fbemitter "^2.1.1"
     invariant "^2.2.4"

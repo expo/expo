@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.appearance;
+package versioned.host.exp.exponent.modules.api.appearance.rncappearance;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -50,7 +50,7 @@ public class RNCAppearanceModule extends ReactContextBaseJavaModule implements L
         return REACT_CLASS;
     }
 
-
+    // `protected` to allow overriding in Expo client for scoping purposes
     protected String getColorScheme(Configuration config) {
         String colorScheme = "no-preference";
 

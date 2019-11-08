@@ -140,7 +140,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
-    
+
     mLayout = new FrameLayout(this);
     setContentView(mLayout);
 

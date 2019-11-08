@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.appearance;
+package versioned.host.exp.exponent.modules.api.appearance.rncappearance;
 
 import android.content.Context;
 

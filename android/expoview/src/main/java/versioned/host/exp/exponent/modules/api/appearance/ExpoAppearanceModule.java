@@ -1,14 +1,14 @@
 package versioned.host.exp.exponent.modules.api.appearance;
 
 import android.content.res.Configuration;
+import android.util.Log;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.common.ReactConstants;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
 
 public class ExpoAppearanceModule extends RNCAppearanceModule {
   public ExpoAppearanceModule(@NonNull ReactApplicationContext reactContext) {
@@ -35,7 +35,7 @@ public class ExpoAppearanceModule extends RNCAppearanceModule {
     }
 
     // shouldn't be reachable as `getCurrentActivity` should always return AppCompatActivity
-    FLog.d(ReactConstants.TAG, "Appearance cannot be properly checked because of invalid Activity class.");
+    Log.d(ExpoAppearanceModule.class.getSimpleName(), "Appearance cannot be properly checked because of invalid Activity class.");
     return super.getColorScheme(config);
   }
 }

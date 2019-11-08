@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearancePackage;
 
 public class ExpoAppearancePackage extends RNCAppearancePackage {
   @NonNull
