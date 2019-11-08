@@ -1,5 +1,5 @@
 'use strict';
-import { PublisherBanner } from 'expo-ads-admob';
+import { PublisherBanner, setTestDeviceIDAsync } from 'expo-ads-admob';
 import { forEach } from 'lodash';
 import React from 'react';
 
@@ -22,6 +22,7 @@ const sizes = [
 
 export function test(t, { setPortalChild, cleanupPortal }) {
   t.describe('PublisherBanner', () => {
+    t.beforeAll(async () => await setTestDeviceIDAsync('EMULATOR'));
     t.afterEach(async () => await cleanupPortal());
 
     const mountAndWaitFor = (child, propName = 'onAdViewDidReceiveAd') =>
@@ -30,22 +31,18 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     t.describe('when given valid adUnitID', () => {
       t.it('calls adViewDidReceiveAd', async () => {
         await mountAndWaitFor(
-          <PublisherBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />,
+          <PublisherBanner bannerSize="banner" adUnitID={validAdUnitID} />,
           'onAdViewDidReceiveAd'
         );
       });
       t.it('displays an ad', async () => {
-        await mountAndWaitFor(
-          <PublisherBanner bannerSize="banner" adUnitID={validAdUnitID} testDeviceID="EMULATOR" />
-        );
+        await mountAndWaitFor(<PublisherBanner bannerSize="banner" adUnitID={validAdUnitID} />);
       });
 
       forEach(sizes, size => {
         t.describe(`when given size = ${size}`, () => {
           t.it('displays an ad', async () => {
-            await mountAndWaitFor(
-              <PublisherBanner bannerSize={size} adUnitID={validAdUnitID} testDeviceID="EMULATOR" />
-            );
+            await mountAndWaitFor(<PublisherBanner bannerSize={size} adUnitID={validAdUnitID} />);
           });
         });
       });
@@ -54,11 +51,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
     t.describe('when given invalid adUnitID', () => {
       t.it('calls didFailToReceiveAdWithError', async () => {
         await mountAndWaitFor(
-          <PublisherBanner
-            bannerSize="banner"
-            adUnitID={invalidAdUnitID}
-            testDeviceID="EMULATOR"
-          />,
+          <PublisherBanner bannerSize="banner" adUnitID={invalidAdUnitID} />,
           'onDidFailToReceiveAdWithError'
         );
       });

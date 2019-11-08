@@ -9,8 +9,6 @@
 
 #import <GoogleMobileAds/Mediation/GADMediatedNativeAdDelegate.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Base protocol for mediated native ads.
 @protocol GADMediatedNativeAd <NSObject>
 
@@ -22,5 +20,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSDictionary *)extraAssets;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -7,6 +7,7 @@
 
 #import <GoogleMobileAds/GADAdSize.h>
 #import <GoogleMobileAds/GADAdSizeDelegate.h>
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADBannerViewDelegate.h>
 #import <GoogleMobileAds/GADInAppPurchaseDelegate.h>
 #import <GoogleMobileAds/GADRequest.h>
@@ -82,6 +83,9 @@
 /// Information about the ad response that returned the current ad. Nil while an ad
 /// request is in progress or if the latest ad request failed.
 @property(nonatomic, readonly, nullable) GADResponseInfo *responseInfo;
+
+/// Called when ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
 
 #pragma mark Deprecated
 

@@ -21,10 +21,6 @@ declare type PropsType = React.ComponentProps<typeof View> & {
      */
     adUnitID?: string;
     /**
-     * Test device ID
-     */
-    testDeviceID?: string;
-    /**
      * Additional request params added to underlying request for the ad.
      */
     additionalRequestParams?: {
@@ -115,7 +111,6 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
         bannerSize: PropTypes.Requireable<string>;
         adUnitID: PropTypes.Requireable<string>;
-        testDeviceID: PropTypes.Requireable<string>;
         servePersonalizedAds: PropTypes.Requireable<boolean>;
         onAdViewDidReceiveAd: PropTypes.Requireable<(...args: any[]) => any>;
         additionalRequestParams: PropTypes.Requireable<object>;

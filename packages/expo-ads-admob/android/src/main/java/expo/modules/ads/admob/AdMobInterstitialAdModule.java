@@ -20,7 +20,6 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class AdMobInterstitialAdModule extends ExportedModule {
   private InterstitialAd mInterstitialAd;
-  private String mTestDeviceID;
   private String mAdUnitID;
   private Promise mRequestAdPromise;
   private Promise mShowAdPromise;
@@ -72,12 +71,6 @@ public class AdMobInterstitialAdModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void setTestDeviceID(String testDeviceID, final Promise promise) {
-    mTestDeviceID = testDeviceID;
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
   public void requestAd(final ReadableArguments additionalRequestParams, final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
@@ -90,12 +83,9 @@ public class AdMobInterstitialAdModule extends ExportedModule {
           AdRequest.Builder adRequestBuilder =
               new AdRequest.Builder()
                   .addNetworkExtrasBundle(AdMobAdapter.class, additionalRequestParams.toBundle());
-          if (mTestDeviceID != null) {
-            if (mTestDeviceID.equals("EMULATOR")) {
-              adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-            } else {
-              adRequestBuilder = adRequestBuilder.addTestDevice(mTestDeviceID);
-            }
+          String testDeviceID = AdMobModule.getTestDeviceID();
+          if (testDeviceID != null) {
+            adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
           }
           AdRequest adRequest = adRequestBuilder.build();
           mInterstitialAd.loadAd(adRequest);

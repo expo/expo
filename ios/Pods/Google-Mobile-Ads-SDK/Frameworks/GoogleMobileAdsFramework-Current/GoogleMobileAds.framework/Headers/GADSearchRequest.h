@@ -10,8 +10,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Search ad border types.
 typedef NS_ENUM(NSUInteger, GADSearchBorderType) {
   kGADSearchBorderTypeNone,    ///< No border.
@@ -63,14 +61,12 @@ typedef NS_ENUM(NSUInteger, GADSearchCallButtonColor) {
 /// can either be a solid color, or a gradient, which can be specified through
 /// setBackgroundGradientFrom:toColor: method. If both solid and gradient
 /// background is requested, only the latter is considered.
-- (void)setBackgroundSolid:(UIColor *)color;
+- (void)setBackgroundSolid:(nonnull UIColor *)color;
 
 /// A linear gradient background color for rendering the ad. The background of
 /// the ad can either be a linear gradient, or a solid color, which can be
 /// specified through setBackgroundSolid method. If both solid and gradient
 /// background is requested, only the latter is considered.
-- (void)setBackgroundGradientFrom:(UIColor *)from toColor:(UIColor *)toColor;
+- (void)setBackgroundGradientFrom:(nonnull UIColor *)from toColor:(nonnull UIColor *)toColor;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -9,8 +9,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @protocol GADVideoControllerDelegate;
 
 /// The video controller class provides a way to get the video metadata and also manages video
@@ -52,5 +50,3 @@ NS_ASSUME_NONNULL_BEGIN
     "Use the aspectRatio property from GADUnifiedNativeAd's mediaContent instead.");
 
 @end
-
-NS_ASSUME_NONNULL_END

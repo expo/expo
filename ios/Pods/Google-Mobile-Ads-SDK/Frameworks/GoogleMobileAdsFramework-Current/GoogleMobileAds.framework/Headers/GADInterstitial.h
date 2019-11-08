@@ -5,6 +5,7 @@
 //  Copyright 2011 Google LLC. All rights reserved.
 //
 
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADInAppPurchaseDelegate.h>
 #import <GoogleMobileAds/GADInterstitialDelegate.h>
 #import <GoogleMobileAds/GADRequest.h>
@@ -55,6 +56,9 @@
 /// Information about the ad response that returned the current ad. Nil while an ad
 /// request is in progress or if the latest ad request failed.
 @property(nonatomic, readonly, nullable) GADResponseInfo *responseInfo;
+
+/// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
 
 /// Presents the interstitial ad which takes over the entire screen until the user dismisses it.
 /// This has no effect unless isReady returns YES and/or the delegate's interstitialDidReceiveAd:
