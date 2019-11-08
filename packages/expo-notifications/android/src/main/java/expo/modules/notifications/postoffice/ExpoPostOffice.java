@@ -8,7 +8,7 @@ public interface ExpoPostOffice {
 
   void notifyAboutUserInteraction(String appId, Bundle userInteraction);
 
-  void registerModuleAndGetInitialUserInteraction(String appId, Mailbox mailbox, Function<Bundle, Boolean> callback);
+  void registerModuleAndFlushPendingUserInteractions(String appId, Mailbox mailbox);
 
   void unregisterModule(String appId);
 
