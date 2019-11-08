@@ -41,12 +41,11 @@ static dispatch_queue_t queue;
   });
 }
 
-- (void)registerModuleAndGetInitialNotificationWithAppId:(NSString *)appId
-          mailbox:(id<EXMailbox>)mailbox
-completionHandler:(void (^)(NSDictionary*))completionHandler
+- (void)registerModuleAndFlushPendingUserIntercationsWithAppId:(NSString *)appId
+                                                       mailbox:(id<EXMailbox>)mailbox
 {
   dispatch_async(queue, ^{
-    [self.insecurePostOffice registerModuleAndGetInitialNotificationWithAppId:appId mailbox:mailbox completionHandler:completionHandler];
+    [self.insecurePostOffice registerModuleAndFlushPendingUserIntercationsWithAppId:appId mailbox:mailbox];
   });
 }
 

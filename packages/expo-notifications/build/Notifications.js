@@ -5,6 +5,7 @@ import { CodedError, UnavailabilityError } from '@unimodules/core';
 import ExpoNotifications from './ExpoNotifications';
 import { Mailbox } from './Mailbox';
 const _mailbox = new Mailbox();
+let isItFirstListener = true;
 function _processNotification(notification) {
     notification = Object.assign({}, notification);
     if (!notification.data) {
@@ -44,9 +45,6 @@ function _validateNotification(notification) {
     else if (Platform.OS === 'android') {
         invariant(!!notification.title, 'Local notifications on Android require a title');
     }
-}
-export async function popInitialUserInteractionAsync() {
-    return ExpoNotifications.popInitialUserInteractionAsync();
 }
 // User passes set of actions titles.
 export async function createCategoryAsync(categoryId, actions) {
@@ -130,6 +128,12 @@ export async function setOnTokenChangeListener(listener) {
 }
 export function addOnUserInteractionListener(listenerName, listener) {
     _mailbox.addOnUserInteractionListener(listenerName, listener);
+    if (isItFirstListener) {
+        isItFirstListener = true;
+        setTimeout(async () => {
+            ExpoNotifications.flushPendingUserInteractionsAsync();
+        }, 0);
+    }
 }
 export function addOnForegroundNotificationListener(listenerName, listener) {
     _mailbox.addOnForegroundNotificationListener(listenerName, listener);
