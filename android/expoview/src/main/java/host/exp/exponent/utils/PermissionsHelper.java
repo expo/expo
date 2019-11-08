@@ -1,3 +1,7 @@
+/*
+  We need this class to ensure back compatibility.
+  It's only used in Exponent class.
+ */
 package host.exp.exponent.utils;
 
 import android.app.Activity;
@@ -5,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
@@ -18,6 +23,7 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 
+// TODO: remove once SDK 35 is deprecated
 public class PermissionsHelper {
 
   @Inject
@@ -56,7 +62,7 @@ public class PermissionsHelper {
     List<String> permissionsToExplain = new ArrayList<>();
     for (String permission : permissions) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-          ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+          /* check for global permission */ activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
         isGranted = false;
         mPermissionsToRequestGlobally.add(permission);
 
@@ -88,14 +94,6 @@ public class PermissionsHelper {
     }
 
     return true;
-  }
-
-  public void requestExperiencePermissions(Exponent.PermissionsListener listener, String[] permissions,
-                                           String experienceName) {
-    mPermissionsListener = listener;
-    mExperienceName = experienceName;
-    mPermissionsAskedCount = permissions.length;
-    showPermissionsDialogForExperience(permissions[mPermissionsAskedCount - 1]);
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -153,7 +151,9 @@ public class PermissionsHelper {
       case android.Manifest.permission.CAMERA:
         return R.string.perm_camera;
       case android.Manifest.permission.READ_CONTACTS:
-        return R.string.perm_contacts;
+        return R.string.perm_contacts_read;
+      case android.Manifest.permission.WRITE_CONTACTS:
+        return R.string.perm_contacts_write;
       case android.Manifest.permission.READ_EXTERNAL_STORAGE:
         return R.string.perm_camera_roll_read;
       case android.Manifest.permission.WRITE_EXTERNAL_STORAGE:

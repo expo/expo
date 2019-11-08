@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type PictureOptions = {
     quality?: number;
     base64?: boolean;
@@ -77,3 +78,4 @@ export declare type NativeProps = {
     ratio?: string;
     useCamera2Api?: boolean;
 };
+export { PermissionResponse, PermissionStatus };

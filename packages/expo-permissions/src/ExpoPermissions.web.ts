@@ -1,8 +1,8 @@
 import {
-  PermissionInfo,
   PermissionMap,
-  PermissionStatus,
   PermissionType,
+  PermissionStatus,
+  PermissionInfo,
 } from './Permissions.types';
 
 /*
@@ -43,18 +43,33 @@ async function askForMediaPermissionAsync(
 ): Promise<PermissionInfo> {
   try {
     await _getUserMedia(options);
-    return { status: PermissionStatus.GRANTED, expires: 'never' };
+    return {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      canAskAgain: true,
+      granted: true,
+    };
   } catch ({ message }) {
     // name: NotAllowedError
     // code: 0
     if (message === 'Permission dismissed') {
       // message: Permission dismissed
-      return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
+      return {
+        status: PermissionStatus.UNDETERMINED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: false,
+      };
     } else {
       // TODO: Bacon: [OSX] The system could deny access to chrome.
       // TODO: Bacon: add: { status: 'unimplemented' }
       // message: Permission denied
-      return { status: PermissionStatus.DENIED, expires: 'never' };
+      return {
+        status: PermissionStatus.DENIED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: false,
+      };
     }
   }
 }
@@ -70,13 +85,29 @@ async function askForCameraPermissionAsync(): Promise<PermissionInfo> {
 async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
   return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
-      () => resolve({ status: PermissionStatus.GRANTED, expires: 'never' }),
+      () =>
+        resolve({
+          status: PermissionStatus.GRANTED,
+          expires: 'never',
+          canAskAgain: true,
+          granted: true,
+        }),
       ({ code }: PositionError) => {
         // https://developer.mozilla.org/en-US/docs/Web/API/PositionError/code
         if (code === 1) {
-          resolve({ status: PermissionStatus.DENIED, expires: 'never' });
+          resolve({
+            status: PermissionStatus.DENIED,
+            expires: 'never',
+            canAskAgain: true,
+            granted: false,
+          });
         } else {
-          resolve({ status: PermissionStatus.UNDETERMINED, expires: 'never' });
+          resolve({
+            status: PermissionStatus.UNDETERMINED,
+            expires: 'never',
+            canAskAgain: true,
+            granted: false,
+          });
         }
       }
     );
@@ -133,7 +164,12 @@ async function getPermissionAsync(
         if (!shouldAsk) {
           const status = await getPermissionWithQueryAsync('notifications');
           if (status) {
-            return { status, expires: 'never' };
+            return {
+              status,
+              expires: 'never',
+              granted: status === PermissionStatus.GRANTED,
+              canAskAgain: true,
+            };
           }
         }
 
@@ -144,9 +180,19 @@ async function getPermissionAsync(
             status = await Notification.requestPermission();
           }
           if (!status || status === 'default') {
-            return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
+            return {
+              status: PermissionStatus.UNDETERMINED,
+              expires: 'never',
+              canAskAgain: true,
+              granted: false,
+            };
           }
-          return { status, expires: 'never' };
+          return {
+            status,
+            expires: 'never',
+            canAskAgain: true,
+            granted: status === PermissionStatus.GRANTED,
+          };
         }
       }
       break;
@@ -157,7 +203,12 @@ async function getPermissionAsync(
           if (maybeStatus === PermissionStatus.UNDETERMINED && shouldAsk) {
             return await askForLocationPermissionAsync();
           }
-          return { status: maybeStatus, expires: 'never' };
+          return {
+            status: maybeStatus,
+            expires: 'never',
+            canAskAgain: true,
+            granted: maybeStatus === PermissionStatus.GRANTED,
+          };
         } else if (shouldAsk) {
           // TODO: Bacon: should this function as ask async when not in chrome?
           return await askForLocationPermissionAsync();
@@ -171,13 +222,23 @@ async function getPermissionAsync(
           if (maybeStatus === PermissionStatus.UNDETERMINED && shouldAsk) {
             return await askForMicrophonePermissionAsync();
           }
-          return { status: maybeStatus, expires: 'never' };
+          return {
+            status: maybeStatus,
+            expires: 'never',
+            canAskAgain: true,
+            granted: maybeStatus === PermissionStatus.GRANTED,
+          };
         } else if (shouldAsk) {
           return await askForMicrophonePermissionAsync();
         } else {
           const maybeGranted = await getMediaMaybeGrantedAsync('audioinput');
           if (maybeGranted) {
-            return { status: PermissionStatus.GRANTED, expires: 'never' };
+            return {
+              status: PermissionStatus.GRANTED,
+              expires: 'never',
+              canAskAgain: true,
+              granted: true,
+            };
           }
           // TODO: Bacon: Get denied or undetermined...
         }
@@ -190,13 +251,23 @@ async function getPermissionAsync(
           if (maybeStatus === PermissionStatus.UNDETERMINED && shouldAsk) {
             return await askForCameraPermissionAsync();
           }
-          return { status: maybeStatus, expires: 'never' };
+          return {
+            status: maybeStatus,
+            expires: 'never',
+            canAskAgain: true,
+            granted: maybeStatus === PermissionStatus.GRANTED,
+          };
         } else if (shouldAsk) {
           return await askForCameraPermissionAsync();
         } else {
           const maybeGranted = await getMediaMaybeGrantedAsync('videoinput');
           if (maybeGranted) {
-            return { status: PermissionStatus.GRANTED, expires: 'never' };
+            return {
+              status: PermissionStatus.GRANTED,
+              expires: 'never',
+              canAskAgain: true,
+              granted: true,
+            };
           }
           // TODO: Bacon: Get denied or undetermined...
         }
@@ -205,7 +276,12 @@ async function getPermissionAsync(
     default:
       break;
   }
-  return { status: PermissionStatus.UNDETERMINED, expires: 'never' };
+  return {
+    status: PermissionStatus.UNDETERMINED,
+    expires: 'never',
+    canAskAgain: true,
+    granted: false,
+  };
 }
 
 export default {

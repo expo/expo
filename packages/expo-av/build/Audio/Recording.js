@@ -1,4 +1,5 @@
 import { EventEmitter, Platform } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import { _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
@@ -104,8 +105,15 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
         linearPCMIsFloat: false,
     },
 };
+export { PermissionStatus };
 let _recorderExists = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+export async function getPermissionsAsync() {
+    return ExponentAV.getPermissionsAsync();
+}
+export async function requestPermissionsAsync() {
+    return ExponentAV.requestPermissionsAsync();
+}
 export class Recording {
     constructor() {
         this._subscription = null;
