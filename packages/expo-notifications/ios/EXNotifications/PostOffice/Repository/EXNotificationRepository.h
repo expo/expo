@@ -7,7 +7,7 @@
 
 - (void)addUserInteractionForAppId:(NSString*)appId userInteraction:(NSDictionary*)userInteraction;
 
-- (NSDictionary*)getUserInterationForAppId:(NSString*)appId;
+- (NSArray<NSDictionary*>*)getPendingUserInterationsForAppId:(NSString*)appId;
 
 @end
 

@@ -35,20 +35,19 @@
   [self.notificationRepository addUserInteractionForAppId:appId userInteraction:userInteraction];
 }
 
-- (void)registerModuleAndGetInitialNotificationWithAppId:(NSString *)appId
+- (void)registerModuleAndFlushPendingUserIntercationsWithAppId:(NSString *)appId
                                                mailbox:(id<EXMailbox>)mailbox
-                                     completionHandler:(void (^)(NSDictionary*))completionHandler
 {
   if (self.mailboxes[appId]) {
-    completionHandler(nil);
     return;
   }
   
   self.mailboxes[appId] = mailbox;
   
-  NSDictionary *initialUserInteraction = [_notificationRepository getUserInterationForAppId:appId];
-  
-  completionHandler(initialUserInteraction);
+  NSArray<NSDictionary*> *initialUserInteraction = [_notificationRepository getPendingUserInterationsForAppId:appId];
+  for (NSDictionary *userInteraction in initialUserInteraction) {
+    [mailbox onUserInteraction:userInteraction];
+  }
 }
 
 - (void)unregisterModuleWithAppId:(NSString*)appId

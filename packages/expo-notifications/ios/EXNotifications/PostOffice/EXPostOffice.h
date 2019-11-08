@@ -9,9 +9,9 @@
 
 - (void)notifyAboutUserInteractionForAppId:(NSString*)appId userInteraction:(NSDictionary*)userInteraction;
 
-- (void)registerModuleAndGetInitialNotificationWithAppId:(NSString *)appId
-                                               mailbox:(id<EXMailbox>)mailbox
-                                     completionHandler:(void (^)(NSDictionary*))completionHandler;
+- (void)registerModuleAndFlushPendingUserIntercationsWithAppId:(NSString *)appId
+                                                       mailbox:(id<EXMailbox>)mailbox;
+                                     
 
 - (void)unregisterModuleWithAppId:(NSString*)appId;
 

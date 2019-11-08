@@ -4,7 +4,7 @@
 
 @interface EXSimpleNotificationRepository()
 
-@property (nonatomic) NSUserDefaults *userIntercations;
+@property (nonatomic) NSMutableDictionary<NSString*,NSMutableArray<NSDictionary*>*> *pendingUserInteractions;
 
 @end
 
@@ -13,23 +13,24 @@
 - (instancetype)init
 {
   if (self = [super init]) {
-    NSString *className = NSStringFromClass([self class]);
-    NSString *userInteractionSuiteName = [NSString stringWithFormat:@"%@/%@", @"UI_", className];
-    self.userIntercations = [[NSUserDefaults alloc] initWithSuiteName:userInteractionSuiteName];
+    _pendingUserInteractions = [NSMutableDictionary new];
   }
   return self;
 }
 
 - (void)addUserInteractionForAppId:(NSString *)appId userInteraction:(NSDictionary*)userInteraction
 {
-  [self.userIntercations setObject:userInteraction forKey:appId];
+  if(!_pendingUserInteractions[appId]) {
+    _pendingUserInteractions[appId] = [@[] mutableCopy];
+  }
+  [_pendingUserInteractions[appId] addObject:userInteraction];
 }
 
-- (NSDictionary*)getUserInterationForAppId:(NSString *)appId
+- (NSArray<NSDictionary*>*)getPendingUserInterationsForAppId:(NSString *)appId
 {
-  NSDictionary *userInteraction = [self.userIntercations dictionaryForKey:appId];
-  [_userIntercations removeObjectForKey:appId];
-  return userInteraction;
+  NSArray<NSDictionary*> *pendingUserInteractions = _pendingUserInteractions[appId];
+  _pendingUserInteractions[appId] = nil;
+  return pendingUserInteractions;
 }
 
 @end

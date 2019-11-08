@@ -18,6 +18,8 @@ import {
 
 const _mailbox: Mailbox = new Mailbox();
 
+let isItFirstListener: boolean = true;
+
 function _processNotification(notification) {
   notification = Object.assign({}, notification);
 
@@ -67,10 +69,6 @@ function _validateNotification(notification) {
   } else if (Platform.OS === 'android') {
     invariant(!!notification.title, 'Local notifications on Android require a title');
   }
-}
-
-export async function popInitialUserInteractionAsync(): Promise<UserInteraction | null> {
-  return ExpoNotifications.popInitialUserInteractionAsync();
 }
 
 // User passes set of actions titles.
@@ -174,6 +172,12 @@ export function addOnUserInteractionListener(
   listener: OnUserInteractionListener
 ) {
   _mailbox.addOnUserInteractionListener(listenerName, listener);
+  if (isItFirstListener) {
+    isItFirstListener = true;
+    setTimeout( async () => {
+        ExpoNotifications.flushPendingUserInteractionsAsync();
+    }, 0);
+  }
 }
 
 export function addOnForegroundNotificationListener(

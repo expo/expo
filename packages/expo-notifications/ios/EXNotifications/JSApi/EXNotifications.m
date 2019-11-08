@@ -46,19 +46,11 @@ UM_REGISTER_MODULE();
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
 }
 
-UM_EXPORT_METHOD_AS(popInitialUserInteractionAsync,
-                    popInitialUserInteractionAsync:(UMPromiseResolveBlock)resolve
+UM_EXPORT_METHOD_AS(flushPendingUserInteractionsAsync,
+                    flushPendingUserInteractionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-    __weak id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-
-    [[EXThreadSafePostOffice sharedInstance] registerModuleAndGetInitialNotificationWithAppId:_appId
-                                                 mailbox:self
-                                      completionHandler:^(NSDictionary *initialUserInteraction)
-      {
-         resolve([EXMessageUnscoper getUnscopedMessage:initialUserInteraction scoper:scoper]);
-      }
-    ];
+    [[EXThreadSafePostOffice sharedInstance] registerModuleAndFlushPendingUserIntercationsWithAppId:_appId mailbox:self];
 }
 
 UM_EXPORT_METHOD_AS(presentLocalNotification,
