@@ -51,6 +51,7 @@ UM_EXPORT_METHOD_AS(flushPendingUserInteractionsAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
     [[EXThreadSafePostOffice sharedInstance] registerModuleAndFlushPendingUserIntercationsWithAppId:_appId mailbox:self];
+    resolve(nil);
 }
 
 UM_EXPORT_METHOD_AS(presentLocalNotification,
@@ -141,7 +142,8 @@ UM_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
     for (UNNotificationRequest *request in requests) {
       if ([request.content.userInfo[@"id"] isEqualToString:uniqueId]) {
         [userNotificationCenter removePendingNotificationRequestsWithIdentifiers:@[request.identifier]];
-        return resolve(nil);
+        resolve(nil);
+        return;
       }
     }
     reject(@"E_NO_NOTIF", [NSString stringWithFormat:@"Could not find pending notification request to cancel with id = %@", uniqueId], nil);
