@@ -3876,7 +3876,7 @@ CACHE_KEYS:
   EXAdsAdMob:
     BUILD_SETTINGS_CHECKSUM:
       EXAdsAdMob: 368762df3b963ea10f87ad5400af2de6
-    CHECKSUM: a3433ceb447dc6d9b1d821694ed8d179aed2e004
+    CHECKSUM: 64bee1dd7f1544388166bd31825f369e07b3a03d
     FILES:
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.h"
       - "../../packages/expo-ads-admob/ios/EXAdsAdMob/EXAdsAdMob.m"
@@ -4794,10 +4794,10 @@ CACHE_KEYS:
   Google-Mobile-Ads-SDK:
     BUILD_SETTINGS_CHECKSUM:
       Google-Mobile-Ads-SDK: 539b9663c2ef324f98d2a11315beaf88
-    CHECKSUM: 5c625884f0788d22b48e3bb641e1d65c673dc7a5
+    CHECKSUM: 62f6244637306cb60a1b4adda067f53224c7a860
     PROJECT_NAME: Google-Mobile-Ads-SDK
     SPECS:
-      - Google-Mobile-Ads-SDK (7.51.0)
+      - Google-Mobile-Ads-SDK (7.52.0)
   GoogleAPIClientForREST:
     BUILD_SETTINGS_CHECKSUM:
       GoogleAPIClientForREST: 7bc2e43d860f0a8b8d74967265f714d1

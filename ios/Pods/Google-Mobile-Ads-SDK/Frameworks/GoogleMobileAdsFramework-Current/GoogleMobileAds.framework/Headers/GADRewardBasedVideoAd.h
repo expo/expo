@@ -28,12 +28,12 @@
 /// events, this property returns the mediated custom event adapter.
 @property(nonatomic, readonly, copy, nullable) NSString *adNetworkClassName;
 
-/// A unique identifier used to identify the user when making server-to-server reward callbacks.
-/// This value is used at both request time and during ad display. New values must only be set
-/// before ad requests.
+/// A unique identifier used to identify the user when making server-side verification reward
+/// callbacks. This value is used at both request time and during ad display. New values
+/// must only be set before ad requests.
 @property(nonatomic, copy, nullable) NSString *userIdentifier;
 
-/// Optional custom reward string to include in the server-to-server callback.
+/// Optional custom reward string to include in the server-side verification callback.
 @property(nonatomic, copy, nullable) NSString *customRewardString;
 
 /// The loaded ad's metadata. Is nil if no ad is loaded or the loaded ad doesn't have metadata. Ad

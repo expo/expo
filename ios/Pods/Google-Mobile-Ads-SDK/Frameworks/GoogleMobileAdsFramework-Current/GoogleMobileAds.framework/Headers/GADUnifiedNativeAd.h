@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <GoogleMobileAds/GADAdChoicesView.h>
 #import <GoogleMobileAds/GADAdLoaderDelegate.h>
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADMediaContent.h>
 #import <GoogleMobileAds/GADMediaView.h>
 #import <GoogleMobileAds/GADMuteThisAdReason.h>
@@ -48,6 +49,11 @@
 @property(nonatomic, readonly, copy, nullable) NSString *price;
 /// Identifies the advertiser. For example, the advertiser’s name or visible URL.
 @property(nonatomic, readonly, copy, nullable) NSString *advertiser;
+/// Media content. Set the associated media view's mediaContent property to this object to display
+/// this content.
+@property(nonatomic, readonly, nonnull) GADMediaContent *mediaContent;
+
+#pragma mark - Other properties
 
 /// Optional delegate to receive state change notifications.
 @property(nonatomic, weak, nullable) id<GADUnifiedNativeAdDelegate> delegate;
@@ -63,16 +69,15 @@
 /// Information about the ad response that returned the ad.
 @property(nonatomic, readonly, nonnull) GADResponseInfo *responseInfo;
 
+/// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
+
 /// Indicates whether custom Mute This Ad is available for the native ad.
 @property(nonatomic, readonly, getter=isCustomMuteThisAdAvailable) BOOL customMuteThisAdAvailable;
 
 /// An array of Mute This Ad reasons used to render customized mute ad survey. Use this array to
 /// implement your own Mute This Ad feature only when customMuteThisAdAvailable is YES.
 @property(nonatomic, readonly, nullable) NSArray<GADMuteThisAdReason *> *muteThisAdReasons;
-
-/// Media content. Set the associated media view's mediaContent property to this object to display
-/// this content.
-@property(nonatomic, readonly, nonnull) GADMediaContent *mediaContent;
 
 /// Registers ad view, clickable asset views, and nonclickable asset views with this native ad.
 /// Media view shouldn't be registered as clickable.
