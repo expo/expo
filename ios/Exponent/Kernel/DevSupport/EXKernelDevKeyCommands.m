@@ -198,7 +198,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleRefreshCommand
 {
-  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
+  // This reloads only JS
+  //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
+
+  // This reloads manifest and JS
+  [[EXKernel sharedInstance] reloadVisibleApp];
 }
 
 - (void)_handleDisableDebuggingCommand

@@ -407,6 +407,17 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
     }
 
     @Override
+    public void reloadExpoApp() {
+      try {
+        int activityId = mDevServerHelper.mSettings.exponentActivityId;
+        Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("reloadFromManifest", int.class).invoke(null, activityId);
+      } catch (Exception expoHandleErrorException) {
+        expoHandleErrorException.printStackTrace();
+      }
+    }
+
+
+    @Override
     public void showDevOptionsDialog() {
         if (mDevOptionsDialog != null || !mIsDevSupportEnabled || ActivityManager.isUserAMonkey()) {
             return;
@@ -421,7 +432,10 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
                     Toast.makeText(mApplicationContext, mApplicationContext.getString(R.string.reactandroid_catalyst_hot_reloading_auto_disable), Toast.LENGTH_LONG).show();
                     mDevSettings.setHotModuleReplacementEnabled(false);
                 }
-                handleReloadJS();
+
+                // NOTE(brentvatne): rather than reload just JS we need to reload the entire project from manifest
+                // handleReloadJS();
+                reloadExpoApp();
             }
         });
 
@@ -732,9 +746,11 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         reloadSettings();
     }
 
+    // NOTE(brentvatne): this is confusingly called the first time the app loads!
     @Override
     public void handleReloadJS() {
         UiThreadUtil.assertOnUiThread();
+
         ReactMarker.logMarker(ReactMarkerConstants.RELOAD, mDevSettings.getPackagerConnectionSettings().getDebugServerHost());
         // dismiss redbox if exists
         hideRedboxDialog();
@@ -1044,6 +1060,7 @@ public class DevSupportManagerImpl implements DevSupportManager, PackagerCommand
         });
     }
 
+    // NOTE(brentvatne): this is confusingly called the first time the app loads!
     private void reload() {
         UiThreadUtil.assertOnUiThread();
         // reload settings, show/hide debug overlay if required & start/stop shake detector
