@@ -1,4 +1,5 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import { Platform } from 'react-native';
 
@@ -95,16 +96,7 @@ export type PagedInfo<T> = {
   totalCount: number;
 };
 
-export enum PermissionStatus {
-  UNDETERMINED = 'undetermined',
-  GRANTED = 'granted',
-  DENIED = 'denied',
-}
-
-export type PermissionInfo = {
-  status: 'granted' | 'denied' | 'undetermined';
-  granted: boolean;
-};
+export { PermissionStatus, PermissionResponse };
 
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
@@ -167,14 +159,14 @@ function dateToNumber(value?: Date | number): number | undefined {
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
 
-export async function requestPermissionsAsync(): Promise<PermissionInfo> {
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
   }
   return await MediaLibrary.requestPermissionsAsync();
 }
 
-export async function getPermissionsAsync(): Promise<PermissionInfo> {
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }

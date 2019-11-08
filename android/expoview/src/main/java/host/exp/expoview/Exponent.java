@@ -235,13 +235,14 @@ public class Exponent {
     return mGCMSenderId;
   }
 
-
+  // TODO: remove once SDK 35 is deprecated
   public interface PermissionsListener {
     void permissionsGranted();
 
     void permissionsDenied();
   }
 
+  // TODO: Remove everything connected with permissions once SDK35 is phased out
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
   private PermissionsHelper mPermissionsHelper;
 
@@ -253,11 +254,6 @@ public class Exponent {
                                     ExperienceId experienceId, String experienceName) {
     mPermissionsHelper = new PermissionsHelper(experienceId);
     return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
-  }
-
-  public void requestExperiencePermissions(PermissionsListener listener, String[] permissions,
-                                           ExperienceId experienceId, String experienceName) {
-    new PermissionsHelper(experienceId).requestExperiencePermissions(listener, permissions, experienceName);
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {

@@ -1,3 +1,5 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+
 export enum MediaTypeOptions {
   All = 'All',
   Videos = 'Videos',
@@ -28,3 +30,5 @@ export type OpenFileBrowserOptions = {
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };
+
+export { PermissionResponse, PermissionStatus };

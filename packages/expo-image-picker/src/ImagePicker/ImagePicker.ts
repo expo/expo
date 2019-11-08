@@ -1,7 +1,28 @@
 import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentImagePicker from './ExponentImagePicker';
-import { ImagePickerResult, MediaTypeOptions, ImagePickerOptions } from './ImagePicker.types';
+import {
+  ImagePickerResult,
+  MediaTypeOptions,
+  ImagePickerOptions,
+  PermissionResponse,
+} from './ImagePicker.types';
+
+export async function getCameraPermissionsAsync(): Promise<PermissionResponse> {
+  return ExponentImagePicker.getCameraPermissionsAsync();
+}
+
+export async function getCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+  return ExponentImagePicker.getCameraRollPermissionsAsync();
+}
+
+export async function requestCameraPermissionsAsync(): Promise<PermissionResponse> {
+  return ExponentImagePicker.requestCameraPermissionsAsync();
+}
+
+export async function requestCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+  return ExponentImagePicker.requestCameraRollPermissionsAsync();
+}
 
 export async function launchImageLibraryAsync(
   options: ImagePickerOptions = {}
