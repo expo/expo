@@ -2,19 +2,22 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import <UMCore/UMEventEmitter.h>
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMEventEmitter.h>
 
-#import "EXPostOffice.h"
-#import "EXThreadSafePostOffice.h"
-#import "EXMailbox.h"
+#import <EXNotifications/EXMailbox.h>
+#import <EXNotifications/EXPostOffice.h>
+#import <EXNotifications/EXThreadSafePostOffice.h>
 
 #import <EXNotifications/EXOnTokenChangeListener.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXNotifications : UMExportedModule <EXMailbox, UMModuleRegistryConsumer, UMEventEmitter, EXOnTokenChangeListener>
+@interface EXNotifications : UMExportedModule <EXMailbox,
+                                               UMModuleRegistryConsumer,
+                                               UMEventEmitter,
+                                               EXOnTokenChangeListener>
 
 @end
 

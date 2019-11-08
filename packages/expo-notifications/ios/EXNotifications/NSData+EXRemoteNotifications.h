@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSData (EXRemoteNotifications)
 
-@property (nonatomic, readonly) NSString *apnsTokenString;
+@property(nonatomic, readonly) NSString *apnsTokenString;
 
 @end
 

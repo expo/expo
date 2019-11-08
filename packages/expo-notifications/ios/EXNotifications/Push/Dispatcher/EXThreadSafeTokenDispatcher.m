@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXThreadSafeTokenDispatcher.h>
 #import <EXNotifications/EXSimpleTokenDispatcher.h>
+#import <EXNotifications/EXThreadSafeTokenDispatcher.h>
 
 #import <EXNotifications/EXEngine.h>
 #import <EXNotifications/EXPushEngineProvider.h>
@@ -17,8 +17,7 @@
 
 static dispatch_queue_t queue;
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     id<EXEngine> engine = [EXSimplePushEngineProvider getEngine];
     _insecureTokenDispatcher = [[EXSimpleTokenDispatcher alloc] initWithEngine:engine];
@@ -26,13 +25,13 @@ static dispatch_queue_t queue;
   return self;
 }
 
-+ (id<EXTokenDispatcher>)sharedInstance
-{
++ (id<EXTokenDispatcher>)sharedInstance {
   static EXThreadSafeTokenDispatcher *sharedInstance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedInstance = [[EXThreadSafeTokenDispatcher alloc] init];
-    queue = dispatch_queue_create("host.exp.exponent.EXThreadSafeTokenDispatcher", DISPATCH_QUEUE_SERIAL);
+    queue = dispatch_queue_create("host.exp.exponent.EXThreadSafeTokenDispatcher",
+                                  DISPATCH_QUEUE_SERIAL);
   });
   return sharedInstance;
 }
@@ -44,10 +43,12 @@ static dispatch_queue_t queue;
   });
 }
 
-- (void)registerForPushTokenWithAppId:(NSString *)appId onTokenChangeListener:(id<EXOnTokenChangeListener>)onTokenChangeListener {
+- (void)registerForPushTokenWithAppId:(NSString *)appId
+                onTokenChangeListener:(id<EXOnTokenChangeListener>)onTokenChangeListener {
   __weak id<EXTokenDispatcher> tokenDipatcher = _insecureTokenDispatcher;
   dispatch_async(queue, ^{
-    [tokenDipatcher registerForPushTokenWithAppId:appId onTokenChangeListener:onTokenChangeListener];
+    [tokenDipatcher registerForPushTokenWithAppId:appId
+                            onTokenChangeListener:onTokenChangeListener];
   });
 }
 

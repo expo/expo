@@ -6,10 +6,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXApiV2Result : NSObject
 
-@property (nonatomic, readonly) BOOL successful;
-@property (nullable, strong, nonatomic, readonly) NSError *error;
-@property (nullable, strong, nonatomic, readonly) id<NSObject> data;
-@property (nonatomic, readonly) NSInteger httpStatusCode;
+@property(nonatomic, readonly) BOOL successful;
+@property(nullable, strong, nonatomic, readonly) NSError *error;
+@property(nullable, strong, nonatomic, readonly) id<NSObject> data;
+@property(nonatomic, readonly) NSInteger httpStatusCode;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithData:(nullable id<NSObject>)data
@@ -19,4 +19,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-

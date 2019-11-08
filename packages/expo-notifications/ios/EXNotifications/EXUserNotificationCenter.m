@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import "EXUserNotificationCenter.h"
+#import <EXNotifications/EXUserNotificationCenter.h>
 
 // This class was created in order to provide thread-safety
 // for UNUserNotificationCenter on iOS 10 and 11.
@@ -12,34 +12,37 @@
 
 static dispatch_queue_t queue;
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     static dispatch_once_t queueCreationGuard;
     dispatch_once(&queueCreationGuard, ^{
-      queue = dispatch_queue_create("host.exp.exponent.EXUserNotificationCenter", DISPATCH_QUEUE_SERIAL);
+      queue = dispatch_queue_create("host.exp.exponent.EXUserNotificationCenter",
+                                    DISPATCH_QUEUE_SERIAL);
     });
   }
   return self;
 }
 
-+ (id<EXUserNotificationCenterProxy>)sharedInstance
-{
-    static EXUserNotificationCenter *sharedInstance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedInstance = [[EXUserNotificationCenter alloc] init];
-    });
-    return sharedInstance;
++ (id<EXUserNotificationCenterProxy>)sharedInstance {
+  static EXUserNotificationCenter *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[EXUserNotificationCenter alloc] init];
+  });
+  return sharedInstance;
 }
 
-- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options completionHandler:(void (^)(BOOL granted, NSError *__nullable error))completionHandler {
+- (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options
+                      completionHandler:
+                          (void (^)(BOOL granted, NSError *__nullable error))completionHandler {
   dispatch_async(queue, ^{
-    [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError * _Nullable error) {
-      dispatch_async(queue, ^{
-        completionHandler(granted, error);
-      });
-    }];
+    [[UNUserNotificationCenter currentNotificationCenter]
+        requestAuthorizationWithOptions:options
+                      completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                        dispatch_async(queue, ^{
+                          completionHandler(granted, error);
+                        });
+                      }];
   });
 }
 
@@ -49,49 +52,61 @@ static dispatch_queue_t queue;
   });
 }
 
-- (void)getNotificationCategoriesWithCompletionHandler:(void(^)(NSSet<UNNotificationCategory *> *categories))completionHandler {
+- (void)getNotificationCategoriesWithCompletionHandler:
+    (void (^)(NSSet<UNNotificationCategory *> *categories))completionHandler {
   dispatch_async(queue, ^{
-    [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> * _Nonnull categories) {
-      dispatch_async(queue, ^{
-        completionHandler(categories);
-      });
-    }];
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getNotificationCategoriesWithCompletionHandler:^(
+            NSSet<UNNotificationCategory *> *_Nonnull categories) {
+          dispatch_async(queue, ^{
+            completionHandler(categories);
+          });
+        }];
   });
 }
 
-- (void)getNotificationSettingsWithCompletionHandler:(void(^)(UNNotificationSettings *settings))completionHandler {
+- (void)getNotificationSettingsWithCompletionHandler:
+    (void (^)(UNNotificationSettings *settings))completionHandler {
   dispatch_async(queue, ^{
-    [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
-      dispatch_async(queue, ^{
-        completionHandler(settings);
-      });
-    }];
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+          dispatch_async(queue, ^{
+            completionHandler(settings);
+          });
+        }];
   });
 }
 
-- (void)addNotificationRequest:(UNNotificationRequest *)request withCompletionHandler:(nullable void(^)(NSError *__nullable error))completionHandler {
+- (void)addNotificationRequest:(UNNotificationRequest *)request
+         withCompletionHandler:(nullable void (^)(NSError *__nullable error))completionHandler {
   dispatch_async(queue, ^{
-    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError *__nullable error) {
-       dispatch_async(queue, ^{
-         completionHandler(error);
-       });
-    }];
+    [[UNUserNotificationCenter currentNotificationCenter]
+        addNotificationRequest:request
+         withCompletionHandler:^(NSError *__nullable error) {
+           dispatch_async(queue, ^{
+             completionHandler(error);
+           });
+         }];
   });
 }
 
-- (void)getPendingNotificationRequestsWithCompletionHandler:(void(^)(NSArray<UNNotificationRequest *> *requests))completionHandler {
+- (void)getPendingNotificationRequestsWithCompletionHandler:
+    (void (^)(NSArray<UNNotificationRequest *> *requests))completionHandler {
   dispatch_async(queue, ^{
-    [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> *requests) {
-      dispatch_async(queue, ^{
-        completionHandler(requests);
-      });
-    }];
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getPendingNotificationRequestsWithCompletionHandler:^(
+            NSArray<UNNotificationRequest *> *requests) {
+          dispatch_async(queue, ^{
+            completionHandler(requests);
+          });
+        }];
   });
 }
 
 - (void)removePendingNotificationRequestsWithIdentifiers:(NSArray<NSString *> *)identifiers {
   dispatch_async(queue, ^{
-    [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:identifiers];
+    [[UNUserNotificationCenter currentNotificationCenter]
+        removePendingNotificationRequestsWithIdentifiers:identifiers];
   });
 }
 

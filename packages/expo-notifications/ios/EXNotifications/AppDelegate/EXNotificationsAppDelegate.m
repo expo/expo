@@ -1,30 +1,30 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import "EXNotificationsAppDelegate.h"
-#import <EXNotifications/EXUserNotificationManager.h>
+#import <EXNotifications/EXNotificationsAppDelegate.h>
 #import <EXNotifications/EXThreadSafeTokenDispatcher.h>
+#import <EXNotifications/EXUserNotificationManager.h>
 
 @implementation EXNotificationsAppDelegate
 
 UM_REGISTER_SINGLETON_MODULE(EXNotificationAppDelegate)
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions {
   if (![UNUserNotificationCenter currentNotificationCenter].delegate) {
-    [UNUserNotificationCenter currentNotificationCenter].delegate = [EXUserNotificationManager sharedInstance];
+    [UNUserNotificationCenter currentNotificationCenter].delegate =
+        [EXUserNotificationManager sharedInstance];
   }
-  
+
   return false;
 }
 
 - (void)application:(UIApplication *)app
-didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken {
   [[EXThreadSafeTokenDispatcher sharedInstance] onNewToken:devToken];
 }
 
 - (void)application:(UIApplication *)app
-didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
-  
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)err {
 }
 
 @end

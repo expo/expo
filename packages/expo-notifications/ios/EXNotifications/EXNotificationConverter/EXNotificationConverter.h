@@ -7,9 +7,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXNotificationConverter : NSObject
 
-+ (NSMutableDictionary*)convertToDictionary:(UNNotificationContent*)notificationContent;
++ (NSMutableDictionary *)convertToDictionary:(UNNotificationContent *)notificationContent;
 
-+ (UNMutableNotificationContent*)convertToNotificationContent:(NSDictionary *)payload;
++ (UNMutableNotificationContent *)convertToNotificationContent:(NSDictionary *)payload;
 
 @end
 

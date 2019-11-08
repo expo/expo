@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
 #import <EXNotifications/EXScoper.h>
+#import <Foundation/Foundation.h>
 #import <UMCore/UMInternalModule.h>
 #import <UMModuleRegistryConsumer.h>
 

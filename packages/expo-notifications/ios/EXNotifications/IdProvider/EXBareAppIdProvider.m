@@ -1,6 +1,6 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import "EXBareAppIdProvider.h"
+#import <EXNotifications/EXBareAppIdProvider.h>
 
 @implementation EXBareAppIdProvider
 
@@ -15,7 +15,7 @@ UM_REGISTER_MODULE()
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXAppIdProvider)];
+  return @[ @protocol(EXAppIdProvider) ];
 }
 
 @end

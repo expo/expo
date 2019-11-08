@@ -16,7 +16,7 @@ UM_REGISTER_MODULE()
 }
 
 - (NSString *)getUnscopedString:(NSString *)string {
-  NSArray<NSString*> *parts = [string componentsSeparatedByString:@":"];
+  NSArray<NSString *> *parts = [string componentsSeparatedByString:@":"];
   if ([parts count] > 1) {
     return parts[1];
   }
@@ -24,7 +24,7 @@ UM_REGISTER_MODULE()
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXScoper)];
+  return @[ @protocol(EXScoper) ];
 }
 
 @end

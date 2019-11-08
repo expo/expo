@@ -9,9 +9,10 @@
 
 - (void)onNewToken:(NSData *)token;
 
-- (void)registerForPushTokenWithAppId:(NSString*)appId onTokenChangeListener:(id<EXOnTokenChangeListener>)onTokenChangeListener;
+- (void)registerForPushTokenWithAppId:(NSString *)appId
+                onTokenChangeListener:(id<EXOnTokenChangeListener>)onTokenChangeListener;
 
-- (void)unregisterWithAppId:(NSString*)appId;
+- (void)unregisterWithAppId:(NSString *)appId;
 
 @end
 

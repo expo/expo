@@ -7,8 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXNotificationsAppDelegate : UMSingletonModule <UIApplicationDelegate>
 
-
-
 @end
 
 NS_ASSUME_NONNULL_END
