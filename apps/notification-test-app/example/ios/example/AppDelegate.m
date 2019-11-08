@@ -30,6 +30,8 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 

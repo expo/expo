@@ -14,11 +14,6 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { 
-      initialUserInteraction: null,
-      gotInformationAboutInitialUserInteraction: false,
-    };
-
     Notifications.addOnForegroundNotificationListener('testScreen',
       (userInteraction: Notifications.UserInteraction) => {
         console.log(userInteraction);
@@ -33,20 +28,9 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this._obtainUserFacingNotifPermissionsAsync();
-    this._getInitialUserInteraction();
   }
 
   render() {
-    if (!this.state.gotInformationAboutInitialUserInteraction) {
-      return (
-        <View>
-          <Text>
-            loading...
-          </Text>     
-        </View>
-      )
-    }
-
     return (
       <View>
         <ScrollView>
@@ -58,16 +42,6 @@ export default class App extends React.Component {
         </ScrollView>
       </View>
     );
-  }
-
-  _getInitialUserInteraction = async () => {
-    const userInteraction = await Notifications.popInitialUserInteractionAsync();
-    console.log(userInteraction);
-    console.log(JSON.stringify(userInteraction));
-    this.setState({
-      gotInformationAboutInitialUserInteraction: true,
-      initialUserInteraction: userInteraction,
-    });
   }
 
   _obtainUserFacingNotifPermissionsAsync = async () => {
