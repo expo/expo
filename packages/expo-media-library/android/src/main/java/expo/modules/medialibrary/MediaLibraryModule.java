@@ -28,8 +28,6 @@ import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
-import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE;
-import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MODULE_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
@@ -112,6 +110,7 @@ public class MediaLibraryModule extends ExportedModule {
   public void saveToLibraryAsync(String localUri, Promise promise) {
     if (isMissingWritePermission()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE);
+      return;
     }
 
     new CreateAsset(mContext, localUri, promise, false)

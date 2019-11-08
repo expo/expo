@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		43A678CD784C051E98C574DCF7FE8D10 /* EXMediaLibrary-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF26697733530D9FB4EDC583903CE270 /* EXMediaLibrary-dummy.m */; };
+		098EB717A222822BC418A1EFDF2F707F /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FDD7893D218D202A90B6019D32A37D9 /* EXMediaLibrary.m */; };
+		0AD17B9976D1883C32213B33692F2118 /* EXMediaLibrary-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AF26697733530D9FB4EDC583903CE270 /* EXMediaLibrary-dummy.m */; };
+		5AC4443BC56F16B6C4C4E6241CFC457A /* EXMediaLibraryCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B423A10CFDD42C8BEB875115E92A0E93 /* EXMediaLibraryCameraRollRequester.m */; };
 		5E85E798216069DE133C0F128E0D3DC6 /* EXSaveToLibraryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = CE9A9A3F4429F7B97BAE070D131E2D8B /* EXSaveToLibraryDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		75D207BB4D2710B13B6A4405EA10637F /* EXMediaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AC4F8849480158FC22CE923E74DE58D /* EXMediaLibrary.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AFF184F619E7B4E3F059ED1795E5AA09 /* EXSaveToLibraryDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 315AA9B896E09B7469B6396FE433D367 /* EXSaveToLibraryDelegate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C35572201568E1073495E4939AD68BE6 /* EXSaveToLibraryDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 315AA9B896E09B7469B6396FE433D367 /* EXSaveToLibraryDelegate.m */; };
 		C42750F7F106B129AB39DF93A2001308 /* EXMediaLibraryCameraRollRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 70722CC88AC93C806313C1F1FD869726 /* EXMediaLibraryCameraRollRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D00BD6D27E0F95D7A414F44571213EDC /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FDD7893D218D202A90B6019D32A37D9 /* EXMediaLibrary.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DFBF4AE67A7A1DF7E2A9FD9F757A5CCE /* EXMediaLibraryCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B423A10CFDD42C8BEB875115E92A0E93 /* EXMediaLibraryCameraRollRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -150,7 +150,7 @@
 			buildConfigurationList = AF2E58C3B21DA7E60D7CF6592A00F054 /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */;
 			buildPhases = (
 				1E9FC0F44E2FCCD7A8862935638DFF08 /* Headers */,
-				D1C0333C34B4493FF44BFB35394E1100 /* Sources */,
+				950008447A2031A175042CBCE92E685D /* Sources */,
 				F3F8FB7AE9DBFAFDF52E53B61C13AA4C /* Frameworks */,
 			);
 			buildRules = (
@@ -199,14 +199,14 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D1C0333C34B4493FF44BFB35394E1100 /* Sources */ = {
+		950008447A2031A175042CBCE92E685D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43A678CD784C051E98C574DCF7FE8D10 /* EXMediaLibrary-dummy.m in Sources */,
-				D00BD6D27E0F95D7A414F44571213EDC /* EXMediaLibrary.m in Sources */,
-				DFBF4AE67A7A1DF7E2A9FD9F757A5CCE /* EXMediaLibraryCameraRollRequester.m in Sources */,
-				AFF184F619E7B4E3F059ED1795E5AA09 /* EXSaveToLibraryDelegate.m in Sources */,
+				0AD17B9976D1883C32213B33692F2118 /* EXMediaLibrary-dummy.m in Sources */,
+				098EB717A222822BC418A1EFDF2F707F /* EXMediaLibrary.m in Sources */,
+				5AC4443BC56F16B6C4C4E6241CFC457A /* EXMediaLibraryCameraRollRequester.m in Sources */,
+				C35572201568E1073495E4939AD68BE6 /* EXSaveToLibraryDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
