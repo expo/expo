@@ -5,9 +5,9 @@
 
 @protocol EXEngine <NSObject>
 
-- (NSString *)generateTokenForAppId:(NSString*)appId withToken:(NSString*)token;
+- (NSString *)generateTokenForAppId:(NSString *)appId withToken:(NSString *)token;
 
-- (void)sendTokenToServer:(NSString*)token;
+- (void)sendTokenToServer:(NSString *)token;
 
 @end
 

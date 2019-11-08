@@ -5,7 +5,7 @@
 
 @protocol EXAppIdProvider <NSObject>
 
-- (NSString*) getAppId;
+- (NSString*)getAppId;
 
 @end
 

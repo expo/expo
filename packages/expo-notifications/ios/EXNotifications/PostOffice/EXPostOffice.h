@@ -3,19 +3,21 @@
 #ifndef EXPostOffice_h
 #define EXPostOffice_h
 
-#import "EXMailbox.h"
+#import <EXNotifications/EXMailbox.h>
 
 @protocol EXPostOffice <NSObject>
 
-- (void)notifyAboutUserInteractionForAppId:(NSString*)appId userInteraction:(NSDictionary*)userInteraction;
+- (void)notifyAboutUserInteractionForAppId:(NSString *)appId
+                           userInteraction:(NSDictionary *)userInteraction;
 
 - (void)registerModuleAndFlushPendingUserIntercationsWithAppId:(NSString *)appId
                                                        mailbox:(id<EXMailbox>)mailbox;
-                                     
 
-- (void)unregisterModuleWithAppId:(NSString*)appId;
+- (void)unregisterModuleWithAppId:(NSString *)appId;
 
-- (void)tryToSendForegroundNotificationTo:(NSString*)appId foregroundNotification:(NSDictionary*)foregroundNotification completionHandler:(void (^)(BOOL))completionHandler;
+- (void)tryToSendForegroundNotificationTo:(NSString *)appId
+                   foregroundNotification:(NSDictionary *)foregroundNotification
+                        completionHandler:(void (^)(BOOL))completionHandler;
 
 @end
 

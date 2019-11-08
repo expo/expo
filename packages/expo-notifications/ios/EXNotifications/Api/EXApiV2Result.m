@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXApiV2Result.h"
+#import <EXNotifications/EXApiV2Result.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -8,8 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithData:(nullable id<NSObject>)data
                        error:(nullable NSError *)error
-              httpStatusCode:(NSInteger)statusCode
-{
+              httpStatusCode:(NSInteger)statusCode {
   if (self = [super init]) {
     _data = data;
     _error = error;
@@ -18,15 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (BOOL)isSuccessful
-{
+- (BOOL)isSuccessful {
   return _httpStatusCode >= 200 && _httpStatusCode < 300 && !_error;
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
   return [NSString stringWithFormat:@"<%@: %p, httpStatusCode: %ld, data: %@, error: %@>",
-          NSStringFromClass([self class]), self, (long) _httpStatusCode, _data, _error];
+                                    NSStringFromClass([self class]), self, (long)_httpStatusCode,
+                                    _data, _error];
 }
 
 @end

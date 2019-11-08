@@ -1,7 +1,7 @@
 //  Copyright © 2019-present 650 Industries. All rights reserved.
 
+#import <EXNotifications/EXNotificationRepository.h>
 #import <Foundation/Foundation.h>
-#import "EXNotificationRepository.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

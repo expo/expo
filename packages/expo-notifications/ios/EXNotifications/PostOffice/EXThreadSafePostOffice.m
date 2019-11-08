@@ -1,13 +1,13 @@
 //  Copyright © 2019-present 650 Industries. All rights reserved.
 
-#import "EXThreadSafePostOffice.h"
-#import "EXSimplePostOffice.h"
-#import "EXNotificationRepository.h"
-#import "EXSimpleNotificationRepository.h"
+#import <EXNotifications/EXNotificationRepository.h>
+#import <EXNotifications/EXSimpleNotificationRepository.h>
+#import <EXNotifications/EXSimplePostOffice.h>
+#import <EXNotifications/EXThreadSafePostOffice.h>
 
-@interface EXThreadSafePostOffice()
+@interface EXThreadSafePostOffice ()
 
-@property (atomic) id<EXPostOffice> insecurePostOffice;
+@property(atomic) id<EXPostOffice> insecurePostOffice;
 
 @end
 
@@ -15,37 +15,39 @@
 
 static dispatch_queue_t queue;
 
-- (instancetype)init
-{
+- (instancetype)init {
   if (self = [super init]) {
     id<EXNotificationRepository> notificationRepostory = [EXSimpleNotificationRepository new];
-    self.insecurePostOffice = [[EXSimplePostOffice alloc] initWithNotificationRepository:notificationRepostory];
+    self.insecurePostOffice =
+        [[EXSimplePostOffice alloc] initWithNotificationRepository:notificationRepostory];
   }
   return self;
 }
 
-+ (id<EXPostOffice>)sharedInstance
-{
++ (id<EXPostOffice>)sharedInstance {
   static EXThreadSafePostOffice *sharedInstance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     sharedInstance = [[EXThreadSafePostOffice alloc] init];
-    queue = dispatch_queue_create("host.exp.exponent.EXThreadSafePostOffice", DISPATCH_QUEUE_SERIAL);
+    queue =
+        dispatch_queue_create("host.exp.exponent.EXThreadSafePostOffice", DISPATCH_QUEUE_SERIAL);
   });
   return sharedInstance;
 }
 
-- (void)notifyAboutUserInteractionForAppId:(NSString *)appId userInteraction:(NSDictionary *)userInteraction {
+- (void)notifyAboutUserInteractionForAppId:(NSString *)appId
+                           userInteraction:(NSDictionary *)userInteraction {
   dispatch_async(queue, ^{
-    [self.insecurePostOffice notifyAboutUserInteractionForAppId:appId userInteraction:userInteraction];
+    [self.insecurePostOffice notifyAboutUserInteractionForAppId:appId
+                                                userInteraction:userInteraction];
   });
 }
 
 - (void)registerModuleAndFlushPendingUserIntercationsWithAppId:(NSString *)appId
-                                                       mailbox:(id<EXMailbox>)mailbox
-{
+                                                       mailbox:(id<EXMailbox>)mailbox {
   dispatch_async(queue, ^{
-    [self.insecurePostOffice registerModuleAndFlushPendingUserIntercationsWithAppId:appId mailbox:mailbox];
+    [self.insecurePostOffice registerModuleAndFlushPendingUserIntercationsWithAppId:appId
+                                                                            mailbox:mailbox];
   });
 }
 
@@ -55,10 +57,13 @@ static dispatch_queue_t queue;
   });
 }
 
-- (void)tryToSendForegroundNotificationTo:(NSString*)appId foregroundNotification:(NSDictionary*)foregroundNotification completionHandler:(void (^)(BOOL))completionHandler
-{
+- (void)tryToSendForegroundNotificationTo:(NSString *)appId
+                   foregroundNotification:(NSDictionary *)foregroundNotification
+                        completionHandler:(void (^)(BOOL))completionHandler {
   dispatch_async(queue, ^{
-    [self.insecurePostOffice tryToSendForegroundNotificationTo:appId foregroundNotification:foregroundNotification completionHandler:completionHandler];
+    [self.insecurePostOffice tryToSendForegroundNotificationTo:appId
+                                        foregroundNotification:foregroundNotification
+                                             completionHandler:completionHandler];
   });
 }
 

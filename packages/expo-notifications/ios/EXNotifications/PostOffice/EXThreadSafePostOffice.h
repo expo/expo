@@ -1,7 +1,7 @@
 //  Copyright © 2019-present 650 Industries. All rights reserved.
 
+#import <EXNotifications/EXPostOffice.h>
 #import <Foundation/Foundation.h>
-#import "EXPostOffice.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

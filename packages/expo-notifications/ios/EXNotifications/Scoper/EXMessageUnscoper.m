@@ -1,11 +1,10 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import "EXMessageUnscoper.h"
+#import <EXNotifications/EXMessageUnscoper.h>
 
 @implementation EXMessageUnscoper
 
-+ (NSDictionary *) getUnscopedMessage:(NSDictionary *)message  scoper:(id<EXScoper>)scoper
-{
++ (NSDictionary *)getUnscopedMessage:(NSDictionary *)message scoper:(id<EXScoper>)scoper {
   NSMutableDictionary *mutableMsg = [message mutableCopy];
   for (NSString *key in [message allKeys]) {
     if ([message[key] isKindOfClass:[NSString class]]) {
