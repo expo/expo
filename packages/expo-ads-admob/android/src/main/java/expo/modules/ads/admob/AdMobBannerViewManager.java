@@ -35,7 +35,6 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView> {
 
   public static final String PROP_BANNER_SIZE = "bannerSize";
   public static final String PROP_AD_UNIT_ID = "adUnitID";
-  public static final String PROP_TEST_DEVICE_ID = "testDeviceID";
   public static final String PROP_ADDITIONAL_REQUEST_PARAMS = "additionalRequestParams";
 
   private EventEmitter mEventEmitter;
@@ -77,11 +76,6 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView> {
   @ExpoProp(name = PROP_AD_UNIT_ID)
   public void setAdUnitID(AdMobBannerView view, final String adUnitID) {
     view.setAdUnitID(adUnitID);
-  }
-
-  @ExpoProp(name = PROP_TEST_DEVICE_ID)
-  public void setPropTestDeviceID(AdMobBannerView view, final String testDeviceID) {
-    view.setPropTestDeviceID(testDeviceID);
   }
 
   @ExpoProp(name = PROP_ADDITIONAL_REQUEST_PARAMS)

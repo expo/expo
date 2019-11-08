@@ -32,10 +32,6 @@ type PropsType = React.ComponentProps<typeof View> & {
    */
   adUnitID?: string;
   /**
-   * Test device ID
-   */
-  testDeviceID?: string;
-  /**
    * Additional request params added to underlying request for the ad.
    */
   additionalRequestParams?: { [key: string]: string };
@@ -63,6 +59,8 @@ type StateType = {
   style: { width?: number; height?: number };
 };
 
+let _hasWarnedAboutTestDeviceID = false;
+
 export default class PublisherBanner extends React.Component<PropsType, StateType> {
   static propTypes = {
     bannerSize: PropTypes.oneOf([
@@ -75,7 +73,6 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
       'smartBannerLandscape',
     ]),
     adUnitID: PropTypes.string,
-    testDeviceID: PropTypes.string,
     servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
     additionalRequestParams: PropTypes.object,
@@ -108,13 +105,18 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     if (!this.props.servePersonalizedAds) {
       additionalRequestParams.npa = '1';
     }
+    if ((this.props as any).testDeviceID && !_hasWarnedAboutTestDeviceID) {
+      console.warn(
+        'The `testDeviceID` prop of PublisherBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.'
+      );
+      _hasWarnedAboutTestDeviceID = true;
+    }
     return (
       <View style={this.props.style}>
         <ExpoBannerView
           style={this.state.style}
           adUnitID={this.props.adUnitID}
           bannerSize={this.props.bannerSize}
-          testDeviceID={this.props.testDeviceID}
           onSizeChange={this._handleSizeChange}
           additionalRequestParams={additionalRequestParams}
           onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}
