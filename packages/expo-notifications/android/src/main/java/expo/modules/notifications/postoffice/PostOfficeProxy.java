@@ -32,8 +32,8 @@ public class PostOfficeProxy implements ExpoPostOffice {
   }
 
   @Override
-  public void registerModuleAndGetInitialUserInteraction(String appId, Mailbox mailbox, Function<Bundle, Boolean> callback) {
-    mSingleThreadExecutor.execute(() -> mPostOffice.registerModuleAndGetInitialUserInteraction(appId, mailbox, callback));
+  public void registerModuleAndFlushPendingUserInteractions(String appId, Mailbox mailbox) {
+    mSingleThreadExecutor.execute(() -> mPostOffice.registerModuleAndFlushPendingUserInteractions(appId, mailbox));
   }
 
   @Override

@@ -68,8 +68,6 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   private ModuleRegistry mModuleRegistry = null;
 
-  private Bundle mInitialUserInteraction = null;
-
   public NotificationsModule(Context context) {
     super(context);
   }
@@ -80,9 +78,12 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void popInitialUserInteractionAsync(final Promise promise) {
-    promise.resolve(mInitialUserInteraction);
-    mInitialUserInteraction = null;
+  public void flushPendingUserInteractionsAsync(final Promise promise) {
+    PostOfficeProxy.getInstance().registerModuleAndFlushPendingUserInteractions(
+      mAppId,
+            this
+    );
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -297,19 +298,6 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
     createDefaultChannel();
     mChannelManager = getChannelManager();
-
-    PostOfficeProxy.getInstance().registerModuleAndGetInitialUserInteraction(
-      mAppId,
-      this,
-      (initialUserInteraction) -> {
-        if (initialUserInteraction != null) {
-          mInitialUserInteraction = MessageUnscoper.getUnscopedMessage(initialUserInteraction, mModuleRegistry.getModule(StringScoper.class));
-        } else {
-          mInitialUserInteraction = null;
-        }
-        return false;
-      }
-    );
   }
 
   private void createDefaultChannel() {
