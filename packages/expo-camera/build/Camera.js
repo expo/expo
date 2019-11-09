@@ -135,6 +135,12 @@ export default class Camera extends React.Component {
         }
         return await CameraManager.getAvailableCameraTypesAsync();
     }
+    static async getPermissionsAsync() {
+        return CameraManager.getPermissionsAsync();
+    }
+    static async requestPermissionsAsync() {
+        return CameraManager.requestPermissionsAsync();
+    }
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
         return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
@@ -227,5 +233,5 @@ Camera.defaultProps = {
     flashMode: CameraManager.FlashMode.off,
     whiteBalance: CameraManager.WhiteBalance.auto,
 };
-export const Constants = Camera.Constants;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
 //# sourceMappingURL=Camera.js.map
