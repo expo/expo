@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord;
 - (void)moveHomeToVisible;
-- (void)refreshVisibleApp;
+- (void)reloadVisibleApp;
 - (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion;
 - (void)setIsMenuVisible:(BOOL)isMenuVisible completion:(void (^ _Nullable)(void))completion;
 - (void)showDiagnostics;

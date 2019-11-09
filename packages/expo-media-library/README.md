@@ -23,11 +23,23 @@ expo install expo-media-library
 
 ### Configure for iOS
 
+Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to save photos</string>
+```
+
 Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-No additional set up necessary.
+Add `android.permission.READ_EXTERNAL_STORAGE` and `android.permission.WRITE_EXTERNAL_STORAGE` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
 
 # Contributing
 

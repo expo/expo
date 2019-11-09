@@ -12,8 +12,11 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXPermissions/**/*.{h,m}",
-  "preserve_paths": "EXPermissions/**/*.{h,m}",
+  "source_files": [
+    "EXPermissions/*.{h,m}",
+    "EXPermissions/Requesters/UserNotification/*.{h,m}",
+    "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
+  ],
   "requires_arc": true,
   "dependencies": {
     "UMCore": [

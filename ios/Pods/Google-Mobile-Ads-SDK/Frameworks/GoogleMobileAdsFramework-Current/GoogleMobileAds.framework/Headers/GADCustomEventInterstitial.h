@@ -10,8 +10,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// The interstitial custom event protocol. Your interstitial custom event handler must implement
 /// this protocol.
 @protocol GADCustomEventInterstitial <NSObject>
@@ -31,12 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param request Contains ad request information.
 - (void)requestInterstitialAdWithParameter:(nullable NSString *)serverParameter
                                      label:(nullable NSString *)serverLabel
-                                   request:(GADCustomEventRequest *)request;
+                                   request:(nonnull GADCustomEventRequest *)request;
 
 /// Present the interstitial ad as a modal view using the provided view controller. Called only
 /// after your class calls -customEventInterstitialDidReceiveAd: on its custom event delegate.
-- (void)presentFromRootViewController:(UIViewController *)rootViewController;
+- (void)presentFromRootViewController:(nonnull UIViewController *)rootViewController;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -41,11 +41,13 @@ import versioned.host.exp.exponent.modules.api.URLHandlerModule;
 import versioned.host.exp.exponent.modules.api.UpdatesModule;
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage;
+import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
+import versioned.host.exp.exponent.modules.api.components.viewpager.RNCViewPagerPackage;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
@@ -217,7 +219,9 @@ public class ExponentPackage implements ReactPackage {
         new RNCWebViewPackage(),
         new SafeAreaContextPackage(),
         new RNSharedElementPackage(),
-        new RNDateTimePickerPackage()
+        new RNDateTimePickerPackage(),
+        new RNCMaskedViewPackage(),
+        new RNCViewPagerPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

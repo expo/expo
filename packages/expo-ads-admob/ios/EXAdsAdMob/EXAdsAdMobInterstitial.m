@@ -20,7 +20,6 @@ static NSString *const EXAdsAdMobInterstitialWillLeaveApplication = @"interstiti
   GADInterstitial  *_interstitial;
   NSString *_adUnitID;
   bool _hasListeners;
-  NSString *_testDeviceID;
   UMPromiseResolveBlock _showAdResolver;
   UMPromiseResolveBlock _requestAdResolver;
   UMPromiseRejectBlock _requestAdRejecter;
@@ -68,15 +67,6 @@ UM_EXPORT_METHOD_AS(setAdUnitID,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setTestDeviceID,
-                    setTestDeviceID:(NSString *)testDeviceID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  _testDeviceID = testDeviceID;
-  resolve(nil);
-}
-
 UM_EXPORT_METHOD_AS(requestAd,
                     requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
                     resolver:(UMPromiseResolveBlock)resolve
@@ -90,13 +80,6 @@ UM_EXPORT_METHOD_AS(requestAd,
     _interstitial.delegate = self;
     
     GADRequest *request = [GADRequest request];
-    if (_testDeviceID) {
-      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
-        request.testDevices = @[kGADSimulatorID];
-      } else {
-        request.testDevices = @[_testDeviceID];
-      }
-    }
     if (additionalRequestParams) {
       GADExtras *extras = [[GADExtras alloc] init];
       extras.additionalParameters = additionalRequestParams;

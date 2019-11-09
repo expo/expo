@@ -23,12 +23,24 @@ expo install expo-calendar
 
 ### Configure for iOS
 
+Add `NSCalendarsUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSCalendarsUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your calendar</string>
+```
+
 Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
 
-No additional set up necessary.
+Add `android.permission.READ_CALENDAR` and `android.permission.WRITE_CALENDAR` permissions to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<uses-permission android:name="android.permission.READ_CALENDAR" />
+<uses-permission android:name="android.permission.WRITE_CALENDAR" />
+```
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

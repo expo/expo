@@ -39,11 +39,6 @@ UM_VIEW_PROPERTY(adUnitID, NSString *, EXAdsAdMobBannerView)
   [view setAdUnitID:value];
 }
 
-UM_VIEW_PROPERTY(testDeviceID, NSString *, EXAdsAdMobBannerView)
-{
-  [view setTestDeviceID:value];
-}
-
 UM_VIEW_PROPERTY(additionalRequestParams, NSDictionary *, EXAdsAdMobBannerView)
 {
   [view setAdditionalRequestParams:value];

@@ -8,8 +8,6 @@
 #import <GoogleMobileAds/GADRequest.h>
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Use to configure Custom Search Ad (CSA) ad requests. A dynamic height search banner can contain
 /// multiple ads and the height is set dynamically based on the ad contents. Please cross-reference
 /// the property sections and properties with the official reference document:
@@ -158,8 +156,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign) BOOL longerHeadlinesExtensionEnabled;
 
 /// Sets an advanced option value for a specified key. The value must be an NSString or NSNumber.
-- (void)setAdvancedOptionValue:(id)value forKey:(NSString *)key;
+- (void)setAdvancedOptionValue:(nonnull id)value forKey:(nonnull NSString *)key;
 
 @end
-
-NS_ASSUME_NONNULL_END

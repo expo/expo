@@ -1,3 +1,7 @@
+# 2019-10-9 -- v5.0.1
+- Fixes an issue that the sign in flow cannot be correctly started on iOS 13.
+- The zip distribution requires Xcode 11 or above.
+
 # 2019-8-14 -- v5.0.0
 - Changes to GIDSignIn
     - `uiDelegate` has been replaced with `presentingViewController`.

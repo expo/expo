@@ -46,9 +46,6 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new ScopedRotationVectorSensorService(experienceId));
     moduleRegistry.registerInternalModule(new SharedCookiesDataSourceFactoryProvider());
 
-    // Overriding expo-permissions/PermissionsService -- binding checks with kernel services
-    moduleRegistry.registerInternalModule(new PermissionsServiceBinding(scopedContext, experienceId));
-
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
     moduleRegistry.registerInternalModule(new ConstantsBinding(scopedContext, experienceProperties, manifest));
 
@@ -67,6 +64,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-facebook
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 
+    // Scoping Amplitude
+    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
@@ -74,7 +74,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     }
 
     // Overriding ScopedUIManagerModuleWrapper from ReactAdapterPackage
-    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext, experienceId, manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)));
+    moduleRegistry.registerInternalModule(new ScopedUIManagerModuleWrapper(reactContext));
 
     // Adding other modules (not universal) to module registry as consumers.
     // It allows these modules to refer to universal modules.

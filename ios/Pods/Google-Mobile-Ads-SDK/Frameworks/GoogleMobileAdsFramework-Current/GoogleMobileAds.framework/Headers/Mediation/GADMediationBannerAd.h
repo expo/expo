@@ -13,6 +13,8 @@
 
 /// Rendered banner ad. Provides a single subview to add to the banner view's view hierarchy.
 @protocol GADMediationBannerAd <GADMediationAd>
+
+/// The banner ad view.
 @property(nonatomic, readonly, nonnull) UIView *view;
 
 @optional
@@ -21,7 +23,9 @@
 - (void)changeAdSizeTo:(GADAdSize)adSize;
 @end
 
+/// Banner ad configuration.
 @interface GADMediationBannerAdConfiguration : GADMediationAdConfiguration
+
 /// Banner ad size requested of the adapter.
 @property(nonatomic, readonly) GADAdSize adSize;
 

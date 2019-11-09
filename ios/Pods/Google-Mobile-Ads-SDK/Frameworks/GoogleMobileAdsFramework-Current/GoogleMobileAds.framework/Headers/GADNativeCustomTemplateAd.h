@@ -15,13 +15,11 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Native ad custom click handler block. |assetID| is the ID of asset that has received a click.
-typedef void (^GADNativeAdCustomClickHandler)(NSString *assetID);
+typedef void (^GADNativeAdCustomClickHandler)(NSString *_Nonnull assetID);
 
 /// Asset key for the GADMediaView asset view.
-GAD_EXTERN NSString *const GADNativeCustomTemplateAdMediaViewKey;
+GAD_EXTERN NSString *_Nonnull const GADNativeCustomTemplateAdMediaViewKey;
 
 /// Native custom template ad. To request this ad type, you need to pass
 /// kGADAdLoaderAdTypeNativeCustomTemplate (see GADAdLoaderAdTypes.h) to the |adTypes| parameter
@@ -30,17 +28,17 @@ GAD_EXTERN NSString *const GADNativeCustomTemplateAdMediaViewKey;
 @interface GADNativeCustomTemplateAd : GADNativeAd
 
 /// The ad's custom template ID.
-@property(nonatomic, readonly) NSString *templateID;
+@property(nonatomic, readonly, nonnull) NSString *templateID;
 
 /// Array of available asset keys.
-@property(nonatomic, readonly) NSArray<NSString *> *availableAssetKeys;
+@property(nonatomic, readonly, nonnull) NSArray<NSString *> *availableAssetKeys;
 
 /// Returns video controller for controlling receiver's video.
-@property(nonatomic, readonly, strong) GADVideoController *videoController;
+@property(nonatomic, readonly, nonnull) GADVideoController *videoController;
 
 /// Returns media view for rendering video loaded by the receiver. Returns nil if receiver doesn't
 /// has a video.
-@property(nonatomic, readonly, strong, nullable) GADMediaView *mediaView;
+@property(nonatomic, readonly, nullable) GADMediaView *mediaView;
 
 /// Custom click handler. Set this property only if this template ad is configured with a custom
 /// click action, otherwise set it to nil. If this property is set to a non-nil value, the ad's
@@ -53,15 +51,15 @@ GAD_EXTERN NSString *const GADNativeCustomTemplateAdMediaViewKey;
 
 /// Returns the native ad image corresponding to the specified key or nil if the image is not
 /// available.
-- (nullable GADNativeAdImage *)imageForKey:(NSString *)key;
+- (nullable GADNativeAdImage *)imageForKey:(nonnull NSString *)key;
 
 /// Returns the string corresponding to the specified key or nil if the string is not available.
-- (nullable NSString *)stringForKey:(NSString *)key;
+- (nullable NSString *)stringForKey:(nonnull NSString *)key;
 
 /// Call when the user clicks on the ad. Provide the asset key that best matches the asset the user
 /// interacted with. If this ad is configured with a custom click action, ensure the receiver's
 /// customClickHandler property is set before calling this method.
-- (void)performClickOnAssetWithKey:(NSString *)assetKey;
+- (void)performClickOnAssetWithKey:(nonnull NSString *)assetKey;
 
 /// Call when the ad is displayed on screen to the user. Can be called multiple times. Only the
 /// first impression is recorded.
@@ -73,7 +71,7 @@ GAD_EXTERN NSString *const GADNativeCustomTemplateAdMediaViewKey;
 /// ignored and |customClickHandler| is executed after recording the click.
 ///
 /// This method is deprecated. See performClickOnAssetWithKey: API.
-- (void)performClickOnAssetWithKey:(NSString *)assetKey
+- (void)performClickOnAssetWithKey:(nonnull NSString *)assetKey
                 customClickHandler:(nullable dispatch_block_t)customClickHandler
     GAD_DEPRECATED_MSG_ATTRIBUTE("Use performClickOnAssetWithKey:.");
 
@@ -86,12 +84,10 @@ GAD_EXTERN NSString *const GADNativeCustomTemplateAdMediaViewKey;
 @protocol GADNativeCustomTemplateAdLoaderDelegate <GADAdLoaderDelegate>
 
 /// Called when requesting an ad. Asks the delegate for an array of custom template ID strings.
-- (NSArray<NSString *> *)nativeCustomTemplateIDsForAdLoader:(GADAdLoader *)adLoader;
+- (nonnull NSArray<NSString *> *)nativeCustomTemplateIDsForAdLoader:(nonnull GADAdLoader *)adLoader;
 
 /// Tells the delegate that a native custom template ad was received.
-- (void)adLoader:(GADAdLoader *)adLoader
-    didReceiveNativeCustomTemplateAd:(GADNativeCustomTemplateAd *)nativeCustomTemplateAd;
+- (void)adLoader:(nonnull GADAdLoader *)adLoader
+    didReceiveNativeCustomTemplateAd:(nonnull GADNativeCustomTemplateAd *)nativeCustomTemplateAd;
 
 @end
-
-NS_ASSUME_NONNULL_END

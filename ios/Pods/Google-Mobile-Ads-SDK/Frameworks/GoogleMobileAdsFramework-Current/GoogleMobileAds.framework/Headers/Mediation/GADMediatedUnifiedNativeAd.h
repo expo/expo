@@ -10,8 +10,6 @@
 #import <GoogleMobileAds/GADUnifiedNativeAdAssetIdentifiers.h>
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Provides methods used for constructing native ads. The adapter must return an object conforming
 /// to this protocol for native ad requests.
 @protocol GADMediatedUnifiedNativeAd <NSObject>
@@ -63,12 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Tells the receiver that it has been rendered in |view| with clickable asset views and
 /// nonclickable asset views. viewController should be used to present modal views for the ad.
-- (void)didRenderInView:(UIView *)view
+- (void)didRenderInView:(nonnull UIView *)view
        clickableAssetViews:
-           (NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)clickableAssetViews
+           (nonnull NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)clickableAssetViews
     nonclickableAssetViews:
-        (NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)nonclickableAssetViews
-            viewController:(UIViewController *)viewController;
+        (nonnull NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)nonclickableAssetViews
+            viewController:(nonnull UIViewController *)viewController;
 
 /// Tells the receiver that an impression is recorded. This method is called only once per mediated
 /// native ad.
@@ -77,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Tells the receiver that a user click is recorded on the asset named |assetName|. Full screen
 /// actions should be presented from viewController. This method is called only if
 /// -[GADMAdNetworkAdapter handlesUserClicks] returns NO.
-- (void)didRecordClickOnAssetWithName:(GADUnifiedNativeAssetIdentifier)assetName
-                                 view:(UIView *)view
-                       viewController:(UIViewController *)viewController;
+- (void)didRecordClickOnAssetWithName:(nonnull GADUnifiedNativeAssetIdentifier)assetName
+                                 view:(nonnull UIView *)view
+                       viewController:(nonnull UIViewController *)viewController;
 
 /// Tells the receiver that it has untracked |view|. This method is called when the mediated native
 /// ad is no longer rendered in the provided view and the delegate should stop tracking the view's
@@ -88,5 +86,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didUntrackView:(nullable UIView *)view;
 
 @end
-
-NS_ASSUME_NONNULL_END

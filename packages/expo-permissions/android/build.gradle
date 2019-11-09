@@ -6,11 +6,15 @@ buildscript {
 
   dependencies {
     classpath 'com.android.tools.build:gradle:3.5.1'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.41"
   }
 }
 
+
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
+
 
 group = 'host.exp.exponent'
 version = '8.0.0-rc.0'
@@ -74,5 +78,10 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
 
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
   api "androidx.appcompat:appcompat:1.0.0"
+  
+  compileOnly('com.facebook.react:react-native:+') {
+    exclude group: 'com.android.support'
+  }
 }

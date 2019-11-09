@@ -34,7 +34,7 @@ As mentioned in the introduction, there are some URL schemes for core functional
 There is no anchor tag in React Native, so we can't write `<a href="https://expo.io">`, instead we have to use `Linking.openURL`.
 
 ```javascript
-import { Linking } from 'react-native';
+import { Linking } from 'expo';
 
 Linking.openURL('https://expo.io');
 ```
@@ -42,7 +42,8 @@ Linking.openURL('https://expo.io');
 Usually you don't open a URL without it being requested by the user -- here's an example of a simple `Anchor` component that will open a URL when it is pressed.
 
 ```javascript
-import { Linking, Text } from 'react-native';
+import { Text } from 'react-native';
+import { Linking } from 'expo';
 
 export default class Anchor extends React.Component {
   _handlePress = () => {

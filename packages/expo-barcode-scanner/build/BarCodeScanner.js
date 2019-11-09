@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import mapValues from 'lodash/mapValues';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,6 +8,7 @@ import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
+export { PermissionStatus };
 export class BarCodeScanner extends React.Component {
     constructor() {
         super(...arguments);
@@ -28,6 +30,12 @@ export class BarCodeScanner extends React.Component {
                 this.lastEvents[type] = JSON.stringify(nativeEvent);
             }
         };
+    }
+    static async getPermissionsAsync() {
+        return ExpoBarCodeScannerModule.getPermissionsAsync();
+    }
+    static async requestPermissionsAsync() {
+        return ExpoBarCodeScannerModule.requestPermissionsAsync();
     }
     static async scanFromURLAsync(url, barCodeTypes = Object.values(BarCodeType)) {
         if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
@@ -80,5 +88,5 @@ BarCodeScanner.defaultProps = {
     type: Type.back,
     barCodeTypes: Object.values(BarCodeType),
 };
-export const { Constants } = BarCodeScanner;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
 //# sourceMappingURL=BarCodeScanner.js.map

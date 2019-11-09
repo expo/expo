@@ -31,11 +31,13 @@ export default class ExpoComponentsScreen extends React.Component {
       'LinearGradient',
       'Lottie',
       'Maps',
+      'MaskedView',
       'ReanimatedImagePreview',
       'ReanimatedProgress',
       'Screens',
       'SharedElement',
       'SVG',
+      'ViewPager',
       'Video',
       'WebView',
     ];
