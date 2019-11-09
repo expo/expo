@@ -33,7 +33,11 @@ beforeEach(() => {
     mockProperty(ExpoLocalization, property, fakeLocalization[property]);
     mockProperty(Localization, property, fakeLocalization[property]);
   }
-  mockProperty(ExpoLocalization, 'getLocalizationAsync', jest.fn(async () => fakeLocalization));
+  mockProperty(
+    ExpoLocalization,
+    'getLocalizationAsync',
+    jest.fn(async () => fakeLocalization)
+  );
 });
 
 afterEach(() => {

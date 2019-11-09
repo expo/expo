@@ -30,9 +30,9 @@ function setRef<T>(refProp: React.Ref<T>, ref: T | null) {
 
 const Canvas: any = React.forwardRef((props, ref) => createElement('canvas', { ...props, ref }));
 
-const CanvasWrapper: React.FunctionComponent<
-  ViewProps & { canvasRef: React.Ref<HTMLCanvasElement> }
-> = ({ pointerEvents, children, ...props }) => {
+const CanvasWrapper: React.FunctionComponent<ViewProps & {
+  canvasRef: React.Ref<HTMLCanvasElement>;
+}> = ({ pointerEvents, children, ...props }) => {
   const [size, setSize] = React.useState<{ width: number; height: number } | null>(null);
 
   const ref = React.useRef<View>(null);
