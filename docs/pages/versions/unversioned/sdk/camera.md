@@ -101,7 +101,8 @@ Check whether the current device has a camera. This is useful for web and simula
 ```js
 import { Camera } from 'expo-camera';
 
-if (await Camera.isAvailableAsync()) {}
+if (await Camera.isAvailableAsync()) {
+}
 ```
 
 - **Camera.getAvailableCameraTypesAsync(): string[]**
@@ -290,6 +291,22 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview`
 
 Resumes the camera preview.
+
+### `requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `getPermissionsAsync()`
+
+Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ## Web Support
 

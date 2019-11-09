@@ -32,9 +32,11 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Returns
 
-Returns a `Promise` that is resolved with the information about the permissions, including status, expiration and scope (if it applies to the permission type).
-Top-level `status` and `expires` keys stores combined info of each component permission that is asked for.
-If any permission resulted in a negative result, then that negative result is propagated here; that means top-level values are positive only if all component values are positive.
+A `Promise` that is resolved with information about the permissions, including status, expiration, and scope (if applicable).
+The top-level `status`, `expires` and `canAskAgain` keys are a reduction of the values from each individual permission.
+If all single permissions have a `status` of `'denied'`, then that the top level `status` is `denied`; in other words, the top-level `status` is `'granted'` if and only if all of the individual permissions are `'granted'`. Otherwise, `status` is`undetermined`.
+If any single permission has a `status` different then `granted`, then top-level `granted` is `false`. Otherwise, it is `true`.
+Top-level `expires` has value of the earliest expirated permission.
 
 Examples `[...componentsValues] => topLevelStatus`:
 
@@ -45,10 +47,14 @@ Examples `[...componentsValues] => topLevelStatus`:
 {
   status, // combined status of all component permissions being asked for, if any of has status !== 'granted' then that status is propagated here
   expires, // combined expires of all permissions being asked for, same as status
+  canAskAgain,
+  granted,
   permissions: { // an object with an entry for each permission requested
     [Permissions.TYPE]: {
       status,
       expires,
+      canAskAgain,
+      granted,
       ... // any additional permission-specific fields
     },
     ...
@@ -188,3 +194,15 @@ In order to request permissions in a standalone Android app (Managed Workflow on
 For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
 
 > **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
+
+## Types
+
+### `PermissionResponse`
+
+| Field name  | Type                       | Description                                                                                                                                                                                    |
+| ----------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| status      | _string_                   | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
+| granted     | _boolean_                  | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
+| canAskAgain | _boolean_                  | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
+| ios         | depends on permission type | Additional detail on iOS (**optional**)                                                                                                                                                        |
+| android     | depends on permission type | Additional detail on Android (**optional**)                                                                                                                                                    |

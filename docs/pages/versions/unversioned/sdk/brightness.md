@@ -17,6 +17,9 @@ import * as Brightness from 'expo-brightness';
 ```
 
 ### Methods
+
+- [`Brightness.requestPermissionsAsync()`](#brightnessrequestpermissionsasync)
+- [`Brightness.getPermissionsAsync()`](#brightnessgetpermissionsasync)
 - [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
 - [`Brightness.setBrightnessAsync(brightnessValue)`](#brightnesssetbrightnessasyncbrightnessvalue)
 - [`Brightness.useSystemBrightnessAsync()`](#brightnessusesystembrightnessasync)
@@ -27,12 +30,30 @@ import * as Brightness from 'expo-brightness';
 - [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#brightnesssetsystembrightnessmodeasyncbrightnessmode)
 
 ### Enum Types
+
 - [`Brightness.BrightnessMode`](#brightnessbrightnessmode)
 
 ### Errors
+
 - [Error Codes](#error-codes)
 
 ## Methods
+
+### `Brightness.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing system brightness. Alias for `Permissions.askAsync(Permissions.BRIGHTNESS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `Brightness.getPermissionsAsync()`
+
+Checks user's permissions for accessing system brightness. Alias for `Permissions.getAsync(Permissions.BRIGHTNESS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Brightness.getBrightnessAsync()`
 
@@ -174,9 +195,9 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 ## Error Codes
 
-| Code | Description |
-| --- | --- |
-| `ERR_BRIGHTNESS` | An error occurred when getting or setting the app brightness. |
-| `ERR_BRIGHTNESS_MODE` | An error occurred when getting or setting the system brightness mode. |
+| Code                                | Description                                                                                    |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `ERR_BRIGHTNESS`                    | An error occurred when getting or setting the app brightness.                                  |
+| `ERR_BRIGHTNESS_MODE`               | An error occurred when getting or setting the system brightness mode.                          |
 | `ERR_BRIGHTNESS_PERMISSIONS_DENIED` | An attempt to set the system brightness was made without the proper permissions from the user. |
-| `ERR_BRIGHTNESS_SYSTEM` | An error occurred when getting or setting the system brightness. |
+| `ERR_BRIGHTNESS_SYSTEM`             | An error occurred when getting or setting the system brightness.                               |

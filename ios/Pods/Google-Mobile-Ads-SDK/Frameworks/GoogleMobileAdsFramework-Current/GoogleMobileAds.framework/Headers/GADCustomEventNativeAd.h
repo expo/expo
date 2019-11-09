@@ -9,8 +9,6 @@
 #import <GoogleMobileAds/GADCustomEventRequest.h>
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @protocol GADCustomEventNativeAdDelegate;
 
 /// Native ad custom event protocol. Your native ad custom event handler class must conform to this
@@ -26,11 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param options Additional options configured by the publisher for requesting a native ad. See
 /// GADNativeAdImageAdLoaderOptions.h for available image options.
 /// @param rootViewController Publisher-provided view controller.
-- (void)requestNativeAdWithParameter:(NSString *)serverParameter
-                             request:(GADCustomEventRequest *)request
-                             adTypes:(NSArray *)adTypes
-                             options:(NSArray *)options
-                  rootViewController:(UIViewController *)rootViewController;
+- (void)requestNativeAdWithParameter:(nonnull NSString *)serverParameter
+                             request:(nonnull GADCustomEventRequest *)request
+                             adTypes:(nonnull NSArray *)adTypes
+                             options:(nonnull NSArray *)options
+                  rootViewController:(nonnull UIViewController *)rootViewController;
 
 /// Indicates whether the custom event handles user clicks. Return YES if the custom event should
 /// handle user clicks. In this case, the Google Mobile Ads SDK doesn't track user clicks and the
@@ -53,5 +51,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, weak, nullable) id<GADCustomEventNativeAdDelegate> delegate;
 
 @end
-
-NS_ASSUME_NONNULL_END

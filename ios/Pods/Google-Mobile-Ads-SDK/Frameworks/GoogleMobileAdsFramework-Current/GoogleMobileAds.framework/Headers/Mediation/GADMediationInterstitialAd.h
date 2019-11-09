@@ -12,8 +12,12 @@
 
 /// Rendered interstitial ad.
 @protocol GADMediationInterstitialAd <GADMediationAd>
+
+/// Presents the receiver from the view controller.
 - (void)presentFromViewController:(nonnull UIViewController *)viewController;
+
 @end
 
+/// Interstitial ad configuration.
 @interface GADMediationInterstitialAdConfiguration : GADMediationAdConfiguration
 @end

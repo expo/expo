@@ -23,9 +23,22 @@ expo install expo-camera
 
 ### Configure for iOS
 
+Add `NSCameraUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSCalendarsUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the camera</string>
+```
+
 Run `pod install` in the ios directory after installing the npm package.
 
 ### Configure for Android
+
+Add `android.permission.CAMERA` permission to your manifest (`android/app/src/main/AndroidManifest.xml`):
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+```
 
 Adjust the `android/build.gradle` to add a new `maven` block after all other repositories as described below:
 ```gradle
@@ -45,4 +58,4 @@ allprojects {
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

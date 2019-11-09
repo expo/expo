@@ -13,6 +13,7 @@ public class AdMobPackage extends BasePackage {
   @Override
   public List<ExportedModule> createExportedModules(Context context) {
     return Arrays.<ExportedModule>asList(
+        new AdMobModule(context),
         new AdMobInterstitialAdModule(context),
         new AdMobRewardedVideoAdModule(context));
   }

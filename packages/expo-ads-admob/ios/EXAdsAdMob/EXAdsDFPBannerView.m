@@ -43,13 +43,6 @@
     _bannerView.adUnitID = _adUnitID;
     _bannerView.rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     GADRequest *request = [GADRequest request];
-    if (_testDeviceID) {
-      if ([_testDeviceID isEqualToString:@"EMULATOR"]) {
-        request.testDevices = @[kGADSimulatorID];
-      } else {
-        request.testDevices = @[_testDeviceID];
-      }
-    }
     GADExtras *extras = [[GADExtras alloc] init];
     extras.additionalParameters = _additionalRequestParams;
     [request registerAdNetworkExtras:extras];
@@ -100,16 +93,6 @@
 {
   if (![additionalRequestParams isEqual:_additionalRequestParams]) {
     _additionalRequestParams = additionalRequestParams;
-    if (_bannerView) {
-      [_bannerView removeFromSuperview];
-    }
-    [self loadBanner];
-  }
-}
-
-- (void)setTestDeviceID:(NSString *)testDeviceID {
-  if (![testDeviceID isEqual:_testDeviceID]) {
-    _testDeviceID = testDeviceID;
     if (_bannerView) {
       [_bannerView removeFromSuperview];
     }

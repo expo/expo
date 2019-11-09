@@ -242,6 +242,15 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   return record;
 }
 
+- (void)reloadVisibleApp
+{
+  if (_browserController) {
+    [EXUtil performSynchronouslyOnMainThread:^{
+      [self->_browserController reloadVisibleApp];
+    }];
+  }
+}
+
 - (void)switchTasks
 {
   if (!_browserController) {

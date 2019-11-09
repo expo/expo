@@ -9,6 +9,7 @@ import {
   PictureOptions,
   Props,
   RecordingOptions,
+  PermissionResponse,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import _CameraManager from './ExponentCameraManager';
@@ -172,6 +173,14 @@ export default class Camera extends React.Component<Props> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
+  static async getPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.getPermissionsAsync();
+  }
+
+  static async requestPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.requestPermissionsAsync();
+  }
+
   _cameraHandle?: number | null;
   _cameraRef?: React.Component | null;
   _lastEvents: { [eventName: string]: string } = {};
@@ -297,4 +306,4 @@ export default class Camera extends React.Component<Props> {
   }
 }
 
-export const Constants = Camera.Constants;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;

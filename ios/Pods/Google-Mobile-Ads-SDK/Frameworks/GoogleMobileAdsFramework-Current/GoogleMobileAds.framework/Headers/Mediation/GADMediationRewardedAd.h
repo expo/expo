@@ -15,5 +15,6 @@
 - (void)presentFromViewController:(nonnull UIViewController *)viewController;
 @end
 
+/// Rewarded ad configuration.
 @interface GADMediationRewardedAdConfiguration : GADMediationAdConfiguration
 @end

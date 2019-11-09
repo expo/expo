@@ -47,6 +47,7 @@ import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.R
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
+import versioned.host.exp.exponent.modules.api.components.viewpager.RNCViewPagerPackage;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
@@ -219,7 +220,8 @@ public class ExponentPackage implements ReactPackage {
         new SafeAreaContextPackage(),
         new RNSharedElementPackage(),
         new RNDateTimePickerPackage(),
-        new RNCMaskedViewPackage()
+        new RNCMaskedViewPackage(),
+        new RNCViewPagerPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

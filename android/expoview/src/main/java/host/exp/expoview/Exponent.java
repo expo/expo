@@ -235,13 +235,14 @@ public class Exponent {
     return mGCMSenderId;
   }
 
-
+  // TODO: remove once SDK 35 is deprecated
   public interface PermissionsListener {
     void permissionsGranted();
 
     void permissionsDenied();
   }
 
+  // TODO: Remove everything connected with permissions once SDK35 is phased out
   private List<ActivityResultListener> mActivityResultListeners = new ArrayList<>();
   private PermissionsHelper mPermissionsHelper;
 
@@ -253,11 +254,6 @@ public class Exponent {
                                     ExperienceId experienceId, String experienceName) {
     mPermissionsHelper = new PermissionsHelper(experienceId);
     return mPermissionsHelper.requestPermissions(listener, permissions, experienceName);
-  }
-
-  public void requestExperiencePermissions(PermissionsListener listener, String[] permissions,
-                                           ExperienceId experienceId, String experienceName) {
-    new PermissionsHelper(experienceId).requestExperiencePermissions(listener, permissions, experienceName);
   }
 
   public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -676,6 +672,16 @@ public class Exponent {
     }
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(mContext));
   }
+
+  // TODO: remove once SDK 35 is deprecated
+  public boolean shouldAlwaysReloadFromManifest(String sdkVersion) {
+    if (sdkVersion == null || ABIVersion.toNumber(sdkVersion) >= ABIVersion.toNumber("36.0.0")) {
+      return true;
+    }
+
+    return false;
+  }
+
 
   public void preloadManifestAndBundle(final String manifestUrl) {
     try {

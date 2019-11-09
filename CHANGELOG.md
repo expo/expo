@@ -6,17 +6,28 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+- `@react-native-community/netinfo` updated from `3.2.1` to `4.6.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-branch` updated from `3.1.1` to `4.2.1`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
 - `react-native-gesture-handler` updated from `1.4.0` to `1.5.0`. ([#6127](https://github.com/expo/expo/pull/6127) by [@tsapeta](https://github.com/tsapeta))
+- `react-native-maps` updated from `0.25.0` to `0.26.1`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-reanimated` updated from `1.3.0` to `1.4.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-svg` updated from `9.9.5` to `9.13.3`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-view-shot` updated from `2.6.0` to `3.0.2`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-webview` updated from `7.0.5` to `7.4.3`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-safe-area-context` updated from `0.5.0` to `0.6.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
 
 ### 🛠 Breaking changes
 
 - **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`.
+- **`expo`**: Removed Branch export from `expo/Branch`. ([#6190](https://github.com/expo/expo/pull/6190)).
+- `Location.requestPermissionsAsync()` is no longer being rejected when permissions were not granted. Instead it returns `PermissionsResponse` object, which is similar to the result of `Permissions.aksAsync(Permissions.Location)`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
 - Added `MediaLibrary.saveToAssetsAsync` function that can work without `CAMERA_ROLL` permission. ([#5678](https://github.com/expo/expo/pull/5678) by [@lukmccall](https://github.com/lukmccall))
 - Added support for `Speech.getAvailableVoicesAsync()` on Android. ([#5887](f0a9d8ce87451dbce8c0a309ff917c8b26472861) by [@Mitch528](https://github.com/Mitch528))
 - Added @react-native-community/masked-view ([#6193](https://github.com/expo/expo/pull/6193)).
+- Added `canAskAgain` and `granted` fields to `PermissionsResponse`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -36,6 +47,9 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed type problem with `EXiOSOperatingSystemVersion` struct in `expo-gl-cpp`. ([#6063](https://github.com/expo/expo/pull/6063) by [@crubier](https://github.com/crubier))
 - Fixed blinking `Camera.Constants.FlashMode.torch` on iOS in `Camera`. ([#6128](https://github.com/expo/expo/pull/6128) by [@bbarthec](https://github.com/bbarthec))
 - Fixed race condition in `GoogleSignIn` on iOS. ([#5872](https://github.com/expo/expo/pull/5872) by [@vonovak](https://github.com/vonovak)])
+- Fixed `Contacts.presentFormAsync` pre-filling, when `bool` value was provided. ([#5522](https://github.com/expo/expo/pull/5522) by [@lukmccall](https://github.com/lukmccall))
+- Fixed crashes when the user tries to download a file through `react-native-webview` without granted storage permission on Android. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `Permissions.getAsync` result, which was inconsistent with iOS settings. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 
 ## 35.0.0
 

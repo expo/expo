@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		241909EFBED62072A133AA8FE3AA11D4 /* EXConstantsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D076BE0593C35ACCFCB6601E18C493A /* EXConstantsService.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		717DDB779F29EF4AF9247A56DE216D2F /* EXConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = B70436D0EF496A1817FDBBC49E460D4A /* EXConstants.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7ED240208286F7C689DD0D6BC6833C11 /* EXConstants-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C3B6B0C0DA5E884A4D7A7A4BB80A88 /* EXConstants-dummy.m */; };
 		8A8E94955A7C4B80BC9B63C2B27F5A87 /* EXConstantsService.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC73D7783D3478DE4D8F7FFC40F0D33 /* EXConstantsService.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		91DDE15A316D1308135FD2B4AEAAA863 /* EXConstants-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C3B6B0C0DA5E884A4D7A7A4BB80A88 /* EXConstants-dummy.m */; };
-		FF5B85166FCF8CE8F279F4606CECB5CC /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = EF18102F3B281AE7AEEAECFF8754D70F /* EXConstants.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D6045FE9D2CE18D87DD1DAA9E9060EDE /* EXConstantsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D076BE0593C35ACCFCB6601E18C493A /* EXConstantsService.m */; };
+		E4B6A6583FCD285FC65D53E117FE0698 /* EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = EF18102F3B281AE7AEEAECFF8754D70F /* EXConstants.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,7 +143,7 @@
 			buildConfigurationList = F03AF8CCC2C5596C6ECDA018962480F7 /* Build configuration list for PBXNativeTarget "EXConstants" */;
 			buildPhases = (
 				F17267FA2A2E6B65AF46358DEC810625 /* Headers */,
-				685FF550B72FEC8E67248939FFE1A132 /* Sources */,
+				11973221CB1B2FB72895DF7E685B9B67 /* Sources */,
 				9519557B1A480269FA07C07A66F20E83 /* Frameworks */,
 			);
 			buildRules = (
@@ -192,13 +192,13 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		685FF550B72FEC8E67248939FFE1A132 /* Sources */ = {
+		11973221CB1B2FB72895DF7E685B9B67 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91DDE15A316D1308135FD2B4AEAAA863 /* EXConstants-dummy.m in Sources */,
-				FF5B85166FCF8CE8F279F4606CECB5CC /* EXConstants.m in Sources */,
-				241909EFBED62072A133AA8FE3AA11D4 /* EXConstantsService.m in Sources */,
+				7ED240208286F7C689DD0D6BC6833C11 /* EXConstants-dummy.m in Sources */,
+				E4B6A6583FCD285FC65D53E117FE0698 /* EXConstants.m in Sources */,
+				D6045FE9D2CE18D87DD1DAA9E9060EDE /* EXConstantsService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
