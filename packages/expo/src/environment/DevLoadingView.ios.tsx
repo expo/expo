@@ -25,14 +25,18 @@ export default function DevLoadingView() {
         return;
       }
 
-      // TODO: maybe we want to add a timeout here, so if it takes more than a
-      // couple seconds we ask the developer if they want to try a full reload?
+      // TODO: if we show the refreshing banner and don't get a hide message
+      // for 3 seconds, warn the user that it's taking a while and suggest
+      // they reload
 
       translateY.setValue(0);
       setIsDevLoading(true);
     }
 
     function handleHide() {
+      // TODO: if we showed the 'refreshing' banner less than 250ms ago, delay
+      // switching to the 'finished' banner
+
       setIsAnimating(true);
       setIsDevLoading(false);
       Animated.timing(translateY, {
