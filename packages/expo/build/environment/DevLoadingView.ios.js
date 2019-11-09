@@ -13,14 +13,16 @@ export default function DevLoadingView() {
             if (message !== 'Refreshing...') {
                 return;
             }
-            setIsDevLoading(true);
+            // TODO: maybe we want to add a timeout here, so if it takes more than a
+            // couple seconds we ask the developer if they want to try a full reload?
             translateY.setValue(0);
+            setIsDevLoading(true);
         }
         function handleHide() {
             setIsAnimating(true);
             setIsDevLoading(false);
             Animated.timing(translateY, {
-                toValue: -100,
+                toValue: 150,
                 delay: 1000,
                 duration: 350,
                 useNativeDriver: true,
@@ -37,19 +39,17 @@ export default function DevLoadingView() {
             nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:showMessage', handleShowMessage);
             nativeDevLoadingViewEventEmitter.removeListener('devLoadingView:hide', handleHide);
         };
-    });
+    }, []);
     if (isDevLoading || isAnimating) {
-        return (<Animated.View style={[styles.animatedContainer, { transform: [{ translateY }] }]}>
+        return (<Animated.View style={[styles.animatedContainer, { transform: [{ translateY }] }]} pointerEvents="none">
         <SafeAreaView style={styles.banner}>
           <View style={styles.contentContainer}>
             <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.text}>
-                {isDevLoading ? 'Refreshing...' : 'Refreshed'}
-              </Text>
+              <Text style={styles.text}>{isDevLoading ? 'Refreshing...' : 'Refreshed'}</Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.subtitle}>
-                {isDevLoading ? 'This should be fast' : "Don't see your changes? Reload the app"}
+                {isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"}
               </Text>
             </View>
           </View>
@@ -63,19 +63,20 @@ export default function DevLoadingView() {
 const styles = StyleSheet.create({
     animatedContainer: {
         position: 'absolute',
-        top: 0,
+        bottom: 0,
         left: 0,
         right: 0,
+        zIndex: 42,
     },
     banner: {
         flex: 1,
         overflow: 'visible',
-        backgroundColor: '#000',
+        backgroundColor: 'rgba(0,0,0,0.75)',
     },
     contentContainer: {
         flex: 1,
-        paddingTop: 5,
-        paddingBottom: 10,
+        paddingTop: 10,
+        paddingBottom: 5,
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
