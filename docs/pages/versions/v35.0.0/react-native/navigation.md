@@ -70,6 +70,20 @@ class HomeScreen extends React.Component {
 }
 ```
 
+```javascript
+class ProfileScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Profile',
+  };
+  render() {
+    const { navigate } = this.props.navigation;
+    return (
+      <View><Text>This is profile screen.</Text></View>
+    );
+  }
+}
+```
+
 React Navigation routers make it easy to override navigation logic. Because routers can be nested inside each other, developers can override navigation logic for one area of the app without making widespread changes.
 
 The views in React Navigation use native components and the [`Animated`](../animated/) library to deliver 60fps animations that are run on the native thread. Plus, the animations and gestures can be easily customized.
