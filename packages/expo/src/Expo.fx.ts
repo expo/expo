@@ -6,10 +6,10 @@ import './environment/muteWarnings.fx';
 import 'expo-asset';
 
 import { AppRegistry, Platform } from 'react-native';
-import DevAppContainer from './environment/DevAppContainer';
 import Constants from 'expo-constants';
 
 import { installWebGeolocationPolyfill } from 'expo-location';
+import DevAppContainer from './environment/DevAppContainer';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
@@ -23,7 +23,10 @@ if (__DEV__) {
   }
 
   // @ts-ignore
-  AppRegistry.setWrapperComponentProvider = () => console.warn('AppRegistry.setWrapperComponentProvider has no effect in managed Expo apps. You can instead wrap your app root component to achieve an identical result.')
+  AppRegistry.setWrapperComponentProvider = () =>
+    console.warn(
+      'AppRegistry.setWrapperComponentProvider has no effect in managed Expo apps. You can instead wrap your app root component to achieve an identical result.'
+    );
 }
 
 // polyfill navigator.geolocation

@@ -5,7 +5,7 @@ import withExpoRoot from './withExpoRoot';
 import { InitialProps } from './withExpoRoot.types';
 
 export default function registerRootComponent<P extends InitialProps>(
-component: React.ComponentType<P>
+  component: React.ComponentType<P>
 ): void {
   AppRegistry.registerComponent('main', () => withExpoRoot(component));
 }

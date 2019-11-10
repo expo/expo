@@ -66,7 +66,9 @@ export default function DevLoadingView() {
 
   if (isDevLoading || isAnimating) {
     return (
-      <Animated.View style={[styles.animatedContainer, { transform: [{ translateY }] }]} pointerEvents="none">
+      <Animated.View
+        style={[styles.animatedContainer, { transform: [{ translateY }] }]}
+        pointerEvents="none">
         <SafeAreaView style={styles.banner}>
           <View style={styles.contentContainer}>
             <View style={{ flexDirection: 'row' }}>
