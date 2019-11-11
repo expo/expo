@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 export type PictureOptions = {
@@ -32,7 +32,7 @@ export type BarCodeScanningResult = { type: string; data: string };
 
 export type FaceDetectionResult = { faces: any[] };
 
-export type Props = React.ComponentProps<typeof View> & {
+export type Props = ViewProps & {
   zoom?: number;
   ratio?: string;
   focusDepth?: number;
@@ -52,6 +52,7 @@ export type Props = React.ComponentProps<typeof View> & {
 };
 
 export type NativeProps = {
+  pointerEvents?: any;
   style?: any;
   ref?: Function;
   onCameraReady?: Function;

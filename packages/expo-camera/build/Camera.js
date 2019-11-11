@@ -109,7 +109,7 @@ export default class Camera extends React.Component {
         this._setReference = (ref) => {
             if (ref) {
                 this._cameraRef = ref;
-                // TODO: Bacon: Make this one...
+                // TODO: Bacon: Unify these
                 if (Platform.OS === 'web') {
                     this._cameraHandle = ref;
                 }
@@ -122,6 +122,18 @@ export default class Camera extends React.Component {
                 this._cameraHandle = null;
             }
         };
+    }
+    static async isAvailableAsync() {
+        if (!CameraManager.isAvailableAsync) {
+            throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
+        }
+        return await CameraManager.isAvailableAsync();
+    }
+    static async getAvailableCameraTypesAsync() {
+        if (!CameraManager.getAvailableCameraTypesAsync) {
+            throw new UnavailabilityError('expo-camera', 'getAvailableCameraTypesAsync');
+        }
+        return await CameraManager.getAvailableCameraTypesAsync();
     }
     static async getPermissionsAsync() {
         return CameraManager.getPermissionsAsync();
