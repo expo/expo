@@ -29,7 +29,7 @@ declare class CameraModule {
     private isStartingCamera;
     private cameraType;
     private webCameraSettings;
-    readonly type: CameraType;
+    get type(): CameraType;
     constructor(videoElement: HTMLVideoElement);
     updateWebCameraSettingsAsync(nextSettings: {
         [key: string]: any;
