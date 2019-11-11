@@ -92,6 +92,29 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 import { Camera } from 'expo-camera';
 ```
 
+## static methods
+
+- **Camera.isAvailableAsync(): boolean**
+
+Check whether the current device has a camera. This is useful for web and simulators cases. This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser). You will still need to check if the native permission has been accepted.
+
+```js
+import { Camera } from 'expo-camera';
+
+if (await Camera.isAvailableAsync()) {
+}
+```
+
+- **Camera.getAvailableCameraTypesAsync(): string[]**
+
+Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
+
+```js
+import { Camera } from 'expo-camera';
+
+const types = await Camera.getAvailableCameraTypesAsync();
+```
+
 ### props
 
 - **type**
@@ -284,3 +307,17 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 #### Returns
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+## Web Support
+
+Luckily most browsers support at least some form of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream).
+
+### Chrome iframe usage
+
+When using **Chrome versions 64+**, if you try to use a web camera in a cross-origin iframe nothing will render. To add support for cameras in your iframe simply add the attribute `allow="microphone; camera;"` to the iframe element:
+
+```html
+<iframe src="..." allow="microphone; camera;">
+  <!-- <Camera /> -->
+</iframe>
+```

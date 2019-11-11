@@ -1,6 +1,6 @@
 import { NativeModulesProxy } from '@unimodules/core';
 
-const CameraManager: Object =
+const CameraManager: { [key: string]: any } =
   NativeModulesProxy.ExponentCameraManager || NativeModulesProxy.ExponentCameraModule;
 
 export default CameraManager;
