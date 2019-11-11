@@ -9,7 +9,6 @@ export { ImageType, CameraType };
 const VALID_SETTINGS_KEYS = [
     'autoFocus',
     'flashMode',
-    'whiteBalance',
     'exposureCompensation',
     'colorTemperature',
     'iso',
@@ -18,6 +17,7 @@ const VALID_SETTINGS_KEYS = [
     'saturation',
     'sharpness',
     'focusDistance',
+    'whiteBalance',
     'zoom',
 ];
 class CameraModule {
