@@ -4024,8 +4024,8 @@ CACHE_KEYS:
       - EXBackgroundFetch (7.0.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      EXBarCodeScanner: deab06529f5e432ecae58e4b39b86992
-    CHECKSUM: 4c8a755e29e025487a4d4c4079925fe0e1c7e962
+      EXBarCodeScanner: 28990d6e76c6e0a2286785ec45b6a2a6
+    CHECKSUM: af6a390c5bfa0fca2b4372f9059cfa935855b85c
     FILES:
       - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h"
       - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.m"
@@ -4921,16 +4921,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 2badc316141e407f94338e969af78bd1
-      Release: 2badc316141e407f94338e969af78bd1
+      Debug: 70c404526b6df149ae6d25c047a325d5
+      Release: 70c404526b6df149ae6d25c047a325d5
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e4b57f9f76a7e235b595f1ee71ebd531
-      Release: e4b57f9f76a7e235b595f1ee71ebd531
+      Debug: 0f856eb18b4cfd63ab12af8167b26da6
+      Release: 0f856eb18b4cfd63ab12af8167b26da6
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e4b57f9f76a7e235b595f1ee71ebd531
-      Release: e4b57f9f76a7e235b595f1ee71ebd531
+      Debug: 0f856eb18b4cfd63ab12af8167b26da6
+      Release: 0f856eb18b4cfd63ab12af8167b26da6
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -7652,4 +7652,13 @@ CACHE_KEYS:
     PROJECT_NAME: ABI35_0_0
     SPECS:
       - yogaABI35_0_0 (0.59.8.React)
+  ZXingObjC:
+    BUILD_SETTINGS_CHECKSUM:
+      ZXingObjC: d3ecdae7b9cd1c5943e115b6207f0009
+    CHECKSUM: fdbb269f25dd2032da343e06f10224d62f537bdb
+    PROJECT_NAME: ZXingObjC
+    SPECS:
+      - ZXingObjC/Core (3.6.5)
+      - ZXingObjC/OneD (3.6.5)
+      - ZXingObjC/PDF417 (3.6.5)
 OBJECT_VERSION: 46

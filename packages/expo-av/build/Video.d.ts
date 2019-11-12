@@ -69,9 +69,7 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").NativeSyntheticEvent<Readonly<{
-            actionName: string;
-        }>>) => void) | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;

@@ -32,7 +32,7 @@ export async function loadSingleFontAsync(
   name: string,
   input: Asset | FontResource
 ): Promise<void> {
-  const asset = input as Asset;
+  const asset = input as any;
   if (asset.downloadAsync) {
     throw new Error('expo-font: loadSingleFontAsync expected an asset of type FontResource on web');
   }

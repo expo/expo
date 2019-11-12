@@ -23,6 +23,7 @@
   "scripts": {
     "generate-lazy": "expo-module babel --config-file ./babel.config.build.js --source-maps --out-file build/ExpoLazy.js build/Expo.js",
     "build": "EXPO_NONINTERACTIVE=1 expo-module build && npm run generate-lazy",
+    "watch": "EXPO_NONINTERACTIVE=1 expo-module build --watch && npm run generate-lazy",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

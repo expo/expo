@@ -64,7 +64,7 @@ Returns a promise resolving to an object representing [Location](#type-location)
 
 ### `Location.watchPositionAsync(options, callback)`
 
-Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [Location.startLocationUpdatesAsync](#locationstartlocationupdatesasync).
+Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [Location.startLocationUpdatesAsync](#locationstartlocationupdatesasynctaskname-options).
 
 #### Arguments
 

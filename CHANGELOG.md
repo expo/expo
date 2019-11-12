@@ -20,7 +20,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 - **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`.
 - **`expo`**: Removed Branch export from `expo/Branch`. ([#6190](https://github.com/expo/expo/pull/6190)).
-- `Location.requestPermissionsAsync()` is no longer being rejected when permissions were not granted. Instead it returns `PermissionsResponse` object, which is similar to the result of `Permissions.aksAsync(Permissions.Location)`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- `Location.requestPermissionsAsync()` is no longer being rejected when permissions were not granted. Instead it returns `PermissionsResponse` object, which is similar to the result of `Permissions.askAsync(Permissions.Location)`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
@@ -50,7 +50,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed `Contacts.presentFormAsync` pre-filling, when `bool` value was provided. ([#5522](https://github.com/expo/expo/pull/5522) by [@lukmccall](https://github.com/lukmccall))
 - Fixed crashes when the user tries to download a file through `react-native-webview` without granted storage permission on Android. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `Permissions.getAsync` result, which was inconsistent with iOS settings. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
-- Add missing `mute` property in `Camera.recordAsync` in the TypeScript definition.
+- Fixed scanning `PDF417` and `Code39` in `BarCodeScanner` on iOS. ([#5976](https://github.com/expo/expo/pull/5531) by [@bbarthec](https://github.com/bbarthec))
+- Add missing `mute` property in `Camera.recordAsync` in the TypeScript definition. ([#6192](https://github.com/expo/expo/pull/6192) by [@wcandillon](https://github.com/wcandillon))
 
 ## 35.0.0
 

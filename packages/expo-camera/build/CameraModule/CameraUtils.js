@@ -2,6 +2,7 @@
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './constants';
+import { requestUserMediaAsync } from './UserMediaManager';
 export function getImageSize(videoWidth, videoHeight, scale) {
     const width = videoWidth * scale;
     const ratio = videoWidth / width;
@@ -60,20 +61,11 @@ export function captureImage(video, pictureOptions) {
     const base64 = toDataURL(canvas, imageType, quality);
     return base64;
 }
-function getUserMedia(constraints) {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        return navigator.mediaDevices.getUserMedia(constraints);
-    }
-    else {
-        let _getUserMedia = navigator['mozGetUserMedia'] || navigator['webkitGetUserMedia'];
-        return new Promise((resolve, reject) => _getUserMedia.call(navigator, constraints, resolve, reject));
-    }
-}
 function getSupportedConstraints() {
     if (navigator.mediaDevices && navigator.mediaDevices.getSupportedConstraints) {
         return navigator.mediaDevices.getSupportedConstraints();
     }
-    return {};
+    return null;
 }
 export function getIdealConstraints(preferredCameraType, width, height) {
     let preferredConstraints = {
@@ -84,21 +76,38 @@ export function getIdealConstraints(preferredCameraType, width, height) {
         return MinimumConstraints;
     }
     const supports = getSupportedConstraints();
-    if (!supports.facingMode || !supports.width || !supports.height) {
+    // TODO: Bacon: Test this
+    if (!supports || !supports.facingMode || !supports.width || !supports.height)
         return MinimumConstraints;
-    }
     if (preferredCameraType && Object.values(CameraType).includes(preferredCameraType)) {
-        preferredConstraints.video.facingMode = {
-            ideal: CameraTypeToFacingMode[preferredCameraType],
-        };
+        const facingMode = CameraTypeToFacingMode[preferredCameraType];
+        if (isWebKit()) {
+            const key = facingMode === 'user' ? 'exact' : 'ideal';
+            preferredConstraints.video.facingMode = {
+                [key]: facingMode,
+            };
+        }
+        else {
+            preferredConstraints.video.facingMode = {
+                ideal: CameraTypeToFacingMode[preferredCameraType],
+            };
+        }
     }
-    preferredConstraints.video.width = width;
-    preferredConstraints.video.height = height;
+    if (isMediaTrackConstraints(preferredConstraints.video)) {
+        preferredConstraints.video.width = width;
+        preferredConstraints.video.height = height;
+    }
     return preferredConstraints;
+}
+function isMediaTrackConstraints(input) {
+    return input && typeof input.video !== 'boolean';
 }
 export async function getStreamDevice(preferredCameraType, preferredWidth, preferredHeight) {
     const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
-    const stream = await getUserMedia(constraints);
+    const stream = await requestUserMediaAsync(constraints);
     return stream;
+}
+export function isWebKit() {
+    return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
 }
 //# sourceMappingURL=CameraUtils.js.map
