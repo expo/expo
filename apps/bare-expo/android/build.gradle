@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -21,7 +23,18 @@ buildscript {
     }
 }
 
+def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+
+ext {
+    reactNativeVersion = packageJson.dependencies["react-native"]
+}
+
 allprojects {
+    configurations.all {
+        resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+    }
+
     repositories {
         mavenLocal()
         maven {
