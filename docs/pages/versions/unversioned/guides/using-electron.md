@@ -18,6 +18,8 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
   - [Customizing the main process](#customizing-the-main-process)
   - [Building your project](#building-your-project)
 - [🧸 Behavior](#-behavior)
+- [Contributing](#contributing)
+- [Learn More](#learn-more-about-electron)
 
 ## 🏁 Setup
 
@@ -67,7 +69,24 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 - Webpack now resolves files with `.electron.js` & `.web.js` extensions in that order. If you want to use `electron` features then put them in a file like `foo.electron.js`.
 - Every universal package you have installed will be transpiled automatically, this includes packages that start with the name: `expo`, `@expo`, `@unimodules`, `@react-navigation`, `react-navigation`, `react-native`. You can add more by appending them to the array for key `expo.web.build.babel.include` in your `app.json` (this feature is experimental and subject to change).
 
+## Contributing
+
+If you would like to help make Electron support in Expo better, please feel free to open a PR or submit an issue:
+
+- [Expo CLI][expo-cli]
+
+If you want to add first-class electron support to any of the Unimodules then you can submit PRs to the expo/expo repo:
+
+- [Expo packages][expo-packages]
+
+## Learn more about Electron
+
+Learn more about how to use Electron in their [docs][electron-docs].
+
+[expo-packages]: https://github.com/expo/expo/tree/master/packages
+[expo-cli]: https://github.com/expo/expo-cli/
 [electron]: https://electronjs.org/
+[electron-docs]: https://electronjs.org/docs/
 [electron-builder]: https://www.electron.build/
 [electron-webpack]: https://github.com/electron-userland/electron-webpack
 [electron-builder-config]: https://www.electron.build/configuration/configuration
