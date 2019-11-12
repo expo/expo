@@ -8,6 +8,39 @@ title: Using Next.js with Expo for Web
 
 Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so you'll need to start your web projects with the `next-cli` and not with `expo start:web`.
 
+## API
+
+
+### Config
+
+#### `withExpo`
+
+Wraps your [`next.config.js`](https://nextjs.org/docs#custom-configuration) and adds universal platform support.
+
+- Defines a custom `pageExtensions` which makes Webpack resolve `.web.js` before `.js`, we call this feature "platform extensions".
+- Wraps the Webpack config in `withUnimodules` from `@expo/webpack-config`
+  - Makes Babel target all Expo, and React Native packages that you've installed
+  - Aliases `react-native` to `react-native-web` in the browser
+  - Defines the platform constants you get in React Native like `__DEV__`
+
+```js
+import { withExpo } from '@expo/next-adapter';
+
+withExpo({ /* next.config.js code */ })
+```
+
+### Document
+
+```js
+import Document, { style, getInitialProps } from '@expo/next-adapter/document';
+```
+
+### Server
+
+```js
+import { createServerAsync, startServerAsync, handleRequest } from '@expo/next-adapter';
+```
+
 ## 🏁 Setup
 
 ### Expo projects with Next.js
