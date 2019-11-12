@@ -13,6 +13,7 @@ export declare type RecordingOptions = {
     maxDuration?: number;
     maxFileSize?: number;
     quality?: number | string;
+    mute?: boolean;
 };
 export declare type CapturedPicture = {
     width: number;
