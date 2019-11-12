@@ -18,6 +18,38 @@ import SnackEmbed from '~/components/plugins/SnackEmbed';
 import * as ImagePicker from 'expo-image-picker';
 ```
 
+### `ImagePicker.requestCameraPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `ImagePicker.requestCameraRollPermissionsAsync()`
+
+Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `ImagePicker.getCameraPermissionsAsync()`
+
+Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `ImagePicker.getCameraRollPermissionsAsync()`
+
+Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
 Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.CAMERA_ROLL` on iOS 10 only.

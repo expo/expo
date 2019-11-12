@@ -56,6 +56,10 @@ android {
   lintOptions {
     abortOnError false
   }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -70,6 +74,7 @@ dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-barcode-scanner-interface"
   unimodule "unimodules-image-loader-interface"
+  unimodule 'unimodules-permissions-interface'
   api 'com.google.android.gms:play-services-vision:15.0.2'
   api 'com.google.zxing:core:3.3.3'
 }

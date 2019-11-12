@@ -1,143 +1,160 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 import { CameraType, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
-import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
+import { FacingModeToCameraType, PictureSizes } from './constants';
+import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
 export { ImageType, CameraType };
+const VALID_SETTINGS_KEYS = [
+    'autoFocus',
+    'flashMode',
+    'exposureCompensation',
+    'colorTemperature',
+    'iso',
+    'brightness',
+    'contrast',
+    'saturation',
+    'sharpness',
+    'focusDistance',
+    'whiteBalance',
+    'zoom',
+];
 class CameraModule {
     constructor(videoElement) {
-        this.stream = null;
-        this.settings = null;
+        this.videoElement = videoElement;
         this.onCameraReady = () => { };
         this.onMountError = () => { };
-        this._isStartingCamera = false;
-        this._autoFocus = 'continuous';
-        this._flashMode = 'off';
-        this._whiteBalance = 'continuous';
-        this._cameraType = CameraType.front;
-        this._zoom = 1;
+        this.stream = null;
+        this.settings = null;
+        this.isStartingCamera = false;
+        this.cameraType = CameraType.front;
+        this.webCameraSettings = {
+            autoFocus: 'continuous',
+            flashMode: 'off',
+            whiteBalance: 'continuous',
+            zoom: 1,
+        };
         // TODO: Bacon: we don't even use ratio in native...
         this.getAvailablePictureSizes = async (ratio) => {
             return PictureSizes;
         };
-        this.unmount = () => {
-            this.pausePreview();
-            this.settings = null;
-            this.stream = null;
+        this.getAvailableCameraTypesAsync = async () => {
+            if (!navigator.mediaDevices.enumerateDevices) {
+                return [];
+            }
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const types = await Promise.all([
+                (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+                (await isBackCameraAvailableAsync()) && CameraType.back,
+            ]);
+            return types.filter(Boolean);
         };
-        this.videoElement = videoElement;
         if (this.videoElement) {
             this.videoElement.addEventListener('loadedmetadata', () => {
-                this._syncTrackCapabilities();
+                this.syncTrackCapabilities();
             });
         }
     }
-    get autoFocus() {
-        return this._autoFocus;
-    }
-    async setAutoFocusAsync(value) {
-        if (value === this.autoFocus) {
-            return;
-        }
-        this._autoFocus = value;
-        await this._syncTrackCapabilities();
-    }
-    get flashMode() {
-        return this._flashMode;
-    }
-    async setFlashModeAsync(value) {
-        if (value === this.flashMode) {
-            return;
-        }
-        this._flashMode = value;
-        await this._syncTrackCapabilities();
-    }
-    get whiteBalance() {
-        return this._whiteBalance;
-    }
-    async setWhiteBalanceAsync(value) {
-        if (value === this.whiteBalance) {
-            return;
-        }
-        this._whiteBalance = value;
-        await this._syncTrackCapabilities();
-    }
     get type() {
-        return this._cameraType;
+        return this.cameraType;
+    }
+    async updateWebCameraSettingsAsync(nextSettings) {
+        const changes = {};
+        for (const key of Object.keys(nextSettings)) {
+            if (!VALID_SETTINGS_KEYS.includes(key))
+                continue;
+            const nextValue = nextSettings[key];
+            if (nextValue !== this.webCameraSettings[key]) {
+                changes[key] = nextValue;
+            }
+        }
+        // Only update the native camera if changes were found
+        const hasChanges = !!Object.keys(changes).length;
+        this.webCameraSettings = { ...this.webCameraSettings, ...changes };
+        if (hasChanges) {
+            await this.syncTrackCapabilities(changes);
+        }
+        return hasChanges;
     }
     async setTypeAsync(value) {
-        if (value === this._cameraType) {
+        if (value === this.cameraType) {
             return;
         }
-        this._cameraType = value;
+        this.cameraType = value;
         await this.resumePreview();
     }
-    get zoom() {
-        return this._zoom;
-    }
-    async setZoomAsync(value) {
-        if (value === this.zoom) {
-            return;
-        }
-        //TODO: Bacon: IMP on non-android devices
-        this._zoom = value;
-        await this._syncTrackCapabilities();
-    }
     setPictureSize(value) {
-        if (value === this._pictureSize) {
+        if (value === this.pictureSize) {
             return;
         }
         invariant(PictureSizes.includes(value), `expo-camera: CameraModule.setPictureSize(): invalid size supplied ${value}, expected one of: ${PictureSizes.join(', ')}`);
-        const [width, height] = value.split('x');
-        //TODO: Bacon: IMP
-        // eslint-disable-next-line
-        const aspectRatio = parseFloat(width) / parseFloat(height);
-        this._pictureSize = value;
+        // TODO: Bacon: IMP
+        // const [width, height] = value.split('x');
+        // const aspectRatio = parseFloat(width) / parseFloat(height);
+        this.pictureSize = value;
     }
-    async onCapabilitiesReady(track) {
+    isTorchAvailable() {
+        return isCapabilityAvailable(this.videoElement, 'torch');
+    }
+    isZoomAvailable() {
+        return isCapabilityAvailable(this.videoElement, 'zoom');
+    }
+    // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+    async onCapabilitiesReady(track, settings = {}) {
         const capabilities = track.getCapabilities();
         // Create an empty object because if you set a constraint that isn't available an error will be thrown.
         const constraints = {};
-        if (capabilities.zoom) {
-            // TODO: Bacon: We should have some async method for getting the (min, max, step) externally
-            const { min, max } = capabilities.zoom;
-            constraints.zoom = Math.min(max, Math.max(min, this._zoom));
+        // TODO: Bacon: Add `pointsOfInterest` support
+        const clampedValues = [
+            'exposureCompensation',
+            'colorTemperature',
+            'iso',
+            'brightness',
+            'contrast',
+            'saturation',
+            'sharpness',
+            'focusDistance',
+            'zoom',
+        ];
+        for (const property of clampedValues) {
+            if (capabilities[property]) {
+                constraints[property] = convertNormalizedSetting(capabilities[property], settings[property]);
+            }
         }
-        if (capabilities.focusMode) {
-            constraints.focusMode = CapabilityUtils.convertAutoFocusJSONToNative(this.autoFocus);
+        const _validatedConstrainedValue = (key, propName, converter) => validatedConstrainedValue(key, propName, converter(settings[propName]), capabilities, settings, this.cameraType);
+        if (capabilities.focusMode && settings.autoFocus !== undefined) {
+            constraints.focusMode = _validatedConstrainedValue('focusMode', 'autoFocus', CapabilityUtils.convertAutoFocusJSONToNative);
         }
-        if (capabilities.torch) {
-            constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
+        if (capabilities.torch && settings.flashMode !== undefined) {
+            constraints.torch = _validatedConstrainedValue('torch', 'flashMode', CapabilityUtils.convertFlashModeJSONToNative);
         }
-        if (capabilities.whiteBalance) {
-            constraints.whiteBalance = this.whiteBalance;
+        if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
+            constraints.whiteBalanceMode = _validatedConstrainedValue('whiteBalanceMode', 'whiteBalance', CapabilityUtils.convertWhiteBalanceJSONToNative);
         }
         await track.applyConstraints({ advanced: [constraints] });
     }
-    async _syncTrackCapabilities() {
-        if (this.stream) {
-            await Promise.all(this.stream.getTracks().map(track => this.onCapabilitiesReady(track)));
+    async applyVideoConstraints(constraints) {
+        if (!this.stream || !this.stream.getVideoTracks) {
+            return false;
         }
+        return await applyConstraints(this.stream.getVideoTracks(), constraints);
     }
-    setVideoSource(stream) {
-        if ('srcObject' in this.videoElement) {
-            this.videoElement.srcObject = stream;
+    async applyAudioConstraints(constraints) {
+        if (!this.stream || !this.stream.getAudioTracks) {
+            return false;
         }
-        else {
-            // TODO: Bacon: Check if needed
-            this.videoElement['src'] = window.URL.createObjectURL(stream);
-        }
+        return await applyConstraints(this.stream.getAudioTracks(), constraints);
     }
-    setSettings(stream) {
-        this.settings = null;
-        if (stream && this.stream) {
-            this.settings = this.stream.getTracks()[0].getSettings();
+    async syncTrackCapabilities(settings = {}) {
+        if (this.stream && this.stream.getVideoTracks) {
+            await Promise.all(this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track, settings)));
         }
     }
     setStream(stream) {
         this.stream = stream;
-        this.setSettings(stream);
-        this.setVideoSource(stream);
+        this.settings = stream ? stream.getTracks()[0].getSettings() : null;
+        setVideoSource(this.videoElement, stream);
     }
     getActualCameraType() {
         if (this.settings) {
@@ -153,20 +170,20 @@ class CameraModule {
         }
     }
     async resumePreview() {
-        if (this._isStartingCamera) {
+        if (this.isStartingCamera) {
             return null;
         }
-        this._isStartingCamera = true;
+        this.isStartingCamera = true;
         try {
-            this.pausePreview();
+            this.stopAsync();
             const stream = await Utils.getStreamDevice(this.type);
             this.setStream(stream);
-            this._isStartingCamera = false;
+            this.isStartingCamera = false;
             this.onCameraReady();
             return stream;
         }
         catch (error) {
-            this._isStartingCamera = false;
+            this.isStartingCamera = false;
             this.onMountError({ nativeEvent: error });
         }
         return null;
@@ -191,13 +208,80 @@ class CameraModule {
         }
         return capturedPicture;
     }
-    pausePreview() {
-        if (!this.stream) {
-            return;
-        }
-        this.stream.getTracks().forEach(track => track.stop());
+    stopAsync() {
+        stopMediaStream(this.stream);
         this.setStream(null);
     }
+}
+function stopMediaStream(stream) {
+    if (!stream)
+        return;
+    if (stream.getAudioTracks)
+        stream.getAudioTracks().forEach(track => track.stop());
+    if (stream.getVideoTracks)
+        stream.getVideoTracks().forEach(track => track.stop());
+    if (isMediaStreamTrack(stream))
+        stream.stop();
+}
+function setVideoSource(video, stream) {
+    try {
+        video.srcObject = stream;
+    }
+    catch (_) {
+        if (stream) {
+            video.src = window.URL.createObjectURL(stream);
+        }
+        else if (typeof video.src === 'string') {
+            window.URL.revokeObjectURL(video.src);
+        }
+    }
+}
+async function applyConstraints(tracks, constraints) {
+    try {
+        await Promise.all(tracks.map(async (track) => {
+            await track.applyConstraints({ advanced: [constraints] });
+        }));
+        return true;
+    }
+    catch (_) {
+        return false;
+    }
+}
+function isCapabilityAvailable(video, keyName) {
+    const stream = video.srcObject;
+    if (stream instanceof MediaStream) {
+        const videoTrack = stream.getVideoTracks()[0];
+        if (typeof videoTrack.getCapabilities === 'undefined') {
+            return false;
+        }
+        const capabilities = videoTrack.getCapabilities();
+        return !!capabilities[keyName];
+    }
+    return false;
+}
+function isMediaStreamTrack(input) {
+    return typeof input.stop === 'function';
+}
+function convertNormalizedSetting(range, value) {
+    if (!value)
+        return;
+    // convert the normalized incoming setting to the native camera zoom range
+    const converted = convertRange(value, [range.min, range.max]);
+    // clamp value so we don't get an error
+    return Math.min(range.max, Math.max(range.min, converted));
+}
+function convertRange(value, r2, r1 = [0, 1]) {
+    return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
+}
+function validatedConstrainedValue(constraintKey, settingsKey, convertedSetting, capabilities, settings, cameraType) {
+    const setting = settings[settingsKey];
+    if (Array.isArray(capabilities[constraintKey]) &&
+        convertedSetting &&
+        !capabilities[constraintKey].includes(convertedSetting)) {
+        console.warn(` { ${settingsKey}: "${setting}" } (converted to "${convertedSetting}" in the browser) is not supported for camera type "${cameraType}" in your browser. Using the default value instead.`);
+        return undefined;
+    }
+    return convertedSetting;
 }
 export default CameraModule;
 //# sourceMappingURL=CameraModule.js.map

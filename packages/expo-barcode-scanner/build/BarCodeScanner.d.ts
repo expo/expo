@@ -1,3 +1,4 @@
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ViewProps } from 'react-native';
@@ -10,6 +11,7 @@ export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
 export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
+export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
@@ -78,9 +80,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").NativeSyntheticEvent<Readonly<{
-            actionName: string;
-        }>>) => void) | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
@@ -95,6 +95,8 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
         type: any;
         barCodeTypes: unknown[];
     };
+    static getPermissionsAsync(): Promise<PermissionResponse>;
+    static requestPermissionsAsync(): Promise<PermissionResponse>;
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<{
         type: string;
         data: string;
@@ -163,5 +165,4 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-};
-export {};
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync;

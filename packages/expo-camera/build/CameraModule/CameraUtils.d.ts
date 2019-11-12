@@ -12,4 +12,5 @@ export declare function hasValidConstraints(preferredCameraType?: CameraType, wi
 export declare function captureImage(video: HTMLVideoElement, pictureOptions: PictureOptions): string;
 export declare function getIdealConstraints(preferredCameraType: CameraType, width?: number | ConstrainLongRange, height?: number | ConstrainLongRange): MediaStreamConstraints;
 export declare function getStreamDevice(preferredCameraType: CameraType, preferredWidth?: number | ConstrainLongRange, preferredHeight?: number | ConstrainLongRange): Promise<MediaStream>;
+export declare function isWebKit(): boolean;
 export {};

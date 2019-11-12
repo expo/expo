@@ -6,10 +6,12 @@ buildscript {
 
   dependencies {
     classpath 'com.android.tools.build:gradle:3.5.1'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.41"
   }
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'org.unimodules'
@@ -56,6 +58,10 @@ android {
   lintOptions {
     abortOnError false
   }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+  }
 }
 
 repositories {
@@ -72,4 +78,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
+  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
 }

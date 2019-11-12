@@ -7,10 +7,12 @@
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
+#import <EXAV/EXAudioRecordingPermissionRequester.h>
 
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
@@ -54,6 +56,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 
 @end
 
@@ -113,7 +116,8 @@ UM_EXPORT_MODULE(ExponentAV);
   _kernelAudioSessionManagerDelegate = [_moduleRegistry getSingletonModuleForName:@"AudioSessionManager"];
 //  [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
-
+  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (void)onAppForegrounded
@@ -746,12 +750,32 @@ UM_EXPORT_METHOD_AS(getStatusForVideo,
 
 #pragma mark - Audio API: Recording
 
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXAudioRecordingPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXAudioRecordingPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
 UM_EXPORT_METHOD_AS(prepareAudioRecorder,
                     prepareAudioRecorder:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![[_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)] hasGrantedPermission:@"audioRecording"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
   }
@@ -785,7 +809,7 @@ UM_EXPORT_METHOD_AS(startAudioRecording,
                     startAudioRecording:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![[_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)] hasGrantedPermission:@"audioRecording"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXAudioRecordingPermissionRequester class]]) {
     reject(@"E_MISSING_PERMISSION", @"Missing audio recording permission.", nil);
     return;
   }
@@ -876,6 +900,5 @@ UM_EXPORT_METHOD_AS(unloadAudioRecorder,
     [self _removeSoundForKey:key];
   }
 }
-
 
 @end

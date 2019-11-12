@@ -1,7 +1,6 @@
 import { ActionSheetProvider, connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import SafeAreaView from 'react-native-safe-area-view';
 
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 
@@ -105,7 +104,6 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
 
   render() {
     return (
-      <SafeAreaView style={styles.flex}>
         <ScrollView style={styles.flex} contentContainerStyle={styles.contentContainer}>
           <Text style={styles.headerText}>
             {
@@ -119,7 +117,6 @@ class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
             only be toggled on Android or web; they always show on iOS.
           </Text>
         </ScrollView>
-      </SafeAreaView>
     );
   }
 }

@@ -26,14 +26,12 @@
     "react-native-unimodules": "~0.7.0-rc.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.2.0",
-    "@typescript-eslint/parser": "^2.2.0",
     "babel-core": "^7.0.0-bridge.0",
-    "eslint": "^6.5.1",
+    "eslint": "^6.6.0",
     "eslint-config-universe": "^2.0.0",
     "expo-cli": "^3.6.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^1.18.2"
+    "prettier": "^1.19.0"
   },
   "resolutions": {}
 }

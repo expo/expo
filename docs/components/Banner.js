@@ -59,15 +59,20 @@ export default class Banner extends React.Component {
   }
 
   _setBannerVisibility = () => {
-    let hideDate =
-      localStorage.getItem('hideDate') && new Date(parseInt(localStorage.getItem('hideDate'), 10));
-    let isBannerHidden = !!localStorage.getItem('isBannerHidden');
-    let sevenDaysAgo = this._sevenDaysAgo();
+    try {
+      let hideDate =
+        localStorage.getItem('hideDate') &&
+        new Date(parseInt(localStorage.getItem('hideDate'), 10));
+      let isBannerHidden = !!localStorage.getItem('isBannerHidden');
+      let sevenDaysAgo = this._sevenDaysAgo();
 
-    if (hideDate && hideDate <= sevenDaysAgo) {
-      this._showBannerAgain();
-    } else {
-      this.setState({ isHidden: isBannerHidden });
+      if (hideDate && hideDate <= sevenDaysAgo) {
+        this._showBannerAgain();
+      } else {
+        this.setState({ isHidden: isBannerHidden });
+      }
+    } catch {
+      this.setState({ isHidden: false });
     }
   };
 
@@ -82,9 +87,13 @@ export default class Banner extends React.Component {
   };
 
   _handleHideBanner = () => {
-    localStorage.setItem('isBannerHidden', true);
-    localStorage.setItem('hideDate', new Date().getTime());
-    this.setState({ isHidden: true });
+    try {
+      localStorage.setItem('isBannerHidden', true);
+      localStorage.setItem('hideDate', new Date().getTime());
+      this.setState({ isHidden: true });
+    } catch {
+      alert('Please enable third-party cookies and site data to hide this banner.');
+    }
   };
 
   render() {

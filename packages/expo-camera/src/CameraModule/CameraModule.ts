@@ -1,107 +1,110 @@
+/* eslint-env browser */
 import invariant from 'invariant';
 
 import { PictureOptions } from '../Camera.types';
 import { CameraType, CapturedPicture, CaptureOptions, ImageType } from './CameraModule.types';
 import * as Utils from './CameraUtils';
-import { FacingModeToCameraType, PictureSizes } from './constants';
 import * as CapabilityUtils from './CapabilityUtils';
+import { FacingModeToCameraType, PictureSizes } from './constants';
+import { isBackCameraAvailableAsync, isFrontCameraAvailableAsync } from './UserMediaManager';
 
 export { ImageType, CameraType, CaptureOptions };
 
-/*
- * TODO: Bacon: Add more props for Android
- *
- * aspectRatio: { min (0.00033), max (4032) }
- * colorTemperature: MediaSettingsRange  (max: 7000, min: 2850, step: 50)
- * exposureCompensation: MediaSettingsRange (max: 2, min: -2, step: 0.1666666716337204)
- * exposureMode: 'continuous' | 'manual'
- * frameRate: { min: (1), max: (60) }
- * iso: MediaSettingsRange (max: 3200, min: 50, step: 1)
- * width: { min: 1, max}
- * height: { min: 1, max}
- */
-
 type OnCameraReadyListener = () => void;
-type OnMountErrorListener = ({ nativeEvent: Error }) => void;
+type OnMountErrorListener = (event: { nativeEvent: Error }) => void;
+
+export type WebCameraSettings = Partial<{
+  autoFocus: string;
+  flashMode: string;
+  whiteBalance: string;
+  exposureCompensation: number;
+  colorTemperature: number;
+  iso: number;
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  sharpness: number;
+  focusDistance: number;
+  zoom: number;
+}>;
+
+const VALID_SETTINGS_KEYS = [
+  'autoFocus',
+  'flashMode',
+  'exposureCompensation',
+  'colorTemperature',
+  'iso',
+  'brightness',
+  'contrast',
+  'saturation',
+  'sharpness',
+  'focusDistance',
+  'whiteBalance',
+  'zoom',
+];
 
 class CameraModule {
-  videoElement: HTMLVideoElement;
-  stream: MediaStream | null = null;
-  settings: MediaTrackSettings | null = null;
-  onCameraReady: OnCameraReadyListener = () => {};
-  onMountError: OnMountErrorListener = () => {};
-  _pictureSize?: string;
-  _isStartingCamera = false;
+  public onCameraReady: OnCameraReadyListener = () => {};
+  public onMountError: OnMountErrorListener = () => {};
+  private stream: MediaStream | null = null;
+  private settings: MediaTrackSettings | null = null;
+  private pictureSize?: string;
+  private isStartingCamera = false;
+  private cameraType: CameraType = CameraType.front;
+  private webCameraSettings: WebCameraSettings = {
+    autoFocus: 'continuous',
+    flashMode: 'off',
+    whiteBalance: 'continuous',
+    zoom: 1,
+  };
 
-  _autoFocus: string = 'continuous';
-  get autoFocus(): string {
-    return this._autoFocus;
+  public get type(): CameraType {
+    return this.cameraType;
   }
-  async setAutoFocusAsync(value: string): Promise<void> {
-    if (value === this.autoFocus) {
+
+  constructor(private videoElement: HTMLVideoElement) {
+    if (this.videoElement) {
+      this.videoElement.addEventListener('loadedmetadata', () => {
+        this.syncTrackCapabilities();
+      });
+    }
+  }
+
+  public async updateWebCameraSettingsAsync(nextSettings: {
+    [key: string]: any;
+  }): Promise<boolean> {
+    const changes: WebCameraSettings = {};
+
+    for (const key of Object.keys(nextSettings)) {
+      if (!VALID_SETTINGS_KEYS.includes(key)) continue;
+      const nextValue = nextSettings[key];
+      if (nextValue !== this.webCameraSettings[key]) {
+        changes[key] = nextValue;
+      }
+    }
+
+    // Only update the native camera if changes were found
+    const hasChanges = !!Object.keys(changes).length;
+
+    this.webCameraSettings = { ...this.webCameraSettings, ...changes };
+    if (hasChanges) {
+      await this.syncTrackCapabilities(changes);
+    }
+
+    return hasChanges;
+  }
+
+  public async setTypeAsync(value: CameraType) {
+    if (value === this.cameraType) {
       return;
     }
-    this._autoFocus = value;
-    await this._syncTrackCapabilities();
-  }
+    this.cameraType = value;
 
-  _flashMode: string = 'off';
-  get flashMode(): string {
-    return this._flashMode;
-  }
-  async setFlashModeAsync(value: string): Promise<void> {
-    if (value === this.flashMode) {
-      return;
-    }
-    this._flashMode = value;
-    await this._syncTrackCapabilities();
-  }
-
-  _whiteBalance: string = 'continuous';
-
-  get whiteBalance(): string {
-    return this._whiteBalance;
-  }
-
-  async setWhiteBalanceAsync(value: string): Promise<void> {
-    if (value === this.whiteBalance) {
-      return;
-    }
-    this._whiteBalance = value;
-    await this._syncTrackCapabilities();
-  }
-
-  _cameraType: CameraType = CameraType.front;
-
-  get type(): CameraType {
-    return this._cameraType;
-  }
-
-  async setTypeAsync(value: CameraType) {
-    if (value === this._cameraType) {
-      return;
-    }
-    this._cameraType = value;
     await this.resumePreview();
   }
 
-  _zoom: number = 1;
-
-  get zoom(): number {
-    return this._zoom;
-  }
-
-  async setZoomAsync(value: number): Promise<void> {
-    if (value === this.zoom) {
-      return;
-    }
-    //TODO: Bacon: IMP on non-android devices
-    this._zoom = value;
-    await this._syncTrackCapabilities();
-  }
-
-  setPictureSize(value: string) {
-    if (value === this._pictureSize) {
+  public setPictureSize(value: string) {
+    if (value === this.pictureSize) {
       return;
     }
     invariant(
@@ -111,81 +114,119 @@ class CameraModule {
       )}`
     );
 
-    const [width, height] = value.split('x');
-    //TODO: Bacon: IMP
-    // eslint-disable-next-line
-    const aspectRatio = parseFloat(width) / parseFloat(height);
+    // TODO: Bacon: IMP
+    // const [width, height] = value.split('x');
+    // const aspectRatio = parseFloat(width) / parseFloat(height);
 
-    this._pictureSize = value;
+    this.pictureSize = value;
   }
 
-  constructor(videoElement: HTMLVideoElement) {
-    this.videoElement = videoElement;
-    if (this.videoElement) {
-      this.videoElement.addEventListener('loadedmetadata', () => {
-        this._syncTrackCapabilities();
-      });
-    }
+  public isTorchAvailable(): boolean {
+    return isCapabilityAvailable(this.videoElement, 'torch');
   }
 
-  async onCapabilitiesReady(track: MediaStreamTrack): Promise<void> {
-    const capabilities = track.getCapabilities() as any;
+  public isZoomAvailable(): boolean {
+    return isCapabilityAvailable(this.videoElement, 'zoom');
+  }
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+  private async onCapabilitiesReady(
+    track: MediaStreamTrack,
+    settings: WebCameraSettings = {}
+  ): Promise<void> {
+    const capabilities = track.getCapabilities();
 
     // Create an empty object because if you set a constraint that isn't available an error will be thrown.
-    const constraints: {
-      zoom?: number;
-      torch?: boolean;
-      whiteBalance?: string;
-      focusMode?: string;
-    } = {};
+    const constraints: MediaTrackConstraintSet = {};
 
-    if (capabilities.zoom) {
-      // TODO: Bacon: We should have some async method for getting the (min, max, step) externally
-      const { min, max } = capabilities.zoom;
-      constraints.zoom = Math.min(max, Math.max(min, this._zoom));
+    // TODO: Bacon: Add `pointsOfInterest` support
+    const clampedValues = [
+      'exposureCompensation',
+      'colorTemperature',
+      'iso',
+      'brightness',
+      'contrast',
+      'saturation',
+      'sharpness',
+      'focusDistance',
+      'zoom',
+    ];
+
+    for (const property of clampedValues) {
+      if (capabilities[property]) {
+        constraints[property] = convertNormalizedSetting(
+          capabilities[property],
+          settings[property]
+        );
+      }
     }
-    if (capabilities.focusMode) {
-      constraints.focusMode = CapabilityUtils.convertAutoFocusJSONToNative(this.autoFocus);
+
+    const _validatedConstrainedValue = (key, propName, converter) =>
+      validatedConstrainedValue(
+        key,
+        propName,
+        converter(settings[propName]),
+        capabilities,
+        settings,
+        this.cameraType
+      );
+
+    if (capabilities.focusMode && settings.autoFocus !== undefined) {
+      constraints.focusMode = _validatedConstrainedValue(
+        'focusMode',
+        'autoFocus',
+        CapabilityUtils.convertAutoFocusJSONToNative
+      );
     }
-    if (capabilities.torch) {
-      constraints.torch = CapabilityUtils.convertFlashModeJSONToNative(this.flashMode);
+
+    if (capabilities.torch && settings.flashMode !== undefined) {
+      constraints.torch = _validatedConstrainedValue(
+        'torch',
+        'flashMode',
+        CapabilityUtils.convertFlashModeJSONToNative
+      );
     }
-    if (capabilities.whiteBalance) {
-      constraints.whiteBalance = this.whiteBalance;
+
+    if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
+      constraints.whiteBalanceMode = _validatedConstrainedValue(
+        'whiteBalanceMode',
+        'whiteBalance',
+        CapabilityUtils.convertWhiteBalanceJSONToNative
+      );
     }
 
     await track.applyConstraints({ advanced: [constraints] as any });
   }
 
-  async _syncTrackCapabilities(): Promise<void> {
-    if (this.stream) {
-      await Promise.all(this.stream.getTracks().map(track => this.onCapabilitiesReady(track)));
+  private async applyVideoConstraints(constraints: { [key: string]: any }): Promise<boolean> {
+    if (!this.stream || !this.stream.getVideoTracks) {
+      return false;
+    }
+    return await applyConstraints(this.stream.getVideoTracks(), constraints);
+  }
+
+  private async applyAudioConstraints(constraints: { [key: string]: any }): Promise<boolean> {
+    if (!this.stream || !this.stream.getAudioTracks) {
+      return false;
+    }
+    return await applyConstraints(this.stream.getAudioTracks(), constraints);
+  }
+
+  private async syncTrackCapabilities(settings: WebCameraSettings = {}): Promise<void> {
+    if (this.stream && this.stream.getVideoTracks) {
+      await Promise.all(
+        this.stream.getVideoTracks().map(track => this.onCapabilitiesReady(track, settings))
+      );
     }
   }
 
-  setVideoSource(stream: MediaStream | MediaSource | Blob | null): void {
-    if ('srcObject' in this.videoElement) {
-      this.videoElement.srcObject = stream;
-    } else {
-      // TODO: Bacon: Check if needed
-      (this.videoElement['src'] as any) = window.URL.createObjectURL(stream);
-    }
-  }
-
-  setSettings(stream: MediaStream | null): void {
-    this.settings = null;
-    if (stream && this.stream) {
-      this.settings = this.stream.getTracks()[0].getSettings();
-    }
-  }
-
-  setStream(stream: MediaStream | null): void {
+  private setStream(stream: MediaStream | null): void {
     this.stream = stream;
-    this.setSettings(stream);
-    this.setVideoSource(stream);
+    this.settings = stream ? stream.getTracks()[0].getSettings() : null;
+    setVideoSource(this.videoElement, stream);
   }
 
-  getActualCameraType(): CameraType | null {
+  public getActualCameraType(): CameraType | null {
     if (this.settings) {
       // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
       const { facingMode = 'user' } = this.settings;
@@ -194,32 +235,32 @@ class CameraModule {
     return null;
   }
 
-  async ensureCameraIsRunningAsync(): Promise<void> {
+  public async ensureCameraIsRunningAsync(): Promise<void> {
     if (!this.stream) {
       await this.resumePreview();
     }
   }
 
-  async resumePreview(): Promise<MediaStream | null> {
-    if (this._isStartingCamera) {
+  public async resumePreview(): Promise<MediaStream | null> {
+    if (this.isStartingCamera) {
       return null;
     }
-    this._isStartingCamera = true;
+    this.isStartingCamera = true;
     try {
-      this.pausePreview();
+      this.stopAsync();
       const stream = await Utils.getStreamDevice(this.type);
       this.setStream(stream);
-      this._isStartingCamera = false;
+      this.isStartingCamera = false;
       this.onCameraReady();
       return stream;
     } catch (error) {
-      this._isStartingCamera = false;
+      this.isStartingCamera = false;
       this.onMountError({ nativeEvent: error });
     }
     return null;
   }
 
-  takePicture(config: PictureOptions): CapturedPicture {
+  public takePicture(config: PictureOptions): CapturedPicture {
     const base64 = Utils.captureImage(this.videoElement, config);
 
     const capturedPicture: CapturedPicture = {
@@ -243,24 +284,123 @@ class CameraModule {
     return capturedPicture;
   }
 
-  pausePreview(): void {
-    if (!this.stream) {
-      return;
-    }
-    this.stream.getTracks().forEach(track => track.stop());
+  public stopAsync(): void {
+    stopMediaStream(this.stream);
     this.setStream(null);
   }
 
   // TODO: Bacon: we don't even use ratio in native...
-  getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
+  public getAvailablePictureSizes = async (ratio: string): Promise<string[]> => {
     return PictureSizes;
   };
 
-  unmount = () => {
-    this.pausePreview();
-    this.settings = null;
-    this.stream = null;
+  public getAvailableCameraTypesAsync = async (): Promise<string[]> => {
+    if (!navigator.mediaDevices.enumerateDevices) {
+      return [];
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices();
+
+    const types: (string | null)[] = await Promise.all([
+      (await isFrontCameraAvailableAsync(devices)) && CameraType.front,
+      (await isBackCameraAvailableAsync()) && CameraType.back,
+    ]);
+
+    return types.filter(Boolean) as string[];
   };
+}
+
+function stopMediaStream(stream: MediaStream | null) {
+  if (!stream) return;
+  if (stream.getAudioTracks) stream.getAudioTracks().forEach(track => track.stop());
+  if (stream.getVideoTracks) stream.getVideoTracks().forEach(track => track.stop());
+  if (isMediaStreamTrack(stream)) stream.stop();
+}
+
+function setVideoSource(
+  video: HTMLVideoElement,
+  stream: MediaStream | MediaSource | Blob | null
+): void {
+  try {
+    video.srcObject = stream;
+  } catch (_) {
+    if (stream) {
+      video.src = window.URL.createObjectURL(stream);
+    } else if (typeof video.src === 'string') {
+      window.URL.revokeObjectURL(video.src);
+    }
+  }
+}
+
+async function applyConstraints(
+  tracks: MediaStreamTrack[],
+  constraints: { [key: string]: any }
+): Promise<boolean> {
+  try {
+    await Promise.all(
+      tracks.map(async track => {
+        await track.applyConstraints({ advanced: [constraints] as any });
+      })
+    );
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function isCapabilityAvailable(video: HTMLVideoElement, keyName: string): boolean {
+  const stream = video.srcObject;
+
+  if (stream instanceof MediaStream) {
+    const videoTrack = stream.getVideoTracks()[0];
+
+    if (typeof videoTrack.getCapabilities === 'undefined') {
+      return false;
+    }
+
+    const capabilities: any = videoTrack.getCapabilities();
+
+    return !!capabilities[keyName];
+  }
+
+  return false;
+}
+
+function isMediaStreamTrack(input: any): input is MediaStreamTrack {
+  return typeof input.stop === 'function';
+}
+
+function convertNormalizedSetting(range: MediaSettingsRange, value?: number): number | undefined {
+  if (!value) return;
+  // convert the normalized incoming setting to the native camera zoom range
+  const converted = convertRange(value, [range.min, range.max]);
+  // clamp value so we don't get an error
+  return Math.min(range.max, Math.max(range.min, converted));
+}
+
+function convertRange(value: number, r2: number[], r1: number[] = [0, 1]): number {
+  return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
+}
+
+function validatedConstrainedValue(
+  constraintKey: string,
+  settingsKey: string,
+  convertedSetting: any,
+  capabilities: MediaTrackCapabilities,
+  settings: any,
+  cameraType: string
+): any {
+  const setting = settings[settingsKey];
+  if (
+    Array.isArray(capabilities[constraintKey]) &&
+    convertedSetting &&
+    !capabilities[constraintKey].includes(convertedSetting)
+  ) {
+    console.warn(
+      ` { ${settingsKey}: "${setting}" } (converted to "${convertedSetting}" in the browser) is not supported for camera type "${cameraType}" in your browser. Using the default value instead.`
+    );
+    return undefined;
+  }
+  return convertedSetting;
 }
 
 export default CameraModule;

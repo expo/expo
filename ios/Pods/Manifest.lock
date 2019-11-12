@@ -755,6 +755,9 @@ PODS:
   - EXBarCodeScanner (7.0.0):
     - UMCore
     - UMImageLoaderInterface
+    - UMPermissionsInterface
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - EXBattery (1.0.0):
     - UMCore
   - EXBlur (7.0.0):
@@ -765,6 +768,7 @@ PODS:
     - UMCore
   - EXBrightness (7.0.0):
     - UMCore
+    - UMPermissionsInterface
   - EXCalendar (7.0.0):
     - UMCore
     - UMPermissionsInterface
@@ -1443,6 +1447,11 @@ PODS:
   - yogaABI33_0_0 (0.59.8.React)
   - yogaABI34_0_0 (0.59.8.React)
   - yogaABI35_0_0 (0.59.8.React)
+  - ZXingObjC/Core (3.6.5)
+  - ZXingObjC/OneD (3.6.5):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.5):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - ABI33_0_0EXAdsAdMob (from `./versioned-react-native/ABI33_0_0/EXAdsAdMob`)
@@ -1814,6 +1823,7 @@ SPEC REPOS:
     - lottie-ios
     - nanopb
     - Protobuf
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
@@ -2641,11 +2651,11 @@ SPEC CHECKSUMS:
   EXAppLoaderProvider: 5d348813a9cf09b03bbe5b8b55437bc1bfbddbd1
   EXAV: 2fead9acfc39b4946ba9228d3a199e0704aec65d
   EXBackgroundFetch: 5983dac76493f8cabb7c5366bbfae26c8e3d6764
-  EXBarCodeScanner: 2443883e2a0a8075fc323dad136a73384ab71cde
+  EXBarCodeScanner: af6a390c5bfa0fca2b4372f9059cfa935855b85c
   EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
   EXBlur: eb1cf2d78e94894e0406a8df47d1c2ea1136da17
   EXBranch: 582656658e6245f6799fb3797de1403b7386b6ea
-  EXBrightness: 8b4827452309499d547f7887a2f0988a10234921
+  EXBrightness: e43f02490c1dd40cc023a17363f48f90aa678301
   EXCalendar: bf85bd9ced7ff032ccd7a2a952e18d8536b99a6a
   EXCamera: 8ad7012d4e0fef09ff35de14fcb41b410357e9be
   EXCellular: d9e0853ddc346bab7aa9fd96371b6ce4efdf7639
@@ -2673,7 +2683,7 @@ SPEC CHECKSUMS:
   EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
   EXMediaLibrary: afa771d4df578966a65a3cd05c0a2f0f3b17441f
   EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXPermissions: a8da2bebf970af22e4714cc24fc5fab124ee315c
+  EXPermissions: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
   EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
   EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
   EXSecureStore: bf94958c936b2b9e3813509d2e7e6b8a263d40df
@@ -2759,6 +2769,7 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
+  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
 PODFILE CHECKSUM: c8c5cf8dffe5c6bad3821247c4ae5c24cc32d73c
 

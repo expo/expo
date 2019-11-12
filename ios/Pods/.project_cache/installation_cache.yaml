@@ -3991,6 +3991,8 @@ CACHE_KEYS:
       EXAV: 427dcf81d85a448fa6dd2b84e127ecd8
     CHECKSUM: 2fead9acfc39b4946ba9228d3a199e0704aec65d
     FILES:
+      - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
+      - "../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
       - "../../packages/expo-av/ios/EXAV/EXAudioSessionManager.h"
       - "../../packages/expo-av/ios/EXAV/EXAudioSessionManager.m"
       - "../../packages/expo-av/ios/EXAV/EXAV.h"
@@ -4022,9 +4024,11 @@ CACHE_KEYS:
       - EXBackgroundFetch (7.0.0)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      EXBarCodeScanner: a48147baf3fa369d20e12e87921a584e
-    CHECKSUM: 2443883e2a0a8075fc323dad136a73384ab71cde
+      EXBarCodeScanner: 28990d6e76c6e0a2286785ec45b6a2a6
+    CHECKSUM: af6a390c5bfa0fca2b4372f9059cfa935855b85c
     FILES:
+      - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h"
+      - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.m"
       - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScanner.h"
       - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScanner.m"
       - "../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScannerModule.h"
@@ -4096,11 +4100,13 @@ CACHE_KEYS:
       - EXBranch (1.0.2)
   EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      EXBrightness: 34e99e82e5aef39a7d75edb18f5a00f7
-    CHECKSUM: 8b4827452309499d547f7887a2f0988a10234921
+      EXBrightness: ec8961c8ee1a8a09852b43e7ad8510c4
+    CHECKSUM: e43f02490c1dd40cc023a17363f48f90aa678301
     FILES:
       - "../../packages/expo-brightness/ios/EXBrightness/EXBrightness.h"
       - "../../packages/expo-brightness/ios/EXBrightness/EXBrightness.m"
+      - "../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessPermissionRequester.h"
+      - "../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessPermissionRequester.m"
     PROJECT_NAME: EXBrightness
     SPECS:
       - EXBrightness (7.0.0)
@@ -4113,6 +4119,10 @@ CACHE_KEYS:
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarConverter.h"
       - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarConverter.m"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarPermissionRequester.h"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXCalendarPermissionRequester.m"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.h"
+      - "../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.m"
     PROJECT_NAME: EXCalendar
     SPECS:
       - EXCalendar (7.0.0)
@@ -4125,6 +4135,8 @@ CACHE_KEYS:
       - "../../packages/expo-camera/ios/EXCamera/EXCamera.m"
       - "../../packages/expo-camera/ios/EXCamera/EXCameraManager.h"
       - "../../packages/expo-camera/ios/EXCamera/EXCameraManager.m"
+      - "../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.h"
+      - "../../packages/expo-camera/ios/EXCamera/EXCameraPermissionRequester.m"
       - "../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.h"
       - "../../packages/expo-camera/ios/EXCamera/Utilities/EXCameraUtils.m"
     PROJECT_NAME: EXCamera
@@ -4161,6 +4173,8 @@ CACHE_KEYS:
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.m"
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts.h"
       - "../../packages/expo-contacts/ios/EXContacts/EXContacts.m"
+      - "../../packages/expo-contacts/ios/EXContacts/EXContactsPermissionRequester.h"
+      - "../../packages/expo-contacts/ios/EXContacts/EXContactsPermissionRequester.m"
       - "../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.h"
       - "../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.m"
     PROJECT_NAME: EXContacts
@@ -4361,6 +4375,10 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.h"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.m"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.h"
+      - "../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (7.0.0)
@@ -4417,6 +4435,8 @@ CACHE_KEYS:
       - "../../packages/expo-location/ios/EXLocation/EXLocation.m"
       - "../../packages/expo-location/ios/EXLocation/EXLocationDelegate.h"
       - "../../packages/expo-location/ios/EXLocation/EXLocationDelegate.m"
+      - "../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.h"
+      - "../../packages/expo-location/ios/EXLocation/EXLocationPermissionRequester.m"
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.h"
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXGeofencingTaskConsumer.m"
       - "../../packages/expo-location/ios/EXLocation/TaskConsumers/EXLocationTaskConsumer.h"
@@ -4441,6 +4461,8 @@ CACHE_KEYS:
     FILES:
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
+      - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.h"
+      - "../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.m"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
       - "../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
@@ -4459,32 +4481,16 @@ CACHE_KEYS:
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
-    CHECKSUM: a8da2bebf970af22e4714cc24fc5fab124ee315c
+    CHECKSUM: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
     FILES:
-      - "../../packages/expo-permissions/ios/EXPermissions/EXAudioRecordingPermissionRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXAudioRecordingPermissionRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXCalendarRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXCalendarRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXCameraPermissionRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXCameraPermissionRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXCameraRollRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXCameraRollRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXContactsRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXContactsRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXLocationRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXLocationRequester.m"
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXRemindersRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXRemindersRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXRemoteNotificationRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXRemoteNotificationRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXSystemBrightnessRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXSystemBrightnessRequester.m"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXUserNotificationRequester.h"
-      - "../../packages/expo-permissions/ios/EXPermissions/EXUserNotificationRequester.m"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.h"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.m"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.h"
+      - "../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.0.0-rc.0)
@@ -4915,16 +4921,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 606c7b51cf8a63015b2fb18623b22908
-      Release: 606c7b51cf8a63015b2fb18623b22908
+      Debug: 70c404526b6df149ae6d25c047a325d5
+      Release: 70c404526b6df149ae6d25c047a325d5
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e4b57f9f76a7e235b595f1ee71ebd531
-      Release: e4b57f9f76a7e235b595f1ee71ebd531
+      Debug: 0f856eb18b4cfd63ab12af8167b26da6
+      Release: 0f856eb18b4cfd63ab12af8167b26da6
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: e4b57f9f76a7e235b595f1ee71ebd531
-      Release: e4b57f9f76a7e235b595f1ee71ebd531
+      Debug: 0f856eb18b4cfd63ab12af8167b26da6
+      Release: 0f856eb18b4cfd63ab12af8167b26da6
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
@@ -7451,6 +7457,8 @@ CACHE_KEYS:
     CHECKSUM: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
     FILES:
       - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h"
+      - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsMethodsDelegate.h"
+      - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsMethodsDelegate.m"
       - "../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h"
     PROJECT_NAME: UMPermissionsInterface
     SPECS:
@@ -7644,4 +7652,13 @@ CACHE_KEYS:
     PROJECT_NAME: ABI35_0_0
     SPECS:
       - yogaABI35_0_0 (0.59.8.React)
+  ZXingObjC:
+    BUILD_SETTINGS_CHECKSUM:
+      ZXingObjC: d3ecdae7b9cd1c5943e115b6207f0009
+    CHECKSUM: fdbb269f25dd2032da343e06f10224d62f537bdb
+    PROJECT_NAME: ZXingObjC
+    SPECS:
+      - ZXingObjC/Core (3.6.5)
+      - ZXingObjC/OneD (3.6.5)
+      - ZXingObjC/PDF417 (3.6.5)
 OBJECT_VERSION: 46

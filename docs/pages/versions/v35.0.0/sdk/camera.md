@@ -268,3 +268,17 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview`
 
 Resumes the camera preview.
+
+## Web Support
+
+Luckily most browsers support at least some form of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream).
+
+### Chrome iframe usage
+
+When using **Chrome versions 64+**, if you try to use a web camera in a cross-origin iframe nothing will render. To add support for cameras in your iframe simply add the attribute `allow="microphone; camera;"` to the iframe element:
+
+```html
+<iframe src="..." allow="microphone; camera;">
+  <!-- <Camera /> -->
+</iframe>
+```

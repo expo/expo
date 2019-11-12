@@ -14,6 +14,24 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Contacts from 'expo-contacts';
 ```
 
+
+### `requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing contacts data. Alias for `Permissions.askAsync(Permissions.CONTACTS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `getPermissionsAsync()`
+
+Checks user's permissions for accessing contacts data. Alias for `Permissions.getAsync(Permissions.CONTACTS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+
 ### getContactsAsync
 
 ```js
@@ -483,7 +501,6 @@ A set of fields that define information about a single entity.
 | socialProfiles | `SocialProfile[]` | Social networks | ✅ | ❌ |
 | thumbnail | `Image` | **Deprecated**: Use `image` | ❌ | ❌ |
 | previousLastName | `string` | **Deprecated**: Use maidenName | ❌ | ❌ |
-
 
 ### Group
 

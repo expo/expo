@@ -1,6 +1,8 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+export { PermissionStatus };
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -279,11 +281,30 @@ export function openEventInCalendar(id) {
     }
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
+/**
+ * @deprecated Use requestCalendarPermissionsAsync()
+ */
 export async function requestPermissionsAsync() {
-    if (!ExpoCalendar.requestPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
+    console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');
+    return requestCalendarPermissionsAsync();
+}
+export async function getCalendarPermissionsAsync() {
+    if (!ExpoCalendar.getCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
     }
-    return await ExpoCalendar.requestPermissionsAsync();
+    return ExpoCalendar.getCalendarPermissionsAsync();
+}
+export async function getRemindersPermissionsAsync() {
+    if (!ExpoCalendar.getRemindersPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAsync');
+    }
+    return ExpoCalendar.getRemindersPermissionsAsync();
+}
+export async function requestCalendarPermissionsAsync() {
+    if (!ExpoCalendar.requestCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
+    }
+    return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
 export async function requestRemindersPermissionsAsync() {
     if (!ExpoCalendar.requestRemindersPermissionsAsync) {
