@@ -495,6 +495,16 @@ Configuration for how and when the app should request OTA JavaScript updates
       "googleMobileAdsAppId": STRING,
 
       /*
+        A boolean indicating whether to initialize Google App Measurement and begin sending
+        user-level event data to Google immediately when the app starts. The default in Expo
+        (Client and in standalone apps) is `false`.
+
+        Sets the opposite of the given value to the following key in Info.plist:
+        https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional
+      */
+      "googleMobileAdsAutoInit": BOOLEAN,
+
+      /*
         Google Sign-In iOS SDK keys for your standalone app.
 
         developers.google.com/identity/sign-in/ios/start-integrating
@@ -502,7 +512,7 @@ Configuration for how and when the app should request OTA JavaScript updates
       "googleSignIn": {
         /*
           The reserved client ID URL scheme.
-          Can be found in GoogeService-Info.plist.
+          Can be found in GoogleService-Info.plist.
         */
         "reservedClientId": STRING
       }
@@ -755,6 +765,16 @@ Configuration for how and when the app should request OTA JavaScript updates
         https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml
       */
       "googleMobileAdsAppId": STRING,
+
+      /*
+        A boolean indicating whether to initialize Google App Measurement and begin sending
+        user-level event data to Google immediately when the app starts. The default in Expo
+        (Client and in standalone apps) is `false`.
+
+        Sets the opposite of the given value to the following tag in AndroidManifest.xml:
+        https://developers.google.com/admob/android/eu-consent#delay_app_measurement_optional
+      */
+      "googleMobileAdsAutoInit": BOOLEAN,
 
       /*
         Google Sign-In Android SDK keys for your standalone app.
