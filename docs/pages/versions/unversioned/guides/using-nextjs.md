@@ -10,6 +10,9 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 ## API
 
+<details><summary>API Guide</summary>
+<p>
+  
 ### Config
 
 #### `withExpo`
@@ -30,9 +33,58 @@ withExpo({ /* next.config.js code */ })
 
 ### Document
 
+Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document). 
+
+This adapter provides a default `Document` (extended from Next.js's Document) that you can use to skip all of the React Native setup. 
+
+- Registers your app with `AppRegistry` from `react-native-web` to start your project.
+- Implements the `react-native-web` CSS reset.
+
 ```js
 import Document, { style, getInitialProps } from '@expo/next-adapter/document';
 ```
+
+#### Customizing the Document
+
+If you need more control you can import then recompose the `Document` how you like. This is good for augmenting the `<head />` element or mixing your own styles.
+
+```js
+import { getInitialProps } from '@expo/next-adapter/document';
+import Document, { Head, Main, NextScript } from 'next/document';
+import React from 'react';
+
+class CustomDocument extends Document {
+  render() {
+    return (
+      <html>
+        <Head>
+          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </html>
+    );
+  }
+}
+
+// Import the getInitialProps method and assign it to your component to ensure the react-native-web styles are used.
+CustomDocument.getInitialProps = getInitialProps;
+
+// OR...
+
+CustomDocument.getInitialProps = async props => {
+  const result = await getInitialProps(props);
+  // Mutate result...
+  return result;
+};
+
+export default CustomDocument;
+```
+
+</p>
+</details>
 
 ### Server
 
@@ -322,59 +374,6 @@ Here is an example `now.json` configuration file:
     }
   ]
 }
-```
-
-</p>
-</details>
-
-### Customizing the Document
-
-Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
-
-<details><summary>Instructions</summary>
-<p>
-
-You can import the following fragments from the custom Document:
-
-```js
-import { Document, getInitialProps, style } from '@expo/next-adapter/document';
-```
-
-Then recompose the Document how you like
-
-```js
-import { getInitialProps } from '@expo/next-adapter/document';
-import Document, { Head, Main, NextScript } from 'next/document';
-import React from 'react';
-
-class CustomDocument extends Document {
-  render() {
-    return (
-      <html>
-        <Head>
-          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        </Head>
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </html>
-    );
-  }
-}
-
-// Import the getInitialProps method and assign it to your component
-CustomDocument.getInitialProps = getInitialProps;
-
-// OR...
-
-CustomDocument.getInitialProps = async props => {
-  const result = await getInitialProps(props);
-  // Mutate result...
-  return result;
-};
-
-export default CustomDocument;
 ```
 
 </p>
