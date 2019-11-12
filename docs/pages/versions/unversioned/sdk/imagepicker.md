@@ -142,17 +142,17 @@ When you run this example and pick an image, you will see the image that you pic
 
 ### `ImagePicker.ExportPresets`
 
-| Preset                          | Resolution           | Video compression algorithm | Audio compression algorithm |
-| ------------------------------- | -------------------- | --------------------------- | --------------------------- |
-| `ExportPresets.Passthrough`     | Unchanged            | None                        | None                        |
-| `ExportPresets.LowQuality`      | Depend on the device | H.264                       | AAC                         |
-| `ExportPresets.MediumQuality`   | Depend on the device | H.264                       | AAC                         |
-| `ExportPresets.HighestQuality`  | Depend on the device | H.264                       | AAC                         |
-| `ExportPresets.H_264_640x480`   | 640 x 480            | H.264                       | AAC                         |
-| `ExportPresets.H_264_960x540`   | 960 x 540            | H.264                       | AAC                         |
-| `ExportPresets.H_264_1280x720`  | 1280 x 720           | H.264                       | AAC                         |
-| `ExportPresets.H_264_1920x1080` | 1920 x 1080          | H.264                       | AAC                         |
-| `ExportPresets.H_264_1920x1080` | 1920 x 1080          | H.264                       | AAC                         |
-| `ExportPresets.H_264_3840x2160` | 3840 x 2160          | H.264                       | AAC                         |
-| `ExportPresets.HEVC_1920x1080`  | 1920 x 1080          | HEVC                        | AAC                         |
-| `ExportPresets.HEVC_3840x2160`  | 3840 x 2160          | HEVC                        | AAC                         |
+| Preset                         | Resolution           | Video compression algorithm | Audio compression algorithm |
+| ------------------------------ | -------------------- | --------------------------- | --------------------------- |
+| `ExportPresets.Passthrough`    | Unchanged            | None                        | None                        |
+| `ExportPresets.LowQuality`     | Depend on the device | H.264                       | AAC                         |
+| `ExportPresets.MediumQuality`  | Depend on the device | H.264                       | AAC                         |
+| `ExportPresets.HighestQuality` | Depend on the device | H.264                       | AAC                         |
+| `ExportPresets.H264_640x480`   | 640 x 480            | H.264                       | AAC                         |
+| `ExportPresets.H264_960x540`   | 960 x 540            | H.264                       | AAC                         |
+| `ExportPresets.H264_1280x720`  | 1280 x 720           | H.264                       | AAC                         |
+| `ExportPresets.H264_1920x1080` | 1920 x 1080          | H.264                       | AAC                         |
+| `ExportPresets.H264_1920x1080` | 1920 x 1080          | H.264                       | AAC                         |
+| `ExportPresets.H264_3840x2160` | 3840 x 2160          | H.264                       | AAC                         |
+| `ExportPresets.HEVC1920x1080`  | 1920 x 1080          | HEVC                        | AAC                         |
+| `ExportPresets.HEVC3840x2160`  | 3840 x 2160          | HEVC                        | AAC                         |
