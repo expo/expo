@@ -36,21 +36,39 @@ import Document, { style, getInitialProps } from '@expo/next-adapter/document';
 
 ### Server
 
-`@expo/next-adapter` provides you with a light-weight and easy to use `http` server for controlling how your project is hosted.
+`@expo/next-adapter` provides you with a light-weight and easy to use `http` server for controlling how your project is hosted. The main reason for using this is to forward the requests for service workers to the static folder where Next.js expects them to be.
 
 ```js
 import { createServerAsync, startServerAsync, handleRequest } from '@expo/next-adapter';
+```
+
+#### `startServerAsync`
+
+- The easiest method for starting an HTTP server with Next.js support.
+- Invokes `createServerAsync` with all of the defaults provided and starts listening.
+  - `port: 3000`
+- Returns all of the results `createServerAsync` (Next app, handle, and HTTP server)
+
+```ts
+function startServerAsync(
+  projectRoot: string, 
+  { port }?: {
+    port?: number;
+}): Promise<{
+  app: App;
+  handle: Function;
+  server: Server;
+}>;
 ```
 
 #### `createServerAsync`
 
 - Create an HTTP server and possibly a Next app, unless one is provided.
 - Handle all requests internally, unless the `handleRequest` option is provided.
-
 - Returns the Next.js app, handle (created with `app.getRequestHandler()`) and HTTP server.
 
 ```ts
-createServerAsync(
+function createServerAsync(
   projectRoot: string, 
   { app, handleRequest }: { 
     app?: App;
@@ -63,9 +81,18 @@ createServerAsync(
 }>
 ```
 
-#### `startServerAsync`
-
 #### `handleRequest`
+
+- Use this if you want to completely skip Expo's server but still ensure that the service-workers are hosted in the Next.js static folder.
+
+```ts
+handleRequest(
+  { projectRoot, app, handle }: {
+    projectRoot: string;
+    app: App;
+    handle: Function;
+}, req: IncomingMessage, res: ServerResponse): void;
+```
 
 ## 🏁 Setup
 
