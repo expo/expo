@@ -136,12 +136,7 @@ export default class SearchBar extends React.Component {
   };
 
   _handleSubmit = () => {
-    let { text } = this.state;
-    if (text.toLowerCase() === '^dev menu' || text.toLowerCase() === '^dm') {
-      Kernel.addDevMenu();
-    } else {
-      this._textInput.blur();
-    }
+    this._textInput.blur();
   };
 
   _handlePressCancelButton = () => {
