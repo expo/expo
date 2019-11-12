@@ -10,7 +10,6 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 ## API
 
-
 ### Config
 
 #### `withExpo`
@@ -37,9 +36,36 @@ import Document, { style, getInitialProps } from '@expo/next-adapter/document';
 
 ### Server
 
+`@expo/next-adapter` provides you with a light-weight and easy to use `http` server for controlling how your project is hosted.
+
 ```js
 import { createServerAsync, startServerAsync, handleRequest } from '@expo/next-adapter';
 ```
+
+#### `createServerAsync`
+
+- Create an HTTP server and possibly a Next app, unless one is provided.
+- Handle all requests internally, unless the `handleRequest` option is provided.
+
+- Returns the Next.js app, handle (created with `app.getRequestHandler()`) and HTTP server.
+
+```ts
+createServerAsync(
+  projectRoot: string, 
+  { app, handleRequest }: { 
+    app?: App;
+    handleRequest?: (req: IncomingMessage, res: ServerResponse) => Promise<void> | void;
+  }
+): Promise<{
+  app: App;
+  handle: Function;
+  server: Server;
+}>
+```
+
+#### `startServerAsync`
+
+#### `handleRequest`
 
 ## 🏁 Setup
 
