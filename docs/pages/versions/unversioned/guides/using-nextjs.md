@@ -153,16 +153,14 @@ handleRequest(
 
 ### Expo projects with Next.js
 
-- Mobile & web project
-
-Using SSR in your universal project
+Using SSR for web in your universal project. This is preferred because you'll get full access to both tools features.
 
 <details><summary>Instructions</summary>
 <p>
 
-- Bootstrap your project with Expo - `expo init`
+- Bootstrap your project with Expo - `expo init --template blank`
 - Install - `yarn add next @expo/next-adapter`
-- Create a front page for your Next project with `cp App.js pages/index.js`
+- Create a front page for your Next project with `mkdir pages; cp App.js pages/index.js`
 - Follow the shared steps
 
 </p>
@@ -170,14 +168,12 @@ Using SSR in your universal project
 
 ### Next.js projects with Expo
 
-- Just a web project
-
-If you want to use Expo components in your web-only projects
+If you want to use Expo components in your web-only project.
 
 <details><summary>Instructions</summary>
 <p>
 
-- Bootstrap your project with `Next.js` - `npx create-next-app`
+- Bootstrap your project with Next.js - `npx create-next-app`
 - Install - `yarn add react-native-web @expo/next-adapter && yarn add -D babel-preset-expo`
 - Follow the shared steps
 
@@ -191,7 +187,8 @@ After following the project specific setup do these:
 <details><summary>Instructions</summary>
 <p>
 
-- Re-export the default Expo Document component from the `pages/_document.js` file of your Next.js project. (`mkdir pages; touch pages/_document.js`). This will ensure `react-native-web` styling works.
+- Re-export the custom `Document` component in the `pages/_document.js` file of your Next.js project. This will ensure `react-native-web` styling works.
+  - Create file - `mkdir pages; touch pages/_document.js` 
 
   `pages/_document.js`
 
@@ -201,25 +198,27 @@ After following the project specific setup do these:
   export default Document;
   ```
 
-- Create a `babel.config.js` and install the Expo Babel preset: `yarn add -D babel-preset-expo`
+- Create a `babel.config.js` and use the Expo Babel preset ([`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo))
+  - You installed this earlier with `yarn add -D babel-preset-expo`
 
   `babel.config.js`
 
   ```js
   module.exports = function(api) {
+    // Detect web usage (this may change in the future if Next.js changes the loader to `next-babel-loader`)
     const isWeb = api.caller(caller => caller && caller.name === 'babel-loader');
 
     return {
       presets: [
         'babel-preset-expo',
-        // Only use next in the browser
+        // Only use next in the browser, it'll break your native project/
         isWeb && 'next/babel',
       ].filter(Boolean),
     };
   };
   ```
 
-- Update the Next.js config file to support loading React Native and Expo packages:
+- Update the Next.js `next.config.js` file to support loading React Native and Expo packages:
   `next.config.js`
 
   ```js
@@ -230,21 +229,22 @@ After following the project specific setup do these:
   });
   ```
 
-- Start your project with `yarn next dev` or `yarn dev`
+- You can now start your Next.js project with `yarn next dev` 🎉
 
 </p>
 </details>
 
-### Adding PWA features
+### Offline support
 
 Unlike the default Expo for web workflow, Workbox and PWA are not supported by default. Here you can learn how to use the plugin [next-offline][next-offline] to get offline support in your Next.js + Expo app.
 
 <details><summary>Instructions</summary>
 <p>
 
-1. Install `next-offline` to emulate Expo PWA features: `yarn add next-offline` (this is optional)
-1. Configure your Next.js project to resolve React Native Unimodules:
-
+- Install `next-offline` to emulate Expo PWA features: `yarn add next-offline`
+- Configure your Next.js project to use `expo-notifications` in the browser:
+  - We inject a custom service worker so we'll need to change what Workbox names their service worker (it must be `workbox-service-worker.js`).
+  
    `next.config.js`
 
    ```js
@@ -278,8 +278,8 @@ Unlike the default Expo for web workflow, Workbox and PWA are not supported by d
      }),
    });
    ```
-
-1. You can now test your project in production mode using the following: `yarn next build && yarn next export && serve -p 3000 ./out`
+- Copy the Expo service worker into your project's public folder: `mkdir public; cp node_modules/\@expo/next-adapter/service-worker.js public/service-worker.js`
+- You can now test your project in production mode using the following: `yarn next build && yarn next export && serve -p 3000 ./out`
 
 </p>
 </details>
@@ -291,7 +291,7 @@ If you have a complex project that requires custom server control then you can e
 <details><summary>Instructions</summary>
 <p>
 
-1. Create a custom server to host your service worker:
+- Create a custom server to host your service worker:
    `server.js`
 
    ```js
@@ -302,9 +302,7 @@ If you have a complex project that requires custom server control then you can e
    });
    ```
 
-1. Copy the Expo service worker into your project's public folder: `mkdir public; cp node_modules/\@expo/next-adapter/service-worker.js public/service-worker.js`
-
-1. Start your project with `node server.js`
+- Start your project with `node server.js`
 
 ### Handle server requests
 
@@ -389,8 +387,8 @@ Here is an example `now.json` configuration file:
 ## Limitations or differences comparing to the default Expo for Web
 
 - Unlike the default Expo for Web, Workbox and PWA are not supported by default. Use Next.js plugins such as [next-offline](https://github.com/hanford/next-offline) instead. Learn more [here](https://nextjs.org/features/progressive-web-apps).
-- You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
-- Only the Next.js default page-based routing is supported.
+- You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion). An easy but fragile way to do this is by defining the package name in your `app.json` under `expo.web.build.babel.include` (it's experimental because that's a really deeply nested object).
+- Only the Next.js default page-based routing is supported. You'll need to use a completely different routing solution to do native navigation. We strongly recommend [react-navigation](https://reactnavigation.org/) for this.
 
 <!-- Footer -->
 
