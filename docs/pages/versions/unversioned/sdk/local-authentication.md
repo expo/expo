@@ -2,6 +2,8 @@
 title: LocalAuthentication
 ---
 
+import SnackEmbed from '~/components/plugins/SnackEmbed';
+
 Use FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.
 
 ## Installation
@@ -56,6 +58,12 @@ Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the 
 
 Returns a promise resolving to an object containing `success`, a boolean indicating whether or not the authentication was successful, and `error` containing the error code in the case where authentication fails.
 
+#### Usage
+
+Since Android doesn't provide a default UI component, we've provided an example with one to help you get up and running:
+
+<SnackEmbed snackId="@charliecruzan/localauthentication35example" />
+
 ### `LocalAuthentication.cancelAuthenticate() - (Android Only)`
 
-Cancels the fingerprint authentication flow.
+Cancels the fingerprint authentication flow. See usage in example snack above.
