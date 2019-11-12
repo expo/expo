@@ -756,6 +756,8 @@ PODS:
     - UMCore
     - UMImageLoaderInterface
     - UMPermissionsInterface
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - EXBattery (1.0.0):
     - UMCore
   - EXBlur (7.0.0):
@@ -1445,6 +1447,11 @@ PODS:
   - yogaABI33_0_0 (0.59.8.React)
   - yogaABI34_0_0 (0.59.8.React)
   - yogaABI35_0_0 (0.59.8.React)
+  - ZXingObjC/Core (3.6.5)
+  - ZXingObjC/OneD (3.6.5):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.5):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - ABI33_0_0EXAdsAdMob (from `./versioned-react-native/ABI33_0_0/EXAdsAdMob`)
@@ -1816,6 +1823,7 @@ SPEC REPOS:
     - lottie-ios
     - nanopb
     - Protobuf
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
@@ -2643,7 +2651,7 @@ SPEC CHECKSUMS:
   EXAppLoaderProvider: 5d348813a9cf09b03bbe5b8b55437bc1bfbddbd1
   EXAV: 2fead9acfc39b4946ba9228d3a199e0704aec65d
   EXBackgroundFetch: 5983dac76493f8cabb7c5366bbfae26c8e3d6764
-  EXBarCodeScanner: 4c8a755e29e025487a4d4c4079925fe0e1c7e962
+  EXBarCodeScanner: af6a390c5bfa0fca2b4372f9059cfa935855b85c
   EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
   EXBlur: eb1cf2d78e94894e0406a8df47d1c2ea1136da17
   EXBranch: 582656658e6245f6799fb3797de1403b7386b6ea
@@ -2761,6 +2769,7 @@ SPEC CHECKSUMS:
   yogaABI33_0_0: aec4e4cfccfd36f11487aa0f2c678fe58ebf77bc
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
+  ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
 PODFILE CHECKSUM: c8c5cf8dffe5c6bad3821247c4ae5c24cc32d73c
 
