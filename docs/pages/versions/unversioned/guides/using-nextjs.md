@@ -10,10 +10,28 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 Next.js can only be used with Expo for web, this doesn't provide SSR for native apps.
 
+- [API](#api)
+  * [Config](#config)
+    + [`withExpo`](#-withexpo-)
+  * [Document](#document)
+    + [Customizing the Document](#customizing-the-document)
+  * [Server](#server)
+    + [`startServerAsync`](#-startserverasync-)
+    + [`createServerAsync`](#-createserverasync-)
+    + [`handleRequest`](#-handlerequest-)
+- [🏁 Setup](#---setup)
+  * [Expo projects with Next.js](#expo-projects-with-nextjs)
+  * [Next.js projects with Expo](#nextjs-projects-with-expo)
+  * [Shared steps](#shared-steps)
+  * [Offline support](#offline-support)
+  * [Using a custom server](#using-a-custom-server)
+  * [Handle server requests](#handle-server-requests)
+  * [Web push notifications support](#web-push-notifications-support)
+- [Limitations](#limitations-or-differences-comparing-to-the-default-expo-for-web)
 
 ## API
 
-<details><summary>API Guide</summary>
+<details><summary>Expand API</summary>
 <p>
   
 ### Config
