@@ -1,6 +1,5 @@
 <resources>
   <string name="app_name">Exponent</string>
-  <string name="dev_activity_name">Exponent Dev</string>
   <string name="info_activity_name">Info</string>
   <string name="info_app_name_placeholder">App Name</string>
   <string name="info_sdk_version">SDK Version: %s</string>
