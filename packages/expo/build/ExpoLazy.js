@@ -459,7 +459,7 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
+exports.DataMigrationHelper = exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
 
 require("./Expo.fx");
 
@@ -482,6 +482,10 @@ exports.Updates = Updates;
 var SplashScreen = _interopRequireWildcard(require("./launch/SplashScreen"));
 
 exports.SplashScreen = SplashScreen;
+
+var DataMigrationHelper = _interopRequireWildcard(require("./DataMigrationHelper"));
+
+exports.DataMigrationHelper = DataMigrationHelper;
 
 var _apisAreAvailable = _interopRequireDefault(require("./apisAreAvailable"));
 
