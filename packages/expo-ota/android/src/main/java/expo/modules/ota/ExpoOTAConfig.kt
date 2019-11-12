@@ -16,7 +16,7 @@ data class ExpoOTAConfig @JvmOverloads constructor(
         val checkForUpdatesAutomatically: Boolean = defaultCheckAutomatically,
         val manifestResponseValidator: ManifestResponseValidator
 )
-val defaultManifestComparator: ManifestComparator = VersionNumberManifestComparator(SdkVersionMustBeEqualNativeComparator())
+val defaultManifestComparator: ManifestComparator = CommitTimeManifestComparator(SdkVersionMustBeEqualNativeComparator())
 private fun defaultValidator(manifestClient: OkHttpClient) = ExpoValidator("https://exp.host/--/manifest-public-key", manifestClient)
 
 fun embeddedManifestExpoConfig(context: Context): ExpoOTAConfig {
