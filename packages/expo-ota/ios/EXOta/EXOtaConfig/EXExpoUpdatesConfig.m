@@ -145,7 +145,7 @@ withCheckForUpdatesAutomatically:(BOOL)checkForUpdatesAutomatically
 
 - (id<ManifestComparator>)defaultManifestComparator
 {
-  return [[EXVersionNumberManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
+  return [[EXCommitTimeManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
 }
 
 @end

@@ -26,14 +26,27 @@ class DummyValidator : ManifestResponseValidator {
 
 class ExpoValidator(private val publicKeyUrl: String, private val httpClient: OkHttpClient) : ManifestResponseValidator {
 
+    private var firstAttempt = true
+
     override fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
+        validate(response, success, error, !firstAttempt)
+    }
+
+    fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit, forceCache: Boolean) {
+        firstAttempt = false
         val request = Request.Builder()
                 .url(publicKeyUrl)
                 .get()
-                .build()
-        httpClient.newCall(request).enqueue(object : Callback {
+        if(forceCache) {
+            request.cacheControl(CacheControl.FORCE_CACHE)
+        }
+        httpClient.newCall(request.build()).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                error(IllegalStateException("Manifest fetching failed: ", e))
+                if (forceCache) {
+                    validate(response, success, error, false)
+                } else {
+                    error(IllegalStateException("Manifest fetching failed: ", e))
+                }
             }
 
             override fun onResponse(call: Call, publicKeyResponse: Response) {
