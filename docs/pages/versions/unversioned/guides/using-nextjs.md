@@ -28,6 +28,7 @@ Next.js can only be used with Expo for web, this doesn't provide SSR for native 
     + [`createServerAsync`](#createserverasync)
     + [`handleRequest`](#handlerequest)
 - [Limitations](#limitations-or-differences-comparing-to-the-default-expo-for-web)
+- [Contributing](#contributing)
 
 ## 🏁 Setup
 
@@ -402,12 +403,23 @@ handleRequest(
 - You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion). An easy but fragile way to do this is by defining the package name in your `app.json` under `expo.web.build.babel.include` (it's experimental because that's a really deeply nested object).
 - Only the Next.js default page-based routing is supported. You'll need to use a completely different routing solution to do native navigation. We strongly recommend [react-navigation](https://reactnavigation.org/) for this.
 
+## Contributing
+
+If you would like to help make Next.js support in Expo better, please feel free to open a PR or submit an issue:
+
+- [Expo Next Adapter][next-adapter]
+
+If you have any problems rendering a certain component with SSR then you can submit fixing to the expo/expo repo:
+- [Expo packages][expo-packages]
+
+Thanks so much 👋
 <!-- Footer -->
 
 ## Learn more about Next.js
 
 Learn more about how to use Next.js from their [docs](https://nextjs.org/docs).
 
+[expo-packages]: https://github.com/expo/expo/tree/master/packages
 [nextjs]: https://nextjs.org/
 [next-adapter]: https://github.com/expo/expo-cli/tree/master/packages/next-adapter
 [next-docs]: https://nextjs.org/docs
