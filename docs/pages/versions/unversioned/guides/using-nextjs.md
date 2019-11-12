@@ -87,6 +87,7 @@ yarn next export
 With `expo start`, [web push notifications](../../guides/push-notifications) are supported without any additional configuration.
 
 To use it with other services such as ZEIT Now, you would need appropriate configuration to
+
 - let `/expo-service-worker.js` serve the file content of `/static/expo-service-worker.js`, and
 - let `/service-worker.js` serve the file content of a service worker, which be:
   - `/static/service-worker.js` (which will by default be a blank file) if you do not want to use any other service worker, or
@@ -124,17 +125,23 @@ If you are using next-offline, you should also set `dontAutoRegisterSw` to `true
 
 ### Customizing `pages/_document.js`
 
-Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
+Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more here: [Customized documents][custom-document].
 
 By default, Expo creates a `pages/_document.js` file for you (which `import` the `.expo/next_document.js` file controlled by Expo) that contains proper layout for your app (and possibility more features such as web push notifications in the future). If you choose to customize the `_document.js` file, we encourage you to copy `.expo/next_document.js` as a starter and check if `.expo/next_document.js` has any update periodically. (You could also try to `export default class MyDocument extends ExpoDocument`, but we do not promise that this will work for every case.)
 
 ## Limitations or differences comparing to the default Expo for Web
 
-- Unlike the default Expo for Web, Workbox and PWA are not supported by default. Use Next.js plugins such as [next-offline](https://github.com/hanford/next-offline) instead. Learn more [here](https://nextjs.org/features/progressive-web-apps).
-- In the production mode (`--no-dev`), reload is not supported. You have to restart (i.e., run `expo start --no-dev --web` again) to rebuild the page.
-- You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
-- Only the Next.js default page-based routing is supported.
+- Unlike the default Expo for web workflow, Workbox and PWA are not supported by default. Use Next.js plugins such as [next-offline][next-offline] instead. Learn more [here][next-pwa].
+- You might need to use the [next-transpile-modules][next-transpile-modules] plugin to transpile certain third-party modules in order for them to work (such as Emotion).
+- Only the Next.js default page-based routing is currently supported.
 
 ## Learn more about Next.js
 
 Learn more about how to use Next.js from their [docs](https://nextjs.org/docs).
+
+[nextjs]: https://nextjs.org/
+[next-docs]: https://nextjs.org/docs
+[custom-document]: https://nextjs.org/docs#custom-document
+[next-offline]: https://github.com/hanford/next-offline
+[next-pwa]: https://nextjs.org/features/progressive-web-apps
+[next-transpile-modules]: https://github.com/martpie/next-transpile-modules
