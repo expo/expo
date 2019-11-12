@@ -198,7 +198,10 @@ createServerAsync(projectRoot, {
 
 ### Web push notifications support
 
-With `expo start`, [web push notifications](https://docs.expo.io/versions/latest/guides/push-notifications/) are supported without any additional configuration.
+With the regular `expo start:web` or `expo start --web` commands [web push notifications](https://docs.expo.io/versions/latest/guides/push-notifications/) are supported without any additional configuration. To get this same functionality working with Next.js you'll need to configure a few things.
+
+<details><summary>Instructions</summary>
+<p>
 
 To use it with other services such as ZEIT Now, you would need appropriate configuration to
 
@@ -234,6 +237,9 @@ Here is an example `now.json` configuration file:
   ]
 }
 ```
+
+</p>
+</details>
 
 ### Customizing the Document
 
