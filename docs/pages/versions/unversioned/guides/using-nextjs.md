@@ -48,7 +48,7 @@ import Document, { style, getInitialProps } from '@expo/next-adapter/document';
 
 If you need more control you can import then recompose the `Document` how you like. This is good for augmenting the `<head />` element or mixing your own styles.
 
-```js
+```tsx
 import { getInitialProps } from '@expo/next-adapter/document';
 import Document, { Head, Main, NextScript } from 'next/document';
 import React from 'react';
@@ -82,9 +82,6 @@ CustomDocument.getInitialProps = async props => {
 
 export default CustomDocument;
 ```
-
-</p>
-</details>
 
 ### Server
 
@@ -145,6 +142,9 @@ handleRequest(
     handle: Function;
 }, req: IncomingMessage, res: ServerResponse): void;
 ```
+
+</p>
+</details>
 
 ## 🏁 Setup
 
