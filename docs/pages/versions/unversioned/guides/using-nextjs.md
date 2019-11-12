@@ -8,6 +8,9 @@ title: Using Next.js with Expo for Web
 
 Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so you'll need to start your web projects with the `next-cli` and not with `expo start:web`.
 
+Next.js can only be used with Expo for web, this doesn't provide SSR for native apps.
+
+
 ## API
 
 <details><summary>API Guide</summary>
@@ -150,6 +153,8 @@ handleRequest(
 
 ### Expo projects with Next.js
 
+- Mobile & web project
+
 Using SSR in your universal project
 
 <details><summary>Instructions</summary>
@@ -164,6 +169,8 @@ Using SSR in your universal project
 </details>
 
 ### Next.js projects with Expo
+
+- Just a web project
 
 If you want to use Expo components in your web-only projects
 
