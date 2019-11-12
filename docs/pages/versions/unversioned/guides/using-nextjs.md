@@ -2,96 +2,210 @@
 title: Using Next.js with Expo for Web
 ---
 
-[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering.
+> Warning: Support for Next.js is experimental. Please open an issue at [expo-cli/issues](https://github.com/expo/expo-cli/issues) if you encountered any problems.
 
-> Warning: Support for Next.js is experimental. Please open an issue at https://github.com/expo/expo-cli/ if you encountered any problem.
+[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web you can use a library called [`@expo/next-adapter`][next-adapter] which simplifies all of the config and setup required for using Next.js with Expo.
 
-## Using Next.js to your Expo for Web project
+Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so you'll need to start your web projects with the `next-cli` and not with `expo start:web`.
 
-### Install and configure Next.js
+## 🏁 Setup
 
-- Follow the [Running in the Browser](../../guides/running-in-the-browser) guide to add web support to your Expo project.
-- In your project, install Next.js: `npm i next --save`. (You may also have to run `npm i @babel/plugin-proposal-decorators --save-dev` due to an incompatibility.)
-- You will also need to add `expo-cli` as one of the `devDependencies` (`npm i expo-cli --save-dev`) if you want to build the project on a service such as [ZEIT Now](https://zeit.co/now).
-- Open `app.json` and set `expo.web.use` to `"nextjs"`:
+### Expo projects with Next.js
 
-```json
-{
-  "expo": {
-    "web": {
-      "use": "nextjs"
+Using SSR in your universal project
+
+<details><summary>Instructions</summary>
+<p>
+
+- Bootstrap your project with Expo - `expo init`
+- Install - `yarn add next @expo/next-adapter`
+- Create a front page for your Next project with `cp App.js pages/index.js`
+- Follow the shared steps
+
+</p>
+</details>
+
+### Next.js projects with Expo
+
+If you want to use Expo components in your web-only projects
+
+<details><summary>Instructions</summary>
+<p>
+
+- Bootstrap your project with `Next.js` - `npx create-next-app`
+- Install - `yarn add react-native-web @expo/next-adapter && yarn add -D babel-preset-expo`
+- Follow the shared steps
+
+</p>
+</details>
+
+### Shared steps
+
+After following the project specific setup do these:
+
+<details><summary>Instructions</summary>
+<p>
+
+- Re-export the default Expo Document component from the `pages/_document.js` file of your Next.js project. (`mkdir pages; touch pages/_document.js`). This will ensure `react-native-web` styling works.
+
+  `pages/_document.js`
+
+  ```js
+  import Document from '@expo/next-adapter/document';
+
+  export default Document;
+  ```
+
+- Create a `babel.config.js` and install the Expo Babel preset: `yarn add -D babel-preset-expo`
+
+  `babel.config.js`
+
+  ```js
+  module.exports = function(api) {
+    const isWeb = api.caller(caller => caller && caller.name === 'babel-loader');
+
+    return {
+      presets: [
+        'babel-preset-expo',
+        // Only use next in the browser
+        isWeb && 'next/babel',
+      ].filter(Boolean),
+    };
+  };
+  ```
+
+- Update the Next.js config file to support loading React Native and Expo packages:
+  `next.config.js`
+
+  ```js
+  const { withExpo } = require('@expo/next-adapter');
+
+  module.exports = withExpo({
+    projectRoot: __dirname,
+  });
+  ```
+
+- Start your project with `yarn next dev` or `yarn dev`
+
+</p>
+</details>
+
+### Adding PWA features
+
+Unlike the default Expo for web workflow, Workbox and PWA are not supported by default. Here you can learn how to use the plugin [next-offline][next-offline] to get offline support in your Next.js + Expo app.
+
+<details><summary>Instructions</summary>
+<p>
+
+1. Install `next-offline` to emulate Expo PWA features: `yarn add next-offline` (this is optional)
+1. Configure your Next.js project to resolve React Native Unimodules:
+
+   `next.config.js`
+
+   ```js
+   const withOffline = require('next-offline');
+   const { withExpo } = require('@expo/next-adapter');
+
+   // If you didn't install next-offline, then simply delete this method and the import.
+   module.exports = withOffline({
+     workboxOpts: {
+       swDest: 'workbox-service-worker.js',
+
+       /* changing any value means you'll have to copy over all the defaults  */
+       /* next-offline */
+       globPatterns: ['static/**/*'],
+       globDirectory: '.',
+       runtimeCaching: [
+         {
+           urlPattern: /^https?.*/,
+           handler: 'NetworkFirst',
+           options: {
+             cacheName: 'offlineCache',
+             expiration: {
+               maxEntries: 200,
+             },
+           },
+         },
+       ],
+     },
+     ...withExpo({
+       projectRoot: __dirname,
+     }),
+   });
+   ```
+
+1. You can now test your project in production mode using the following: `yarn next build && yarn next export && serve -p 3000 ./out`
+
+</p>
+</details>
+
+### Using a custom server
+
+If you have a complex project that requires custom server control then you can extend the default server to control hosting.
+
+<details><summary>Instructions</summary>
+<p>
+
+1. Create a custom server to host your service worker:
+   `server.js`
+
+   ```js
+   const { startServerAsync } = require('@expo/next-adapter');
+
+   startServerAsync(__dirname, {
+     /* port: 3000 */
+   });
+   ```
+
+1. Copy the Expo service worker into your project's public folder: `mkdir public; cp node_modules/\@expo/next-adapter/service-worker.js public/service-worker.js`
+
+1. Start your project with `node server.js`
+
+### Handle server requests
+
+You may want to intercept server requests, this will allow for that:
+
+`server.js`
+
+```js
+const { createServerAsync } = require('@expo/next-adapter');
+
+createServerAsync(projectRoot, {
+  handleRequest(res, req) {
+    const parsedUrl = parse(req.url, true);
+    const { pathname } = parsedUrl;
+
+    // handle GET request to /cool-file.png
+    if (pathname === '/cool-file.png') {
+      const filePath = join(__dirname, '.next', pathname);
+
+      app.serveStatic(req, res, filePath);
+      // Return true to prevent the default handler
+      return true;
     }
-  }
-}
-```
-
-- Since Next.js use page-based routing, your homepage will be `pages/index.js`, which is different from Expo project's main file (which is by default `App.js`). To support both native (mobile) app and Next.js, you could set `App.js` to:
-
-```javascript
-import Index from './pages/index';
-export default Index;
-```
-
-- You could also add more logic in `App.js` such as `createStackNavigator`. Note that it will only be used by your native app since Next.js directly uses files under the `pages/` folder.
-
-```javascript
-import index from './pages/index';
-import about from './pages/about';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
-const AppNavigator = createStackNavigator(
-  {
-    index,
-    about,
   },
-  {
-    initialRouteName: 'index',
-  }
-);
+}).then(({ server, app }) => {
+  const port = 3000;
 
-const AppContainer = createAppContainer(AppNavigator);
-export default AppContainer;
+  server.listen(port, () => {
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+});
 ```
 
-- To start your project, run `expo start --web`.
-
-### Build and publish your website
-
-To build your website, run:
-
-```bash
-expo build:web
-```
-
-If you wish to use services such as [ZEIT Now](https://zeit.co/now) to host your website, you should ask the service to run `expo build:web`.
-
-For [ZEIT Now](https://zeit.co/now) specifically, you could simply set `scripts.build` and `scripts.now-build` to `"expo build:web"` in your `package.json` file. Then run `now` to publish. Learn more [here](https://zeit.co/guides/upgrade-to-zero-configuration#frameworks-with-zero-configuration).
-
-```json
-{
-  "scripts": {
-    "build": "expo build:web",
-    "now-build": "expo build:web"
-  }
-}
-```
-
-You also export the website as static files by running the following commands. Learn more [here](https://nextjs.org/features/static-exporting).
-
-```
-expo build:web
-yarn next export
-```
+</p>
+</details>
 
 ### Web push notifications support
 
-With `expo start`, [web push notifications](../../guides/push-notifications) are supported without any additional configuration.
+With `expo start`, [web push notifications](https://docs.expo.io/versions/latest/guides/push-notifications/) are supported without any additional configuration.
 
 To use it with other services such as ZEIT Now, you would need appropriate configuration to
 
-- let `/expo-service-worker.js` serve the file content of `/static/expo-service-worker.js`, and
-- let `/service-worker.js` serve the file content of a service worker, which be:
-  - `/static/service-worker.js` (which will by default be a blank file) if you do not want to use any other service worker, or
-  - `/_next/static/service-worker.js` if you are using [next-offline](https://github.com/hanford/next-offline), or
+- let `/service-worker.js` serve the file content of `/public/service-worker.js`, and
+- let `/workbox-service-worker.js` serve the file content of a service worker, which be:
+  - `/public/workbox-service-worker.js` (which will by default be a blank file) if you do not want to use any other service worker, or
+  - `/_next/public/workbox-service-worker.js` if you are using [next-offline](https://github.com/hanford/next-offline), or
   - your own service worker file.
 
 Here is an example `now.json` configuration file:
@@ -101,8 +215,8 @@ Here is an example `now.json` configuration file:
   "version": 2,
   "routes": [
     {
-      "src": "/expo-service-worker.js",
-      "dest": "/static/expo-service-worker.js",
+      "src": "/service-worker.js",
+      "dest": "/public/service-worker.js",
       "headers": {
         "cache-control": "public, max-age=43200, immutable",
         "Service-Worker-Allowed": "/"
@@ -110,8 +224,8 @@ Here is an example `now.json` configuration file:
     },
     // If you are using next-offline, change the object below according to their guide.
     {
-      "src": "/service-worker.js",
-      "dest": "/static/service-worker.js",
+      "src": "/workbox-service-worker.js",
+      "dest": "/public/workbox-service-worker.js",
       "headers": {
         "cache-control": "public, max-age=43200, immutable",
         "Service-Worker-Allowed": "/"
@@ -121,25 +235,73 @@ Here is an example `now.json` configuration file:
 }
 ```
 
-If you are using next-offline, you should also set `dontAutoRegisterSw` to `true` (`withOffline({ dontAutoRegisterSw: true })`) since Expo is handling the service worker registration.
+### Customizing the Document
 
-### Customizing `pages/_document.js`
+Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
 
-Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more here: [Customized documents][custom-document].
+<details><summary>Instructions</summary>
+<p>
 
-By default, Expo creates a `pages/_document.js` file for you (which `import` the `.expo/next_document.js` file controlled by Expo) that contains proper layout for your app (and possibility more features such as web push notifications in the future). If you choose to customize the `_document.js` file, we encourage you to copy `.expo/next_document.js` as a starter and check if `.expo/next_document.js` has any update periodically. (You could also try to `export default class MyDocument extends ExpoDocument`, but we do not promise that this will work for every case.)
+You can import the following fragments from the custom Document:
+
+```js
+import { Document, getInitialProps, style } from '@expo/next-adapter/document';
+```
+
+Then recompose the Document how you like
+
+```js
+import { getInitialProps } from '@expo/next-adapter/document';
+import Document, { Head, Main, NextScript } from 'next/document';
+import React from 'react';
+
+class CustomDocument extends Document {
+  render() {
+    return (
+      <html>
+        <Head>
+          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        </Head>
+        <body>
+          <Main />
+          <NextScript />
+        </body>
+      </html>
+    );
+  }
+}
+
+// Import the getInitialProps method and assign it to your component
+CustomDocument.getInitialProps = getInitialProps;
+
+// OR...
+
+CustomDocument.getInitialProps = async props => {
+  const result = await getInitialProps(props);
+  // Mutate result...
+  return result;
+};
+
+export default CustomDocument;
+```
+
+</p>
+</details>
 
 ## Limitations or differences comparing to the default Expo for Web
 
-- Unlike the default Expo for web workflow, Workbox and PWA are not supported by default. Use Next.js plugins such as [next-offline][next-offline] instead. Learn more [here][next-pwa].
-- You might need to use the [next-transpile-modules][next-transpile-modules] plugin to transpile certain third-party modules in order for them to work (such as Emotion).
-- Only the Next.js default page-based routing is currently supported.
+- Unlike the default Expo for Web, Workbox and PWA are not supported by default. Use Next.js plugins such as [next-offline](https://github.com/hanford/next-offline) instead. Learn more [here](https://nextjs.org/features/progressive-web-apps).
+- You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
+- Only the Next.js default page-based routing is supported.
+
+<!-- Footer -->
 
 ## Learn more about Next.js
 
 Learn more about how to use Next.js from their [docs](https://nextjs.org/docs).
 
 [nextjs]: https://nextjs.org/
+[next-adapter]: https://github.com/expo/expo-cli/tree/master/packages/next-adapter
 [next-docs]: https://nextjs.org/docs
 [custom-document]: https://nextjs.org/docs#custom-document
 [next-offline]: https://github.com/hanford/next-offline
