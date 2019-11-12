@@ -409,7 +409,7 @@ If you would like to help make Next.js support in Expo better, please feel free 
 
 - [Expo Next Adapter][next-adapter]
 
-If you have any problems rendering a certain component with SSR then you can submit fixing to the expo/expo repo:
+If you have any problems rendering a certain component with SSR then you can submit fixes to the expo/expo repo:
 - [Expo packages][expo-packages]
 
 Thanks so much 👋
