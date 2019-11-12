@@ -6,7 +6,7 @@ title: Using Next.js with Expo for Web
 
 [Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web you can use a library called [`@expo/next-adapter`][next-adapter] which simplifies all of the config and setup required for using Next.js with Expo.
 
-Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so you'll need to start your web projects with the `next-cli` and not with `expo start:web`.
+Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
 
 Next.js can only be used with Expo for web, this doesn't provide SSR for native apps.
 
