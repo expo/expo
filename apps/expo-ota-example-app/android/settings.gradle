@@ -4,9 +4,6 @@ def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
 
 apply from: '../../../node_modules/react-native-unimodules/gradle.groovy'
 
-include ':unimodules-core'
-project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../../../packages/@unimodules/core/android')
-
 def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
 includeUnimodulesProjects(modulesPaths : [
         '../../../../packages',

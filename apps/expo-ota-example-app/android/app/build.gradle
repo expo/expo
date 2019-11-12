@@ -166,7 +166,6 @@ android {
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "androidx.appcompat:appcompat:1.0.0"
     implementation "com.facebook.react:react-native:+"  // From node_modules
     addUnimodulesDependencies([
@@ -180,7 +179,6 @@ dependencies {
     implementation jscFlavor
 
     implementation 'com.facebook.stetho:stetho:1.5.1'
-    implementation project(':expo-ota')
 }
 
 // Run this once to be able to run the application with BUCK
