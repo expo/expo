@@ -15,9 +15,9 @@ If you'd like to jump right into a working project then check out [expo/examples
 
 ## 🏁 Setup
 
-We put all of the features for Expo web in the plugin [`gatsby-plugin-react-native-web`](https://github.com/slorber/gatsby-plugin-react-native-web) so setup would be as easy as possible. This guide will show you how to install and use it. Under the hood it's basically doing what `expo start:web` and the Expo + Next.js workflows are doing.
+We put all of the features for Expo web in the plugin [`gatsby-plugin-react-native-web`](https://github.com/slorber/gatsby-plugin-react-native-web) so setup would be as easy as possible. This guide will show you how to install and use it. Under the hood it's basically doing what `expo start:web` or the Expo + Next.js workflows are doing.
 
-### Expo projects with Next.js
+### Expo projects with Gatsby
 
 For using the Gatsby tools in a universal app with the Expo SDK.
 
