@@ -23,12 +23,8 @@ export default class OpenProjectByURLButton extends React.Component {
         text: 'Open',
         onPress: text => {
           if (text) {
-            if (text.toLowerCase() === '^dm') {
-              Kernel.addDevMenu();
-            } else {
-              let url = UrlUtils.normalizeUrl(text);
-              Linking.canOpenURL(url) && Linking.openURL(url);
-            }
+            let url = UrlUtils.normalizeUrl(text);
+            Linking.canOpenURL(url) && Linking.openURL(url);
           }
         },
       },

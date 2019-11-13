@@ -157,15 +157,6 @@
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
-      android:name=".ExponentDevActivity"
-      android:exported="true"
-      android:label="@string/dev_activity_name"
-      android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Dark"
-      android:windowSoftInputMode="adjustPan">
-    </activity>
-
-    <activity
         android:name="net.openid.appauth.RedirectUriReceiverActivity"
         tools:node="replace">
       <intent-filter>

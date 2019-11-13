@@ -47,7 +47,6 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.AppLoader;
-import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ErrorActivity;
@@ -64,7 +63,6 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
-import host.exp.expoview.R;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ExceptionUtils;
@@ -243,15 +241,6 @@ public class Kernel extends KernelInterface {
 
       Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), shouldNotUseKernelCache);
     }
-  }
-
-  public void reloadJSBundle() {
-    if (Constants.isStandaloneApp()) {
-      return;
-    }
-    String bundleUrl = getBundleUrl();
-    mHasError = false;
-    Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), true);
   }
 
   public static void addIntentDocumentFlags(Intent intent) {
@@ -457,11 +446,6 @@ public class Kernel extends KernelInterface {
     String intentUri = uri == null ? null : uri.toString();
 
     if (bundle != null) {
-      if (bundle.getBoolean(KernelConstants.DEV_FLAG)) {
-        openDevActivity(activity);
-        return;
-      }
-
       // Notification
       String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
@@ -511,22 +495,6 @@ public class Kernel extends KernelInterface {
 
     String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
     openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
-  }
-
-  private void openDevActivity(Activity activity) {
-    ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-    for (ActivityManager.AppTask task : manager.getAppTasks()) {
-      Intent baseIntent = task.getTaskInfo().baseIntent;
-
-      if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-        task.moveToFront();
-        return;
-      }
-    }
-
-    Intent intent = new Intent(activity, ExponentDevActivity.class);
-    Kernel.addIntentDocumentFlags(intent);
-    activity.startActivity(intent);
   }
 
   public void openExperience(final KernelConstants.ExperienceOptions options) {
@@ -1152,22 +1120,6 @@ public class Kernel extends KernelInterface {
         ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
       }
     });
-  }
-
-  public void addDevMenu() {
-    Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
-    shortcutIntent.setAction(Intent.ACTION_MAIN);
-    shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    shortcutIntent.putExtra(KernelConstants.DEV_FLAG, true);
-
-    ShortcutInfoCompat pinShortcutInfo =
-      new ShortcutInfoCompat.Builder(mContext, "devtools_shortcut")
-              .setIcon(IconCompat.createWithResource(mContext, R.mipmap.dev_icon))
-          .setShortLabel("Dev Tools")
-          .setIntent(shortcutIntent)
-          .build();
-
-    ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
   }
 
   private void goToHome() {
