@@ -6,9 +6,9 @@ title: Using Electron with Expo for Web
 [![supports Linux](https://img.shields.io/badge/Linux-4630EB.svg?style=for-the-badge&logo=LINUX&labelColor=000&logoColor=fff)](https://github.com/expo/expo)
 [![supports OSX](https://img.shields.io/badge/OSX-4630EB.svg?style=for-the-badge&logo=APPLE&labelColor=000&logoColor=fff)](https://github.com/expo/expo)
 
-> Notice: Electron is an experimental feature with Expo so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-cli](https://github.com/expo/expo-cli/issues) with the `[electron]` tag in the title.
+> Notice: Electron support is experimental, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-cli](https://github.com/expo/expo-cli/issues) with the `[electron]` tag in the title.
 
-[Electron][electron] is a framework for creating desktop apps that run in a Chromium wrapper. Using Expo with Electron will enable you to use your existing components to build OSX, Windows, and Linux apps!
+[Electron][electron] is a framework for creating desktop apps that run in a Chromium wrapper. Using Expo with Electron will enable you to use your existing components to build OSX, Windows, and Linux apps.
 
 To simplify this we created the package `@expo/electron-adapter` which wraps [`electron-webpack`][electron-webpack] and adds support for Expo web and other universal React packages.
 
@@ -58,7 +58,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 ### Building your project
 
-`@expo/electron-adapter` doesn't do anything to streamline building Expo Electron projects just yet. But until it does here is a guide for building projects using [`electron-builder`][electron-builder].
+`@expo/electron-adapter` doesn't do anything to streamline the build phase of Electron projects just yet. But until it does here is a guide for building projects using [`electron-builder`][electron-builder].
 
 - Install the package with `yarn add -D electron-builder`
 - Use the builder with: `yarn electron-webpack && yarn electron-builder --dir -c.compression=store -c.mac.identity=null` (`-c.compression=store` speeds the builds up a lot, delete this for actual production builds)
@@ -77,7 +77,7 @@ If you would like to help make Electron support in Expo better, please feel free
 
 If you want to add first-class electron support to any of the Unimodules then you can submit PRs to the expo/expo repo:
 
-- [Expo packages][expo-packages]
+- [Expo SDK packages][expo-packages]
 
 ## Learn more about Electron
 
