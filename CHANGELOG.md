@@ -53,6 +53,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed `Permissions.getAsync` result, which was inconsistent with iOS settings. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 - Fixed scanning `PDF417` and `Code39` in `BarCodeScanner` on iOS. ([#5976](https://github.com/expo/expo/pull/5531) by [@bbarthec](https://github.com/bbarthec))
 - Add missing `mute` property in `Camera.recordAsync` in the TypeScript definition. ([#6192](https://github.com/expo/expo/pull/6192) by [@wcandillon](https://github.com/wcandillon))
+- Fixed the type definition in `expo-image-picker` to follow the documentation. ([#6253](https://github.com/expo/expo/pull/6253) by [@shiba-hiro](https://github.com/shiba-hiro))
 
 ## 35.0.0
 
