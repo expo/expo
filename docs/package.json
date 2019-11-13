@@ -38,7 +38,6 @@
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
     "http-server": "^0.11.1",
-    "localtunnel": "^2.0.0",
     "minimist": "^1.2.0",
     "prettier": "^1.18.2"
   }
