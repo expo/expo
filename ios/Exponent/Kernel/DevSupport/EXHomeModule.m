@@ -208,16 +208,6 @@ RCT_REMAP_METHOD(removeSessionAsync,
   }
 }
 
-RCT_EXPORT_METHOD(addDevMenu)
-{
-  __weak typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (weakSelf.delegate) {
-      [weakSelf.delegate homeModuleDidSelectHomeDiagnostics:self];
-    }
-  });
-}
-
 RCT_REMAP_METHOD(getIsNuxFinishedAsync,
                  getIsNuxFinishedWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)

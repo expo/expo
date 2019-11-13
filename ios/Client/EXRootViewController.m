@@ -6,7 +6,6 @@
 #import "EXAppViewController.h"
 #import "EXButtonView.h"
 #import "EXHomeAppManager.h"
-#import "EXHomeDiagnosticsViewController.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
@@ -110,18 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
   } else {
     completion();
   }
-}
-
-- (void)showDiagnostics
-{
-  __weak typeof(self) weakSelf = self;
-  [self setIsMenuVisible:NO completion:^{
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
-      [strongSelf presentViewController:vcDiagnostics animated:NO completion:nil];
-    }
-  }];
 }
 
 - (void)showQRReader

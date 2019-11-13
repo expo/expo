@@ -38,7 +38,6 @@ public class KernelConstants {
   public static final String NOTIFICATION_KEY = "notification";
   public static final String NOTIFICATION_ID_KEY = "notification_id";
   public static final String NOTIFICATION_OBJECT_KEY = "notification_object";
-  public static final String DEV_FLAG = "dev_flag";
 
   public static Class MAIN_ACTIVITY_CLASS = DetachActivity.class;
 
