@@ -40,6 +40,7 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.expoview.BuildConfig;
 
 public class HomeActivity extends BaseExperienceActivity {
@@ -55,6 +56,9 @@ public class HomeActivity extends BaseExperienceActivity {
     mSDKVersion = RNObject.UNVERSIONED;
     mManifest = mExponentManifest.getKernelManifest();
     mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
+
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), this);
+
     EventBus.getDefault().registerSticky(this);
     mKernel.startJSKernel(this);
     showLoadingScreen(null);

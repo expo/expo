@@ -207,7 +207,7 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.0.0"
+  api "androidx.appcompat:appcompat:1.1.0"
   api('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
     transitive = true;
   }
