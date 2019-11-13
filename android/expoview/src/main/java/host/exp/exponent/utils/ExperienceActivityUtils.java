@@ -76,7 +76,7 @@ public class ExperienceActivityUtils {
 
   @Nullable
   private static String readUserInterfaceStyleFromManifest(JSONObject manifest) {
-    if (manifest.optJSONObject("android").has("userInterfaceStyle")) {
+    if (manifest.has("android") && manifest.optJSONObject("android").has("userInterfaceStyle")) {
       return manifest.optJSONObject("android").optString("userInterfaceStyle");
     }
     return manifest.optString("userInterfaceStyle", "light");
