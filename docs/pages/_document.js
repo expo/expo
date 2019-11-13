@@ -18,17 +18,20 @@ if (typeof window !== 'undefined') {
 }
 
 export default class MyDocument extends Document {
-  static getInitialProps({ renderPage }) {
+  static getInitialProps(opts) {
+    const { renderPage } = opts;
+    const tunnelUrl = opts.req.headers['Expo-Documentation-Tunnel-URL'];
     const page = renderPage();
     const styles = extractCritical(page.html);
-    return { ...page, ...styles };
+    return { ...page, ...styles, tunnelUrl };
   }
 
   constructor(props) {
     super(props);
-    const { __NEXT_DATA__, ids } = props;
+    const { __NEXT_DATA__, ids, tunnelUrl } = props;
     if (ids) {
       __NEXT_DATA__.ids = ids;
+      __NEXT_DATA__.tunnelUrl = tunnelUrl;
     }
   }
 
