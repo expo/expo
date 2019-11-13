@@ -19,6 +19,11 @@ We put all of the features for Expo web in the plugin [`gatsby-plugin-react-nati
 
 ### Expo projects with Next.js
 
+For using the Gatsby tools in a universal app with the Expo SDK.
+
+<details><summary>Instructions</summary>
+<p>
+  
 - Create a new project - `expo init --template blank`
 - Install the plugin
   - **using yarn** - `yarn add gatsby-plugin-react-native-web`
@@ -51,7 +56,15 @@ We put all of the features for Expo web in the plugin [`gatsby-plugin-react-nati
 - Add `/.cache` and `/public` to your `.gitignore`
 - Run `yarn gatsby develop` to try it out!
 
+</p>
+</details>
+
 ### Gatsby projects with Expo
+
+For using the Expo SDK in a web-only Gatsby project.
+
+<details><summary>Instructions</summary>
+<p>
 
 - Create a new Gatsby project
   - Install the CLI - `npm install -g gatsby-cli`
@@ -91,6 +104,9 @@ We put all of the features for Expo web in the plugin [`gatsby-plugin-react-nati
   - Core packages: `yarn add expo`
   - Gestures: `yarn add react-native-gesture-handler`
   - hooks: `yarn add react-native-web-hooks`
+
+</p>
+</details>
 
 ## 🏁 New Commands
 
