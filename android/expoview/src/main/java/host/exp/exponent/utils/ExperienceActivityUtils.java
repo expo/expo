@@ -11,6 +11,9 @@ import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -44,6 +47,43 @@ public class ExperienceActivityUtils {
         break;
     }
   }
+
+  // region user interface style - light/dark/automatic mode
+
+  public static void overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
+    String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
+    int mode = nightModeFromString(userInterfaceStyle);
+    activity.getDelegate().setLocalNightMode(mode);
+  }
+
+  private static int nightModeFromString(@Nullable String userInterfaceStyle) {
+    if (userInterfaceStyle == null) {
+      return AppCompatDelegate.MODE_NIGHT_NO;
+    }
+    switch (userInterfaceStyle) {
+      case "automatic":
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+          return AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
+        }
+        return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+      case "dark":
+        return AppCompatDelegate.MODE_NIGHT_YES;
+      case "light":
+      default:
+        return AppCompatDelegate.MODE_NIGHT_NO;
+    }
+  }
+
+  @Nullable
+  private static String readUserInterfaceStyleFromManifest(JSONObject manifest) {
+    if (manifest.optJSONObject("android").has("userInterfaceStyle")) {
+      return manifest.optJSONObject("android").optString("userInterfaceStyle");
+    }
+    return manifest.optString("userInterfaceStyle", "light");
+  }
+
+  // endregion
+
 
   public static void setWindowTransparency(final String sdkVersion, final JSONObject manifest, final Activity activity) {
     JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
@@ -111,7 +151,7 @@ public class ExperienceActivityUtils {
     if (navBarOptions == null) {
       return;
     }
-    
+
     String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
 
     // Set background color of navigation bar

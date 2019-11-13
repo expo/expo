@@ -40,8 +40,8 @@ export default class UserSettingsScreen extends React.Component {
         contentContainerStyle={{ paddingTop: 15 }}
         keyboardShouldPersistTaps="always"
         keyboardDismissMode="on-drag">
-        {this._renderMenuGestureOptions()}
-        {Platform.OS === 'ios' ? this._renderAppearanceOptions() : null}
+        {Platform.OS === 'ios' ? this._renderMenuGestureOptions() : null}
+        {this._renderAppearanceOptions()}
 
         <View style={{ marginTop: 30 }}>
           <TouchableHighlight

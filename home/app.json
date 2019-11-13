@@ -20,8 +20,8 @@
     packagerOpts: {
       config: 'metro.config.js',
     },
+    userInterfaceStyle: 'automatic',
     ios: {
-      userInterfaceStyle: 'automatic',
       supportsTablet: true,
       bundleIdentifier: 'host.exp.exponent',
     },
