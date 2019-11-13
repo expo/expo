@@ -30,7 +30,7 @@ export default function AppContainer() {
 class App extends React.Component<Props, State> {
   readonly state: State = initialState;
 
-  componentWillMount() {
+  componentDidMount() {
     this._loadAssetsAsync();
   }
 
