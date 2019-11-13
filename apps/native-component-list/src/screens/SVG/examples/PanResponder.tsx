@@ -22,7 +22,8 @@ class PanExample extends React.Component {
   _panResponder?: PanResponderInstance;
   root?: any;
 
-  componentWillMount = () => {
+  constructor(props: any) {
+    super(props);
     this._panResponder = RNPanResponder.create({
       onStartShouldSetPanResponder: this._alwaysTrue,
       onMoveShouldSetPanResponder: this._alwaysTrue,

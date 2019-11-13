@@ -105,21 +105,20 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   camera?: Camera;
 
-  async componentWillMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ permission: status, permissionsGranted: status === 'granted' });
-  }
-
-  componentDidMount() {
+  async componentDidMount() {
     if (Platform.OS === 'web') {
       return;
     }
+
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    this.setState({ permission: status, permissionsGranted: status === 'granted' });
+
     try {
-      FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos').catch(e => {
-        // tslint:disable-next-line no-console
-        console.log(e, 'Directory exists');
-      });
-    } catch (error) {}
+      await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
+    } catch (error) {
+      // tslint:disable-next-line no-console
+      console.log(error, 'Directory exists');
+    }
   }
 
   getRatios = async () => this.camera!.getSupportedRatiosAsync();
