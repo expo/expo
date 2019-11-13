@@ -541,6 +541,7 @@
 		31E6D47D20B8451B0082B09F /* EXSensorManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSensorManager.m; sourceTree = "<group>"; };
 		31E6D47F20B845830082B09F /* EXSensorsManagerBinding.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSensorsManagerBinding.m; sourceTree = "<group>"; };
 		31E6D48120B845920082B09F /* EXSensorsManagerBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSensorsManagerBinding.h; sourceTree = "<group>"; };
+		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		36BC76754E88A8F5C6E57DDD /* Pods-Exponent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exponent.release.xcconfig"; path = "Pods/Target Support Files/Pods-Exponent/Pods-Exponent.release.xcconfig"; sourceTree = "<group>"; };
 		391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementStyle.m; sourceTree = "<group>"; };
 		3C3C339320E24E7D000F8B92 /* EXSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreen.h; sourceTree = "<group>"; };
@@ -1938,7 +1939,6 @@
 				B5E49B551D1346FA00AA6436 /* Exponent.entitlements */,
 				B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */,
 				B5E49B671D1348E800AA6436 /* EXShell.plist */,
-				31239A2422AE91EB003BFCAF /* GoogleService-Info.plist */,
 				B5E49B561D1346FA00AA6436 /* Info.plist */,
 				B5E628FD1E32F05A00629A55 /* kernel-manifest.json */,
 				B5E49B741D134F0700AA6436 /* kernel.ios.bundle */,
@@ -2266,6 +2266,7 @@
 				F12A1ABA22ABD6ED008542C6 /* cleanup-dynamic-macros.sh */,
 				F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */,
 				F12A1ABC22ABE400008542C6 /* run-fabric.sh */,
+				3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */,
 			);
 			path = "Build-Phases";
 			sourceTree = "<group>";
@@ -2310,6 +2311,7 @@
 				78CEE2BC1ACD07D70095B124 /* Sources */,
 				78CEE2BD1ACD07D70095B124 /* Frameworks */,
 				78CEE2BE1ACD07D70095B124 /* Resources */,
+				347794D3234BFFC20087B402 /* Copy Bundle Resources Conditionally */,
 				B575EEC61D5AA56100DCABBC /* Clean Up Dynamic Macros */,
 				78F81D401B70746F000E5595 /* Fabric */,
 				9F407D89B3F72F916C80DD38 /* [CP] Copy Pods Resources */,
@@ -2449,7 +2451,6 @@
 				B575EEA41D54175B00DCABBC /* shell-app-manifest.json in Resources */,
 				B5EF826E1F55B8F100FC7424 /* launch_background_image.png in Resources */,
 				B575EEA51D54175B00DCABBC /* shell-app.bundle in Resources */,
-				31239A2522AE91EB003BFCAF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2488,6 +2489,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		347794D3234BFFC20087B402 /* Copy Bundle Resources Conditionally */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Bundle Resources Conditionally";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "$SRCROOT/Build-Phases/cp-bundle-resources-conditionally.sh\n\n";
 		};
 		78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3066,6 +3085,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 80F51F42EE852A05B015A15E /* Pods-Exponent.debug.xcconfig */;
 			buildSettings = {
+				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -3095,6 +3115,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 36BC76754E88A8F5C6E57DDD /* Pods-Exponent.release.xcconfig */;
 			buildSettings = {
+				APP_OWNER = Expo;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Exponent/Supporting/Exponent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
