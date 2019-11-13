@@ -8,7 +8,7 @@ title: Using Gatsby with Expo for Web
 - [🏁 Setup](#-setup)
   - [Expo projects with Gatsby](#expo-projects-with-gatsby)
   - [Gatsby projects with Expo](#gatsby-projects-with-expo)
-- [New Commands](#-new-commands)
+- [New Commands](#️-new-commands)
 - [Contributing](#contributing)
 - [Learn more](#learn-more-about-gatsby)
 
