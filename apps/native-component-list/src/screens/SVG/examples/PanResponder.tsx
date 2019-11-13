@@ -20,7 +20,6 @@ class PanExample extends React.Component {
   };
 
   _panResponder?: PanResponderInstance;
-  root?: any;
 
   constructor(props: any) {
     super(props);
@@ -48,14 +47,14 @@ class PanExample extends React.Component {
   }
 
   _handlePanResponderGrant = () => {
-    this.root.setNativeProps({
-      opacity: 0.5,
+    this.setState({
+      hover: true,
     });
   }
 
   _handlePanResponderEnd = (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
-    this.root.setNativeProps({
-      opacity: 1,
+    this.setState({
+      hover: false,
     });
     this._previousLeft += gestureState.dx;
     this._previousTop += gestureState.dy;
@@ -65,9 +64,7 @@ class PanExample extends React.Component {
     return (
       <Svg.Svg height="200" width="200">
         <G
-          ref={ele => {
-            this.root = ele;
-          }}
+          opacity={this.state.hover ? 0.5 : 1}
           x={this.state.x}
           y={this.state.y}
         >
