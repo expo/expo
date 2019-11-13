@@ -49,7 +49,7 @@ private ExpoOTA expoOTA;
 
 ## iOS
 
-Make sur efollowing code is presen in your `AppDelegate.m`
+Make sure following code is present in your `AppDelegate.m`
 
 ```objc
 
