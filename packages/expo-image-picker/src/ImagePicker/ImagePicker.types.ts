@@ -6,12 +6,30 @@ export enum MediaTypeOptions {
   Images = 'Images',
 }
 
-export type ImageInfo = {
+export type NativeImageInfo = {
+  type: 'image';
   uri: string;
   width: number;
   height: number;
-  type?: 'image' | 'video';
+  exif?: Record<string, any>;
+  base64?: string;
 };
+
+export type NativeVideoInfo = {
+  type: 'video';
+  uri: string;
+  width: number;
+  height: number;
+  duration: number;
+};
+
+export type WebImageInfo = {
+  uri: string;
+  width: 0;
+  height: 0;
+};
+
+export type ImageInfo = NativeImageInfo | NativeVideoInfo | WebImageInfo;
 
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
 
