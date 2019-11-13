@@ -4,11 +4,11 @@ title: Using Next.js with Expo for Web
 
 > Warning: Support for Next.js is experimental. Please open an issue at [expo-cli/issues](https://github.com/expo/expo-cli/issues) if you encountered any problems.
 
-[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web you can use a library called [`@expo/next-adapter`][next-adapter] which simplifies all of the config and setup required for using Next.js with Expo.
+[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
 Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
 
-Next.js can only be used with Expo for web, this doesn't provide SSR for native apps.
+> 💡 Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
 - [🏁 Setup](#-setup)
   * [Expo projects with Next.js](#expo-projects-with-nextjs)
@@ -34,7 +34,7 @@ Next.js can only be used with Expo for web, this doesn't provide SSR for native 
 
 ### Expo projects with Next.js
 
-Using SSR for web in your universal project. This is preferred because you'll get full access to both tools features.
+In this approach you would be using SSR for web in your universal project. This is the recommended path because it gives you full access to the features of Expo and Next.js.
 
 <details><summary>Instructions</summary>
 <p>
@@ -49,7 +49,7 @@ Using SSR for web in your universal project. This is preferred because you'll ge
 
 ### Next.js projects with Expo
 
-If you want to use Expo components in your web-only project.
+This approach is useful if you want to use Expo components in your web-only project.
 
 <details><summary>Instructions</summary>
 <p>
@@ -79,7 +79,7 @@ After following the project specific setup do these:
   export default Document;
   ```
 
-- Create a `babel.config.js` and use the Expo Babel preset ([`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo))
+- Create a `babel.config.js` and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
   - You installed this earlier with `yarn add -D babel-preset-expo`
 
   `babel.config.js`
@@ -117,7 +117,7 @@ After following the project specific setup do these:
 
 ### Offline support
 
-Unlike the default Expo for web workflow, Workbox and PWA are not supported by default. Here you can learn how to use the plugin [next-offline][next-offline] to get offline support in your Next.js + Expo app.
+Unlike the default Expo for web workflow, Workbox and PWA are not supported out of the box. Here you can learn how to use the plugin [next-offline][next-offline] to get offline support in your Next.js + Expo app.
 
 <details><summary>Instructions</summary>
 <p>
@@ -407,10 +407,10 @@ handleRequest(
 
 If you would like to help make Next.js support in Expo better, please feel free to open a PR or submit an issue:
 
-- [Expo Next Adapter][next-adapter]
+- [@expo/next-adapter][next-adapter]
 
 If you have any problems rendering a certain component with SSR then you can submit fixes to the expo/expo repo:
-- [Expo packages][expo-packages]
+- [Expo SDK packages][expo-packages]
 
 Thanks so much 👋
 <!-- Footer -->
