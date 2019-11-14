@@ -17,7 +17,7 @@
     "react-native": "0.59.10",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-reanimated": "~1.4.0",
-    "react-native-screens": "1.0.0-alpha.23",
+    "react-native-screens": "2.0.0-alpha.11",
     "react-native-unimodules": "0.6.0",
     "react-native-web": "^0.11.7"
   },
