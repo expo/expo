@@ -57,7 +57,8 @@ export function getTestModules() {
       require('./tests/Haptics'),
       require('./tests/Localization'),
       require('./tests/SecureStore'),
-      require('./tests/SMS')
+      require('./tests/SMS'),
+      require('./tests/StoreReview')
     );
     return modules;
   }
