@@ -55,5 +55,38 @@ export const globalExtras = `
   details p {
     margin-left: 15px;
   }
+
+  .snack-inline-example-button {
+    display: inline-block;
+    border: none;
+    border-radius: 3px;
+    padding: 0.8rem 1rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+    background: #5844ed;
+    color: #ffffff;
+    font-family: sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background 250ms ease-in-out, 
+                transform 150ms ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .snack-inline-example-button:hover, .snack-inline-example-button:focus  {
+    background: #322596;
+  }
+
+  .snack-inline-example-button:focus {
+      outline: 1px solid #fff;
+      outline-offset: -4px;
+  }
+
+  .snack-inline-example-button:active {
+      transform: scale(0.99);
+  }
 `;
 

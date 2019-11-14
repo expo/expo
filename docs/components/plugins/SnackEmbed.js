@@ -1,6 +1,9 @@
 import * as React from 'react';
+import DocumentationPageContext from '~/components/DocumentationPageContext';
 
 export default class SnackEmbed extends React.Component {
+  static contextType = DocumentationPageContext;
+
   componentDidMount() {
     var script = document.getElementById('snack');
     // inject script if it hasn't been loaded by a previous page
