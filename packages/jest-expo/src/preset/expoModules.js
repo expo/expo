@@ -675,7 +675,8 @@ module.exports = {
         },
         ExpoStoreReview: {
           addListener: { type: 'function' },
-          isSupported: { type: 'boolean', mock: true },
+          isSupported: { type: 'function' },
+          isAvailableAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           requestReview: { type: 'function' },
         },

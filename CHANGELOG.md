@@ -23,6 +23,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - **`expo`**: Removed Branch export from `expo/Branch`. ([#6190](https://github.com/expo/expo/pull/6190)).
 - **`expo-analytics-segment`**: Fixed `enabled` behavior inverted on iOS. ([#6242](https://github.com/expo/expo/pull/6242)).
 - **`expo-location`**: `Location.requestPermissionsAsync()` is no longer being rejected when permissions were not granted. Instead it returns `PermissionsResponse` object, which is similar to the result of `Permissions.askAsync(Permissions.Location)`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- Replace `StoreReview.isSupported` method with `StoreReview.isAvailableAsync` returning promise instead of boolean ([#6195](https://github.com/expo/expo/pull/6195) by [@danibonilha](https://github.com/danibonilha))
 
 ### 🎉 New features
 
