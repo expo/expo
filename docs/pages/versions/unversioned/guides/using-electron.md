@@ -24,7 +24,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 ## 🏁 Setup
 
 - Create a new Expo project - `expo init --template blank`
-- Install - `yarn add @expo/electron-adapter`
+- Install - `yarn add -D @expo/electron-adapter @expo/webpack-config`
 - Create a new [`electron-webpack`][electron-webpack] config file
 
   - `touch ./electron-webpack.js`
