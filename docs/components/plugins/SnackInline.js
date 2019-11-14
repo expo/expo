@@ -2,12 +2,7 @@ import * as React from 'react';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 
 const DEFAULT_PLATFORM = 'android';
-const DEFAULT_DEPS = {
-  'v35.0.0': [
-    // NOTE(brentvatne): we can express default dependencies to include
-    // in every Snack here, for example for React Navigation we would do this:
-  ],
-};
+const LATEST_VERSION = `v${require('../../package.json').version}`;
 
 export default class SnackInline extends React.Component {
   static contextType = DocumentationPageContext;
@@ -28,48 +23,50 @@ export default class SnackInline extends React.Component {
     this.setState({ showLink: true });
   }
 
-  // Filter out "latest" -- map it to the newest version in the DEFAULT_DEPS map instead
+  // Filter out `latest` and use the concrete latest version instead. We want to
+  // keep `unversioned` in for the selected docs version though. This is used to
+  // find the examples in the static dir, and we don't have a `latest` version
+  // there, but we do have `unversioned`.
   _getSelectedDocsVersion = () => {
     let { version } = this.context;
     if (version === 'latest') {
-      return Object.keys(DEFAULT_DEPS)[0];
+      return LATEST_VERSION;
     }
 
     return version;
   };
 
-  // Get the current selected version but coerce it to a SDK version that Snack
-  // supports and remove the leading "v"
-  _getSdkVersion = () => {
+  // Get a SDK version that Snack will understand. `latest` and `unversioned`
+  // are meaningless to Snack so we filter those out and use `LATEST_VERSION` instead
+  _getSnackSdkVersion = () => {
     let version = this._getSelectedDocsVersion();
     if (version === 'unversioned') {
-      version = Object.keys(DEFAULT_DEPS)[0];
+      version = LATEST_VERSION;
     }
 
     return version.replace('v', '');
   };
 
+  _getExamplesPath = () => {
+    return `${document.location.origin}/static/examples/${this._getSelectedDocsVersion()}`;
+  };
+
   _getDependencies = () => {
-    let dependencies = [
-      ...(DEFAULT_DEPS[this._getSelectedDocsVersion()] || []),
-      ...this.props.dependencies,
-    ];
-    return dependencies.join(',');
+    return [...this.props.dependencies].join(',');
   };
 
   _getSnackUrl = () => {
-    let currentVersion = this._getSelectedDocsVersion();
     let label = this.props.label;
     let templateId = this.props.templateId;
 
     let baseUrl =
       `https://snack.expo.io?platform=${DEFAULT_PLATFORM}&name=` +
       encodeURIComponent(label) +
-      `&sdkVersion=${this._getSdkVersion()}` +
+      `&sdkVersion=${this._getSnackSdkVersion()}` +
       `&dependencies=${encodeURIComponent(this._getDependencies())}`;
 
     if (templateId) {
-      let templateUrl = `${document.location.origin}/static/examples/${currentVersion}/${templateId}.js`;
+      let templateUrl = `${this._getExamplesPath()}/${templateId}.js`;
       return `${baseUrl}&sourceUrl=${encodeURIComponent(templateUrl)}`;
     } else {
       return `${baseUrl}&code=${encodeURIComponent(this._getCode())}`;
