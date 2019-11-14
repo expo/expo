@@ -6,10 +6,6 @@ const DEFAULT_DEPS = {
   'v35.0.0': [
     // NOTE(brentvatne): we can express default dependencies to include
     // in every Snack here, for example for React Navigation we would do this:
-    // 'react-navigation@^4.0.10',
-    // 'react-navigation-tabs@^2.5.6',
-    // 'react-navigation-stack@^1.10.3',
-    // 'react-navigation-drawer@^2.3.3',
   ],
 };
 
@@ -27,26 +23,50 @@ export default class SnackInline extends React.Component {
   };
 
   componentDidMount() {
-    // render it only on the client side
+    // render the link only on the client side, because it depends on accessing DOM
     // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({ showLink: true });
   }
 
+  // Filter out "latest" -- map it to the newest version in the DEFAULT_DEPS map instead
+  _getSelectedDocsVersion = () => {
+    let { version } = this.context;
+    if (version === 'latest') {
+      return Object.keys(DEFAULT_DEPS)[0];
+    }
+
+    return version;
+  };
+
+  // Get the current selected version but coerce it to a SDK version that Snack
+  // supports and remove the leading "v"
+  _getSdkVersion = () => {
+    let version = this._getSelectedDocsVersion();
+    if (version === 'unversioned') {
+      version = Object.keys(DEFAULT_DEPS)[0];
+    }
+
+    return version.replace('v', '');
+  };
+
   _getDependencies = () => {
-    let dependencies = [...DEFAULT_DEPS[this.context.version], ...this.props.dependencies];
+    let dependencies = [
+      ...(DEFAULT_DEPS[this._getSelectedDocsVersion()] || []),
+      ...this.props.dependencies,
+    ];
     return dependencies.join(',');
   };
 
   _getSnackUrl = () => {
-    let currentVersion = this.context.version;
+    let currentVersion = this._getSelectedDocsVersion();
     let label = this.props.label;
     let templateId = this.props.templateId;
 
     let baseUrl =
       `https://snack.expo.io?platform=${DEFAULT_PLATFORM}&name=` +
       encodeURIComponent(label) +
-      '&dependencies=' +
-      encodeURIComponent(this._getDependencies());
+      `&sdkVersion=${this._getSdkVersion()}` +
+      `&dependencies=${encodeURIComponent(this._getDependencies())}`;
 
     if (templateId) {
       let templateUrl = `${document.location.origin}/static/examples/${currentVersion}/${templateId}.js`;
