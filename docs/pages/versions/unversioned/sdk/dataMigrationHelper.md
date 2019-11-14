@@ -17,7 +17,7 @@ This method returns the path to the legacy document directory which can be used 
 
 > Returns null on all platforms except Android
 
-### `DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync(conflictResolver: ConflictResolver): Promise<void>`
+### `DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync(conflictResolver?: ConflictResolver): Promise<void>`
 
 ```js
 
@@ -45,7 +45,7 @@ export default class App extends React.Component {
   }
 
   async _moveFiles() {
-    await DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync();
+    await DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync(); 
   }
   ...
 }

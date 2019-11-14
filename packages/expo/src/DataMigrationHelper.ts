@@ -58,7 +58,7 @@ async function addLockToOldFilesDirectory(path: string): Promise<void> {
     await FileSystem.writeAsStringAsync(path + LOCK_FILE_NAME, "lock");
 }
 
-export async function migrateFilesFromLegacyDirectoryAsync(conflictResolver: ConflictResolver | null | undefined ): Promise<void> {
+export async function migrateFilesFromLegacyDirectoryAsync(conflictResolver?: ConflictResolver): Promise<void> {
     const { appOwnership } = Constants;
     if (Platform.OS !== 'android' || appOwnership !== "standalone") {
         return;
