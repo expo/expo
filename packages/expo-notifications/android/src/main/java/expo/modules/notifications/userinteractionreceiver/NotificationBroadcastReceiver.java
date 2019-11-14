@@ -15,7 +15,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
   }
 
   private void showActivity(Context context, Intent intent) {
-    String activityName = Configuration.getValueFor(Configuration.NOTIFICATION_ACTIVITY_NAME_KEY, context);
+    String activityName = Configuration.getNotificationActivityName(context);
     Class activityClass = null;
     try {
       activityClass = Class.forName(activityName);

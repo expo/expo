@@ -13,9 +13,9 @@ public class Configuration {
     public static String NOTIFICATION_ACTIVITY_NAME_KEY = "notificationReceiver";
     public static String PUSH_ENGINE_KEY = "pushNotificationEngine";
 
-    static HashMap<String, String> configuration = new HashMap<>();
+    private static HashMap<String, String> configuration = new HashMap<>();
 
-    static HashMap<String, String> defaultValues = new HashMap<>();
+    private static HashMap<String, String> defaultValues = new HashMap<>();
 
     static {
         defaultValues.put(APP_ID_KEY, "defaultId");
@@ -23,7 +23,7 @@ public class Configuration {
         defaultValues.put(PUSH_ENGINE_KEY, "bare");
     }
 
-    public static String getValueFor(String name, Context context) {
+    private static String getValueFor(String name, Context context) {
         if (configuration.containsKey(name)) {
             return configuration.get(name);
         }
@@ -34,14 +34,27 @@ public class Configuration {
             Bundle bundle = ai.metaData;
             value = bundle.getString(name);
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
+
         if (value == null) {
             configuration.put(name, defaultValues.get(name));
         } else {
             configuration.put(name, value);
         }
         return configuration.get(name);
+    }
+
+    public static String getAppId(Context context) {
+        return getValueFor(APP_ID_KEY, context);
+    }
+
+    public static String getPushEngine(Context context) {
+        return getValueFor(PUSH_ENGINE_KEY, context);
+    }
+
+    public static String getNotificationActivityName(Context context) {
+        return getValueFor(NOTIFICATION_ACTIVITY_NAME_KEY, context);
     }
 
 }
