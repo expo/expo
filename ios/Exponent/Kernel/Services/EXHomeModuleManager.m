@@ -80,15 +80,6 @@
   }
 }
 
-- (void)homeModuleDidSelectHomeDiagnostics:(__unused EXHomeModule *)module
-{
-  if ([EXKernel sharedInstance].browserController) {
-    [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXKernel sharedInstance].browserController showDiagnostics];
-    }];
-  }
-}
-
 - (void)homeModuleDidSelectQRReader:(EXHomeModule *)module
 {
   if ([EXKernel sharedInstance].browserController) {

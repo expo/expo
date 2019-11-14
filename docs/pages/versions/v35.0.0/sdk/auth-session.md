@@ -1,5 +1,6 @@
 ---
 title: AuthSession
+sourceCodeUrl: "https://github.com/expo/expo/blob/sdk-35/packages/expo/src/AuthSession.ts"
 ---
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Example](#example).

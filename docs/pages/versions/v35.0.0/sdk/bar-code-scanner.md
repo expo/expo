@@ -1,5 +1,6 @@
 ---
 title: BarCodeScanner
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-barcode-scanner"
 ---
 
 A React component that renders a viewfinder for the device's either front or back camera viewfinder and will scan bar codes that show up in the frame.

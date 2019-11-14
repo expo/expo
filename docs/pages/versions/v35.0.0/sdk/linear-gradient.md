@@ -1,5 +1,6 @@
 ---
 title: LinearGradient
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-linear-gradient"
 ---
 
 A React component that renders a gradient view.

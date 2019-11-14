@@ -26,7 +26,6 @@ static NSString *const kGTMSessionIdentifierUploadLocationURLMetadataKey    = @"
 static NSString *const kGTMSessionIdentifierUploadMIMETypeMetadataKey       = @"_uploadMIME";
 static NSString *const kGTMSessionIdentifierUploadChunkSizeMetadataKey      = @"_upChSize";
 static NSString *const kGTMSessionIdentifierUploadCurrentOffsetMetadataKey  = @"_upOffset";
-static NSString *const kGTMSessionIdentifierUploadAllowsCellularAccess      = @"_upAllowsCellularAccess";
 
 static NSString *const kGTMSessionHeaderXGoogUploadChunkGranularity = @"X-Goog-Upload-Chunk-Granularity";
 static NSString *const kGTMSessionHeaderXGoogUploadCommand          = @"X-Goog-Upload-Command";
@@ -98,7 +97,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
 @property(assign, atomic, getter=isSubdataGenerating) BOOL subdataGenerating;
 @property(assign, atomic) BOOL shouldInitiateOffsetQuery;
 @property(assign, atomic) int64_t uploadGranularity;
-@property(assign, atomic) BOOL allowsCellularAccess;
 
 @end
 
@@ -159,34 +157,20 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   GTMSessionUploadFetcher *fetcher = [self uploadFetcherWithRequest:request
                                                      fetcherService:fetcherService];
   [fetcher setLocationURL:nil
-            uploadMIMEType:uploadMIMEType
-                 chunkSize:chunkSize
-      allowsCellularAccess:request.allowsCellularAccess];
+           uploadMIMEType:uploadMIMEType
+                chunkSize:chunkSize];
   return fetcher;
 }
 
-+ (instancetype)uploadFetcherWithLocation:(NSURL *GTM_NULLABLE_TYPE)uploadLocationURL
++ (instancetype)uploadFetcherWithLocation:(NSURL * GTM_NULLABLE_TYPE)uploadLocationURL
                            uploadMIMEType:(NSString *)uploadMIMEType
                                 chunkSize:(int64_t)chunkSize
-                           fetcherService:(GTM_NULLABLE GTMSessionFetcherService *)fetcherServiceOrNil {
-  return [self uploadFetcherWithLocation:uploadLocationURL
-                          uploadMIMEType:uploadMIMEType
-                               chunkSize:chunkSize
-                    allowsCellularAccess:YES
-                          fetcherService:fetcherServiceOrNil];
-}
-
-+ (instancetype)uploadFetcherWithLocation:(NSURL *GTM_NULLABLE_TYPE)uploadLocationURL
-                           uploadMIMEType:(NSString *)uploadMIMEType
-                                chunkSize:(int64_t)chunkSize
-                     allowsCellularAccess:(BOOL)allowsCellularAccess
                            fetcherService:(GTMSessionFetcherService *)fetcherService {
   GTMSessionUploadFetcher *fetcher = [self uploadFetcherWithRequest:nil
                                                      fetcherService:fetcherService];
   [fetcher setLocationURL:uploadLocationURL
-            uploadMIMEType:uploadMIMEType
-                 chunkSize:chunkSize
-      allowsCellularAccess:allowsCellularAccess];
+           uploadMIMEType:uploadMIMEType
+                chunkSize:chunkSize];
   return fetcher;
 }
 
@@ -227,12 +211,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   }
   int64_t currentOffset =
       [metadata[kGTMSessionIdentifierUploadCurrentOffsetMetadataKey] longLongValue];
-
-  BOOL allowsCellularAccess = YES;
-  if (metadata[kGTMSessionIdentifierUploadAllowsCellularAccess]) {
-    allowsCellularAccess = [metadata[kGTMSessionIdentifierUploadAllowsCellularAccess] boolValue];
-  }
-
   GTMSESSION_ASSERT_DEBUG(currentOffset <= uploadFileLength,
                           @"CurrentOffset (%lld) exceeds UploadFileSize (%lld)",
                           currentOffset, uploadFileLength);
@@ -241,7 +219,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   GTMSessionUploadFetcher *uploadFetcher = [self uploadFetcherWithLocation:uploadLocationURL
                                                             uploadMIMEType:uploadMIMEType
                                                                  chunkSize:uploadChunkSize
-                                                      allowsCellularAccess:allowsCellularAccess
                                                             fetcherService:nil];
   // Set the upload file length before setting the upload file URL tries to determine the length.
   [uploadFetcher setUploadFileLength:uploadFileLength];
@@ -536,16 +513,13 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   [self setRequest:mutableRequest];
 }
 
-- (void)setLocationURL:(NSURL *GTM_NULLABLE_TYPE)location
-          uploadMIMEType:(NSString *)uploadMIMEType
-               chunkSize:(int64_t)chunkSize
-    allowsCellularAccess:(BOOL)allowsCellularAccess {
+- (void)setLocationURL:(NSURL * GTM_NULLABLE_TYPE)location
+        uploadMIMEType:(NSString *)uploadMIMEType
+             chunkSize:(int64_t)chunkSize {
   @synchronized(self) {
     GTMSessionMonitorSynchronized(self);
 
     GTMSESSION_ASSERT_DEBUG(chunkSize > 0, @"chunk size is zero");
-
-    _allowsCellularAccess = allowsCellularAccess;
 
     // When resuming an upload, set the known upload target URL.
     _uploadLocationURL = location;
@@ -1349,8 +1323,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   }
   metadata[kGTMSessionIdentifierUploadChunkSizeMetadataKey] = @(self.chunkSize);
   metadata[kGTMSessionIdentifierUploadCurrentOffsetMetadataKey] = @(self.currentOffset);
-  metadata[kGTMSessionIdentifierUploadAllowsCellularAccess] = @(self.request.allowsCellularAccess);
-
   return metadata;
 }
 
@@ -1367,11 +1339,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
   // n.b. that self.request is nil for upload fetchers created with an existing upload location
   // URL.
   NSURLRequest *origRequest = self.request;
-
-  chunkRequest.allowsCellularAccess = origRequest.allowsCellularAccess;
-  if (!origRequest) {
-    chunkRequest.allowsCellularAccess = _allowsCellularAccess;
-  }
   NSString *userAgent = [origRequest valueForHTTPHeaderField:@"User-Agent"];
   if (userAgent.length > 0) {
     [chunkRequest setValue:userAgent forHTTPHeaderField:@"User-Agent"];
@@ -1782,7 +1749,6 @@ NSString *const kGTMSessionFetcherUploadLocationObtainedNotification =
 
 // Public properties.
 @synthesize currentOffset = _currentOffset,
-            allowsCellularAccess = _allowsCellularAccess,
             delegateCompletionHandler = _delegateCompletionHandler,
             chunkFetcher = _chunkFetcher,
             lastChunkRequest = _lastChunkRequest,

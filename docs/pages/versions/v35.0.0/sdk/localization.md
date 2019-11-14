@@ -1,5 +1,6 @@
 ---
 title: Localization
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-localization"
 ---
 
 You can use this module to Localize your app, and access the locale data on the native device.

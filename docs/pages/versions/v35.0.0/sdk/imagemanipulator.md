@@ -1,5 +1,6 @@
 ---
 title: ImageManipulator
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-image-manipulator"
 ---
 
 An API to modify images stored on the local file system.

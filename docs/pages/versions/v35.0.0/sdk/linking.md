@@ -1,5 +1,6 @@
 ---
 title: Linking
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo/src/Linking"
 ---
 
 This module allows your app to interact with other apps via deep links. It provides helper methods for constructing and parsing deep links into your app.

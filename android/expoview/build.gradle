@@ -207,7 +207,7 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.0.0"
+  api "androidx.appcompat:appcompat:1.1.0"
   api('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
     transitive = true;
   }
@@ -237,7 +237,11 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
+  
+  // react-native-screens
   api "com.google.android.material:material:1.0.0"
+  api'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
+
   api 'com.google.firebase:firebase-core:16.0.9'
   api 'com.google.firebase:firebase-messaging:18.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'

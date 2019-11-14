@@ -1,5 +1,6 @@
 ---
 title: Cellular
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-cellular"
 ---
 
 Provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.

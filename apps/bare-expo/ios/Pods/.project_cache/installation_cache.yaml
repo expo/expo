@@ -92,6 +92,8 @@ CACHE_KEYS:
       EXAV: 24e752f72833c75365a542d09159efe2
     CHECKSUM: 2fead9acfc39b4946ba9228d3a199e0704aec65d
     FILES:
+      - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.h"
+      - "../../../../packages/expo-av/ios/EXAV/EXAudioRecordingPermissionRequester.m"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioSessionManager.h"
       - "../../../../packages/expo-av/ios/EXAV/EXAudioSessionManager.m"
       - "../../../../packages/expo-av/ios/EXAV/EXAV.h"
@@ -111,9 +113,11 @@ CACHE_KEYS:
       - EXAV (8.0.0-rc.1)
   EXBarCodeScanner:
     BUILD_SETTINGS_CHECKSUM:
-      EXBarCodeScanner: 0087241f055c69d81dd8b82a5ee7dc10
-    CHECKSUM: 2443883e2a0a8075fc323dad136a73384ab71cde
+      EXBarCodeScanner: c28f9ae1e4b34028013b8e5b051e414a
+    CHECKSUM: af6a390c5bfa0fca2b4372f9059cfa935855b85c
     FILES:
+      - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h"
+      - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.m"
       - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScanner.h"
       - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScanner.m"
       - "../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeScannerModule.h"
@@ -165,11 +169,13 @@ CACHE_KEYS:
       - EXBlur (7.0.0)
   EXBrightness:
     BUILD_SETTINGS_CHECKSUM:
-      EXBrightness: 3e892c21f3a29f7819f9099fdb324c76
-    CHECKSUM: 8b4827452309499d547f7887a2f0988a10234921
+      EXBrightness: b6276dc192939ff820706926254325d2
+    CHECKSUM: e43f02490c1dd40cc023a17363f48f90aa678301
     FILES:
       - "../../../../packages/expo-brightness/ios/EXBrightness/EXBrightness.h"
       - "../../../../packages/expo-brightness/ios/EXBrightness/EXBrightness.m"
+      - "../../../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessPermissionRequester.h"
+      - "../../../../packages/expo-brightness/ios/EXBrightness/EXSystemBrightnessPermissionRequester.m"
     PROJECT_NAME: EXBrightness
     SPECS:
       - EXBrightness (7.0.0)
@@ -182,6 +188,10 @@ CACHE_KEYS:
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendar.m"
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendarConverter.h"
       - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendarConverter.m"
+      - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendarPermissionRequester.h"
+      - "../../../../packages/expo-calendar/ios/EXCalendar/EXCalendarPermissionRequester.m"
+      - "../../../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.h"
+      - "../../../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.m"
     PROJECT_NAME: EXCalendar
     SPECS:
       - EXCalendar (7.0.0)
@@ -216,6 +226,8 @@ CACHE_KEYS:
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts+Serialization.m"
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts.h"
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContacts.m"
+      - "../../../../packages/expo-contacts/ios/EXContacts/EXContactsPermissionRequester.h"
+      - "../../../../packages/expo-contacts/ios/EXContacts/EXContactsPermissionRequester.m"
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.h"
       - "../../../../packages/expo-contacts/ios/EXContacts/EXContactsViewController.m"
     PROJECT_NAME: EXContacts
@@ -380,6 +392,10 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h"
       - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.m"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.h"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraPermissionRequester.m"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.h"
+      - "../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePickerCameraRollPermissionRequester.m"
     PROJECT_NAME: EXImagePicker
     SPECS:
       - EXImagePicker (7.0.0)
@@ -444,6 +460,8 @@ CACHE_KEYS:
     FILES:
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibrary.m"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.h"
+      - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXMediaLibraryCameraRollRequester.m"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.h"
       - "../../../../packages/expo-media-library/ios/EXMediaLibrary/EXSaveToLibraryDelegate.m"
     PROJECT_NAME: EXMediaLibrary
@@ -462,32 +480,16 @@ CACHE_KEYS:
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
-    CHECKSUM: a8da2bebf970af22e4714cc24fc5fab124ee315c
+    CHECKSUM: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
     FILES:
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXAudioRecordingPermissionRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXAudioRecordingPermissionRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXCalendarRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXCalendarRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXCameraPermissionRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXCameraPermissionRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXCameraRollRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXCameraRollRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXContactsRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXContactsRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXLocationRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXLocationRequester.m"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXReactNativeUserNotificationCenterProxy.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXRemindersRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXRemindersRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXRemoteNotificationRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXRemoteNotificationRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXSystemBrightnessRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXSystemBrightnessRequester.m"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXUserNotificationRequester.h"
-      - "../../../../packages/expo-permissions/ios/EXPermissions/EXUserNotificationRequester.m"
+      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.h"
+      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/RemoteNotification/EXRemoteNotificationPermissionRequester.m"
+      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.h"
+      - "../../../../packages/expo-permissions/ios/EXPermissions/Requesters/UserNotification/EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: EXPermissions
     SPECS:
       - EXPermissions (8.0.0-rc.0)
@@ -636,23 +638,23 @@ CACHE_KEYS:
   FBLazyVector:
     BUILD_SETTINGS_CHECKSUM:
       FBLazyVector: db36a67e420fa1be73e35e9a4f9553c4
-    CHECKSUM: 68b6a76960fbd8ecd9fb7ce0aadd3329c3340a99
+    CHECKSUM: feb35a6b7f7b50f367be07f34012f34a79282fa3
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyIterator.h"
       - "../../../../react-native-lab/react-native/Libraries/FBLazyVector/FBLazyVector/FBLazyVector.h"
     PROJECT_NAME: FBLazyVector
     SPECS:
-      - FBLazyVector (0.61.2)
+      - FBLazyVector (0.61.4)
   FBReactNativeSpec:
     BUILD_SETTINGS_CHECKSUM:
       FBReactNativeSpec: b36bdafa9dd7869b629421ecfc0f088b
-    CHECKSUM: 5a764c60abdc3336a213e5310c40b74741f32839
+    CHECKSUM: 51477b84b1bf7ab6f9ef307c24e3dd675391be44
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
       - "../../../../react-native-lab/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h"
     PROJECT_NAME: FBReactNativeSpec
     SPECS:
-      - FBReactNativeSpec (0.61.2)
+      - FBReactNativeSpec (0.61.4)
   Folly:
     BUILD_SETTINGS_CHECKSUM:
       Folly: 6929e5198d305a2496bf017ba64d131c
@@ -671,10 +673,10 @@ CACHE_KEYS:
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: a0153e525df9a663a947ee922d9629b2
-    CHECKSUM: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
+    CHECKSUM: a62edd0516721d2a3db1259a5681b91f9b41c06a
     PROJECT_NAME: GoogleSignIn
     SPECS:
-      - GoogleSignIn (5.0.1)
+      - GoogleSignIn (5.0.0)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
@@ -685,33 +687,33 @@ CACHE_KEYS:
   GTMSessionFetcher:
     BUILD_SETTINGS_CHECKSUM:
       GTMSessionFetcher: d9c89823d2516fe6150cc01204ef77f0
-    CHECKSUM: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
+    CHECKSUM: 61bb0f61a4cb560030f1222021178008a5727a23
     PROJECT_NAME: GTMSessionFetcher
     SPECS:
-      - GTMSessionFetcher (1.3.0)
-      - GTMSessionFetcher/Core (1.3.0)
-      - GTMSessionFetcher/Full (1.3.0)
+      - GTMSessionFetcher (1.2.2)
+      - GTMSessionFetcher/Core (1.2.2)
+      - GTMSessionFetcher/Full (1.2.2)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 59b9eb9a1caf2c2d950b5074fb75f0dd
-      Release: 59b9eb9a1caf2c2d950b5074fb75f0dd
+      Debug: 1c5cce5602d7a1ca50a162ce84f41cc2
+      Release: 1c5cce5602d7a1ca50a162ce84f41cc2
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 12aede7893aa68cbcd909b2780653b86
-      Release: 12aede7893aa68cbcd909b2780653b86
+      Debug: db80c27826ef9e2e5e761094f6109afd
+      Release: db80c27826ef9e2e5e761094f6109afd
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
-    CHECKSUM: c639d59ed389cfb1f1203f65c2ea946d8ec586e2
+    CHECKSUM: f3b3fb6f4723e8e52facb229d0c75fdc76773849
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/RCTRequired/RCTRequired/RCTRequired.h"
     PROJECT_NAME: RCTRequired
     SPECS:
-      - RCTRequired (0.61.2)
+      - RCTRequired (0.61.4)
   RCTTypeSafety:
     BUILD_SETTINGS_CHECKSUM:
       RCTTypeSafety: 81c338bf84f00fe6071089a3b1373474
-    CHECKSUM: dc23fb655d6c77667c78e327bf661bc11e3b8aec
+    CHECKSUM: 2ec60de6abb1db050b56ecc4b60188026078fd10
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTConvertHelpers.h"
       - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTConvertHelpers.mm"
@@ -719,11 +721,11 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/TypeSafety/RCTTypedModuleConstants.mm"
     PROJECT_NAME: RCTTypeSafety
     SPECS:
-      - RCTTypeSafety (0.61.2)
+      - RCTTypeSafety (0.61.4)
   React:
     BUILD_SETTINGS_CHECKSUM:
       React: b069c5ce70db8b25ef629d88c47d2ecb
-    CHECKSUM: 7e586e5d7bec12b91c1a096826b0fc9ab1da7865
+    CHECKSUM: 10e0130b57e55a7cd8c3dee37c1261102ce295f4
     FILES:
       - "../../../../react-native-lab/react-native/LICENSE"
       - "../../../../react-native-lab/react-native/LICENSE-docs"
@@ -731,11 +733,11 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/README.md"
     PROJECT_NAME: React
     SPECS:
-      - React (0.61.2)
+      - React (0.61.4)
   React-Core:
     BUILD_SETTINGS_CHECKSUM:
       React-Core: 12e0327312cda6f65b6ebcbec6f3dce2
-    CHECKSUM: 8ddb9770b4a30a6ab4a754e6ed5ec76454e3d699
+    CHECKSUM: 636212410772d05f3a1eb79d965df2962ca1c70b
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/ActionSheetIOS/RCTActionSheetManager.h"
       - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobManager.h"
@@ -1111,24 +1113,24 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/README.md"
     PROJECT_NAME: React-Core
     SPECS:
-      - React-Core (0.61.2)
-      - React-Core/CoreModulesHeaders (0.61.2)
-      - React-Core/Default (0.61.2)
-      - React-Core/DevSupport (0.61.2)
-      - React-Core/RCTActionSheetHeaders (0.61.2)
-      - React-Core/RCTAnimationHeaders (0.61.2)
-      - React-Core/RCTBlobHeaders (0.61.2)
-      - React-Core/RCTImageHeaders (0.61.2)
-      - React-Core/RCTLinkingHeaders (0.61.2)
-      - React-Core/RCTNetworkHeaders (0.61.2)
-      - React-Core/RCTSettingsHeaders (0.61.2)
-      - React-Core/RCTTextHeaders (0.61.2)
-      - React-Core/RCTVibrationHeaders (0.61.2)
-      - React-Core/RCTWebSocket (0.61.2)
+      - React-Core (0.61.4)
+      - React-Core/CoreModulesHeaders (0.61.4)
+      - React-Core/Default (0.61.4)
+      - React-Core/DevSupport (0.61.4)
+      - React-Core/RCTActionSheetHeaders (0.61.4)
+      - React-Core/RCTAnimationHeaders (0.61.4)
+      - React-Core/RCTBlobHeaders (0.61.4)
+      - React-Core/RCTImageHeaders (0.61.4)
+      - React-Core/RCTLinkingHeaders (0.61.4)
+      - React-Core/RCTNetworkHeaders (0.61.4)
+      - React-Core/RCTSettingsHeaders (0.61.4)
+      - React-Core/RCTTextHeaders (0.61.4)
+      - React-Core/RCTVibrationHeaders (0.61.4)
+      - React-Core/RCTWebSocket (0.61.4)
   React-CoreModules:
     BUILD_SETTINGS_CHECKSUM:
       React-CoreModules: 12fc6e0ffd23fb34d494c63cfd4e8007
-    CHECKSUM: b3d9eece8ad7df36c917a41f05c1168c52fe0b34
+    CHECKSUM: 6f70d5e41919289c582f88c9ad9923fe5c87400a
     FILES:
       - "../../../../react-native-lab/react-native/React/CoreModules/CoreModulesPlugins.mm"
       - "../../../../react-native-lab/react-native/React/CoreModules/RCTExceptionsManager.mm"
@@ -1138,11 +1140,11 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/React/CoreModules/RCTPlatform.mm"
     PROJECT_NAME: React-CoreModules
     SPECS:
-      - React-CoreModules (0.61.2)
+      - React-CoreModules (0.61.4)
   React-cxxreact:
     BUILD_SETTINGS_CHECKSUM:
       React-cxxreact: 3e83cb09172a4e6d4d8e4c515b41354a
-    CHECKSUM: 1f972757c0bd08d962ef78068e06613c27489a3f
+    CHECKSUM: ddecbe9157ec1743f52ea17bf8d95debc0d6e846
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxModule.h"
       - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/CxxNativeModule.cpp"
@@ -1179,11 +1181,11 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/ReactCommon/cxxreact/SystraceSection.h"
     PROJECT_NAME: React-cxxreact
     SPECS:
-      - React-cxxreact (0.61.2)
+      - React-cxxreact (0.61.4)
   React-jsi:
     BUILD_SETTINGS_CHECKSUM:
       React-jsi: 7436312a0162aaf956e82cb50e540389
-    CHECKSUM: 32285a21b1b24c36060493ed3057a34677d58d09
+    CHECKSUM: ca921f4041505f9d5197139b2d09eeb020bb12e8
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.cpp"
       - "../../../../react-native-lab/react-native/ReactCommon/jsi/JSCRuntime.h"
@@ -1200,12 +1202,12 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/ReactCommon/jsi/jsi/threadsafe.h"
     PROJECT_NAME: React-jsi
     SPECS:
-      - React-jsi (0.61.2)
-      - React-jsi/Default (0.61.2)
+      - React-jsi (0.61.4)
+      - React-jsi/Default (0.61.4)
   React-jsiexecutor:
     BUILD_SETTINGS_CHECKSUM:
       React-jsiexecutor: 7ca7679c2cf21fe925a2637926fede3c
-    CHECKSUM: 8909917ff7d8f21a57e443a866fd8d4560e50c65
+    CHECKSUM: 8dfb73b987afa9324e4009bdce62a18ce23d983c
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.cpp"
       - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSIExecutor.h"
@@ -1213,37 +1215,37 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/ReactCommon/jsiexecutor/jsireact/JSINativeModules.h"
     PROJECT_NAME: React-jsiexecutor
     SPECS:
-      - React-jsiexecutor (0.61.2)
+      - React-jsiexecutor (0.61.4)
   React-jsinspector:
     BUILD_SETTINGS_CHECKSUM:
       React-jsinspector: 9e0b7df27a53899ab5df9729e2b35bc8
-    CHECKSUM: 111d7d342b07a904c400592e02a2b958f1098b60
+    CHECKSUM: d15478d0a8ada19864aa4d1cc1c697b41b3fa92f
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jsinspector/InspectorInterfaces.cpp"
       - "../../../../react-native-lab/react-native/ReactCommon/jsinspector/InspectorInterfaces.h"
     PROJECT_NAME: React-jsinspector
     SPECS:
-      - React-jsinspector (0.61.2)
+      - React-jsinspector (0.61.4)
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 73d0c6f3a5c8695b8c8952e7ccb0f96b
-    CHECKSUM: 13004a45f3021328fdd9ee1f987c3131fb65928d
+    CHECKSUM: d288138da2c800caa111f9352e9333f186a06ead
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (0.5.0)
+      - react-native-safe-area-context (0.6.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet: 5d86490d49e6cc964d1993e5c05e10db
-    CHECKSUM: 89b037c0fb7d2671607cb645760164e7e0c013f6
+    CHECKSUM: 7369b7c85f99b6299491333affd9f01f5a130c22
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/ActionSheetIOS/RCTActionSheetManager.m"
     PROJECT_NAME: React-RCTActionSheet
     SPECS:
-      - React-RCTActionSheet (0.61.2)
+      - React-RCTActionSheet (0.61.4)
   React-RCTAnimation:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTAnimation: 9e98ea8cf28345fb54d93e21870fe454
-    CHECKSUM: e3cefa93c38c004c318f7ec04b883eb14b8b8235
+    CHECKSUM: d07be15b2bd1d06d89417eb0343f98ffd2b099a7
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTDecayAnimation.m"
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/Drivers/RCTEventAnimation.m"
@@ -1267,11 +1269,11 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.m"
     PROJECT_NAME: React-RCTAnimation
     SPECS:
-      - React-RCTAnimation (0.61.2)
+      - React-RCTAnimation (0.61.4)
   React-RCTBlob:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTBlob: e95d830659380751c66f8f881afd0abd
-    CHECKSUM: d26ac0e313fbf14e7203473fd593ccaaeee8329e
+    CHECKSUM: 8e0b23d95c9baa98f6b0e127e07666aaafd96c34
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobCollector.h"
       - "../../../../react-native-lab/react-native/Libraries/Blob/RCTBlobCollector.mm"
@@ -1279,11 +1281,11 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/Blob/RCTFileReaderModule.m"
     PROJECT_NAME: React-RCTBlob
     SPECS:
-      - React-RCTBlob (0.61.2)
+      - React-RCTBlob (0.61.4)
   React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTImage: 8b06d2734b41d3d37b9ee94e31a7791a
-    CHECKSUM: 4bdd9588783fa9e48ef669ccd4f747224e208edf
+    CHECKSUM: 443050d14a66e8c2332e9c055f45689d23e15cc7
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Image/RCTAnimatedImage.m"
       - "../../../../react-native-lab/react-native/Libraries/Image/RCTGIFImageDecoder.m"
@@ -1298,20 +1300,20 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/Image/RCTUIImageViewAnimated.m"
     PROJECT_NAME: React-RCTImage
     SPECS:
-      - React-RCTImage (0.61.2)
+      - React-RCTImage (0.61.4)
   React-RCTLinking:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTLinking: f35081b0c5cc9cfe5441f6cc8ed75aa3
-    CHECKSUM: 65f0088ff463babd3d5d567964a65b74141eff3b
+    CHECKSUM: ce9a90ba155aec41be49e75ec721bbae2d48a47e
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/LinkingIOS/RCTLinkingManager.m"
     PROJECT_NAME: React-RCTLinking
     SPECS:
-      - React-RCTLinking (0.61.2)
+      - React-RCTLinking (0.61.4)
   React-RCTNetwork:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTNetwork: 2c8926e65972db12bb2dde9f66b0f6b4
-    CHECKSUM: 0c1a73576c1cfeafe68396556de1b17d93c0c595
+    CHECKSUM: 41fe54bacc67dd00e6e4c4d30dd98a13e4beabc8
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTDataRequestHandler.m"
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTFileRequestHandler.m"
@@ -1321,20 +1323,20 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/Network/RCTNetworkTask.m"
     PROJECT_NAME: React-RCTNetwork
     SPECS:
-      - React-RCTNetwork (0.61.2)
+      - React-RCTNetwork (0.61.4)
   React-RCTSettings:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTSettings: 8018bcc273b6f77e6703ed88f77ac6dd
-    CHECKSUM: 4194f1f0edbddf3fd44d1714dc6578bb20379b60
+    CHECKSUM: 45e3e0a6470310b2dab2ccc6d1d73121ba3ea936
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Settings/RCTSettingsManager.m"
     PROJECT_NAME: React-RCTSettings
     SPECS:
-      - React-RCTSettings (0.61.2)
+      - React-RCTSettings (0.61.4)
   React-RCTText:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTText: 7e0a52fb714759ffbc14429e282e6752
-    CHECKSUM: e3ef6191cdb627855ff7fe8fa0c1e14094967fb8
+    CHECKSUM: 21934e0a51d522abcd0a275407e80af45d6fd9ec
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h"
       - "../../../../react-native-lab/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m"
@@ -1395,20 +1397,20 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/Libraries/Text/VirtualText/RCTVirtualTextViewManager.m"
     PROJECT_NAME: React-RCTText
     SPECS:
-      - React-RCTText (0.61.2)
+      - React-RCTText (0.61.4)
   React-RCTVibration:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTVibration: a33f19a10d65fd9cad62e32ae07a9249
-    CHECKSUM: fb54c732fd20405a76598e431aa2f8c2bf527de9
+    CHECKSUM: 0f76400ee3cec6edb9c125da49fed279340d145a
     FILES:
       - "../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibration.m"
     PROJECT_NAME: React-RCTVibration
     SPECS:
-      - React-RCTVibration (0.61.2)
+      - React-RCTVibration (0.61.4)
   ReactCommon:
     BUILD_SETTINGS_CHECKSUM:
       ReactCommon: 4d8fb8d90ac8a3824ff3b310b07f1021
-    CHECKSUM: 5848032ed2f274fcb40f6b9ec24067787c42d479
+    CHECKSUM: a6a294e7028ed67b926d29551aa9394fd989c24c
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/jscallinvoker/ReactCommon/BridgeJSCallInvoker.cpp"
       - "../../../../react-native-lab/react-native/ReactCommon/jscallinvoker/ReactCommon/BridgeJSCallInvoker.h"
@@ -1429,22 +1431,22 @@ CACHE_KEYS:
       - "../../../../react-native-lab/react-native/ReactCommon/turbomodule/core/TurboModuleUtils.h"
     PROJECT_NAME: ReactCommon
     SPECS:
-      - ReactCommon/jscallinvoker (0.61.2)
-      - ReactCommon/turbomodule/core (0.61.2)
+      - ReactCommon/jscallinvoker (0.61.4)
+      - ReactCommon/turbomodule/core (0.61.4)
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler: 894f538872c881c328b338cadc584db1
-    CHECKSUM: 4cb47a93019c1a201df2644413a0a1569a51c8aa
+    CHECKSUM: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.4.1)
+      - RNGestureHandler (1.5.0)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated: 1834c20101082965441e7e968432d2b3
-    CHECKSUM: 6abbbae2e5e72609d85aabd92a982a94566885f1
+    CHECKSUM: b2ab0b693dddd2339bd2f300e770f6302d2e960c
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.3.0)
+      - RNReanimated (1.4.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492
@@ -1549,6 +1551,8 @@ CACHE_KEYS:
     CHECKSUM: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
     FILES:
       - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsInterface.h"
+      - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsMethodsDelegate.h"
+      - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMPermissionsMethodsDelegate.m"
       - "../../../../packages/unimodules-permissions-interface/ios/UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h"
     PROJECT_NAME: UMPermissionsInterface
     SPECS:
@@ -1595,7 +1599,7 @@ CACHE_KEYS:
   Yoga:
     BUILD_SETTINGS_CHECKSUM:
       Yoga: 1c1562cda00c80e209af7feb55d5f6dd
-    CHECKSUM: 14927e37bd25376d216b150ab2a561773d57911f
+    CHECKSUM: ba3d99dbee6c15ea6bbe3783d1f0cb1ffb79af0f
     FILES:
       - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/Bitfield.h"
       - "../../../../react-native-lab/react-native/ReactCommon/yoga/yoga/CompactValue.h"
@@ -1630,4 +1634,13 @@ CACHE_KEYS:
     PROJECT_NAME: Yoga
     SPECS:
       - Yoga (1.14.0)
+  ZXingObjC:
+    BUILD_SETTINGS_CHECKSUM:
+      ZXingObjC: d3ecdae7b9cd1c5943e115b6207f0009
+    CHECKSUM: fdbb269f25dd2032da343e06f10224d62f537bdb
+    PROJECT_NAME: ZXingObjC
+    SPECS:
+      - ZXingObjC/Core (3.6.5)
+      - ZXingObjC/OneD (3.6.5)
+      - ZXingObjC/PDF417 (3.6.5)
 OBJECT_VERSION: 46

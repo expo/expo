@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0846DDC8A867368E66E517D3A88337C2 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 135F3121F3D8B3CE6F7B34296B24B624 /* EXLocalAuthentication-dummy.m */; };
 		41F18C29D26182E3F0ADEE6066101704 /* EXLocalAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 7F39137866B42F86CDD54E288DBED11F /* EXLocalAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6F39AF2EDA05438B8098C1B84DB38DF1 /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C4355AB5F222BDC84C354CE22FF1731D /* EXLocalAuthentication.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CB384BDFCDC2FB4FF11ABD9C4EA57727 /* EXLocalAuthentication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 135F3121F3D8B3CE6F7B34296B24B624 /* EXLocalAuthentication-dummy.m */; };
+		8CB418C98A508B27D428335BCEF4DD0F /* EXLocalAuthentication.m in Sources */ = {isa = PBXBuildFile; fileRef = C4355AB5F222BDC84C354CE22FF1731D /* EXLocalAuthentication.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +136,7 @@
 			buildConfigurationList = 6A79242EC68E83DA25514EED507D1F9C /* Build configuration list for PBXNativeTarget "EXLocalAuthentication" */;
 			buildPhases = (
 				69F39D4523390F1BD713B2F915C6329D /* Headers */,
-				30D15AC10BEDAEFAF8A9ECD915445464 /* Sources */,
+				60DE448E40E38659B94D9F56DC7EB7D8 /* Sources */,
 				6437BBD9F8172F88CE5DB947EFD01C0A /* Frameworks */,
 			);
 			buildRules = (
@@ -185,12 +185,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		30D15AC10BEDAEFAF8A9ECD915445464 /* Sources */ = {
+		60DE448E40E38659B94D9F56DC7EB7D8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CB384BDFCDC2FB4FF11ABD9C4EA57727 /* EXLocalAuthentication-dummy.m in Sources */,
-				6F39AF2EDA05438B8098C1B84DB38DF1 /* EXLocalAuthentication.m in Sources */,
+				0846DDC8A867368E66E517D3A88337C2 /* EXLocalAuthentication-dummy.m in Sources */,
+				8CB418C98A508B27D428335BCEF4DD0F /* EXLocalAuthentication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

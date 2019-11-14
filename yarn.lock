@@ -12087,10 +12087,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-appearance@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.1.0.tgz#a195d9a71c03dc4de246b86a18e95c8ecd08d505"
-  integrity sha512-WitRX+1bYCwTOxh0dV+/3Pv/O0jzKl/Y+O4kMiPhiJFe/tibAE8l5wYw6l3X1gkPMn52khdxBDV0Ndkp3Pjvdw==
+react-native-appearance@0.2.1, react-native-appearance@~0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-appearance/-/react-native-appearance-0.2.1.tgz#b8c08cbd6ea92533591c247a4a154b95fd8e31c8"
+  integrity sha512-eaNIVd3CPfDs4/10i0YxCYTx0FcbmaPcUh5xrzfHsgluPJJjHbJEV2MSHqukrNsQ9cQBMNvTSEaBrO9N16L7ZA==
   dependencies:
     fbemitter "^2.1.1"
     invariant "^2.2.4"
@@ -12178,7 +12178,14 @@ react-native-safe-module@^1.1.0:
   dependencies:
     dedent "^0.6.0"
 
-"react-native-screens@^1.0.0 || ^1.0.0-alpha", react-native-screens@~1.0.0-alpha.23:
+react-native-screens@2.0.0-alpha.11:
+  version "2.0.0-alpha.11"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.0.0-alpha.11.tgz#077674284e0f80130cf971ba8eacc4f969724eea"
+  integrity sha512-Sw01mMTvqMgNl4stk7rdcE8LRiISTx7DhXMeBgvmlI4uF1rIZBFcTV5tH/wZ8ld6Pa/H5ASKWAiaaMMxgv1fBw==
+  dependencies:
+    debounce "^1.2.0"
+
+"react-native-screens@^1.0.0 || ^1.0.0-alpha":
   version "1.0.0-alpha.23"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-1.0.0-alpha.23.tgz#25d7ea4d11bda4fcde2d1da7ae50271c6aa636e0"
   integrity sha512-tOxHGQUN83MTmQB4ghoQkibqOdGiX4JQEmeyEv96MKWO/x8T2PJv84ECUos9hD3blPRQwVwSpAid1PPPhrVEaw==

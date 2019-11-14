@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		1D59FE96CA3CA5888714076510EA6C22 /* EXWKSnapshotPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 907023CFB9890AB6F652AA5A9288F470 /* EXWKSnapshotPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		33F96C894CC4CB1C6AC4223CE209D3D9 /* EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11409AAE420187D382FE0423F6B91AE1 /* EXWKPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		3E69A3C3E0893F7C1AF89F3BF707718C /* EXWKPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EC0AA57ECC8392920EDFC46CD6DD85 /* EXWKPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4EEC946FDACEC73376FBE26DB25E0C92 /* EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE48B0B88937ACB649BAF56C8EF68A0 /* EXWKViewPDFRenderer.m */; };
 		71F223EA78C6F48C9265C4283C0959ED /* EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = E4F419E6F02CA0BDD839CBEBCF44E1E8 /* EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		916EB78F4B00B30FE2F87802263DFC48 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = F257CA9C2626BCBA2A295287B9E4FD28 /* EXPrint.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		75EDCFFC5177009FDC65D456C3CB842B /* EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5723B612E57E05A7FF53D223C05C206D /* EXWKSnapshotPDFRenderer.m */; };
+		89DCD86505207CF67ECB4123197F96F5 /* EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11409AAE420187D382FE0423F6B91AE1 /* EXWKPDFRenderer.m */; };
+		AE15E440F7BABAB816D1153F73A4A397 /* EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5879DCB4737507C6372DC431B0D22640 /* EXPrint-dummy.m */; };
 		B2014A6242C9D0585CD677995B89D189 /* EXWKViewPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = F1E9CA1372363E059C54911F34241169 /* EXWKViewPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C7C8488E255089723C9893B58D9BD680 /* EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5723B612E57E05A7FF53D223C05C206D /* EXWKSnapshotPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E57CD18D9082E43791BDA5F592B04E2E /* EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE48B0B88937ACB649BAF56C8EF68A0 /* EXWKViewPDFRenderer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FB9B87C2389C407A1ACC8771F8221830 /* EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5879DCB4737507C6372DC431B0D22640 /* EXPrint-dummy.m */; };
+		C628A882E3B2D002A4499ED925D607F6 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = F257CA9C2626BCBA2A295287B9E4FD28 /* EXPrint.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,7 +157,7 @@
 			buildConfigurationList = FF266557DDFDEBE6380C65866E26D2D3 /* Build configuration list for PBXNativeTarget "EXPrint" */;
 			buildPhases = (
 				BCFDCE7771B2C0AB3E64F1BABC25B53B /* Headers */,
-				A60F7E3FD0F5E32084EFDFD8F604DC18 /* Sources */,
+				AB3F33973DA11774A0762284C62F11B0 /* Sources */,
 				9F6131D16D28B810972FA2C7B0779229 /* Frameworks */,
 			);
 			buildRules = (
@@ -206,15 +206,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A60F7E3FD0F5E32084EFDFD8F604DC18 /* Sources */ = {
+		AB3F33973DA11774A0762284C62F11B0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FB9B87C2389C407A1ACC8771F8221830 /* EXPrint-dummy.m in Sources */,
-				916EB78F4B00B30FE2F87802263DFC48 /* EXPrint.m in Sources */,
-				33F96C894CC4CB1C6AC4223CE209D3D9 /* EXWKPDFRenderer.m in Sources */,
-				C7C8488E255089723C9893B58D9BD680 /* EXWKSnapshotPDFRenderer.m in Sources */,
-				E57CD18D9082E43791BDA5F592B04E2E /* EXWKViewPDFRenderer.m in Sources */,
+				AE15E440F7BABAB816D1153F73A4A397 /* EXPrint-dummy.m in Sources */,
+				C628A882E3B2D002A4499ED925D607F6 /* EXPrint.m in Sources */,
+				89DCD86505207CF67ECB4123197F96F5 /* EXWKPDFRenderer.m in Sources */,
+				75EDCFFC5177009FDC65D456C3CB842B /* EXWKSnapshotPDFRenderer.m in Sources */,
+				4EEC946FDACEC73376FBE26DB25E0C92 /* EXWKViewPDFRenderer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

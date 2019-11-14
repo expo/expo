@@ -16,8 +16,6 @@ export default {
     return false;
   },
 
-  addDevMenu(): void {},
-
   async getDevMenuItemsToShowAsync(): Promise<unknown> {
     return {};
   },

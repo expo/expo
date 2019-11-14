@@ -112,6 +112,10 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceIosPath: 'ios/Appearance',
         targetIosPath: 'Api/Appearance',
+        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        targetAndroidPath: 'modules/api/appearance/rncappearance',
+        sourceAndroidPackage: 'com.reactlibrary',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],
   },

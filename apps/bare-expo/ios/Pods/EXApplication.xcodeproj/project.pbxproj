@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0560D794600CFE40E188E00EBF945672 /* EXApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = 942BA3DCC31B49B1C7AE247F63CCD1D9 /* EXApplication.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		983239E6D25DB2E0E601F0E940FCCFF9 /* EXApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD39DA3713290E1FBFBF644FEC37580 /* EXApplication-dummy.m */; };
-		E327707DE3EF76CEF039F8590693C07D /* EXApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F49A07610E8DBAD5E3325969C38D4D1 /* EXApplication.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3E0A6E117CE1EB645AD6CB5366F3CB6B /* EXApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F49A07610E8DBAD5E3325969C38D4D1 /* EXApplication.m */; };
+		FC2CFD78B2352D3B7A770827466B91D1 /* EXApplication-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BD39DA3713290E1FBFBF644FEC37580 /* EXApplication-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = FEEFB4AB56C57085A27915BDC9541EAD /* Build configuration list for PBXNativeTarget "EXApplication" */;
 			buildPhases = (
 				0C2F63669D938DDCD0A35350E116F0B5 /* Headers */,
-				943CC2F1E664B789C4A114BB88956D0E /* Sources */,
+				34E4C9EF26DF7341C08F11F01CF55B1D /* Sources */,
 				9255D6350930E7CD19A44CCC63B351F3 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		943CC2F1E664B789C4A114BB88956D0E /* Sources */ = {
+		34E4C9EF26DF7341C08F11F01CF55B1D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				983239E6D25DB2E0E601F0E940FCCFF9 /* EXApplication-dummy.m in Sources */,
-				E327707DE3EF76CEF039F8590693C07D /* EXApplication.m in Sources */,
+				FC2CFD78B2352D3B7A770827466B91D1 /* EXApplication-dummy.m in Sources */,
+				3E0A6E117CE1EB645AD6CB5366F3CB6B /* EXApplication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

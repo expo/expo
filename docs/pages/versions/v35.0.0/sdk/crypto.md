@@ -1,5 +1,6 @@
 ---
 title: Crypto
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-crypto"
 ---
 
 **`expo-crypto`** enables you to hash data in an equivalent manner to the `Node.js` core `crypto` API.

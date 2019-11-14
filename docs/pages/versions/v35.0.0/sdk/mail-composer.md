@@ -1,5 +1,6 @@
 ---
 title: MailComposer
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-mail-composer"
 ---
 
 An API to compose mails using OS specific UI.

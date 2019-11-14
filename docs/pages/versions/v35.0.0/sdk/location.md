@@ -1,5 +1,6 @@
 ---
 title: Location
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-location"
 ---
 
 This module allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.

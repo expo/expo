@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6C4B19961E3F0203ED868884B8B7C2D9 /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E37928A16BA493A6971F7386D74E709 /* EXSharingModule.m */; };
 		8115AF8A31209E1234A71FD1AD093BB8 /* EXSharingModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ECD0A5CAED6CACED2C0D43FA2F3C2CD4 /* EXSharingModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		838F27005E7BE0E5324B0DAB1EADCBDB /* EXSharingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E37928A16BA493A6971F7386D74E709 /* EXSharingModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A5A40B28645392D599799C69000C444B /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B81C46686E733DA8E9122486E8430A2 /* EXSharing-dummy.m */; };
+		E4D58721D9057637F59B54500B024C52 /* EXSharing-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B81C46686E733DA8E9122486E8430A2 /* EXSharing-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +136,7 @@
 			buildConfigurationList = 1420350743A22FA96A2BE106D8AAC86B /* Build configuration list for PBXNativeTarget "EXSharing" */;
 			buildPhases = (
 				458B68AD1F683B16EE5547A27199BDDC /* Headers */,
-				96B7DF8C22EF8E1C8ED86895B96FCF90 /* Sources */,
+				2523768F981F0FCEAD0C360E18D2073E /* Sources */,
 				D7ADA47DFACAD9FE25759D1BE0ABAD67 /* Frameworks */,
 			);
 			buildRules = (
@@ -185,12 +185,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		96B7DF8C22EF8E1C8ED86895B96FCF90 /* Sources */ = {
+		2523768F981F0FCEAD0C360E18D2073E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A5A40B28645392D599799C69000C444B /* EXSharing-dummy.m in Sources */,
-				838F27005E7BE0E5324B0DAB1EADCBDB /* EXSharingModule.m in Sources */,
+				E4D58721D9057637F59B54500B024C52 /* EXSharing-dummy.m in Sources */,
+				6C4B19961E3F0203ED868884B8B7C2D9 /* EXSharingModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

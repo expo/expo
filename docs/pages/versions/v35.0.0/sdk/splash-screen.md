@@ -1,5 +1,6 @@
 ---
 title: SplashScreen
+sourceCodeUrl: "https://github.com/expo/expo/blob/sdk-35/packages/expo/src/launch/SplashScreen.ts"
 ---
 
 A module that tells Expo to keep the splash screen visible until you make it hide.

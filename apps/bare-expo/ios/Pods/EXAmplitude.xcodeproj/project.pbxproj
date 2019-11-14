@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9BAB92C101F2A4D6D952AA3C4E2453BD /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DCDBC28E572810BABBF882DB3217E0C4 /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */; };
+		D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */; };
+		FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,7 +145,7 @@
 			buildConfigurationList = 5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */;
 			buildPhases = (
 				FFCFF7394E11240C54C886B42D84BC65 /* Headers */,
-				086DCBAC434B3D0B23BD063A2BF32210 /* Sources */,
+				70E3171D93A647B463CE54006B97B93F /* Sources */,
 				6327A136E639A980832C3253BB2C1E94 /* Frameworks */,
 			);
 			buildRules = (
@@ -198,12 +198,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		086DCBAC434B3D0B23BD063A2BF32210 /* Sources */ = {
+		70E3171D93A647B463CE54006B97B93F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DCDBC28E572810BABBF882DB3217E0C4 /* EXAmplitude-dummy.m in Sources */,
-				9BAB92C101F2A4D6D952AA3C4E2453BD /* EXAmplitude.m in Sources */,
+				D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */,
+				FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
