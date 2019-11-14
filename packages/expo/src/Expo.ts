@@ -162,18 +162,3 @@ export {
   // @ts-ignore
   WebView,
 } from './removed';
-
-declare var module: any;
-
-if (module && module.exports) {
-  if (global) {
-    const globals = require('./globals');
-
-    // @ts-ignore
-    global.__exponent = globals;
-    // @ts-ignore
-    global.__expo = globals;
-    // @ts-ignore
-    global.Expo = globals;
-  }
-}

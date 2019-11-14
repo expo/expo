@@ -7,9 +7,9 @@ import 'expo-asset';
 
 import { AppRegistry, Platform } from 'react-native';
 import Constants from 'expo-constants';
+import DevAppContainer from './environment/DevAppContainer';
 
 import { installWebGeolocationPolyfill } from 'expo-location';
-import DevAppContainer from './environment/DevAppContainer';
 
 if (typeof Constants.manifest.env === 'object') {
   Object.assign(process.env, Constants.manifest.env);
@@ -31,3 +31,20 @@ if (__DEV__) {
 
 // polyfill navigator.geolocation
 installWebGeolocationPolyfill();
+
+
+// install globals
+declare var module: any;
+
+if (module && module.exports) {
+  if (global) {
+    const globals = require('./globals');
+
+    // @ts-ignore
+    global.__exponent = globals;
+    // @ts-ignore
+    global.__expo = globals;
+    // @ts-ignore
+    global.Expo = globals;
+  }
+}
