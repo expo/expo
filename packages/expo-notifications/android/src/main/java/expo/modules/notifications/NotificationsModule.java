@@ -64,6 +64,10 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   private Context mContext;
   private String mAppId;
   private ChannelManager mChannelManager;
+  private NotificationPresenter mNotificationPresenter = new NotificationPresenterImpl();
+  private NotificationScoper mNotificationScoper;
+  private StringScoper mStringScoper;
+  private EventEmitter mEventEmitter;
 
   private ModuleRegistry mModuleRegistry = null;
 
@@ -109,8 +113,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   private String getProperString(String string) { // scoped version returns appIdId+":"+string;
-    StringScoper stringScoper = mModuleRegistry.getModule(StringScoper.class);
-    return stringScoper.getScopedString(string);
+    return mStringScoper.getScopedString(string);
   }
 
   @ExpoMethod
@@ -153,7 +156,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @ExpoMethod
   public void presentLocalNotification(HashMap data, final Promise promise) {
-    data = new NotificationScoper(mModuleRegistry.getModule(StringScoper.class)).scope(data);
+    data = mNotificationScoper.scope(data);
 
     Bundle bundle = new MapArguments(data).toBundle();
     bundle.putString(NOTIFICATION_APP_ID_KEY, mAppId);
@@ -161,8 +164,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     Integer notificationId = Math.abs( new Random().nextInt() );
     bundle.putString(NOTIFICATION_ID_KEY, notificationId.toString());
 
-    NotificationPresenter notificationPresenter = new NotificationPresenterImpl();
-    notificationPresenter.presentNotification(
+    mNotificationPresenter.presentNotification(
         mContext.getApplicationContext(),
         mAppId,
         bundle,
@@ -226,7 +228,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @ExpoMethod
   public void scheduleNotificationWithTimer(HashMap<String, Object> data, final HashMap<String, Object> options, final Promise promise) {
-    data = new NotificationScoper(mModuleRegistry.getModule(StringScoper.class)).scope(data);
+    data = mNotificationScoper.scope(data);
     data.put(NOTIFICATION_APP_ID_KEY, mAppId);
 
     HashMap<String, Object> details = new HashMap<>();
@@ -258,7 +260,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @ExpoMethod
   public void scheduleNotificationWithCalendar(HashMap data, final HashMap options, final Promise promise) {
-    data = new NotificationScoper(mModuleRegistry.getModule(StringScoper.class)).scope(data);
+    data = mNotificationScoper.scope(data);
     data.put(NOTIFICATION_APP_ID_KEY, mAppId);
 
     HashMap<String, Object> details = new HashMap<>();
@@ -297,6 +299,10 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
     createDefaultChannel();
     mChannelManager = getChannelManager();
+
+    mStringScoper = mModuleRegistry.getModule(StringScoper.class);
+    mNotificationScoper = new NotificationScoper(mStringScoper);
+    mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
   }
 
   private void createDefaultChannel() {
@@ -310,7 +316,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   protected ChannelManager getChannelManager() {
-    return new ChannelScopeManager(mModuleRegistry.getModule(StringScoper.class));
+    return new ChannelScopeManager(mStringScoper);
   }
 
   @ExpoMethod
@@ -331,29 +337,26 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @Override
   public void onUserInteraction(Bundle userInteraction) {
-    userInteraction = MessageUnscoper.getUnscopedMessage(userInteraction, mModuleRegistry.getModule(StringScoper.class));
-    EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-    if (eventEmitter != null) {
-      eventEmitter.emit(ON_USER_INTERACTION_EVENT, userInteraction);
+    userInteraction = MessageUnscoper.getUnscopedMessage(userInteraction, mStringScoper);
+    if (mEventEmitter != null) {
+      mEventEmitter.emit(ON_USER_INTERACTION_EVENT, userInteraction);
     }
   }
 
   @Override
   public void onForegroundNotification(Bundle notification) {
-    notification = MessageUnscoper.getUnscopedMessage(notification, mModuleRegistry.getModule(StringScoper.class));
-    EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-    if (eventEmitter != null) {
-      eventEmitter.emit(ON_FOREGROUND_NOTIFICATION_EVENT, notification);
+    notification = MessageUnscoper.getUnscopedMessage(notification, mStringScoper);
+    if (mEventEmitter != null) {
+      mEventEmitter.emit(ON_FOREGROUND_NOTIFICATION_EVENT, notification);
     }
   }
 
   @Override
   public void onTokenChange(String token) {
-    EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
-    if (eventEmitter != null) {
+    if (mEventEmitter != null) {
       Bundle msg = new Bundle();
       msg.putString("token", token);
-      eventEmitter.emit(ON_TOKEN_CHANGE, msg);
+      mEventEmitter.emit(ON_TOKEN_CHANGE, msg);
     }
   }
 
