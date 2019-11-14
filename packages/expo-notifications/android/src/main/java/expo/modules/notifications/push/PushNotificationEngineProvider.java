@@ -16,7 +16,7 @@ public class PushNotificationEngineProvider {
 
     public synchronized static Engine getPushNotificationEngine(Context context) {
         init();
-        return engines.get(Configuration.getValueFor(Configuration.PUSH_ENGINE_KEY, context));
+        return engines.get(Configuration.getPushEngine(context));
     }
 
     private static void init() {
