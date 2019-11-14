@@ -29,7 +29,7 @@ commands:
           command: |
 
             ROOT_BRANCH="master"
-
+            SEARCH_DEPTH=<< parameters.search_depth >>
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
               echo " ▶️  Running on ${CIRCLE_BRANCH}. Continuing the job..."
               # Required for circleci/node:latest-browsers
@@ -41,17 +41,17 @@ commands:
             echo "Checking for changes in branch ${CIRCLE_BRANCH}"
             echo " - Excluding << parameters.exclude >>"
             echo " - Requiring << parameters.requireOneOf >>"
-            echo " - Depth << parameters.search_depth >>"
+            echo " - Depth $SEARCH_DEPTH"
             echo " - Git repository root at ${CIRCLE_WORKING_DIRECTORY}"
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
 
             # Test all top-level files and directories
-            for file in $(find $PWD/* -maxdepth << parameters.search_depth >>); do
+            find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
               baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
               currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
               if ! [[ $file =~ << parameters.exclude >> ]]; then
                 if [[ $file =~ << parameters.requireOneOf >> ]]; then
-                  echo " -- [required] ${file}"
+                  echo " ++ [required] ${file}"
                   if [ ! $baseFileHash = $currentFileHash ]; then
                     echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
                     set +e
