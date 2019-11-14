@@ -16,8 +16,8 @@
 
 #import "ABI34_0_0RCTCxxUtils.h"
 
-using facebook::xplat::module::CxxModule;
-using namespace facebook::ReactABI34_0_0;
+using ABI34_0_0facebook::xplat::module::CxxModule;
+using namespace ABI34_0_0facebook::ReactABI34_0_0;
 
 @implementation ABI34_0_0RCTCxxMethod
 {
@@ -114,7 +114,7 @@ using namespace facebook::ReactABI34_0_0;
       // TODO: we should convert this to JSValue directly
       return convertFollyDynamicToId(result);
     }
-  } catch (const facebook::xplat::JsArgumentException &ex) {
+  } catch (const ABI34_0_0facebook::xplat::JsArgumentException &ex) {
     ABI34_0_0RCTLogError(@"Method %@.%s argument error: %s",
                 ABI34_0_0RCTBridgeModuleNameForClass([module class]), _method->name.c_str(),
                 ex.what());

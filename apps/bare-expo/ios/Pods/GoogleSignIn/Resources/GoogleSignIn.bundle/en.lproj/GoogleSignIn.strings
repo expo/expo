@@ -4,18 +4,6 @@
 /* Long form sign-in button text */
 "Sign in with Google" = "Sign in with Google";
 
-/* The title of the promotional prompt to install the Google app. */
-"PromoTitle" = "Sign in with Google";
-
-/* The body message of the promotional prompt to install the Google app. */
-"PromoMessage" = "Get the free Google app and sign in to apps with your Google Account. No need to remember passwords.";
-
-/* The cancel button on the promotional prompt to install the Google app. */
-"PromoActionCancel" = "Cancel";
-
-/* The install button on the promotional prompt to install the Google app. */
-"PromoActionInstall" = "Get";
-
 /* The text for the button for user to acknowledge and dismiss a dialog. */
 "OK" = "OK";
 

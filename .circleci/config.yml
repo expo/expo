@@ -1,5 +1,9 @@
 version: 2.1
 
+orbs:
+  job-status-change: expo/job-status-change@1.0.11
+  slack-job-status-notification: expo/slack-job-status-notification@1.0.6
+
 commands:
   conditionally_halt:
     description: 'Stop the job when there are no active changes in the branch. However, the master branch not affected.'
@@ -122,23 +126,27 @@ commands:
     steps:
       - run:
           name: Install common packages
+          # curl: slack sends notifications
           # direnv: configures environment with .envrc files
           # findutils: where, find, etc. for expo-module test
           # git: circleci checkout steps
           # gnugrep: used in .envrc
           # gnutar: used by nix commands which download channels
           # gzip: used by nix commands which download channels
+          # jq: used to format and parse json
           # openssh: circleci checkout steps
           # rsync: expo-module-scripts uses to copy template files
           # xz: circleci checkout steps
           command: |
             nix-env -iA \
+              nixpkgs.curl \
               nixpkgs.direnv \
               nixpkgs.findutils \
               nixpkgs.git \
               nixpkgs.gnugrep \
               nixpkgs.gnutar \
               nixpkgs.gzip \
+              nixpkgs.jq \
               nixpkgs.openssh \
               nixpkgs.rsync \
               nixpkgs.xz
@@ -147,12 +155,13 @@ commands:
       - run: echo 'eval "$(direnv export bash)"' >> ~/.bash_profile
       - run: echo '--frozen-lockfile true' >> ~/.yarnrc
       - checkout
+      - job-status-change/prepare
   decrypt_secrets_if_possible:
     steps:
       - run:
           name: Decrypt secrets
           command: |
-            if ! [ -v EXPO_GIT_CRYPT_KEY_BASE64 ]; then
+            if [[ ${EXPO_GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
               echo 'git-crypt key not present in environment' && exit 0
             fi
             git crypt unlock <(echo $EXPO_GIT_CRYPT_KEY_BASE64 | base64 --decode)
@@ -172,6 +181,20 @@ commands:
       - run:
           name: Fetch CocoaPods
           command: curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
+  git_lfs_pull:
+    steps:
+      - restore_cache:
+          keys:
+            - gitlfs-{{ arch }}
+            - gitlfs
+      - run:
+          name: Pull Git LFS files
+          command: git lfs pull
+      - save_cache:
+          key: gitlfs-{{ arch }}
+          paths:
+            # Save the LFS cache directory to save GitHub bandwidth
+            - .git/lfs
   restore_yarn_cache:
     parameters:
       working_directory:
@@ -224,6 +247,17 @@ commands:
           command: 'install'
           working_directory: << parameters.working_directory >>
           max_tries: 5
+  yarn_restore_and_install:
+    parameters:
+      working_directory:
+        type: string
+    steps:
+      - restore_yarn_cache:
+          working_directory: << parameters.working_directory >>
+      - yarn_install:
+          working_directory: << parameters.working_directory >>
+      - save_yarn_cache:
+          working_directory: << parameters.working_directory >>
 
 executors:
   # We add -l to all the shell commands to make it easier to use direnv
@@ -259,12 +293,16 @@ executors:
     working_directory: /Users/distiller/project
     shell: /bin/bash -leo pipefail
     environment:
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
       # fastlane complains if these are not set
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
       FASTLANE_SKIP_UPDATE_CHECK: 1
       FASTLANE_DISABLE_COLORS: 1
       CI: 1
+      # Prevent automatic download of LFS files
+      GIT_LFS_SKIP_SMUDGE: 1
 
 workflows:
   docs:
@@ -286,9 +324,9 @@ workflows:
   sdk:
     jobs:
       - expo_sdk
-      - web_test_suite
       # E2E SDK testing
-      - iOS-Detox
+      - web_test_suite
+      # - ios_test_suite
 
   # Android and iOS clients
   client:
@@ -313,11 +351,31 @@ workflows:
       - client_android_release_google_play:
           requires:
             - client_android_approve_google_play
+      - client_android_apk_release_approve:
+          type: approval
+          requires:
+            - client_android
+          filters:
+            branches:
+              only:
+                - /.*sdk-\d+/
+                - /.*all-ci.*/
+      - client_android_apk_release:
+          requires:
+            - client_android_apk_release_approve
+      - client_ios_simulator_release_approve:
+          type: approval
+          requires:
+            - client_ios
+          filters:
+            branches:
+              only:
+                - /.*sdk-\d+/
+                - /.*all-ci.*/
+      - client_ios_simulator_release:
+          requires:
+            - client_ios_simulator_release_approve
 
-  #     - shell_app_ios_tests:
-  #         requires:
-  #           - shell_app_sim_base_ios
-  #           - test_suite_publish
   shell_app:
     jobs:
       - shell_app_ios_approve_build:
@@ -366,10 +424,13 @@ jobs:
       - yarn_install:
           working_directory: ~/expo
       - save_yarn_cache
-      # Add back linting once we get ESLint or TSLint set up
       - run:
           name: Check packages
           command: expotools check-packages
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master sdk-*
+          slack_webhook: $SLACK_API_WEBHOOK
 
   web_test_suite:
     executor: web
@@ -383,8 +444,12 @@ jobs:
           working_directory: ~/expo
       - save_yarn_cache
       - yarn:
-          command: test:web:ci
-          working_directory: ~/expo/apps/test-suite
+          command: test:web
+          working_directory: ~/expo/apps/bare-expo
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master sdk-*
+          slack_webhook: $SLACK_WEB_WEBHOOK
 
   home:
     executor: js
@@ -399,23 +464,26 @@ jobs:
       - yarn:
           command: jest --maxWorkers 1
           working_directory: ~/expo/home
+      - yarn:
+          command: lint
+          working_directory: ~/expo/home
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master sdk-*
+          slack_webhook: $SLACK_API_WEBHOOK
 
   expotools:
     executor: js
     steps:
       - setup
       - guard_sdk_tests
-      - restore_yarn_cache:
-          working_directory: ~/expo/tools/expotools
-      - yarn_install:
-          working_directory: ~/expo/tools/expotools
-      - save_yarn_cache:
+      - yarn_restore_and_install:
           working_directory: ~/expo/tools/expotools
       - yarn:
           command: tsc
           working_directory: ~/expo/tools/expotools
 
-  iOS-Detox:
+  ios_test_suite:
     executor: mac
     macos: # Detox simulators require 10.1.0
       xcode: '10.1.0'
@@ -430,15 +498,15 @@ jobs:
       - run:
           name: Pull Detox
           working_directory: ~/project/apps/bare-expo
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew
+          command: brew tap wix/brew
       - run:
           name: Install iOS simulators
           working_directory: ~/project/apps/bare-expo
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils
+          command: brew install applesimutils
       - run:
           name: Install Watchman
           working_directory: ~/project/apps/bare-expo
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman
+          command: brew install watchman
 
       ## Yarn takes a while to run
       - restore_yarn_cache
@@ -450,20 +518,25 @@ jobs:
       - run:
           name: Clean Detox
           working_directory: ~/project/apps/bare-expo
-          command: yarn ci:detox-clean
+          command: yarn detox:clean
       - run:
           name: Build iOS project for Detox
           working_directory: ~/project/apps/bare-expo
-          command: yarn ci:detox-build-release
+          command: yarn ios:detox:build:release
       - run:
           name: Run tests
           working_directory: ~/project/apps/bare-expo
-          command: yarn ci:detox-test-release
+          command: yarn ios:detox:test:release
           # command: circleci tests glob "__e2e__/*.test.js" | circleci tests split --split-by=timings | xargs -n 1 yarn ci:detox-test-release --cleanup -f --workers=8
           # environment:
           #   JEST_JUNIT_OUTPUT: ./__e2e__/results/jest/results.xml
       # - store_test_results:
       # path: ~/project/apps/bare-expo/__e2e__/results
+
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master sdk-*
+          slack_webhook: $SLACK_IOS_WEBHOOK
 
   client_ios:
     executor: mac
@@ -472,16 +545,37 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
-      - run: git lfs pull
-      - fetch_cocoapods_specs
+      - git_lfs_pull
       - run:
           name: Generate dynamic macros
           command: expotools ios-generate-dynamic-macros
       - run:
           name: Build
           command: nix run expo.procps --command fastlane ios create_simulator_build
+      - save_cache:
+          key: client-ios-simulator-{{ .Revision }}
+          paths:
+            - ~/project/ios/simulator-build
       - store_artifacts:
           path: ~/Library/Logs/fastlane/
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master sdk-*
+          slack_webhook: $SLACK_IOS_WEBHOOK
+
+  client_ios_simulator_release:
+    executor: mac
+    steps:
+      - install_nix
+      - setup
+      - update_submodules
+      - git_lfs_pull
+      - decrypt_secrets_if_possible
+      - yarn_restore_and_install:
+          working_directory: ~/project/tools/expotools
+      - restore_cache:
+          key: client-ios-simulator-{{ .Revision }}
+      - run: expotools client-build --platform ios --release
 
   expo_client_build:
     executor: mac
@@ -490,11 +584,13 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
-      - run: git lfs pull
+      - git_lfs_pull
       - fetch_cocoapods_specs
       - run:
           name: Generate dynamic macros
-          command: expotools ios-generate-dynamic-macros
+          # Remove GoogleServices-Info because it has been stripped of all our secret keys
+          # Will be generated later in the build process if the user provides their own ios.googleServicesFile
+          command: expotools ios-generate-dynamic-macros --skip-template=GoogleService-Info.plist
       - run:
           name: Build Expo Client and upload tarball
           command: |
@@ -517,7 +613,7 @@ jobs:
       - setup
       - guard_sdk_tests
       - update_submodules
-      - run: git lfs pull
+      - git_lfs_pull
       - fetch_cocoapods_specs
       - yarn_install:
           working_directory: ~/project/tools-public
@@ -627,6 +723,22 @@ jobs:
           path: ~/expo/android/app/build/outputs/apk
       - store_artifacts: # daemon logs for debugging crashes
           path: ~/.gradle/daemon
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master sdk-*
+          slack_webhook: $SLACK_ANDROID_WEBHOOK
+
+  client_android_apk_release:
+    executor: js
+    steps:
+      - setup
+      - update_submodules
+      - decrypt_secrets_if_possible
+      - yarn_restore_and_install:
+          working_directory: ~/expo/tools/expotools
+      - restore_cache:
+          key: client-android-apk-{{ .Revision }}
+      - run: expotools client-build --platform android --release
 
   client_android_release_google_play:
     executor: js
@@ -668,6 +780,10 @@ jobs:
           key: docs-site-{{ .Revision }}
           paths:
             - docs/out
+      - job-status-change/status
+      - slack-job-status-notification/notify:
+          only_for_branches: master
+          slack_webhook: $SLACK_DOCS_WEBHOOK
 
   docs_deploy:
     executor: nix

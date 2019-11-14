@@ -33,7 +33,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* BareExpoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BareExpoTests.m; sourceTree = "<group>"; };
 		028439B18A901F7A2CF09BB9 /* libPods-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07F961A680F5B00A75B9A /* BareExpo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BareExpo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Bare Expo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bare Expo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BareExpo/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BareExpo/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* BareExpo.app */,
+				13B07F961A680F5B00A75B9A /* Bare Expo.app */,
 				00E356EE1AD99517003FC87E /* BareExpoTests.xctest */,
 			);
 			name = Products;
@@ -198,7 +198,7 @@
 			);
 			name = BareExpo;
 			productName = "Hello World";
-			productReference = 13B07F961A680F5B00A75B9A /* BareExpo.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Bare Expo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -463,8 +463,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.payments;
-				PRODUCT_NAME = BareExpo;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_NAME = "Bare Expo";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -484,8 +484,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.payments;
-				PRODUCT_NAME = BareExpo;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_NAME = "Bare Expo";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

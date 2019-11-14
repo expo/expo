@@ -28,18 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
     @see https://tools.ietf.org/html/rfc6749#section-5.1
     @see http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse
  */
-@interface OIDAuthorizationResponse : NSObject <NSCopying, NSSecureCoding> {
-  // property variables
-  OIDAuthorizationRequest *_request;
-  NSString *_authorizationCode;
-  NSString *_state;
-  NSString *_accessToken;
-  NSDate *_accessTokenExpirationDate;
-  NSString *_tokenType;
-  NSString *_idToken;
-  NSString *_scope;
-  NSDictionary<NSString *, NSObject<NSCopying> *> *_additionalParameters;
-}
+@interface OIDAuthorizationResponse : NSObject <NSCopying, NSSecureCoding>
 
 /*! @brief The request which was serviced.
  */
@@ -101,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary<NSString *, NSObject<NSCopying> *> *additionalParameters;
 
 /*! @internal
-    @brief Unavailable. Please use initWithParameters:.
+    @brief Unavailable. Please use initWithRequest:parameters:.
  */
 - (instancetype)init NS_UNAVAILABLE;
 

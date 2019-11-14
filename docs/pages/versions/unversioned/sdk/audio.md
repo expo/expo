@@ -18,6 +18,24 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import { Audio } from 'expo-av';
 ```
 
+## Request recording permissions
+
+### `Audio.requestPermissionsAsync()`
+
+Asks the user to grant permissions for audio recording. Alias for `Permissions.askAsync(Permissions.AUDIO_RECORDING)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `Audio.getPermissionsAsync()`
+
+Checks user's permissions for audio recording. Alias for `Permissions.getAsync(Permissions.AUDIO_RECORDING)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
 ## Enabling Audio and customizing Audio Mode
 
 ### `Audio.setIsEnabledAsync(value)`
@@ -170,7 +188,7 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
-The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](../av/) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -208,7 +226,7 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
 
-Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details.
+Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details. Additionally, audio recording is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
 #### Returns
 

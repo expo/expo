@@ -6,8 +6,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
 import abi34_0_0.org.unimodules.core.ExportedModule;
@@ -129,6 +129,9 @@ public class WebBrowserModule extends ExportedModule {
   public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
 
     Intent intent = createCustomTabsIntent(arguments);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
     intent.setData(Uri.parse(url));
 
     try {

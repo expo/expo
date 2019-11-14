@@ -16,7 +16,7 @@
 #import <GoogleMapsBase/GoogleMapsBase.h>
 #endif
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A result from a reverse geocode request, containing a human-readable address. This class is
@@ -72,4 +72,4 @@ NS_ASSUME_NONNULL_BEGIN;
  */
 @compatibility_alias GMSReverseGeocodeResult GMSAddress;
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

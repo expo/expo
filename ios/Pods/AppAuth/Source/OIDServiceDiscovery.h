@@ -23,10 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*! @brief Represents an OpenID Connect 1.0 Discovery Document
     @see https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
  */
-@interface OIDServiceDiscovery : NSObject <NSCopying, NSSecureCoding> {
-  // private variables
-  NSDictionary *_discoveryDictionary;
-}
+@interface OIDServiceDiscovery : NSObject <NSCopying, NSSecureCoding>
 
 /*! @brief The decoded OpenID Connect 1.0 Discovery Document as a dictionary.
  */
@@ -80,6 +77,12 @@ NS_ASSUME_NONNULL_BEGIN
     @seealso http://openid.net/specs/openid-connect-registration-1_0.html
  */
 @property(nonatomic, readonly, nullable) NSURL *registrationEndpoint;
+
+/* @brief OPTIONAL. URL of the OP's RP-Initiated Logout endpoint.
+   @remarks end_session_endpoint
+   @seealso http://openid.net/specs/openid-connect-session-1_0.html#OPMetadata
+ */
+@property(nonatomic, readonly, nullable) NSURL *endSessionEndpoint;
 
 /*! @brief RECOMMENDED. JSON array containing a list of the OAuth 2.0 [RFC6749] scope values that
         this server supports. The server MUST support the openid scope value. Servers MAY choose not

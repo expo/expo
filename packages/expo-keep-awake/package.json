@@ -1,6 +1,6 @@
 {
   "name": "expo-keep-awake",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,6 +8,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -21,7 +22,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-keep-awake"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -33,7 +35,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "~1.1.1"
   },
-  "gitHead": "9518929d6f2ba9cf8e0aae81d34cc1eb52f7093a"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

@@ -41,16 +41,6 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 
 @implementation OIDRegistrationResponse
 
-@synthesize request = _request;
-@synthesize clientID = _clientID;
-@synthesize clientIDIssuedAt = _clientIDIssuedAt;
-@synthesize clientSecret = _clientSecret;
-@synthesize clientSecretExpiresAt = _clientSecretExpiresAt;
-@synthesize registrationAccessToken = _registrationAccessToken;
-@synthesize registrationClientURI = _registrationClientURI;
-@synthesize tokenEndpointAuthenticationMethod = _tokenEndpointAuthenticationMethod;
-@synthesize additionalParameters = _additionalParameters;
-
 /*! @brief Returns a mapping of incoming parameters to instance variables.
     @return A mapping of incoming parameters to instance variables.
  */

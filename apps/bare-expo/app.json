@@ -7,6 +7,14 @@
     "privacy": "unlisted",
     "sdkVersion": "34.0.0",
     "version": "1.0.0",
-    "platforms": ["ios", "android", "web"]
+    "platforms": ["ios", "android", "web"],
+    "web": {
+      "build": {
+        "babel": {
+          "root": "./",
+          "include": ["test-suite", "bare-expo"]
+        }
+      }
+    }
   }
 }

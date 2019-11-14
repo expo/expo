@@ -29,7 +29,7 @@ static NSString * const IdentFieldName = @"ident";
 static NSString * const RNBranchErrorDomain = @"RNBranchErrorDomain";
 static NSInteger const RNBranchUniversalObjectNotFoundError = 1;
 
-static NSString * const REQUIRED_BRANCH_SDK = @"0.27.1";
+static NSString * const REQUIRED_BRANCH_SDK = @"0.29.0";
 
 #pragma mark - Private RNBranch declarations
 
@@ -89,9 +89,6 @@ RCT_EXPORT_MODULE();
     if (config.delayInitToCheckForSearchAds) {
         [instance delayInitToCheckForSearchAds];
     }
-    if (config.appleSearchAdsDebugMode) {
-        [instance setAppleSearchAdsDebugMode];
-    }
 }
 
 - (NSDictionary<NSString *, NSString *> *)constantsToExport {
@@ -147,11 +144,6 @@ RCT_EXPORT_MODULE();
     [self.branch delayInitToCheckForSearchAds];
 }
 
-+ (void)setAppleSearchAdsDebugMode
-{
-    [self.branch setAppleSearchAdsDebugMode];
-}
-
 + (void)setRequestMetadataKey:(NSString *)key value:(NSObject *)value
 {
     [self.branch setRequestMetadataKey:key value:value];
@@ -183,7 +175,7 @@ RCT_EXPORT_MODULE();
         if (error) result[RNBranchLinkOpenedNotificationErrorKey] = error;
         if (params) {
             result[RNBranchLinkOpenedNotificationParamsKey] = params;
-            BOOL clickedBranchLink = params[@"+clicked_branch_link"];
+            BOOL clickedBranchLink = [params[@"+clicked_branch_link"] boolValue];
 
             if (clickedBranchLink) {
                 BranchUniversalObject *branchUniversalObject = [BranchUniversalObject objectWithDictionary:params];

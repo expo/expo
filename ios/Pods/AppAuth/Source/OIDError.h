@@ -381,7 +381,7 @@ typedef NS_ENUM(NSInteger, OIDErrorCodeOAuthRegistration) {
 
 
 /*! @brief The exception text for the exception which occurs when a
-        @c OIDAuthorizationFlowSession receives a message after it has already completed.
+        @c OIDExternalUserAgentSession receives a message after it has already completed.
  */
 extern NSString *const OIDOAuthExceptionInvalidAuthorizationFlow;
 

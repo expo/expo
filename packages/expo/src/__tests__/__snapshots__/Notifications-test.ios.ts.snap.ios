@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`properly throws if "options.intervalMs" is used 1`] = `[Error: The "intervalMs" option is not supported on iOS]`;

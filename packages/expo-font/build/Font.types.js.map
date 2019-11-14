@@ -1,0 +1,1 @@
+{"version":3,"file":"Font.types.js","sourceRoot":"","sources":["../src/Font.types.ts"],"names":[],"mappings":"","sourcesContent":["import { Asset } from 'expo-asset';\n\n/**\n * A font source can be a URI, a module ID, or an Expo Asset.\n */\nexport type FontSource = string | number | Asset | FontResource;\n\nexport type FontResource = {\n  uri: string | number;\n};\n"]}

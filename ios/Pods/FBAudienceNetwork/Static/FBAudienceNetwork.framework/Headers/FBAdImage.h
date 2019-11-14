@@ -20,6 +20,8 @@
 
 #import <FBAudienceNetwork/FBAdDefines.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  Represents an image creative.
  */
@@ -58,3 +60,5 @@ FB_CLASS_EXPORT
 - (void)loadImageAsyncWithBlock:(nullable void (^)(UIImage * __nullable image))block;
 
 @end
+
+NS_ASSUME_NONNULL_END

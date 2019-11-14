@@ -51,7 +51,7 @@ export default class DocumentationSidebarLink extends React.Component {
     }
 
     // Special case for root url
-    if (this.props.info.name === 'Getting to know Expo') {
+    if (this.props.info.name === 'What is Expo?') {
       const asPath = this.props.asPath;
       if (this.props.asPath.match(/\/versions\/[\w\.]+\/$/)) {
         return true;

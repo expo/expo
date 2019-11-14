@@ -1,6 +1,6 @@
 package expo.modules.imagemanipulator.arguments;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.unimodules.core.arguments.ReadableArguments;
 

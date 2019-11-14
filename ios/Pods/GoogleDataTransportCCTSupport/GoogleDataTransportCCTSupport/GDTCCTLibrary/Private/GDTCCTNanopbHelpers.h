@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <GoogleDataTransport/GDTStoredEvent.h>
+#import <GoogleDataTransport/GDTCORStoredEvent.h>
 
 #import "GDTCCTLibrary/Protogen/nanopb/cct.nanopb.h"
 
@@ -63,7 +63,7 @@ NSData *GDTCCTEncodeBatchedLogRequest(gdt_cct_BatchedLogRequest *batchedLogReque
  */
 FOUNDATION_EXPORT
 gdt_cct_BatchedLogRequest GDTCCTConstructBatchedLogRequest(
-    NSDictionary<NSString *, NSSet<GDTStoredEvent *> *> *logMappingIDToLogSet);
+    NSDictionary<NSString *, NSSet<GDTCORStoredEvent *> *> *logMappingIDToLogSet);
 
 /** Constructs a log request given a log source and a set of events.
  *
@@ -72,15 +72,15 @@ gdt_cct_BatchedLogRequest GDTCCTConstructBatchedLogRequest(
  * @param logSet The set of events to send in this log request.
  */
 FOUNDATION_EXPORT
-gdt_cct_LogRequest GDTCCTConstructLogRequest(int32_t logSource, NSSet<GDTStoredEvent *> *logSet);
+gdt_cct_LogRequest GDTCCTConstructLogRequest(int32_t logSource, NSSet<GDTCORStoredEvent *> *logSet);
 
-/** Constructs a gdt_cct_LogEvent given a GDTStoredEvent*.
+/** Constructs a gdt_cct_LogEvent given a GDTCORStoredEvent*.
  *
- * @param event The GDTStoredEvent to convert.
+ * @param event The GDTCORStoredEvent to convert.
  * @return The new gdt_cct_LogEvent object.
  */
 FOUNDATION_EXPORT
-gdt_cct_LogEvent GDTCCTConstructLogEvent(GDTStoredEvent *event);
+gdt_cct_LogEvent GDTCCTConstructLogEvent(GDTCORStoredEvent *event);
 
 /** Constructs a gdt_cct_ClientInfo representing the client device.
  *

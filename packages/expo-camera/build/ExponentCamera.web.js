@@ -1,27 +1,20 @@
-import React from 'react';
-import { findNodeHandle, StyleSheet, View } from 'react-native';
+import React, { forwardRef } from 'react';
+import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
 import CameraModule from './CameraModule/CameraModule';
 import CameraManager from './ExponentCameraManager.web';
 export default class ExponentCamera extends React.Component {
     constructor() {
         super(...arguments);
         this.state = { type: null };
-        this._updateCameraProps = async ({ type, zoom, pictureSize, flashMode, autoFocus, 
-        // focusDepth,
-        whiteBalance, }) => {
+        this._updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }) => {
             const { camera } = this;
             if (!camera) {
                 return;
             }
-            await Promise.all([
-                camera.setTypeAsync(type),
-                camera.setPictureSize(pictureSize),
-                camera.setZoomAsync(zoom),
-                camera.setAutoFocusAsync(autoFocus),
-                camera.setWhiteBalanceAsync(whiteBalance),
-                camera.setFlashModeAsync(flashMode),
-                camera.ensureCameraIsRunningAsync(),
-            ]);
+            await camera.setTypeAsync(type);
+            await camera.updateWebCameraSettingsAsync(webCameraSettings);
+            // await camera.setPictureSize(pictureSize as string);
+            await camera.ensureCameraIsRunningAsync();
             const actualCameraType = camera.getActualCameraType();
             if (actualCameraType !== this.state.type) {
                 this.setState({ type: actualCameraType });
@@ -45,13 +38,17 @@ export default class ExponentCamera extends React.Component {
                 onPictureSaved: this.props.onPictureSaved,
             });
         };
+        this.getAvailableCameraTypesAsync = async () => {
+            const camera = this.getCamera();
+            return await camera.getAvailableCameraTypesAsync();
+        };
         this.resumePreview = async () => {
             const camera = this.getCamera();
             await camera.resumePreview();
         };
-        this.pausePreview = () => {
+        this.pausePreview = async () => {
             const camera = this.getCamera();
-            camera.pausePreview();
+            await camera.stopAsync();
         };
         this.onCameraReady = () => {
             if (this.props.onCameraReady) {
@@ -67,12 +64,13 @@ export default class ExponentCamera extends React.Component {
             if (!ref) {
                 this.video = null;
                 if (this.camera) {
-                    this.camera.unmount();
+                    this.camera.stopAsync();
                     this.camera = undefined;
                 }
                 return;
             }
             this.video = findNodeHandle(ref);
+            this.video.webkitPlaysinline = true;
             this.camera = new CameraModule(ref);
             this.camera.onCameraReady = this.onCameraReady;
             this.camera.onMountError = this.onMountError;
@@ -81,35 +79,38 @@ export default class ExponentCamera extends React.Component {
     }
     componentWillUnmount() {
         if (this.camera) {
-            this.camera.unmount();
+            this.camera.stopAsync();
         }
     }
     componentWillReceiveProps(nextProps) {
         this._updateCameraProps(nextProps);
     }
     render() {
-        const transform = this.state.type === CameraManager.Type.front ? 'rotateY(180deg)' : 'none';
+        const { pointerEvents } = this.props;
+        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
+        // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
+        const isMuted = true;
+        const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
         const style = {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform,
+            // Flip the camera
+            transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
         };
-        return (<View style={[styles.videoWrapper, this.props.style]}>
-        <video ref={this._setRef} style={style} autoPlay playsInline/>
+        return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
+        <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
         {this.props.children}
       </View>);
     }
 }
+const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
 const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,
         alignItems: 'stretch',
+    },
+    video: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
     },
 });
 //# sourceMappingURL=ExponentCamera.web.js.map

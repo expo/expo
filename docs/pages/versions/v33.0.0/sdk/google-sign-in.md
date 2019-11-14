@@ -130,6 +130,8 @@ Asynchronously returns a boolean representing the user's authentication status.
 
 This method will attempt to reauthenticate the user without initializing the authentication flow. If the method is successful, the currently authenticated `GoogleUser` will be returned, otherwise the method will return `null`.
 
+On Android, the returned `GoogleUser` object may have a nonnull `serverAuthCode` rather than a `refreshToken`. If you need a refresh token, you can call Google's API directly to exchange the authorization code for a token. Instructions for how to perform this request can be found [in Google's documentation](https://developers.google.com/identity/protocols/OAuth2InstalledApp#exchange-authorization-code) ("Step 5: Exchange authorization code for refresh and access tokens"). The `clientId` in these requests is the **Web Client ID** from the Google API Console.
+
 ### `signInAsync(): Promise<?GoogleSignInAuthResult>`
 
 Starts the native authentication flow with the information provided in `initAsync()`.

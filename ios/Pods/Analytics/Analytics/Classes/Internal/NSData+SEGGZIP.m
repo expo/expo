@@ -49,7 +49,7 @@ void *_Nullable seg_libzOpen()
 }
 
 
-@implementation NSData (GZIP)
+@implementation NSData (SEG_GZIP)
 
 - (NSData *)seg_gzippedDataWithCompressionLevel:(float)level
 {

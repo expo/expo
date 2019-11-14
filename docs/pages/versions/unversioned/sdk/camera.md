@@ -92,6 +92,29 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 import { Camera } from 'expo-camera';
 ```
 
+## static methods
+
+- **Camera.isAvailableAsync(): boolean**
+
+Check whether the current device has a camera. This is useful for web and simulators cases. This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser). You will still need to check if the native permission has been accepted.
+
+```js
+import { Camera } from 'expo-camera';
+
+if (await Camera.isAvailableAsync()) {
+}
+```
+
+- **Camera.getAvailableCameraTypesAsync(): string[]**
+
+Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
+
+```js
+import { Camera } from 'expo-camera';
+
+const types = await Camera.getAvailableCameraTypesAsync();
+```
+
 ### props
 
 - **type**
@@ -216,7 +239,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file (useable as the source for an `Image` element) and `width, height` specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-The local image URI is temporary. Use [`Expo.FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+The local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
 
 ### `recordAsync`
 
@@ -268,3 +291,33 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview`
 
 Resumes the camera preview.
+
+### `requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `getPermissionsAsync()`
+
+Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+## Web Support
+
+Luckily most browsers support at least some form of web camera functionality, you can check out the [web camera browser support here](https://caniuse.com/#feat=stream).
+
+### Chrome iframe usage
+
+When using **Chrome versions 64+**, if you try to use a web camera in a cross-origin iframe nothing will render. To add support for cameras in your iframe simply add the attribute `allow="microphone; camera;"` to the iframe element:
+
+```html
+<iframe src="..." allow="microphone; camera;">
+  <!-- <Camera /> -->
+</iframe>
+```

@@ -6,6 +6,7 @@
 // redefined from RCTDevMenu.mm
 NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
+NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 
 @implementation EXDevSettings
 
@@ -15,7 +16,8 @@ NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
 {
   NSDictionary *defaultValues = @{
                                   kRCTDevSettingShakeToShowDevMenu: @YES,
-                                  kRCTDevSettingLiveReloadEnabled: @YES,
+                                  kRCTDevSettingHotLoadingEnabled: @YES,
+                                  kRCTDevSettingLiveReloadEnabled: @NO,
                                   };
   EXDevSettingsDataSource *dataSource = [[EXDevSettingsDataSource alloc] initWithDefaultValues:defaultValues
                                                                                forExperienceId:experienceId

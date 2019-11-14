@@ -38,6 +38,10 @@ static NSString *const kIssuerKey = @"issuer";
  */
 static NSString *const kRegistrationEndpointKey = @"registrationEndpoint";
 
+/*! @brief The key for the @c endSessionEndpoint property.
+ */
+static NSString *const kEndSessionEndpointKey = @"endSessionEndpoint";
+
 /*! @brief The key for the @c discoveryDocument property.
  */
 static NSString *const kDiscoveryDocumentKey = @"discoveryDocument";
@@ -50,18 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
                                 tokenEndpoint:(NSURL *)tokenEndpoint
                                        issuer:(nullable NSURL *)issuer
                          registrationEndpoint:(nullable NSURL *)registrationEndpoint
+                           endSessionEndpoint:(nullable NSURL *)endSessionEndpoint
                             discoveryDocument:(nullable OIDServiceDiscovery *)discoveryDocument
                             NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation OIDServiceConfiguration
-
-@synthesize authorizationEndpoint = _authorizationEndpoint;
-@synthesize tokenEndpoint = _tokenEndpoint;
-@synthesize issuer = _issuer;
-@synthesize registrationEndpoint = _registrationEndpoint;
-@synthesize discoveryDocument = _discoveryDocument;
 
 - (instancetype)init
     OID_UNAVAILABLE_USE_INITIALIZER(@selector(
@@ -73,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         tokenEndpoint:(NSURL *)tokenEndpoint
                issuer:(nullable NSURL *)issuer
  registrationEndpoint:(nullable NSURL *)registrationEndpoint
+   endSessionEndpoint:(nullable OIDServiceDiscovery *)endSessionEndpoint
     discoveryDocument:(nullable OIDServiceDiscovery *)discoveryDocument {
 
   self = [super init];
@@ -81,6 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     _tokenEndpoint = [tokenEndpoint copy];
     _issuer = [issuer copy];
     _registrationEndpoint = [registrationEndpoint copy];
+    _endSessionEndpoint = [endSessionEndpoint copy];
     _discoveryDocument = [discoveryDocument copy];
   }
   return self;
@@ -92,6 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
                                tokenEndpoint:tokenEndpoint
                                       issuer:nil
                         registrationEndpoint:nil
+                          endSessionEndpoint:nil
                            discoveryDocument:nil];
 }
 
@@ -102,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
                                tokenEndpoint:tokenEndpoint
                                       issuer:nil
                         registrationEndpoint:registrationEndpoint
+                          endSessionEndpoint:nil
                            discoveryDocument:nil];
 }
 
@@ -112,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                                tokenEndpoint:tokenEndpoint
                                       issuer:issuer
                         registrationEndpoint:nil
+                          endSessionEndpoint:nil
                            discoveryDocument:nil];
 }
 
@@ -123,6 +127,20 @@ NS_ASSUME_NONNULL_BEGIN
                                tokenEndpoint:tokenEndpoint
                                       issuer:issuer
                         registrationEndpoint:registrationEndpoint
+                          endSessionEndpoint:nil
+                           discoveryDocument:nil];
+}
+
+- (instancetype)initWithAuthorizationEndpoint:(NSURL *)authorizationEndpoint
+                                tokenEndpoint:(NSURL *)tokenEndpoint
+                                       issuer:(nullable NSURL *)issuer
+                         registrationEndpoint:(nullable NSURL *)registrationEndpoint
+                           endSessionEndpoint:(nullable NSURL *)endSessionEndpoint {
+  return [self initWithAuthorizationEndpoint:authorizationEndpoint
+                               tokenEndpoint:tokenEndpoint
+                                      issuer:issuer
+                        registrationEndpoint:registrationEndpoint
+                          endSessionEndpoint:endSessionEndpoint
                            discoveryDocument:nil];
 }
 
@@ -131,6 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
                                tokenEndpoint:discoveryDocument.tokenEndpoint
                                       issuer:discoveryDocument.issuer
                         registrationEndpoint:discoveryDocument.registrationEndpoint
+                          endSessionEndpoint:discoveryDocument.endSessionEndpoint
                            discoveryDocument:discoveryDocument];
 }
 
@@ -159,6 +178,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          forKey:kIssuerKey];
   NSURL *registrationEndpoint = [aDecoder decodeObjectOfClass:[NSURL class]
                                                        forKey:kRegistrationEndpointKey];
+  NSURL *endSessionEndpoint = [aDecoder decodeObjectOfClass:[NSURL class]
+                                                       forKey:kEndSessionEndpointKey];
   // We don't accept nil authorizationEndpoints or tokenEndpoints.
   if (!authorizationEndpoint || !tokenEndpoint) {
     return nil;
@@ -171,6 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
                                tokenEndpoint:tokenEndpoint
                                       issuer:issuer
                         registrationEndpoint:registrationEndpoint
+                          endSessionEndpoint:endSessionEndpoint
                            discoveryDocument:discoveryDocument];
 }
 
@@ -180,6 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
   [aCoder encodeObject:_issuer forKey:kIssuerKey];
   [aCoder encodeObject:_registrationEndpoint forKey:kRegistrationEndpointKey];
   [aCoder encodeObject:_discoveryDocument forKey:kDiscoveryDocumentKey];
+  [aCoder encodeObject:_endSessionEndpoint forKey:kEndSessionEndpointKey];
 }
 
 #pragma mark - description
@@ -187,10 +210,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)description {
   return [NSString stringWithFormat:
       @"OIDServiceConfiguration authorizationEndpoint: %@, tokenEndpoint: %@, "
-          "registrationEndpoint: %@, discoveryDocument: [%@]",
+          "registrationEndpoint: %@, endSessionEndpoint: %@, discoveryDocument: [%@]",
       _authorizationEndpoint,
       _tokenEndpoint,
       _registrationEndpoint,
+      _endSessionEndpoint,
       _discoveryDocument];
 }
 

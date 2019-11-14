@@ -13,7 +13,9 @@
     "tag": "v1.1.6"
   },
   "module_name": "DoubleConversion",
+  "header_dir": "double-conversion",
   "source_files": "double-conversion/*.{h,cc}",
+  "compiler_flags": "-Wno-unreachable-code",
   "platforms": {
     "ios": "9.0",
     "tvos": "9.2"

@@ -178,10 +178,10 @@ extends `OAuthBaseProps`, is used to create OAuth flows.
 
 | Name                                                                                                                                             | Type                 | Description                                                   |
 | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- | ------------------------------------------------------------- |
-| [authorizationEndpoint](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint)                                             | `string | undefined` | Optional URL of the OP's OAuth 2.0 Authorization Endpoint     |
-| [registrationEndpoint](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#ab6a4608552978d3bce67b93b45321555) | `string | undefined` | Optional URL of the OP's Dynamic Client Registration Endpoint |
+| [tokenEndpoint](https://openid.net/specs/openid-connect-core-1_0.html#TokenEndpoint)                                                             | `string`             | URL of the OP's OAuth 2.0 Token Endpoint                      |
+| [authorizationEndpoint](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint)                                             | `string`             | URL of the OP's OAuth 2.0 Authorization Endpoint              |
+| [registrationEndpoint](https://openid.net/specs/openid-connect-registration-1_0.html#ClientRegistration)                                         | `string | undefined` | Optional URL of the OP's Dynamic Client Registration Endpoint |
 | revocationEndpoint                                                                                                                               | `string | undefined` | Optional URL of the OAuth server used for revoking tokens     |
-| tokenEndpoint                                                                                                                                    | `string`             | URL of the OP's OAuth 2.0 Token Endpoint                      |
 
 ## `OAuthParameters`
 

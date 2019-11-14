@@ -1,0 +1,29 @@
+{
+  "name": "React-RCTLinking",
+  "version": "0.61.2",
+  "summary": "A general interface to interact with both incoming and outgoing app links.",
+  "homepage": "http://facebook.github.io/react-native/",
+  "documentation_url": "https://facebook.github.io/react-native/docs/linking",
+  "license": "MIT",
+  "authors": "Facebook, Inc. and its affiliates",
+  "platforms": {
+    "ios": "9.0",
+    "tvos": "9.2"
+  },
+  "source": {
+    "git": "https://github.com/facebook/react-native.git",
+    "tag": "v0.61.2"
+  },
+  "source_files": "*.{m}",
+  "preserve_paths": [
+    "package.json",
+    "LICENSE",
+    "LICENSE-docs"
+  ],
+  "header_dir": "RCTLinking",
+  "dependencies": {
+    "React-Core/RCTLinkingHeaders": [
+      "0.61.2"
+    ]
+  }
+}

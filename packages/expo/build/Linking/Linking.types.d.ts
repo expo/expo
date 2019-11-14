@@ -1,6 +1,11 @@
+export declare type QueryParams = {
+    [key: string]: string | undefined;
+};
 export declare type ParsedURL = {
+    scheme: string | null;
+    hostname: string | null;
     path: string | null;
-    queryParams: Object | null;
+    queryParams: QueryParams | null;
 };
 export declare type EventType = {
     url: string;

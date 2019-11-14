@@ -7,7 +7,15 @@ The Vibration API is exposed at `Vibration.vibrate()`. The vibration is asynchro
 
 There will be no effect on devices that do not support Vibration, eg. the simulator.
 
-**Note for Android:** add `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`
+**Note for Android:** add the `VIBRATE` permission under the `"android"` field in your `app.json` file:
+
+```javascript
+{
+  "android": {
+    "permission": ["VIBRATE"]
+  }
+}
+```
 
 **The vibration duration in iOS is not configurable**, so there are some differences with Android. In Android, if `pattern` is a number, it specifies the vibration duration in ms. If `pattern` is an array, those odd indices are the vibration duration, while the even ones are the separation time.
 

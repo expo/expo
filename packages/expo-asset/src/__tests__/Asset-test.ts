@@ -182,11 +182,15 @@ if (Platform.OS === 'web') {
     it(`fetches images to determine the dimensions`, async () => {
       const ImageAssets = require('../ImageAssets');
       const { Asset } = require('../index');
-  
+
       let asset = Asset.fromMetadata(mockImageMetadata);
-      ImageAssets.getImageInfoAsync.mockResolvedValueOnce({ width: 120, height: 180, name: 'test' });
+      ImageAssets.getImageInfoAsync.mockResolvedValueOnce({
+        width: 120,
+        height: 180,
+        name: 'test',
+      });
       await asset.downloadAsync();
-  
+
       expect(asset.width).toBe(120);
       expect(asset.height).toBe(180);
       expect(asset.downloaded).toBe(true);

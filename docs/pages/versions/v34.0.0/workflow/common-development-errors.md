@@ -14,7 +14,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - An error is preventing the connection to your local development server.
 
-- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../../introduction/troubleshooting-proxies/) affecting the network you are currently connected to.
+- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../../guides/troubleshooting-proxies/) affecting the network you are currently connected to.
 
 ### Module AppRegistry is not a registered callable module (calling runApplication)
 

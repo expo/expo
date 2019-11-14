@@ -51,7 +51,7 @@ async function emitOrientationEvent() {
 }
 
 if (canUseEventListeners) {
-  if (orientation) {
+  if (orientation && orientation.addEventListener) {
     orientation.addEventListener('change', emitOrientationEvent);
   } else {
     window.addEventListener('orientationchange', emitOrientationEvent);

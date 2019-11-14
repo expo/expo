@@ -40,4 +40,23 @@ export default {
       });
     };
   },
+
+  setPreferredAppearance(preferredAppearance) {
+    return async dispatch => {
+      try {
+        await Promise.all([
+          LocalStorage.updateSettingsAsync({
+            preferredAppearance,
+          }),
+        ]);
+
+        return dispatch({
+          type: 'setPreferredAppearance',
+          payload: { preferredAppearance },
+        });
+      } catch (e) {
+        alert('Oops, something went wrong and we were unable to change the preferred appearance');
+      }
+    };
+  },
 };

@@ -19,8 +19,9 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 }
 
 const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
-const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
+const BasicMaskScreen = optionalRequire(() => require('../screens/BasicMaskScreen')); const BlurView = optionalRequire(() => require('../screens/BlurViewScreen'));
 const Camera = optionalRequire(() => require('../screens/Camera/CameraScreen'));
+const DateTimePicker = optionalRequire(() => require('../screens/DateTimePickerScreen'));
 const FacebookAds = optionalRequire(() =>
   require('../screens/FacebookAdsScreen')
 );
@@ -37,12 +38,16 @@ const ReanimatedProgress = optionalRequire(() =>
 );
 const SVGExample = optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
 const SVG = optionalRequire(() => require('../screens/SVG/SVGScreen'));
+const SharedElement = optionalRequire(() => require('../screens/SharedElementScreen'));
+const ViewPager = optionalRequire(() => require('../screens/ViewPagerScreen'));
 
 const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   AdMob,
   BarCodeScanner,
+  MaskedView: BasicMaskScreen,
   BlurView,
   Camera,
+  DateTimePicker,
   GL,
   ...GLScreens,
   GestureHandlerPinch,
@@ -60,6 +65,8 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   Video,
   Screens: ScreensScreens,
   WebView,
+  ViewPager,
+  SharedElement,
 };
 
 interface ScreensObjectType {

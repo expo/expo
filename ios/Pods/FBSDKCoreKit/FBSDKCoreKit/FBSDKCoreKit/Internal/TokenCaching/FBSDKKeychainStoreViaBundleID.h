@@ -20,6 +20,7 @@
 
 // This is the keychainstore defined in 3.17 that incorrectly used the bundle id as the service id
 // and should NOT be used outside of this cache.
+NS_SWIFT_NAME(KeychainStoreViaBundleID)
 @interface FBSDKKeychainStoreViaBundleID : FBSDKKeychainStore
 
 // since this subclass represents the old keychainstore behavior,

@@ -21,12 +21,13 @@
 @class OIDAuthorization;
 @class OIDAuthorizationRequest;
 @class OIDAuthorizationResponse;
+@class OIDEndSessionRequest;
+@class OIDEndSessionResponse;
 @class OIDRegistrationRequest;
 @class OIDRegistrationResponse;
 @class OIDServiceConfiguration;
 @class OIDTokenRequest;
 @class OIDTokenResponse;
-@protocol OIDAuthorizationFlowSession;
 @protocol OIDExternalUserAgent;
 @protocol OIDExternalUserAgentSession;
 
@@ -47,6 +48,13 @@ typedef void (^OIDDiscoveryCallback)(OIDServiceConfiguration *_Nullable configur
  */
 typedef void (^OIDAuthorizationCallback)(OIDAuthorizationResponse *_Nullable authorizationResponse,
                                          NSError *_Nullable error);
+
+/*! @brief Block used as a callback for the end-session request of @c OIDAuthorizationService.
+    @param endSessionResponse The end-session response, if available.
+    @param error The error if an error occurred.
+ */
+typedef void (^OIDEndSessionCallback)(OIDEndSessionResponse *_Nullable endSessionResponse,
+                                      NSError *_Nullable error);
 
 /*! @brief Represents the type of block used as a callback for various methods of
         @c OIDAuthorizationService.
@@ -72,10 +80,7 @@ typedef void (^OIDRegistrationCompletion)(OIDRegistrationResponse *_Nullable reg
 /*! @brief Performs various OAuth and OpenID Connect related calls via the user agent or
         \NSURLSession.
  */
-@interface OIDAuthorizationService : NSObject {
-  // property variables
-  OIDServiceConfiguration *_configuration;
-}
+@interface OIDAuthorizationService : NSObject
 
 /*! @brief The service's configuration.
     @remarks Each authorization service is initialized with a configuration. This configuration
@@ -111,9 +116,6 @@ typedef void (^OIDRegistrationCompletion)(OIDRegistrationResponse *_Nullable reg
 + (void)discoverServiceConfigurationForDiscoveryURL:(NSURL *)discoveryURL
                                          completion:(OIDDiscoveryCallback)completion;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 /*! @brief Perform an authorization flow using a generic flow shim.
     @param request The authorization request.
     @param externalUserAgent Generic external user-agent that can present an authorization
@@ -123,12 +125,23 @@ typedef void (^OIDRegistrationCompletion)(OIDRegistrationResponse *_Nullable reg
         receives a @c OIDExternalUserAgentSession.cancel message, or after processing a
         @c OIDExternalUserAgentSession.resumeExternalUserAgentFlowWithURL: message.
  */
-+ (id<OIDExternalUserAgentSession, OIDAuthorizationFlowSession>)
-    presentAuthorizationRequest:(OIDAuthorizationRequest *)request
-              externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
-                       callback:(OIDAuthorizationCallback)callback;
++ (id<OIDExternalUserAgentSession>) presentAuthorizationRequest:(OIDAuthorizationRequest *)request
+    externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
+             callback:(OIDAuthorizationCallback)callback;
 
-#pragma GCC diagnostic pop
+/*! @brief Perform a logout request.
+    @param request The end-session logout request.
+    @param externalUserAgent Generic external user-agent that can present user-agent requests.
+    @param callback The method called when the request has completed or failed.
+    @return A @c OIDExternalUserAgentSession instance which will terminate when it
+        receives a @c OIDExternalUserAgentSession.cancel message, or after processing a
+        @c OIDExternalUserAgentSession.resumeExternalUserAgentFlowWithURL: message.
+    @see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
+ */
++ (id<OIDExternalUserAgentSession>)
+    presentEndSessionRequest:(OIDEndSessionRequest *)request
+           externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
+                    callback:(OIDEndSessionCallback)callback;
 
 /*! @brief Performs a token request.
     @param request The token request.

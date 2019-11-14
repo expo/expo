@@ -11,6 +11,7 @@ import Calendars from '../screens/CalendarsScreen';
 import Constants from '../screens/ConstantsScreen';
 import ContactDetail from '../screens/Contacts/ContactDetailScreen';
 import Contacts from '../screens/Contacts/ContactsScreen';
+import Device from '../screens/DeviceScreen';
 import DocumentPicker from '../screens/DocumentPickerScreen';
 import Events from '../screens/EventsScreen';
 import FacebookLogin from '../screens/FacebookLoginScreen';
@@ -33,6 +34,7 @@ import Permissions from '../screens/PermissionsScreen';
 import Print from '../screens/PrintScreen';
 import Recording from '../screens/AV/RecordingScreen';
 import Reminders from '../screens/RemindersScreen';
+import SafeAreaContext from '../screens/SafeAreaContextScreen';
 import ScreenOrientation from '../screens/ScreenOrientationScreen';
 import Sharing from '../screens/SharingScreen';
 import SecureStore from '../screens/SecureStoreScreen';
@@ -50,6 +52,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   }
 }
 
+const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
 const GoogleSignIn = optionalRequire(() => require('../screens/GoogleSignInScreen'));
 const Haptics = optionalRequire(() => require('../screens/HapticsScreen'));
@@ -61,6 +64,7 @@ const MediaLibraryScreens = optionalRequire(() =>
 );
 const Sensor = optionalRequire(() => require('../screens/SensorScreen'));
 const Accelerometer = optionalRequire(() => require('../screens/AccelerometerScreen'));
+const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 
 const optionalScreens: {
   [key: string]: React.ComponentType | undefined;
@@ -68,12 +72,15 @@ const optionalScreens: {
   Accelerometer,
   ActionSheet,
   AppAuth,
+  Appearance,
+  AppleAuthentication,
   Audio,
   AuthSession,
   BackgroundFetch,
   Battery,
   Branch,
   Brightness,
+  Device,
   DocumentPicker,
   Localization,
   FacebookLogin,
@@ -110,6 +117,7 @@ const optionalScreens: {
   Recording,
   // @ts-ignore
   Reminders,
+  SafeAreaContext,
   ScreenOrientation,
   SecureStore,
   Sensor,

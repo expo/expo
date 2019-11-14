@@ -79,13 +79,14 @@ static void CreateDecodingTable(const char *encodingTable,
 }
 
 static NSData *DecodeBase64StringCommon(NSString *base64Str,
-                                        char *decodingTable) {
+                                        char *decodingTable,
+                                        BOOL requirePadding) {
   // The input string should be plain ASCII
   const char *cString = [base64Str cStringUsingEncoding:NSASCIIStringEncoding];
   if (cString == nil) return nil;
 
   NSInteger inputLength = (NSInteger)strlen(cString);
-  if (inputLength % 4 != 0) return nil;
+  if (requirePadding && (inputLength % 4 != 0)) return nil;
   if (inputLength == 0) return [NSData data];
 
   while (inputLength > 0 && cString[inputLength - 1] == '=') {
@@ -127,7 +128,7 @@ NSData *GTLRDecodeBase64(NSString *base64Str) {
                         decodingTable);
     hasInited = YES;
   }
-  return DecodeBase64StringCommon(base64Str, decodingTable);
+  return DecodeBase64StringCommon(base64Str, decodingTable, YES /* requirePadding */ );
 }
 
 NSData *GTLRDecodeWebSafeBase64(NSString *base64Str) {
@@ -139,5 +140,5 @@ NSData *GTLRDecodeWebSafeBase64(NSString *base64Str) {
                         decodingTable);
     hasInited = YES;
   }
-  return DecodeBase64StringCommon(base64Str, decodingTable);
+  return DecodeBase64StringCommon(base64Str, decodingTable, NO /* requirePadding */);
 }

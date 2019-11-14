@@ -1,141 +1,66 @@
-import React from 'react';
-import { Alert, ScrollView } from 'react-native';
 import * as Battery from 'expo-battery';
+import * as React from 'react';
+import { ScrollView } from 'react-native';
 
-import ListButton from '../components/ListButton';
-import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 
-type State = {
-  batteryLevel?: number;
-  batteryState?: Battery.BatteryState;
-  lowPowerMode?: boolean;
-  powerState?: Battery.PowerState;
-};
-
-export default class BatteryScreen extends React.Component<{}, State> {
-  static navigationOptions = {
-    title: 'Battery',
-  };
-
-  readonly state: State = {};
-
-  _subscriptionPowerMode?: Battery.Subscription | null;
-  _subscriptionBatteryState?: Battery.Subscription | null;
-  _subscriptionBatteryLevel?: Battery.Subscription | null;
-
-  async componentDidMount() {
-    await this._pingBattery();
-    this._subscribePowerMode();
-    this._subscribeBatteryState();
-    this._subscribeBatteryLevel();
+export default function BatteryScreen() {
+  if (!Battery.isSupported) {
+    return <MonoText>Battery API is not supported on this device</MonoText>;
   }
 
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
+  const [batteryLevel, setBatteryLevel] = React.useState(-1);
+  const [batteryState, setBatteryState] = React.useState(Battery.BatteryState.UNKNOWN);
+  const [lowPowerMode, setLowPowerMode] = React.useState(false);
 
-  _pingBattery = async () => {
-    const [batteryLevel, batteryState, lowPowerMode, powerState] = await Promise.all([
-      Battery.getBatteryLevelAsync(),
-      Battery.getBatteryStateAsync(),
-      Battery.isLowPowerModeEnabledAsync(),
-      Battery.getPowerStateAsync(),
-    ]);
-    this.setState({ batteryLevel, powerState, batteryState, lowPowerMode });
-  };
+  React.useEffect(() => {
+    (async () => {
+      const [batteryLevel, batteryState, lowPowerMode] = await Promise.all([
+        Battery.getBatteryLevelAsync(),
+        Battery.getBatteryStateAsync(),
+        Battery.isLowPowerModeEnabledAsync(),
+      ]);
 
-  _subscribePowerMode = () => {
-    this._subscriptionPowerMode = Battery.addLowPowerModeListener(
-      ({ lowPowerMode }: Battery.PowerModeEvent) => {
-        this.setState({ lowPowerMode });
-      }
+      setBatteryLevel(batteryLevel);
+      setBatteryState(batteryState);
+      setLowPowerMode(lowPowerMode);
+    })();
+    const batteryLevelListener = Battery.addBatteryLevelListener(({ batteryLevel }) =>
+      setBatteryLevel(batteryLevel)
     );
-  };
-  _subscribeBatteryState = () => {
-    this._subscriptionBatteryState = Battery.addBatteryStateListener(
-      ({ batteryState }: Battery.BatteryStateEvent) => {
-        this.setState({ batteryState });
-      }
+    const batteryStateListener = Battery.addBatteryStateListener(({ batteryState }) =>
+      setBatteryState(batteryState)
     );
-  };
-  _subscribeBatteryLevel = () => {
-    this._subscriptionBatteryLevel = Battery.addBatteryLevelListener(
-      ({ batteryLevel }: Battery.BatteryLevelEvent) => {
-        this.setState({ batteryLevel });
-      }
+    const lowPowerModeListener = Battery.addLowPowerModeListener(({ lowPowerMode }) =>
+      setLowPowerMode(lowPowerMode)
     );
-  };
-  _unsubscribe = () => {
-    this._subscriptionPowerMode && this._subscriptionPowerMode.remove();
-    this._subscriptionPowerMode = null;
-    this._subscriptionBatteryState && this._subscriptionBatteryState.remove();
-    this._subscriptionBatteryState = null;
-    this._subscriptionBatteryLevel && this._subscriptionBatteryLevel.remove();
-    this._subscriptionBatteryLevel = null;
-  };
+    return () => {
+      batteryLevelListener && batteryLevelListener.remove();
+      batteryStateListener && batteryStateListener.remove();
+      lowPowerModeListener && lowPowerModeListener.remove();
+    };
+  }, []);
 
-  render() {
-    return (
-      <ScrollView style={{ padding: 10 }}>
-        <ListButton
-          onPress={async () => {
-            const result = await Battery.getBatteryLevelAsync();
-            Alert.alert('Battery Level:', `${result}`);
-          }}
-          title="Get Battery Level"
-        />
-        <ListButton
-          onPress={async () => {
-            const result = await Battery.getBatteryStateAsync();
-            Alert.alert('Battery State:', getBatteryStateString(result));
-          }}
-          title="Get Battery State"
-        />
-        <ListButton
-          onPress={async () => {
-            const result = await Battery.isLowPowerModeEnabledAsync();
-            Alert.alert('Low Power Mode:', `${JSON.stringify(result)}`);
-          }}
-          title="Get Low Power Mode Status "
-        />
-        <ListButton
-          onPress={async () => {
-            const result = await Battery.getPowerStateAsync();
-            Alert.alert('Power State:', `${JSON.stringify(result)}`);
-          }}
-          title="Get Power State "
-        />
-        <ListButton
-          onPress={() => {
-            this._subscribeBatteryLevel();
-            this._subscribeBatteryState();
-            this._subscribePowerMode();
-          }}
-          title="Listen for battery state updates"
-        />
-        <ListButton onPress={this._unsubscribe} title="Stop listening for all battery updates" />
-        <ListButton onPress={this._pingBattery} title="Ping Battery info" />
-
-        <HeadingText>Battery Level</HeadingText>
-        <MonoText>{JSON.stringify(this.state.batteryLevel, null, 2)}</MonoText>
-
-        <HeadingText>Battery State</HeadingText>
-        <MonoText>
-          {typeof this.state.batteryState === 'number'
-            ? getBatteryStateString(this.state.batteryState)
-            : ''}
-        </MonoText>
-
-        <HeadingText>Low Power Mode</HeadingText>
-        <MonoText>{JSON.stringify(this.state.lowPowerMode, null, 2)}</MonoText>
-
-        <HeadingText>Power State</HeadingText>
-        <MonoText>{JSON.stringify(this.state.powerState, null, 2)}</MonoText>
-      </ScrollView>
-    );
-  }
+  return (
+    <ScrollView style={{ padding: 10 }}>
+      <MonoText>
+        {JSON.stringify(
+          {
+            batteryLevel,
+            batteryState: getBatteryStateString(batteryState),
+            lowPowerMode,
+          },
+          null,
+          2
+        )}
+      </MonoText>
+    </ScrollView>
+  );
 }
+
+BatteryScreen.navigationOptions = {
+  title: 'Battery',
+};
 
 function getBatteryStateString(batteryState: Battery.BatteryState): string {
   switch (batteryState) {

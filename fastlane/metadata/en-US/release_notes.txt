@@ -1,4 +1,4 @@
 Introducing Expo Web! Run your Expo projects as Progressive Web Apps—this is the first step in an exciting direction.
-SDK 34 uses React Native 0.59.8.
+SDK 35 uses React Native 0.59.8.
 
 This minor release includes bug fixes.

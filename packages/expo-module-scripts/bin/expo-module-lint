@@ -4,5 +4,4 @@ set -eo pipefail
 
 script_dir="$(dirname "$0")"
 
-"$script_dir/expo-module-eslint" --ext .js,.jsx.,.ts,.tsx.,.d.ts "$@" src
-
+"$script_dir/expo-module-eslint" --ext .js,.jsx,.ts,.tsx,.d.ts "$@" src

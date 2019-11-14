@@ -25,6 +25,20 @@ NSString *iso8601FormattedString(NSDate *date)
     return [dateFormatter stringFromDate:date];
 }
 
+/** trim the queue so that it contains only upto `max` number of elements. */
+void trimQueue(NSMutableArray *queue, NSUInteger max)
+{
+    if (queue.count < max) {
+        return;
+    }
+
+    // Previously we didn't cap the queue. Hence there are cases where
+    // the queue may already be larger than 1000 events. Delete as many
+    // events as required to trim the queue size.
+    NSRange range = NSMakeRange(0, queue.count - max);
+    [queue removeObjectsInRange:range];
+}
+
 // Async Utils
 dispatch_queue_t
 seg_dispatch_queue_create_specific(const char *label,

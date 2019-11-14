@@ -5,6 +5,8 @@
   "author": "Expo",
   "license": "MIT",
   "scripts": {
+    "setup:docs": "./scripts/download-dependencies.sh",
+    "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
     "postinstall": "expo-yarn-workspaces check-workspace-dependencies",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
@@ -21,17 +23,15 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.5.0"
+    "react-native-unimodules": "~0.7.0-rc.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
     "babel-core": "^7.0.0-bridge.0",
-    "eslint": "~6.1.0",
-    "eslint-config-universe": "^2.0.0-beta.0",
-    "expo-cli": "^3.0.4",
-    "expo-yarn-workspaces": "^1.2.0",
-    "prettier": "^1.18.2"
+    "eslint": "^6.6.0",
+    "eslint-config-universe": "^2.0.0",
+    "expo-cli": "^3.6.0",
+    "expo-yarn-workspaces": "*",
+    "prettier": "^1.19.0"
   },
   "resolutions": {}
 }

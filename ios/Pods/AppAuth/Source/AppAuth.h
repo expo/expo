@@ -19,7 +19,6 @@
 #import "OIDAuthState.h"
 #import "OIDAuthStateChangeDelegate.h"
 #import "OIDAuthStateErrorDelegate.h"
-#import "OIDAuthorizationFlowSession.h"
 #import "OIDAuthorizationRequest.h"
 #import "OIDAuthorizationResponse.h"
 #import "OIDAuthorizationService.h"
@@ -41,6 +40,8 @@
 #import "OIDTokenResponse.h"
 #import "OIDTokenUtilities.h"
 #import "OIDURLSessionProvider.h"
+#import "OIDEndSessionRequest.h"
+#import "OIDEndSessionResponse.h"
 
 #if TARGET_OS_TV
 #elif TARGET_OS_WATCH
@@ -57,7 +58,6 @@
 #else
 #error "Platform Undefined"
 #endif
-
 
 /*! @mainpage AppAuth for iOS and macOS
 

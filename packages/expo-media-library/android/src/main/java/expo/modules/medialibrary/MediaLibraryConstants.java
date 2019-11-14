@@ -2,7 +2,7 @@ package expo.modules.medialibrary;
 
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,7 @@ final class MediaLibraryConstants {
   static final String ERROR_IO_EXCEPTION = "E_IO_EXCEPTION";
   static final String ERROR_NO_PERMISSIONS = "E_NO_PERMISSIONS";
   static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing CAMERA_ROLL permissions.";
+  static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing CAMERA_ROLL write permission.";
   static final String ERROR_NO_PERMISSIONS_MODULE = "E_NO_PERMISSIONS_MODULE";
   static final String ERROR_NO_PERMISSIONS_MODULE_MESSAGE = "Permissions module not found. Are you sure that Expo modules are properly linked?";
 

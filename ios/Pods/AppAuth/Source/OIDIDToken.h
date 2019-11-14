@@ -29,17 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     @see https://tools.ietf.org/html/rfc7519
     @see https://jwt.io/
  */
-@interface OIDIDToken : NSObject {
-  // property variables
-  NSDictionary *_header;
-  NSDictionary *_claims;
-  NSURL *_issuer;
-  NSString *_subject;
-  NSArray *_audience;
-  NSDate *_expiresAt;
-  NSDate *_issuedAt;
-  NSString *_nonce;
-}
+@interface OIDIDToken : NSObject
 
 /*! @internal
     @brief Unavailable. Please use @c initWithAuthorizationResponse:.

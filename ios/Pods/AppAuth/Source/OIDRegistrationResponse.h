@@ -50,18 +50,7 @@ extern NSString *const OIDRegistrationClientURIParam;
 /*! @brief Represents a registration response.
     @see https://openid.net/specs/openid-connect-registration-1_0.html#RegistrationResponse
  */
-@interface OIDRegistrationResponse : NSObject <NSCopying, NSSecureCoding> {
-  // property variables
-  OIDRegistrationRequest *_request;
-  NSString *_clientID;
-  NSDate *_clientIDIssuedAt;
-  NSString *_clientSecret;
-  NSDate *_clientSecretExpiresAt;
-  NSString *_registrationAccessToken;
-  NSURL *_registrationClientURI;
-  NSString *_tokenEndpointAuthenticationMethod;
-  NSDictionary<NSString *, NSObject <NSCopying> *> *_additionalParameters;
-}
+@interface OIDRegistrationResponse : NSObject <NSCopying, NSSecureCoding>
 
 /*! @brief The request which was serviced.
  */

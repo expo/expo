@@ -15,6 +15,7 @@ import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
+import Banner from './Banner';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 32px;
@@ -147,6 +148,7 @@ export default class DocumentationPage extends React.Component {
 
         {!this.state.isMenuActive ? (
           <div className={STYLES_DOCUMENT}>
+            <Banner />
             <H1>{this.props.title}</H1>
             {this.props.children}
             <DocumentationFooter title={this.props.title} asPath={this.props.asPath} />

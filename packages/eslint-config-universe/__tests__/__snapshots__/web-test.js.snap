@@ -253,3 +253,20 @@ Object {
   "warningCount": 0,
 }
 `;
+
+exports[`lints with the web config: fixtures/web-native-03.js 1`] = `
+Object {
+  "errorCount": 0,
+  "fixableErrorCount": 0,
+  "fixableWarningCount": 0,
+  "messages": Array [],
+  "output": "import React from 'react';
+import { View } from 'react-native';
+
+export default function Example() {
+  return <View testID=\\"test\\" />;
+}
+",
+  "warningCount": 0,
+}
+`;

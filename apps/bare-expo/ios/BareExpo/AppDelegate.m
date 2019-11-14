@@ -7,6 +7,8 @@
 
 #import "AppDelegate.h"
 
+#import <React/RCTLinkingManager.h>
+
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
@@ -57,4 +59,11 @@
   return YES;
 }
 #endif
+
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [RCTLinkingManager application:app openURL:url options:options];
+}
+
 @end

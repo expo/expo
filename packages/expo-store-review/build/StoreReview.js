@@ -17,9 +17,7 @@ export async function requestReview() {
         await StoreReview.requestReview();
     }
     else {
-        /*
-         * If StoreReview is unavailable then get the store URL from the `app.json` and open to the store.
-         */
+        // If StoreReview is unavailable then get the store URL from `app.json` and open the store
         const url = storeUrl();
         if (url) {
             const supported = await Linking.canOpenURL(url);
@@ -28,7 +26,6 @@ export async function requestReview() {
             }
             else {
                 await Linking.openURL(url);
-                return;
             }
         }
         else {

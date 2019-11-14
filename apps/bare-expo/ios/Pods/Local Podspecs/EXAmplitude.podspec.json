@@ -1,6 +1,6 @@
 {
   "name": "EXAmplitude",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "summary": "Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.",
   "description": "Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.",
   "license": "MIT",
@@ -23,7 +23,7 @@
 
     ],
     "Amplitude-iOS": [
-
+      "~> 4.7.1"
     ]
   }
 }

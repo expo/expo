@@ -18,7 +18,11 @@
 
 #import "FBSDKLoginTooltipView.h"
 
+#ifdef COCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
 #import "FBSDKCoreKit+Internal.h"
+#endif
 
 @interface FBSDKLoginTooltipView ()
 @end

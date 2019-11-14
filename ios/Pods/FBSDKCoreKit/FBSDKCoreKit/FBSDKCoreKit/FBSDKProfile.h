@@ -18,6 +18,10 @@
 
 #import "FBSDKProfilePictureView.h"
 
+@class FBSDKProfile;
+
+NS_ASSUME_NONNULL_BEGIN
+
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
 
 /**
@@ -27,18 +31,20 @@
  `FBSDKProfileChangeOldKey` and
  `FBSDKProfileChangeNewKey`.
  */
-FOUNDATION_EXPORT NSNotificationName const FBSDKProfileDidChangeNotification;
+FOUNDATION_EXPORT NSNotificationName const FBSDKProfileDidChangeNotification
+NS_SWIFT_NAME(ProfileDidChange);
 
 #else
 
 /**
-  Notification indicating that the `currentProfile` has changed.
+ Notification indicating that the `currentProfile` has changed.
 
  the userInfo dictionary of the notification will contain keys
  `FBSDKProfileChangeOldKey` and
  `FBSDKProfileChangeNewKey`.
  */
-FOUNDATION_EXPORT NSString *const FBSDKProfileDidChangeNotification;
+FOUNDATION_EXPORT NSString *const FBSDKProfileDidChangeNotification
+NS_SWIFT_NAME(ProfileDidChangeNotification);
 
 #endif
 
@@ -46,13 +52,24 @@ FOUNDATION_EXPORT NSString *const FBSDKProfileDidChangeNotification;
 
  If there was no old profile, the key will not be present.
  */
-FOUNDATION_EXPORT NSString *const FBSDKProfileChangeOldKey;
+FOUNDATION_EXPORT NSString *const FBSDKProfileChangeOldKey
+NS_SWIFT_NAME(ProfileChangeOldKey);
 
 /*   key in notification's userInfo object for getting the new profile.
 
  If there is no new profile, the key will not be present.
  */
-FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
+FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey
+NS_SWIFT_NAME(ProfileChangeNewKey);
+
+/**
+ Describes the callback for loadCurrentProfileWithCompletion.
+ @param profile the FBSDKProfile
+ @param error the error during the request, if any
+
+ */
+typedef void (^FBSDKProfileBlock)(FBSDKProfile *_Nullable profile, NSError *_Nullable error)
+NS_SWIFT_NAME(ProfileBlock);
 
 /**
   Represents an immutable Facebook profile
@@ -66,6 +83,7 @@ FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
 
  You can use this class to build your own `FBSDKProfilePictureView` or in place of typical requests to "/me".
  */
+NS_SWIFT_NAME(Profile)
 @interface FBSDKProfile : NSObject<NSCopying, NSSecureCoding>
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -82,12 +100,24 @@ FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
  @param refreshDate the optional date this profile was fetched. Defaults to [NSDate date].
  */
 - (instancetype)initWithUserID:(NSString *)userID
-                     firstName:(NSString *)firstName
-                    middleName:(NSString *)middleName
-                      lastName:(NSString *)lastName
-                          name:(NSString *)name
-                       linkURL:(NSURL *)linkURL
-                   refreshDate:(NSDate *)refreshDate NS_DESIGNATED_INITIALIZER;
+                     firstName:(nullable NSString *)firstName
+                    middleName:(nullable NSString *)middleName
+                      lastName:(nullable NSString *)lastName
+                          name:(nullable NSString *)name
+                       linkURL:(nullable NSURL *)linkURL
+                   refreshDate:(nullable NSDate *)refreshDate NS_DESIGNATED_INITIALIZER;
+
+/**
+ The current profile instance and posts the appropriate notification
+ if the profile parameter is different than the receiver.
+
+ This persists the profile to NSUserDefaults.
+ */
+
+/// The current profile
+@property (class, nonatomic, strong, nullable) FBSDKProfile *currentProfile
+NS_SWIFT_NAME(current);
+
 /**
   The user id
  */
@@ -95,45 +125,31 @@ FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
 /**
   The user's first name
  */
-@property (nonatomic, copy, readonly) NSString *firstName;
+@property (nonatomic, copy, readonly, nullable) NSString *firstName;
 /**
   The user's middle name
  */
-@property (nonatomic, copy, readonly) NSString *middleName;
+@property (nonatomic, copy, readonly, nullable) NSString *middleName;
 /**
   The user's last name
  */
-@property (nonatomic, copy, readonly) NSString *lastName;
+@property (nonatomic, copy, readonly, nullable) NSString *lastName;
 /**
   The user's complete name
  */
-@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, copy, readonly, nullable) NSString *name;
 /**
   A URL to the user's profile.
 
- Consider using Bolts and `FBSDKAppLinkResolver` to resolve this
+ Consider using `FBSDKAppLinkResolver` to resolve this
  to an app link to link directly to the user's profile in the Facebook app.
  */
-@property (nonatomic, readonly) NSURL *linkURL;
+@property (nonatomic, readonly, nullable) NSURL *linkURL;
 
 /**
   The last time the profile data was fetched.
  */
 @property (nonatomic, readonly) NSDate *refreshDate;
-
-/**
-  Gets the current FBSDKProfile instance.
- */
-+ (FBSDKProfile *)currentProfile;
-
-/**
-  Sets the current instance and posts the appropriate notification if the profile parameter is different
- than the receiver.
- @param profile the profile to set
-
- This persists the profile to NSUserDefaults.
- */
-+ (void)setCurrentProfile:(FBSDKProfile *)profile;
 
 /**
   Indicates if `currentProfile` will automatically observe `FBSDKAccessTokenDidChangeNotification` notifications
@@ -145,7 +161,8 @@ FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
  Note that if `[FBSDKAccessToken currentAccessToken]` is unset, the `currentProfile` instance remains. It's also possible
  for `currentProfile` to return nil until the data is fetched.
  */
-+ (void)enableUpdatesOnAccessTokenChange:(BOOL)enable;
++ (void)enableUpdatesOnAccessTokenChange:(BOOL)enable
+NS_SWIFT_NAME(enableUpdatesOnAccessTokenChange(_:));
 
 /**
   Loads the current profile and passes it to the completion block.
@@ -154,26 +171,15 @@ FOUNDATION_EXPORT NSString *const FBSDKProfileChangeNewKey;
  If the profile is already loaded, this method will call the completion block synchronously, otherwise it
  will begin a graph request to update `currentProfile` and then call the completion block when finished.
  */
-+ (void)loadCurrentProfileWithCompletion:(void(^)(FBSDKProfile *profile, NSError *error))completion;
++ (void)loadCurrentProfileWithCompletion:(nullable FBSDKProfileBlock)completion;
 
 /**
   A convenience method for returning a complete `NSURL` for retrieving the user's profile image.
  @param mode The picture mode
  @param size The height and width. This will be rounded to integer precision.
  */
-- (NSURL *)imageURLForPictureMode:(FBSDKProfilePictureMode)mode size:(CGSize)size;
-
-/**
-  A convenience method for returning a Graph API path for retrieving the user's profile image.
-
-@warning use `imageURLForPictureMode:size:` instead
-
- You can pass this to a `FBSDKGraphRequest` instance to download the image.
- @param mode The picture mode
- @param size The height and width. This will be rounded to integer precision.
- */
-- (NSString *)imagePathForPictureMode:(FBSDKProfilePictureMode)mode size:(CGSize)size
-DEPRECATED_MSG_ATTRIBUTE("use imageURLForPictureMode:size: instead");
+- (nullable NSURL *)imageURLForPictureMode:(FBSDKProfilePictureMode)mode size:(CGSize)size
+NS_SWIFT_NAME(imageURL(forMode:size:));
 
 /**
   Returns YES if the profile is equivalent to the receiver.
@@ -181,3 +187,5 @@ DEPRECATED_MSG_ATTRIBUTE("use imageURLForPictureMode:size: instead");
  */
 - (BOOL)isEqualToProfile:(FBSDKProfile *)profile;
 @end
+
+NS_ASSUME_NONNULL_END

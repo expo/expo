@@ -25,6 +25,7 @@ async function generateAction(options): Promise<void> {
     expoKitPath: EXPO_DIR,
     templateFilesPath: TEMPLATE_FILES_DIR,
     configuration,
+    skipTemplates: options.skipTemplate,
   });
 }
 
@@ -36,6 +37,11 @@ async function cleanupAction(options): Promise<void> {
     infoPlistPath: infoPlistPath,
     expoKitPath: EXPO_DIR,
   });
+}
+
+function collect(val, memo) {
+  memo.push(val);
+  return memo;
 }
 
 export default (program: Command) => {
@@ -52,6 +58,10 @@ export default (program: Command) => {
     .option(
       '--configuration [string]',
       'Build configuration. Defaults to `process.env.CONFIGURATION`.'
+    )
+    .option(
+      '--skip-template [string]',
+      'Skip generating a template (ie) GoogleService-Info.plist. Optional.', collect, []
     )
     .description('Generates dynamic macros for iOS client.')
     .asyncAction(generateAction);

@@ -1,12 +1,14 @@
 import { Audio } from 'expo-av';
 import React from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
 import AudioPlayer from '../components/AudioPlayer';
 import Colors from '../constants/Colors';
 import Environment from '../utils/Environment';
 import { useAudio, useAudioMode } from '../utils/useAudio';
+import { StyledScrollView } from '../components/Views';
+import { StyledText } from '../components/Text';
 
 const initialAudioMode = {
   interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
@@ -20,8 +22,8 @@ export default function AudioDiagnosticsScreen() {
   const [audioMode, setAudioMode] = useAudioMode(initialAudioMode);
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.title}>Audio Player</Text>
+    <StyledScrollView style={styles.screen} contentContainerStyle={styles.contentContainer}>
+      <StyledText style={styles.title}>Audio Player</StyledText>
       <AudioPlayer
         isAudioEnabled={isAudioEnabled}
         source={{
@@ -29,7 +31,7 @@ export default function AudioDiagnosticsScreen() {
             'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
         }}
       />
-      <Text style={[styles.title, { marginTop: 16 }]}>Audio Modes</Text>
+      <StyledText style={[styles.title, { marginTop: 16 }]}>Audio Modes</StyledText>
       <AudioOptionSwitch
         title="Enable Audio"
         value={isAudioEnabled}
@@ -88,7 +90,7 @@ export default function AudioDiagnosticsScreen() {
           setAudioMode(newAudioMode);
         }}
       />
-    </ScrollView>
+    </StyledScrollView>
   );
 }
 
@@ -106,7 +108,7 @@ type AudioOptionSwitchProps = {
 function AudioOptionSwitch(props: AudioOptionSwitchProps) {
   return (
     <View style={styles.switch}>
-      <Text style={styles.optionTitle}>{props.title}</Text>
+      <StyledText style={styles.optionTitle}>{props.title}</StyledText>
       <Switch disabled={props.disabled} value={props.value} onValueChange={props.onValueChange} />
     </View>
   );
@@ -123,26 +125,26 @@ type AudioOptionSelectorProps<T> = {
 function AudioOptionSelector<T>(props: AudioOptionSelectorProps<T>) {
   return (
     <>
-      <Text style={styles.selectorTitle}>{props.title}</Text>
+      <StyledText style={styles.selectorTitle}>{props.title}</StyledText>
       {props.items.map(item => (
         <BorderlessButton
           key={item.name}
           enabled={!props.disabled && !item.disabled}
           onPress={() => props.onSelect(item.value)}
           style={styles.selectorButton}>
-          <Text
+          <StyledText
             style={[
-              styles.selectorButtonText,
-              props.disabled || item.disabled ? styles.disabledSelectorButtonText : null,
+              styles.selectorButtonStyledText,
+              props.disabled || item.disabled ? styles.disabledSelectorButtonStyledText : null,
             ]}>
             {item.name}
             {Object.is(item.value, props.selectedValue) ? ' ✓' : null}
-          </Text>
+          </StyledText>
         </BorderlessButton>
       ))}
       <View
         style={{
-          borderBottomColor: Colors.navBarBorderBottom,
+          borderBottomColor: Colors.light.navBorderBottom,
           borderBottomWidth: StyleSheet.hairlineWidth,
         }}
       />
@@ -152,7 +154,6 @@ function AudioOptionSelector<T>(props: AudioOptionSelectorProps<T>) {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: Colors.greyBackground,
     flexGrow: 1,
   },
   contentContainer: {
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
   },
   switch: {
     alignItems: 'center',
-    borderBottomColor: Colors.navBarBorderBottom,
+    borderBottomColor: Colors.light.navBorderBottom,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -186,12 +187,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  selectorButtonText: {
-    color: Colors.tintColor,
+  selectorButtonStyledText: {
+    color: Colors.light.tintColor,
     fontSize: 16,
     padding: 5,
   },
-  disabledSelectorButtonText: {
-    color: Colors.greyText,
+  disabledSelectorButtonStyledText: {
+    color: Colors.light.greyText,
   },
 });

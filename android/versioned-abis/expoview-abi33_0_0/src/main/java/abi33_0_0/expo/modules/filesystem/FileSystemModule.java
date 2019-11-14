@@ -506,6 +506,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
             }
             result.putInt("status", response.code());
             result.putBundle("headers", translateHeaders(response.headers()));
+            response.close();
             promise.resolve(result);
           }
         });
@@ -690,6 +691,7 @@ public class FileSystemModule extends ExportedModule implements ModuleRegistryCo
         result.putInt("status", response.code());
         result.putBundle("headers", translateHeaders(response.headers()));
 
+        response.close();
         promise.resolve(result);
         return null;
       } catch (Exception e) {

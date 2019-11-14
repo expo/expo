@@ -1,11 +1,11 @@
-import * as React from 'react';
 import PropTypes from 'prop-types';
-import { SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
+import * as React from 'react';
+import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
 declare type GLViewProps = {
     /**
-    * Called when the OpenGL context is created, with the context object as a parameter. The context
-    * object has an API mirroring WebGL's WebGLRenderingContext.
-    */
+     * Called when the OpenGL context is created, with the context object as a parameter. The context
+     * object has an API mirroring WebGL's WebGLRenderingContext.
+     */
     onContextCreate(gl: ExpoWebGLRenderingContext): void;
     /**
      * [iOS only] Number of samples for Apple's built-in multisampling.
@@ -16,7 +16,6 @@ declare type GLViewProps = {
      */
     nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | null): any;
 } & BaseGLViewProps;
-declare type ComponentOrHandle = null | number | React.Component<any, any> | React.ComponentClass<any>;
 /**
  * A component that acts as an OpenGL render target
  */
@@ -33,9 +32,6 @@ export declare class GLView extends React.Component<GLViewProps> {
         collapsable?: PropTypes.Validator<boolean | undefined> | undefined;
         needsOffscreenAlphaCompositing?: PropTypes.Validator<boolean | undefined> | undefined;
         renderToHardwareTextureAndroid?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
         isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
         hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -62,16 +58,22 @@ export declare class GLView extends React.Component<GLViewProps> {
         onTouchCancel?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityActions?: PropTypes.Validator<readonly Readonly<{
+            name: import("react-native").AccessibilityActionName;
+            label?: string | undefined;
+        }>[] | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityRole?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "keyboardkey" | "text" | "adjustable" | "imagebutton" | "header" | "summary" | "alert" | "checkbox" | "combobox" | "menu" | "menubar" | "menuitem" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "switch" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
+        accessibilityRole?: PropTypes.Validator<"button" | "header" | "link" | "menu" | "menuitem" | "summary" | "image" | "switch" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | "alert" | "checkbox" | "combobox" | "menubar" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
+        accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "text" | "adjustable" | "header" | "summary" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;

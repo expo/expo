@@ -1,6 +1,6 @@
 {
   "name": "EXImagePicker",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "summary": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "description": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "license": "MIT",

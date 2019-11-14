@@ -9,6 +9,6 @@ export declare enum AuthenticationType {
     FACIAL_RECOGNITION = 2
 }
 export declare type AuthOptions = {
-    promptMessage: string;
+    promptMessage?: string;
     fallbackLabel?: string;
 };

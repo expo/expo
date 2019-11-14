@@ -1,6 +1,6 @@
 {
   "name": "EXPermissions",
-  "version": "6.0.0",
+  "version": "8.0.0-rc.0",
   "summary": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "license": "MIT",
@@ -12,8 +12,11 @@
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
-  "source_files": "EXPermissions/**/*.{h,m}",
-  "preserve_paths": "EXPermissions/**/*.{h,m}",
+  "source_files": [
+    "EXPermissions/*.{h,m}",
+    "EXPermissions/Requesters/UserNotification/*.{h,m}",
+    "EXPermissions/Requesters/RemoteNotification/*.{h,m}"
+  ],
   "requires_arc": true,
   "dependencies": {
     "UMCore": [

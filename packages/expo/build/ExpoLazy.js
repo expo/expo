@@ -459,17 +459,13 @@ Object.defineProperty(exports, "WebView", {
     return _removed.WebView;
   }
 });
-exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.ErrorRecovery = exports.AR = void 0;
+exports.SplashScreen = exports.Updates = exports.ScreenOrientation = exports.Logs = exports.AR = void 0;
 
 require("./Expo.fx");
 
 var AR = _interopRequireWildcard(require("./AR"));
 
 exports.AR = AR;
-
-var ErrorRecovery = _interopRequireWildcard(require("./ErrorRecovery/ErrorRecovery"));
-
-exports.ErrorRecovery = ErrorRecovery;
 
 var Logs = _interopRequireWildcard(require("./logs/Logs"));
 
@@ -505,7 +501,9 @@ var _removed = require("./removed");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function () { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 // The following should all be extracted from this package
 // @ts-ignore

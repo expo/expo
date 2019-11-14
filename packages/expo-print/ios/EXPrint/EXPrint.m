@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXPrint/EXPrint.h>
-#import <EXPrint/EXPrintPDFRenderTask.h>
+#import <EXPrint/EXWKPDFRenderer.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 
@@ -180,35 +180,40 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
   
-  EXPrintPDFRenderTask *renderTask = [EXPrintPDFRenderTask new];
-  
-  [renderTask renderWithOptions:options completionHandler:^(NSData *pdfData) {
-    if (pdfData != nil) {
-      NSString *filePath = [self _generatePath];
-      if (!filePath) {
-        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
-        return;
-      }
-      NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
-      
-      NSError *error;
-      BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&error];
-      
-      if (!success) {
-        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
-        return;
-      }
-      
-      NSMutableDictionary *result = [@{ @"uri": uri, @"numberOfPages": @(renderTask.numberOfPages) } mutableCopy];
-      
-      if (options[@"base64"] != nil && [options[@"base64"] boolValue]) {
-        result[@"base64"] = [pdfData base64EncodedStringWithOptions:0];
-      }
-      
-      resolve(result);
-    } else {
-      reject(@"E_PRINT_PDF_NOT_RENDERED", @"Error occurred while printing to PDF.", nil);
+  __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
+
+  NSString *htmlString = options[@"html"] ?: @"";
+  CGSize paperSize = [self _paperSizeFromOptions:options];
+
+  [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
+    renderTask = nil;
+    if (error) {
+      reject(@"E_PRINT_PDF_NOT_RENDERED", @"Error occurred while printing to PDF.", error);
+      return;
     }
+
+    NSString *filePath = [self _generatePath];
+    if (!filePath) {
+      reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
+      return;
+    }
+    NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
+
+    NSError *writeError;
+    BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
+
+    if (!success) {
+      reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
+      return;
+    }
+
+    NSMutableDictionary *result = [@{ @"uri": uri, @"numberOfPages": @(pagesCount) } mutableCopy];
+
+    if (options[@"base64"] != nil && [options[@"base64"] boolValue]) {
+      result[@"base64"] = [pdfData base64EncodedStringWithOptions:0];
+    }
+
+    resolve(result);
   }];
 }
 
@@ -290,9 +295,11 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
   }
   
   if (options[@"html"]) {
-    __block EXPrintPDFRenderTask *renderTask = [EXPrintPDFRenderTask new];
-    
-    [renderTask renderWithOptions:options completionHandler:^(NSData *pdfData) {
+    __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
+
+    NSString *htmlString = options[@"html"] ?: @"";
+    CGSize paperSize = [self _paperSizeFromOptions:options];
+    [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
       } else {
@@ -315,6 +322,31 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
     return UIPrintInfoOrientationLandscape;
   }
   return UIPrintInfoOrientationPortrait;
+}
+
+#define kLetterPaperSize CGSizeMake(612, 792)
+
+- (CGSize)_paperSizeFromOptions:(NSDictionary *)options
+{
+  // defaults to pixel size for A4 paper format with 72 PPI
+  CGSize paperSize = CGSizeMake(kLetterPaperSize.width, kLetterPaperSize.height);
+
+  if (options[@"width"]) {
+    paperSize.width = [options[@"width"] floatValue];
+  }
+
+  if (options[@"height"]) {
+    paperSize.height = [options[@"height"] floatValue];
+  }
+
+  if ([options[@"orientation"] isEqualToString:@"landscape"]) {
+    // Make height the lesser dimension if the orientation is landscape.
+    CGFloat biggerValue = fmax(paperSize.width, paperSize.height);
+    CGFloat smallerValue = fmin(paperSize.width, paperSize.height);
+    paperSize = CGSizeMake(biggerValue, smallerValue);
+  }
+
+  return paperSize;
 }
 
 - (NSString *)_generatePath

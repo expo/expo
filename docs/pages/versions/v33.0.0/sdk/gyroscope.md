@@ -2,7 +2,7 @@
 title: Gyroscope
 ---
 
-Access the device gyroscope sensor to respond to changes in rotation in 3d space.
+Access the device gyroscope sensor to respond to changes in rotation in 3d space. Note that the gyroscope hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
 ## Installation
 

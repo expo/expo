@@ -43,6 +43,10 @@ async function action(options) {
         }
         await runScriptAsync(pkg, 'test', args);
       }
+      if (options.lint) {
+        const args = ['--max-warnings', '0'];
+        await runScriptAsync(pkg, 'lint', args);
+      }
       console.log(`✨ ${chalk.bold.green(pkg.packageName)} checks passed.`);
       passCount++;
     } catch (error) {
@@ -129,8 +133,9 @@ async function checkBuildUniformityAsync(pkg: Package): Promise<void> {
 export default (program: Command) => {
   program
     .command('check-packages')
-    .option('--no-build', 'Whether to skip `yarn run build` check.', false)
-    .option('--no-test', 'Whether to skip `yarn run test` check.', false)
+    .option('--no-build', 'Whether to skip `yarn build` check.', false)
+    .option('--no-test', 'Whether to skip `yarn test` check.', false)
+    .option('--no-lint', 'Whether to skip `yarn lint` check.', false)
     .option(
       '--no-uniformity-check',
       'Whether to check the uniformity of committed and generated build files.',

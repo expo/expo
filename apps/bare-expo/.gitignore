@@ -29,6 +29,7 @@ build/
 .gradle
 local.properties
 *.iml
+sdcard.img
 
 # node.js
 #
@@ -58,3 +59,5 @@ buck-out/
 ios/build
 
 /android/app/build
+
+/scripts/start.command

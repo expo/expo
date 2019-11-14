@@ -14,7 +14,7 @@
 @class GIDProfileData;
 
 // This class represents a user account.
-@interface GIDGoogleUser : NSObject <NSCoding>
+@interface GIDGoogleUser : NSObject <NSSecureCoding>
 
 // The Google user ID.
 @property(nonatomic, readonly) NSString *userID;
@@ -25,11 +25,6 @@
 
 // The authentication object for the user.
 @property(nonatomic, readonly) GIDAuthentication *authentication;
-
-// The API scopes requested by the app in an array of |NSString|s. Deprecated.
-// Use |grantedScopes| instead.
-@property(nonatomic, readonly) NSArray *accessibleScopes
-    __attribute__((deprecated("Use grantedScopes instead.")));
 
 // The API scopes granted to the app in an array of |NSString|s.
 @property(nonatomic, readonly) NSArray *grantedScopes;

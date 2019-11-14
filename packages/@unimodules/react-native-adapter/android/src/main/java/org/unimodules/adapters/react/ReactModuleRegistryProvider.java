@@ -15,9 +15,8 @@ import org.unimodules.core.interfaces.SingletonModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.WeakHashMap;
 
 /**
  * Since React Native v0.55, {@link com.facebook.react.ReactPackage#createViewManagers(ReactApplicationContext)}
@@ -74,7 +73,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
       return mViewManagers;
     }
 
-    mViewManagers = Collections.newSetFromMap(new WeakHashMap<ViewManager, Boolean>());
+    mViewManagers = new HashSet<>();
     mViewManagers.addAll(createViewManagers(context));
     return mViewManagers;
   }
@@ -84,7 +83,7 @@ public class ReactModuleRegistryProvider extends ModuleRegistryProvider {
       return mReactViewManagers;
     }
 
-    mReactViewManagers = Collections.newSetFromMap(new WeakHashMap<com.facebook.react.uimanager.ViewManager, Boolean>());
+    mReactViewManagers = new HashSet<>();
     for (Package pkg : getPackages()) {
       if (pkg instanceof ReactPackage) {
         mReactViewManagers.addAll(((ReactPackage) pkg).createViewManagers(context));

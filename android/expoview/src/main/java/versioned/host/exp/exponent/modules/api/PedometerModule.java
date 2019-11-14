@@ -4,8 +4,8 @@ package versioned.host.exp.exponent.modules.api;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -216,7 +216,11 @@ public class PedometerModule extends ReactContextBaseJavaModule implements Lifec
   }
 
   private String getExperienceId() {
-    ExperienceActivity activity = (ExperienceActivity) getCurrentActivity();
-    return activity != null ? activity.getExperienceId() : null;
+    try {
+      ExperienceActivity activity = (ExperienceActivity) getCurrentActivity();
+      return activity != null ? activity.getExperienceId() : null;
+    } catch (ClassCastException e) {
+      return null;
+    }
   }
 }

@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.1'
     classpath 'de.undercouch:gradle-download-task:2.0.0'
   }
 }
@@ -14,7 +14,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '6.0.0'
+version = '7.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -178,8 +178,8 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 17
-    versionName "6.0.0"
+    versionCode 19
+    versionName "7.0.0"
 
     ndk {
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'

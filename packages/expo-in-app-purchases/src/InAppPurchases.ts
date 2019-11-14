@@ -1,6 +1,13 @@
 import { Platform } from 'react-native';
 import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
-import { IAPQueryResponse, InAppPurchase, InAppPurchaseState, IAPItemType, IAPResponseCode, IAPErrorCode } from './InAppPurchases.types';
+import {
+  IAPErrorCode,
+  IAPItemType,
+  IAPQueryResponse,
+  IAPResponseCode,
+  InAppPurchase,
+  InAppPurchaseState,
+} from './InAppPurchases.types';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 
 const errors = {
@@ -15,12 +22,7 @@ const eventEmitter = new EventEmitter(ExpoInAppPurchases);
 let connected = false;
 let purchaseUpdatedSubscription: Subscription;
 
-export {
-  InAppPurchaseState,
-  IAPResponseCode,
-  IAPErrorCode,
-  IAPItemType,
-}
+export { InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPItemType };
 
 export async function connectAsync(): Promise<IAPQueryResponse> {
   if (connected) {
@@ -61,12 +63,18 @@ export async function setPurchaseListener(callback: (result) => void): Promise<v
     purchaseUpdatedSubscription.remove();
   }
 
-  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(PURCHASES_UPDATED_EVENT, result => {
-    callback(result);
-  });
+  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(
+    PURCHASES_UPDATED_EVENT,
+    result => {
+      callback(result);
+    }
+  );
 }
 
-export async function finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean): Promise<void> {
+export async function finishTransactionAsync(
+  purchase: InAppPurchase,
+  consumeItem: boolean
+): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }

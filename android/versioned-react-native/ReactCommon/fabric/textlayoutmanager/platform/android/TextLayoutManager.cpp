@@ -31,7 +31,7 @@ Size TextLayoutManager::measure(
           "FabricUIManager");
 
   static auto measure =
-      jni::findClassStatic("abi34_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi35_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jstring,
               ReadableNativeMap::javaobject,

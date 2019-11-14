@@ -75,7 +75,6 @@ jarjar-rules.txt
 /android/app/fabric.properties
 /ios/Exponent/Generated/EXKeys.h
 /ios/ExponentIntegrationTests/EXTestEnvironment.plist
-/ios/Podfile
 /exponent-view-template/ios/Podfile
 
 # Codemod
@@ -87,6 +86,7 @@ jarjar-rules.txt
 /fastlane/Preview.html
 /fastlane/Deployment
 /Preview.html
+/gc_keys.json
 
 # CI
 /android/logcat.txt

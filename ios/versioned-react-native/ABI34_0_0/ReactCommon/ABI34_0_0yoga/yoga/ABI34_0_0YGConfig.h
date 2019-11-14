@@ -10,7 +10,7 @@
 #include "ABI34_0_0Yoga.h"
 
 struct ABI34_0_0YGConfig {
-  std::array<bool, facebook::ABI34_0_0yoga::enums::count<ABI34_0_0YGExperimentalFeature>()>
+  std::array<bool, ABI34_0_0facebook::ABI34_0_0yoga::enums::count<ABI34_0_0YGExperimentalFeature>()>
       experimentalFeatures = {};
   bool useWebDefaults = false;
   bool useLegacyStretchBehaviour = false;

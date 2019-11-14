@@ -29,3 +29,7 @@ export function getIosDir(): string {
 export function getAndroidDir(): string {
   return path.join(getExpoRepositoryRootDir(), 'android');
 }
+
+export function getReactNativeSubmoduleDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'react-native-lab', 'react-native');
+}

@@ -23,7 +23,6 @@
 @class OIDRegistrationResponse;
 @class OIDTokenResponse;
 @class OIDTokenRequest;
-@protocol OIDAuthorizationFlowSession;
 @protocol OIDAuthStateChangeDelegate;
 @protocol OIDAuthStateErrorDelegate;
 @protocol OIDExternalUserAgent;
@@ -52,30 +51,7 @@ typedef void (^OIDAuthStateAuthorizationCallback)(OIDAuthState *_Nullable authSt
 /*! @brief A convenience class that retains the auth state between @c OIDAuthorizationResponse%s
         and @c OIDTokenResponse%s.
  */
-@interface OIDAuthState : NSObject <NSSecureCoding> {
-  // private variables
-  /*! @brief Array of pending actions (use @c _pendingActionsSyncObject to synchronize access).
-   */
-  NSMutableArray *_pendingActions;
-
-  /*! @brief Object for synchronizing access to @c pendingActions.
-   */
-  id _pendingActionsSyncObject;
-
-  /*! @brief If YES, tokens will be refreshed on the next API call regardless of expiry.
-   */
-  BOOL _needsTokenRefresh;
-
-  // property variables
-  NSString *_refreshToken;
-  NSString *_scope;
-  OIDAuthorizationResponse *_lastAuthorizationResponse;
-  OIDTokenResponse *_lastTokenResponse;
-  OIDRegistrationResponse *_lastRegistrationResponse;
-  NSError *_authorizationError;
-  __weak id<OIDAuthStateChangeDelegate> _stateChangeDelegate;
-  __weak id<OIDAuthStateErrorDelegate> _errorDelegate;
-}
+@interface OIDAuthState : NSObject <NSSecureCoding>
 
 /*! @brief The most recent refresh token received from the server.
     @discussion Rather than using this property directly, you should call
@@ -141,7 +117,11 @@ typedef void (^OIDAuthStateAuthorizationCallback)(OIDAuthState *_Nullable authSt
 @property(nonatomic, weak, nullable) id<OIDAuthStateErrorDelegate> errorDelegate;
 
 /*! @brief Convenience method to create a @c OIDAuthState by presenting an authorization request
-        and performing the authorization code exchange in the case of code flow requests.
+        and performing the authorization code exchange in the case of code flow requests. For
+        the hybrid flow, the caller should validate the id_token and c_hash, then perform the token
+        request (@c OIDAuthorizationService.performTokenRequest:callback:)
+        and update the OIDAuthState with the results (@c
+        OIDAuthState.updateWithTokenResponse:error:).
     @param authorizationRequest The authorization request to present.
     @param externalUserAgent A external user agent that can present an external user-agent request.
     @param callback The method called when the request has completed or failed.
@@ -149,7 +129,7 @@ typedef void (^OIDAuthStateAuthorizationCallback)(OIDAuthState *_Nullable authSt
         receives a @c OIDExternalUserAgentSession.cancel message, or after processing a
         @c OIDExternalUserAgentSession.resumeExternalUserAgentFlowWithURL: message.
  */
-+ (id<OIDExternalUserAgentSession, OIDAuthorizationFlowSession>)
++ (id<OIDExternalUserAgentSession>)
     authStateByPresentingAuthorizationRequest:(OIDAuthorizationRequest *)authorizationRequest
                             externalUserAgent:(id<OIDExternalUserAgent>)externalUserAgent
                                      callback:(OIDAuthStateAuthorizationCallback)callback;
@@ -249,6 +229,19 @@ typedef void (^OIDAuthStateAuthorizationCallback)(OIDAuthState *_Nullable authSt
          additionalRefreshParameters:
     (nullable NSDictionary<NSString *, NSString *> *)additionalParameters;
 
+/*! @brief Calls the block with a valid access token (refreshing it first, if needed), or if a
+        refresh was needed and failed, with the error that caused it to fail.
+    @param action The block to execute with a fresh token. This block will be executed on the main
+        thread.
+    @param additionalParameters Additional parameters for the token request if token is
+        refreshed.
+    @param dispatchQueue The dispatchQueue on which to dispatch the action block.
+ */
+- (void)performActionWithFreshTokens:(OIDAuthStateAction)action
+         additionalRefreshParameters:
+    (nullable NSDictionary<NSString *, NSString *> *)additionalParameters
+                       dispatchQueue:(dispatch_queue_t)dispatchQueue;
+
 /*! @brief Forces a token refresh the next time @c OIDAuthState.performActionWithFreshTokens: is
         called, even if the current tokens are considered valid.
  */
@@ -273,16 +266,6 @@ typedef void (^OIDAuthStateAuthorizationCallback)(OIDAuthState *_Nullable authSt
  */
 - (nullable OIDTokenRequest *)tokenRefreshRequestWithAdditionalParameters:
     (nullable NSDictionary<NSString *, NSString *> *)additionalParameters;
-
-/*! @brief Deprecated, use @c OIDAuthState.performActionWithFreshTokens:.
-    @discussion Calls the block with a valid access token (refreshing it first, if needed), or if a
-        refresh was needed and failed, with the error that caused it to fail.
-    @param action The block to execute with a fresh token. This block will be executed on the main
-        thread.
-    @deprecated Use @c OIDAuthState.performActionWithFreshTokens: which is equivalent.
- */
-- (void)withFreshTokensPerformAction:(OIDAuthStateAction)action
-    __deprecated_msg("Use OIDAuthState.performActionWithFreshTokens:");
 
 @end
 

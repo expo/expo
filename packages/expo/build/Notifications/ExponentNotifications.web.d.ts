@@ -1,4 +1,5 @@
 import { LocalNotification } from './Notifications.types';
+import './ExponentNotifications.fx.web';
 declare const _default: {
     presentLocalNotification(notification: LocalNotification): Promise<import("react").ReactText>;
     scheduleLocalNotification(notification: any, options?: {
@@ -10,5 +11,10 @@ declare const _default: {
     dismissAllNotifications(): Promise<void>;
     cancelScheduledNotificationAsync(notificationId: string): Promise<void>;
     cancelAllScheduledNotificationsAsync(): Promise<void>;
+    getExponentPushTokenAsync(): Promise<string>;
+    getDevicePushTokenAsync(): Promise<{
+        type: string;
+        data: Object;
+    }>;
 };
 export default _default;

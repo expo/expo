@@ -3,6 +3,7 @@ import semver from 'semver';
 import inquirer from 'inquirer';
 import { Command } from '@expo/commander';
 
+import * as AndroidVersioning from '../versioning/android';
 import * as IosVersioning from '../versioning/ios';
 import { getExpoRepositoryRootDir } from '../Directories';
 import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
@@ -60,6 +61,8 @@ async function action(options: ActionOptions) {
       } else {
         return IosVersioning.addVersionAsync(sdkVersion, EXPO_DIR);
       }
+    case 'android':
+      return AndroidVersioning.addVersionAsync(sdkVersion);
     default:
       throw new Error(`Platform '${options.platform}' is not supported.`);
   }

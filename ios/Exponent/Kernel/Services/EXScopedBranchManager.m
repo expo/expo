@@ -1,3 +1,5 @@
+#if __has_include(<EXBranch/EXBranchManager.h>)
+
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXScopedBranchManager.h"
@@ -86,3 +88,5 @@ UM_REGISTER_SINGLETON_MODULE(BranchManager);
 }
 
 @end
+
+#endif

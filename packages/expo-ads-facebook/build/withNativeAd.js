@@ -39,7 +39,7 @@ export default function withNativeAd(Component) {
                 },
             };
             this._adOptionsViewContextValue = {
-                nativeAdViewRef: this._nativeAdViewRef
+                nativeAdViewRef: this._nativeAdViewRef,
             };
             this._adIconViewContextValue = {
                 nativeRef: (component) => {
@@ -96,20 +96,18 @@ export default function withNativeAd(Component) {
             let { adsManager } = this.props;
             let props = this._getForwardedProps();
             let viewHierarchy = (<NativeAdView ref={this._nativeAdViewRef} adsManager={adsManager.placementId} onAdLoaded={this._handleAdLoaded}>
-            <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
-              <AdIconViewContext.Provider value={this._adIconViewContextValue}>
-                <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
-                  <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
-                    {this.state.ad ? (<Component {...props} nativeAd={this.state.ad}/>) : null}
-                  </AdOptionsViewContext.Provider>
-                </AdTriggerViewContext.Provider>
-              </AdIconViewContext.Provider>
-            </AdMediaViewContext.Provider>
-          </NativeAdView>);
+          <AdMediaViewContext.Provider value={this._adMediaViewContextValue}>
+            <AdIconViewContext.Provider value={this._adIconViewContextValue}>
+              <AdTriggerViewContext.Provider value={this._adTriggerViewContextValue}>
+                <AdOptionsViewContext.Provider value={this._adOptionsViewContextValue}>
+                  {this.state.ad ? <Component {...props} nativeAd={this.state.ad}/> : null}
+                </AdOptionsViewContext.Provider>
+              </AdTriggerViewContext.Provider>
+            </AdIconViewContext.Provider>
+          </AdMediaViewContext.Provider>
+        </NativeAdView>);
             if (NativeAdLayout) {
-                return (<NativeAdLayout>
-            {viewHierarchy}
-          </NativeAdLayout>);
+                return <NativeAdLayout>{viewHierarchy}</NativeAdLayout>;
             }
             return viewHierarchy;
         }

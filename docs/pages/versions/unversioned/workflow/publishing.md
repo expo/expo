@@ -70,7 +70,7 @@ If you make any of the following changes in `app.json`, you will need to
 re-build the binaries for your app for the change to take effect:
 
 - Increment the Expo SDK Version
-- Change anything under the `ios` or `android` keys
+- Change anything under the `ios`, `android`, or `notification` keys
 - Change your app `splash`
 - Change your app `icon`
 - Change your app `name`
@@ -96,3 +96,9 @@ file by setting the key “privacy” to either `“public”` or `“unlisted�
 These options work similarly to the way they do on YouTube. Unlisted
 project URLs will be secret unless you tell people about them or share
 them. Public projects might be surfaced to other developers.
+
+## How do I remove a Managed Expo project that I published?
+
+The default [privacy setting](../../workflow/configuration/) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
+
+If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../../distribution/advanced-release-channels/), which explains how to roll back.

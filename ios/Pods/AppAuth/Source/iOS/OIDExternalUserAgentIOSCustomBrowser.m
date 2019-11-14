@@ -27,15 +27,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation OIDExternalUserAgentIOSCustomBrowser {
-  OIDCustomBrowserURLTransformation _URLTransformation;
-  NSString *_canOpenURLScheme;
-  NSURL *_appStoreURL;
-}
-
-@synthesize URLTransformation = _URLTransformation;
-@synthesize canOpenURLScheme = _canOpenURLScheme;
-@synthesize appStoreURL = _appStoreURL;
+@implementation OIDExternalUserAgentIOSCustomBrowser
 
 + (instancetype)CustomBrowserChrome {
   // Chrome iOS documentation: https://developer.chrome.com/multidevice/ios/links

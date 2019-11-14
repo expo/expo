@@ -1,0 +1,313 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D61B01865B69609E47812F6C78446AFB /* FirebaseMLVisionFaceModel */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 65564A3CB39404858CA44DA20F23E5E4 /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */;
+			buildPhases = (
+			);
+			dependencies = (
+				9BF18B075A9495237CE99674AD5253CF /* PBXTargetDependency */,
+			);
+			name = FirebaseMLVisionFaceModel;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		60F3114BF3E92AC02D0A5F6F8D3F69CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66D67CD60FCBCFF3514A60626A770369 /* GoogleMobileVision.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2708175A425F1F6674D0854CB8EA85C4;
+			remoteInfo = GoogleMobileVision;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0EBD4744007ADC1379B33B6D83CC68E5 /* FirebaseMLVisionFaceModel.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FirebaseMLVisionFaceModel.xcconfig; sourceTree = "<group>"; };
+		56CEFC3763084FE2E440FA50D9F7657E /* FirebaseMLVisionFaceModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMLVisionFaceModel.framework; path = Frameworks/FirebaseMLVisionFaceModel.framework; sourceTree = "<group>"; };
+		66D67CD60FCBCFF3514A60626A770369 /* GoogleMobileVision */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleMobileVision; path = GoogleMobileVision.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		136F76D52682FC7ABFD11AF871117E50 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				56CEFC3763084FE2E440FA50D9F7657E /* FirebaseMLVisionFaceModel.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7A63D33E4AC3B9986184EF58EB2C8089 /* FirebaseMLVisionFaceModel */ = {
+			isa = PBXGroup;
+			children = (
+				136F76D52682FC7ABFD11AF871117E50 /* Frameworks */,
+				DB5ED11D14FD1EAA047B5A2F5D4CDCE9 /* Support Files */,
+			);
+			name = FirebaseMLVisionFaceModel;
+			path = FirebaseMLVisionFaceModel;
+			sourceTree = "<group>";
+		};
+		902E7AFCACE19222F1D751837FEB3FF0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		974A7E9CE8AB7ABE70E23E243BE7031C /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				66D67CD60FCBCFF3514A60626A770369 /* GoogleMobileVision */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		DB5ED11D14FD1EAA047B5A2F5D4CDCE9 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				0EBD4744007ADC1379B33B6D83CC68E5 /* FirebaseMLVisionFaceModel.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/FirebaseMLVisionFaceModel";
+			sourceTree = "<group>";
+		};
+		E0383C32FA63DD4FD208BC86FA4B76AD = {
+			isa = PBXGroup;
+			children = (
+				974A7E9CE8AB7ABE70E23E243BE7031C /* Dependencies */,
+				7A63D33E4AC3B9986184EF58EB2C8089 /* FirebaseMLVisionFaceModel */,
+				EF3F5FC61AE73345B906CA6D2318D8D5 /* Frameworks */,
+				902E7AFCACE19222F1D751837FEB3FF0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EF3F5FC61AE73345B906CA6D2318D8D5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		1ED3BDF47844AF120A442E287048A242 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 752374B8BB182D363FFCD5DB4B74A6FD /* Build configuration list for PBXProject "FirebaseMLVisionFaceModel" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E0383C32FA63DD4FD208BC86FA4B76AD;
+			productRefGroup = 902E7AFCACE19222F1D751837FEB3FF0 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 66D67CD60FCBCFF3514A60626A770369 /* GoogleMobileVision */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				D61B01865B69609E47812F6C78446AFB /* FirebaseMLVisionFaceModel */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXTargetDependency section */
+		9BF18B075A9495237CE99674AD5253CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoogleMobileVision;
+			targetProxy = 60F3114BF3E92AC02D0A5F6F8D3F69CF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		44860747BE074C918A5331188F548B3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0EBD4744007ADC1379B33B6D83CC68E5 /* FirebaseMLVisionFaceModel.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		59B0A40F9355B5000BA9562CD88AD1DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		DB89A883F475E37B9005D8EA3F40023E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		E801D7A70A898CDAB90B80F1F427EF2A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0EBD4744007ADC1379B33B6D83CC68E5 /* FirebaseMLVisionFaceModel.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		65564A3CB39404858CA44DA20F23E5E4 /* Build configuration list for PBXAggregateTarget "FirebaseMLVisionFaceModel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44860747BE074C918A5331188F548B3A /* Debug */,
+				E801D7A70A898CDAB90B80F1F427EF2A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		752374B8BB182D363FFCD5DB4B74A6FD /* Build configuration list for PBXProject "FirebaseMLVisionFaceModel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB89A883F475E37B9005D8EA3F40023E /* Debug */,
+				59B0A40F9355B5000BA9562CD88AD1DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1ED3BDF47844AF120A442E287048A242 /* Project object */;
+}

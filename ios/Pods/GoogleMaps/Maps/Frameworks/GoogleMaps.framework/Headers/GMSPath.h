@@ -10,7 +10,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSPath encapsulates an immutable array of CLLocationCooordinate2D. All the coordinates of a
@@ -109,4 +109,4 @@ typedef NS_ENUM(NSUInteger, GMSLengthKind) {
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

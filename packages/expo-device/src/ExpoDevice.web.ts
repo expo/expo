@@ -1,5 +1,5 @@
-import UAParser from 'ua-parser-js';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import UAParser from 'ua-parser-js';
 
 import { DeviceType } from './Device.types';
 
@@ -29,7 +29,7 @@ export default {
     return null;
   },
   get supportedCpuArchitectures(): string[] | null {
-    return (result && result.cpu.architecture) ? [result.cpu.architecture] : null;
+    return result && result.cpu.architecture ? [result.cpu.architecture] : null;
   },
   get osName(): string {
     return (result && result.os.name) || '';

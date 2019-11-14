@@ -1,8 +1,8 @@
 package abi34_0_0.host.exp.exponent.modules.api.screens;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.support.v4.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;

@@ -4,6 +4,6 @@ export default {
     },
     get isSupported() {
         return false;
-    }
+    },
 };
 //# sourceMappingURL=ExpoStoreReview.web.js.map

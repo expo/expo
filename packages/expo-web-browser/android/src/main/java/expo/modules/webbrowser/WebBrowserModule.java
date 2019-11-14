@@ -6,8 +6,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 import android.text.TextUtils;
 
 import org.unimodules.core.ExportedModule;
@@ -31,6 +31,8 @@ public class WebBrowserModule extends ExportedModule {
   private final static String SERVICE_PACKAGES_KEY = "servicePackages";
   private final static String PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage";
   private final static String DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage";
+
+  private final static String SHOW_IN_RECENTS = "showInRecents";
 
   private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String ERROR_CODE = "EXWebBrowser";
@@ -129,9 +131,6 @@ public class WebBrowserModule extends ExportedModule {
   public void openBrowserAsync(final String url, ReadableArguments arguments, final Promise promise) {
 
     Intent intent = createCustomTabsIntent(arguments);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-    intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
     intent.setData(Uri.parse(url));
 
     try {
@@ -170,6 +169,12 @@ public class WebBrowserModule extends ExportedModule {
     intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, arguments.getBoolean(ENABLE_BAR_COLLAPSING_KEY, false));
     if (!TextUtils.isEmpty(packageName)) {
       intent.setPackage(packageName);
+    }
+
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    if (!arguments.getBoolean(SHOW_IN_RECENTS, false)) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
     }
 
     return intent;

@@ -4,7 +4,7 @@
 #import "AMPConstants.h"
 
 NSString *const kAMPLibrary = @"amplitude-ios";
-NSString *const kAMPVersion = @"3.14.1";
+NSString *const kAMPVersion = @"4.7.1";
 NSString *const kAMPEventLogDomain = @"api.amplitude.com";
 NSString *const kAMPEventLogUrl = @"https://api.amplitude.com/";
 NSString *const kAMPDefaultInstance = @"$default_instance";
@@ -33,6 +33,7 @@ const int kAMPMaxStringLength = 1024;
 const int kAMPMaxPropertyKeys = 1000;
 
 NSString *const IDENTIFY_EVENT = @"$identify";
+NSString *const GROUP_IDENTIFY_EVENT = @"$groupidentify";
 NSString *const AMP_OP_ADD = @"$add";
 NSString *const AMP_OP_APPEND = @"$append";
 NSString *const AMP_OP_CLEAR_ALL = @"$clearAll";
@@ -46,3 +47,20 @@ NSString *const AMP_REVENUE_QUANTITY = @"$quantity";
 NSString *const AMP_REVENUE_PRICE = @"$price";
 NSString *const AMP_REVENUE_REVENUE_TYPE = @"$revenueType";
 NSString *const AMP_REVENUE_RECEIPT = @"$receipt";
+
+NSString *const AMP_TRACKING_OPTION_CARRIER = @"carrier";
+NSString *const AMP_TRACKING_OPTION_CITY = @"city";
+NSString *const AMP_TRACKING_OPTION_COUNTRY = @"country";
+NSString *const AMP_TRACKING_OPTION_DEVICE_MANUFACTURER = @"device_manufacturer";
+NSString *const AMP_TRACKING_OPTION_DEVICE_MODEL = @"device_model";
+NSString *const AMP_TRACKING_OPTION_DMA = @"dma";
+NSString *const AMP_TRACKING_OPTION_IDFA = @"idfa";
+NSString *const AMP_TRACKING_OPTION_IDFV = @"idfv";
+NSString *const AMP_TRACKING_OPTION_IP_ADDRESS = @"ip_address";
+NSString *const AMP_TRACKING_OPTION_LANGUAGE = @"language";
+NSString *const AMP_TRACKING_OPTION_LAT_LNG = @"lat_lng";
+NSString *const AMP_TRACKING_OPTION_OS_NAME = @"os_name";
+NSString *const AMP_TRACKING_OPTION_OS_VERSION = @"os_version";
+NSString *const AMP_TRACKING_OPTION_PLATFORM = @"platform";
+NSString *const AMP_TRACKING_OPTION_REGION = @"region";
+NSString *const AMP_TRACKING_OPTION_VERSION_NAME = @"version_name";

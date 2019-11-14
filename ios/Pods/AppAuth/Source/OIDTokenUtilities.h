@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     @param inputString The input string.
     @return The SHA256 data.
  */
-+ (NSData *)sha265:(NSString *)inputString;
++ (NSData *)sha256:(NSString *)inputString;
 
 /*! @brief Truncated intput string after first 6 characters followed by ellipses
     @param inputString The input string.

@@ -13,13 +13,10 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/MarkerInfoWindowViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
+#import "GoogleMapsDemos/UIViewController+GMSToastMessages.h"
 
 @interface MarkerInfoWindowViewController ()<GMSMapViewDelegate>
 @end
@@ -88,27 +85,13 @@
 - (void)mapView:(GMSMapView *)mapView didCloseInfoWindowOfMarker:(GMSMarker *)marker {
   NSString *message =
       [NSString stringWithFormat:@"Info window for marker %@ closed.", marker.title];
-  [self showMessage:message];
+  [self gms_showToastWithMessage:message];
 }
 
 - (void)mapView:(GMSMapView *)mapView didLongPressInfoWindowOfMarker:(GMSMarker *)marker {
   NSString *message =
       [NSString stringWithFormat:@"Info window for marker %@ long pressed.", marker.title];
-  [self showMessage:message];
-}
-
-#pragma mark Private
-
-- (void)showMessage:(NSString *)message {
-  UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil
-                                                      message:message
-                                                     delegate:nil
-                                            cancelButtonTitle:nil
-                                            otherButtonTitles:nil];
-  [alertView show];
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-  });
+  [self gms_showToastWithMessage:message];
 }
 
 @end

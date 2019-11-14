@@ -1,3 +1,5 @@
+/* @flow */
+
 import Constants from 'expo-constants';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -10,6 +12,7 @@ import { EventEmitter } from 'fbemitter';
 import SearchBar from '../components/SearchBar';
 import SearchResults from '../components/SearchResults';
 import isIPhoneX from '../utils/isIPhoneX';
+import { StyledView } from '../components/Views';
 
 const ResultsLimit = 10;
 const SearchQuery = gql`
@@ -96,12 +99,12 @@ export default class SearchScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <StyledView style={styles.container} darkBackgroundColor="#000">
         <View style={styles.searchBarContainer}>
           <SearchBar emitter={this.state.emitter} />
         </View>
         <SearchResults query={this.props.data.variables.query} data={this.props.data} />
-      </View>
+      </StyledView>
     );
   }
 }
@@ -111,7 +114,6 @@ const NOTCH_HEIGHT = isIPhoneX ? 20 : 0;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   searchBarContainer: {
     ...Platform.select({

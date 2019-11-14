@@ -4,15 +4,13 @@ import plist from 'plist';
 import semver from 'semver';
 import JsonFile from '@expo/json-file';
 
-import * as Directories from './Directories';
+import { EXPO_DIR, ANDROID_DIR } from './Constants';
 
 export type Platform = 'ios' | 'android';
 
 export type SDKVersionsObject = {
   sdkVersions: string[];
 };
-
-const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
 export async function sdkVersionAsync(): Promise<string> {
   const packageJson = await JsonFile.readAsync(path.join(EXPO_DIR, 'packages/expo/package.json'));
@@ -28,6 +26,17 @@ export async function iosAppVersionAsync(): Promise<string> {
     throw new Error(`"CFBundleShortVersionString" not found in plist: ${infoPlistPath}`);
   }
   return bundleVersion;
+}
+
+export async function androidAppVersionAsync(): Promise<string> {
+  const buildGradlePath = path.join(ANDROID_DIR, 'app', 'build.gradle');
+  const buildGradleContent = await fs.readFile(buildGradlePath, 'utf8');
+  const match = buildGradleContent.match(/versionName ['"]([^'"]+?)['"]/);
+
+  if (!match) {
+    throw new Error('Can\'t obtain `versionName` from app\'s build.gradle');
+  }
+  return match[1];
 }
 
 export async function getHomeSDKVersionAsync(): Promise<string> {

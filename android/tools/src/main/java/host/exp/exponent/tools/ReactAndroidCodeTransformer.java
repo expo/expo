@@ -70,18 +70,18 @@ public class ReactAndroidCodeTransformer {
         "}";
   }
 
-  private static String getHandleErrorBlockString(String throwable, String title, String details, String exceptionId, String isFatal) {
-    return getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"handleReactNativeError\", Throwable.class, String.class, Object.class, Integer.class, Boolean.class", "null, " + throwable + ", " + title + ", " + details + ", " + exceptionId + ", " + isFatal);
+  private static String getHandleErrorBlockString(String title, String details, String exceptionId, String isFatal) {
+    return getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"handleReactNativeError\", String.class, Object.class, Integer.class, Boolean.class", "null, " + title + ", " + details + ", " + exceptionId + ", " + isFatal);
   }
 
-  private static BlockStmt getHandleErrorBlock(String throwable, String title, String details, String exceptionId, String isFatal) {
-    return JavaParser.parseBlock(getHandleErrorBlockString(throwable, title, details, exceptionId, isFatal));
+  private static BlockStmt getHandleErrorBlock(String title, String details, String exceptionId, String isFatal) {
+    return JavaParser.parseBlock(getHandleErrorBlockString(title, details, exceptionId, isFatal));
   }
 
   private static CatchClause getCatchClause(String title, String details, String exceptionId, String isFatal) {
     ReferenceType t = JavaParser.parseClassOrInterfaceType("RuntimeException");
     SimpleName v = new SimpleName("expoException");
-    BlockStmt catchBlock = getHandleErrorBlock("expoException", title, details, exceptionId, isFatal);
+    BlockStmt catchBlock = getHandleErrorBlock(title, details, exceptionId, isFatal);
     return getCatchClause(Arrays.asList(t), v, catchBlock);
   }
 
@@ -196,11 +196,11 @@ public class ReactAndroidCodeTransformer {
         // In dev mode call the original methods. Otherwise open Expo error screen
         switch (methodName) {
           case "reportFatalException":
-            return exceptionsManagerModuleHandleException(n, "true");
+            return exceptionsManagerModuleHandleException(n, "message", "stack", "id", "true");
           case "reportSoftException":
-            return exceptionsManagerModuleHandleException(n, "false");
+            return exceptionsManagerModuleHandleException(n, "message", "stack", "id", "false");
           case "updateExceptionMessage":
-            return exceptionsManagerModuleHandleException(n, "false");
+            return exceptionsManagerModuleHandleException(n, "title", "details", "exceptionId", "false");
         }
 
         return n;
@@ -501,13 +501,13 @@ public class ReactAndroidCodeTransformer {
     });
   }
 
-  private static Node exceptionsManagerModuleHandleException(final MethodDeclaration n, final String isFatal) {
+  private static Node exceptionsManagerModuleHandleException(final MethodDeclaration n, final String errorMessageName, final String errorDetailsName, final String errorIdName, final String isFatal) {
     String source =
         "{\n" +
             "if (mDevSupportManager.getDevSupportEnabled()) {\n" +
                 n.getBody().get().toString() + "\n" +
             "} else {\n" +
-                getHandleErrorBlockString("null", "title", "details", "exceptionId", isFatal) + "\n" +
+                getHandleErrorBlockString(errorMessageName, errorDetailsName, errorIdName, isFatal) + "\n" +
             "}\n" +
         "}\n";
 

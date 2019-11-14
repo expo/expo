@@ -1,6 +1,6 @@
 {
   "name": "EXDocumentPicker",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "summary": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "license": "MIT",

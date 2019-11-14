@@ -46,9 +46,7 @@ describe('selectAssetSource', () => {
 
     let source = AssetSources.selectAssetSource(mockFontMetadata);
     expect(source.uri).toBe(
-      `https://exp.direct:19001/assets/test.ttf?platform=${
-        Platform.OS
-      }&hash=cafecafecafecafecafecafecafecafe`
+      `https://exp.direct:19001/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
     );
     expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
   });
@@ -114,9 +112,7 @@ describe('selectAssetSource', () => {
     });
 
     expect(source.uri).toBe(
-      `https://example.com/overridden.mp4?platform=${
-        Platform.OS
-      }&hash=d00dd00dd00dd00dd00dd00dd00dd00d`
+      `https://example.com/overridden.mp4?platform=${Platform.OS}&hash=d00dd00dd00dd00dd00dd00dd00dd00d`
     );
     expect(source.hash).toBe('d00dd00dd00dd00dd00dd00dd00dd00d');
   });

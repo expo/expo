@@ -99,6 +99,8 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
           [reportableFaces addObject:[encoder encode:face]];
         }
       }
+
+      CGImageRelease(cgImage);
       if (error != nil) {
         reject(@"E_FACE_DETECTION_FAILED", [exception description], nil);
       } else {

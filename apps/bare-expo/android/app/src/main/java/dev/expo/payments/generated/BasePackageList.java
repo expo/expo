@@ -30,7 +30,6 @@ public class BasePackageList {
         new expo.modules.haptics.HapticsPackage(),
         new expo.modules.imagemanipulator.ImageManipulatorPackage(),
         new expo.modules.imagepicker.ImagePickerPackage(),
-        new expo.modules.inapppurchases.InAppPurchasesPackage(),
         new expo.modules.intentlauncher.IntentLauncherPackage(),
         new expo.modules.keepawake.KeepAwakePackage(),
         new expo.modules.lineargradient.LinearGradientPackage(),

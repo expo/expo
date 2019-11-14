@@ -1,13 +1,12 @@
 /* @flow */
 
 import React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import FadeIn from 'react-native-fade-in-image';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
-import { take } from 'lodash';
+import { Platform, StyleSheet, TouchableHighlight, View } from 'react-native';
 
 import Colors from '../constants/Colors';
+import { Ionicons } from './Icons';
+import { StyledText } from './Text';
+import { StyledButton } from './Views';
 
 export default class SeeAllProjectsButton extends React.Component {
   static defaultProps = {
@@ -16,37 +15,38 @@ export default class SeeAllProjectsButton extends React.Component {
   };
 
   render() {
-    let { snacks, maxIconCount } = this.props;
+    let { snacks } = this.props;
 
     if (!snacks || !snacks.length) {
       return <View />;
     }
 
     return (
-      <TouchableNativeFeedback
+      <StyledButton
         onPress={this.props.onPress}
         underlayColor="#c3c3c3"
-        fallback={TouchableHighlight}
-        style={styles.container}>
-        <Text style={styles.buttonText}>{this.props.label}</Text>
+        style={styles.container}
+        fallback={TouchableHighlight}>
+        <StyledText style={styles.buttonText} lightColor={Colors.light.blackText}>
+          {this.props.label}
+        </StyledText>
         <View style={styles.arrowIconContainer}>
           <Ionicons
             name="ios-arrow-forward"
             size={22}
-            color={Colors.greyText}
+            color={Colors.light.greyText}
             style={{ marginTop: -1, marginLeft: 15 }}
           />
         </View>
-      </TouchableNativeFeedback>
+      </StyledButton>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    flex: 1,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: Colors.separator,
     paddingTop: 15,
     paddingBottom: 12,
     paddingHorizontal: 15,
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {

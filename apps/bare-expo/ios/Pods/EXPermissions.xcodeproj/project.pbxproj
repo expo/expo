@@ -1,0 +1,498 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06B3B055E72E5FA652C8F277FEA6029E /* EXCameraRollRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = FBCFE85B7EAE3FD62DC98180D7282F35 /* EXCameraRollRequester.m */; };
+		1DF401A375780777E89480D0CFC4377D /* EXRemindersRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E0C9B8EC6E41A5608B53DD3C25F07DC /* EXRemindersRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		289AD92F0DC980923D23A211880FE997 /* EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC4FF9CF01668940983638895E29AD7 /* EXPermissions-dummy.m */; };
+		2D24955AFD11AC96EC6F62E47A4BDE2F /* EXLocationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC8FEF221543306DD2830BB37075375 /* EXLocationRequester.m */; };
+		2E09EB263856F01AC7C6D57F409297F0 /* EXCalendarRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = CCD0703977EB61B3AD647E89737CE155 /* EXCalendarRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		37225E2335C1790AE8CB49C452D3864E /* EXContactsRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E55C0EFB4E2FF4EC44D389104D721A8 /* EXContactsRequester.m */; };
+		3EFE9D6B7908D54933CBC261CA6CC90B /* EXAudioRecordingPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C0B23D3BCB920CBF0C7C2BDE72C963D /* EXAudioRecordingPermissionRequester.m */; };
+		55E725C6AC804E53C22B4204C543FA76 /* EXSystemBrightnessRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 2055FCC860916172D325B527D2837C47 /* EXSystemBrightnessRequester.m */; };
+		59FEEF282269D05D529369D4B0DF6DEA /* EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = E4269984132EC09ACDA0FA03D8327C5E /* EXPermissions.m */; };
+		5CB02654960758ECEFCEE0D129569BAF /* EXLocationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = BB90A6F628C769A04999758FFDF81CBF /* EXLocationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8302F196D3EA55766B0B2C5CBE60DFD3 /* EXCameraPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 9657271B34D4B7F60AC8E766DD09DCFA /* EXCameraPermissionRequester.m */; };
+		83F317DA8C5F14D4E5FD50B8DA3F9042 /* EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = DA1C5AA9A8C7F47E52087248FDA8EA53 /* EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8B480763B36D14852205E950FEF399A1 /* EXUserNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 606552BA66ACBE586195B19F95F304D9 /* EXUserNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8DFD384BA128B0C3AD4419E474F18ABB /* EXSystemBrightnessRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = EF1708633737E08D26E9B22BE4D276DF /* EXSystemBrightnessRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9A09746CEA7F8F9F1AC72EE2E2050FB3 /* EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = A82F3E53C071DB68223EE9C5DAC505D8 /* EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9F7B63CACD12A2C97E5094C47D6DD6DB /* EXAudioRecordingPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 81682034A02571C443AA832A85D498DA /* EXAudioRecordingPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A20593B5D571C2978D9551621ED227F5 /* EXRemoteNotificationRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E7000C01BF750D4BFC1F24FCF555CE3 /* EXRemoteNotificationRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BD2A18828759B2824DA3CA2E9A588D87 /* EXCalendarRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AF2749CFDDAA9B5AE5CEAB840CD59B1 /* EXCalendarRequester.m */; };
+		C0BA279ADE65BF8F4576557E5A218490 /* EXRemindersRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 362BDF8C0DBE2AEA0FD51037293B67E5 /* EXRemindersRequester.m */; };
+		C7BA7D111B7100FA89AFA908F378D330 /* EXCameraPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = DB40333E822461CA504C40D731A482F3 /* EXCameraPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CD3C58468AAAA19438071703F19AB0BE /* EXRemoteNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = CE02726B3A50597F5718681561232A4B /* EXRemoteNotificationRequester.m */; };
+		D11D5D51BF0D85E02CCBA89400671166 /* EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 976B16EDEFE1EA87BD95E3E1A3E88C9F /* EXReactNativeUserNotificationCenterProxy.m */; };
+		D2BBEDDFC4BCDBA245A88607634B8A2E /* EXContactsRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 6B914D055D8CBD8F72E5A1EF6ED4027C /* EXContactsRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E222ACFC1FF757D3DFDD9FE98E2C814F /* EXUserNotificationRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 061AB586F46D6EF6A1B2EBB30A88754C /* EXUserNotificationRequester.m */; };
+		FD150C6EEF7883C56149D43A8E783360 /* EXCameraRollRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EF2B9008DF81B1BA73F06EE3076DC7A /* EXCameraRollRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		12E97E56ACB70D66CAD062E16812F3C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
+		370B68E22D23C1FE1660D26030235878 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D2058653576C4016C65A58703057E384 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01A1DC8068A812A8B3A183BCC95FFF5A /* libEXPermissions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXPermissions.a; path = libEXPermissions.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		061AB586F46D6EF6A1B2EBB30A88754C /* EXUserNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXUserNotificationRequester.m; path = EXPermissions/EXUserNotificationRequester.m; sourceTree = "<group>"; };
+		1C0B23D3BCB920CBF0C7C2BDE72C963D /* EXAudioRecordingPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAudioRecordingPermissionRequester.m; path = EXPermissions/EXAudioRecordingPermissionRequester.m; sourceTree = "<group>"; };
+		2055FCC860916172D325B527D2837C47 /* EXSystemBrightnessRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSystemBrightnessRequester.m; path = EXPermissions/EXSystemBrightnessRequester.m; sourceTree = "<group>"; };
+		23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
+		2DC8FEF221543306DD2830BB37075375 /* EXLocationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLocationRequester.m; path = EXPermissions/EXLocationRequester.m; sourceTree = "<group>"; };
+		2E7000C01BF750D4BFC1F24FCF555CE3 /* EXRemoteNotificationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRemoteNotificationRequester.h; path = EXPermissions/EXRemoteNotificationRequester.h; sourceTree = "<group>"; };
+		362BDF8C0DBE2AEA0FD51037293B67E5 /* EXRemindersRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRemindersRequester.m; path = EXPermissions/EXRemindersRequester.m; sourceTree = "<group>"; };
+		5A5017723BF51B4032507A93999272C2 /* EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		606552BA66ACBE586195B19F95F304D9 /* EXUserNotificationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXUserNotificationRequester.h; path = EXPermissions/EXUserNotificationRequester.h; sourceTree = "<group>"; };
+		6B914D055D8CBD8F72E5A1EF6ED4027C /* EXContactsRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXContactsRequester.h; path = EXPermissions/EXContactsRequester.h; sourceTree = "<group>"; };
+		6BC4FF9CF01668940983638895E29AD7 /* EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPermissions-dummy.m"; sourceTree = "<group>"; };
+		6E55C0EFB4E2FF4EC44D389104D721A8 /* EXContactsRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXContactsRequester.m; path = EXPermissions/EXContactsRequester.m; sourceTree = "<group>"; };
+		7E0C9B8EC6E41A5608B53DD3C25F07DC /* EXRemindersRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRemindersRequester.h; path = EXPermissions/EXRemindersRequester.h; sourceTree = "<group>"; };
+		81682034A02571C443AA832A85D498DA /* EXAudioRecordingPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAudioRecordingPermissionRequester.h; path = EXPermissions/EXAudioRecordingPermissionRequester.h; sourceTree = "<group>"; };
+		8AF2749CFDDAA9B5AE5CEAB840CD59B1 /* EXCalendarRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendarRequester.m; path = EXPermissions/EXCalendarRequester.m; sourceTree = "<group>"; };
+		8EF2B9008DF81B1BA73F06EE3076DC7A /* EXCameraRollRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCameraRollRequester.h; path = EXPermissions/EXCameraRollRequester.h; sourceTree = "<group>"; };
+		9657271B34D4B7F60AC8E766DD09DCFA /* EXCameraPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCameraPermissionRequester.m; path = EXPermissions/EXCameraPermissionRequester.m; sourceTree = "<group>"; };
+		976B16EDEFE1EA87BD95E3E1A3E88C9F /* EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXReactNativeUserNotificationCenterProxy.m; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
+		A82F3E53C071DB68223EE9C5DAC505D8 /* EXReactNativeUserNotificationCenterProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXReactNativeUserNotificationCenterProxy.h; path = EXPermissions/EXReactNativeUserNotificationCenterProxy.h; sourceTree = "<group>"; };
+		A877BCE66829D40814E00B865703AF18 /* EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPermissions.xcconfig; sourceTree = "<group>"; };
+		BB90A6F628C769A04999758FFDF81CBF /* EXLocationRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLocationRequester.h; path = EXPermissions/EXLocationRequester.h; sourceTree = "<group>"; };
+		BE1AB288F246A2167D0D0D14535730FC /* EXPermissions-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPermissions-prefix.pch"; sourceTree = "<group>"; };
+		CCD0703977EB61B3AD647E89737CE155 /* EXCalendarRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendarRequester.h; path = EXPermissions/EXCalendarRequester.h; sourceTree = "<group>"; };
+		CE02726B3A50597F5718681561232A4B /* EXRemoteNotificationRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRemoteNotificationRequester.m; path = EXPermissions/EXRemoteNotificationRequester.m; sourceTree = "<group>"; };
+		D2058653576C4016C65A58703057E384 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		DA1C5AA9A8C7F47E52087248FDA8EA53 /* EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPermissions.h; path = EXPermissions/EXPermissions.h; sourceTree = "<group>"; };
+		DB40333E822461CA504C40D731A482F3 /* EXCameraPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCameraPermissionRequester.h; path = EXPermissions/EXCameraPermissionRequester.h; sourceTree = "<group>"; };
+		E4269984132EC09ACDA0FA03D8327C5E /* EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPermissions.m; path = EXPermissions/EXPermissions.m; sourceTree = "<group>"; };
+		EF1708633737E08D26E9B22BE4D276DF /* EXSystemBrightnessRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSystemBrightnessRequester.h; path = EXPermissions/EXSystemBrightnessRequester.h; sourceTree = "<group>"; };
+		FBCFE85B7EAE3FD62DC98180D7282F35 /* EXCameraRollRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCameraRollRequester.m; path = EXPermissions/EXCameraRollRequester.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2F9D1F7DA9298AC772F26245582E1880 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		10F07685D911354EC31EF13EA26AC79F /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				5A5017723BF51B4032507A93999272C2 /* EXPermissions.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		3F718E59B0171F9699987AA7D05A9460 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				D2058653576C4016C65A58703057E384 /* UMCore */,
+				23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		4090ABD82F1A881552E6F2D5774AE6D9 /* EXPermissions */ = {
+			isa = PBXGroup;
+			children = (
+				81682034A02571C443AA832A85D498DA /* EXAudioRecordingPermissionRequester.h */,
+				1C0B23D3BCB920CBF0C7C2BDE72C963D /* EXAudioRecordingPermissionRequester.m */,
+				CCD0703977EB61B3AD647E89737CE155 /* EXCalendarRequester.h */,
+				8AF2749CFDDAA9B5AE5CEAB840CD59B1 /* EXCalendarRequester.m */,
+				DB40333E822461CA504C40D731A482F3 /* EXCameraPermissionRequester.h */,
+				9657271B34D4B7F60AC8E766DD09DCFA /* EXCameraPermissionRequester.m */,
+				8EF2B9008DF81B1BA73F06EE3076DC7A /* EXCameraRollRequester.h */,
+				FBCFE85B7EAE3FD62DC98180D7282F35 /* EXCameraRollRequester.m */,
+				6B914D055D8CBD8F72E5A1EF6ED4027C /* EXContactsRequester.h */,
+				6E55C0EFB4E2FF4EC44D389104D721A8 /* EXContactsRequester.m */,
+				BB90A6F628C769A04999758FFDF81CBF /* EXLocationRequester.h */,
+				2DC8FEF221543306DD2830BB37075375 /* EXLocationRequester.m */,
+				DA1C5AA9A8C7F47E52087248FDA8EA53 /* EXPermissions.h */,
+				E4269984132EC09ACDA0FA03D8327C5E /* EXPermissions.m */,
+				A82F3E53C071DB68223EE9C5DAC505D8 /* EXReactNativeUserNotificationCenterProxy.h */,
+				976B16EDEFE1EA87BD95E3E1A3E88C9F /* EXReactNativeUserNotificationCenterProxy.m */,
+				7E0C9B8EC6E41A5608B53DD3C25F07DC /* EXRemindersRequester.h */,
+				362BDF8C0DBE2AEA0FD51037293B67E5 /* EXRemindersRequester.m */,
+				2E7000C01BF750D4BFC1F24FCF555CE3 /* EXRemoteNotificationRequester.h */,
+				CE02726B3A50597F5718681561232A4B /* EXRemoteNotificationRequester.m */,
+				EF1708633737E08D26E9B22BE4D276DF /* EXSystemBrightnessRequester.h */,
+				2055FCC860916172D325B527D2837C47 /* EXSystemBrightnessRequester.m */,
+				606552BA66ACBE586195B19F95F304D9 /* EXUserNotificationRequester.h */,
+				061AB586F46D6EF6A1B2EBB30A88754C /* EXUserNotificationRequester.m */,
+				10F07685D911354EC31EF13EA26AC79F /* Pod */,
+				AD787B28673B937A7CA43B3DA18296D5 /* Support Files */,
+			);
+			name = EXPermissions;
+			path = "../../../../packages/expo-permissions/ios";
+			sourceTree = "<group>";
+		};
+		9EDFF3299932780154763497EC9393F2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				01A1DC8068A812A8B3A183BCC95FFF5A /* libEXPermissions.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AD787B28673B937A7CA43B3DA18296D5 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				A877BCE66829D40814E00B865703AF18 /* EXPermissions.xcconfig */,
+				6BC4FF9CF01668940983638895E29AD7 /* EXPermissions-dummy.m */,
+				BE1AB288F246A2167D0D0D14535730FC /* EXPermissions-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXPermissions";
+			sourceTree = "<group>";
+		};
+		CA57B2477F967B79F73A580AF5DC80B5 = {
+			isa = PBXGroup;
+			children = (
+				3F718E59B0171F9699987AA7D05A9460 /* Dependencies */,
+				4090ABD82F1A881552E6F2D5774AE6D9 /* EXPermissions */,
+				F0844FFECEE1FF894716DA737ACCEFEF /* Frameworks */,
+				9EDFF3299932780154763497EC9393F2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F0844FFECEE1FF894716DA737ACCEFEF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B17FE3A295D1665969393331C5B7FE20 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F7B63CACD12A2C97E5094C47D6DD6DB /* EXAudioRecordingPermissionRequester.h in Headers */,
+				2E09EB263856F01AC7C6D57F409297F0 /* EXCalendarRequester.h in Headers */,
+				C7BA7D111B7100FA89AFA908F378D330 /* EXCameraPermissionRequester.h in Headers */,
+				FD150C6EEF7883C56149D43A8E783360 /* EXCameraRollRequester.h in Headers */,
+				D2BBEDDFC4BCDBA245A88607634B8A2E /* EXContactsRequester.h in Headers */,
+				5CB02654960758ECEFCEE0D129569BAF /* EXLocationRequester.h in Headers */,
+				83F317DA8C5F14D4E5FD50B8DA3F9042 /* EXPermissions.h in Headers */,
+				9A09746CEA7F8F9F1AC72EE2E2050FB3 /* EXReactNativeUserNotificationCenterProxy.h in Headers */,
+				1DF401A375780777E89480D0CFC4377D /* EXRemindersRequester.h in Headers */,
+				A20593B5D571C2978D9551621ED227F5 /* EXRemoteNotificationRequester.h in Headers */,
+				8DFD384BA128B0C3AD4419E474F18ABB /* EXSystemBrightnessRequester.h in Headers */,
+				8B480763B36D14852205E950FEF399A1 /* EXUserNotificationRequester.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		488F0C19AB92FC4B503EB55CC688FCF5 /* EXPermissions */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E63A2BBBDA228AB5130B1514F562D08C /* Build configuration list for PBXNativeTarget "EXPermissions" */;
+			buildPhases = (
+				B17FE3A295D1665969393331C5B7FE20 /* Headers */,
+				FA6A4874FC55C97ED36D69C13DC2B752 /* Sources */,
+				2F9D1F7DA9298AC772F26245582E1880 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5DC41D014F87C31FB212926708BEFAF4 /* PBXTargetDependency */,
+				B681E9696FD1486B80D2CF5A8E4C8240 /* PBXTargetDependency */,
+			);
+			name = EXPermissions;
+			productName = EXPermissions;
+			productReference = 01A1DC8068A812A8B3A183BCC95FFF5A /* libEXPermissions.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F1A4D5BCF9162A439A341803692E37D0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 7B2535EC613DE02F6025CB7A18B916B3 /* Build configuration list for PBXProject "EXPermissions" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CA57B2477F967B79F73A580AF5DC80B5;
+			productRefGroup = 9EDFF3299932780154763497EC9393F2 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = D2058653576C4016C65A58703057E384 /* UMCore */;
+				},
+				{
+					ProjectRef = 23684C993EACFABBCCFEB21EC4740D24 /* UMPermissionsInterface */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				488F0C19AB92FC4B503EB55CC688FCF5 /* EXPermissions */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FA6A4874FC55C97ED36D69C13DC2B752 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3EFE9D6B7908D54933CBC261CA6CC90B /* EXAudioRecordingPermissionRequester.m in Sources */,
+				BD2A18828759B2824DA3CA2E9A588D87 /* EXCalendarRequester.m in Sources */,
+				8302F196D3EA55766B0B2C5CBE60DFD3 /* EXCameraPermissionRequester.m in Sources */,
+				06B3B055E72E5FA652C8F277FEA6029E /* EXCameraRollRequester.m in Sources */,
+				37225E2335C1790AE8CB49C452D3864E /* EXContactsRequester.m in Sources */,
+				2D24955AFD11AC96EC6F62E47A4BDE2F /* EXLocationRequester.m in Sources */,
+				289AD92F0DC980923D23A211880FE997 /* EXPermissions-dummy.m in Sources */,
+				59FEEF282269D05D529369D4B0DF6DEA /* EXPermissions.m in Sources */,
+				D11D5D51BF0D85E02CCBA89400671166 /* EXReactNativeUserNotificationCenterProxy.m in Sources */,
+				C0BA279ADE65BF8F4576557E5A218490 /* EXRemindersRequester.m in Sources */,
+				CD3C58468AAAA19438071703F19AB0BE /* EXRemoteNotificationRequester.m in Sources */,
+				55E725C6AC804E53C22B4204C543FA76 /* EXSystemBrightnessRequester.m in Sources */,
+				E222ACFC1FF757D3DFDD9FE98E2C814F /* EXUserNotificationRequester.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5DC41D014F87C31FB212926708BEFAF4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 370B68E22D23C1FE1660D26030235878 /* PBXContainerItemProxy */;
+		};
+		B681E9696FD1486B80D2CF5A8E4C8240 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = 12E97E56ACB70D66CAD062E16812F3C8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1C291454ECC94DD336D729B6C0798D35 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		33C60FEC96F0D46B35CA73003240EFC9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A877BCE66829D40814E00B865703AF18 /* EXPermissions.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPermissions;
+				PRODUCT_NAME = EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4523848AF98B335121EB81A3C940A764 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		7DB91BC477A90D6CEA314AC7CDD804F8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A877BCE66829D40814E00B865703AF18 /* EXPermissions.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPermissions/EXPermissions-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPermissions;
+				PRODUCT_NAME = EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7B2535EC613DE02F6025CB7A18B916B3 /* Build configuration list for PBXProject "EXPermissions" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4523848AF98B335121EB81A3C940A764 /* Debug */,
+				1C291454ECC94DD336D729B6C0798D35 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E63A2BBBDA228AB5130B1514F562D08C /* Build configuration list for PBXNativeTarget "EXPermissions" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				33C60FEC96F0D46B35CA73003240EFC9 /* Debug */,
+				7DB91BC477A90D6CEA314AC7CDD804F8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F1A4D5BCF9162A439A341803692E37D0 /* Project object */;
+}

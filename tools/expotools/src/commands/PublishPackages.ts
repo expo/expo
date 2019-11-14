@@ -166,9 +166,9 @@ async function _runPipelineAsync(
   }
 }
 
-async function _getPackageViewFromRegistryAsync(packageName: string): Promise<PackageView | null> {
+async function _getPackageViewFromRegistryAsync(packageName: string, version?: string): Promise<PackageView | null> {
   try {
-    const json = await _spawnJSONCommandAsync('npm', ['view', packageName, '--json']);
+    const json = await _spawnJSONCommandAsync('npm', ['view', version ? `${packageName}@${version}` : packageName, '--json']);
 
     if (json && !json.error) {
       const currentVersion = json.versions[json.versions.length - 1];
@@ -217,9 +217,9 @@ async function _gitLogWithFormatAsync(
   };
 }
 
-async function _gitAddAsync(pathToAdd: string): Promise<void> {
+async function _gitAddAsync(pathToAdd: string, cwd: string = EXPO_DIR): Promise<void> {
   try {
-    return await _spawnAsync('git', ['add', pathToAdd]);
+    return await _spawnAsync('git', ['add', pathToAdd], { cwd });
   } catch (error) {
     // Nothing: sometimes gitignored files might throw errors here, but we don't care.
   }
@@ -382,7 +382,6 @@ async function _askForVersionAsync(
       },
     },
   ]);
-  console.log();
   return result.version;
 }
 
@@ -470,10 +469,13 @@ async function _preparePublishAsync(
   const defaultVersion = _findDefaultVersion(packageJson, packageView, options);
   const maintainers = packageView ? await _getMaintainersAsync(pkg.packageName) : [];
   const isMaintainer = !packageView || maintainers.includes(options.npmProfile.name);
+
+  let newVersion = currentVersion;
   let shouldPublish = false;
+  let isSubmodule: boolean | undefined;
 
   if (isScoped) {
-    console.log(`Preparing ${chalk.green(pkg.packageName)}... 👨‍🍳`);
+    console.log(`Preparing ${chalk.bold.green(pkg.packageName)}... 👨‍🍳`);
 
     if (packageView && currentVersion) {
       // package is already published
@@ -530,31 +532,29 @@ async function _preparePublishAsync(
   }
 
   if (shouldPublish) {
-    const newVersion = await _askForVersionAsync(
+    newVersion = await _askForVersionAsync(
       pkg,
       currentVersion,
       defaultVersion,
       packageView,
       options
     );
+    isSubmodule = await _isGitSubmoduleAsync(pkg);
 
-    return {
-      currentVersion,
-      newVersion,
-      packageView,
-      shouldPublish,
-      packageJson,
-      maintainers,
-    };
+    if (isSubmodule) {
+      await _checkoutGitSubmoduleAsync(pkg);
+    }
+    console.log();
   }
 
   return {
     currentVersion,
-    newVersion: currentVersion,
+    newVersion,
     packageView,
     shouldPublish,
     packageJson,
     maintainers,
+    isSubmodule,
   };
 }
 
@@ -712,7 +712,7 @@ async function _publishAsync(
   if (!shouldPublish) {
     return;
   }
-  console.log(`\nPublishing ${chalk.green(pkg.packageName)}... 🚀`);
+  console.log(`Publishing ${chalk.green(pkg.packageName)}... 🚀`);
 
   if (options.dry) {
     console.log(chalk.gray(`Publishing skipped because of --dry flag.`));
@@ -731,7 +731,7 @@ async function _publishAsync(
 
     // Unfortunately, `npm publish` doesn't provide --json flag, so the best way to check if it succeded
     // is to check if the new package view resolves current version to the new version we just tried publishing
-    const newPackageView = await _getPackageViewFromRegistryAsync(pkg.packageName);
+    const newPackageView = await _getPackageViewFromRegistryAsync(pkg.packageName, newVersion);
 
     if (newPackageView && newPackageView.currentVersion === newVersion) {
       console.log(
@@ -749,7 +749,7 @@ async function _publishAsync(
 
       if (
         await _promptAsync(
-          'It might be an intermittent issue. Do you confirm it has been published?'
+          `It might be an intermittent issue. Do you confirm it has been published? Check out ${chalk.blue(`https://www.npmjs.com/package/${pkg.packageName}`)}.`
         )
       ) {
         return { published: true };
@@ -796,41 +796,35 @@ async function _cleanupAsync({ pkg, tarballFilename }: PipelineConfig): Promise<
   await fs.remove(path.join(pkg.path, tarballFilename));
 }
 
-async function _gitCommitAsync(allConfigs: Map<string, PipelineConfig>): Promise<void> {
+async function _isGitSubmoduleAsync(pkg: Package): Promise<boolean> {
+  const child = await _spawnAsync('git', ['rev-parse', '--show-toplevel'], {
+    cwd: pkg.path,
+  });
+  return child.stdout.trim() === pkg.path;
+}
+
+async function _checkoutGitSubmoduleAsync(pkg: Package): Promise<void> {
+  const { branchName } = await inquirer.prompt<{ branchName: string }>([
+    {
+      type: 'input',
+      name: 'branchName',
+      message: `Type in ${chalk.bold.green(pkg.packageName)} submodule branch to checkout:`,
+      default: 'master',
+    }
+  ]);
+
+  await _spawnAsync('git', ['fetch'], { cwd: pkg.path });
+  await _spawnAsync('git', ['checkout', '-B', branchName], { cwd: pkg.path });
+}
+
+async function _gitAddAndCommitAsync(allConfigs: Map<string, PipelineConfig>): Promise<void> {
   console.log();
 
   if (await _promptAsync('Do you want to commit changes made by this script?')) {
-    const publishedPackages: string[] = [];
-
-    for (const { pkg, newVersion, shouldPublish } of allConfigs.values()) {
-      if (shouldPublish) {
-        publishedPackages.push(`${pkg.packageName}@${newVersion}`);
-
-        const files = ['package.json', 'yarn.lock', 'build', 'android/build.gradle'];
-
-        // Add to git index.
-        for (const file of files) {
-          const fullPath = path.join(pkg.path, file);
-          if (await fs.exists(fullPath)) {
-            await _gitAddAsync(fullPath);
-          }
-        }
-      }
-    }
-
+    // Link dependencies within yarn workspaces.
     for (const project of Object.values(await getWorkspacesInfoAsync())) {
-      await _gitAddAsync(path.join(EXPO_DIR, project.location, 'package.json'));
+      await _gitAddAsync('package.json', path.join(EXPO_DIR, project.location));
     }
-
-    const description = publishedPackages.join('\n');
-    const { message } = await inquirer.prompt<{ message: string }>([
-      {
-        type: 'input',
-        name: 'message',
-        message: 'Type in commit message:',
-        default: 'Update packages',
-      },
-    ]);
 
     // Add some files from iOS project that are being touched by `pod update` command
     await _gitAddAsync('ios/Podfile.lock');
@@ -839,10 +833,67 @@ async function _gitCommitAsync(allConfigs: Map<string, PipelineConfig>): Promise
     // Add expoview's build.gradle in which the dependencies were updated
     await _gitAddAsync('android/expoview/build.gradle');
 
+    // Update package versions in expo's bundledNativeModules.
     await _gitAddAsync('packages/expo/bundledNativeModules.json');
 
-    await _spawnAsync('git', ['commit', '-m', message, '-m', description]);
+    const publishedPackages: string[] = [];
+
+    // Add files from updated packages and submodules.
+    for (const { pkg, newVersion, shouldPublish, isSubmodule } of allConfigs.values()) {
+      if (shouldPublish && newVersion) {
+        publishedPackages.push(`${pkg.packageName}@${newVersion}`);
+
+        const files = ['package.json', 'yarn.lock', 'build', 'android/build.gradle'];
+
+        // Add to git index.
+        for (const file of files) {
+          const fullPath = path.join(pkg.path, file);
+          if (await fs.exists(fullPath)) {
+            await _gitAddAsync(file, pkg.path);
+          }
+        }
+
+        // We need to do a bit more if the package is also a submodule, like react-native-unimodules.
+        if (isSubmodule) {
+          // Commit changes in the submodule.
+          await _gitCommitWithPromptAsync(
+            pkg.packageName,
+            `Publish version ${newVersion}`,
+            '',
+            pkg.path
+          );
+
+          // Add submodule changes to the main repo.
+          await _gitAddAsync(pkg.path);
+        }
+      }
+    }
+
+    await _gitCommitWithPromptAsync(
+      'expo',
+      'Publish packages',
+      publishedPackages.join('\n'),
+      EXPO_DIR,
+    );
+    console.log();
   }
+}
+
+async function _gitCommitWithPromptAsync(
+  repositoryName: string,
+  defaultCommitMessage: string,
+  commitDescription: string,
+  cwd: string,
+): Promise<void> {
+  const { commitMessage } = await inquirer.prompt<{ commitMessage: string }>([
+    {
+      type: 'input',
+      name: 'commitMessage',
+      message: `Type in commit message for ${chalk.green(repositoryName)} repository:`,
+      default: defaultCommitMessage,
+    },
+  ]);
+  await _spawnAsync('git', ['commit', '-m', commitMessage, '-m', commitDescription], { cwd });
 }
 
 async function _updatePodsAsync(allConfigs: Map<string, PipelineConfig>): Promise<void> {
@@ -963,7 +1014,7 @@ async function publishPackagesAsync(argv: any): Promise<void> {
 
   if (await _promptAsync('Is this correct? Are you ready to launch a rocket into space? 🚀')) {
     await _updatePodsAsync(publishConfigs);
-    await _gitCommitAsync(publishConfigs);
+    await _gitAddAndCommitAsync(publishConfigs);
     await _runPipelineAsync(publishPipeline, publishConfigs, options);
   } else {
     await _runPipelineAsync([_cleanupAsync], publishConfigs, options);

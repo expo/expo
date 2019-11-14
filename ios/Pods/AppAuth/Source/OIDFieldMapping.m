@@ -22,10 +22,6 @@
 
 @implementation OIDFieldMapping
 
-@synthesize name = _name;
-@synthesize expectedType = _expectedType;
-@synthesize conversion = _conversion;
-
 - (nonnull instancetype)init
     OID_UNAVAILABLE_USE_INITIALIZER(@selector(initWithName:type:conversion:))
 

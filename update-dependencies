@@ -16,7 +16,7 @@ echo "$newCommit" > ./nix/nixpkgs.json
 # generate binstubs for cli tools
 bin/nix-binstubs \
   awscli \
-  cocoapods \
+  cocoapods-beta \
   fastlane \
   git-crypt \
   git-lfs \

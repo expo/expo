@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Platform, ScrollView } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import HeadingText from '../components/HeadingText';
@@ -43,28 +43,8 @@ export default class NotificationScreen extends React.Component {
 
         <HeadingText>Push Notifications</HeadingText>
         <ListButton
-          onPress={() => this._sendNotificationAsync('simple')}
+          onPress={this._sendNotificationAsync}
           title="Send me a push notification"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('image')}
-          title="Send me a push notification with an image"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('audio')}
-          title="Send me a push notification with an audio"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('gif')}
-          title="Send me a push notification with an animated image"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('video')}
-          title="Send me a push notification with a video"
-        />
-        <ListButton
-          onPress={() => this._sendNotificationAsync('imageWithCustomIcon')}
-          title="Send me a push notification with a image and a custom icon"
         />
 
         <HeadingText>Custom notification categories</HeadingText>
@@ -251,20 +231,10 @@ export default class NotificationScreen extends React.Component {
     Alert.alert(`Cleared the badge`);
   }
 
-  _sendNotificationAsync = async (type: string) => {
-    if (type !== 'simple' && type !== 'image' && Platform.OS !== 'ios') {
-      alert(
-        'While you will still receive the notification, you will not see any rich content since rich content other than images are only supported on iOS.'
-      );
-    }
-    if (type === 'imageWithCustomIcon' && Platform.OS === 'ios') {
-      alert(
-        'While you will still receive the notification, you will not see any custom icon since custom icons are not supported on iOS.'
-      );
-    }
+  _sendNotificationAsync = async () => {
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {
-      registerForPushNotificationsAsync(type);
+      registerForPushNotificationsAsync();
     }
   }
 }

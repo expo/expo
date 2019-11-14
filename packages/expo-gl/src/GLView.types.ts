@@ -1,6 +1,7 @@
+import { Component, ComponentClass } from 'react';
 import { ViewProps } from 'react-native';
 
-import WebGL2RenderingContext from './WebGL2RenderingContext'
+import WebGL2RenderingContext from './WebGL2RenderingContext';
 
 export type SurfaceCreateEvent = {
   nativeEvent: {
@@ -32,6 +33,8 @@ export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
   __exglCtxId: number;
   endFrameEXP(): void;
 }
+
+export type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
 
 /**
  *

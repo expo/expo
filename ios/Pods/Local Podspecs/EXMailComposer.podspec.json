@@ -1,6 +1,6 @@
 {
   "name": "EXMailComposer",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "summary": "Provides an API to compose mails using OS specific UI",
   "description": "Provides an API to compose mails using OS specific UI",
   "license": "MIT",

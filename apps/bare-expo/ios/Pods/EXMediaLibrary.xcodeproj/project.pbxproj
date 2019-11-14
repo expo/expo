@@ -1,0 +1,418 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0181E61DC7B85A74612BD906BCFE095E /* EXMediaLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = 840273615DF98FDBD6A7FF87D043BC11 /* EXMediaLibrary.m */; };
+		06C0FFD83FEC4292B93AC4B6C54E46E5 /* EXMediaLibrary-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EC0E69A677E38A83C15F143A55C710C /* EXMediaLibrary-dummy.m */; };
+		206139C3E874F39318EF555354A40ED0 /* EXSaveToLibraryDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 978D0E0CC90C4F1E11C4E273317B2481 /* EXSaveToLibraryDelegate.m */; };
+		9A2EC8AF5D3FB5D6CD12FAE7D19E9637 /* EXMediaLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = C641F343A5F6E6D8FCAC312137ED878C /* EXMediaLibrary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		9AACFACDEFE7DEB96C83416A33A028A7 /* EXSaveToLibraryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 9FFCA93F4EDD6BA9CEC2B069DE2C3190 /* EXSaveToLibraryDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4954B91508144BE92B7006AD0A729FE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7134E14832E2CD4F261377D667A6BD78 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
+		D30866C4E4420A8AEAF5BE67005A110E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1DE3E8ABF750AF6E1F028D7B4A4379CD /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1DE3E8ABF750AF6E1F028D7B4A4379CD /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		4F55A2B0C78DF709A2AB852008B812DD /* EXMediaLibrary.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXMediaLibrary.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		69F63F01CF0A951FD9D399DD9D9475B0 /* EXMediaLibrary.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXMediaLibrary.xcconfig; sourceTree = "<group>"; };
+		7134E14832E2CD4F261377D667A6BD78 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
+		7332765204ED323C9C39E11A973382FF /* libEXMediaLibrary.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXMediaLibrary.a; path = libEXMediaLibrary.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		840273615DF98FDBD6A7FF87D043BC11 /* EXMediaLibrary.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXMediaLibrary.m; path = EXMediaLibrary/EXMediaLibrary.m; sourceTree = "<group>"; };
+		8EC0E69A677E38A83C15F143A55C710C /* EXMediaLibrary-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXMediaLibrary-dummy.m"; sourceTree = "<group>"; };
+		978D0E0CC90C4F1E11C4E273317B2481 /* EXSaveToLibraryDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSaveToLibraryDelegate.m; path = EXMediaLibrary/EXSaveToLibraryDelegate.m; sourceTree = "<group>"; };
+		9FFCA93F4EDD6BA9CEC2B069DE2C3190 /* EXSaveToLibraryDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSaveToLibraryDelegate.h; path = EXMediaLibrary/EXSaveToLibraryDelegate.h; sourceTree = "<group>"; };
+		C641F343A5F6E6D8FCAC312137ED878C /* EXMediaLibrary.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXMediaLibrary.h; path = EXMediaLibrary/EXMediaLibrary.h; sourceTree = "<group>"; };
+		D05BF50F0F95DB6CB4FF03BC979FFFFE /* EXMediaLibrary-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXMediaLibrary-prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		859584A92E383A7EEA61077012F3F25C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08A9B86E0C91ACCCD25A8F6633A713F0 /* EXMediaLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				C641F343A5F6E6D8FCAC312137ED878C /* EXMediaLibrary.h */,
+				840273615DF98FDBD6A7FF87D043BC11 /* EXMediaLibrary.m */,
+				9FFCA93F4EDD6BA9CEC2B069DE2C3190 /* EXSaveToLibraryDelegate.h */,
+				978D0E0CC90C4F1E11C4E273317B2481 /* EXSaveToLibraryDelegate.m */,
+				9FD4E1DBA84ED75DF7B456731643654D /* Pod */,
+				CCA9C35397B34A59CAF0E5ABFACAEBAF /* Support Files */,
+			);
+			name = EXMediaLibrary;
+			path = "../../../../packages/expo-media-library/ios";
+			sourceTree = "<group>";
+		};
+		342C3AF2941FE9BA65E4F03B2F868DB4 = {
+			isa = PBXGroup;
+			children = (
+				78905F9CD2C5B155FAFD2E861736E16C /* Dependencies */,
+				08A9B86E0C91ACCCD25A8F6633A713F0 /* EXMediaLibrary */,
+				C6267BB1A1D34C9298E723AF4A17C8BA /* Frameworks */,
+				D449196729C4ACDE34BE7AB14541B57C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		78905F9CD2C5B155FAFD2E861736E16C /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				1DE3E8ABF750AF6E1F028D7B4A4379CD /* UMCore */,
+				7134E14832E2CD4F261377D667A6BD78 /* UMPermissionsInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		9FD4E1DBA84ED75DF7B456731643654D /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				4F55A2B0C78DF709A2AB852008B812DD /* EXMediaLibrary.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		C6267BB1A1D34C9298E723AF4A17C8BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CCA9C35397B34A59CAF0E5ABFACAEBAF /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				69F63F01CF0A951FD9D399DD9D9475B0 /* EXMediaLibrary.xcconfig */,
+				8EC0E69A677E38A83C15F143A55C710C /* EXMediaLibrary-dummy.m */,
+				D05BF50F0F95DB6CB4FF03BC979FFFFE /* EXMediaLibrary-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXMediaLibrary";
+			sourceTree = "<group>";
+		};
+		D449196729C4ACDE34BE7AB14541B57C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7332765204ED323C9C39E11A973382FF /* libEXMediaLibrary.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A3EF5F321B172A68C302036EC1AA738B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A2EC8AF5D3FB5D6CD12FAE7D19E9637 /* EXMediaLibrary.h in Headers */,
+				9AACFACDEFE7DEB96C83416A33A028A7 /* EXSaveToLibraryDelegate.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		422CF65902B3ABF0E6A47527F9209CC8 /* EXMediaLibrary */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 789CFFEAC97F49D817F195D01134569F /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */;
+			buildPhases = (
+				A3EF5F321B172A68C302036EC1AA738B /* Headers */,
+				8F353C4196AD23216B3B9D384695B2D6 /* Sources */,
+				859584A92E383A7EEA61077012F3F25C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C4AC737EA155CB00846E1F1E6C95FB63 /* PBXTargetDependency */,
+				97E4D1CB48C14CD99B9241AC333DAA06 /* PBXTargetDependency */,
+			);
+			name = EXMediaLibrary;
+			productName = EXMediaLibrary;
+			productReference = 7332765204ED323C9C39E11A973382FF /* libEXMediaLibrary.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		17499A6B9CBF16A29EE550734537B96F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 92C1512F651AB8F0999D49559B9E07CB /* Build configuration list for PBXProject "EXMediaLibrary" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 342C3AF2941FE9BA65E4F03B2F868DB4;
+			productRefGroup = D449196729C4ACDE34BE7AB14541B57C /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 1DE3E8ABF750AF6E1F028D7B4A4379CD /* UMCore */;
+				},
+				{
+					ProjectRef = 7134E14832E2CD4F261377D667A6BD78 /* UMPermissionsInterface */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				422CF65902B3ABF0E6A47527F9209CC8 /* EXMediaLibrary */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8F353C4196AD23216B3B9D384695B2D6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				06C0FFD83FEC4292B93AC4B6C54E46E5 /* EXMediaLibrary-dummy.m in Sources */,
+				0181E61DC7B85A74612BD906BCFE095E /* EXMediaLibrary.m in Sources */,
+				206139C3E874F39318EF555354A40ED0 /* EXSaveToLibraryDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		97E4D1CB48C14CD99B9241AC333DAA06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = 4954B91508144BE92B7006AD0A729FE7 /* PBXContainerItemProxy */;
+		};
+		C4AC737EA155CB00846E1F1E6C95FB63 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = D30866C4E4420A8AEAF5BE67005A110E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		070D12D7B9757560348E560EC65201E5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		51653CA1F569A4C5756BC1789166E04E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69F63F01CF0A951FD9D399DD9D9475B0 /* EXMediaLibrary.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMediaLibrary/EXMediaLibrary-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMediaLibrary;
+				PRODUCT_NAME = EXMediaLibrary;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9FA469A992EC764969B635ACD1B86F2C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		A3856136B22713E979D38D7B2E626CA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 69F63F01CF0A951FD9D399DD9D9475B0 /* EXMediaLibrary.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMediaLibrary/EXMediaLibrary-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMediaLibrary;
+				PRODUCT_NAME = EXMediaLibrary;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		789CFFEAC97F49D817F195D01134569F /* Build configuration list for PBXNativeTarget "EXMediaLibrary" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51653CA1F569A4C5756BC1789166E04E /* Debug */,
+				A3856136B22713E979D38D7B2E626CA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		92C1512F651AB8F0999D49559B9E07CB /* Build configuration list for PBXProject "EXMediaLibrary" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				070D12D7B9757560348E560EC65201E5 /* Debug */,
+				9FA469A992EC764969B635ACD1B86F2C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 17499A6B9CBF16A29EE550734537B96F /* Project object */;
+}

@@ -61,15 +61,6 @@ static NSString *const kAdditionalParametersKey = @"additionalParameters";
 
 @implementation OIDTokenResponse
 
-@synthesize request = _request;
-@synthesize accessToken = _accessToken;
-@synthesize accessTokenExpirationDate = _accessTokenExpirationDate;
-@synthesize tokenType = _tokenType;
-@synthesize idToken = _idToken;
-@synthesize refreshToken = _refreshToken;
-@synthesize scope = _scope;
-@synthesize additionalParameters = _additionalParameters;
-
 /*! @brief Returns a mapping of incoming parameters to instance variables.
     @return A mapping of incoming parameters to instance variables.
  */

@@ -67,7 +67,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
   - **allowedReminders (_array_)** -- (Android only)
   - **allowedAttendeeTypes (_array_)** -- (Android only)
   - **isVisible (_boolean_)** -- (Android only)
-  - **isSynced (_boolean_)** -- (Android only)
+  - **isSynced (_boolean_)** -- (Android only) Whether or not the calendar is synced from a remote source. Unexpected behavior may occur if this is not set to `true`.
   - **accessLevel (_string_)** -- (Android only)
 
 #### Returns

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, StyleProp, ViewStyle } from 'react-native';
+import { ImageProps, View } from 'react-native';
 import { PlaybackNativeSource, PlaybackSource, PlaybackStatus, PlaybackStatusToSet } from './AV';
 export declare type NaturalSize = {
     width: number;
@@ -21,10 +21,8 @@ export declare type FullscreenUpdateEvent = {
 };
 export declare type VideoProps = {
     source?: PlaybackSource;
-    posterSource?: {
-        uri: string;
-    } | number;
-    posterStyle?: StyleProp<ViewStyle>;
+    posterSource?: ImageProps['source'];
+    posterStyle?: ImageProps['style'];
     onPlaybackStatusUpdate?: (status: PlaybackStatus) => void;
     onLoadStart?: () => void;
     onLoad?: (status: PlaybackStatus) => void;

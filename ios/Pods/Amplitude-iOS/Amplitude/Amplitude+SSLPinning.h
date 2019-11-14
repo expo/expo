@@ -1,4 +1,3 @@
-#ifdef AMPLITUDE_SSL_PINNING
 //
 //  Amplitude+SSLPinning
 //  Amplitude
@@ -7,11 +6,13 @@
 //  Copyright (c) 2015 Amplitude. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+#import "Amplitude.h"
 
 @interface Amplitude (SSLPinning)
 
+#ifdef AMPLITUDE_SSL_PINNING
 @property (nonatomic, assign) BOOL sslPinningEnabled;
+#endif
 
 @end
-#endif

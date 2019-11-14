@@ -13,7 +13,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 /*
@@ -64,4 +64,4 @@ RN_EXPORT ScriptTag parseTypeFromHeader(const BundleHeader& header);
 RN_EXPORT const char* stringForScriptTag(const ScriptTag& tag);
 
 }  // namespace ReactABI33_0_0
-}  // namespace facebook
+}  // namespace ABI33_0_0facebook

@@ -1,27 +1,14 @@
 import UUID from 'uuid-js';
 
 import { LocalNotification, LocalNotificationId } from './Notifications.types';
+import {
+  guardPermission,
+  getExponentPushTokenAsync,
+  getDevicePushTokenAsync,
+} from './ExponentNotificationsHelper.web';
 
-function guardPermission() {
-  if (!('Notification' in window)) {
-    throw new Error('The Notification API is not available on this device.');
-  }
-  if (!navigator.serviceWorker) {
-    throw new Error(
-      'Notifications cannot be sent because the service worker API is not supported on this device.'
-    );
-  }
-  if (!navigator.serviceWorker.controller) {
-    throw new Error(
-      'Notifications cannot be sent because there is no service worker controller registered. Ensure you have SSL certificates enabled.'
-    );
-  }
-  if (Notification.permission !== 'granted') {
-    throw new Error(
-      'Cannot use Notifications without permissions. Please request permissions with `expo-permissions`'
-    );
-  }
-}
+// Register `message`'s event listener (side-effect)
+import './ExponentNotifications.fx.web';
 
 function transformLocalNotification(
   notification: LocalNotification,
@@ -33,6 +20,8 @@ function transformLocalNotification(
     ...abstractNotification,
     tag,
     ...web,
+    // Show that this notification is a local notification
+    _isLocal: true,
   };
   return [nativeNotification.title, nativeNotification];
 }
@@ -112,5 +101,13 @@ export default {
   },
   async cancelAllScheduledNotificationsAsync(): Promise<void> {
     this.dismissNotification();
+  },
+
+  async getExponentPushTokenAsync(): Promise<string> {
+    return await getExponentPushTokenAsync();
+  },
+
+  async getDevicePushTokenAsync(): Promise<{ type: string; data: Object }> {
+    return await getDevicePushTokenAsync();
   },
 };

@@ -9,7 +9,7 @@
 #include <fbsystrace.h>
 #endif
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 /**

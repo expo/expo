@@ -25,6 +25,28 @@ public class PropsNode extends Node implements FinalNode {
   private final JavaOnlyMap mPropMap;
   private final ReactStylesDiffMap mDiffMap;
 
+  private static void addProp(WritableMap propMap, String key, Object value) {
+    if (value == null) {
+      propMap.putNull(key);
+    } else if (value instanceof Double) {
+      propMap.putDouble(key, (Double) value);
+    } else if (value instanceof Integer) {
+      propMap.putInt(key, (Integer) value);
+    } else if (value instanceof Number) {
+      propMap.putDouble(key, ((Number) value).doubleValue());
+    } else if (value instanceof Boolean) {
+      propMap.putBoolean(key, (Boolean) value);
+    } else if (value instanceof String) {
+      propMap.putString(key, (String) value);
+    } else if (value instanceof WritableArray) {
+      propMap.putArray(key, (WritableArray)value);
+    } else if (value instanceof WritableMap) {
+      propMap.putMap(key, (WritableMap)value);
+    } else {
+      throw new IllegalStateException("Unknown type of animated value");
+    }
+  }
+
   public PropsNode(
           int nodeID,
           ReadableMap config,
@@ -89,12 +111,13 @@ public class PropsNode extends Node implements FinalNode {
         }
       } else {
         String key = entry.getKey();
+        Object value = node.value();
         if (mNodesManager.uiProps.contains(key)) {
           hasUIProps = true;
-          mPropMap.putDouble(key, node.doubleValue());
+          addProp(mPropMap, key, value);
         } else {
           hasNativeProps = true;
-          nativeProps.putDouble(key, node.doubleValue());
+          addProp(nativeProps, key, value);
         }
       }
     }

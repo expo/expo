@@ -30,7 +30,10 @@
         }
         _sessionsByWriteKey = [NSMutableDictionary dictionary];
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.HTTPAdditionalHeaders = @{ @"Accept-Encoding" : @"gzip" };
+        config.HTTPAdditionalHeaders = @{
+            @"Accept-Encoding" : @"gzip",
+            @"User-Agent" : [NSString stringWithFormat:@"analytics-ios/%@", [SEGAnalytics version]],
+        };
         _genericSession = [NSURLSession sessionWithConfiguration:config];
     }
     return self;
@@ -46,6 +49,7 @@
             @"Content-Encoding" : @"gzip",
             @"Content-Type" : @"application/json",
             @"Authorization" : [@"Basic " stringByAppendingString:[[self class] authorizationHeader:writeKey]],
+            @"User-Agent" : [NSString stringWithFormat:@"analytics-ios/%@", [SEGAnalytics version]],
         };
         session = [NSURLSession sessionWithConfiguration:config];
         self.sessionsByWriteKey[writeKey] = session;
@@ -93,6 +97,7 @@
 
     NSURLSessionUploadTask *task = [session uploadTaskWithRequest:request fromData:gzippedPayload completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
         if (error) {
+            // Network error. Retry.
             SEGLog(@"Error uploading request %@.", error);
             completionHandler(YES);
             return;
@@ -100,24 +105,30 @@
 
         NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
         if (code < 300) {
-            // 2xx response codes.
+            // 2xx response codes. Don't retry.
             completionHandler(NO);
             return;
         }
         if (code < 400) {
-            // 3xx response codes.
+            // 3xx response codes. Retry.
             SEGLog(@"Server responded with unexpected HTTP code %d.", code);
             completionHandler(YES);
             return;
         }
+        if (code == 429) {
+          // 429 response codes. Retry.
+          SEGLog(@"Server limited client with response code %d.", code);
+          completionHandler(YES);
+          return;
+        }
         if (code < 500) {
-            // 4xx response codes.
+            // non-429 4xx response codes. Don't retry.
             SEGLog(@"Server rejected payload with HTTP code %d.", code);
             completionHandler(NO);
             return;
         }
 
-        // 5xx response codes.
+        // 5xx response codes. Retry.
         SEGLog(@"Server error with HTTP code %d.", code);
         completionHandler(YES);
     }];

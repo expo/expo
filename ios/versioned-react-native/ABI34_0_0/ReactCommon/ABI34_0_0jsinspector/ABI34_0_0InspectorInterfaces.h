@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 class IDestructible {
@@ -76,4 +76,4 @@ extern IInspector& getInspectorInstance();
 extern std::unique_ptr<IInspector> makeTestInspectorInstance();
 
 } // namespace ReactABI34_0_0
-} // namespace facebook
+} // namespace ABI34_0_0facebook

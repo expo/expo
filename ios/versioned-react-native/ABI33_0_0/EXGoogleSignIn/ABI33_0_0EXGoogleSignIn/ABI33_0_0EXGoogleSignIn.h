@@ -3,5 +3,5 @@
 #import <ABI33_0_0UMCore/ABI33_0_0UMModuleRegistryConsumer.h>
 #import <GoogleSignIn/GoogleSignIn.h>
 
-@interface ABI33_0_0EXGoogleSignIn : ABI33_0_0UMExportedModule <ABI33_0_0UMModuleRegistryConsumer, GIDSignInDelegate, GIDSignInUIDelegate>
+@interface ABI33_0_0EXGoogleSignIn : ABI33_0_0UMExportedModule <ABI33_0_0UMModuleRegistryConsumer, GIDSignInDelegate>
 @end

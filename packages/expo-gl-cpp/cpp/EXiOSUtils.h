@@ -3,11 +3,11 @@
 
 void EXiOSLog(const char *msg, ...) __attribute__((format(printf, 1, 2)));
 
-struct EXiOSOperatingSystemVersion {
+typedef struct {
   long majorVersion;
   long minorVersion;
   long patchVersion;
-};
+} EXiOSOperatingSystemVersion;
 
 EXiOSOperatingSystemVersion EXiOSGetOperatingSystemVersion();
 

@@ -19,7 +19,7 @@ import java.util.List;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
 
-@Table(databaseName = SchedulersDatabase.NAME)
+@Table(database = SchedulersDatabase.class)
 public class IntervalSchedulerModel extends BaseModel implements SchedulerModel {
 
   private static List<String> triggeringActions = Arrays.asList(null,

@@ -1,7 +1,7 @@
 /* @flow */
 
 import React from 'react';
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 import { withNavigation } from 'react-navigation';
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   largeProjectCardList: {
     paddingTop: 10,
     paddingBottom: 10,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
   largeProjectCard: {
     marginBottom: 10,
