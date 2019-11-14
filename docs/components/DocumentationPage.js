@@ -151,7 +151,7 @@ export default class DocumentationPage extends React.Component {
             <Banner />
             <H1>{this.props.title}</H1>
             {this.props.children}
-            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} />
+            <DocumentationFooter title={this.props.title} asPath={this.props.asPath} sourceCodeUrl={this.props.sourceCodeUrl} />
           </div>
         ) : (
           <DocumentationSidebar url={this.props.url} asPath={this.props.asPath} routes={routes} />

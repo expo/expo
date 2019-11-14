@@ -1,5 +1,6 @@
 ---
 title: Speech
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-speech"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';

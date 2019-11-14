@@ -1,5 +1,6 @@
 ---
 title: Application
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-application"
 ---
 
 This module provides useful information about the native application, such as the its ID, app name, and build version.

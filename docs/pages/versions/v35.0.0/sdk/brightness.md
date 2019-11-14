@@ -1,5 +1,6 @@
 ---
 title: Brightness
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-brightness"
 ---
 
 An API to get and set screen brightness.
