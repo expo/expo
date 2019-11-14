@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03F7EF3E3310D7D33BA8B8676CBE6933 /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */; };
+		079C6BE2BCA1BF66805859B13C955CCD /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */; };
 		2271C5DE62BDA3E42803DFA7CE2CCBE7 /* EXLinearGradientLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		392ABE8AD62225B353AC77B12EBE6D44 /* EXLinearGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4CEF5258AA19924552EF7AF07BEB8AF3 /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7D70CB55E5664751EEFEFDF7A9027353 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */; };
 		AD192289C856A89E30FA11708845755A /* EXLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CE20E08B98E4D48AD32FF9A3C107FAA9 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CE5738D8AF16272CF18DB78F3B495CB0 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */; };
-		FD097C67EBC9A1588736DCEF13D65FC5 /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F04F703CDAE714E411039040E0F8E7A7 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,7 +141,7 @@
 			buildConfigurationList = AD1E4CC5BC01FDE00E8E7250F6853001 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */;
 			buildPhases = (
 				B07EE5D0FCEB54330AA88814EF74D9BE /* Headers */,
-				22D7C96173ED71DE61DF903DA3E63356 /* Sources */,
+				A0EEAB317DB6A3996D6C02670E3385ED /* Sources */,
 				37DFA69BB348E8368921C737704CAD00 /* Frameworks */,
 			);
 			buildRules = (
@@ -186,14 +186,14 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		22D7C96173ED71DE61DF903DA3E63356 /* Sources */ = {
+		A0EEAB317DB6A3996D6C02670E3385ED /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE5738D8AF16272CF18DB78F3B495CB0 /* EXLinearGradient-dummy.m in Sources */,
-				4CEF5258AA19924552EF7AF07BEB8AF3 /* EXLinearGradient.m in Sources */,
-				FD097C67EBC9A1588736DCEF13D65FC5 /* EXLinearGradientLayer.m in Sources */,
-				CE20E08B98E4D48AD32FF9A3C107FAA9 /* EXLinearGradientManager.m in Sources */,
+				F04F703CDAE714E411039040E0F8E7A7 /* EXLinearGradient-dummy.m in Sources */,
+				079C6BE2BCA1BF66805859B13C955CCD /* EXLinearGradient.m in Sources */,
+				03F7EF3E3310D7D33BA8B8676CBE6933 /* EXLinearGradientLayer.m in Sources */,
+				7D70CB55E5664751EEFEFDF7A9027353 /* EXLinearGradientManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

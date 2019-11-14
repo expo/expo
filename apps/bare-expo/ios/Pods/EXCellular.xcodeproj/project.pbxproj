@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04032C57CF3E2F26809617B92463297B /* EXCellular-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 80B0CBB679B87D22CBF004CA548BA9DC /* EXCellular-dummy.m */; };
+		15A90B97809B0098AB5A96D4D7334E69 /* EXCellularModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FD01B9701D3BA735889A228E2F6B6B62 /* EXCellularModule.m */; };
 		28DFEF118D139FE7EED0880717AC30C3 /* EXCellularModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CFDF6A03C615DA4183537E0BC5B96B6 /* EXCellularModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		58D1797EB37A4F6409EE3780786A5EAD /* EXCellularModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FD01B9701D3BA735889A228E2F6B6B62 /* EXCellularModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BFE865269296974504D60664DCEE4C10 /* EXCellular-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 80B0CBB679B87D22CBF004CA548BA9DC /* EXCellular-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = B518F0C3E77DD46F7B910E95400F849A /* Build configuration list for PBXNativeTarget "EXCellular" */;
 			buildPhases = (
 				AA872AA26B1BF9717715C16C60C9E1E0 /* Headers */,
-				CB4309EB5230FF9CED754664A3307F27 /* Sources */,
+				C06220BE9D21B8BF2269BD387AF94FC9 /* Sources */,
 				F861353E86DF493284B08848FCC73676 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		CB4309EB5230FF9CED754664A3307F27 /* Sources */ = {
+		C06220BE9D21B8BF2269BD387AF94FC9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				04032C57CF3E2F26809617B92463297B /* EXCellular-dummy.m in Sources */,
-				58D1797EB37A4F6409EE3780786A5EAD /* EXCellularModule.m in Sources */,
+				BFE865269296974504D60664DCEE4C10 /* EXCellular-dummy.m in Sources */,
+				15A90B97809B0098AB5A96D4D7334E69 /* EXCellularModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

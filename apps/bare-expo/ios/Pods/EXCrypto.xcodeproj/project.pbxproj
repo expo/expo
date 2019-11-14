@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0F586B416ADE22EA518EC761DAD78B1D /* EXCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 94329D3F1A7993CB471BBB13DCC2AF05 /* EXCrypto.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		370194DA942DC31BD3729FC19E222560 /* EXCrypto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A7EE61883FBD133794E880F262B23899 /* EXCrypto-dummy.m */; };
-		F446CB997F730EF48AB6070224E86DFA /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE582CD1F5C6B0679750212838AC8F /* EXCrypto.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		658DFED6C9D26D084091B7A4E29FC3B1 /* EXCrypto-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A7EE61883FBD133794E880F262B23899 /* EXCrypto-dummy.m */; };
+		DACF13D06C8C7990C5D9F078DC9987B9 /* EXCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 5ECE582CD1F5C6B0679750212838AC8F /* EXCrypto.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = 9A4F8034C3A18095C3231083603283CA /* Build configuration list for PBXNativeTarget "EXCrypto" */;
 			buildPhases = (
 				1441FE21056B792C82B9EABF27780905 /* Headers */,
-				C11D254D7F697EAFE56F578A2AE2C366 /* Sources */,
+				54A418D934967902F9FA4F7A95DB97DB /* Sources */,
 				CC567C1FDAA59DB3E6CCDE5DE5F04184 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C11D254D7F697EAFE56F578A2AE2C366 /* Sources */ = {
+		54A418D934967902F9FA4F7A95DB97DB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				370194DA942DC31BD3729FC19E222560 /* EXCrypto-dummy.m in Sources */,
-				F446CB997F730EF48AB6070224E86DFA /* EXCrypto.m in Sources */,
+				658DFED6C9D26D084091B7A4E29FC3B1 /* EXCrypto-dummy.m in Sources */,
+				DACF13D06C8C7990C5D9F078DC9987B9 /* EXCrypto.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

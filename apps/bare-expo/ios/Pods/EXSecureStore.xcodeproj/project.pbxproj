@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B2D7915DE3D8AE7C730D92806F017E37 /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A0142BFC1E6F5F7F13E69EFFB5C99908 /* EXSecureStore.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		38E912B45859CD7978DF745D12C55BBF /* EXSecureStore.m in Sources */ = {isa = PBXBuildFile; fileRef = A0142BFC1E6F5F7F13E69EFFB5C99908 /* EXSecureStore.m */; };
 		BD1CD80F4789399AC2BC89AEAEDE4A2E /* EXSecureStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CEC4ED96CB0B4E72ACAB34A82C672C4 /* EXSecureStore.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DD8A947F9ABC358E262D88A1F6661D71 /* EXSecureStore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8BF500CF0A29DDF91AB0A5F18E02E6 /* EXSecureStore-dummy.m */; };
+		C8CE6C444CFD3AE37726C98A7BC72CBC /* EXSecureStore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C8BF500CF0A29DDF91AB0A5F18E02E6 /* EXSecureStore-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = 0DAB6336B4BF6F2742329A0B94C17C6C /* Build configuration list for PBXNativeTarget "EXSecureStore" */;
 			buildPhases = (
 				FABBCD3BB035E95E0B2FA8A91175E8CD /* Headers */,
-				3F22D8E269F8F3013ED3CEC1D4842673 /* Sources */,
+				4CBF830EEC21A67A463036FA67BB7049 /* Sources */,
 				193F61C9D2A9422C05E27F6FB69E9051 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		3F22D8E269F8F3013ED3CEC1D4842673 /* Sources */ = {
+		4CBF830EEC21A67A463036FA67BB7049 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD8A947F9ABC358E262D88A1F6661D71 /* EXSecureStore-dummy.m in Sources */,
-				B2D7915DE3D8AE7C730D92806F017E37 /* EXSecureStore.m in Sources */,
+				C8CE6C444CFD3AE37726C98A7BC72CBC /* EXSecureStore-dummy.m in Sources */,
+				38E912B45859CD7978DF745D12C55BBF /* EXSecureStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

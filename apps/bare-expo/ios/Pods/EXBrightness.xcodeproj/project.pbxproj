@@ -7,15 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		710C0009F120808A093C6DB7EF17D23B /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = 28CEE15C44ED956C2F738BFCCA9651C1 /* EXBrightness.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		7803FE87F7BE30D89A3CAC157D1533EF /* EXBrightness.h in Headers */ = {isa = PBXBuildFile; fileRef = 40A85FD958B78973442C8E6438A62FB3 /* EXBrightness.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AE3483800969788D6C10DE3A8C04F470 /* EXBrightness-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F725D1DCD7F2A1F4D4B9A5A28DD4056 /* EXBrightness-dummy.m */; };
+		63D55EB7F0D0E36EFECA6EDE67D47E1A /* EXBrightness-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A9DD69CFDF74446E5F1844C9ED10064 /* EXBrightness-dummy.m */; };
+		9CCC0340803F582EC10947B0297C16AE /* EXBrightness.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CD19A9B78B9250D1FAE63BD946E54B /* EXBrightness.m */; };
+		B9345B95F2D95D57641FEBB992200A0F /* EXSystemBrightnessPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B7C3A85070351622B303589C4B16DA /* EXSystemBrightnessPermissionRequester.m */; };
+		C8A1AC43D53CD5775C13F7E9E2D9BBC0 /* EXSystemBrightnessPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = CEB2AF659BE833FF4E8D73BA4AA2677F /* EXSystemBrightnessPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FE6CF2508CEC1CB912DBDD6CB362621A /* EXBrightness.h in Headers */ = {isa = PBXBuildFile; fileRef = 1ADBF9F5D8DD681D9872E79618155683 /* EXBrightness.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1D72C0666F3E386B3449086BD45E4434 /* PBXContainerItemProxy */ = {
+		0F5CFAE8DA30712EA38095E54AC6194A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 441596ADA7982F36A0600487B8BF17BF /* UMCore.xcodeproj */;
+			containerPortal = EE0D3A0E84E24292C58EC3938B349E15 /* UMPermissionsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
+			remoteInfo = UMPermissionsInterface;
+		};
+		164E80EBE92CA324D10DFF66B970D722 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 059DB79AFAF343E5E34BFD79BAB0C76B /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
@@ -23,18 +32,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		28CEE15C44ED956C2F738BFCCA9651C1 /* EXBrightness.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBrightness.m; path = EXBrightness/EXBrightness.m; sourceTree = "<group>"; };
-		40A85FD958B78973442C8E6438A62FB3 /* EXBrightness.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBrightness.h; path = EXBrightness/EXBrightness.h; sourceTree = "<group>"; };
-		441596ADA7982F36A0600487B8BF17BF /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		7F725D1DCD7F2A1F4D4B9A5A28DD4056 /* EXBrightness-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBrightness-dummy.m"; sourceTree = "<group>"; };
-		8B891740A8EA3B9E3BC17706DBB001DC /* EXBrightness-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBrightness-prefix.pch"; sourceTree = "<group>"; };
-		A4C711225A6DAF5D36AAC58EDED31332 /* EXBrightness.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBrightness.xcconfig; sourceTree = "<group>"; };
+		059DB79AFAF343E5E34BFD79BAB0C76B /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		06C498E13CFE3F538A737908AF56DD7C /* EXBrightness-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXBrightness-prefix.pch"; sourceTree = "<group>"; };
+		0C17808F09374E7C7ABE9CF9C628C0DE /* EXBrightness.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXBrightness.xcconfig; sourceTree = "<group>"; };
+		1ADBF9F5D8DD681D9872E79618155683 /* EXBrightness.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXBrightness.h; path = EXBrightness/EXBrightness.h; sourceTree = "<group>"; };
+		29B7C3A85070351622B303589C4B16DA /* EXSystemBrightnessPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSystemBrightnessPermissionRequester.m; path = EXBrightness/EXSystemBrightnessPermissionRequester.m; sourceTree = "<group>"; };
+		4A9DD69CFDF74446E5F1844C9ED10064 /* EXBrightness-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXBrightness-dummy.m"; sourceTree = "<group>"; };
+		A4069D6C6D049AFC464193B714D3B5B3 /* EXBrightness.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBrightness.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CEB2AF659BE833FF4E8D73BA4AA2677F /* EXSystemBrightnessPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSystemBrightnessPermissionRequester.h; path = EXBrightness/EXSystemBrightnessPermissionRequester.h; sourceTree = "<group>"; };
 		D314A3B54D6F7C93D6B59B24F83D52E4 /* libEXBrightness.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXBrightness.a; path = libEXBrightness.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		ED0B72A7B2A3B01F71FA9C6D852E3503 /* EXBrightness.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXBrightness.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		EE0D3A0E84E24292C58EC3938B349E15 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
+		F2CD19A9B78B9250D1FAE63BD946E54B /* EXBrightness.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXBrightness.m; path = EXBrightness/EXBrightness.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		7E89733F4D107463040FD06E0E339F0B /* Frameworks */ = {
+		335E45848E88BF3CBCAF82E9BA5BE723 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -44,14 +56,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00AECBC6156705DCC9BA0FF2A04B6AAF /* Dependencies */ = {
-			isa = PBXGroup;
-			children = (
-				441596ADA7982F36A0600487B8BF17BF /* UMCore */,
-			);
-			name = Dependencies;
-			sourceTree = "<group>";
-		};
 		2364FD1E7E840EF1590DE2F140F74231 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -70,52 +74,64 @@
 		719DF276E6445B7CF9D4512050F81576 = {
 			isa = PBXGroup;
 			children = (
-				00AECBC6156705DCC9BA0FF2A04B6AAF /* Dependencies */,
-				C5319DAF1937E39981F8240BF47B1D9D /* EXBrightness */,
+				827E5CC6067C7047D753076F1E2A6701 /* Dependencies */,
+				8CA219C8B86D94F4E52C3FCCE166EE06 /* EXBrightness */,
 				2364FD1E7E840EF1590DE2F140F74231 /* Frameworks */,
 				3AC146AFBE26980E31FBCABF28875D0F /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C5319DAF1937E39981F8240BF47B1D9D /* EXBrightness */ = {
+		827E5CC6067C7047D753076F1E2A6701 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				40A85FD958B78973442C8E6438A62FB3 /* EXBrightness.h */,
-				28CEE15C44ED956C2F738BFCCA9651C1 /* EXBrightness.m */,
-				FA6B10870C02A1D13014BCE435BB6B37 /* Pod */,
-				E41A3CF32592BDDD34ECFCB5B48AC621 /* Support Files */,
+				059DB79AFAF343E5E34BFD79BAB0C76B /* UMCore */,
+				EE0D3A0E84E24292C58EC3938B349E15 /* UMPermissionsInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		8CA219C8B86D94F4E52C3FCCE166EE06 /* EXBrightness */ = {
+			isa = PBXGroup;
+			children = (
+				1ADBF9F5D8DD681D9872E79618155683 /* EXBrightness.h */,
+				F2CD19A9B78B9250D1FAE63BD946E54B /* EXBrightness.m */,
+				CEB2AF659BE833FF4E8D73BA4AA2677F /* EXSystemBrightnessPermissionRequester.h */,
+				29B7C3A85070351622B303589C4B16DA /* EXSystemBrightnessPermissionRequester.m */,
+				99DF8DF84C284F54248E6DD313E1C45A /* Pod */,
+				A6F2B1BE7958EAA96B139925A90730D0 /* Support Files */,
 			);
 			name = EXBrightness;
 			path = "../../../../packages/expo-brightness/ios";
 			sourceTree = "<group>";
 		};
-		E41A3CF32592BDDD34ECFCB5B48AC621 /* Support Files */ = {
+		99DF8DF84C284F54248E6DD313E1C45A /* Pod */ = {
 			isa = PBXGroup;
 			children = (
-				A4C711225A6DAF5D36AAC58EDED31332 /* EXBrightness.xcconfig */,
-				7F725D1DCD7F2A1F4D4B9A5A28DD4056 /* EXBrightness-dummy.m */,
-				8B891740A8EA3B9E3BC17706DBB001DC /* EXBrightness-prefix.pch */,
+				A4069D6C6D049AFC464193B714D3B5B3 /* EXBrightness.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		A6F2B1BE7958EAA96B139925A90730D0 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				0C17808F09374E7C7ABE9CF9C628C0DE /* EXBrightness.xcconfig */,
+				4A9DD69CFDF74446E5F1844C9ED10064 /* EXBrightness-dummy.m */,
+				06C498E13CFE3F538A737908AF56DD7C /* EXBrightness-prefix.pch */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXBrightness";
 			sourceTree = "<group>";
 		};
-		FA6B10870C02A1D13014BCE435BB6B37 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				ED0B72A7B2A3B01F71FA9C6D852E3503 /* EXBrightness.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		F02C7A8EFCAC50B59EF0388015490CFC /* Headers */ = {
+		2D340D753A5735B7CE96F56D48E12163 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7803FE87F7BE30D89A3CAC157D1533EF /* EXBrightness.h in Headers */,
+				FE6CF2508CEC1CB912DBDD6CB362621A /* EXBrightness.h in Headers */,
+				C8A1AC43D53CD5775C13F7E9E2D9BBC0 /* EXSystemBrightnessPermissionRequester.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,16 +140,17 @@
 /* Begin PBXNativeTarget section */
 		4AA3EE5BEEB58B2975A12819B1C58D97 /* EXBrightness */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6A51D28CA6C39A07375DCB1490D553E8 /* Build configuration list for PBXNativeTarget "EXBrightness" */;
+			buildConfigurationList = DD004EE9BB6F41E9F295ABDEA544B59E /* Build configuration list for PBXNativeTarget "EXBrightness" */;
 			buildPhases = (
-				F02C7A8EFCAC50B59EF0388015490CFC /* Headers */,
-				7885F5DC6FA117493C62505037440B1F /* Sources */,
-				7E89733F4D107463040FD06E0E339F0B /* Frameworks */,
+				2D340D753A5735B7CE96F56D48E12163 /* Headers */,
+				2A27A2AAC689D0519E99C1C4DB1EEB6C /* Sources */,
+				335E45848E88BF3CBCAF82E9BA5BE723 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				39A2E549FEE12B4C9A8630D5C663B98E /* PBXTargetDependency */,
+				B80DEEC7D4C2B92EBD9080204852803D /* PBXTargetDependency */,
+				6BCD0747FFFB26818F1EF8922362823E /* PBXTargetDependency */,
 			);
 			name = EXBrightness;
 			productName = EXBrightness;
@@ -161,7 +178,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProjectRef = 441596ADA7982F36A0600487B8BF17BF /* UMCore */;
+					ProjectRef = 059DB79AFAF343E5E34BFD79BAB0C76B /* UMCore */;
+				},
+				{
+					ProjectRef = EE0D3A0E84E24292C58EC3938B349E15 /* UMPermissionsInterface */;
 				},
 			);
 			projectRoot = "";
@@ -172,22 +192,28 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		7885F5DC6FA117493C62505037440B1F /* Sources */ = {
+		2A27A2AAC689D0519E99C1C4DB1EEB6C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AE3483800969788D6C10DE3A8C04F470 /* EXBrightness-dummy.m in Sources */,
-				710C0009F120808A093C6DB7EF17D23B /* EXBrightness.m in Sources */,
+				63D55EB7F0D0E36EFECA6EDE67D47E1A /* EXBrightness-dummy.m in Sources */,
+				9CCC0340803F582EC10947B0297C16AE /* EXBrightness.m in Sources */,
+				B9345B95F2D95D57641FEBB992200A0F /* EXSystemBrightnessPermissionRequester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		39A2E549FEE12B4C9A8630D5C663B98E /* PBXTargetDependency */ = {
+		6BCD0747FFFB26818F1EF8922362823E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMPermissionsInterface;
+			targetProxy = 0F5CFAE8DA30712EA38095E54AC6194A /* PBXContainerItemProxy */;
+		};
+		B80DEEC7D4C2B92EBD9080204852803D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMCore;
-			targetProxy = 1D72C0666F3E386B3449086BD45E4434 /* PBXContainerItemProxy */;
+			targetProxy = 164E80EBE92CA324D10DFF66B970D722 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -252,9 +278,33 @@
 			};
 			name = Release;
 		};
-		97F7D2BB4B81E2DB7E15DFBC4EB69268 /* Release */ = {
+		47A58400335D3E161FFA0A54828F9AD1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A4C711225A6DAF5D36AAC58EDED31332 /* EXBrightness.xcconfig */;
+			baseConfigurationReference = 0C17808F09374E7C7ABE9CF9C628C0DE /* EXBrightness.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXBrightness;
+				PRODUCT_NAME = EXBrightness;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C9801CAB64E385A0927472B94CED9BFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0C17808F09374E7C7ABE9CF9C628C0DE /* EXBrightness.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -276,30 +326,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		9CBDED56F14F4AB779D1910ABCF96E8D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A4C711225A6DAF5D36AAC58EDED31332 /* EXBrightness.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXBrightness/EXBrightness-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXBrightness;
-				PRODUCT_NAME = EXBrightness;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		F3A0E4DD7CC163EBD5F3A0EB78078541 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -368,11 +394,11 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6A51D28CA6C39A07375DCB1490D553E8 /* Build configuration list for PBXNativeTarget "EXBrightness" */ = {
+		DD004EE9BB6F41E9F295ABDEA544B59E /* Build configuration list for PBXNativeTarget "EXBrightness" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9CBDED56F14F4AB779D1910ABCF96E8D /* Debug */,
-				97F7D2BB4B81E2DB7E15DFBC4EB69268 /* Release */,
+				47A58400335D3E161FFA0A54828F9AD1 /* Debug */,
+				C9801CAB64E385A0927472B94CED9BFD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

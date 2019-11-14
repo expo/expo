@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		424DF9B5616FF75672E8C02408CF7D0F /* EXRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 7909E3FD95BF9048FB771A2542A340C3 /* EXRandom.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		8A4CE81A070BE91D4CCED73E0A035033 /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 58542E66C1E3327A6DB431F42F0F2C58 /* EXRandom-dummy.m */; };
-		8BF41D9570AA23E47FC71E3CC40F1A0D /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 74ABFDF64AF0187FA36A6CA0A3EA53FC /* EXRandom.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7E9E9E60D6714E946FC8719D6ECD5C46 /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 58542E66C1E3327A6DB431F42F0F2C58 /* EXRandom-dummy.m */; };
+		91F5F55ACE938806C5BA42D0DFE90CB5 /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 74ABFDF64AF0187FA36A6CA0A3EA53FC /* EXRandom.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = 9F9B00B953B16BEFB7A472A49D295319 /* Build configuration list for PBXNativeTarget "EXRandom" */;
 			buildPhases = (
 				413A76996CF33CEF683471A45AC655E9 /* Headers */,
-				994964C9045F39B9FEB8C23683804DDE /* Sources */,
+				3019E3CDF556F4AD30EA00DED0B45EC6 /* Sources */,
 				BEAE2C6354B1523C06C77E85A0038A4A /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		994964C9045F39B9FEB8C23683804DDE /* Sources */ = {
+		3019E3CDF556F4AD30EA00DED0B45EC6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A4CE81A070BE91D4CCED73E0A035033 /* EXRandom-dummy.m in Sources */,
-				8BF41D9570AA23E47FC71E3CC40F1A0D /* EXRandom.m in Sources */,
+				7E9E9E60D6714E946FC8719D6ECD5C46 /* EXRandom-dummy.m in Sources */,
+				91F5F55ACE938806C5BA42D0DFE90CB5 /* EXRandom.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

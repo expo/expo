@@ -32,6 +32,7 @@ You will need to have an Android or iOS device or emulator connected as well as 
 
 | version | react-native version |
 | ------- | -------------------- |
+| 1.4.0+  | 0.60.0+              |
 | 1.1.0+  | 0.57.2+              | 
 | <1.1.0  | 0.50.0+              |
 

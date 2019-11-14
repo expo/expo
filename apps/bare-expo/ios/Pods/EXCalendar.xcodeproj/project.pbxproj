@@ -7,46 +7,54 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		048C08E8987C9D2881716B5F6B992A0B /* EXCalendarConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 8954AA5546C058D4B70BEB4C413F2256 /* EXCalendarConverter.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		0D41960EBF2168F339EBB5E05CD17B08 /* EXCalendar.h in Headers */ = {isa = PBXBuildFile; fileRef = B21BB592B669BE1FA40DB9FB43F267F2 /* EXCalendar.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		1F80B74E4CED066B58518A1DCEBABE5F /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E0BF84D3D7E21DAC3C0A7915BF693A /* EXCalendarConverter.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		1F9D3466BC0268578C5016A5E76B4349 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = C6AC7BF23EF55562985D788F0D35352E /* EXCalendar.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C7C87EF530E9721E3DDF9C673E465C19 /* EXCalendar-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A07E73AA27A8B89AE813799048C6D /* EXCalendar-dummy.m */; };
+		14564810DE05C8D9CB1259E3ABAB23F1 /* EXCalendarConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 7E694131663AB0CB48E264709E52ADD4 /* EXCalendarConverter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		341D9214A5DD67D5ECB93445D2CE2646 /* EXCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 95B2691A116A565D08AFE353E9EDC703 /* EXCalendar.m */; };
+		3789F896E5E261805F7F48D6F6B4A822 /* EXRemindersPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = D3366005F81D69413D799F5A5EA00BFD /* EXRemindersPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6C066B2FFEA6F8F6A09E94E9B78EFD41 /* EXCalendar.h in Headers */ = {isa = PBXBuildFile; fileRef = F1E1EA7A1AA3F31F5E6204391B8CC32D /* EXCalendar.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A19C84ABD03EDBDD875552BAB7F36348 /* EXCalendarPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 7625A8145E4B94ADF95E499539A463E1 /* EXCalendarPermissionRequester.m */; };
+		AA3394D3FA8CD025A58E7BECD283E0FC /* EXCalendar-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 05787898FE590911B2D4F1C3842F0B45 /* EXCalendar-dummy.m */; };
+		AF2120E1E863E9CB0B984CEF0AC9FB98 /* EXCalendarConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = EF4361B16F2FF8DD78F89B478C87CE8D /* EXCalendarConverter.m */; };
+		C3EF4F7A742D66D95E5224D52D876DEF /* EXCalendarPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = C01BA2DE681703FFB4BA332E17EBA6C1 /* EXCalendarPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		E6A078F60B16C05F833EDCD5917A15DA /* EXRemindersPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 86D0A11D4C0290EE4F585F5E1683DCB0 /* EXRemindersPermissionRequester.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		7BECCC2475C574D6F9263B87652B94E7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0700B2590EA29CE592442333236A8EC2 /* UMCore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
-			remoteInfo = UMCore;
-		};
-		86903F83F3673D45B81BE79CA597DC12 /* PBXContainerItemProxy */ = {
+		9B98661F07B33833EA81946E9EAC9CF7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 507B0492B31CCD1A28244836D46E72E2 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
+		C7B3CEE0E503D010726AB0A711AAF093 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0700B2590EA29CE592442333236A8EC2 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		05787898FE590911B2D4F1C3842F0B45 /* EXCalendar-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCalendar-dummy.m"; sourceTree = "<group>"; };
 		0700B2590EA29CE592442333236A8EC2 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
-		143ED72D8920DD021954F424101BE12D /* EXCalendar.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCalendar.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		507B0492B31CCD1A28244836D46E72E2 /* UMPermissionsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMPermissionsInterface; path = UMPermissionsInterface.xcodeproj; sourceTree = "<group>"; };
-		69E0BF84D3D7E21DAC3C0A7915BF693A /* EXCalendarConverter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendarConverter.m; path = EXCalendar/EXCalendarConverter.m; sourceTree = "<group>"; };
-		7579E72C3E8E820991489AE3BB81D7F0 /* EXCalendar.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCalendar.xcconfig; sourceTree = "<group>"; };
-		8954AA5546C058D4B70BEB4C413F2256 /* EXCalendarConverter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendarConverter.h; path = EXCalendar/EXCalendarConverter.h; sourceTree = "<group>"; };
-		A5DC6CDA42BC4D3BA828EFB4BD6496F8 /* EXCalendar-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCalendar-prefix.pch"; sourceTree = "<group>"; };
-		B21BB592B669BE1FA40DB9FB43F267F2 /* EXCalendar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendar.h; path = EXCalendar/EXCalendar.h; sourceTree = "<group>"; };
-		C6AC7BF23EF55562985D788F0D35352E /* EXCalendar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendar.m; path = EXCalendar/EXCalendar.m; sourceTree = "<group>"; };
+		5539DC2B2DB2ED3200CD5B0972401ACE /* EXCalendar.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCalendar.xcconfig; sourceTree = "<group>"; };
+		718F7778486B9F00AAC97C9B9B3DF7A2 /* EXCalendar-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCalendar-prefix.pch"; sourceTree = "<group>"; };
+		7625A8145E4B94ADF95E499539A463E1 /* EXCalendarPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendarPermissionRequester.m; path = EXCalendar/EXCalendarPermissionRequester.m; sourceTree = "<group>"; };
+		77C8E50F93B9CFF0CF61C3F1F8270EB0 /* EXCalendar.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCalendar.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		7E694131663AB0CB48E264709E52ADD4 /* EXCalendarConverter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendarConverter.h; path = EXCalendar/EXCalendarConverter.h; sourceTree = "<group>"; };
+		86D0A11D4C0290EE4F585F5E1683DCB0 /* EXRemindersPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRemindersPermissionRequester.m; path = EXCalendar/EXRemindersPermissionRequester.m; sourceTree = "<group>"; };
+		95B2691A116A565D08AFE353E9EDC703 /* EXCalendar.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendar.m; path = EXCalendar/EXCalendar.m; sourceTree = "<group>"; };
+		C01BA2DE681703FFB4BA332E17EBA6C1 /* EXCalendarPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendarPermissionRequester.h; path = EXCalendar/EXCalendarPermissionRequester.h; sourceTree = "<group>"; };
+		D3366005F81D69413D799F5A5EA00BFD /* EXRemindersPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRemindersPermissionRequester.h; path = EXCalendar/EXRemindersPermissionRequester.h; sourceTree = "<group>"; };
 		DC75F91AD9C182C802D3D0BAF7E534F2 /* libEXCalendar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXCalendar.a; path = libEXCalendar.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		EE7A07E73AA27A8B89AE813799048C6D /* EXCalendar-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCalendar-dummy.m"; sourceTree = "<group>"; };
+		EF4361B16F2FF8DD78F89B478C87CE8D /* EXCalendarConverter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCalendarConverter.m; path = EXCalendar/EXCalendarConverter.m; sourceTree = "<group>"; };
+		F1E1EA7A1AA3F31F5E6204391B8CC32D /* EXCalendar.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCalendar.h; path = EXCalendar/EXCalendar.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8C1C984827A9DE883836394482821913 /* Frameworks */ = {
+		DAED9BF017E222607ECB6973E90F189C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -80,58 +88,64 @@
 			name = Dependencies;
 			sourceTree = "<group>";
 		};
-		34B85EE9C3A02675684FF75BA73F45E4 /* Pod */ = {
+		549FEFB5166715F14FCE054945803B71 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				143ED72D8920DD021954F424101BE12D /* EXCalendar.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		3B6B274EF2FA11004D1E78CF92550E9B /* EXCalendar */ = {
-			isa = PBXGroup;
-			children = (
-				B21BB592B669BE1FA40DB9FB43F267F2 /* EXCalendar.h */,
-				C6AC7BF23EF55562985D788F0D35352E /* EXCalendar.m */,
-				8954AA5546C058D4B70BEB4C413F2256 /* EXCalendarConverter.h */,
-				69E0BF84D3D7E21DAC3C0A7915BF693A /* EXCalendarConverter.m */,
-				34B85EE9C3A02675684FF75BA73F45E4 /* Pod */,
-				67A55404109E093E2303954398BAEF66 /* Support Files */,
-			);
-			name = EXCalendar;
-			path = "../../../../packages/expo-calendar/ios";
-			sourceTree = "<group>";
-		};
-		67A55404109E093E2303954398BAEF66 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				7579E72C3E8E820991489AE3BB81D7F0 /* EXCalendar.xcconfig */,
-				EE7A07E73AA27A8B89AE813799048C6D /* EXCalendar-dummy.m */,
-				A5DC6CDA42BC4D3BA828EFB4BD6496F8 /* EXCalendar-prefix.pch */,
+				5539DC2B2DB2ED3200CD5B0972401ACE /* EXCalendar.xcconfig */,
+				05787898FE590911B2D4F1C3842F0B45 /* EXCalendar-dummy.m */,
+				718F7778486B9F00AAC97C9B9B3DF7A2 /* EXCalendar-prefix.pch */,
 			);
 			name = "Support Files";
 			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXCalendar";
+			sourceTree = "<group>";
+		};
+		91948D9C1765F1C5EE58D846343316A8 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				77C8E50F93B9CFF0CF61C3F1F8270EB0 /* EXCalendar.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		9CFD39CA6E60A2102DE49CBFAF09A508 = {
 			isa = PBXGroup;
 			children = (
 				3045F0E905030363A0139AF26119E565 /* Dependencies */,
-				3B6B274EF2FA11004D1E78CF92550E9B /* EXCalendar */,
+				E8C44DD475ACD7D27142BCCDE8F5A761 /* EXCalendar */,
 				1FD3D6060FA714DCCAFD238654DC63B8 /* Frameworks */,
 				0CB6E12CC6EA715AA48013D6A97F8F5B /* Products */,
 			);
 			sourceTree = "<group>";
 		};
+		E8C44DD475ACD7D27142BCCDE8F5A761 /* EXCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				F1E1EA7A1AA3F31F5E6204391B8CC32D /* EXCalendar.h */,
+				95B2691A116A565D08AFE353E9EDC703 /* EXCalendar.m */,
+				7E694131663AB0CB48E264709E52ADD4 /* EXCalendarConverter.h */,
+				EF4361B16F2FF8DD78F89B478C87CE8D /* EXCalendarConverter.m */,
+				C01BA2DE681703FFB4BA332E17EBA6C1 /* EXCalendarPermissionRequester.h */,
+				7625A8145E4B94ADF95E499539A463E1 /* EXCalendarPermissionRequester.m */,
+				D3366005F81D69413D799F5A5EA00BFD /* EXRemindersPermissionRequester.h */,
+				86D0A11D4C0290EE4F585F5E1683DCB0 /* EXRemindersPermissionRequester.m */,
+				91948D9C1765F1C5EE58D846343316A8 /* Pod */,
+				549FEFB5166715F14FCE054945803B71 /* Support Files */,
+			);
+			name = EXCalendar;
+			path = "../../../../packages/expo-calendar/ios";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		D79673B8B1B36AB96CD2A13FFAF6FE8A /* Headers */ = {
+		1AD74DD46C9EA2281E67C84A4D7048F6 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D41960EBF2168F339EBB5E05CD17B08 /* EXCalendar.h in Headers */,
-				048C08E8987C9D2881716B5F6B992A0B /* EXCalendarConverter.h in Headers */,
+				6C066B2FFEA6F8F6A09E94E9B78EFD41 /* EXCalendar.h in Headers */,
+				14564810DE05C8D9CB1259E3ABAB23F1 /* EXCalendarConverter.h in Headers */,
+				C3EF4F7A742D66D95E5224D52D876DEF /* EXCalendarPermissionRequester.h in Headers */,
+				3789F896E5E261805F7F48D6F6B4A822 /* EXRemindersPermissionRequester.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,17 +154,17 @@
 /* Begin PBXNativeTarget section */
 		0F2988851D689F1E41CFC89C31422758 /* EXCalendar */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2734A1329EA747BC73813ED24520FD98 /* Build configuration list for PBXNativeTarget "EXCalendar" */;
+			buildConfigurationList = 96FD3A87F5065F3B324BBAD0F2D12243 /* Build configuration list for PBXNativeTarget "EXCalendar" */;
 			buildPhases = (
-				D79673B8B1B36AB96CD2A13FFAF6FE8A /* Headers */,
-				F5F60D3FB52512B762A74B5CBFBB7573 /* Sources */,
-				8C1C984827A9DE883836394482821913 /* Frameworks */,
+				1AD74DD46C9EA2281E67C84A4D7048F6 /* Headers */,
+				AAFEF2F050A1619C1AD25AD69B62D32E /* Sources */,
+				DAED9BF017E222607ECB6973E90F189C /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				7D4DC27AE2A0E7A09E0CAB166FAE2D8C /* PBXTargetDependency */,
-				A09B1DE30C8364B2CA4FE408DC61B2E0 /* PBXTargetDependency */,
+				80A6A3D5DF543BC30D6ED92A49734C26 /* PBXTargetDependency */,
+				377C7376A1D534E6C84318E91117D095 /* PBXTargetDependency */,
 			);
 			name = EXCalendar;
 			productName = EXCalendar;
@@ -192,56 +206,34 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F5F60D3FB52512B762A74B5CBFBB7573 /* Sources */ = {
+		AAFEF2F050A1619C1AD25AD69B62D32E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7C87EF530E9721E3DDF9C673E465C19 /* EXCalendar-dummy.m in Sources */,
-				1F9D3466BC0268578C5016A5E76B4349 /* EXCalendar.m in Sources */,
-				1F80B74E4CED066B58518A1DCEBABE5F /* EXCalendarConverter.m in Sources */,
+				AA3394D3FA8CD025A58E7BECD283E0FC /* EXCalendar-dummy.m in Sources */,
+				341D9214A5DD67D5ECB93445D2CE2646 /* EXCalendar.m in Sources */,
+				AF2120E1E863E9CB0B984CEF0AC9FB98 /* EXCalendarConverter.m in Sources */,
+				A19C84ABD03EDBDD875552BAB7F36348 /* EXCalendarPermissionRequester.m in Sources */,
+				E6A078F60B16C05F833EDCD5917A15DA /* EXRemindersPermissionRequester.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		7D4DC27AE2A0E7A09E0CAB166FAE2D8C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UMCore;
-			targetProxy = 7BECCC2475C574D6F9263B87652B94E7 /* PBXContainerItemProxy */;
-		};
-		A09B1DE30C8364B2CA4FE408DC61B2E0 /* PBXTargetDependency */ = {
+		377C7376A1D534E6C84318E91117D095 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UMPermissionsInterface;
-			targetProxy = 86903F83F3673D45B81BE79CA597DC12 /* PBXContainerItemProxy */;
+			targetProxy = 9B98661F07B33833EA81946E9EAC9CF7 /* PBXContainerItemProxy */;
+		};
+		80A6A3D5DF543BC30D6ED92A49734C26 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = C7B3CEE0E503D010726AB0A711AAF093 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		B3D4A76213A4B878A080A9F4B9731A56 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7579E72C3E8E820991489AE3BB81D7F0 /* EXCalendar.xcconfig */;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				GCC_PREFIX_HEADER = "Target Support Files/EXCalendar/EXCalendar-prefix.pch";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_MODULE_NAME = EXCalendar;
-				PRODUCT_NAME = EXCalendar;
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		C0492438EBAC1E2E9CFA14313CF68D9E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -366,9 +358,33 @@
 			};
 			name = Release;
 		};
-		DD7CC03E2A9BF721812BB13A07ECB99D /* Release */ = {
+		F35284AC17CA9530D4EEB25EC90E7DF6 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7579E72C3E8E820991489AE3BB81D7F0 /* EXCalendar.xcconfig */;
+			baseConfigurationReference = 5539DC2B2DB2ED3200CD5B0972401ACE /* EXCalendar.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCalendar/EXCalendar-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCalendar;
+				PRODUCT_NAME = EXCalendar;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F4CA10C31EA249C227AF538F0B8CA051 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5539DC2B2DB2ED3200CD5B0972401ACE /* EXCalendar.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -394,20 +410,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2734A1329EA747BC73813ED24520FD98 /* Build configuration list for PBXNativeTarget "EXCalendar" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B3D4A76213A4B878A080A9F4B9731A56 /* Debug */,
-				DD7CC03E2A9BF721812BB13A07ECB99D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		85002C4E2C707BA56E8627A6D6E0A87B /* Build configuration list for PBXProject "EXCalendar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C0492438EBAC1E2E9CFA14313CF68D9E /* Debug */,
 				DB4DD161F0DE6CC1CBA404C11D4CD23A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96FD3A87F5065F3B324BBAD0F2D12243 /* Build configuration list for PBXNativeTarget "EXCalendar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F35284AC17CA9530D4EEB25EC90E7DF6 /* Debug */,
+				F4CA10C31EA249C227AF538F0B8CA051 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

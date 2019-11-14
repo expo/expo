@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		74B03F00919ECBDB9003A2E9DF0B758B /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = B06BAD0600E1793DE43351AA20533AB0 /* EXSQLite.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		18547F0715A1C174CBE702D18B74B128 /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = B06BAD0600E1793DE43351AA20533AB0 /* EXSQLite.m */; };
+		80C2499C52E3D74EC383C9B7D161ACBE /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 735C5A2B94A394B90AE5C2D96DC606D1 /* EXSQLite-dummy.m */; };
 		BFFD921BAA03E8315205B02F171AD4EE /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A8D9CA691649ABD5E7F7A320B9AB86D /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CAD1DC20621D96FAFFA3B23F8E9FC52E /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 735C5A2B94A394B90AE5C2D96DC606D1 /* EXSQLite-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +136,7 @@
 			buildConfigurationList = 383C479324D98B5C06D0E0FCCB995460 /* Build configuration list for PBXNativeTarget "EXSQLite" */;
 			buildPhases = (
 				A0C6F2448E298575FC0779290FEF7575 /* Headers */,
-				9C6079AE69DB0C9BD223AFAA2BED7C66 /* Sources */,
+				EAB00EF38F0DC00FD422FFB8B2CF21B0 /* Sources */,
 				ABBE6D5A6F285C2D589D4DFFA38C4AF3 /* Frameworks */,
 			);
 			buildRules = (
@@ -185,12 +185,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9C6079AE69DB0C9BD223AFAA2BED7C66 /* Sources */ = {
+		EAB00EF38F0DC00FD422FFB8B2CF21B0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CAD1DC20621D96FAFFA3B23F8E9FC52E /* EXSQLite-dummy.m in Sources */,
-				74B03F00919ECBDB9003A2E9DF0B758B /* EXSQLite.m in Sources */,
+				80C2499C52E3D74EC383C9B7D161ACBE /* EXSQLite-dummy.m in Sources */,
+				18547F0715A1C174CBE702D18B74B128 /* EXSQLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

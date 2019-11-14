@@ -309,7 +309,7 @@ workflows:
       - expo_sdk
       # E2E SDK testing
       - web_test_suite
-      # - ios_test_suite
+      - ios_test_suite
 
   # Android and iOS clients
   client:

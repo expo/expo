@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		183B2CFBA4E7CCE4E08A677B79F900D6 /* EXGoogleSignInAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F383B66C89AB0A002470343DBD69D1F /* EXGoogleSignInAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		204BF775256D326B93BBE7CD1C36113C /* EXGoogleSignIn-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A15C7419819D8025388FB344D2773D42 /* EXGoogleSignIn-dummy.m */; };
+		2141D83B2547F14ABC8DC6AFECA0B80B /* EXGoogleSignInAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C651E8534ACD72F729718422C68718 /* EXGoogleSignInAppDelegate.m */; };
 		355262FA5153CFB73B112F43944009C9 /* EXGoogleSignIn.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DAEC1677DCD42230AA66CA52041C2FB /* EXGoogleSignIn.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3F9B46B723986D0D2E56C79DDCCAA030 /* EXAuthTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DF057D08F5F6DC9DF2413E6E213D4C8 /* EXAuthTask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		57BF84E9603549CE45BB1212E2A27C12 /* EXGoogleSignIn+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 113E8907720AD8423541965CCDAEA510 /* EXGoogleSignIn+Serialization.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		4C72A5A84DB585F247EB67682677CE39 /* EXGoogleSignIn.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1589257181EF3E1D3AA408646D0144 /* EXGoogleSignIn.m */; };
+		7E0957205CCAA2C586A886888B7E3BBD /* EXGoogleSignIn+Serialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 113E8907720AD8423541965CCDAEA510 /* EXGoogleSignIn+Serialization.m */; };
+		82A4555780B4D39F01846E1E68A31B82 /* EXAuthTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DF057D08F5F6DC9DF2413E6E213D4C8 /* EXAuthTask.m */; };
 		9212021C05AAB89BFC3FA119E3CAEA16 /* EXAuthTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 673D43583E8866D4AAFA699385E2EA7D /* EXAuthTask.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AD90133424E0FF0AED514DB4A2C8FF80 /* EXGoogleSignIn-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A15C7419819D8025388FB344D2773D42 /* EXGoogleSignIn-dummy.m */; };
 		BEAC9C2632EE4364577FBC719D835A89 /* EXGoogleSignIn+Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = BD0F4F155359E7A209F0C0B657DE5AF4 /* EXGoogleSignIn+Serialization.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D6B1C909772508B922B17E86DF77FA59 /* EXGoogleSignInAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5C651E8534ACD72F729718422C68718 /* EXGoogleSignInAppDelegate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FE163E9327306B6B8ADC22CE9F8909BD /* EXGoogleSignIn.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1589257181EF3E1D3AA408646D0144 /* EXGoogleSignIn.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,7 +157,7 @@
 			buildConfigurationList = 241E2E8DEB7518AFC774C7053B9382B5 /* Build configuration list for PBXNativeTarget "EXGoogleSignIn" */;
 			buildPhases = (
 				CEE4FFA8BE88B4AFB91E109BB60816B2 /* Headers */,
-				5AFC7F8A48FD9515967B46B78C697186 /* Sources */,
+				78624BCB0156C3AB679F323752ACE9C3 /* Sources */,
 				976A054E8C95B6F7457A81FE1FE5A1D2 /* Frameworks */,
 			);
 			buildRules = (
@@ -206,15 +206,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		5AFC7F8A48FD9515967B46B78C697186 /* Sources */ = {
+		78624BCB0156C3AB679F323752ACE9C3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F9B46B723986D0D2E56C79DDCCAA030 /* EXAuthTask.m in Sources */,
-				57BF84E9603549CE45BB1212E2A27C12 /* EXGoogleSignIn+Serialization.m in Sources */,
-				AD90133424E0FF0AED514DB4A2C8FF80 /* EXGoogleSignIn-dummy.m in Sources */,
-				FE163E9327306B6B8ADC22CE9F8909BD /* EXGoogleSignIn.m in Sources */,
-				D6B1C909772508B922B17E86DF77FA59 /* EXGoogleSignInAppDelegate.m in Sources */,
+				82A4555780B4D39F01846E1E68A31B82 /* EXAuthTask.m in Sources */,
+				7E0957205CCAA2C586A886888B7E3BBD /* EXGoogleSignIn+Serialization.m in Sources */,
+				204BF775256D326B93BBE7CD1C36113C /* EXGoogleSignIn-dummy.m in Sources */,
+				4C72A5A84DB585F247EB67682677CE39 /* EXGoogleSignIn.m in Sources */,
+				2141D83B2547F14ABC8DC6AFECA0B80B /* EXGoogleSignInAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
