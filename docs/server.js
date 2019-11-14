@@ -7,6 +7,15 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   createServer((req, res) => {
+    // Enable CORS in development
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+
     const { pathname, query } = parse(req.url, true);
     if (pathname === '/' || pathname.startsWith('/static') || pathname.startsWith('/_next')) {
       handle(req, res);
@@ -23,6 +32,6 @@ app.prepare().then(() => {
       throw err;
     }
 
-    console.log(`The documentation server is running on http://localhost:${port}`);
+    console.log(`Next.js server started at http://localhost:${port}`);
   });
 });
