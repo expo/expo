@@ -16,12 +16,13 @@ commands:
       requireOneOf:
         description: 'The job will halt if no file matching the given regex has been modified'
         type: string
-        # Require nothing
-        default: '*'
+        # Require anything
+        default: '.*'
       search_depth:
         description: 'The maximum directory depth to search'
         type: integer
-        default: 1
+        # Just top-level directories and files
+        default: 0
     steps:
       - run:
           name: Stop the job if only << parameters.exclude >> was changed
@@ -45,7 +46,7 @@ commands:
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
 
             # Test all top-level files and directories
-            for file in $(find $PWD/* -maxdepth << parameters.search_depth >> -not -path '*/\.*'); do
+            for file in $(find $PWD/* -maxdepth << parameters.search_depth >>); do
               baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
               currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
               if ! [[ $file =~ << parameters.exclude >> ]]; then
@@ -169,8 +170,8 @@ commands:
   guard_sdk_tests:
     steps:
       - conditionally_halt:
-          exclude: '/(docs|guides|*.md)/'
-          search_depth: 1
+          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
   update_submodules:
     steps:
       - run:
@@ -417,8 +418,8 @@ jobs:
     steps:
       - setup
       - conditionally_halt:
-          exclude: '/(docs|apps)/'
-          search_depth: 1
+          # Exclude (include anything except) .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, and every `.md` file
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates).*|\.md$)'
       - update_submodules
       - restore_yarn_cache
       - yarn_install:
@@ -801,7 +802,8 @@ jobs:
     steps:
       - setup
       - conditionally_halt:
-          exclude: '/(docs|*/native-component-list|*/bare-expo|*/)/'
+          # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, native-component-list/, bare-expo/, and every `.md` file
+          exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates|native-component-list|bare-expo).*|\.md$)'
           search_depth: 2
       - update_submodules
       - decrypt_secrets_if_possible
