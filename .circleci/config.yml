@@ -804,7 +804,7 @@ jobs:
       - conditionally_halt:
           # Exclude .git/, node_modules,THIRD-PARTY-LICENSES, LICENSE, docs/, guides/, template-files/, templates/, native-component-list/, bare-expo/, and every `.md` file
           exclude: '^(.*)(\/(.git\/|LICENSE|THIRD-PARTY-LICENSES|node_modules|docs|guides|scripts|template-files|templates|native-component-list|bare-expo).*|\.md$)'
-          search_depth: 2
+          search_depth: 1
       - update_submodules
       - decrypt_secrets_if_possible
       - run:
