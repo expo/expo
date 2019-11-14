@@ -62,6 +62,15 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     getFragmentManager().removeOnBackStackChangedListener(mBackStackListener);
+    getFragmentManager().popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (mTopScreen != null) {
+      setupBackHandlerIfNeeded(mTopScreen);
+    }
   }
 
   @Override
@@ -194,13 +203,13 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
       }
     }
     if (topScreen != firstScreen && topScreen.isDismissable()) {
-      getFragmentManager().addOnBackStackChangedListener(mBackStackListener);
       getFragmentManager()
               .beginTransaction()
               .hide(topScreen)
               .show(topScreen)
               .addToBackStack(BACK_STACK_TAG)
-              .commit();
+              .commitAllowingStateLoss();
+      getFragmentManager().addOnBackStackChangedListener(mBackStackListener);
     }
   }
 }

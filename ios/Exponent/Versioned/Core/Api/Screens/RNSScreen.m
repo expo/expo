@@ -211,6 +211,11 @@
   return nil;
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
 - (void)willMoveToParentViewController:(UIViewController *)parent
 {
   if (parent == nil) {
