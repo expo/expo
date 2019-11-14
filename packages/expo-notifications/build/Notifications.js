@@ -68,9 +68,17 @@ export async function deleteChannelAsync(id) {
     return ExpoNotifications.deleteChannel(id);
 }
 export async function createChannelGroupAsync(groupId, groupName) {
+    if (Platform.OS !== 'android') {
+        console.warn(`createChannelGroupAsync(...) has no effect on ${Platform.OS}`);
+        return;
+    }
     return ExpoNotifications.createChannelGroup(groupId, groupName);
 }
 export async function deleteChannelGroupAsync(groupId) {
+    if (Platform.OS !== 'android') {
+        console.warn(`deleteChannelGroupAsync(...) has no effect on ${Platform.OS}`);
+        return;
+    }
     return ExpoNotifications.deleteChannelGroup(groupId);
 }
 /**
