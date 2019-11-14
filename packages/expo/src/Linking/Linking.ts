@@ -42,11 +42,16 @@ function _removeTrailingSlashAndQueryString(url: string) {
 
 function makeUrl(path: string = '', queryParams: QueryParams = {}): string {
   let scheme = 'exp';
-  if (Constants.appOwnership === 'standalone') {
-    scheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
-  }
-  if (!scheme) {
+  let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+
+  if (Constants.appOwnership === 'standalone' && manifestScheme) {
+    scheme = manifestScheme;
+  } else if (Constants.appOwnership === 'standalone' && !manifestScheme) {
     throw new Error('Cannot make a deep link into a standalone app with no custom scheme defined');
+  } else if (Constants.appOwnership === 'expo' && !manifestScheme) {
+    console.warn(
+      'Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/'
+    );
   }
 
   let hostUri = HOST_URI || '';
