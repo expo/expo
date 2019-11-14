@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -334,6 +333,8 @@
 		F167C43B209C7EE600F01382 /* EXUtilService.m in Sources */ = {isa = PBXBuildFile; fileRef = F167C43A209C7EE600F01382 /* EXUtilService.m */; };
 		F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 4670FD34142C4706BEA4FD1E /* RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
+		4F0C654D34E74404BA5425F6 /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1015,6 +1016,10 @@
 		F167C43A209C7EE600F01382 /* EXUtilService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXUtilService.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		FDC01B7874B93745E639DFA6 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */ = {isa = PBXFileReference; name = "RNSScreenStack.h"; path = "RNSScreenStack.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */ = {isa = PBXFileReference; name = "RNSScreenStack.m"; path = "RNSScreenStack.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; name = "RNSScreenStackHeaderConfig.h"; path = "RNSScreenStackHeaderConfig.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */ = {isa = PBXFileReference; name = "RNSScreenStackHeaderConfig.m"; path = "RNSScreenStackHeaderConfig.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2232,6 +2237,10 @@
 				BB36BC5E2135C98D00AFFD58 /* RNSScreenContainer.m */,
 				BB36BC602135C98D00AFFD58 /* RNSScreenContainer.h */,
 				BB36BC612135C98D00AFFD58 /* RNSScreen.m */,
+				FA872B0AA66044B4B8C574F0 /* RNSScreenStack.h */,
+				E4C5DD7E869E4753BA6319FA /* RNSScreenStack.m */,
+				A7848BD4CFE74709BDC8E8B0 /* RNSScreenStackHeaderConfig.h */,
+				6261E3DAD1C3435E87DCF5DB /* RNSScreenStackHeaderConfig.m */,
 			);
 			name = Screens;
 			path = Exponent/Versioned/Core/Api/Screens;
@@ -2911,6 +2920,8 @@
 				F21159F62C244F3BA8CDE98B /* RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */,
 				E77A18FAA07E47EFBBDD7338 /* ReactNativePageView.m in Sources */,
 				2E50A3637BCE4846A8676DEC /* ReactViewPagerManager.m in Sources */,
+				4F0C654D34E74404BA5425F6 /* RNSScreenStack.m in Sources */,
+				66827DD222C54196B1FDA739 /* RNSScreenStackHeaderConfig.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
