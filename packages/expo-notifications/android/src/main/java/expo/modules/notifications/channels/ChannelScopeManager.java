@@ -17,7 +17,7 @@ public class ChannelScopeManager implements ChannelManager {
   }
 
   @Override
-  public void addChannel(String channelId, ChannelPOJO channel, Context context) {
+  public void addChannel(String channelId, ChannelSpecification channel, Context context) {
     addChannel(channelId, channel, context, () -> {});
   }
 
@@ -27,7 +27,7 @@ public class ChannelScopeManager implements ChannelManager {
   }
 
   @Override
-  public void addChannel(String channelId, ChannelPOJO channel, Context context, Runnable continuation) {
+  public void addChannel(String channelId, ChannelSpecification channel, Context context, Runnable continuation) {
     channelId = scope(channelId);
     channel = scope(channel);
     nextChannelManager.addChannel(channelId, channel, context, continuation);
@@ -40,7 +40,7 @@ public class ChannelScopeManager implements ChannelManager {
   }
 
   @Override
-  public Future<ChannelPOJO> getPropertiesForChannelId(String channelId, Context context) {
+  public Future<ChannelSpecification> getPropertiesForChannelId(String channelId, Context context) {
     channelId = scope(channelId);
     return nextChannelManager.getPropertiesForChannelId(channelId, context);
   }
@@ -49,16 +49,16 @@ public class ChannelScopeManager implements ChannelManager {
     return mStringScoper.getScopedString(text);
   }
 
-  private ChannelPOJO scope(ChannelPOJO channelPOJO) {
-    ChannelPOJO.Builder builder = new ChannelPOJO.Builder();
-    return builder.setImportance(channelPOJO.getImportance())
-        .setBadge(channelPOJO.getBadge())
-        .setSound(channelPOJO.getSound())
-        .setVibrate(channelPOJO.getVibrate())
-        .setDescription(channelPOJO.getDescription())
-        .setChannelName(channelPOJO.getChannelName())
-        .setChannelId(scope(channelPOJO.getChannelId()))
-        .setGroupId(scope(channelPOJO.getGroupId()))
+  private ChannelSpecification scope(ChannelSpecification channelSpecification) {
+    ChannelSpecification.Builder builder = new ChannelSpecification.Builder();
+    return builder.setImportance(channelSpecification.getImportance())
+        .setBadge(channelSpecification.getBadge())
+        .setSound(channelSpecification.getSound())
+        .setVibrate(channelSpecification.getVibrate())
+        .setDescription(channelSpecification.getDescription())
+        .setChannelName(channelSpecification.getChannelName())
+        .setChannelId(scope(channelSpecification.getChannelId()))
+        .setGroupId(scope(channelSpecification.getGroupId()))
         .build();
   }
 }

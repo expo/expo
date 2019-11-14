@@ -1,16 +1,14 @@
 package expo.modules.notifications.channels;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-public class SynchronicFuture implements Future<ChannelPOJO> {
+public class SynchronicFuture implements Future<ChannelSpecification> {
 
-  private ChannelPOJO mChannelPOJO;
+  private ChannelSpecification mChannelSpecification;
 
-  SynchronicFuture(ChannelPOJO channelPOJO) {
-    mChannelPOJO = channelPOJO;
+  SynchronicFuture(ChannelSpecification channelSpecification) {
+    mChannelSpecification = channelSpecification;
   }
 
   @Override
@@ -29,12 +27,12 @@ public class SynchronicFuture implements Future<ChannelPOJO> {
   }
 
   @Override
-  public ChannelPOJO get() {
-    return mChannelPOJO;
+  public ChannelSpecification get() {
+    return mChannelSpecification;
   }
 
   @Override
-  public ChannelPOJO get(long timeout, TimeUnit unit) {
-    return mChannelPOJO;
+  public ChannelSpecification get(long timeout, TimeUnit unit) {
+    return mChannelSpecification;
   }
 }

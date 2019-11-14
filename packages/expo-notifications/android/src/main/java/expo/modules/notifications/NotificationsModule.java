@@ -28,9 +28,8 @@ import java.util.Random;
 
 import expo.modules.notifications.action.NotificationActionCenter;
 import expo.modules.notifications.channels.ChannelManager;
-import expo.modules.notifications.channels.ChannelPOJO;
+import expo.modules.notifications.channels.ChannelSpecification;
 import expo.modules.notifications.channels.ChannelScopeManager;
-import expo.modules.notifications.channels.ThreadSafeChannelManager;
 import expo.modules.notifications.helpers.provider.AppIdProvider;
 import expo.modules.notifications.push.TokenDispatcher.OnTokenChangeListener;
 import expo.modules.notifications.push.TokenDispatcher.ThreadSafeTokenDispatcher;
@@ -119,9 +118,9 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     channelId = getProperString(channelId);
     data.put(NOTIFICATION_CHANNEL_ID, channelId);
 
-    ChannelPOJO channelPOJO = ChannelPOJO.createChannelPOJO(data);
+    ChannelSpecification channelSpecification = ChannelSpecification.createChannelSpecification(data);
 
-    mChannelManager.addChannel(channelId, channelPOJO, mContext.getApplicationContext(), () -> { promise.resolve(null); });
+    mChannelManager.addChannel(channelId, channelSpecification, mContext.getApplicationContext(), () -> { promise.resolve(null); });
   }
 
   @ExpoMethod

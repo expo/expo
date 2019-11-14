@@ -5,13 +5,10 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import org.json.JSONObject;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 @Table(database = ChannelPropertiesDatabase.class)
 public class ChannelProperties extends BaseModel {
@@ -27,12 +24,12 @@ public class ChannelProperties extends BaseModel {
 
   }
 
-  public ChannelProperties(ChannelPOJO channelPOJO) {
-    channelId = channelPOJO.getChannelId();
+  public ChannelProperties(ChannelSpecification channelSpecification) {
+    channelId = channelSpecification.getChannelId();
     try {
       ByteArrayOutputStream bo = new ByteArrayOutputStream();
       ObjectOutputStream so = new ObjectOutputStream(bo);
-      so.writeObject(channelPOJO);
+      so.writeObject(channelSpecification);
       so.flush();
       serializedChannel = bo.toString("ISO-8859-1");
       so.close();
@@ -41,14 +38,14 @@ public class ChannelProperties extends BaseModel {
     }
   }
 
-  public ChannelPOJO toChannelPOJO() {
+  public ChannelSpecification toChannelSpecification() {
     try {
       byte b[] = serializedChannel.getBytes("ISO-8859-1");
       ByteArrayInputStream bi = new ByteArrayInputStream(b);
       ObjectInputStream si = new ObjectInputStream(bi);
-      ChannelPOJO channelPOJO = (ChannelPOJO) si.readObject();
+      ChannelSpecification channelSpecification = (ChannelSpecification) si.readObject();
       si.close();
-      return channelPOJO;
+      return channelSpecification;
     } catch (Exception e) {
       System.out.println(e);
     }

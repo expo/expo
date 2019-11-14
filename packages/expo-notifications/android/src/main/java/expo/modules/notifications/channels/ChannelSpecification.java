@@ -13,7 +13,7 @@ import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CHAN
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CHANNEL_SOUND;
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CHANNEL_VIBRATE;
 
-public class ChannelPOJO implements Serializable {
+public class ChannelSpecification implements Serializable {
 
   private String channelId;
 
@@ -31,10 +31,10 @@ public class ChannelPOJO implements Serializable {
 
   private String description;
 
-  private ChannelPOJO() {}
+  private ChannelSpecification() {}
 
-  public static ChannelPOJO createChannelPOJO(HashMap<String, Object> map) {
-    Builder builder = new ChannelPOJO.Builder();
+  public static ChannelSpecification createChannelSpecification(HashMap<String, Object> map) {
+    Builder builder = new ChannelSpecification.Builder();
 
     if (map.containsKey(NOTIFICATION_CHANNEL_PRIORITY)) {
       builder.setImportance(((Number) map.get(NOTIFICATION_CHANNEL_PRIORITY)).intValue());
@@ -88,50 +88,50 @@ public class ChannelPOJO implements Serializable {
 
   public static class Builder {
 
-    ChannelPOJO mChannelPOJO = new ChannelPOJO();
+    ChannelSpecification mChannelSpecification = new ChannelSpecification();
 
     public Builder setChannelId(String channelId) {
-      mChannelPOJO.channelId = channelId;
+      mChannelSpecification.channelId = channelId;
       return this;
     }
 
     public Builder setChannelName(String channelName) {
-      mChannelPOJO.channelName = channelName;
+      mChannelSpecification.channelName = channelName;
       return this;
     }
 
     public Builder setImportance(int importance) {
-      mChannelPOJO.importance = importance;
+      mChannelSpecification.importance = importance;
       return this;
     }
 
     public Builder setVibrate(long [] vibrate) {
-      mChannelPOJO.vibrate = vibrate;
+      mChannelSpecification.vibrate = vibrate;
       return this;
     }
 
     public Builder setBadge(boolean badge) {
-      mChannelPOJO.badge = badge;
+      mChannelSpecification.badge = badge;
       return this;
     }
 
     public Builder setSound(boolean sound) {
-      mChannelPOJO.sound = sound;
+      mChannelSpecification.sound = sound;
       return this;
     }
 
     public Builder setGroupId(String groupId) {
-      mChannelPOJO.groupId = groupId;
+      mChannelSpecification.groupId = groupId;
       return this;
     }
 
     public Builder setDescription(String description) {
-      mChannelPOJO.description = description;
+      mChannelSpecification.description = description;
       return this;
     }
 
-    public ChannelPOJO build() {
-      return mChannelPOJO;
+    public ChannelSpecification build() {
+      return mChannelSpecification;
     }
 
   }

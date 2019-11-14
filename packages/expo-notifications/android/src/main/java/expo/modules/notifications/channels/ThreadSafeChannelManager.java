@@ -24,7 +24,7 @@ public class ThreadSafeChannelManager implements ChannelManager {
   }
 
   @Override
-  public void addChannel(String channelId, ChannelPOJO channel, Context context) {
+  public void addChannel(String channelId, ChannelSpecification channel, Context context) {
     mSingleThreadExecutor.execute(() -> mChannelManager.addChannel(channelId, channel, context));
   }
 
@@ -34,7 +34,7 @@ public class ThreadSafeChannelManager implements ChannelManager {
   }
 
   @Override
-  public void addChannel(String channelId, ChannelPOJO channel, Context context, Runnable continuation) {
+  public void addChannel(String channelId, ChannelSpecification channel, Context context, Runnable continuation) {
     mSingleThreadExecutor.execute(
       () -> {
         mChannelManager.addChannel(channelId, channel, context);
@@ -54,7 +54,7 @@ public class ThreadSafeChannelManager implements ChannelManager {
   }
 
   @Override
-  public Future<ChannelPOJO> getPropertiesForChannelId(String channelId, Context context) {
+  public Future<ChannelSpecification> getPropertiesForChannelId(String channelId, Context context) {
     return mSingleThreadExecutor.submit(() -> mChannelManager.getPropertiesForChannelId(channelId, context).get());
   }
 }
