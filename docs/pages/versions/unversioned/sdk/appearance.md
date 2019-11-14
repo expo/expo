@@ -11,8 +11,8 @@ To install this API in a [managed](../../introduction/managed-vs-bare/#managed-w
 ## Configuration
 
 You can configure supported appearance styles in managed apps inside `app.json` with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
-Available options are `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict app to support light theme only) or `dark` (restrict app to support dark theme only).
-If this key is absent, the `light` style will be forced.
+The available options are: `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict app to support light theme only), and `dark` (restrict app to support dark theme only).
+If this key is absent, the app will default to the `light` style.
 
 Example `app.json` configuration:
 ```json
@@ -31,7 +31,7 @@ Example `app.json` configuration:
 
 In bare apps:
 - **iOS**: you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`.
-- **Android**: please follow steps from [`react-native-appearance` repo](https://github.com/expo/react-native-appearance#configuration).
+- **Android**: please follow steps from the [`react-native-appearance` repo](https://github.com/expo/react-native-appearance#configuration).
 
 ## API
 
