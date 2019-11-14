@@ -109,7 +109,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     promise.resolve(null);
   }
 
-  protected String getProperString(String string) { // scoped version return appIdId+":"+string;
+  private String getProperString(String string) { // scoped version returns appIdId+":"+string;
     StringScoper stringScoper = mModuleRegistry.getModule(StringScoper.class);
     return stringScoper.getScopedString(string);
   }
