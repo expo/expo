@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		19EDB15E7CD9C0F6EEF7C0DF4DA34ABA /* EXDocumentPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A359AAB35FF9C0825B157DC0A8B255 /* EXDocumentPicker-dummy.m */; };
-		503000252CF0291ED81B427F741861EE /* EXDocumentPickerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 89107976877BAE86384886345705871E /* EXDocumentPickerModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0253BD56042F9EC3316AD1C977DD5155 /* EXDocumentPickerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 89107976877BAE86384886345705871E /* EXDocumentPickerModule.m */; };
 		E4590C6BAB922D3CFBA78A62DE7709B0 /* EXDocumentPickerModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 68FC49F798BEBD76D2D17EEA44A1B5F0 /* EXDocumentPickerModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FDDE40B9AD49EAE7FAC1F6C8BBB29875 /* EXDocumentPicker-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 58A359AAB35FF9C0825B157DC0A8B255 /* EXDocumentPicker-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +136,7 @@
 			buildConfigurationList = E7071EA3AFBA5E62BDEF63B15D9D4CE9 /* Build configuration list for PBXNativeTarget "EXDocumentPicker" */;
 			buildPhases = (
 				D386DE007FFB99FCF23CC38D6CA45D62 /* Headers */,
-				CC1D5AA998767DE7FD367C64DC39207C /* Sources */,
+				B01BAC56E43CD7C678957C04FB6C980D /* Sources */,
 				12924BFF821C40AE7978AE94213A4613 /* Frameworks */,
 			);
 			buildRules = (
@@ -185,12 +185,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		CC1D5AA998767DE7FD367C64DC39207C /* Sources */ = {
+		B01BAC56E43CD7C678957C04FB6C980D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				19EDB15E7CD9C0F6EEF7C0DF4DA34ABA /* EXDocumentPicker-dummy.m in Sources */,
-				503000252CF0291ED81B427F741861EE /* EXDocumentPickerModule.m in Sources */,
+				FDDE40B9AD49EAE7FAC1F6C8BBB29875 /* EXDocumentPicker-dummy.m in Sources */,
+				0253BD56042F9EC3316AD1C977DD5155 /* EXDocumentPickerModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1229,10 +1229,10 @@ CACHE_KEYS:
   react-native-safe-area-context:
     BUILD_SETTINGS_CHECKSUM:
       react-native-safe-area-context: 73d0c6f3a5c8695b8c8952e7ccb0f96b
-    CHECKSUM: 13004a45f3021328fdd9ee1f987c3131fb65928d
+    CHECKSUM: d288138da2c800caa111f9352e9333f186a06ead
     PROJECT_NAME: react-native-safe-area-context
     SPECS:
-      - react-native-safe-area-context (0.5.0)
+      - react-native-safe-area-context (0.6.0)
   React-RCTActionSheet:
     BUILD_SETTINGS_CHECKSUM:
       React-RCTActionSheet: 5d86490d49e6cc964d1993e5c05e10db
@@ -1436,17 +1436,17 @@ CACHE_KEYS:
   RNGestureHandler:
     BUILD_SETTINGS_CHECKSUM:
       RNGestureHandler: 894f538872c881c328b338cadc584db1
-    CHECKSUM: 4cb47a93019c1a201df2644413a0a1569a51c8aa
+    CHECKSUM: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
     PROJECT_NAME: RNGestureHandler
     SPECS:
-      - RNGestureHandler (1.4.1)
+      - RNGestureHandler (1.5.0)
   RNReanimated:
     BUILD_SETTINGS_CHECKSUM:
       RNReanimated: 1834c20101082965441e7e968432d2b3
-    CHECKSUM: 6abbbae2e5e72609d85aabd92a982a94566885f1
+    CHECKSUM: b2ab0b693dddd2339bd2f300e770f6302d2e960c
     PROJECT_NAME: RNReanimated
     SPECS:
-      - RNReanimated (1.3.0)
+      - RNReanimated (1.4.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492

@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0AFBDE8A8F36F238C900DCDB3E5E1C54 /* EXLocalization-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E5DEDC6723AB11C276776F7E84EC919 /* EXLocalization-dummy.m */; };
-		16BCD6A0793C98E354287C0F86CC2678 /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D84A22398483FCF1B870C8D1569D7E5 /* EXLocalization.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0A32D43EBCF99FD321A125D74024783F /* EXLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D84A22398483FCF1B870C8D1569D7E5 /* EXLocalization.m */; };
+		A6B7B6845DAC372B97E51258E0F5FD54 /* EXLocalization-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E5DEDC6723AB11C276776F7E84EC919 /* EXLocalization-dummy.m */; };
 		EF9F7CD893EB2A2EFD3188F1A62CB412 /* EXLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = 39480747FF123AF7C24EFFF260569040 /* EXLocalization.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -127,7 +127,7 @@
 			buildConfigurationList = 3725D11B4D31D9BB4295554931BAC696 /* Build configuration list for PBXNativeTarget "EXLocalization" */;
 			buildPhases = (
 				5328244C26E5D31B7A75D664C1D0759F /* Headers */,
-				68F6CF7530376DDB06687346B735740D /* Sources */,
+				755470D4CE5B4E1A633B95B8F9B7617D /* Sources */,
 				812D83FE14D78DE95299C3520DCF78A7 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		68F6CF7530376DDB06687346B735740D /* Sources */ = {
+		755470D4CE5B4E1A633B95B8F9B7617D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AFBDE8A8F36F238C900DCDB3E5E1C54 /* EXLocalization-dummy.m in Sources */,
-				16BCD6A0793C98E354287C0F86CC2678 /* EXLocalization.m in Sources */,
+				A6B7B6845DAC372B97E51258E0F5FD54 /* EXLocalization-dummy.m in Sources */,
+				0A32D43EBCF99FD321A125D74024783F /* EXLocalization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

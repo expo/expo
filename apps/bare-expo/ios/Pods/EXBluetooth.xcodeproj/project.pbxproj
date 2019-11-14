@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7C38CCB94EE74D6FE367C072CBA5FCC0 /* EXBluetooth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBC4110FC0DC71BDA0A1E9E03FD65B9 /* EXBluetooth-dummy.m */; };
-		7CD6B2BCC8D9670FECD032A5DD057E63 /* EXBluetooth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC67F0BB70B3BED6F5A4738A1B1F86B /* EXBluetooth+JSON.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0ECC0FABC9E7987C8DFB82B839B75A1D /* EXBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = E6AB879C16CB5B729774510E2F30D775 /* EXBluetooth.m */; };
+		371E5B4D889FF70C950096C7EC70E1DE /* EXBluetooth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BBC4110FC0DC71BDA0A1E9E03FD65B9 /* EXBluetooth-dummy.m */; };
+		5C1FEF62061D6C61B6F8418B8B67D747 /* EXBluetooth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC67F0BB70B3BED6F5A4738A1B1F86B /* EXBluetooth+JSON.m */; };
 		8FEB415D2A2958D2231E9CF002094E61 /* EXBluetooth.h in Headers */ = {isa = PBXBuildFile; fileRef = 03F3102C9FCF2CBBB9ED6ED4277D3310 /* EXBluetooth.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9C14B6AD747146FD3FCA23E91705105A /* EXBluetooth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = A38BE196B83B708F28B5FA509A5086A7 /* EXBluetooth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A52512EA9F3334B85EB66374796723C4 /* EXBluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = E6AB879C16CB5B729774510E2F30D775 /* EXBluetooth.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,7 +134,7 @@
 			buildConfigurationList = E2F3550EF6ED601E51C7E8FDD0B19CBF /* Build configuration list for PBXNativeTarget "EXBluetooth" */;
 			buildPhases = (
 				4A00C6ABB54458FE653991D44279FD44 /* Headers */,
-				355238C8AA40F240C20452BE3E57A5F4 /* Sources */,
+				64E475837CFA8D516E31E07D43550B23 /* Sources */,
 				A546E4005811DFC33BD6B016F49305E3 /* Frameworks */,
 			);
 			buildRules = (
@@ -179,13 +179,13 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		355238C8AA40F240C20452BE3E57A5F4 /* Sources */ = {
+		64E475837CFA8D516E31E07D43550B23 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CD6B2BCC8D9670FECD032A5DD057E63 /* EXBluetooth+JSON.m in Sources */,
-				7C38CCB94EE74D6FE367C072CBA5FCC0 /* EXBluetooth-dummy.m in Sources */,
-				A52512EA9F3334B85EB66374796723C4 /* EXBluetooth.m in Sources */,
+				5C1FEF62061D6C61B6F8418B8B67D747 /* EXBluetooth+JSON.m in Sources */,
+				371E5B4D889FF70C950096C7EC70E1DE /* EXBluetooth-dummy.m in Sources */,
+				0ECC0FABC9E7987C8DFB82B839B75A1D /* EXBluetooth.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

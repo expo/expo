@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10A6BF6D1931916817FBF2CC5A5C722A /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A51E672A1A6E7442A2D8771A9BB166A7 /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */; };
+		B3B078C7F97F76EAD4BDE68A55F75C0C /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */; };
 		CF383E9B194D71A30471938647E343C6 /* EXNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E8E4A4A48F950E810328EE7AD01C3D21 /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = FC50712A6D79D545272F95935F1BECAC /* Build configuration list for PBXNativeTarget "EXNetwork" */;
 			buildPhases = (
 				D083178F5240957F98C8072B74A4DD68 /* Headers */,
-				714E338419C4A3D4A15EF18F27EB1BF5 /* Sources */,
+				F82118ED0470D490AD7744510F4FB14B /* Sources */,
 				FEAE0FF8A75CF5B2F08AD4FB0F79BD73 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		714E338419C4A3D4A15EF18F27EB1BF5 /* Sources */ = {
+		F82118ED0470D490AD7744510F4FB14B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E8E4A4A48F950E810328EE7AD01C3D21 /* EXNetwork-dummy.m in Sources */,
-				10A6BF6D1931916817FBF2CC5A5C722A /* EXNetwork.m in Sources */,
+				B3B078C7F97F76EAD4BDE68A55F75C0C /* EXNetwork-dummy.m in Sources */,
+				A51E672A1A6E7442A2D8771A9BB166A7 /* EXNetwork.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

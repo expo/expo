@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F856B9B724F00F52DCD5EA3ACED1D74 /* EXSMS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E330B8C4ED0C34DD73132AE774BEFD0 /* EXSMS-dummy.m */; };
 		414DD02ECE7AF77615070088DAB540B1 /* EXSMSModule.h in Headers */ = {isa = PBXBuildFile; fileRef = C01E0C72430F2090026742FEE66DEFCE /* EXSMSModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		41D5A8040C54CB17E2C0AFB8EBB4BFCE /* EXSMSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B18FF366505ED4E5D63C772573968330 /* EXSMSModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CA97B63A6831AC61377C0A056DC59C0F /* EXSMS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E330B8C4ED0C34DD73132AE774BEFD0 /* EXSMS-dummy.m */; };
+		F06205154F94AAB92B2EA47B13DBF77F /* EXSMSModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B18FF366505ED4E5D63C772573968330 /* EXSMSModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,7 +136,7 @@
 			buildConfigurationList = 64E8A0D645E7DABF7ADCFECD756799C1 /* Build configuration list for PBXNativeTarget "EXSMS" */;
 			buildPhases = (
 				23E62912B953EDDEB62EAC54A8F59C71 /* Headers */,
-				BE04335421C61FF097E6695F9D5D11F9 /* Sources */,
+				7D397E000A5AC3396B9113D0104B84E6 /* Sources */,
 				59900D8F58BCD466F0455D6B0D83CEDC /* Frameworks */,
 			);
 			buildRules = (
@@ -185,12 +185,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BE04335421C61FF097E6695F9D5D11F9 /* Sources */ = {
+		7D397E000A5AC3396B9113D0104B84E6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA97B63A6831AC61377C0A056DC59C0F /* EXSMS-dummy.m in Sources */,
-				41D5A8040C54CB17E2C0AFB8EBB4BFCE /* EXSMSModule.m in Sources */,
+				3F856B9B724F00F52DCD5EA3ACED1D74 /* EXSMS-dummy.m in Sources */,
+				F06205154F94AAB92B2EA47B13DBF77F /* EXSMSModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

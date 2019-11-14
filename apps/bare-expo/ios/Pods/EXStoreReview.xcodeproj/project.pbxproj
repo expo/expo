@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AF1398BF4BEF40008BE8A7873C0360D8 /* EXStoreReviewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E76344BA6ED904BE9A27DE6B71DECA /* EXStoreReviewModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		026E2FD70D5BD3E342F7A4C70EC8A90E /* EXStoreReview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 45675809524876031BF934292CB1D353 /* EXStoreReview-dummy.m */; };
+		47935A8EE058263146617A66DD4E92C4 /* EXStoreReviewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E76344BA6ED904BE9A27DE6B71DECA /* EXStoreReviewModule.m */; };
 		E64CEAC098A682F3213893672B61BE80 /* EXStoreReviewModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC521801FE93690F1116D293D37610B /* EXStoreReviewModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		F1FA8631562EDA1A9B60E097F29F23F1 /* EXStoreReview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 45675809524876031BF934292CB1D353 /* EXStoreReview-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = 4008F4A8FAB4437D128D364015B25B45 /* Build configuration list for PBXNativeTarget "EXStoreReview" */;
 			buildPhases = (
 				ABC6F57DC6DF4BA842ADF46E31D94480 /* Headers */,
-				975C94F4E80BB44FB786550EA1E5EA39 /* Sources */,
+				5929C4DAAD82AFDE186CACC6DE3046D7 /* Sources */,
 				E49C5D8CDD061C4E6801AADF57715A09 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		975C94F4E80BB44FB786550EA1E5EA39 /* Sources */ = {
+		5929C4DAAD82AFDE186CACC6DE3046D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1FA8631562EDA1A9B60E097F29F23F1 /* EXStoreReview-dummy.m in Sources */,
-				AF1398BF4BEF40008BE8A7873C0360D8 /* EXStoreReviewModule.m in Sources */,
+				026E2FD70D5BD3E342F7A4C70EC8A90E /* EXStoreReview-dummy.m in Sources */,
+				47935A8EE058263146617A66DD4E92C4 /* EXStoreReviewModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

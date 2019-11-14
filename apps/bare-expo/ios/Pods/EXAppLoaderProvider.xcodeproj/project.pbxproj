@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		10DCA26960FA1F39C37F98A8439826E6 /* EXAppLoaderProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 82297C9FD49A56DE019CFA92AC2B4703 /* EXAppLoaderProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		19ED20FED529304EC209D69E50927B8A /* EXAppLoaderProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 07DDE2B9C08F6DF0CDD13C752955C8E0 /* EXAppLoaderProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		41544B1F781B09FFC30AE06F0997B143 /* EXAppLoaderInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 477D4DAFB7B0516743488C6C2B57A79B /* EXAppLoaderInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B1511A1276DEFC0F99DE7C6B686E8B1B /* EXAppLoaderProvider-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBD6CC46742F282747119581B2B37D7 /* EXAppLoaderProvider-dummy.m */; };
 		D33C71357D2843D7EFC20468DE37E725 /* EXAppRecordInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 8D885CC264C7DCB8C59B0D383B39E1DC /* EXAppRecordInterface.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		D9BF00D32247633A33216C899A958436 /* EXAppLoaderProvider-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DBD6CC46742F282747119581B2B37D7 /* EXAppLoaderProvider-dummy.m */; };
+		E9BE2621E7A42B49638E25B4AB5D0291 /* EXAppLoaderProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 82297C9FD49A56DE019CFA92AC2B4703 /* EXAppLoaderProvider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -124,7 +124,7 @@
 			buildConfigurationList = FC54ECCE3FE9EBA1DCACADDDE52CA274 /* Build configuration list for PBXNativeTarget "EXAppLoaderProvider" */;
 			buildPhases = (
 				86C8F20C9F968FD41079D23A46EB9C47 /* Headers */,
-				928D8E03ED73D1FEEEBAE215414B2DC9 /* Sources */,
+				94D30C6811566D4A3E8AA84611821FC5 /* Sources */,
 				21B4076681E1E514B715B911C4AB4B67 /* Frameworks */,
 			);
 			buildRules = (
@@ -163,12 +163,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		928D8E03ED73D1FEEEBAE215414B2DC9 /* Sources */ = {
+		94D30C6811566D4A3E8AA84611821FC5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D9BF00D32247633A33216C899A958436 /* EXAppLoaderProvider-dummy.m in Sources */,
-				10DCA26960FA1F39C37F98A8439826E6 /* EXAppLoaderProvider.m in Sources */,
+				B1511A1276DEFC0F99DE7C6B686E8B1B /* EXAppLoaderProvider-dummy.m in Sources */,
+				E9BE2621E7A42B49638E25B4AB5D0291 /* EXAppLoaderProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
