@@ -6,11 +6,11 @@ import java.util.concurrent.Future;
 
 public interface ChannelManager {
 
-  void addChannel(String channelId, ChannelPOJO channel, final Context context);
+  void addChannel(String channelId, ChannelSpecification channel, final Context context);
 
   void deleteChannel(String channelId, final Context context);
 
-  default void addChannel(String channelId, ChannelPOJO channel, final Context context, Runnable continuation) {
+  default void addChannel(String channelId, ChannelSpecification channel, final Context context, Runnable continuation) {
     addChannel(channelId, channel, context);
   }
 
@@ -18,6 +18,6 @@ public interface ChannelManager {
     deleteChannel(channelId, context);
   }
 
-  Future<ChannelPOJO> getPropertiesForChannelId(String channelId, final Context context);
+  Future<ChannelSpecification> getPropertiesForChannelId(String channelId, final Context context);
 
 }

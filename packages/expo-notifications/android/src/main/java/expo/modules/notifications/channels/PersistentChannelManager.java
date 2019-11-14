@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 public class PersistentChannelManager implements ChannelManager{
 
   @Override
-  public void addChannel(String channelId, ChannelPOJO channel, final Context context) {
+  public void addChannel(String channelId, ChannelSpecification channel, final Context context) {
     deleteChannel(channelId, context);
     new ChannelProperties(channel).save();
   }
@@ -26,13 +26,13 @@ public class PersistentChannelManager implements ChannelManager{
   }
 
   @Override
-  public Future<ChannelPOJO> getPropertiesForChannelId(String channelId, final Context context) {
+  public Future<ChannelSpecification> getPropertiesForChannelId(String channelId, final Context context) {
     List<ChannelProperties> channelList = new Select().from(ChannelProperties.class)
         .where(ChannelProperties_Table.channelId.eq(channelId))
         .queryList();
     if (channelList.size() == 0) {
       return new SynchronicFuture(null);
     }
-    return new SynchronicFuture(channelList.get(0).toChannelPOJO());
+    return new SynchronicFuture(channelList.get(0).toChannelSpecification());
   }
 }
