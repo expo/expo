@@ -299,7 +299,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
       } else {
         promise.reject(new SecurityException("User rejected permissions"));
       }
-    });
+    }, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
   }
 
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
