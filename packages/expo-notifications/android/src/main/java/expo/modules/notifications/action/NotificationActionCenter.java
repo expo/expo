@@ -32,12 +32,9 @@ public class NotificationActionCenter {
   }
 
   public synchronized static void removeCategory(String categoryId) {
-    List<ActionObject> actions = SQLite.select().from(ActionObject.class)
-        .where(ActionObject_Table.categoryId.eq(categoryId))
-        .queryList();
-    for (ActionObject actionObject : actions) {
-      actionObject.delete();
-    }
+    SQLite.delete().from(ActionObject.class)
+            .where(ActionObject_Table.categoryId.eq(categoryId))
+            .async().execute();
   }
 
   public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
