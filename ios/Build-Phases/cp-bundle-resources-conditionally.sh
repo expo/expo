@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -exo pipefail
 
 SRC_FILE="${PROJECT_DIR}/Exponent/Supporting/GoogleService-Info.plist"
 DST_FILE="${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist"
