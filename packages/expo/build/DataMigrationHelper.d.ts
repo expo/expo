@@ -1,7 +1,7 @@
 export interface ConflictResolver {
-    onConflict(legacyFile: string, currentFile: string): Promise<void>;
+    (legacyFile: string, currentFile: string): Promise<void>;
 }
-export declare const LOCK_FILE_NAME = "migrationLock#6453743";
+export declare const LOCK_FILE_NAME = "migrationLock6453743tc";
 export declare function getLegacyDocumentDirectoryAndroid(): string | null;
-export declare const NOOP_CONFLICT_RESOLVER: ConflictResolver;
-export declare function migrateFilesFromLegacyDirectoryAsync(conflictResolver?: ConflictResolver): Promise<void>;
+export declare const noopResolve: ConflictResolver;
+export declare function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: ConflictResolver): Promise<void>;

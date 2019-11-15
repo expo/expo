@@ -2,11 +2,12 @@ import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 
-export interface ConflictResolver {
-    onConflict(legacyFile: string, currentFile: string): Promise<void>;
-};
 
-export const LOCK_FILE_NAME = "migrationLock#6453743";
+export interface ConflictResolver {
+    (legacyFile: string, currentFile: string): Promise<void>;
+}
+
+export const LOCK_FILE_NAME = "migrationLock64537438658125";
 
 export function getLegacyDocumentDirectoryAndroid(): string | null {
     if (Platform.OS !== 'android' || FileSystem.documentDirectory == null) {
@@ -18,13 +19,11 @@ export function getLegacyDocumentDirectoryAndroid(): string | null {
     return oldFilesDirectory;
 }
 
-export const NOOP_CONFLICT_RESOLVER: ConflictResolver = {
-    async onConflict(legacyFile: string, currentFile: string): Promise<void> {
-        // do nothing! leave legacy and current file
-    }
+export const noopResolve: ConflictResolver = async (legacyFile: string, currentFile: string): Promise<void> => {
+    // do nothing! leave legacy and current file
 };
 
-async function treeSearch(relativePath: string, legacyPath: string, newPath: string, conflictResolver: ConflictResolver): Promise<void> {
+async function treeSearch(relativePath: string, legacyPath: string, newPath: string, resolveConflict: ConflictResolver): Promise<void> {
     const currentNewPath = `${newPath}${relativePath}`;
     const currentLegacyPath: string = `${legacyPath}${relativePath}`;
     const legacyPathInfo = await FileSystem.getInfoAsync(currentLegacyPath);
@@ -41,11 +40,11 @@ async function treeSearch(relativePath: string, legacyPath: string, newPath: str
 
     if (legacyPathInfo.isDirectory) {
         const children = await FileSystem.readDirectoryAsync(currentLegacyPath);
-        children.forEach(async (child) => {
-            treeSearch(relativePath + `${child}/`, legacyPath, newPath, conflictResolver);
-        });
+        for (let child of children) {
+            await treeSearch(relativePath + `${child}/`, legacyPath, newPath, resolveConflict);
+        }
     } else {
-        conflictResolver.onConflict(currentLegacyPath, currentNewPath);
+        await resolveConflict(currentLegacyPath, currentNewPath);
     }
 }
 
@@ -58,7 +57,7 @@ async function addLockToOldFilesDirectory(path: string): Promise<void> {
     await FileSystem.writeAsStringAsync(path + LOCK_FILE_NAME, "lock");
 }
 
-export async function migrateFilesFromLegacyDirectoryAsync(conflictResolver?: ConflictResolver): Promise<void> {
+export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: ConflictResolver): Promise<void> {
     const { appOwnership } = Constants;
     if (Platform.OS !== 'android' || appOwnership !== "standalone") {
         return;
@@ -76,18 +75,18 @@ export async function migrateFilesFromLegacyDirectoryAsync(conflictResolver?: Co
         return;
     }
 
-    if (await doesOldFilesDirectoryContainsLock(oldFilesDirectory)) {
+    if (await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
         return;
     }
 
-    if (conflictResolver == null) {
+    if (resolveConflict == null) {
         await FileSystem.copyAsync({
             from: <string>oldFilesDirectory,
             to: <string>newFilesDirectory,
         });
         await FileSystem.deleteAsync(<string>oldFilesDirectory);
     } else {
-        await treeSearch("", oldFilesDirectory, newFilesDirectory, conflictResolver);
+        await treeSearch("", oldFilesDirectory, newFilesDirectory, resolveConflict);
         await addLockToOldFilesDirectory(oldFilesDirectory);
     }
 }
