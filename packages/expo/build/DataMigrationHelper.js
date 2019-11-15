@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
-export const LOCK_FILE_NAME = "migrationLock6453743tc";
+export const LOCK_FILE_NAME = "migrationLock64537438658125";
 export function getLegacyDocumentDirectoryAndroid() {
     if (Platform.OS !== 'android' || FileSystem.documentDirectory == null) {
         return null;
@@ -56,10 +56,7 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict) {
     }
     const oldFilesDirectoryInfo = await FileSystem.getInfoAsync(oldFilesDirectory);
     const doesOldFilesDirectoryExist = oldFilesDirectoryInfo["exists"];
-    if (!doesOldFilesDirectoryExist) {
-        return;
-    }
-    if (await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
+    if (!doesOldFilesDirectoryExist || await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
         return;
     }
     if (resolveConflict == null) {

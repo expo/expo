@@ -70,11 +70,7 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: Con
   const oldFilesDirectoryInfo = await FileSystem.getInfoAsync(<string>oldFilesDirectory);
   const doesOldFilesDirectoryExist = oldFilesDirectoryInfo["exists"];
 
-  if (!doesOldFilesDirectoryExist) {
-    return;
-  }
-
-  if (await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
+  if (!doesOldFilesDirectoryExist || await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
     return;
   }
 
