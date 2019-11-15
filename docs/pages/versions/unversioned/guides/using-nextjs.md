@@ -75,13 +75,11 @@ After following the project specific setup do these:
   `pages/_document.js`
 
   ```js
-  import Document from '@expo/next-adapter/document';
-
-  export default Document;
+  export { Document as default } from '@expo/next-adapter/document';
   ```
 
 - Create a `babel.config.js` and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
-  - You installed this earlier with `yarn add -D babel-preset-expo`
+  - You may have installed this earlier with `yarn add -D babel-preset-expo`
 
   `babel.config.js`
 
@@ -101,6 +99,8 @@ After following the project specific setup do these:
   ```
 
 - Update the Next.js `next.config.js` file to support loading React Native and Expo packages:
+  - `touch next.config.js`
+  
   `next.config.js`
 
   ```js
@@ -111,7 +111,7 @@ After following the project specific setup do these:
   });
   ```
 
-- You can now start your Next.js project with `yarn next dev` 🎉
+- You can now start your Expo web + Next.js project with `yarn next dev` 🎉
 
 </p>
 </details>
