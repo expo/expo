@@ -1,5 +1,6 @@
 ---
 title: MapView
+sourceCodeUrl: "https://github.com/react-community/react-native-maps"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';

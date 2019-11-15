@@ -1,5 +1,6 @@
 ---
 title: Updates
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/Updates"
 ---
 
 API for controlling and responding to over-the-air updates to your app.

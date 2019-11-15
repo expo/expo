@@ -1,5 +1,6 @@
 ---
 title: Calendar
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-calendar"
 ---
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.

@@ -1,5 +1,6 @@
 ---
 title: BlurView
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-blur"
 ---
 
 A React component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.

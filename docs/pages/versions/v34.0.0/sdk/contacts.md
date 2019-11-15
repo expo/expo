@@ -1,5 +1,6 @@
 ---
 title: Contacts
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-contacts"
 ---
 
 Provides access to the phone's system contacts.

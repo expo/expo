@@ -1,5 +1,6 @@
 ---
 title: ErrorRecovery
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/ErrorRecovery"
 ---
 
 Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.

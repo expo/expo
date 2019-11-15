@@ -1,5 +1,6 @@
 ---
 title: Pedometer
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
