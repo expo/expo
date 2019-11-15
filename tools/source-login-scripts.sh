@@ -11,3 +11,5 @@ elif [ -f ~/.bash_login ]; then
 elif [ -f ~/.profile ]; then
    source ~/.profile > /dev/null
 fi
+
+if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then . ~/.nix-profile/etc/profile.d/nix.sh; fi
