@@ -27,29 +27,7 @@ public class BasicNotificationDisplayer implements NotificationDisplayer {
 
   private volatile static List<NotificationModifier> mModifiers = null;
 
-  @Override
-  public void displayNotification(Context context, String appId, Bundle notification, final int notificationId) {
-
-    new Thread(() -> {
-      NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-
-      notification.putInt("notificationIntId", notificationId);
-
-      for (NotificationModifier notificationModifier : BasicNotificationDisplayer.getNotificationModifiers()) {
-        notificationModifier.modify(builder, notification, context, appId);
-      }
-
-      NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-      notificationManagerCompat.notify(appId, notificationId, builder.build());
-
-    }).start(); // this may result in leak (anonymous class is a inner class so it has ref to outer class)
-
-  }
-
-  public static synchronized List<NotificationModifier> getNotificationModifiers() {
-    if (mModifiers != null) {
-      return mModifiers;
-    }
+  static {
     mModifiers = new ArrayList<>();
 
     /*
@@ -69,8 +47,25 @@ public class BasicNotificationDisplayer implements NotificationDisplayer {
     mModifiers.add(new IntentModifier());
     mModifiers.add(new LinkModifier());
     mModifiers.add(new CategoryModifier());
+  }
 
-    return mModifiers;
+  @Override
+  public void displayNotification(Context context, String appId, Bundle notification, final int notificationId) {
+
+    new Thread(() -> {
+      NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+
+      notification.putInt("notificationIntId", notificationId);
+
+      for (NotificationModifier notificationModifier : mModifiers) {
+        notificationModifier.modify(builder, notification, context, appId);
+      }
+
+      NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+      notificationManagerCompat.notify(appId, notificationId, builder.build());
+
+    }).start(); // this may result in leak (anonymous class is a inner class so it has ref to outer class)
+
   }
 
 }
