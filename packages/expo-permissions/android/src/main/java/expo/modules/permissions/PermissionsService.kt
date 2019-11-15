@@ -4,64 +4,35 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-
-import com.facebook.react.modules.core.PermissionAwareActivity
-
-import org.unimodules.core.ModuleRegistry
+import com.facebook.react.modules.core.PermissionListener
 import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.InternalModule
 import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 import org.unimodules.interfaces.permissions.PermissionsStatus
 
 private const val PERMISSIONS_REQUEST: Int = 13
-private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
 
 internal const val ERROR_TAG = "E_PERMISSIONS"
 
-class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
-  private var mActivityProvider: ActivityProvider? = null
-
+class PermissionsService(val context: Context,
+                         private val mAskedPermissionsCache: PermissionsCacheDelegate,
+                         private val mActivityDelegate: ActivityDelegate) : Permissions, LifecycleEventListener {
 
   // state holders for asking for writing permissions
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
   private var mAskAsyncListener: PermissionsResponseListener? = null
   private var mAskAsyncRequestedPermissions: Array<out String>? = null
 
-  private lateinit var mAskedPermissionsCache: SharedPreferences
-
-  private fun didAsk(permission: String): Boolean = mAskedPermissionsCache.getBoolean(permission, false)
-
-  private fun addToAskedPermissionsCache(permissions: List<String>) {
-    with(mAskedPermissionsCache.edit()) {
-      permissions.forEach { putBoolean(it, true) }
-      apply()
-    }
-  }
-
-  override fun getExportedInterfaces(): List<Class<out Any>> = listOf(Permissions::class.java)
-
-  @Throws(IllegalStateException::class)
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-        ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
-    moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    mAskedPermissionsCache = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
-  }
 
   override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
+
     getPermissions(PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
       val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
       val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
@@ -119,7 +90,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
         mAskAsyncListener = newListener
         mAskAsyncRequestedPermissions = permissionsToAsk
 
-        addToAskedPermissionsCache(listOf(Manifest.permission.WRITE_SETTINGS))
+        mAskedPermissionsCache.add(listOf(Manifest.permission.WRITE_SETTINGS))
         askForWriteSettingsPermissionFirst()
       } else {
         askForManifestPermissions(permissionsToAsk, newListener)
@@ -156,28 +127,8 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
     return when (permission) {
       // we need to handle this permission in different way
       Manifest.permission.WRITE_SETTINGS -> hasWriteSettingsPermission()
-      else -> getManifestPermission(permission) == PackageManager.PERMISSION_GRANTED
+      else -> mActivityDelegate.getPermission(permission) == PackageManager.PERMISSION_GRANTED
     }
-  }
-
-  /**
-   * Gets status for Android built-in permission
-   *
-   * @param permission [android.Manifest.permission]
-   */
-  private fun getManifestPermission(permission: String): Int {
-    mActivityProvider?.currentActivity?.let {
-      if (it is PermissionAwareActivity) {
-        return ContextCompat.checkSelfPermission(it, permission)
-      }
-    }
-    return PackageManager.PERMISSION_DENIED
-  }
-
-  private fun canAskAgain(permission: String): Boolean {
-    return mActivityProvider?.currentActivity?.let {
-      ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
-    } ?: false
   }
 
   private fun parseNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {
@@ -191,13 +142,13 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
   private fun getPermissionResponseFromNativeResponse(permission: String, result: Int): PermissionsResponse {
     val status = when {
       result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
-      didAsk(permission) -> PermissionsStatus.DENIED
+      mAskedPermissionsCache.contains(permission) -> PermissionsStatus.DENIED
       else -> PermissionsStatus.UNDETERMINED
     }
     return PermissionsResponse(
         status,
         if (status == PermissionsStatus.DENIED) {
-          canAskAgain(permission)
+          mActivityDelegate.canAskAgain(permission)
         } else {
           true
         }
@@ -211,23 +162,16 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
    * @param permissions [android.Manifest.permission]
    */
   private fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    addToAskedPermissionsCache(permissions.toList())
-
-    mActivityProvider?.currentActivity?.run {
-      if (this is PermissionAwareActivity) {
-        this.requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
-          return@requestPermissions if (requestCode == PERMISSIONS_REQUEST) {
-            listener.onResult(parseNativeResult(receivePermissions, grantResults))
-            true
-          } else {
-            listener.onResult(parseNativeResult(receivePermissions, IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED }))
-            false
-          }
-        }
+    mAskedPermissionsCache.add(permissions.toList())
+    mActivityDelegate.askForPermissions(permissions, PermissionListener { requestCode, receivePermissions, grantResults ->
+      if (requestCode == PERMISSIONS_REQUEST) {
+        listener.onResult(parseNativeResult(receivePermissions, grantResults))
+        true
       } else {
-        listener.onResult(parseNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
+        listener.onResult(parseNativeResult(receivePermissions, IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED }))
+        false
       }
-    }
+    })
   }
 
   /**
@@ -253,7 +197,7 @@ class PermissionsService(val context: Context) : InternalModule, Permissions, Li
 
   private fun hasWriteSettingsPermission(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Settings.System.canWrite(mActivityProvider!!.currentActivity.applicationContext)
+      Settings.System.canWrite(mActivityDelegate.getApplicationContext())
     } else {
       true
     }

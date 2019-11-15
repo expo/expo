@@ -5,7 +5,6 @@ class UnimodulesPlugin implements Plugin<Project> {
             project.android.sourceSets {
                 main {
                     java {
-                        srcDir 'src'
                         exclude '**/flutter/**'
                     }
                 }
