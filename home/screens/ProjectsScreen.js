@@ -122,7 +122,8 @@ export default class ProjectsScreen extends React.Component {
           contentContainerStyle={styles.contentContainer}>
           <SectionLabelContainer>
             <SectionLabelText>
-              {Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR'
+              {(Platform.OS === 'ios' && Environment.IOSClientReleaseType === 'SIMULATOR') ||
+              (Platform.OS === 'android' && !Constants.isDevice)
                 ? 'CLIPBOARD'
                 : 'TOOLS'}
             </SectionLabelText>

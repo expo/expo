@@ -24,8 +24,8 @@ export default class OpenFromClipboardButton extends React.Component {
   render() {
     let { clipboardContents, isValid } = this.props;
 
-    // Show info for iOS simulator about how to make clipboard contents available
-    if (!isValid && Platform.OS === 'ios' && !Constants.isDevice) {
+    // Show info for iOS/Android simulator about how to make clipboard contents available
+    if (!isValid && !Constants.isDevice) {
       return (
         <StyledView
           style={[
@@ -35,7 +35,9 @@ export default class OpenFromClipboardButton extends React.Component {
             styles.bottomBorder,
           ]}>
           <Text style={styles.subtitleText} ellipsizeMode="tail" numberOfLines={1}>
-            {isValid ? clipboardContents : 'Press ⌘+v to move clipboard to simulator'}
+            {Platform.OS === 'ios'
+              ? 'Press ⌘+v to move clipboard to simulator.'
+              : 'Project URLs on your clipboard will appear here.'}
           </Text>
         </StyledView>
       );
