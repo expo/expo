@@ -5,7 +5,7 @@ export const name = 'StoreReview';
 
 export function test({ describe, it, expect }) {
   describe(`isAvailableAsync()`, () => {
-    if (Constants.platform.ios.systemVersion >= 10.3) {
+    if (Constants.platform.ios && Constants.platform.ios.systemVersion >= 10.3) {
       it(`has access to iOS StoreReview API`, async () => {
         expect(await StoreReview.isAvailableAsync()).toBe(true);
       });
