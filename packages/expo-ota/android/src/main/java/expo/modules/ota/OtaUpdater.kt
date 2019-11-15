@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit
 class OtaUpdater constructor(
         private val persistence: ExpoOTAPersistence,
         private val config: ExpoOTAConfig,
+        private val api: OtaApi,
         private val id: String,
         private val embeddedManifestAndBundle: EmbeddedManifestAndBundle,
         private val bundleLoader: BundleLoader,
@@ -32,6 +33,7 @@ class OtaUpdater constructor(
                 updatersMap.put(id, OtaUpdater(
                         persistence,
                         config,
+                        ExpoOtaApi(config.manifestHttpClient, bundleClient(config)),
                         id,
                         EmbeddedManifestAndBundle(context),
                         BundleLoader(bundleClient(config)),
