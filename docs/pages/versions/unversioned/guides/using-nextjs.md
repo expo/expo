@@ -40,9 +40,10 @@ In this approach you would be using SSR for web in your universal project. This 
 <p>
 
 - Bootstrap your project with Expo - `expo init --template blank`
+  - cd into the project
 - Install - `yarn add next @expo/next-adapter`
 - Create a front page for your Next project with `mkdir pages; cp App.js pages/index.js`
-- Follow the shared steps
+- Follow the [shared steps](#shared-steps)
 
 </p>
 </details>
@@ -56,7 +57,7 @@ This approach is useful if you want to use Expo components in your web-only proj
 
 - Bootstrap your project with Next.js - `npx create-next-app`
 - Install - `yarn add react-native-web @expo/next-adapter && yarn add -D babel-preset-expo`
-- Follow the shared steps
+- Follow the [shared steps](#shared-steps)
 
 </p>
 </details>
