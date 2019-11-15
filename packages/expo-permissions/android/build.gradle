@@ -79,7 +79,7 @@ dependencies {
   unimodule 'unimodules-permissions-interface'
 
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.41"
-  api "androidx.appcompat:appcompat:1.0.0"
+  api "androidx.appcompat:appcompat:1.0.2"
   
   compileOnly('com.facebook.react:react-native:+') {
     exclude group: 'com.android.support'
