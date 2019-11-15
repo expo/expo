@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -exo pipefail
 
 if [ -z "$EXPO_TOOLS_DIR" ]; then
   EXPO_TOOLS_DIR="${SRCROOT}/../tools"
