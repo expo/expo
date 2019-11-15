@@ -8,19 +8,15 @@ import androidx.core.app.NotificationManagerCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.modules.notifications.displayers.modifiers.StickyModifier;
-import expo.modules.notifications.displayers.modifiers.BodyModifier;
+import expo.modules.notifications.displayers.modifiers.MainModifier;
 import expo.modules.notifications.displayers.modifiers.CategoryModifier;
 import expo.modules.notifications.displayers.modifiers.ChannelModifier;
-import expo.modules.notifications.displayers.modifiers.ColorModifier;
-import expo.modules.notifications.displayers.modifiers.AppIdModifier;
 import expo.modules.notifications.displayers.modifiers.IconModifier;
 import expo.modules.notifications.displayers.modifiers.ImportanceModifier;
 import expo.modules.notifications.displayers.modifiers.IntentModifier;
 import expo.modules.notifications.displayers.modifiers.LinkModifier;
 import expo.modules.notifications.displayers.modifiers.NotificationModifier;
 import expo.modules.notifications.displayers.modifiers.SoundModifer;
-import expo.modules.notifications.displayers.modifiers.TitleModifier;
 import expo.modules.notifications.displayers.modifiers.VibrateModifier;
 
 public class BasicNotificationDisplayer implements NotificationDisplayer {
@@ -34,16 +30,12 @@ public class BasicNotificationDisplayer implements NotificationDisplayer {
     The order is important because ChannelModifier adds additional options to the notification bundle
      */
 
-    mModifiers.add(new AppIdModifier());
+    mModifiers.add(new MainModifier());
     mModifiers.add(new ChannelModifier());
     mModifiers.add(new VibrateModifier());
-    mModifiers.add(new StickyModifier());
-    mModifiers.add(new TitleModifier());
-    mModifiers.add(new BodyModifier());
     mModifiers.add(new SoundModifer());
     mModifiers.add(new IconModifier());
     mModifiers.add(new ImportanceModifier());
-    mModifiers.add(new ColorModifier());
     mModifiers.add(new IntentModifier());
     mModifiers.add(new LinkModifier());
     mModifiers.add(new CategoryModifier());
