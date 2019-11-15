@@ -6,8 +6,8 @@ import android.os.Bundle;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import expo.modules.notifications.presenters.NotificationPresenterProvider;
-import expo.modules.notifications.push.PushNotificationEngineProvider;
+
+import expo.modules.notifications.displayers.NotificationDisplayerProvider;
 
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_BODY;
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CATEGORY;
@@ -54,7 +54,7 @@ public class ExpoFcmMessagingService extends FirebaseMessagingService {
     bundle.putString(NOTIFICATION_SOUND, remoteMessage.getData().get(NOTIFICATION_SOUND));
     bundle.putBoolean(NOTIFICATION_REMOTE, true);
 
-    NotificationPresenterProvider.getNotificationPresenter().presentNotification(
+    NotificationDisplayerProvider.getNotificationDisplayer().displayNotification(
       this.getApplicationContext(),
       appId,
       bundle
