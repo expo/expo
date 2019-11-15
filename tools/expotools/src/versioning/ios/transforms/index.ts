@@ -80,11 +80,3 @@ function pathMatchesTransformPaths(filePath: string, transformPaths?: string | s
   }
   return true;
 }
-
-// Copies `$1`-`$9` fields from RegExp as they would be overwritten by `replace` function where we use these captures.
-function copyRegExpCaptures(): RegExpCaptures {
-  return Array(9).fill(0).map((value, index) => `$${index + 1}`).reduce((acc, key) => {
-    acc[key] = RegExp[key];
-    return acc;
-  }, {});
-}

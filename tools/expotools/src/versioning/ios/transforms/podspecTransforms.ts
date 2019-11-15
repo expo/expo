@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-
 import { TransformPipeline } from '.';
 
 export function podspecTransforms(versionName: string): TransformPipeline {
