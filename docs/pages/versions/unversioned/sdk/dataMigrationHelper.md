@@ -66,14 +66,14 @@ This method moves all files from the legacy directory to the current document di
 ```js
 
 export interface ConflictResolver {
-  onConflict(legacyFile: string, currentFile: string): Promise<void>;
-};
+  (legacyFile: string, currentFile: string): Promise<void>;
+}
 
 ```
 
 In some cases, you may want to decide separately for each file conflict how it should be resolved.
 Object that implements `ConflictResolver` interface can be passed to `DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync()` as an argument.
-`onConflict` method will be called for each file that already exists in both legacy and current document directories. 
+Conflict resolver function will be called for each file that already exists in both legacy and current document directories. 
 
 One of the common situations is when one wants to move only files that don't generate conflicts. 
-DataMigrationHelper exports conflict resolver for such a case: `DataMigrationHelper.NOOP_CONFLICT_RESOLVER`.
+DataMigrationHelper exports conflict resolver for such a case: `DataMigrationHelper.noopResolve`.
