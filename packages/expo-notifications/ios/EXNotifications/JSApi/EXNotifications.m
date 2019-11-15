@@ -15,6 +15,7 @@
 @property(strong) NSString *appId;
 @property(nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property(nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property(nonatomic, weak) id<EXScoper> scoper;
 
 @end
 
@@ -41,6 +42,7 @@ UM_REGISTER_MODULE();
   _moduleRegistry = moduleRegistry;
   _appId = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppIdProvider)] getAppId];
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
 }
 
 UM_EXPORT_METHOD_AS(flushPendingUserInteractionsAsync,
@@ -284,8 +286,7 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 }
 
 - (NSString *)internalIdForIdentifier:(NSString *)identifier {
-  id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  return [scoper getScopedString:identifier];
+  return [_scoper getScopedString:identifier];
 }
 
 - (UNCalendarNotificationTrigger *)calendarTriggerFrom:(NSDictionary *)options {
@@ -341,14 +342,12 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
 }
 
 - (void)onForegroundNotification:(NSDictionary *)notification {
-  id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  notification = [EXMessageUnscoper getUnscopedMessage:notification scoper:scoper];
+  notification = [EXMessageUnscoper getUnscopedMessage:notification scoper:_scoper];
   [_eventEmitter sendEventWithName:@"Expo.onForegroundNotification" body:notification];
 }
 
 - (void)onUserInteraction:(NSDictionary *)userInteraction {
-  id<EXScoper> scoper = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXScoper)];
-  userInteraction = [EXMessageUnscoper getUnscopedMessage:userInteraction scoper:scoper];
+  userInteraction = [EXMessageUnscoper getUnscopedMessage:userInteraction scoper:_scoper];
   [_eventEmitter sendEventWithName:@"Expo.onUserInteraction" body:userInteraction];
 }
 
