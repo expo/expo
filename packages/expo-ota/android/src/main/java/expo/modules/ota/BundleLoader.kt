@@ -1,17 +1,17 @@
 package expo.modules.ota
 
-import android.content.Context
 import okhttp3.*
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 
-class BundleLoader(val context: Context, val httpClient: OkHttpClient) {
+class BundleLoader(private val httpClient: OkHttpClient) {
 
     data class BundleLoadParams(val url: String,
                                 val directory: File,
                                 val fileName: String)
 
-    fun loadJsBundle(params: BundleLoadParams, success: (String) -> Unit, error: (Exception?) -> Unit): Boolean {
+    fun loadJsBundle(params: BundleLoadParams, success: (BundleLoadParams, InputStream) -> Unit, error: (Exception?) -> Unit): Boolean {
         val requestBuilder: Request.Builder = Request.Builder().url(params.url)
 
         downloadBundle(requestBuilder.build(), this.handleResponse(params, success, error), error)
@@ -37,13 +37,13 @@ class BundleLoader(val context: Context, val httpClient: OkHttpClient) {
         })
     }
 
-    private fun handleResponse(params: BundleLoadParams, success: (String) -> Unit, error: (Exception?) -> Unit): (Response) -> Unit =
+    private fun handleResponse(params: BundleLoadParams, success: (BundleLoadParams, InputStream) -> Unit, error: (Exception?) -> Unit): (Response) -> Unit =
             { response: Response ->
                 if (!response.isSuccessful) {
                     handleUnsuccessfulResponse(response, error)
                 } else {
                     try {
-                        saveResponseToFile(params.directory, params.fileName)(response.body()!!.byteStream(), success, error)
+                        success(params, response.body()!!.byteStream())
                     } catch (e: Exception) {
                         error(e)
                     }

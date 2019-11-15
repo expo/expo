@@ -16,6 +16,12 @@ android {
     abortOnError false
   }
 
+  testOptions {
+    unitTests.all {
+      useJUnitPlatform()
+    }
+  }
+
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -31,10 +37,11 @@ dependencies {
 
   testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+  testImplementation 'org.json:json:20190722'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
   testImplementation "org.junit.jupiter:junit-jupiter-params:5.5.2"
-  testCompileOnly "org.junit.jupiter:junit-jupiter-engine:5.5.2"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.2"
 
   testImplementation 'io.mockk:mockk:1.9'
 

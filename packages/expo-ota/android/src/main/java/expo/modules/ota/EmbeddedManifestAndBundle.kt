@@ -16,7 +16,7 @@ class EmbeddedManifestAndBundle(val context: Context) {
         return JSONObject(stringBuilder.deleteCharAt(stringBuilder.length - 1).toString())
     }
 
-    fun readBundle():InputStream {
+    fun readBundle(): InputStream {
         return context.assets.open("shell-app.bundle")
     }
 

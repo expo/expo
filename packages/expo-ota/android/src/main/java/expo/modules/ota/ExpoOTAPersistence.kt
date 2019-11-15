@@ -1,10 +1,8 @@
 package expo.modules.ota
 
 import android.content.Context
-import android.content.res.AssetManager
 import android.text.TextUtils
 import org.json.JSONObject
-import java.lang.IllegalStateException
 
 const val KEY_BUNDLE_PATH = "bundlePath"
 const val KEY_DOWNLOADED_BUNDLE_PATH = "downloadedBundlePath"
@@ -13,7 +11,7 @@ const val KEY_DOWNLOADED_MANIFEST = "downloadedManifest"
 const val KEY_BUNDLE_OUTDATED = "outdatedBundle"
 const val KEY_REORDER_ENQUEUED = "reorderAtBoot"
 
-class ExpoOTAPersistence(val context: Context, val storage: KeyValueStorage) {
+class ExpoOTAPersistence(val storage: KeyValueStorage) {
 
     var config: ExpoOTAConfig? = null
     var id: String? = null
@@ -111,7 +109,7 @@ object ExpoOTAPersistenceFactory {
         } else if (persistenceMap.containsKey(id)) {
             persistenceMap[id]!!
         } else {
-            val persistence = ExpoOTAPersistence(context.applicationContext, KeyValueStorage(context, id))
+            val persistence = ExpoOTAPersistence(SharedPreferencesKeyValueStorage(context, id))
             persistenceMap[id] = persistence
             persistence
         }

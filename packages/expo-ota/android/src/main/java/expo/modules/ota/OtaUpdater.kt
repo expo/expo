@@ -7,22 +7,41 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class OtaUpdater private constructor(private val context: Context, private val persistence: ExpoOTAPersistence, private val config: ExpoOTAConfig, private val id: String) {
+class OtaUpdater constructor(
+        private val persistence: ExpoOTAPersistence,
+        private val config: ExpoOTAConfig,
+        private val id: String,
+        private val embeddedManifestAndBundle: EmbeddedManifestAndBundle,
+        private val bundleLoader: BundleLoader,
+        private val fileOperator: FileOperator) {
 
     companion object {
         val updatersMap = HashMap<String, OtaUpdater>()
 
-        @JvmStatic fun createUpdater(context: Context, persistence: ExpoOTAPersistence, config: ExpoOTAConfig, id: String): OtaUpdater
-        {
-            if(!updatersMap.containsKey(id)) {
-                updatersMap.put(id, OtaUpdater(context, persistence, config, id));
+        private fun bundleClient(config: ExpoOTAConfig): OkHttpClient {
+            return config.bundleHttpClient ?: longTimeoutHttpClient()
+        }
+
+        private fun longTimeoutHttpClient(): OkHttpClient {
+            return OkHttpClient.Builder().callTimeout(2, TimeUnit.MINUTES).build()
+        }
+
+        @JvmStatic
+        fun createUpdater(context: Context, persistence: ExpoOTAPersistence, config: ExpoOTAConfig, id: String): OtaUpdater {
+            if (!updatersMap.containsKey(id)) {
+                updatersMap.put(id, OtaUpdater(
+                        persistence,
+                        config,
+                        id,
+                        EmbeddedManifestAndBundle(context),
+                        BundleLoader(bundleClient(config)),
+                        FileOperator(context.filesDir)))
             }
             return updatersMap[id]!!
         }
 
     }
 
-    private val embeddedManifestAndBundle = EmbeddedManifestAndBundle(context)
     var updateEvents: UpdatesEventEmitter? = null
 
     init {
@@ -94,7 +113,7 @@ class OtaUpdater private constructor(private val context: Context, private val p
     fun saveDownloadedManifestAndBundlePath(manifest: JSONObject, path: String) {
         val previousBundle = persistence.downloadedBundlePath
         if (previousBundle != null) {
-            removeFile(previousBundle) // TODO: Move to persistence!
+            fileOperator.removeFile(previousBundle) // TODO: Move to persistence!
         }
         persistence.downloadedManifest = manifest
         persistence.downloadedBundlePath = path
@@ -108,7 +127,7 @@ class OtaUpdater private constructor(private val context: Context, private val p
     fun markDownloadedCurrentAndCurrentOutdated() {
         val outdated = persistence.outdatedBundlePath
         if (outdated != null) {
-            removeFile(outdated)
+            fileOperator.removeFile(outdated)
         }
         persistence.markDownloadedCurrentAndCurrentOutdated()
     }
@@ -117,7 +136,7 @@ class OtaUpdater private constructor(private val context: Context, private val p
         val outdatedBundlePath = persistence.outdatedBundlePath
         persistence.outdatedBundlePath = null
         if (outdatedBundlePath != null) {
-            removeFile(outdatedBundlePath)
+            fileOperator.removeFile(outdatedBundlePath)
         }
     }
 
@@ -125,14 +144,14 @@ class OtaUpdater private constructor(private val context: Context, private val p
         val bundlesDir = bundleDir()
         if (bundlesDir.exists() && bundlesDir.isDirectory) {
             bundlesDir.listFiles { directory, filename -> !validFilesSet.contains(File(directory, filename).path) }
-                    .forEach { removeFile(it.path) }
+                    .forEach { fileOperator.removeFile(it.path) }
         }
     }
 
     private fun checkAssetsBundleAndManifest() {
         if (shouldCopyAssetsManifestAndBundle()) {
             val embeddedManifest: JSONObject = embeddedManifestAndBundle.readManifest()
-            saveResponseToFile(bundleDir(), bundleFilename(embeddedManifest)) (embeddedManifestAndBundle.readBundle(), {
+            fileOperator.saveResponseToFile(bundleDir(), bundleFilename(embeddedManifest))(embeddedManifestAndBundle.readBundle(), {
                 saveDownloadedManifestAndBundlePath(embeddedManifest, it)
                 markDownloadedCurrentAndCurrentOutdated()
             }, {})
@@ -161,9 +180,10 @@ class OtaUpdater private constructor(private val context: Context, private val p
 
     private fun downloadBundle(manifest: JSONObject, success: (String) -> Unit, error: (Exception?) -> Unit) {
         val bundleUrl = manifest.optString(KEY_MANIFEST_BUNDLE_URL)
-        val bundleLoader = BundleLoader(context, bundleClient())
         val params = BundleLoader.BundleLoadParams(bundleUrl, bundleDir(), bundleFilename(manifest))
-        bundleLoader.loadJsBundle(params, success, error)
+        bundleLoader.loadJsBundle(params, { _, stream ->
+            fileOperator.saveResponseToFile(params.directory, params.fileName)(stream, success, error)
+        }, error)
     }
 
     private fun bundleFilename(manifest: JSONObject): String {
@@ -174,15 +194,7 @@ class OtaUpdater private constructor(private val context: Context, private val p
         return "bundle_${config.channelIdentifier}"
     }
 
-    private fun bundleClient(): OkHttpClient {
-        return config.bundleHttpClient ?: longTimeoutHttpClient()
-    }
-
-    private fun longTimeoutHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().callTimeout(2, TimeUnit.MINUTES).build()
-    }
-
     private fun bundleDir(): File {
-        return File(context.filesDir, "bundle-$id")
+        return fileOperator.dirPath("bundle-$id")
     }
 }
