@@ -292,9 +292,13 @@ UM_EXPORT_METHOD_AS(deleteCategoryAsync,
   BOOL repeats = [options[@"repeat"] boolValue];
 
   NSDateComponents *date = [[NSDateComponents alloc] init];
+  date.calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
 
-  NSArray *timeUnits = @[ @"year", @"day", @"weekDay", @"month", @"hour", @"second", @"minute" ];
-
+  int weekDay = ([options[@"weekDay"] intValue] % 7) + 1;
+  date.weekday = weekDay;
+  
+  NSArray *timeUnits = @[ @"year", @"day", @"month", @"hour", @"second", @"minute" ];
+  
   for (NSString *timeUnit in timeUnits) {
     if (options[timeUnit]) {
       [date setValue:options[timeUnit] forKey:timeUnit];

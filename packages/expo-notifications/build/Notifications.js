@@ -158,10 +158,13 @@ export async function scheduleNotificationWithCalendarAsync(notification, option
         (options.hour == null || isInRangeInclusive(options.hour, 0, 23)) &&
         (options.minute == null || isInRangeInclusive(options.minute, 0, 59)) &&
         (options.second == null || isInRangeInclusive(options.second, 0, 59)) &&
-        (options.weekDay == null || isInRangeInclusive(options.weekDay, 1, 7)) &&
+        (options.weekDay == null || isInRangeInclusive(options.weekDay, 0, 7)) &&
         (options.weekDay == null || options.day == null);
     if (!areOptionsValid) {
         throw new CodedError('WRONG_OPTIONS', 'Options in scheduleNotificationWithCalendarAsync call were incorrect!');
+    }
+    if (options.weekDay == 0) {
+        options.weekDay = 7;
     }
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
