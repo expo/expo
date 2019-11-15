@@ -6,7 +6,7 @@ export interface ConflictResolver {
   (legacyFile: string, currentFile: string): Promise<void>;
 }
 
-export const LOCK_FILE_NAME = "migrationLock64537438658125";
+export const LOCK_FILE_NAME = 'migrationLock64537438658125';
 
 export function getLegacyDocumentDirectoryAndroid(): string | null {
   if (Platform.OS !== 'android' || FileSystem.documentDirectory == null) {
@@ -53,12 +53,12 @@ async function doesOldFilesDirectoryContainLock(path: string): Promise<boolean> 
 }
 
 async function addLockToOldFilesDirectory(path: string): Promise<void> {
-  await FileSystem.writeAsStringAsync(path + LOCK_FILE_NAME, "lock");
+  await FileSystem.writeAsStringAsync(path + LOCK_FILE_NAME, 'lock');
 }
 
 export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: ConflictResolver): Promise<void> {
   const { appOwnership } = Constants;
-  if (Platform.OS !== 'android' || appOwnership !== "standalone") {
+  if (Platform.OS !== 'android' || appOwnership !== 'standalone') {
     return;
   }
   const oldFilesDirectory = getLegacyDocumentDirectoryAndroid();
@@ -68,7 +68,7 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: Con
   }
 
   const oldFilesDirectoryInfo = await FileSystem.getInfoAsync(<string>oldFilesDirectory);
-  const doesOldFilesDirectoryExist = oldFilesDirectoryInfo["exists"];
+  const doesOldFilesDirectoryExist = oldFilesDirectoryInfo['exists'];
 
   if (!doesOldFilesDirectoryExist || await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
     return;
@@ -81,7 +81,7 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: Con
     });
     await FileSystem.deleteAsync(<string>oldFilesDirectory);
   } else {
-    await treeSearch("", oldFilesDirectory, newFilesDirectory, resolveConflict);
+    await treeSearch('', oldFilesDirectory, newFilesDirectory, resolveConflict);
     await addLockToOldFilesDirectory(oldFilesDirectory);
   }
 }
