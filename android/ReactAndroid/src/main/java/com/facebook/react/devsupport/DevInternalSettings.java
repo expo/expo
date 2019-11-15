@@ -120,16 +120,16 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
     }
 
     public boolean isReloadOnJSChangeEnabled() {
-      // NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for
-      // now. I managed to get into a state where fast refresh wouldn't work because live reload
-      // would kick in every time and there was no way to turn it off from the dev menu.
         return false;
-      // return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, true);
+    // NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for
+    // now. I managed to get into a state where fast refresh wouldn't work because live reload
+    // would kick in every time and there was no way to turn it off from the dev menu.
+    // return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);
     }
 
     public void setReloadOnJSChangeEnabled(boolean enabled) {
-      // NOTE(brentvatne): We don't need to do anything here because this option is always false
-      // mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
+    // NOTE(brentvatne): We don't need to do anything here because this option is always false
+    // mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
     }
 
     public boolean isElementInspectorEnabled() {
