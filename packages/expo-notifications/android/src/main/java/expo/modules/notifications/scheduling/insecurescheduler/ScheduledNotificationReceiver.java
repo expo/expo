@@ -9,7 +9,7 @@ import java.util.HashMap;
 import android.os.Bundle;
 import expo.modules.notifications.scheduling.managers.SchedulersManagerProxy;
 import expo.modules.notifications.helpers.Utils;
-import expo.modules.notifications.presenters.NotificationPresenterProvider;
+import expo.modules.notifications.displayers.NotificationDisplayerProvider;
 
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_APP_ID_KEY;
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_ID_KEY;
@@ -29,7 +29,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
     Bundle notification = Utils.convertMapToBundle(details).getBundle("data");
 
-    NotificationPresenterProvider.getNotificationPresenter().presentNotification(
+    NotificationDisplayerProvider.getNotificationDisplayer().displayNotification(
         context.getApplicationContext(),
         notification.getString("appId"),
         notification,

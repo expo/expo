@@ -1,4 +1,4 @@
-package expo.modules.notifications.presenters;
+package expo.modules.notifications.displayers;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,34 +8,34 @@ import androidx.core.app.NotificationManagerCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-import expo.modules.notifications.presenters.modifiers.StickyModifier;
-import expo.modules.notifications.presenters.modifiers.BodyModifier;
-import expo.modules.notifications.presenters.modifiers.CategoryModifier;
-import expo.modules.notifications.presenters.modifiers.ChannelModifier;
-import expo.modules.notifications.presenters.modifiers.ColorModifier;
-import expo.modules.notifications.presenters.modifiers.AppIdModifier;
-import expo.modules.notifications.presenters.modifiers.IconModifier;
-import expo.modules.notifications.presenters.modifiers.ImportanceModifier;
-import expo.modules.notifications.presenters.modifiers.IntentModifier;
-import expo.modules.notifications.presenters.modifiers.LinkModifier;
-import expo.modules.notifications.presenters.modifiers.NotificationModifier;
-import expo.modules.notifications.presenters.modifiers.SoundModifer;
-import expo.modules.notifications.presenters.modifiers.TitleModifier;
-import expo.modules.notifications.presenters.modifiers.VibrateModifier;
+import expo.modules.notifications.displayers.modifiers.StickyModifier;
+import expo.modules.notifications.displayers.modifiers.BodyModifier;
+import expo.modules.notifications.displayers.modifiers.CategoryModifier;
+import expo.modules.notifications.displayers.modifiers.ChannelModifier;
+import expo.modules.notifications.displayers.modifiers.ColorModifier;
+import expo.modules.notifications.displayers.modifiers.AppIdModifier;
+import expo.modules.notifications.displayers.modifiers.IconModifier;
+import expo.modules.notifications.displayers.modifiers.ImportanceModifier;
+import expo.modules.notifications.displayers.modifiers.IntentModifier;
+import expo.modules.notifications.displayers.modifiers.LinkModifier;
+import expo.modules.notifications.displayers.modifiers.NotificationModifier;
+import expo.modules.notifications.displayers.modifiers.SoundModifer;
+import expo.modules.notifications.displayers.modifiers.TitleModifier;
+import expo.modules.notifications.displayers.modifiers.VibrateModifier;
 
-public class NotificationPresenterImpl implements NotificationPresenter {
+public class BasicNotificationDisplayer implements NotificationDisplayer {
 
   private volatile static List<NotificationModifier> mModifiers = null;
 
   @Override
-  public void presentNotification(Context context, String appId, Bundle notification, final int notificationId) {
+  public void displayNotification(Context context, String appId, Bundle notification, final int notificationId) {
 
     new Thread(() -> {
       NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
       notification.putInt("notificationIntId", notificationId);
 
-      for (NotificationModifier notificationModifier : NotificationPresenterImpl.getNotificationModifiers()) {
+      for (NotificationModifier notificationModifier : BasicNotificationDisplayer.getNotificationModifiers()) {
         notificationModifier.modify(builder, notification, context, appId);
       }
 

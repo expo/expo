@@ -1,4 +1,4 @@
-package expo.modules.notifications.presenters.modifiers;
+package expo.modules.notifications.displayers.modifiers;
 
 
 import android.content.Context;

@@ -30,6 +30,7 @@ import expo.modules.notifications.action.NotificationActionCenter;
 import expo.modules.notifications.channels.ChannelManager;
 import expo.modules.notifications.channels.ChannelSpecification;
 import expo.modules.notifications.channels.ChannelScopeManager;
+import expo.modules.notifications.displayers.NotificationDisplayer;
 import expo.modules.notifications.helpers.provider.AppIdProvider;
 import expo.modules.notifications.push.TokenDispatcher.OnTokenChangeListener;
 import expo.modules.notifications.push.TokenDispatcher.ThreadSafeTokenDispatcher;
@@ -37,8 +38,7 @@ import expo.modules.notifications.scheduling.schedulers.IntervalSchedulerModel;
 import expo.modules.notifications.scheduling.schedulers.SchedulerImpl;
 import expo.modules.notifications.postoffice.Mailbox;
 import expo.modules.notifications.postoffice.PostOfficeProxy;
-import expo.modules.notifications.presenters.NotificationPresenterImpl;
-import expo.modules.notifications.presenters.NotificationPresenter;
+import expo.modules.notifications.displayers.BasicNotificationDisplayer;
 import expo.modules.notifications.scheduling.schedulers.exceptions.UnableToScheduleException;
 import expo.modules.notifications.scheduling.managers.SchedulersManagerProxy;
 import expo.modules.notifications.scheduling.schedulers.CalendarSchedulerModel;
@@ -64,7 +64,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   private Context mContext;
   private String mAppId;
   private ChannelManager mChannelManager;
-  private NotificationPresenter mNotificationPresenter = new NotificationPresenterImpl();
+  private NotificationDisplayer mNotificationDisplayer = new BasicNotificationDisplayer();
   private NotificationScoper mNotificationScoper;
   private StringScoper mStringScoper;
   private EventEmitter mEventEmitter;
@@ -164,7 +164,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     Integer notificationId = Math.abs( new Random().nextInt() );
     bundle.putString(NOTIFICATION_ID_KEY, notificationId.toString());
 
-    mNotificationPresenter.presentNotification(
+    mNotificationDisplayer.displayNotification(
         mContext.getApplicationContext(),
         mAppId,
         bundle,
