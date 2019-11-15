@@ -3,7 +3,7 @@ title: DataMigrationHelper
 ---
 
 **`DataMigrationHelper`** helps you to solve a problem with missing files after SDK upgrade on Android.
-The problem only occurs when one upgrades the ejected/standalone application from SDK 32 or below to SDK 33 or above.
+The problem only occurs when the ejected/standalone application is upgraded from SDK 32 or below to SDK 33 or above.
 
 ## API
 
@@ -13,7 +13,7 @@ import { DataMigrationHelper } from 'expo';
 
 ### `DataMigrationHelper.getLegacyDocumentDirectoryAndroid(): string | null`
 
-This method returns the path to the legacy document directory which can be used by `expo-file-system`.
+Returns the path to the legacy document directory which can be used by `expo-file-system`.
 
 > Returns null on all platforms except Android
 

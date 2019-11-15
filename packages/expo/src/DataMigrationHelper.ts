@@ -15,7 +15,7 @@ export function getLegacyDocumentDirectoryAndroid(): string | null {
     // expo-file-system decodes paths so we need to encode twice
     let id: string = encodeURIComponent(encodeURIComponent(Constants.manifest.id));
     const oldFilesDirectory = `${FileSystem.documentDirectory}ExperienceData/${id}/`;
-    return oldFilesDirectory
+    return oldFilesDirectory;
 }
 
 export const NOOP_CONFLICT_RESOLVER: ConflictResolver = {
@@ -25,7 +25,7 @@ export const NOOP_CONFLICT_RESOLVER: ConflictResolver = {
 };
 
 async function treeSearch(relativePath: string, legacyPath: string, newPath: string, conflictResolver: ConflictResolver): Promise<void> {
-    const currentNewPath: string = `${newPath}${relativePath}`;
+    const currentNewPath = `${newPath}${relativePath}`;
     const currentLegacyPath: string = `${legacyPath}${relativePath}`;
     const legacyPathInfo = await FileSystem.getInfoAsync(currentLegacyPath);
     const newPathInfo = await FileSystem.getInfoAsync(currentNewPath);
@@ -49,7 +49,7 @@ async function treeSearch(relativePath: string, legacyPath: string, newPath: str
     }
 }
 
-async function doesOldFilesDirectoryContainsLock(path: string): Promise<boolean> {
+async function doesOldFilesDirectoryContainLock(path: string): Promise<boolean> {
     const children = await FileSystem.readDirectoryAsync(path);
     return children.indexOf(LOCK_FILE_NAME) > -1;
 }
