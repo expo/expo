@@ -108,7 +108,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
   [redBox setOverrideReloadAction:^{
       [[NSNotificationCenter defaultCenter]
-     postNotificationName:@"EXReloadActiveAppRequest" object:nil];
+     postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
