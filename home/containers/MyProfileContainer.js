@@ -1,8 +1,9 @@
 /* @flow */
 
 import gql from 'graphql-tag';
+import { flowRight } from 'lodash';
 import React, { useEffect } from 'react';
-import { compose, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 
 import Profile from '../components/Profile';
 import SessionActions from '../redux/SessionActions';
@@ -53,7 +54,7 @@ function withAuthSessionVerification(Component) {
   };
 }
 
-export default compose(
+export default flowRight(
   graphql(MyProfileQuery, {
     props(props) {
       return {
