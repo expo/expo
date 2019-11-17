@@ -22,6 +22,7 @@ NSString *kEXKernelErrorDomain = @"EXKernelErrorDomain";
 NSString *kEXKernelShouldForegroundTaskEvent = @"foregroundTask";
 NSString * const kEXDeviceInstallUUIDKey = @"EXDeviceInstallUUIDKey";
 NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUserDefaultsKey";
+NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 @interface EXKernel () <EXKernelAppRegistryDelegate>
 
@@ -59,6 +60,12 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
 
     // init service registry: classes which manage shared resources among all bridges
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
+
+    // register for notifications to request reloading the visible app
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(_handleRequestReloadVisibleApp:)
+                                                 name:kEXReloadActiveAppRequest
+                                               object:nil];
 
     for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                              UIApplicationDidEnterBackgroundNotification,
@@ -242,6 +249,7 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
   return record;
 }
 
+
 - (void)reloadVisibleApp
 {
   if (_browserController) {
@@ -371,6 +379,12 @@ NSString * const kEXKernelClearJSCacheUserDefaultsKey = @"EXKernelClearJSCacheUs
       }
     }
   }
+}
+
+
+- (void)_handleRequestReloadVisibleApp:(NSNotification *)notification
+{
+  [self reloadVisibleApp];
 }
 
 - (void)_moveAppToVisible:(EXKernelAppRecord *)appRecord
