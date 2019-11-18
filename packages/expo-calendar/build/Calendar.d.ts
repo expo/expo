@@ -104,6 +104,15 @@ export declare type RecurrenceRule = {
     interval?: number;
     endDate?: string;
     occurrence?: number;
+    daysOfTheWeek?: [{
+        dayOfTheWeek: number;
+        weekNumber: number;
+    }];
+    daysOfTheMonth?: [number];
+    monthsOfTheYear?: [number];
+    weeksOfTheYear?: [number];
+    daysOfTheYear?: [number];
+    setPositions?: [number];
 };
 export { PermissionResponse, PermissionStatus };
 declare type OptionalKeys<T> = {
