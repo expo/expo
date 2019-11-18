@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI36_0_0/ReactNative/Libraries/ActionSheetIOS/ABI36_0_0RCTActionSheetManager.h

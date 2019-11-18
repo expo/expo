@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/GestureHandler/Handlers/ABI36_0_0RNForceTouchHandler.h
