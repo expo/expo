@@ -11,17 +11,21 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.EmptyStmt;
+import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.UnionType;
+import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitor;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -184,6 +188,9 @@ public class ReactAndroidCodeTransformer {
             return hasUpToDateJSBundleInCache(n);
           case "showDevOptionsDialog":
             return showDevOptionsDialog(n);
+          case "getExponentActivityId":
+            n.setBody(JavaParser.parseBlock("{return mDevServerHelper.mSettings.exponentActivityId;}"));
+            return n;
         }
 
         return n;
@@ -253,8 +260,18 @@ public class ReactAndroidCodeTransformer {
       public Node visit(String methodName, MethodDeclaration n) {
         switch (methodName) {
           case "isReloadOnJSChangeEnabled":
-            BlockStmt blockStmt = JavaParser.parseBlock("{return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, true);}");
+            BlockStmt blockStmt = JavaParser.parseBlock("{return false;}");
+            blockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for"));
+            blockStmt.addOrphanComment(new LineComment(" now. I managed to get into a state where fast refresh wouldn't work because live reload"));
+            blockStmt.addOrphanComment(new LineComment(" would kick in every time and there was no way to turn it off from the dev menu."));
+            blockStmt.addOrphanComment(new LineComment(" return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);"));
             n.setBody(blockStmt);
+            return n;
+          case "setReloadOnJSChangeEnabled":
+            BlockStmt emptyBlockStmt = JavaParser.parseBlock("{}");
+            emptyBlockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): We don't need to do anything here because this option is always false"));
+            emptyBlockStmt.addOrphanComment(new LineComment(" mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();"));
+            n.setBody(emptyBlockStmt);
             return n;
         }
 
@@ -262,7 +279,7 @@ public class ReactAndroidCodeTransformer {
       }
 
       @Override
-      public String modifySource(final String source) {
+      String modifySource(String source) {
         return addBeforeEndOfClass(source, "public int exponentActivityId = -1;");
       }
     });
@@ -527,11 +544,16 @@ public class ReactAndroidCodeTransformer {
     return mapBlockStatement(n, new StatementMapper() {
       @Override
       public Statement map(Statement statement) {
-        if (!statement.toString().startsWith("options.put(mApplicationContext.getString(R.string.catalyst_settings)")) {
-          return statement;
+        if (statement instanceof LabeledStmt) {
+          LabeledStmt labeledStmt = (LabeledStmt) statement;
+          if ("expo_transformer_remove".equals(labeledStmt.getLabel().getIdentifier())) {
+            Statement emptyStatement = new EmptyStmt();
+            emptyStatement.setLineComment(" code removed by ReactAndroidCodeTransformer");
+            return emptyStatement;
+          }
         }
 
-        return new EmptyStmt();
+        return statement;
       }
     });
   }
