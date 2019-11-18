@@ -182,7 +182,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     getLastKnownLocation(null, location -> {
       if (location == null) {
-        promise.reject("E_LAST_KNOW_LOCATION_NOT_FOUND", "Last known location not found.", null);
+        promise.reject("E_LAST_KNOWN_LOCATION_NOT_FOUND", "Last known location not found.", null);
         return;
       }
       promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));

@@ -60,7 +60,7 @@ Returns a promise resolving to an object representing [Location](#type-location)
 
 Get the current position of the device.
 
-> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds.
+> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasync) if you expect to get a quick response and high accuracy is not required.
 
 #### Arguments
 

@@ -194,7 +194,7 @@ UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
       if (locations.lastObject) {
         resolve([EXLocation exportLocation:locations.lastObject]);
       } else {
-        reject(@"E_LAST_KNOW_LOCATION_NOT_FOUND", @"Last known location not found.", nil);
+        reject(@"E_LAST_KNOWN_LOCATION_NOT_FOUND", @"Last known location not found.", nil);
       }
       
       UM_ENSURE_STRONGIFY(self)
