@@ -20,9 +20,6 @@ export type TransformPipeline = {
   transforms: TransformPattern[];
 };
 
-type RegExpCapturesKeys = '$1' | '$2' | '$3' | '$4' | '$5' | '$6' | '$7' | '$8' | '$9';
-type RegExpCaptures = { [key in RegExpCapturesKeys]?: string };
-
 export async function runTransformPipelineAsync({ pipeline, targetPath, input }: TransformConfig) {
   let output = input;
   const matches: { value: string, line: number, replacedWith: string }[] = [];
