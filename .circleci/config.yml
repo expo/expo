@@ -74,7 +74,6 @@ commands:
             else
               echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
             fi
-            
   halt_if_unchanged:
     parameters:
       requireOneOf:
