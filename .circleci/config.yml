@@ -53,6 +53,7 @@ commands:
                 if [[ $file =~ << parameters.requireOneOf >> ]]; then
                   echo " ++ [required] ${file}"
                   if [ ! $baseFileHash = $currentFileHash ]; then
+                    TASK_NO_BAIL="1"
                     echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
                     set +e
                     exit 0
@@ -63,13 +64,15 @@ commands:
               fi
             done
 
-            echo "⏹ No relevant file changes in the current branch; stopping tests."
+            if [[ -z "${TASK_NO_BAIL}" ]]; then
+              echo "⏹ No relevant file changes in the current branch; stopping tests."
 
-            # circleci-agent is not available with nix executors
-            if command -v circleci-agent >/dev/null; then
-              circleci-agent task halt
-            else
-              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              # circleci-agent is not available with nix executors
+              if command -v circleci-agent >/dev/null; then
+                circleci-agent task halt
+              else
+                echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+              fi
             fi
   halt_if_unchanged:
     parameters:
