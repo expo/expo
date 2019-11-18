@@ -28,7 +28,6 @@ commands:
           name: Stop the job if only << parameters.exclude >> was changed
           command: |
 
-            unset TASK_NO_BAIL
             ROOT_BRANCH="master"
             SEARCH_DEPTH=<< parameters.search_depth >>
             if [ $CIRCLE_BRANCH = $ROOT_BRANCH ]; then
@@ -47,14 +46,13 @@ commands:
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
 
             # Test all top-level files and directories
-            find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
+            if find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
               baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
               currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
               if ! [[ $file =~ << parameters.exclude >> ]]; then
                 if [[ $file =~ << parameters.requireOneOf >> ]]; then
                   echo " ++ [required] ${file}"
                   if [ ! $baseFileHash = $currentFileHash ]; then
-                    TASK_NO_BAIL="1"
                     echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
                     set +e
                     exit 0
@@ -63,18 +61,20 @@ commands:
               else
                 echo " -- [excluded] ${file}"
               fi
-            done
-
-            if [[ -z "${TASK_NO_BAIL}" ]]; then
-              echo "⏹ No relevant file changes in the current branch; stopping tests."
-
-              # circleci-agent is not available with nix executors
-              if command -v circleci-agent >/dev/null; then
-                circleci-agent task halt
-              else
-                echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
-              fi
+            done; then
+              set +e
+              exit 0
             fi
+
+            echo "⏹ No relevant file changes in the current branch; stopping tests."
+
+            # circleci-agent is not available with nix executors
+            if command -v circleci-agent >/dev/null; then
+              circleci-agent task halt
+            else
+              echo 'user-halt' > "$CIRCLE_INTERNAL_SCRATCH/HALT_TASK"
+            fi
+            
   halt_if_unchanged:
     parameters:
       requireOneOf:
