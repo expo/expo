@@ -76,7 +76,6 @@ private fun manifestHeaders(expoSdkVersion: String, apiVersion: Number = 1, rele
 
 private fun manifestComparatorByVersionComparisonValue(versionComparison: String?): ManifestComparator {
     return when (versionComparison) {
-        "ANY" -> AllAcceptingManifestComparator(SdkVersionMustBeEqualNativeComparator())
         "VERSION" -> VersionNumberManifestComparator(SdkVersionMustBeEqualNativeComparator())
         "REVISION" -> RevisionIdManifestComparator(SdkVersionMustBeEqualNativeComparator())
         "NEWEST" -> CommitTimeManifestComparator(SdkVersionMustBeEqualNativeComparator())

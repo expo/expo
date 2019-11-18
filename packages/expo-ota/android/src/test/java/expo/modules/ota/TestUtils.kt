@@ -4,8 +4,6 @@ import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkClass
-import okhttp3.OkHttpClient
-import okhttp3.Response
 import org.json.JSONObject
 import java.io.InputStream
 
@@ -40,6 +38,8 @@ fun mockOtaPersistence(
     every { otaPersistence.newestManifest } answers { newestManifest }
     every { otaPersistence.enqueuedReorderAtNextBoot } answers { enqueuedReorderAtNextBoot }
     every { otaPersistence.enqueuedReorderAtNextBoot = any() } just Runs
+    every { otaPersistence.markDownloadedCurrentAndCurrentOutdated() } just Runs
+    every { otaPersistence.synchronize() } just Runs
     return otaPersistence
 }
 
@@ -49,19 +49,4 @@ fun mockEmbeddedManifest(manifest: JSONObject = emptyJson(), bundle: InputStream
     every { embeddedManifestAndBundle.readBundle() } returns bundle
     every { embeddedManifestAndBundle.isEmbeddedManifestCompatibleWith(any()) } returns manifestCompatible
             return embeddedManifestAndBundle
-}
-
-fun mockOtaConfig(
-        channel: String = "channel",
-        manifestHttpClient: OkHttpClient = mockkClass(OkHttpClient::class),
-        manifestResponseValidator: ManifestResponseValidator = object: ManifestResponseValidator {
-            override fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
-                success()
-            }
-        }
-): ExpoOTAConfig {
-    val config = mockkClass(ExpoOTAConfig::class)
-    every { config.channelIdentifier } returns channel
-    every { config.manifestHttpClient } returns manifestHttpClient
-    every { config.manifestResponseValidator }
 }

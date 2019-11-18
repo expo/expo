@@ -1,23 +1,23 @@
 package expo.modules.ota
 
 import android.content.Context
-import okhttp3.*
+import okhttp3.OkHttpClient
 import org.json.JSONObject
 import java.io.File
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class OtaUpdater constructor(
         private val persistence: ExpoOTAPersistence,
-        private val config: ExpoOTAConfig,
         private val api: OtaApi,
+        private val manifestValidator: ManifestResponseValidator,
+        private val manifestComparator: ManifestComparator,
         private val id: String,
+        private val channelIdentifier: String,
         private val embeddedManifestAndBundle: EmbeddedManifestAndBundle,
-        private val bundleLoader: BundleLoader,
         private val fileOperator: FileOperator) {
 
     companion object {
-        val updatersMap = HashMap<String, OtaUpdater>()
+        private val updatersMap = HashMap<String, OtaUpdater>()
 
         private fun bundleClient(config: ExpoOTAConfig): OkHttpClient {
             return config.bundleHttpClient ?: longTimeoutHttpClient()
@@ -30,14 +30,17 @@ class OtaUpdater constructor(
         @JvmStatic
         fun createUpdater(context: Context, persistence: ExpoOTAPersistence, config: ExpoOTAConfig, id: String): OtaUpdater {
             if (!updatersMap.containsKey(id)) {
-                updatersMap.put(id, OtaUpdater(
+                val updater = OtaUpdater(
                         persistence,
-                        config,
-                        ExpoOtaApi(config.manifestHttpClient, bundleClient(config)),
+                        ExpoOtaApi(config.manifestHttpClient, config.manifestUrl, config.manifestHeaders, bundleClient(config)),
+                        config.manifestResponseValidator,
+                        config.manifestComparator,
                         id,
+                        config.channelIdentifier,
                         EmbeddedManifestAndBundle(context),
-                        BundleLoader(bundleClient(config)),
-                        FileOperator(context.filesDir)))
+                        FileOperator(context.filesDir))
+                updater.initialize()
+                updatersMap[id] = updater
             }
             return updatersMap[id]!!
         }
@@ -46,19 +49,19 @@ class OtaUpdater constructor(
 
     var updateEvents: UpdatesEventEmitter? = null
 
-    init {
-        checkAssetsBundleAndManifest()
+    fun initialize() {
         if (persistence.enqueuedReorderAtNextBoot) {
             markDownloadedCurrentAndCurrentOutdated()
             removeOutdatedBundle()
             persistence.enqueuedReorderAtNextBoot = false
         }
+        checkAssetsBundleAndManifest()
     }
 
     fun checkAndDownloadUpdate(success: (manifest: JSONObject, path: String) -> Unit,
                                updateUnavailable: (manifest: JSONObject) -> Unit,
                                error: (Exception?) -> Unit) {
-        downloadManifest({ manifest ->
+        downloadAndVerifyManifest({ manifest ->
             if (shouldReplaceBundle(persistence.newestManifest, manifest)) {
                 updateEvents?.emitDownloadStarted()
                 downloadBundle(manifest, {
@@ -76,38 +79,17 @@ class OtaUpdater constructor(
     }
 
     private fun shouldReplaceBundle(currentManifest: JSONObject, manifestToReplace: JSONObject) =
-            config.manifestComparator.shouldReplaceBundle(currentManifest, manifestToReplace)
+            manifestComparator.shouldReplaceBundle(currentManifest, manifestToReplace)
 
+    fun downloadAndVerifyManifest(success: (JSONObject) -> Unit, error: (Exception?) -> Unit) {
+        api.manifest({ response ->
+            verifyManifest(response, success, error)
+        }, error)
 
-    private fun createManifestRequest(config: ExpoOTAConfig): Request {
-        val requestBuilder = Request.Builder()
-        requestBuilder.url(config.manifestUrl)
-        config.manifestHeaders.forEach { requestBuilder.addHeader(it.key, it.value) }
-        return requestBuilder.build()
     }
 
-    fun downloadManifest(success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
-        config.manifestHttpClient.newCall(createManifestRequest(config)).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                error(IllegalStateException("Manifest fetching failed: ", e))
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    if (response.body() != null) {
-                        verifyManifest(response, success, error)
-                    } else {
-                        error(IllegalStateException("Response body is null: ", response.body()))
-                    }
-                } else {
-                    error(IllegalStateException("Response not successful. Code: " + response.code() + ", body: " + response.body()?.toString()))
-                }
-            }
-        })
-    }
-
-    fun verifyManifest(response: Response, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
-        config.manifestResponseValidator.validate(response, {
+    private fun verifyManifest(response: JSONObject, success: (JSONObject) -> Unit, error: (Exception) -> Unit) {
+        manifestValidator.validate(response, {
             success(JSONObject(it))
         }, error)
     }
@@ -182,9 +164,8 @@ class OtaUpdater constructor(
 
     private fun downloadBundle(manifest: JSONObject, success: (String) -> Unit, error: (Exception?) -> Unit) {
         val bundleUrl = manifest.optString(KEY_MANIFEST_BUNDLE_URL)
-        val params = BundleLoader.BundleLoadParams(bundleUrl, bundleDir(), bundleFilename(manifest))
-        bundleLoader.loadJsBundle(params, { _, stream ->
-            fileOperator.saveResponseToFile(params.directory, params.fileName)(stream, success, error)
+        api.bundle(bundleUrl, {
+            fileOperator.saveResponseToFile(bundleDir(), bundleFilename(manifest))(it, success, error)
         }, error)
     }
 
@@ -193,7 +174,7 @@ class OtaUpdater constructor(
     }
 
     private fun bundleFilePrefix(): String {
-        return "bundle_${config.channelIdentifier}"
+        return "bundle_${channelIdentifier}"
     }
 
     private fun bundleDir(): File {

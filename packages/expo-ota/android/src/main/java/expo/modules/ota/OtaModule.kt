@@ -25,7 +25,7 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
     @Suppress("unused")
     @ExpoMethod
     fun checkForUpdateAsync(promise: Promise) {
-        updater.downloadManifest(manifestHandler(promise)) { e -> promise.reject("E_FETCH_MANIFEST_FAILED", e) }
+        updater.downloadAndVerifyManifest(manifestHandler(promise)) { e -> promise.reject("E_FETCH_MANIFEST_FAILED", e) }
     }
 
     private fun manifestHandler(promise: Promise): (JSONObject) -> Unit = { manifest ->

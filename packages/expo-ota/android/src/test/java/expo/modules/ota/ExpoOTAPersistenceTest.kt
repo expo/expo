@@ -67,6 +67,25 @@ class ExpoOTAPersistenceTest: TestCase() {
         assertEquals(manifest.toString(), otaPersistence.newestManifest.toString())
     }
 
+    @Test
+    fun testMarkDownloadedAsCurrentAndCurrentAsOutdated() {
+        whenStorageEmpty()
+
+        every { storage.readString(KEY_BUNDLE_PATH, any()) } returns "bundle"
+        every { storage.readString(KEY_MANIFEST, any()) } returns jsonWithOneValue("value", "manifest").toString()
+        every { storage.readString(KEY_DOWNLOADED_MANIFEST, any()) } returns jsonWithOneValue("value", "downloadedManifest").toString()
+        every { storage.readString(KEY_DOWNLOADED_BUNDLE_PATH, any()) } returns "downloadedPath"
+
+        otaPersistence.markDownloadedCurrentAndCurrentOutdated()
+
+        verify { storage.writeString(KEY_BUNDLE_PATH, "downloadedPath") }
+        verify { storage.writeString(KEY_MANIFEST, jsonWithOneValue("value", "downloadedManifest").toString()) }
+        verify { storage.writeString(KEY_DOWNLOADED_BUNDLE_PATH, null) }
+        verify { storage.writeString(KEY_DOWNLOADED_MANIFEST, null) }
+        verify { storage.writeString(KEY_BUNDLE_OUTDATED, "bundle") }
+        verify(exactly = 0) { storage.writeBoolean(any(), any()) }
+    }
+
     private fun whenStorageEmpty() {
         storage = object: KeyValueStorage {
             override fun readString(key: String, defaultValue: String?): String? {
