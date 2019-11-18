@@ -8,15 +8,18 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.core.content.FileProvider;
+
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
 
@@ -279,8 +282,8 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     }
 
     final Intent cameraIntent = new Intent(mediaTypes.equals("Videos") ?
-                                            MediaStore.ACTION_VIDEO_CAPTURE :
-                                            MediaStore.ACTION_IMAGE_CAPTURE);
+        MediaStore.ACTION_VIDEO_CAPTURE :
+        MediaStore.ACTION_IMAGE_CAPTURE);
 
     if (cameraIntent.resolveActivity(getApplication(null).getPackageManager()) == null) {
       promise.reject(new IllegalStateException("Error resolving activity"));
@@ -294,7 +297,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
     }
     permissionsModule.askForPermissions(permissionsResponse -> {
       if (permissionsResponse.get(Manifest.permission.WRITE_EXTERNAL_STORAGE).getStatus() == PermissionsStatus.GRANTED
-          &&  permissionsResponse.get(Manifest.permission.CAMERA).getStatus() == PermissionsStatus.GRANTED) {
+          && permissionsResponse.get(Manifest.permission.CAMERA).getStatus() == PermissionsStatus.GRANTED) {
         launchCameraWithPermissionsGranted(promise, cameraIntent);
       } else {
         promise.reject(new SecurityException("User rejected permissions"));
@@ -488,40 +491,47 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
                   .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
                   .start(getExperienceActivity());
             } else {
-              final Bitmap.CompressFormat finalCompressFormat = compressFormat;
-              mImageLoader.loadImageForManipulationFromURL(uri.toString(), new ImageLoader.ResultListener() {
-                @Override
-                public void onSuccess(@NonNull Bitmap bitmap) {
-                  int width = bitmap.getWidth();
-                  int height = bitmap.getHeight();
-
+              // No modification requested
+              if (quality == null || quality == DEFAULT_QUALITY) {
+                try {
                   ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
-                  File file = new File(path);
 
-                  // We have an image and should compress its quality
-                  if (quality != null) {
+                  File file = new File(path);
+                  copyImage(uri, file, out);
+
+                  BitmapFactory.Options options = new BitmapFactory.Options();
+                  options.inJustDecodeBounds = true;
+                  BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+
+                  returnImageResult(exifData, file.toURI().toString(), options.outWidth, options.outHeight, out, promise);
+                } catch (IOException e) {
+                  promise.reject("E_COPY_ERR", "Could not copy image from " + uri + ": " + e.getMessage(), e);
+                }
+              } else {
+                final Bitmap.CompressFormat finalCompressFormat = compressFormat;
+                mImageLoader.loadImageForManipulationFromURL(uri.toString(), new ImageLoader.ResultListener() {
+                  @Override
+                  public void onSuccess(@NonNull Bitmap bitmap) {
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+
+                    ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
+                    File file = new File(path);
+
+                    // We have an image and should compress its quality
                     saveImage(bitmap, finalCompressFormat, file, out);
                     returnImageResult(exifData, file.toURI().toString(), width, height, out, promise);
-                    return;
                   }
 
-                  // No modification requested
-                  try {
-                    copyImage(uri, file, out);
-                    returnImageResult(exifData, file.toURI().toString(), width, height, out, promise);
-                  } catch (IOException e) {
-                    promise.reject("E_COPY_ERR", "Could not copy image from " + uri + ": " + e.getMessage(), e);
+                  @Override
+                  public void onFailure(@Nullable Throwable cause) {
+                    promise.reject("E_READ_ERR", "Could not open an image from " + uri);
+                    if (requestCode == REQUEST_LAUNCH_CAMERA) {
+                      revokeUriPermissionForCamera();
+                    }
                   }
-                }
-
-                @Override
-                public void onFailure(@Nullable Throwable cause) {
-                  promise.reject("E_READ_ERR", "Could not open an image from " + uri);
-                  if (requestCode == REQUEST_LAUNCH_CAMERA) {
-                    revokeUriPermissionForCamera();
-                  }
-                }
-              });
+                });
+              }
             }
           } else {
             Bundle response = new Bundle();
