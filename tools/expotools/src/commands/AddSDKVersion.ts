@@ -5,16 +5,14 @@ import { Command } from '@expo/commander';
 
 import * as AndroidVersioning from '../versioning/android';
 import * as IosVersioning from '../versioning/ios';
-import { getExpoRepositoryRootDir } from '../Directories';
 import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
   platform: Platform;
   sdkVersion?: string;
   filenames?: string;
+  reinstall?: boolean;
 };
-
-const EXPO_DIR = getExpoRepositoryRootDir();
 
 async function getNextOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
   const defaultSdkVersion = await getNextSDKVersionAsync(platform);
@@ -57,10 +55,12 @@ async function action(options: ActionOptions) {
   switch (options.platform) {
     case 'ios':
       if (options.filenames) {
-        return IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
+        await IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
       } else {
-        return IosVersioning.addVersionAsync(sdkVersion, EXPO_DIR);
+        await IosVersioning.addVersionAsync(sdkVersion);
+        await IosVersioning.reinstallPodsAsync(options.reinstall);
       }
+      return;
     case 'android':
       return AndroidVersioning.addVersionAsync(sdkVersion);
     default:
@@ -97,6 +97,10 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
     .option(
       '-f, --filenames [string]',
       'Glob pattern of file paths to version. Useful when you want to backport unversioned code into already versioned SDK. Optional. When provided, option `--sdkVersion` is required.'
+    )
+    .option(
+      '-r, --reinstall',
+      'Whether to force reinstalling pods after generating a new version. iOS only.'
     )
     .asyncAction(action);
 };
