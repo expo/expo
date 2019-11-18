@@ -1,18 +1,27 @@
 import { Platform } from 'react-native';
+
 import { NativeModulesProxy } from '@unimodules/core';
 import processTheme from './utils/processTheme';
 import checkArgs from './utils/checkArgs';
-import checkInit from './utils/checkInit';
 import * as types from './utils/types';
+import * as validators from './utils/validators';
 import errorCodes from './errorCodes';
 
 const { StripeModule } = NativeModulesProxy;
 
+function checkInit(instance: Stripe) {
+  if (!instance.stripeInitialized) {
+    throw new Error(
+      `You should call init first.\nRead more https://github.com/tipsi/tipsi-stripe#usage`
+    );
+  }
+}
+
 class Stripe {
   stripeInitialized = false;
 
-  setOptionsAsync = (options = {}) => {
-    checkArgs(types.setOptionsOptionsPropTypes, options, 'options', 'Stripe.setOptions');
+  setOptionsAsync = (options: types.StripeOptions) => {
+    checkArgs(validators.setOptionsOptionsPropTypes, options, 'options', 'Stripe.setOptions');
 
     this.stripeInitialized = true;
 
@@ -20,10 +29,10 @@ class Stripe {
   };
 
   // @deprecated use deviceSupportsNativePay
-  deviceSupportsAndroidPayAsync = () => StripeModule.deviceSupportsAndroidPay();
+  deviceSupportsAndroidPayAsync = (): Promise<boolean> => StripeModule.deviceSupportsAndroidPay();
 
   // @deprecated use deviceSupportsNativePay
-  deviceSupportsApplePayAsync = () => StripeModule.deviceSupportsApplePay();
+  deviceSupportsApplePayAsync = (): Promise<boolean> => StripeModule.deviceSupportsApplePay();
 
   deviceSupportsNativePayAsync = () =>
     Platform.select({
@@ -32,9 +41,11 @@ class Stripe {
     })();
 
   // @deprecated use canMakeNativePayPayments
-  canMakeApplePayPaymentsAsync = (options = {}) => {
+  canMakeApplePayPaymentsAsync = (
+    options: types.CanMakeApplePayPaymentsOptions = {}
+  ): Promise<boolean> => {
     checkArgs(
-      types.canMakeApplePayPaymentsOptionsPropTypes,
+      validators.canMakeApplePayPaymentsOptionsPropTypes,
       options,
       'options',
       'Stripe.canMakeApplePayPayments'
@@ -43,20 +54,22 @@ class Stripe {
   };
 
   // @deprecated use canMakeNativePayPayments
-  canMakeAndroidPayPaymentsAsync = () => StripeModule.canMakeAndroidPayPayments();
+  canMakeAndroidPayPaymentsAsync = (): Promise<boolean> => StripeModule.canMakeAndroidPayPayments();
 
   // iOS requires networks array while Android requires nothing
-  canMakeNativePayPaymentsAsync = (options = {}) =>
+  canMakeNativePayPaymentsAsync = (options: types.CanMakeApplePayPaymentsOptions = {}) =>
     Platform.select({
       ios: () => this.canMakeApplePayPaymentsAsync(options),
       android: () => this.canMakeAndroidPayPaymentsAsync(),
     })();
 
   // @deprecated use paymentRequestWithNativePay
-  paymentRequestWithAndroidPayAsync = (options = {}) => {
+  paymentRequestWithAndroidPayAsync = (
+    options: types.PaymentRequestWithAndroidPayOptions
+  ): Promise<types.AndroidToken> => {
     checkInit(this);
     checkArgs(
-      types.paymentRequestWithAndroidPayOptionsPropTypes,
+      validators.paymentRequestWithAndroidPayOptionsPropTypes,
       options,
       'options',
       'Stripe.paymentRequestWithAndroidPay'
@@ -65,16 +78,19 @@ class Stripe {
   };
 
   // @deprecated use paymentRequestWithNativePay
-  paymentRequestWithApplePayAsync = (items = [], options = {}) => {
+  paymentRequestWithApplePayAsync = (
+    items: types.PaymentRequestWithApplePayItem[],
+    options: types.PaymentRequestWithApplePayOptions
+  ): Promise<types.AppleToken> => {
     checkInit(this);
     checkArgs(
-      types.paymentRequestWithApplePayItemsPropTypes,
+      validators.paymentRequestWithApplePayItemsPropTypes,
       { items },
       'items',
       'Stripe.paymentRequestWithApplePay'
     );
     checkArgs(
-      types.paymentRequestWithApplePayOptionsPropTypes,
+      validators.paymentRequestWithApplePayOptionsPropTypes,
       options,
       'options',
       'Stripe.paymentRequestWithApplePay'
@@ -82,15 +98,25 @@ class Stripe {
     return StripeModule.paymentRequestWithApplePay(items, options);
   };
 
-  paymentRequestWithNativePayAsync(options = {}, items = []) {
-    return Platform.select({
-      ios: () => this.paymentRequestWithApplePayAsync(items, options),
-      android: () => this.paymentRequestWithAndroidPayAsync(options),
+  paymentRequestWithNativePayAsync(
+    options: types.PaymentRequestWithApplePayOptions | types.PaymentRequestWithAndroidPayOptions,
+    items: types.PaymentRequestWithApplePayItem[] = []
+  ) {
+    return Platform.select<() => Promise<types.AppleToken | types.AndroidToken>>({
+      ios: () =>
+        this.paymentRequestWithApplePayAsync(
+          items,
+          options as types.PaymentRequestWithApplePayOptions
+        ),
+      android: () =>
+        this.paymentRequestWithAndroidPayAsync(
+          options as types.PaymentRequestWithAndroidPayOptions
+        ),
     })();
   }
 
   // @deprecated use completeNativePayRequest
-  completeApplePayRequestAsync = () => {
+  completeApplePayRequestAsync = (): Promise<void> => {
     checkInit(this);
     return StripeModule.completeApplePayRequest();
   };
@@ -103,7 +129,7 @@ class Stripe {
     })();
 
   // @deprecated use cancelNativePayRequest
-  cancelApplePayRequestAsync = () => {
+  cancelApplePayRequestAsync = (): Promise<void> => {
     checkInit(this);
     return StripeModule.cancelApplePayRequestAsync();
   };
@@ -116,7 +142,7 @@ class Stripe {
     })();
 
   // @deprecated use openNativePaySetup
-  openApplePaySetupAsync = () => StripeModule.openApplePaySetup();
+  openApplePaySetupAsync = (): Promise<void> => StripeModule.openApplePaySetup();
 
   // no corresponding android impl exists
   openNativePaySetupAsync = () =>
@@ -125,10 +151,12 @@ class Stripe {
       android: () => Promise.resolve(),
     })();
 
-  paymentRequestWithCardFormAsync = (options = {}) => {
+  paymentRequestWithCardFormAsync = (
+    options: types.PaymentRequestWithCardFormOptions = {}
+  ): Promise<types.AndroidToken | types.AppleToken> => {
     checkInit(this);
     checkArgs(
-      types.paymentRequestWithCardFormOptionsPropTypes,
+      validators.paymentRequestWithCardFormOptionsPropTypes,
       options,
       'options',
       'Stripe.paymentRequestWithCardForm'
@@ -139,10 +167,12 @@ class Stripe {
     });
   };
 
-  createTokenWithCardAsync = (params = {}) => {
+  createTokenWithCardAsync = (
+    params: types.CreateTokenWithCardOptions
+  ): Promise<types.AndroidToken | types.AppleToken> => {
     checkInit(this);
     checkArgs(
-      types.createTokenWithCardParamsPropTypes,
+      validators.createTokenWithCardParamsPropTypes,
       params,
       'params',
       'Stripe.createTokenWithCard'
@@ -150,10 +180,12 @@ class Stripe {
     return StripeModule.createTokenWithCard(params);
   };
 
-  createTokenWithBankAccountAsync = (params = {}) => {
+  createTokenWithBankAccountAsync = (
+    params = {}
+  ): Promise<types.AndroidToken | types.AppleToken> => {
     checkInit(this);
     checkArgs(
-      types.createTokenWithBankAccountParamsPropTypes,
+      validators.createTokenWithBankAccountParamsPropTypes,
       params,
       'params',
       'Stripe.createTokenWithBankAccount'
@@ -161,10 +193,12 @@ class Stripe {
     return StripeModule.createTokenWithBankAccount(params);
   };
 
-  createSourceWithParamsAsync = (params = {}) => {
+  createSourceWithParamsAsync = (
+    params: types.CreateSourceWithParamsOptions
+  ): Promise<types.Source> => {
     checkInit(this);
     checkArgs(
-      types.createSourceWithParamsPropType,
+      validators.createSourceWithParamsPropType,
       params,
       'params',
       'Stripe.createSourceWithParams'
