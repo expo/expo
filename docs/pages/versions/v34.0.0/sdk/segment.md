@@ -1,5 +1,6 @@
 ---
 title: Segment
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-analytics-segment"
 ---
 
 Provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.

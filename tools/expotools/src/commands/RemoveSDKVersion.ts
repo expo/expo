@@ -5,7 +5,6 @@ import { Command } from '@expo/commander';
 
 import * as IosVersioning from '../versioning/ios';
 import * as AndroidVersioning from '../versioning/android';
-import { getExpoRepositoryRootDir } from '../Directories';
 import { Platform, getSDKVersionsAsync, getOldestSDKVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
@@ -14,7 +13,6 @@ type ActionOptions = {
 };
 
 const SUPPORTED_PLATFORMS: Platform[] = ['ios', 'android'];
-const EXPO_DIR = getExpoRepositoryRootDir();
 
 async function getOldestOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
   const sdkVersions = await getSDKVersionsAsync(platform);
@@ -74,7 +72,7 @@ async function action(options: ActionOptions) {
 
   switch (platform) {
     case 'ios':
-      return IosVersioning.removeVersionAsync(sdkVersion, EXPO_DIR);
+      return IosVersioning.removeVersionAsync(sdkVersion);
     case 'android':
       return AndroidVersioning.removeVersionAsync(sdkVersion);
     default:

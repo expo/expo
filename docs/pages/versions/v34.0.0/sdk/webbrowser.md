@@ -1,5 +1,6 @@
 ---
 title: WebBrowser
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-web-browser"
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';

@@ -1,5 +1,6 @@
 ---
 title: Constants
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-constants"
 ---
 
 System information that remains constant throughout the lifetime of your app.

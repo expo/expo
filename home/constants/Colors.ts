@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { ThemeColors } from 'react-navigation';
 const tintColor = '#4e9bde';
 const darkTintColor = '#1a74b3';
@@ -18,7 +19,7 @@ export default {
     cardTitle: '#242c39',
 
     tabIconDefault: '#bdbfc3',
-    tabIconSelected: tintColor,
+    tabIconSelected: Platform.OS === 'android' ? '#000' : tintColor,
     tabBar: '#fff',
     noticeText: '#fff',
     greyBackground: '#f8f8f9',
@@ -44,7 +45,7 @@ export default {
 
     tabBar: '#000',
     tabIconDefault: '#bdbfc3',
-    tabIconSelected: tintColor,
+    tabIconSelected: Platform.OS === 'android' ? '#fff' : tintColor,
     noticeText: '#fff',
     greyBackground: '#f8f8f9',
     greyText: '#a7aab0',

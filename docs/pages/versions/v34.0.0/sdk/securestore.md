@@ -1,5 +1,6 @@
 ---
 title: SecureStore
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-secure-store"
 ---
 
 Provides a way to encrypt and securely store key–value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.

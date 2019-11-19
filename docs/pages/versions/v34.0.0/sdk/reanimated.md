@@ -1,5 +1,6 @@
 ---
 title: Reanimated
+sourceCodeUrl: "https://github.com/kmagiera/react-native-reanimated"
 ---
 
 This API simplifies the process of creating smooth, powerful, and maintainable animations. From the project's README:

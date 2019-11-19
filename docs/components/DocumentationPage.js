@@ -2,7 +2,6 @@ import Router from 'next/router';
 import { css } from 'react-emotion';
 
 import * as React from 'react';
-import Banner from './Banner';
 import * as Utilities from '~/common/utilities';
 import * as Constants from '~/common/constants';
 import * as WindowUtils from '~/common/window';
@@ -17,6 +16,7 @@ import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScr
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
+import Banner from './Banner';
 
 const STYLES_DOCUMENT = css`
   padding: 24px 24px 24px 32px;
@@ -152,7 +152,7 @@ export default class DocumentationPage extends React.Component {
             <Banner />
             <H1>{this.props.title}</H1>
             <DocumentationPageContext.Provider value={{version: this._version}}>
-              {this.props.children}
+            {this.props.children}
             </DocumentationPageContext.Provider>
             <DocumentationFooter title={this.props.title} asPath={this.props.asPath} sourceCodeUrl={this.props.sourceCodeUrl} />
           </div>

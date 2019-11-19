@@ -1,5 +1,6 @@
 ---
 title: FaceDetector
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-face-detector"
 ---
 
 `FaceDetector` lets you use the power of [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.

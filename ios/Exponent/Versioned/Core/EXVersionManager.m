@@ -12,7 +12,6 @@
 #import "EXUnversioned.h"
 #import "EXScopedFileSystemModule.h"
 #import "EXTest.h"
-#import "EXKernel.h"
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
@@ -108,7 +107,8 @@ void EXRegisterScopedModule(Class moduleClass, ...)
   // Keep in mind that it is possible this will return a EXDisabledRedBox
   RCTRedBox *redBox = [self _moduleInstanceForBridge:bridge named:@"RedBox"];
   [redBox setOverrideReloadAction:^{
-    [[EXKernel sharedInstance] reloadVisibleApp];
+      [[NSNotificationCenter defaultCenter]
+     postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor

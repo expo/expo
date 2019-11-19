@@ -394,7 +394,7 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
     resolve(calendarEvent.calendarItemIdentifier);
   } else {
     reject(@"E_EVENT_NOT_SAVED",
-         [NSString stringWithFormat:@"Event with id %@ was not saved", calendarEvent.calendarItemIdentifier],
+         [NSString stringWithFormat:@"Event with id %@ was not saved. %@", calendarEvent.calendarItemIdentifier, error.description],
          error);
   }
 }

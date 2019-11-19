@@ -62,6 +62,9 @@ export async function enableNetworkProviderAsync() {
 export async function getCurrentPositionAsync(options = {}) {
     return ExpoLocation.getCurrentPositionAsync(options);
 }
+export async function getLastKnownPositionAsync() {
+    return ExpoLocation.getLastKnownPositionAsync();
+}
 // Start Compass Module
 // To simplify, we will call watchHeadingAsync and wait for one update To ensure accuracy, we wait
 // for a couple of watch updates if the data has low accuracy
