@@ -57,15 +57,12 @@
           </service> -->
 
          <!-- choose if you want to use expo servers START -->
-          <meta-data android:name="appId" android:value="@szymon20000/wefwefjwhefwhefwefwefwef" /> <!-- only with expo engine -->
-          <meta-data android:name="pushNotificationEngine" android:value="expo" /> <!-- expo|bare-->
+          <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@szymon20000/wefwefjwhefwhefwefwefwef" /> <!-- only with expo engine -->
          <!-- choose if you want to use expo servers END -->
-
         <!-- turn on push notifications END -->
 
-
         <!-- tell us which activity should be launched when notification is tapped START -->
-          <meta-data android:name="notificationReceiver" android:value="com.example.MainActivity" />
+          <!-- <meta-data android:name="expo.modules.notifications.configuration.ACTIVITY" android:value="com.example.MainActivity" />  (optional) -->
         <!-- tell us which activity should be launched when notification is tapped END -->
 
       <!-- expo-notifications END -->
