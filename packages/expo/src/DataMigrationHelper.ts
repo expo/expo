@@ -74,7 +74,7 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict?: Con
     return;
   }
 
-  if (resolveConflict == null) {
+  if (!resolveConflict) {
     await FileSystem.copyAsync({
       from: <string>oldFilesDirectory,
       to: <string>newFilesDirectory,

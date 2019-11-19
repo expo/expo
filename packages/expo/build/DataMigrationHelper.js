@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
-export const LOCK_FILE_NAME = "migrationLock64537438658125";
+export const LOCK_FILE_NAME = 'migrationLock64537438658125';
 export function getLegacyDocumentDirectoryAndroid() {
     if (Platform.OS !== 'android' || FileSystem.documentDirectory == null) {
         return null;
@@ -42,11 +42,11 @@ async function doesOldFilesDirectoryContainLock(path) {
     return children.indexOf(LOCK_FILE_NAME) > -1;
 }
 async function addLockToOldFilesDirectory(path) {
-    await FileSystem.writeAsStringAsync(path + LOCK_FILE_NAME, "lock");
+    await FileSystem.writeAsStringAsync(path + LOCK_FILE_NAME, 'lock');
 }
 export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict) {
     const { appOwnership } = Constants;
-    if (Platform.OS !== 'android' || appOwnership !== "standalone") {
+    if (Platform.OS !== 'android' || appOwnership !== 'standalone') {
         return;
     }
     const oldFilesDirectory = getLegacyDocumentDirectoryAndroid();
@@ -55,11 +55,11 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict) {
         return;
     }
     const oldFilesDirectoryInfo = await FileSystem.getInfoAsync(oldFilesDirectory);
-    const doesOldFilesDirectoryExist = oldFilesDirectoryInfo["exists"];
+    const doesOldFilesDirectoryExist = oldFilesDirectoryInfo['exists'];
     if (!doesOldFilesDirectoryExist || await doesOldFilesDirectoryContainLock(oldFilesDirectory)) {
         return;
     }
-    if (resolveConflict == null) {
+    if (!resolveConflict) {
         await FileSystem.copyAsync({
             from: oldFilesDirectory,
             to: newFilesDirectory,
@@ -67,7 +67,7 @@ export async function migrateFilesFromLegacyDirectoryAsync(resolveConflict) {
         await FileSystem.deleteAsync(oldFilesDirectory);
     }
     else {
-        await treeSearch("", oldFilesDirectory, newFilesDirectory, resolveConflict);
+        await treeSearch('', oldFilesDirectory, newFilesDirectory, resolveConflict);
         await addLockToOldFilesDirectory(oldFilesDirectory);
     }
 }
