@@ -41,6 +41,10 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+     <!-- <intent-filter>
+          <action android:name="expo.modules.notifications.ACTION_RECEIVE_NOTIFICATION" />
+          <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter> -->
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
 
@@ -60,10 +64,6 @@
           <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@szymon20000/wefwefjwhefwhefwefwefwef" /> <!-- only with expo engine -->
          <!-- choose if you want to use expo servers END -->
         <!-- turn on push notifications END -->
-
-        <!-- tell us which activity should be launched when notification is tapped START -->
-          <!-- <meta-data android:name="expo.modules.notifications.configuration.ACTIVITY" android:value="com.example.MainActivity" />  (optional) -->
-        <!-- tell us which activity should be launched when notification is tapped END -->
 
       <!-- expo-notifications END -->
     </application>
