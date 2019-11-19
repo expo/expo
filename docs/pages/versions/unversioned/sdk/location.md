@@ -48,9 +48,19 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
+### `Location.getLastKnownPositionAsync()`
+
+Get the last known position of the device.
+
+#### Returns
+
+Returns a promise resolving to an object representing [Location](#type-location) type.
+
 ### `Location.getCurrentPositionAsync(options)`
 
 Get the current position of the device.
+
+> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasync) if you expect to get a quick response and high accuracy is not required.
 
 #### Arguments
 
