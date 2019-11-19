@@ -34,6 +34,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added `canAskAgain` and `granted` fields to `PermissionsResponse`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 - Added support for `react-native-appearance` on Android and Web. ([#6162](https://github.com/expo/expo/pull/6162) by [@bbarthec](https://github.com/bbarthec))
 - Added `Location.getLastKnownPositionAsync` to get the last known position of the device. ([#6246](https://github.com/expo/expo/pull/6246) by [@lukmccall](https://github.com/lukmccall))
+- Added support for complex recurrence rules for events and reminders on iOS. ([#6300](https://github.com/expo/expo/pull/6300) by [@tasn](https://github.com/tasn))
 
 ### 🐛 Bug fixes
 
