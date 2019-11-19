@@ -1,6 +1,7 @@
 import FontObserver from 'fontfaceobserver';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { FontResource } from './Font.types';
+import { FontDisplay, FontResource } from './Font.types';
+import { CodedError } from '@unimodules/core';
 
 export default {
   get name(): string {
@@ -14,7 +15,10 @@ export default {
 
     const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
     if (!canInjectStyle) {
-      throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
+      throw new CodedError(
+        'ERR_WEB_ENVIRONMENT',
+        `The browser's \`document.head\` element doesn't support injecting fonts.`
+      );
     }
 
     const style = _createWebStyle(fontFamilyName, resource);
@@ -44,6 +48,7 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
   const fontStyle = `@font-face {
     font-family: ${fontFamily};
     src: url(${resource.uri});
+    font-display: ${resource.display || FontDisplay.AUTO};
   }`;
 
   const styleElement = getStyleElement();
