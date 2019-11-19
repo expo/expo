@@ -48,6 +48,16 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /\b(MAX_DELTA_TIME)\b/g,
         with: `${versionName}$1`,
       },
+      {
+        paths: 'ModuleRegistry.cpp',
+        replace: /(std::string normalizeName\(std::string name\) \{)/,
+        with: `$1\n  if (name.compare(0, ${versionName.length}, "${versionName}") == 0) {\n    name = name.substr(${versionName.length});\n  }\n`,
+      },
+      {
+        paths: 'ModuleRegistry.cpp',
+        replace: /(\(name\.compare\(\d+, \d+, ")([^"]+)(RCT"\))/,
+        with: '$1$3',
+      },
 
       // Universal modules
       {
