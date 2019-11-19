@@ -3,6 +3,8 @@ title: ImagePicker
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-image-picker"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
 ## Installation
