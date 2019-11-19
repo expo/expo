@@ -9,19 +9,14 @@ import java.util.HashMap;
 
 public class Configuration {
 
-    public static String APP_ID_KEY = "appId";
-    public static String NOTIFICATION_ACTIVITY_NAME_KEY = "notificationReceiver";
-    public static String PUSH_ENGINE_KEY = "pushNotificationEngine";
+    private static String APP_ID_KEY = "expo.modules.notifications.configuration.APP_ID";
+    private static String NOTIFICATION_ACTIVITY_NAME_KEY = "expo.modules.notifications.configuration.ACTIVITY";
+    private static String PUSH_ENGINE_KEY = "expo.modules.notifications.configuration.PUSH_ENGINE";
+    public static String DEFAULT_APP_ID = "defaultId";
+    public static String BARE_ENGINE = "bare";
+    public static String EXPO_ENGINE = "expo";
 
     private static HashMap<String, String> configuration = new HashMap<>();
-
-    private static HashMap<String, String> defaultValues = new HashMap<>();
-
-    static {
-        defaultValues.put(APP_ID_KEY, "defaultId");
-        defaultValues.put(NOTIFICATION_ACTIVITY_NAME_KEY, null);
-        defaultValues.put(PUSH_ENGINE_KEY, "bare");
-    }
 
     private static String getValueFor(String name, Context context) {
         if (configuration.containsKey(name)) {
@@ -37,11 +32,7 @@ public class Configuration {
             e.printStackTrace();
         }
 
-        if (value == null) {
-            configuration.put(name, defaultValues.get(name));
-        } else {
-            configuration.put(name, value);
-        }
+        configuration.put(name, value);
         return configuration.get(name);
     }
 
@@ -50,7 +41,16 @@ public class Configuration {
     }
 
     public static String getPushEngine(Context context) {
-        return getValueFor(PUSH_ENGINE_KEY, context);
+        String pushEngine = getValueFor(PUSH_ENGINE_KEY, context);
+        if (pushEngine != null) {
+            return pushEngine;
+        }
+
+        String appId = getAppId(context);
+        if (appId.equals(DEFAULT_APP_ID)) {
+            return BARE_ENGINE;
+        }
+        return EXPO_ENGINE;
     }
 
     public static String getNotificationActivityName(Context context) {
