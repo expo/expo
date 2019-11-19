@@ -118,12 +118,12 @@ export type RecurrenceRule = {
   endDate?: string;
   occurrence?: number;
 
-  daysOfTheWeek?: [{ dayOfTheWeek: number; weekNumber: number }];
-  daysOfTheMonth?: [number];
-  monthsOfTheYear?: [number];
-  weeksOfTheYear?: [number];
-  daysOfTheYear?: [number];
-  setPositions?: [number];
+  daysOfTheWeek?: Array<{ dayOfTheWeek: number; weekNumber?: number }>;
+  daysOfTheMonth?: number[];
+  monthsOfTheYear?: number[];
+  weeksOfTheYear?: number[];
+  daysOfTheYear?: number[];
+  setPositions?: number[];
 };
 
 export { PermissionResponse, PermissionStatus };
