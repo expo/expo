@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import expo.modules.notifications.configuration.Configuration;
 
 public class NotificationBroadcastReceiver extends BroadcastReceiver {
+  private static final String ACTION_RECEIVE_NOTIFICATION = "expo.modules.notifications.ACTION_RECEIVE_NOTIFICATION";
+
   @Override
   public void onReceive(Context context, Intent intent) {
     showActivity(context, intent);
@@ -16,23 +18,19 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
   }
 
   private void showActivity(Context context, Intent intent) {
-    String activityName = Configuration.getNotificationActivityName(context);
-    Intent startActivityIntent = null;
-
-    if (activityName != null) {
-      Class activityClass = null;
-      try {
-        activityClass = Class.forName(activityName);
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      }
-      startActivityIntent = new Intent(context, activityClass);
-      startActivityIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    } else {
+    try {
+      sendCustomAction(context);
+    } catch (android.content.ActivityNotFoundException e) {
       PackageManager packageManager = context.getPackageManager();
-      startActivityIntent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+      Intent startActivityIntent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+      startActivityIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      context.startActivity(startActivityIntent);
     }
+  }
 
-    context.startActivity(startActivityIntent);
+  private void sendCustomAction(Context context) {
+    Intent customActionIntent = new Intent(ACTION_RECEIVE_NOTIFICATION);
+    customActionIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    context.startActivity(customActionIntent);
   }
 }

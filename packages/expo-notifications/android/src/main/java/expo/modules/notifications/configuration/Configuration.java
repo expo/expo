@@ -9,12 +9,11 @@ import java.util.HashMap;
 
 public class Configuration {
 
-    private static String APP_ID_KEY = "expo.modules.notifications.configuration.APP_ID";
-    private static String NOTIFICATION_ACTIVITY_NAME_KEY = "expo.modules.notifications.configuration.ACTIVITY";
-    private static String PUSH_ENGINE_KEY = "expo.modules.notifications.configuration.PUSH_ENGINE";
-    public static String DEFAULT_APP_ID = "defaultId";
-    public static String BARE_ENGINE = "bare";
-    public static String EXPO_ENGINE = "expo";
+    private static final String APP_ID_KEY = "expo.modules.notifications.configuration.APP_ID";
+    private static final String PUSH_ENGINE_KEY = "expo.modules.notifications.configuration.PUSH_ENGINE";
+    public static final String DEFAULT_APP_ID = "defaultId";
+    public static final String BARE_ENGINE = "bare";
+    public static final String EXPO_ENGINE = "expo";
 
     private static HashMap<String, String> configuration = new HashMap<>();
 
@@ -51,10 +50,6 @@ public class Configuration {
             return BARE_ENGINE;
         }
         return EXPO_ENGINE;
-    }
-
-    public static String getNotificationActivityName(Context context) {
-        return getValueFor(NOTIFICATION_ACTIVITY_NAME_KEY, context);
     }
 
 }
