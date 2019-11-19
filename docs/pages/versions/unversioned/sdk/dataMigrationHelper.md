@@ -2,8 +2,14 @@
 title: DataMigrationHelper
 ---
 
-**`DataMigrationHelper`** helps you to solve a problem with missing files after SDK upgrade on Android.
-The problem only occurs when the ejected/standalone application is upgraded from SDK 32 or below to SDK 33 or above.
+**`DataMigrationHelper`** allows manual control over migrating `FileSystem` files from the legacy directory on Android.
+In SDK 33, the location of the `FileSystem.documentDirectory` was changed for standalone apps from a scoped to an unscoped directory. The Expo runtime attempts to migrate files to the new location automatically; however, we provide this manual helper class in case you need more fine-grained control.
+
+## How to use
+
+- **If you are upgrading your standalone app from SDK 32 or below** and use the `FileSystem` API, we recommend running `DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync()` as early as possible in your app's lifecycle to properly migrate old files. After this, you should be good to go.
+- **If you have already upgraded your standalone app from SDK 32 or below to SDKs 33-35 and are upgrading again**, and use the `FileSystem` API, we recommend calling `DataMigrationHelper.migrateFilesFromLegacyDirectoryAsync(DataMigrationHelper.noopResolve)` as early as possible in your app's lifecycle. This will migrate files from the legacy directory only if files with the same name do not already exist in the new location -- allowing you migrate old users without fear of overwriting newly created data for newer users.
+- **If your app never used the `FileSystem` API in SDK 32 or below**, there is no need for you to use this module.
 
 ## API
 
@@ -53,11 +59,11 @@ export default class App extends React.Component {
 ```
 
 This method moves all files from the legacy directory to the current document directory. 
-`conflictResolver` argument is optional and if it is possible to leave it empty we encourage to do so because the method runs faster without it.
+The `conflictResolver` argument is optional, and if it is possible to leave it empty, we encourage doing so because the method runs faster without it.
 
- If you don't pass any conflict resolver and current document directory already contains a file with the same relative path as a file in the legacy directory then it will be overwritten.
+If no `conflictResolver` is provided, and there is a naming conflict between any file in the current and legacy directories, the file in the current directory will be overwritten.
 
- There is no need to check if the method was already called (We check that).
+This method is idempotent; there is no need to check whether it has already been called.
 
 > no-op on all platforms except Android
 
