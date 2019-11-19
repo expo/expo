@@ -10,6 +10,9 @@ import expo.modules.notifications.push.TokenDispatcher.engines.BareEngine;
 import expo.modules.notifications.push.TokenDispatcher.engines.Engine;
 import expo.modules.notifications.push.TokenDispatcher.engines.ExpoEngine;
 
+import static expo.modules.notifications.configuration.Configuration.BARE_ENGINE;
+import static expo.modules.notifications.configuration.Configuration.EXPO_ENGINE;
+
 public class PushNotificationEngineProvider {
 
     private static Map<String, Engine> engines;
@@ -22,8 +25,8 @@ public class PushNotificationEngineProvider {
     private static void init() {
         if (engines == null) {
             engines = new HashMap<>();
-            engines.put("bare", new BareEngine());
-            engines.put("expo", new ExpoEngine());
+            engines.put(BARE_ENGINE, new BareEngine());
+            engines.put(EXPO_ENGINE, new ExpoEngine());
         }
     }
 

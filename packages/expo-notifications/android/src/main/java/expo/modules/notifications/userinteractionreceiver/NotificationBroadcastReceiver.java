@@ -3,6 +3,7 @@ package expo.modules.notifications.userinteractionreceiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 
 import expo.modules.notifications.configuration.Configuration;
 
@@ -16,15 +17,22 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
   private void showActivity(Context context, Intent intent) {
     String activityName = Configuration.getNotificationActivityName(context);
-    Class activityClass = null;
-    try {
-      activityClass = Class.forName(activityName);
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+    Intent startActivityIntent = null;
+
+    if (activityName != null) {
+      Class activityClass = null;
+      try {
+        activityClass = Class.forName(activityName);
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      }
+      startActivityIntent = new Intent(context, activityClass);
+      startActivityIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    } else {
+      PackageManager packageManager = context.getPackageManager();
+      startActivityIntent = packageManager.getLaunchIntentForPackage(context.getPackageName());
     }
 
-    Intent startActivityIntent = new Intent(context, activityClass);
-    startActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(startActivityIntent);
   }
 }
