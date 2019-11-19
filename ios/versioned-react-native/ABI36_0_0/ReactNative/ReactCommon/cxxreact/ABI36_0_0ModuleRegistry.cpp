@@ -24,7 +24,7 @@ std::string normalizeName(std::string name) {
   // change iOS to emit normalized names, drop the "RK..." from
   // names hardcoded in Android, and then delete this and the
   // similar hacks in js.
-  if (name.compare(0, 3, "ABI36_0_0RCT") == 0) {
+  if (name.compare(0, 3, "RCT") == 0) {
     return name.substr(3);
   } else if (name.compare(0, 2, "RK") == 0) {
     return name.substr(2);
