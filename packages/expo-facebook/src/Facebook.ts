@@ -2,11 +2,17 @@ import { UnavailabilityError } from '@unimodules/core';
 
 import ExponentFacebook from './ExponentFacebook';
 
-export type FacebookLoginResult = {
-  type: string;
-  token?: string;
-  expires?: number;
-};
+export type FacebookLoginResult =
+  | {
+      type: 'cancel';
+    }
+  | {
+      type: 'success';
+      token: string;
+      expires: number;
+      permissions: string[];
+      declinedPermissions: string[];
+    };
 
 export type FacebookOptions = {
   permissions?: string[];
