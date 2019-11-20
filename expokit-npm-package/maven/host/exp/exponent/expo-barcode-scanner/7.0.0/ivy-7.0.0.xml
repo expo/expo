@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-barcode-scanner" revision="7.0.0" status="integration" publication="20191119134531"/>
+  <info organisation="host.exp.exponent" module="expo-barcode-scanner" revision="7.0.0" status="integration" publication="20191120124350"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -111,25 +111,24 @@
     <dependency org="com.android.tools.build" name="aapt2" rev="3.5.1-5435860" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="com.google.android.gms" name="play-services-vision" rev="15.0.2" conf="api-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-vision" rev="18.0.0" conf="api-&gt;default"/>
     <dependency org="com.google.zxing" name="core" rev="3.3.3" conf="api-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-core" rev="5.0.0-rc.0" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-barcode-scanner-interface" rev="4.0.0" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-image-loader-interface" rev="5.0.0-rc.0" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="4.0.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.5.1" conf="lintClassPath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-vision" rev="15.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-base" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-basement" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.legacy" name="legacy-support-v4" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.core" name="core" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.annotation" name="annotation" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-vision" rev="18.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-base" rev="17.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.collection" name="collection" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.annotation" name="annotation" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.core" name="core" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.lifecycle" name="lifecycle-runtime" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.lifecycle" name="lifecycle-common" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.arch.core" name="core-common" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.versionedparcelable" name="versionedparcelable" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.media" name="media" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.fragment" name="fragment" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-core-ui" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.legacy" name="legacy-support-core-utils" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.documentfile" name="documentfile" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.loader" name="loader" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -139,7 +138,6 @@
     <dependency org="androidx.lifecycle" name="lifecycle-viewmodel" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.localbroadcastmanager" name="localbroadcastmanager" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.print" name="print" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.legacy" name="legacy-support-core-ui" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.customview" name="customview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.viewpager" name="viewpager" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.coordinatorlayout" name="coordinatorlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -149,12 +147,12 @@
     <dependency org="androidx.swiperefreshlayout" name="swiperefreshlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.asynclayoutinflater" name="asynclayoutinflater" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.cursoradapter" name="cursoradapter" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.fragment" name="fragment" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-tasks" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-vision-common" rev="15.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-clearcut" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-phenotype" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-flags" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-basement" rev="17.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-tasks" rev="17.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-vision-common" rev="18.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-clearcut" rev="17.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-phenotype" rev="17.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android.gms" name="play-services-flags" rev="17.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="com.google.zxing" name="core" rev="3.3.3" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-jdk7" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
