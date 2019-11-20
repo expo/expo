@@ -1,6 +1,6 @@
 {
   "name": "EXFaceDetector",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "license": "MIT",
@@ -23,13 +23,19 @@
 
     ],
     "Firebase/Core": [
-
+      "6.7.0"
     ],
     "Firebase/MLVision": [
-
+      "6.7.0"
     ],
     "Firebase/MLVisionFaceModel": [
-
+      "6.7.0"
+    ],
+    "FirebaseMLVision": [
+      "0.17.0"
+    ],
+    "FirebaseMLCommon": [
+      "0.17.0"
     ]
   }
 }

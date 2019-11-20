@@ -7,68 +7,68 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04DE0400A43594DC1694D49F29D7F951 /* GPBDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = D9266476BDBFCC4D9387CF1DF7A8C4A8 /* GPBDescriptor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0542227DA56AD0E89918B350BFD6526A /* GPBWellKnownTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 130C9335CBDFDC44D2F73B8401346959 /* GPBWellKnownTypes.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		095DB2D0BEEEFB848420D2D23175A954 /* GPBUtilities_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0DADD7D431283555A09CA4E6E4392490 /* GPBUtilities_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		0B4C97586947D0A79807EB60356D837D /* Protobuf-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A36622F94175346D13CFD5CDCF4D54C /* Protobuf-dummy.m */; };
 		0DFA11EF06A4018F7AB1CBA0E47D5B3F /* SourceContext.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = B9016FEC40A6DA1087032596CF0B2F1B /* SourceContext.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0F53FF0CEC97320B78AAFA36D0B07511 /* GPBArray.m in Sources */ = {isa = PBXBuildFile; fileRef = FA0FA9B38EB6DD0F343952574A1A8B54 /* GPBArray.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1A3C05EA485431C9815B078EE5FA12C4 /* GPBUnknownFieldSet_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 8AC83ECCAB5F5C271C9B95DC3E624F86 /* GPBUnknownFieldSet_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1A5B61F99A7F9093F5C22A1961A0E0EE /* GPBCodedInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = ED859195D69288F6F9338F2789FF57CC /* GPBCodedInputStream.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1AE100668EF33CD522B7CBDD4D2BCED7 /* GPBExtensionRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4870459245C6B07547E1DA6F780A65 /* GPBExtensionRegistry.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1C758BD130C33BD5D3E0DB0DAA7EE339 /* Empty.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = E1BA1E2A06690157806CF933219DB4CF /* Empty.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		1D549348BA7FA7BBA198DA2D3BCAED5A /* Struct.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEB32AD76E08D2685FB47860B7A6B9A /* Struct.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1DEB7C93157C24DC99BD5DF2FEBAA339 /* GPBCodedInputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 029F8CE7219B5FE6F41A55F537CF04CF /* GPBCodedInputStream.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		28AF22A5D84CCFEE65ED6711AF6672CB /* Duration.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = AF13E587B2AEC4F5A1CC3E0BCC419DDB /* Duration.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		2C129D96FFABD9351E6764D440086E68 /* GPBRootObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D4DF2643C6F1529D869CEB961BB64F53 /* GPBRootObject.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		2E7020CF1A78C69A700C283BD93CCCC8 /* Wrappers.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = EF396BD8C597DE8BC7896BD12437423D /* Wrappers.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		31063F6992EF4A6C04C96652E7FB2BE3 /* Type.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 16614C050D96070077B6B3C4095F8F18 /* Type.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		31A2DFC89AF805742E28D2EE8F527CB3 /* GPBExtensionInternals.h in Headers */ = {isa = PBXBuildFile; fileRef = 19FDD5554FDE0BA8B536C031E72447C4 /* GPBExtensionInternals.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		38201B538748C7C2D0C9228BA149E766 /* Timestamp.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E67DDC0CC17621737B281723326CAB4 /* Timestamp.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		38D8AF65AFACAE565B408BC6FA492262 /* Timestamp.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 94C7264F5AE1B7C14ACBADF5C68EEBA9 /* Timestamp.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		3A7C8F93005543F727BC1E1ED2A9120C /* GPBDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 680CD24907AE12DAAD7CAD0D810D3CBB /* GPBDictionary.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		3D9B7FBDE430245BE0E74E81193E044F /* GPBExtensionInternals.m in Sources */ = {isa = PBXBuildFile; fileRef = 51F14791DD09681AF872DB6D25C796E6 /* GPBExtensionInternals.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		432F72B9D9058EC973B5C2F9441201BE /* Type.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 4641376388A4E7F0DE00556E5BAB914B /* Type.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		3ACEE06E081F20B0D584033B2A78743A /* GPBUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B82CE719603F85FE7C5FE6DA36618160 /* GPBUtilities.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		46704A51058758A476AA5FF7E385F561 /* Struct.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 92D0B3F98EC437945705D012D9CB3488 /* Struct.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		48F85BB8908B5BEE7E19118A5F9C19C6 /* Api.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = C99F2F7BFF7F298F0974ED111EBD7FEB /* Api.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		4A48152B441C666FC896C715AFA9A23B /* GPBUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B82CE719603F85FE7C5FE6DA36618160 /* GPBUtilities.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		565590299E95FA44BD356670584325CA /* GPBBootstrap.h in Headers */ = {isa = PBXBuildFile; fileRef = C68CD279850AEC06FBD784D6F92CCD40 /* GPBBootstrap.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		565BBF3A875E988E8E5E84E9BFA2E9EC /* GPBWireFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = 4D4283598A74F1CCFA336E53D572BBFF /* GPBWireFormat.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		58F6D8D915BAAF8C6A6380D8C1B08CC8 /* GPBCodedOutputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A7D9D3A26823A1566ECCAA359594898 /* GPBCodedOutputStream.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		61CE3F983E74EE7AC81073C51582D2F3 /* GPBRuntimeTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B1B17D6B7F3CBF28A2DE16936D768B4 /* GPBRuntimeTypes.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		67FBED8DDCAFD22BAD29CF281FE6749F /* FieldMask.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 11A9ED9F7599104BA34A2C881BBA9DC8 /* FieldMask.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6F2E432DD813F9EF54ACDD524F514F9C /* GPBCodedOutputStream_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B3520BBD58782645C1F0CAEC12DA24 /* GPBCodedOutputStream_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		717DADBE27E5D264668AFB428E9C18B7 /* Wrappers.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = EF396BD8C597DE8BC7896BD12437423D /* Wrappers.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		6FB5A54A20E2EA636134DB9B28FA19A2 /* Any.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 849322991D298855DA8B05B8D9A54A61 /* Any.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7217F033E04B5C64BE735A9A4418D189 /* Empty.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 36DA549148B6E71F6C3E284E914898D4 /* Empty.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		72E5FDA9669F1A4F9E4AAB7E70AE5FA4 /* GPBArray_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 64213F1426F1CE5F6D5AE2DA6E004B14 /* GPBArray_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7824A57DF515DB5F4570109A66DD5E09 /* GPBMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8846D4D8DA5406FA6346017A0113EDC6 /* GPBMessage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		799EE6A69C70D6247FD1C450EA4635EB /* SourceContext.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 222523F07B4171BEAFE574DF1C093DD7 /* SourceContext.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		7C3B3A1647D0CA68129BEF0873A94123 /* Duration.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = AF13E587B2AEC4F5A1CC3E0BCC419DDB /* Duration.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		7E75BFAB6CD0F2A1E10DDD111E93F9B0 /* GPBUnknownFieldSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 6828AE5210BB24A8A6682A56E667B873 /* GPBUnknownFieldSet.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		802DE149C4B8583C066E3F48F1FAF3F3 /* GPBArray.m in Sources */ = {isa = PBXBuildFile; fileRef = FA0FA9B38EB6DD0F343952574A1A8B54 /* GPBArray.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		83D99C78E93A4A9B89E0872738CBECCD /* GPBCodedInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = ED859195D69288F6F9338F2789FF57CC /* GPBCodedInputStream.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8594DE19411F5C880B08FB3AA9A0E082 /* GPBExtensionRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = EA4870459245C6B07547E1DA6F780A65 /* GPBExtensionRegistry.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		870CBDCC8F80D7BE3E28CCC60205DED7 /* Empty.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 36DA549148B6E71F6C3E284E914898D4 /* Empty.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		884589158EB2DD61D1574FAD90276463 /* Any.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 849322991D298855DA8B05B8D9A54A61 /* Any.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		898757462506C4BB9A1C757941C359B4 /* Timestamp.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E67DDC0CC17621737B281723326CAB4 /* Timestamp.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8CDE7C49E59B2809653B9B5049C432B2 /* GPBRootObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 551925DA4B844F1C0C48EF6B43F4110C /* GPBRootObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		9132C9D5B580EA08CE0107C959BFE35E /* FieldMask.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = B7613E2910C7C9FBB000BB43B6745440 /* FieldMask.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7D718D60E4CDEACB2182182BC65990A7 /* SourceContext.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 222523F07B4171BEAFE574DF1C093DD7 /* SourceContext.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7EB2F4D301397861C0BBA409DCFB8819 /* FieldMask.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = B7613E2910C7C9FBB000BB43B6745440 /* FieldMask.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8B0DE35FE7AF1AD8CB9B0B98E3C9B2AA /* GPBExtensionInternals.m in Sources */ = {isa = PBXBuildFile; fileRef = 51F14791DD09681AF872DB6D25C796E6 /* GPBExtensionInternals.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8B9455838819796671199AFCE022E521 /* GPBMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8846D4D8DA5406FA6346017A0113EDC6 /* GPBMessage.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8D0F6080FFA2A23A7FFBBD24AFDAFDD8 /* GPBUnknownField.m in Sources */ = {isa = PBXBuildFile; fileRef = 979F820D0D297D71916B80BC4AA824A1 /* GPBUnknownField.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9453283694EB77D994850747E6F67BB3 /* GPBDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 36DBB770AEFCD903D775371822A86D4F /* GPBDictionary.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		954556D0DF36D90A5909B5CF468C886B /* Type.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 4641376388A4E7F0DE00556E5BAB914B /* Type.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9600FEFAC575F0ED40D0F0C5E3F527FE /* GPBArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 830F5F51288A4ACF0BE877CB4D02C824 /* GPBArray.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		97007CE7D984286C53ADD116126936C7 /* GPBProtocolBuffers.h in Headers */ = {isa = PBXBuildFile; fileRef = A3EEDF39A8168A75ED947BACA4CF0255 /* GPBProtocolBuffers.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9C85802F0A93197BED15480D62CF70B3 /* GPBDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 94081F255AF66856FA558C05CB6D1B99 /* GPBDescriptor.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9D109542A565E3DAD728A43B48D25B23 /* GPBRootObject_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 89280A6F5B48AB06676D3D744974434D /* GPBRootObject_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9D59DD18187D04F1F74E0DB93D268447 /* GPBMessage_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = CA2BC517136EC5DBFA61AEFCBAC9EEAB /* GPBMessage_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9F86A32FE2F094AB733D5D333920B2F2 /* Any.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4BE44CAA34FA7BDADE54ECB722C24D /* Any.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A28898F5DEA3FA7673C5C08F30A92008 /* GPBUnknownFieldSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 6828AE5210BB24A8A6682A56E667B873 /* GPBUnknownFieldSet.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A7886908CBFF73564CF2045BC87CC15E /* Api.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = C99F2F7BFF7F298F0974ED111EBD7FEB /* Api.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AA8D506CB36A0B35DA5C27BD55AB57E9 /* GPBUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 3DB1649E0BFCE337555E346C1FFC7582 /* GPBUtilities.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		AC524B7541B955187559A62267DF3C6B /* GPBDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = D9266476BDBFCC4D9387CF1DF7A8C4A8 /* GPBDescriptor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		BC14464049FBB0FF741512A0A0A3BF5D /* GPBUnknownField.m in Sources */ = {isa = PBXBuildFile; fileRef = 979F820D0D297D71916B80BC4AA824A1 /* GPBUnknownField.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		C5C789322B866FDAE4E3D253307F580E /* Struct.pbobjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AEB32AD76E08D2685FB47860B7A6B9A /* Struct.pbobjc.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AEE7F01E25992E2C83996A9B05B7BB2C /* GPBWireFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 361A5752C447E73CF322C56D6C47804F /* GPBWireFormat.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		BB77E7751B7CA2FCA74EA3BD60003B90 /* GPBDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 680CD24907AE12DAAD7CAD0D810D3CBB /* GPBDictionary.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		CDCFD5D0EC647FD44278AD8B4C8BBC90 /* Api.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = D2FDC0F0137CC09C6A2A307DB163B0AB /* Api.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CDE90F46928A5CF690E178180CA394A6 /* GPBWellKnownTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 02B136D5BFDC9C42FD471989DC16E500 /* GPBWellKnownTypes.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D26C506CFD47E15F61F551D8012A5899 /* GPBDescriptor_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = FED5155AA63EC9614EF30573410EAA6A /* GPBDescriptor_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D32401F39119F529340212637D93D91E /* GPBUnknownFieldSet.h in Headers */ = {isa = PBXBuildFile; fileRef = E1339E8C3E89E58E0EF457A112C2F55E /* GPBUnknownFieldSet.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DBFDBBCE7695183CBC4FE511AEFAF554 /* GPBRootObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 551925DA4B844F1C0C48EF6B43F4110C /* GPBRootObject.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		DCA990820351402CA51A7720590B116D /* GPBUnknownField_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 90C299B232AD2269422A6D100C728B19 /* GPBUnknownField_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		DD88976EBEDEF589E3B3602D11A17EFC /* GPBWireFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 361A5752C447E73CF322C56D6C47804F /* GPBWireFormat.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		E3B39A1FA602538E746676A32AFAE259 /* GPBCodedInputStream_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = DD405A867F62E2CB0B45BFD5F3CE179B /* GPBCodedInputStream_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		E5DF137B9D48ABF4F433F7A69E1FAD09 /* GPBUnknownField.h in Headers */ = {isa = PBXBuildFile; fileRef = B71E07A3ABEC1CB5137F1D59E3FBCFEB /* GPBUnknownField.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E5DF796E53CEDB850ACE0FB161335249 /* GPBWellKnownTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 130C9335CBDFDC44D2F73B8401346959 /* GPBWellKnownTypes.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		E7C2AA948D1603A066422747584AF7C5 /* GPBProtocolBuffers_RuntimeSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = DB9F955E895FBAD072127AE7B71563DF /* GPBProtocolBuffers_RuntimeSupport.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		ECAD217394C7B30759C8C8479F06FF96 /* GPBCodedOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = B40D4BF0588DF6FB7D3FA9C1FA651929 /* GPBCodedOutputStream.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		F0D9914D6C7BA06C1CC6AB3844969EF2 /* GPBMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 82FB5EF54172CB83468F0DE0316C37FF /* GPBMessage.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F244D8D5F485FEBEE2B419CA8EDE064D /* GPBExtensionRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F8C3DB71AF1B3E6DEDFC1AD86025507 /* GPBExtensionRegistry.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F39721C0994784FE158DB4103D1857E7 /* Duration.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = 765EE92C51E949D47C6B8706E817EC48 /* Duration.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F4FDAFE5F04DBAB026FAD9DC81EBD1A2 /* GPBDictionary_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = D99B568A0D2D3D9ADB6ED720C5459735 /* GPBDictionary_PackagePrivate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F99E6E3BB61B5459A12F6AC64B2679DD /* GPBCodedOutputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = B40D4BF0588DF6FB7D3FA9C1FA651929 /* GPBCodedOutputStream.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FDCEAA22D4568BE3C0019385A572254C /* Wrappers.pbobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = A070D5B9ADF036EA674B61DFA7A420E5 /* Wrappers.pbobjc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -357,31 +357,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				884589158EB2DD61D1574FAD90276463 /* Any.pbobjc.m in Sources */,
-				48F85BB8908B5BEE7E19118A5F9C19C6 /* Api.pbobjc.m in Sources */,
-				7C3B3A1647D0CA68129BEF0873A94123 /* Duration.pbobjc.m in Sources */,
-				870CBDCC8F80D7BE3E28CCC60205DED7 /* Empty.pbobjc.m in Sources */,
-				9132C9D5B580EA08CE0107C959BFE35E /* FieldMask.pbobjc.m in Sources */,
-				802DE149C4B8583C066E3F48F1FAF3F3 /* GPBArray.m in Sources */,
-				83D99C78E93A4A9B89E0872738CBECCD /* GPBCodedInputStream.m in Sources */,
-				ECAD217394C7B30759C8C8479F06FF96 /* GPBCodedOutputStream.m in Sources */,
-				AC524B7541B955187559A62267DF3C6B /* GPBDescriptor.m in Sources */,
-				3A7C8F93005543F727BC1E1ED2A9120C /* GPBDictionary.m in Sources */,
-				3D9B7FBDE430245BE0E74E81193E044F /* GPBExtensionInternals.m in Sources */,
-				8594DE19411F5C880B08FB3AA9A0E082 /* GPBExtensionRegistry.m in Sources */,
-				7824A57DF515DB5F4570109A66DD5E09 /* GPBMessage.m in Sources */,
-				8CDE7C49E59B2809653B9B5049C432B2 /* GPBRootObject.m in Sources */,
-				BC14464049FBB0FF741512A0A0A3BF5D /* GPBUnknownField.m in Sources */,
-				7E75BFAB6CD0F2A1E10DDD111E93F9B0 /* GPBUnknownFieldSet.m in Sources */,
-				4A48152B441C666FC896C715AFA9A23B /* GPBUtilities.m in Sources */,
-				E5DF796E53CEDB850ACE0FB161335249 /* GPBWellKnownTypes.m in Sources */,
-				DD88976EBEDEF589E3B3602D11A17EFC /* GPBWireFormat.m in Sources */,
+				6FB5A54A20E2EA636134DB9B28FA19A2 /* Any.pbobjc.m in Sources */,
+				A7886908CBFF73564CF2045BC87CC15E /* Api.pbobjc.m in Sources */,
+				28AF22A5D84CCFEE65ED6711AF6672CB /* Duration.pbobjc.m in Sources */,
+				7217F033E04B5C64BE735A9A4418D189 /* Empty.pbobjc.m in Sources */,
+				7EB2F4D301397861C0BBA409DCFB8819 /* FieldMask.pbobjc.m in Sources */,
+				0F53FF0CEC97320B78AAFA36D0B07511 /* GPBArray.m in Sources */,
+				1A5B61F99A7F9093F5C22A1961A0E0EE /* GPBCodedInputStream.m in Sources */,
+				F99E6E3BB61B5459A12F6AC64B2679DD /* GPBCodedOutputStream.m in Sources */,
+				04DE0400A43594DC1694D49F29D7F951 /* GPBDescriptor.m in Sources */,
+				BB77E7751B7CA2FCA74EA3BD60003B90 /* GPBDictionary.m in Sources */,
+				8B0DE35FE7AF1AD8CB9B0B98E3C9B2AA /* GPBExtensionInternals.m in Sources */,
+				1AE100668EF33CD522B7CBDD4D2BCED7 /* GPBExtensionRegistry.m in Sources */,
+				8B9455838819796671199AFCE022E521 /* GPBMessage.m in Sources */,
+				DBFDBBCE7695183CBC4FE511AEFAF554 /* GPBRootObject.m in Sources */,
+				8D0F6080FFA2A23A7FFBBD24AFDAFDD8 /* GPBUnknownField.m in Sources */,
+				A28898F5DEA3FA7673C5C08F30A92008 /* GPBUnknownFieldSet.m in Sources */,
+				3ACEE06E081F20B0D584033B2A78743A /* GPBUtilities.m in Sources */,
+				0542227DA56AD0E89918B350BFD6526A /* GPBWellKnownTypes.m in Sources */,
+				AEE7F01E25992E2C83996A9B05B7BB2C /* GPBWireFormat.m in Sources */,
 				0B4C97586947D0A79807EB60356D837D /* Protobuf-dummy.m in Sources */,
-				799EE6A69C70D6247FD1C450EA4635EB /* SourceContext.pbobjc.m in Sources */,
-				C5C789322B866FDAE4E3D253307F580E /* Struct.pbobjc.m in Sources */,
-				898757462506C4BB9A1C757941C359B4 /* Timestamp.pbobjc.m in Sources */,
-				432F72B9D9058EC973B5C2F9441201BE /* Type.pbobjc.m in Sources */,
-				717DADBE27E5D264668AFB428E9C18B7 /* Wrappers.pbobjc.m in Sources */,
+				7D718D60E4CDEACB2182182BC65990A7 /* SourceContext.pbobjc.m in Sources */,
+				1D549348BA7FA7BBA198DA2D3BCAED5A /* Struct.pbobjc.m in Sources */,
+				38201B538748C7C2D0C9228BA149E766 /* Timestamp.pbobjc.m in Sources */,
+				954556D0DF36D90A5909B5CF468C886B /* Type.pbobjc.m in Sources */,
+				2E7020CF1A78C69A700C283BD93CCCC8 /* Wrappers.pbobjc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,6 +1,6 @@
 {
   "name": "EXGoogleSignIn",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Enables native Google authentication features in your app! This module can only be used in ExpoKit, or a Standalone Expo app. For in-depth setup, check out this guide: https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce",
   "description": "Enables native Google authentication features in your app! This module can only be used in ExpoKit, or a Standalone Expo app. For in-depth setup, check out this guide: https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce",
   "license": "MIT",
@@ -20,7 +20,7 @@
 
     ],
     "GoogleSignIn": [
-
+      "~> 5.0"
     ]
   }
 }

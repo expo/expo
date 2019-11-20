@@ -1,7 +1,7 @@
 package abi35_0_0.expo.modules.av.video;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.yqritc.scalablevideoview.ScalableType;
 

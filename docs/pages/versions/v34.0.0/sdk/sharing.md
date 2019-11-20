@@ -1,5 +1,6 @@
 ---
 title: Sharing
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sharing"
 ---
 
 This module allows sharing files.

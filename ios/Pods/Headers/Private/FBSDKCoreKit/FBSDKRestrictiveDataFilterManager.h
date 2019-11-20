@@ -1,1 +1,1 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/AppEvents/Internal/FBSDKRestrictiveDataFilterManager.h
+../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/AppEvents/Internal/RestrictiveDataFilter/FBSDKRestrictiveDataFilterManager.h

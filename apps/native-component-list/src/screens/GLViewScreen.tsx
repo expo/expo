@@ -18,7 +18,7 @@ export default class BasicScene extends React.Component {
     transitionIsComplete: false,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       this.setState({ transitionIsComplete: true });
     });

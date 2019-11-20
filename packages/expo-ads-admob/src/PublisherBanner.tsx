@@ -32,13 +32,9 @@ type PropsType = React.ComponentProps<typeof View> & {
    */
   adUnitID?: string;
   /**
-   * Test device ID
-   */
-  testDeviceID?: string;
-  /**
    * Additional request params added to underlying request for the ad.
    */
-  additionalRequestParams?: { [key: string]: string },
+  additionalRequestParams?: { [key: string]: string };
   /**
    * Whether the SDK should serve personalized ads (use only with user's consent). If this value is
    * `false` or `undefined`, this sets the `npa` key of `additionalRequestParams` to `'1'` following
@@ -46,7 +42,7 @@ type PropsType = React.ComponentProps<typeof View> & {
    * and
    * https://developers.google.com/admob/android/eu-consent#forward_consent_to_the_google_mobile_ads_sdk.
    */
-  servePersonalizedAds?: boolean,
+  servePersonalizedAds?: boolean;
   /**
    * AdMob iOS library events
    */
@@ -63,6 +59,8 @@ type StateType = {
   style: { width?: number; height?: number };
 };
 
+let _hasWarnedAboutTestDeviceID = false;
+
 export default class PublisherBanner extends React.Component<PropsType, StateType> {
   static propTypes = {
     bannerSize: PropTypes.oneOf([
@@ -75,7 +73,6 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
       'smartBannerLandscape',
     ]),
     adUnitID: PropTypes.string,
-    testDeviceID: PropTypes.string,
     servePersonalizedAds: PropTypes.bool,
     onAdViewDidReceiveAd: PropTypes.func,
     additionalRequestParams: PropTypes.object,
@@ -102,9 +99,17 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
     this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
 
   render() {
-    let additionalRequestParams: { [key: string]: string } = { ...this.props.additionalRequestParams };
+    let additionalRequestParams: { [key: string]: string } = {
+      ...this.props.additionalRequestParams,
+    };
     if (!this.props.servePersonalizedAds) {
-      additionalRequestParams.npa = "1";
+      additionalRequestParams.npa = '1';
+    }
+    if ((this.props as any).testDeviceID && !_hasWarnedAboutTestDeviceID) {
+      console.warn(
+        'The `testDeviceID` prop of PublisherBanner is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceID instead.'
+      );
+      _hasWarnedAboutTestDeviceID = true;
     }
     return (
       <View style={this.props.style}>
@@ -112,7 +117,6 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
           style={this.state.style}
           adUnitID={this.props.adUnitID}
           bannerSize={this.props.bannerSize}
-          testDeviceID={this.props.testDeviceID}
           onSizeChange={this._handleSizeChange}
           additionalRequestParams={additionalRequestParams}
           onAdViewDidReceiveAd={this.props.onAdViewDidReceiveAd}

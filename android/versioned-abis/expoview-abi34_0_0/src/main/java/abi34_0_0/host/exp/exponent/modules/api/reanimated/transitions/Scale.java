@@ -3,10 +3,10 @@ package abi34_0_0.host.exp.exponent.modules.api.reanimated.transitions;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.support.transition.Transition;
-import android.support.transition.TransitionListenerAdapter;
-import android.support.transition.TransitionValues;
-import android.support.transition.Visibility;
+import androidx.transition.Transition;
+import androidx.transition.TransitionListenerAdapter;
+import androidx.transition.TransitionValues;
+import androidx.transition.Visibility;
 import android.view.View;
 import android.view.ViewGroup;
 

@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { AdMobInterstitial } from 'expo-ads-admob';
+import { AdMobInterstitial, setTestDeviceIDAsync } from 'expo-ads-admob';
 
 export const name = 'AdMobInterstitial';
 
@@ -7,11 +7,11 @@ export function canRunAsync({ isDetox }) {
   return !isDetox;
 }
 
-export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t }) {
+export function test({ describe, beforeEach, afterEach, it, expect, beforeAll, jasmine, ...t }) {
   describe('AdMobInterstitial', () => {
-    describe('setTestDeviceID', () => {
+    describe('setTestDeviceIDAsync', () => {
       it('successfully sets Test Device ID for interstitial ads', () => {
-        expect(AdMobInterstitial.setTestDeviceID('EMULATOR')).not.toBeNull();
+        expect(setTestDeviceIDAsync('EMULATOR')).not.toBeNull();
       });
     });
 
@@ -77,7 +77,7 @@ export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t
           });
 
           it('calls interstitialDidLoad listener', async () => {
-            const didLoadListener = t.jasmine.createSpy('interstitialDidLoad');
+            const didLoadListener = jasmine.createSpy('interstitialDidLoad');
             AdMobInterstitial.addEventListener('interstitialDidLoad', didLoadListener);
             await AdMobInterstitial.requestAdAsync();
             expect(didLoadListener).toHaveBeenCalled();
@@ -98,7 +98,7 @@ export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t
           });
 
           it('calls interstitialDidFailToLoad listener', async () => {
-            const didFailToLoadListener = t.jasmine.createSpy('interstitialDidFailToLoad');
+            const didFailToLoadListener = jasmine.createSpy('interstitialDidFailToLoad');
             AdMobInterstitial.addEventListener('interstitialDidFailToLoad', didFailToLoadListener);
             try {
               await AdMobInterstitial.requestAdAsync();
@@ -114,7 +114,7 @@ export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t
 
       describe('showAdAsync', () => {
         describe('if an ad is prepared', () => {
-          t.beforeEach(async () => {
+          beforeEach(async () => {
             AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
             await AdMobInterstitial.requestAdAsync();
             expect(await AdMobInterstitial.getIsReadyAsync()).toBe(true);
@@ -126,7 +126,7 @@ export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t
           });
 
           it('calls interstitialDidOpen listener', async () => {
-            const didOpenListener = t.jasmine.createSpy('interstitialDidOpen');
+            const didOpenListener = jasmine.createSpy('interstitialDidOpen');
             AdMobInterstitial.addEventListener('interstitialDidOpen', didOpenListener);
             await AdMobInterstitial.showAdAsync();
             expect(didOpenListener).toHaveBeenCalled();
@@ -151,7 +151,7 @@ export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t
 
       describe('dismissAdAsync', () => {
         describe('if an ad is being shown', () => {
-          t.beforeEach(async () => {
+          beforeEach(async () => {
             AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712');
             await AdMobInterstitial.requestAdAsync();
             expect(await AdMobInterstitial.getIsReadyAsync()).toBe(true);
@@ -163,7 +163,7 @@ export function test({ describe, afterEach, it, expect, beforeAll, jasmine, ...t
           });
 
           it('calls interstitialDidClose listener', async () => {
-            const didCloseListener = t.jasmine.createSpy('interstitialDidClose');
+            const didCloseListener = jasmine.createSpy('interstitialDidClose');
             AdMobInterstitial.addEventListener('interstitialDidClose', didCloseListener);
             await AdMobInterstitial.dismissAdAsync();
             expect(didCloseListener).toHaveBeenCalled();

@@ -24,11 +24,11 @@ def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.ex
 
 // Include unimodules.
 includeUnimodulesProjects(
-        modulesPaths : [
-                '../../../../packages',
-        ],
-        configuration: 'api',
-        target       : 'react-native',
+    modulesPaths : [
+        '../../../../packages',
+    ],
+    configuration: 'api',
+    target       : 'react-native',
 // [Custom] Remove `expo-task-manager` which doesn't work on Android
 // "expo-task-manager",
 // "unimodules-task-manager-interface",
@@ -50,7 +50,7 @@ includeUnimodulesProjects(
 // [Custom] Remove non-unimodules
 // "expo-video-thumbnails",
 // "expo-module-template"
-        exclude      : excludedUnimodules
+     exclude      : excludedUnimodules
 )
 
 rootProject.name = 'BareExpo'

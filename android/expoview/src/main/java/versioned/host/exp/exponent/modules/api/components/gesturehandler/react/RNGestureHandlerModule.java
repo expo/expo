@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import static versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler.HIT_SLOP_NONE;
 

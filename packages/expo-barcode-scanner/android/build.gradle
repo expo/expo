@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.1'
   }
 }
 
@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '7.0.0-rc.0'
+version = '7.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -50,11 +50,15 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 18
-    versionName "7.0.0-rc.0"
+    versionCode 19
+    versionName "7.0.0"
   }
   lintOptions {
     abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
   }
 }
 
@@ -70,6 +74,7 @@ dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-barcode-scanner-interface"
   unimodule "unimodules-image-loader-interface"
+  unimodule 'unimodules-permissions-interface'
   api 'com.google.android.gms:play-services-vision:15.0.2'
   api 'com.google.zxing:core:3.3.3'
 }

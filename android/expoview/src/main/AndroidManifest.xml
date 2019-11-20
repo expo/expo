@@ -84,7 +84,7 @@
         <!-- WHEN_VERSIONING_REMOVE_TO_HERE -->
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -102,6 +102,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->
     </application>
 
 </manifest>

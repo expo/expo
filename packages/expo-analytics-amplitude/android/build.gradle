@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.1'
   }
 }
 
@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '7.0.0-rc.0'
+version = '7.0.0'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -50,7 +50,7 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 8
+    versionCode 9
     versionName '1.0.0'
   }
   lintOptions {
@@ -68,6 +68,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  api 'com.amplitude:android-sdk:2.9.2'
+  api 'com.amplitude:android-sdk:2.23.2'
 }

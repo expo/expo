@@ -4,7 +4,7 @@
 #import <UMConstantsInterface/UMConstantsInterface.h>
 #import <Analytics/SEGAnalytics.h>
 
-static NSString *const EXSegmentOptOutKey = @"EXSegmentOptOutKey";
+static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";
 
 @interface EXSegment ()
 
@@ -22,9 +22,9 @@ UM_EXPORT_METHOD_AS(initializeIOS,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:writeKey];
+  NSNumber *enabledSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentEnabledKey];
   _instance = [[SEGAnalytics alloc] initWithConfiguration:configuration];
-  NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentOptOutKey];
-  if (optOutSetting != nil && ![optOutSetting boolValue]) {
+  if (enabledSetting != nil && ![enabledSetting boolValue]) {
     [_instance disable];
   }
   resolve(nil);
@@ -174,7 +174,8 @@ UM_EXPORT_METHOD_AS(getEnabledAsync,
                     getEnabledWithResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentOptOutKey];
+  NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentEnabledKey];
+  // default is enabled: true
   resolve(optOutSetting ?: @(YES));
 }
 
@@ -183,7 +184,7 @@ UM_EXPORT_METHOD_AS(setEnabledAsync,
                     withResolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EXSegmentOptOutKey];
+  [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EXSegmentEnabledKey];
   if (_instance) {
     if (enabled) {
       [_instance enable];

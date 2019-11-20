@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "35.0.0-rc.0",
+  "version": "35.0.0",
   "license": "MIT",
   "main": "src",
   "repository": {
@@ -30,7 +30,7 @@
     "preset": "jest-expo/universal"
   },
   "peerDependencies": {
-    "react": "~16.8.3",
+    "react": "~16.9.0",
     "react-native": "*",
     "react-native-web": "*"
   },
@@ -41,12 +41,12 @@
     "jest-watch-typeahead": "^0.4.0",
     "json5": "^2.1.0",
     "lodash": "^4.5.0",
-    "react-test-renderer": "~16.8.3"
+    "react-test-renderer": "~16.9.0"
   },
   "devDependencies": {
-    "react": "16.8.3"
+    "react": "16.9.0"
   },
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447",
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },

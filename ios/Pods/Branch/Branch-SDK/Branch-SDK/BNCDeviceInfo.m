@@ -174,7 +174,6 @@ exit:
 
     _country = [BNCDeviceInfo bnc_country].copy;
     _language = [BNCDeviceInfo bnc_language].copy;
-    _browserUserAgent = [BNCDeviceInfo userAgentString].copy;
     _extensionType = self.class.extensionType.copy;
     _branchSDKVersion = [NSString stringWithFormat:@"ios%@", BNC_SDK_VERSION];
     _applicationVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
@@ -355,7 +354,6 @@ exit:
     } else {
         addString(adId,             idfa);
     }
-    addString(browserUserAgent,     user_agent);
     addString(country,              country);
     addString(language,             language);
     addString(brandName,            brand);
@@ -368,6 +366,8 @@ exit:
     addString(localIPAddress,       local_ip);
 
     #include "BNCFieldDefines.h"
+    
+    dictionary[@"user_agent"] = [BNCDeviceInfo userAgentString];
 
     if (!self.isAdTrackingEnabled)
         dictionary[@"limit_ad_tracking"] = (__bridge NSNumber*) kCFBooleanTrue;

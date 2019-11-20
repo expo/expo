@@ -182,8 +182,7 @@ Configuration for loading and splash screen for standalone apps.
 
     /*
       Determines how the "image" will be displayed in the splash loading screen.
-      Must be one of "cover" or "contain", defaults to `contain`.
-      Valid values: "cover", "contain"
+      Valid values: "cover", "contain", or "native". Defaults to "contain".
     */
     "resizeMode": STRING,
 
@@ -353,6 +352,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration.
+      Must be customized if your app requests system permissions.
 
       No other validation is performed, so use this at your own risk of rejection from the App Store.
     */

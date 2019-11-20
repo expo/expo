@@ -1,1 +1,0 @@
-../../../../../../../react-native-lab/react-native/Libraries/Vibration/RCTVibration.h

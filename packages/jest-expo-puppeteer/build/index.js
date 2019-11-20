@@ -41,6 +41,7 @@ function ofCommands(commands) {
 function withExpoPuppeteer(config = {}) {
     const { mode = process.env.EXPO_WEB_E2E_ENV, preventRebuild, server = {}, launch = {}, projectRoot } = config, partConfig = __rest(config, ["mode", "preventRebuild", "server", "launch", "projectRoot"]);
     const projectPath = path_1.default.resolve(projectRoot || process.cwd());
+    // @ts-ignore: ProjectConfig doesn't declare "web" -- either fix this or the declaration
     const { web = {} } = config_1.readConfigJson(projectPath);
     const hasServerSideRendering = web.use === 'nextjs';
     const defaultPort = hasServerSideRendering ? 8000 : 5000;

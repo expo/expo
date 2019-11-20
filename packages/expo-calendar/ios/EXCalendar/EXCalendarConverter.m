@@ -124,7 +124,7 @@
   return @{
        @"id": source.sourceIdentifier,
        @"type": [EXCalendarConverter _sourceType:source.sourceType],
-       @"name": source.title
+       @"name": UMNullIfNil(source.title)
        };
 }
 

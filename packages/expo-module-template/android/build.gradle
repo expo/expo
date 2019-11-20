@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.0'
   }
 }
 
@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '7.0.0-rc.0'
+version = '7.0.0'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -46,8 +46,8 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion 26
-    versionCode 19
-    versionName "7.0.0-rc.0"
+    versionCode 20
+    versionName "7.0.0"
   }
   lintOptions {
     abortOnError false

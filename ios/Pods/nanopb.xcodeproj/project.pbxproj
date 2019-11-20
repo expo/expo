@@ -10,11 +10,11 @@
 		298A9150D2F6613E23CD34E4981D3A6A /* pb_decode.h in Headers */ = {isa = PBXBuildFile; fileRef = B79980A182F4C58079BFB048870F77AC /* pb_decode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		4C09004FAFACC746DB1F25D0DE6C94B0 /* nanopb-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E01F0129D8A2E80D2539C5B2EEA3E21E /* nanopb-dummy.m */; };
 		5892AC4F385F8990B770E04431349205 /* pb_common.h in Headers */ = {isa = PBXBuildFile; fileRef = E4AFC20268EE46BB3BCB299B7C5E7B77 /* pb_common.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		5F4D235F1FC2773B6F88A1A4E7134776 /* pb_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = B5E3576EAB9383445B4FF1DA1620345A /* pb_encode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -fno-objc-arc"; }; };
-		B0534B822605F6A142F0A7DC83AD22D4 /* pb_common.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C1667F0F00DD8F907143D139EB7E17E /* pb_common.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -fno-objc-arc -fno-objc-arc"; }; };
+		6709CA27ED233119F839B23E2DD4122B /* pb_common.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C1667F0F00DD8F907143D139EB7E17E /* pb_common.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		83E6AFF1A612CB794345761FE749DAA0 /* pb_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = B5E3576EAB9383445B4FF1DA1620345A /* pb_encode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		92639F8D767F8DAE88EC65B0268B9D94 /* pb_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = DE3B63DEC0D7129301A9D38875859ED5 /* pb_decode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B0F16D51CFC032AB8DBEA57AB6A9ED5D /* pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 4C41AECB394EF8E5807B171BFCCEEAA0 /* pb.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		DFE7BD96597B4E3424CBD681A927A06C /* pb_encode.h in Headers */ = {isa = PBXBuildFile; fileRef = 498DC3D05B7718EF628F4852733A03F9 /* pb_encode.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		FAB56AA864237A005FF145090AB4590D /* pb_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = DE3B63DEC0D7129301A9D38875859ED5 /* pb_decode.c */; settings = {COMPILER_FLAGS = "-fno-objc-arc -fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,9 +175,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C09004FAFACC746DB1F25D0DE6C94B0 /* nanopb-dummy.m in Sources */,
-				B0534B822605F6A142F0A7DC83AD22D4 /* pb_common.c in Sources */,
-				FAB56AA864237A005FF145090AB4590D /* pb_decode.c in Sources */,
-				5F4D235F1FC2773B6F88A1A4E7134776 /* pb_encode.c in Sources */,
+				6709CA27ED233119F839B23E2DD4122B /* pb_common.c in Sources */,
+				92639F8D767F8DAE88EC65B0268B9D94 /* pb_decode.c in Sources */,
+				83E6AFF1A612CB794345761FE749DAA0 /* pb_encode.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

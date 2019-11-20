@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/EXFileSystem/ABI36_0_0EXFileSystem/ABI36_0_0EXFileSystem.h

@@ -1,0 +1,410 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AD57F2B7FCA9F61D54FAF01D723EEF23 /* EXMailComposer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFE8EAD9E6BDAD2D01989C79CB3681C /* EXMailComposer-dummy.m */; };
+		C9259AD24CF067B4AAA548779EBCE6ED /* EXMailComposer.m in Sources */ = {isa = PBXBuildFile; fileRef = C7B0EAA076E5FF9571179278C6ADBED4 /* EXMailComposer.m */; };
+		DD3DCA8D547A2A66D4938A671D234DD1 /* EXMailComposer.h in Headers */ = {isa = PBXBuildFile; fileRef = 38121F6BD805F74DB3D011DFEC8491BA /* EXMailComposer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		282DFCF446286227D2ECB94416EDC12D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 813298070ADF4621DE884238CB780596 /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
+		3E00A5EB2C1C63535B9409BAA56B49BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		36E8F677FA336DF0D0C675EEE2409905 /* EXMailComposer-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXMailComposer-prefix.pch"; sourceTree = "<group>"; };
+		38121F6BD805F74DB3D011DFEC8491BA /* EXMailComposer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXMailComposer.h; path = EXMailComposer/EXMailComposer.h; sourceTree = "<group>"; };
+		813298070ADF4621DE884238CB780596 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
+		9AFE8EAD9E6BDAD2D01989C79CB3681C /* EXMailComposer-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXMailComposer-dummy.m"; sourceTree = "<group>"; };
+		A1FF5FC007E0721F006FC45A2C52D472 /* EXMailComposer.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXMailComposer.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		B83994D1C0C5704A99950B97F0405E9A /* libEXMailComposer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXMailComposer.a; path = libEXMailComposer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7B0EAA076E5FF9571179278C6ADBED4 /* EXMailComposer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXMailComposer.m; path = EXMailComposer/EXMailComposer.m; sourceTree = "<group>"; };
+		D2B5292C8DA658F6A3C648234CE0DFAB /* EXMailComposer.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXMailComposer.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6BB43F7DB6A83799A59704D83CADC88D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		32A3765645CCBC1FBA722B572E3D64F4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B83994D1C0C5704A99950B97F0405E9A /* libEXMailComposer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5B0CD34420792B45C9567B85F2814B1C /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				D2B5292C8DA658F6A3C648234CE0DFAB /* EXMailComposer.xcconfig */,
+				9AFE8EAD9E6BDAD2D01989C79CB3681C /* EXMailComposer-dummy.m */,
+				36E8F677FA336DF0D0C675EEE2409905 /* EXMailComposer-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXMailComposer";
+			sourceTree = "<group>";
+		};
+		5F7015BE59B82722A9EDEAC36A03BC5A /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A1FF5FC007E0721F006FC45A2C52D472 /* EXMailComposer.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		A3F0D1FC9938B3BD1AC7625859607956 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AD631AD2D22AB3FCBAFF317044463A5E /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore */,
+				813298070ADF4621DE884238CB780596 /* UMFileSystemInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		B99CCE960A172F655D8BB354D2E525A2 /* EXMailComposer */ = {
+			isa = PBXGroup;
+			children = (
+				38121F6BD805F74DB3D011DFEC8491BA /* EXMailComposer.h */,
+				C7B0EAA076E5FF9571179278C6ADBED4 /* EXMailComposer.m */,
+				5F7015BE59B82722A9EDEAC36A03BC5A /* Pod */,
+				5B0CD34420792B45C9567B85F2814B1C /* Support Files */,
+			);
+			name = EXMailComposer;
+			path = "../../../../packages/expo-mail-composer/ios";
+			sourceTree = "<group>";
+		};
+		C816BC62BDE8C39FCF560E69687AF154 = {
+			isa = PBXGroup;
+			children = (
+				AD631AD2D22AB3FCBAFF317044463A5E /* Dependencies */,
+				B99CCE960A172F655D8BB354D2E525A2 /* EXMailComposer */,
+				A3F0D1FC9938B3BD1AC7625859607956 /* Frameworks */,
+				32A3765645CCBC1FBA722B572E3D64F4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		01EBC8E3EA7EE2F944D06475EC5449F2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD3DCA8D547A2A66D4938A671D234DD1 /* EXMailComposer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2E02530F5AAAD2AC2A43FE2B8AC3E99C /* EXMailComposer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6A7441A1B25FB2C81A2ED770C2386D70 /* Build configuration list for PBXNativeTarget "EXMailComposer" */;
+			buildPhases = (
+				01EBC8E3EA7EE2F944D06475EC5449F2 /* Headers */,
+				C55BA22CE31B16692236FE2689EB116A /* Sources */,
+				6BB43F7DB6A83799A59704D83CADC88D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A8C76084287BAAE5D71B3B03D2DB0E80 /* PBXTargetDependency */,
+				30310B251234405E70D2C40D53EDC189 /* PBXTargetDependency */,
+			);
+			name = EXMailComposer;
+			productName = EXMailComposer;
+			productReference = B83994D1C0C5704A99950B97F0405E9A /* libEXMailComposer.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		34456E88F1D92D28F797ED7F1A2F7B0C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 24618B347D0F22AF25988072BEC2A9D9 /* Build configuration list for PBXProject "EXMailComposer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C816BC62BDE8C39FCF560E69687AF154;
+			productRefGroup = 32A3765645CCBC1FBA722B572E3D64F4 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 0C730C301ED2FFBAF8027878DCB8A9F3 /* UMCore */;
+				},
+				{
+					ProjectRef = 813298070ADF4621DE884238CB780596 /* UMFileSystemInterface */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				2E02530F5AAAD2AC2A43FE2B8AC3E99C /* EXMailComposer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C55BA22CE31B16692236FE2689EB116A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD57F2B7FCA9F61D54FAF01D723EEF23 /* EXMailComposer-dummy.m in Sources */,
+				C9259AD24CF067B4AAA548779EBCE6ED /* EXMailComposer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		30310B251234405E70D2C40D53EDC189 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = 282DFCF446286227D2ECB94416EDC12D /* PBXContainerItemProxy */;
+		};
+		A8C76084287BAAE5D71B3B03D2DB0E80 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 3E00A5EB2C1C63535B9409BAA56B49BA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		18FD2BC870333A4C0C8ADF724196E6E6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2B5292C8DA658F6A3C648234CE0DFAB /* EXMailComposer.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMailComposer;
+				PRODUCT_NAME = EXMailComposer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6801C6B1BB3268F42C640A890D374A9F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		98A661790499223437837ED8B813F8C1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		EB93336C04B17CD575A93B0B8C89F418 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2B5292C8DA658F6A3C648234CE0DFAB /* EXMailComposer.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXMailComposer/EXMailComposer-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXMailComposer;
+				PRODUCT_NAME = EXMailComposer;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		24618B347D0F22AF25988072BEC2A9D9 /* Build configuration list for PBXProject "EXMailComposer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98A661790499223437837ED8B813F8C1 /* Debug */,
+				6801C6B1BB3268F42C640A890D374A9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6A7441A1B25FB2C81A2ED770C2386D70 /* Build configuration list for PBXNativeTarget "EXMailComposer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				18FD2BC870333A4C0C8ADF724196E6E6 /* Debug */,
+				EB93336C04B17CD575A93B0B8C89F418 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 34456E88F1D92D28F797ED7F1A2F7B0C /* Project object */;
+}

@@ -1,5 +1,6 @@
 package expo.modules.brightness;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
@@ -12,6 +13,7 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.interfaces.permissions.Permissions;
 
 public class BrightnessModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;
@@ -28,6 +30,16 @@ public class BrightnessModule extends ExportedModule {
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_SETTINGS);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_SETTINGS);
   }
 
   @ExpoMethod

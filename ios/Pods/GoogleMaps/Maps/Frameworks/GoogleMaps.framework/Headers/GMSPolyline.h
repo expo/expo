@@ -11,46 +11,11 @@
 #import <UIKit/UIKit.h>
 
 #import "GMSOverlay.h"
-#import "GMSStrokeStyle.h"
+#import "GMSStyleSpan.h"
 
 @class GMSPath;
 
 NS_ASSUME_NONNULL_BEGIN
-
-/** Describes the style for some region of a polyline. */
-@interface GMSStyleSpan : NSObject
-
-/**
- * Factory returning a solid color span of length one segment. Equivalent to
- * [GMSStyleSpan spanWithStyle:[GMSStrokeStyle solidColor:|color|] segments:1].
- */
-+ (instancetype)spanWithColor:(UIColor *)color;
-
-/**
- * Factory returning a solid color span with a given number of segments. Equivalent to
- * [GMSStyleSpan spanWithStyle:[GMSStrokeStyle solidColor:|color|] segments:|segments|].
- */
-+ (instancetype)spanWithColor:(UIColor *)color segments:(double)segments;
-
-/**
- * Factory returning a span with the given |style| of length one segment. Equivalent to
- * [GMSStyleSpan spanWithStyle:|style| segments:1].
- */
-+ (instancetype)spanWithStyle:(GMSStrokeStyle *)style;
-
-/**
- * Factory returning a span with the given |style| and length in number of segments.
- * |segments| must be greater than 0 (i.e. can't be 0).
- */
-+ (instancetype)spanWithStyle:(GMSStrokeStyle *)style segments:(double)segments;
-
-/** The style of this span. */
-@property(nonatomic, readonly) GMSStrokeStyle *style;
-
-/** The length of this span in number of segments. */
-@property(nonatomic, readonly) double segments;
-
-@end
 
 /**
  * GMSPolyline specifies the available options for a polyline that exists on the Earth's surface.
@@ -66,15 +31,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The width of the line in screen points. Defaults to 1.
  */
-@property(nonatomic, assign) CGFloat strokeWidth;
+@property(nonatomic) CGFloat strokeWidth;
 
 /**
  * The UIColor used to render the polyline. Defaults to [UIColor blueColor].
  */
-@property(nonatomic, strong) UIColor *strokeColor;
+@property(nonatomic) UIColor *strokeColor;
 
 /** Whether this line should be rendered with geodesic correction. */
-@property(nonatomic, assign) BOOL geodesic;
+@property(nonatomic) BOOL geodesic;
 
 /**
  * Convenience constructor for GMSPolyline for a particular path. Other properties will have

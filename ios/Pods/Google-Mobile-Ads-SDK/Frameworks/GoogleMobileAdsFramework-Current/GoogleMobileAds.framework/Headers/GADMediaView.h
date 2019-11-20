@@ -9,8 +9,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Displays native ad media content.
 ///
 /// To display media content in GADUnifiedNativeAdView instances, add a GADMediaView subview,
@@ -30,5 +28,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, nullable) GADMediaContent *mediaContent;
 
 @end
-
-NS_ASSUME_NONNULL_END

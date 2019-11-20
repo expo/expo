@@ -12,7 +12,7 @@
 #import <ReactABI35_0_0/ABI35_0_0RCTJavaScriptExecutor.h>
 #import <cxxReactABI35_0_0/ABI35_0_0JSExecutor.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class ABI35_0_0RCTObjcExecutorFactory : public JSExecutorFactory {

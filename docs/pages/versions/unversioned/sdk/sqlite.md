@@ -13,7 +13,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## API
 
 ```js
-import { SQLite } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 ```
 
 ### `SQLite.openDatabase(name, version, description, size)`

@@ -53,7 +53,7 @@ NS_ENUM(NSInteger) {
  * instance, when using RAM bundles:
  *
  *  - self.data will point to the bundle header
- *  - self.data.length is the length of the bundle header, i.e. sizeof(facebook::ReactABI35_0_0::BundleHeader)
+ *  - self.data.length is the length of the bundle header, i.e. sizeof(ABI35_0_0facebook::ReactABI35_0_0::BundleHeader)
  *  - self.length is the length of the entire bundle file (header + contents)
  */
 @property (nonatomic, readonly) NSUInteger length;

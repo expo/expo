@@ -3,6 +3,17 @@ package versioned.host.exp.exponent.modules.api.components.svg;
 import android.graphics.Path;
 import android.graphics.RectF;
 
+import java.util.ArrayList;
+
+class PathElement {
+    ElementType type;
+    Point[] points;
+    PathElement(ElementType type, Point[] points) {
+        this.type = type;
+        this.points = points;
+    }
+}
+
 class PathParser {
     static float mScale;
 
@@ -10,6 +21,7 @@ class PathParser {
     private static int l;
     private static String s;
     private static Path mPath;
+    static ArrayList<PathElement> elements;
 
     private static float mPenX;
     private static float mPenY;
@@ -20,6 +32,7 @@ class PathParser {
     private static boolean mPenDown;
 
     static Path parse(String d) {
+        elements = new ArrayList<>();
         char prev_cmd = ' ';
         mPath = new Path();
         l = d.length();
@@ -189,6 +202,7 @@ class PathParser {
         mPenDownX = mPivotX = mPenX = x;
         mPenDownY = mPivotY = mPenY = y;
         mPath.moveTo(x * mScale, y * mScale);
+        elements.add(new PathElement(ElementType.kCGPathElementMoveToPoint, new Point[]{new Point(x,y)}));
     }
 
     private static void line(float x, float y) {
@@ -201,6 +215,7 @@ class PathParser {
         mPivotX = mPenX = x;
         mPivotY = mPenY = y;
         mPath.lineTo(x * mScale, y * mScale);
+        elements.add(new PathElement(ElementType.kCGPathElementAddLineToPoint, new Point[]{new Point(x,y)}));
     }
 
     private static void curve(float c1x, float c1y, float c2x, float c2y, float ex, float ey) {
@@ -219,6 +234,7 @@ class PathParser {
         mPenX = ex;
         mPenY = ey;
         mPath.cubicTo(c1x * mScale, c1y * mScale, c2x * mScale, c2y * mScale, ex * mScale, ey * mScale);
+        elements.add(new PathElement(ElementType.kCGPathElementAddCurveToPoint, new Point[]{new Point(c1x, c1y), new Point(c2x, c2y), new Point(ex, ey)}));
     }
 
     private static void smoothCurve(float c1x, float c1y, float ex, float ey) {
@@ -364,6 +380,7 @@ class PathParser {
                     (cy + rx) * mScale);
 
             mPath.arcTo(oval, start, sweep);
+            elements.add(new PathElement(ElementType.kCGPathElementAddCurveToPoint, new Point[]{new Point(x, y)}));
         }
     }
 
@@ -373,6 +390,7 @@ class PathParser {
             mPenY = mPenDownY;
             mPenDown = false;
             mPath.close();
+            elements.add(new PathElement(ElementType.kCGPathElementCloseSubpath, new Point[]{new Point(mPenX, mPenY)}));
         }
     }
 
@@ -420,6 +438,7 @@ class PathParser {
             float ey = (cy + xy * x + yy * y);
 
             mPath.cubicTo(c1x * mScale, c1y * mScale, c2x * mScale, c2y * mScale, ex * mScale, ey * mScale);
+            elements.add(new PathElement(ElementType.kCGPathElementAddCurveToPoint, new Point[]{new Point(c1x, c1y), new Point(c2x, c2y), new Point(ex, ey)}));
         }
     }
 

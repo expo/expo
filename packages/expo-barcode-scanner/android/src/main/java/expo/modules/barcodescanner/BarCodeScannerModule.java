@@ -1,10 +1,11 @@
 package expo.modules.barcodescanner;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -22,6 +23,7 @@ import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import org.unimodules.interfaces.imageloader.ImageLoader;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;
@@ -87,6 +89,16 @@ public class BarCodeScannerModule extends ExportedModule {
         });
       }
     });
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
   }
 
   @ExpoMethod

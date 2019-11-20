@@ -11,7 +11,7 @@
 
 #import <ReactABI35_0_0/ABI35_0_0RCTBridgeModule.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace xplat {
 namespace module {
 class CxxModule;
@@ -28,6 +28,6 @@ class CxxModule;
 @interface ABI35_0_0RCTCxxModule : NSObject <ABI35_0_0RCTBridgeModule>
 
 // To be implemented by subclasses
-- (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule;
+- (std::unique_ptr<ABI35_0_0facebook::xplat::module::CxxModule>)createModule;
 
 @end

@@ -3,7 +3,7 @@
 package host.exp.exponent.modules;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -148,11 +148,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     mKernel.installShortcut(manifestUrl, manifest, bundleUrl);
 
     promise.resolve(true);
-  }
-
-  @ReactMethod
-  public void addDevMenu() {
-    mKernel.addDevMenu();
   }
 
   @ReactMethod

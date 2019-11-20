@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -401,6 +401,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
@@ -583,11 +584,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (pushNotificationHelper != null) {
       pushNotificationHelper.removeNotifications(this, unreadNotifications);
     }
-  }
-
-  public void onEvent(BaseExperienceActivity.ExperienceDoneLoadingEvent event) {
-    // On cold boot to this experience, wait until we're done loading to load the kernel.
-    mKernel.startJSKernel();
   }
 
   /*

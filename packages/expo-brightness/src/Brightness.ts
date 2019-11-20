@@ -1,5 +1,7 @@
 import { Platform } from 'react-native';
-import { NativeModulesProxy } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import ExpoBrightness from './ExpoBrightness';
 
 export enum BrightnessMode {
   UNKNOWN = 0,
@@ -7,23 +9,31 @@ export enum BrightnessMode {
   MANUAL = 2,
 }
 
+export { PermissionResponse, PermissionStatus };
+
 export async function getBrightnessAsync(): Promise<number> {
-  return await NativeModulesProxy.ExpoBrightness.getBrightnessAsync();
+  if (!ExpoBrightness.getBrightnessAsync) {
+    throw new UnavailabilityError('expo-brightness', 'getBrightnessAsync');
+  }
+  return await ExpoBrightness.getBrightnessAsync();
 }
 
 export async function setBrightnessAsync(brightnessValue: number): Promise<void> {
+  if (!ExpoBrightness.setBrightnessAsync) {
+    throw new UnavailabilityError('expo-brightness', 'setBrightnessAsync');
+  }
   let clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
   if (isNaN(clampedBrightnessValue)) {
     throw new TypeError(`setBrightnessAsync cannot be called with ${brightnessValue}`);
   }
-  return await NativeModulesProxy.ExpoBrightness.setBrightnessAsync(clampedBrightnessValue);
+  return await ExpoBrightness.setBrightnessAsync(clampedBrightnessValue);
 }
 
 export async function getSystemBrightnessAsync(): Promise<number> {
   if (Platform.OS !== 'android') {
     return await getBrightnessAsync();
   }
-  return await NativeModulesProxy.ExpoBrightness.getSystemBrightnessAsync();
+  return await ExpoBrightness.getSystemBrightnessAsync();
 }
 
 export async function setSystemBrightnessAsync(brightnessValue: number): Promise<void> {
@@ -34,33 +44,41 @@ export async function setSystemBrightnessAsync(brightnessValue: number): Promise
   if (Platform.OS !== 'android') {
     return await setBrightnessAsync(clampedBrightnessValue);
   }
-  return await NativeModulesProxy.ExpoBrightness.setSystemBrightnessAsync(clampedBrightnessValue);
+  return await ExpoBrightness.setSystemBrightnessAsync(clampedBrightnessValue);
 }
 
 export async function useSystemBrightnessAsync(): Promise<void> {
   if (Platform.OS !== 'android') {
     return;
   }
-  return await NativeModulesProxy.ExpoBrightness.useSystemBrightnessAsync();
+  return await ExpoBrightness.useSystemBrightnessAsync();
 }
 
 export async function isUsingSystemBrightnessAsync(): Promise<boolean> {
   if (Platform.OS !== 'android') {
     return false;
   }
-  return await NativeModulesProxy.ExpoBrightness.isUsingSystemBrightnessAsync();
+  return await ExpoBrightness.isUsingSystemBrightnessAsync();
 }
 
 export async function getSystemBrightnessModeAsync(): Promise<BrightnessMode> {
   if (Platform.OS !== 'android') {
     return BrightnessMode.UNKNOWN;
   }
-  return await NativeModulesProxy.ExpoBrightness.getSystemBrightnessModeAsync();
+  return await ExpoBrightness.getSystemBrightnessModeAsync();
 }
 
 export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMode): Promise<void> {
   if (Platform.OS !== 'android' || brightnessMode === BrightnessMode.UNKNOWN) {
     return;
   }
-  return await NativeModulesProxy.ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
+  return await ExpoBrightness.setSystemBrightnessModeAsync(brightnessMode);
+}
+
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  return ExpoBrightness.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  return ExpoBrightness.requestPermissionsAsync();
 }

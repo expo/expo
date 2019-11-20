@@ -1,8 +1,8 @@
 package abi35_0_0.org.unimodules.interfaces.imageloader;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public interface ImageLoader {
   interface ResultListener {

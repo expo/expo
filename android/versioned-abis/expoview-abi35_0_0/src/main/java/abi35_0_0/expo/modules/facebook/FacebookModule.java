@@ -33,8 +33,6 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
 
   public FacebookModule(Context context) {
     super(context);
-    //noinspection deprecation
-    FacebookSdk.sdkInitialize(context);
     mCallbackManager = CallbackManager.Factory.create();
   }
 
@@ -45,8 +43,10 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
 
   @ExpoMethod
   public void logInWithReadPermissionsAsync(final String appId, final ReadableArguments config, final Promise promise) {
-    AccessToken.setCurrentAccessToken(null);
     FacebookSdk.setApplicationId(appId);
+    //noinspection deprecation
+    FacebookSdk.sdkInitialize(getContext());
+    AccessToken.setCurrentAccessToken(null);
 
     List<String> permissions = (List<String>) config.getList("permissions", Arrays.asList("public_profile", "email"));
 

@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a native blur view 1`] = `
+Object {
+  "intensity": 0.65,
+  "tint": "light",
+}
+`;

@@ -1,6 +1,6 @@
 #import <Flutter/Flutter.h>
-#import <EXCore/EXInternalModule.h>
-#import <EXCore/EXEventEmitterService.h>
+#import <UMCore/UMInternalModule.h>
+#import <UMCore/UMEventEmitterService.h>
 
 @interface ExpoFlutterAdapterPlugin : NSObject<FlutterPlugin>
 

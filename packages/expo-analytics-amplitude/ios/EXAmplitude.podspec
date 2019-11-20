@@ -18,8 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
-  s.dependency 'Amplitude-iOS'
-
+  s.dependency 'Amplitude-iOS', '~> 4.7.1'
 end
-
-  

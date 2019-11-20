@@ -1,11 +1,12 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.uimanager;
 
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -18,8 +19,6 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
-import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily for
@@ -48,15 +47,16 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   /**
    * Nodes that return {@code true} will be treated as "virtual" nodes. That is, nodes that are not
-   * mapped into native views (e.g. nested text node). By default this method returns {@code false}.
+   * mapped into native views or Yoga nodes (e.g. nested text node). By default this method returns
+   * {@code false}.
    */
   boolean isVirtual();
 
   /**
    * Nodes that return {@code true} will be treated as a root view for the virtual nodes tree. It
-   * means that {@link NativeViewHierarchyManager} will not try to perform {@code manageChildren}
-   * operation on such views. Good example is {@code InputText} view that may have children {@code
-   * Text} nodes but this whole hierarchy will be mapped to a single android {@link EditText} view.
+   * means that all of its descendants will be "virtual" nodes. Good example is {@code InputText}
+   * view that may have children {@code Text} nodes but this whole hierarchy will be mapped to a
+   * single android {@link EditText} view.
    */
   boolean isVirtualAnchor();
 
@@ -67,6 +67,14 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * subclass to enforce this requirement.
    */
   boolean isYogaLeafNode();
+
+  /**
+   * When constructing the native tree, nodes that return {@code true} will be treated as leaves.
+   * Instead of adding this view's native children as subviews of it, they will be added as subviews
+   * of an ancestor. In other words, this view wants to support native children but it cannot host
+   * them itself (e.g. it isn't a ViewGroup).
+   */
+  boolean hoistNativeChildren();
 
   String getViewClass();
 
@@ -99,7 +107,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()} or
    * require layouting (marked with {@link #dirty()}).
    */
-  void onBeforeLayout();
+  void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
 
   void updateProperties(ReactStylesDiffMap props);
 
@@ -135,6 +143,12 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   @Nullable
   T getParent();
 
+  // Returns the node that is responsible for laying out this node.
+  @Nullable
+  T getLayoutParent();
+
+  void setLayoutParent(@Nullable T layoutParent);
+
   /**
    * Get the {@link ThemedReactContext} associated with this {@link ReactShadowNode}. This will
    * never change during the lifetime of a {@link ReactShadowNode} instance, but different instances
@@ -147,6 +161,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean shouldNotifyOnLayout();
 
   void calculateLayout();
+
+  void calculateLayout(float width, float height);
 
   boolean hasNewLayout();
 
@@ -176,6 +192,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   void setIsLayoutOnly(boolean isLayoutOnly);
 
   boolean isLayoutOnly();
+
+  NativeKind getNativeKind();
 
   int getTotalNativeChildren();
 
@@ -346,4 +364,12 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
+
+  void setMeasureSpecs(int widthMeasureSpec, int heightMeasureSpec);
+
+  Integer getWidthMeasureSpec();
+
+  Integer getHeightMeasureSpec();
+
+  Iterable<? extends ReactShadowNode> calculateLayoutOnChildren();
 }

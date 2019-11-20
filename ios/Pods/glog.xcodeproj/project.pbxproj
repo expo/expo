@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13CD5915DE2D5906774CD009B5DD3874 /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1FA798AE543D696C36688BB4F6FB3C47 /* vlog_is_on.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		08D27C75E673005D33C796D0F4516055 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8880F0A632176E976D4C56838C047064 /* utilities.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		0FFA42AFC133A7E6950775860C29E69E /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 613AC97AC1174F75A3AEEE930DDCED32 /* logging.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1439F5B68C83481E4625EDF49F991221 /* vlog_is_on.h in Headers */ = {isa = PBXBuildFile; fileRef = 828ADDB930C6775916A84CB7B34CB323 /* vlog_is_on.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		254F0D99D44802861A96826F005B2B0E /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 48E273FBCDBF9F92F88F9CE4BF58BCEE /* signalhandler.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		3000B88000D9F1F250BBCAFCBC56B8AD /* log_severity.h in Headers */ = {isa = PBXBuildFile; fileRef = C78C93F32C30E4CF046C6B36A41F795A /* log_severity.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		41E34C41EA262B8C8BDE5BE0037D1757 /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = ABE953EE3E836BBEF1FF581A06DDEA58 /* demangle.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		49222BA93982FDD5ED8D6F5CA59590B4 /* symbolize.cc in Sources */ = {isa = PBXBuildFile; fileRef = FEAAB1901C6E0E47FC92E07CB4E18A00 /* symbolize.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		5F3D60CC6246E7F18B990F2864E9FAAE /* logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = 613AC97AC1174F75A3AEEE930DDCED32 /* logging.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		416E27C303F9E8C326D375AE0B47361F /* demangle.cc in Sources */ = {isa = PBXBuildFile; fileRef = ABE953EE3E836BBEF1FF581A06DDEA58 /* demangle.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		606221575BAC793092A5CD0C2206E891 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = A6919066C4D94E410DD341C471FE374D /* raw_logging.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		61E7B272FD66EA3890C82FBB4DB8402A /* logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 103D4D2150698F02CB1A5BEFC1466427 /* logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6AB8FF8539B72614C3F5BB04160F4DE3 /* utilities.cc in Sources */ = {isa = PBXBuildFile; fileRef = 8880F0A632176E976D4C56838C047064 /* utilities.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8DB7605FD7272BF91C992CE35C09FF7E /* symbolize.cc in Sources */ = {isa = PBXBuildFile; fileRef = FEAAB1901C6E0E47FC92E07CB4E18A00 /* symbolize.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		ABCBBA6E6311038A4D7A97ED3DE13DAA /* glog-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AC5DDA58319446ABDD899B5382E17764 /* glog-dummy.m */; };
 		B1E8E67FE5300451AC09BB0BAB259E45 /* raw_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 3132121F1B9209EAA18C0D41B4A66780 /* raw_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		BC8B06DC85C542C7FF9ED83FCF185A40 /* raw_logging.cc in Sources */ = {isa = PBXBuildFile; fileRef = A6919066C4D94E410DD341C471FE374D /* raw_logging.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C5633521A0EBC8F6664BFDE585AC0D55 /* signalhandler.cc in Sources */ = {isa = PBXBuildFile; fileRef = 48E273FBCDBF9F92F88F9CE4BF58BCEE /* signalhandler.cc */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D39B22176B1F139C4D40DD9C2A78159D /* stl_logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 1328E1DC31E394F230EADF7F668AB87E /* stl_logging.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FC627147E1745B42142886FD52D7F75F /* vlog_is_on.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1FA798AE543D696C36688BB4F6FB3C47 /* vlog_is_on.cc */; settings = {COMPILER_FLAGS = "-Wno-shorten-64-to-32 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -174,14 +174,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				41E34C41EA262B8C8BDE5BE0037D1757 /* demangle.cc in Sources */,
+				416E27C303F9E8C326D375AE0B47361F /* demangle.cc in Sources */,
 				ABCBBA6E6311038A4D7A97ED3DE13DAA /* glog-dummy.m in Sources */,
-				5F3D60CC6246E7F18B990F2864E9FAAE /* logging.cc in Sources */,
-				BC8B06DC85C542C7FF9ED83FCF185A40 /* raw_logging.cc in Sources */,
-				C5633521A0EBC8F6664BFDE585AC0D55 /* signalhandler.cc in Sources */,
-				49222BA93982FDD5ED8D6F5CA59590B4 /* symbolize.cc in Sources */,
-				6AB8FF8539B72614C3F5BB04160F4DE3 /* utilities.cc in Sources */,
-				13CD5915DE2D5906774CD009B5DD3874 /* vlog_is_on.cc in Sources */,
+				0FFA42AFC133A7E6950775860C29E69E /* logging.cc in Sources */,
+				606221575BAC793092A5CD0C2206E891 /* raw_logging.cc in Sources */,
+				254F0D99D44802861A96826F005B2B0E /* signalhandler.cc in Sources */,
+				8DB7605FD7272BF91C992CE35C09FF7E /* symbolize.cc in Sources */,
+				08D27C75E673005D33C796D0F4516055 /* utilities.cc in Sources */,
+				FC627147E1745B42142886FD52D7F75F /* vlog_is_on.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

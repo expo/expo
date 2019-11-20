@@ -1,5 +1,6 @@
 ---
 title: NetInfo
+sourceCodeUrl: "https://github.com/react-native-community/react-native-netinfo"
 ---
 
 This API allows you to get information about connection type and connection quality.

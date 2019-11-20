@@ -1,6 +1,6 @@
 {
   "name": "EXLocalization",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Provides an interface for native user localization information.",
   "description": "Provides an interface for native user localization information.",
   "license": "MIT",

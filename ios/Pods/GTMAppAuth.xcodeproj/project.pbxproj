@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		089B3741E50B3FCCF2987714E9A76396 /* GTMAppAuthFetcherAuthorization+Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 21893C2449DB99E597753AD0443BDE4B /* GTMAppAuthFetcherAuthorization+Keychain.m */; };
-		318EC3FC6E23E0839D46AF5553F3DD36 /* GTMAppAuthFetcherAuthorization.m in Sources */ = {isa = PBXBuildFile; fileRef = B9A706ADEA38280141FB2B20E4962351 /* GTMAppAuthFetcherAuthorization.m */; };
+		0F6ED914BFBF508E408CBBD6F2B99D77 /* GTMAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCAF0F18717EDCB13E66C5CC7567274 /* GTMAppAuth-dummy.m */; };
+		19D63428B52845C340C33D5AB4A6C6C1 /* GTMAppAuthFetcherAuthorization.m in Sources */ = {isa = PBXBuildFile; fileRef = B9A706ADEA38280141FB2B20E4962351 /* GTMAppAuthFetcherAuthorization.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		45D82612C658CB2B6FD50D748DFFDCD4 /* GTMKeychain_iOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 434B815B2B73C0BF3F8E80BEA884D5D0 /* GTMKeychain_iOS.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		5F565D68AB2A031DC8CB5433551E8C7A /* GTMAppAuthFetcherAuthorization.h in Headers */ = {isa = PBXBuildFile; fileRef = D45A299C06C0FFDCFE8A7C956C49CEDB /* GTMAppAuthFetcherAuthorization.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6A83A8EC0EAD24ED59E286A38937B24F /* GTMAppAuthFetcherAuthorization+Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 21893C2449DB99E597753AD0443BDE4B /* GTMAppAuthFetcherAuthorization+Keychain.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		707617ACE87DA113190DFD46A819E10A /* GTMOAuth2KeychainCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = 2AD4DE6F9D29901C30134BA6EC14D400 /* GTMOAuth2KeychainCompatibility.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		74096D3D27BC8F9F2508123BAE37F168 /* GTMKeychain_iOS.m in Sources */ = {isa = PBXBuildFile; fileRef = 434B815B2B73C0BF3F8E80BEA884D5D0 /* GTMKeychain_iOS.m */; };
 		77307BB66C19867E01A3026F716CB524 /* GTMAppAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = 639EB7D7E847464EC807A74D0289443B /* GTMAppAuth.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		92E764751CF7A3E9E70ACBB007E3F17D /* GTMOAuth2KeychainCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B22ED452124775AAB530D4BB315F7155 /* GTMOAuth2KeychainCompatibility.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		95D536759F4209894C9F1EB90901CD46 /* GTMKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = EFD3A061A0BFCF1989177ECD6888D13B /* GTMKeychain.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B871625E8829F3BC09C36AC1A6751D01 /* GTMOAuth2KeychainCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B22ED452124775AAB530D4BB315F7155 /* GTMOAuth2KeychainCompatibility.m */; };
-		BFE6765AC8533AAB4E48CCDEE33383E5 /* GTMAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BBCAF0F18717EDCB13E66C5CC7567274 /* GTMAppAuth-dummy.m */; };
 		FBAE9E20AA0AAA1BE13685F82A0502FE /* GTMAppAuthFetcherAuthorization+Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 741BDD2FFBBE2400C1880C36A5FBD4E2 /* GTMAppAuthFetcherAuthorization+Keychain.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -151,7 +151,7 @@
 			buildConfigurationList = A2C25B2304AAC87D7EAAF8071E103817 /* Build configuration list for PBXNativeTarget "GTMAppAuth" */;
 			buildPhases = (
 				5E77587676D789A6BEF864D91BBBF983 /* Headers */,
-				188A7CBBC086C921015D08F445169C34 /* Sources */,
+				87B89D420BEF17D3C9BC04D28D796CA4 /* Sources */,
 				3B04834A98AFE93C5AB9982ADC0C6628 /* Frameworks */,
 			);
 			buildRules = (
@@ -200,15 +200,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		188A7CBBC086C921015D08F445169C34 /* Sources */ = {
+		87B89D420BEF17D3C9BC04D28D796CA4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BFE6765AC8533AAB4E48CCDEE33383E5 /* GTMAppAuth-dummy.m in Sources */,
-				089B3741E50B3FCCF2987714E9A76396 /* GTMAppAuthFetcherAuthorization+Keychain.m in Sources */,
-				318EC3FC6E23E0839D46AF5553F3DD36 /* GTMAppAuthFetcherAuthorization.m in Sources */,
-				74096D3D27BC8F9F2508123BAE37F168 /* GTMKeychain_iOS.m in Sources */,
-				B871625E8829F3BC09C36AC1A6751D01 /* GTMOAuth2KeychainCompatibility.m in Sources */,
+				0F6ED914BFBF508E408CBBD6F2B99D77 /* GTMAppAuth-dummy.m in Sources */,
+				6A83A8EC0EAD24ED59E286A38937B24F /* GTMAppAuthFetcherAuthorization+Keychain.m in Sources */,
+				19D63428B52845C340C33D5AB4A6C6C1 /* GTMAppAuthFetcherAuthorization.m in Sources */,
+				45D82612C658CB2B6FD50D748DFFDCD4 /* GTMKeychain_iOS.m in Sources */,
+				92E764751CF7A3E9E70ACBB007E3F17D /* GTMOAuth2KeychainCompatibility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

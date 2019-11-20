@@ -1,6 +1,6 @@
 {
   "name": "EXAdsFacebook",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Facebook Audience SDK integration",
   "description": "Facebook Audience SDK integration",
   "license": "MIT",
@@ -20,7 +20,7 @@
 
     ],
     "FBAudienceNetwork": [
-
+      "5.5.0"
     ]
   }
 }

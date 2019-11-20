@@ -1,22 +1,22 @@
 #import "InternalServicesModule.h"
-#import <EXCore/EXModuleRegistry.h>
-#import <EXCore/EXModuleRegistryProvider.h>
-#import <EXCore/EXAppLifecycleListener.h>
-#import <EXCore/EXEventEmitter.h>
+#import <UMCore/UMModuleRegistry.h>
+#import <UMCore/UMModuleRegistryProvider.h>
+#import <UMCore/UMAppLifecycleListener.h>
+#import <UMCore/UMEventEmitter.h>
 
 @interface InternalServicesModule ()
 
 @property (nonatomic, strong) FlutterEventSink sink;
-@property (nonatomic, strong) NSMutableSet<id<EXAppLifecycleListener>> *lifecycleListeners;
+@property (nonatomic, strong) NSMutableSet<id<UMAppLifecycleListener>> *lifecycleListeners;
 @property (nonatomic, assign) BOOL isForegrounded;
 
 @end
 
 @implementation InternalServicesModule
 
-EX_REGISTER_MODULE();
+UM_REGISTER_MODULE();
 
-#pragma mark EXInternalModule impl
+#pragma mark UMInternalModule impl
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -27,10 +27,10 @@ EX_REGISTER_MODULE();
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
-    return @[@protocol(EXEventEmitterService), @protocol(EXAppLifecycleService)];
+    return @[@protocol(UMEventEmitterService), @protocol(UMAppLifecycleService)];
 }
 
-# pragma mark EXEventEmitterService impl
+# pragma mark UMEventEmitterService impl
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body {
     if (!_sink) {
@@ -43,7 +43,7 @@ EX_REGISTER_MODULE();
     });
 }
 
-#pragma mark FlutterInternalServicesModule impl
+#pragma mark FlutterStreamHandler impl
 
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
     self.sink = eventSink;
@@ -55,21 +55,21 @@ EX_REGISTER_MODULE();
     return nil;
 }
 
-#pragma mark EXAppLifecycleService impl
+#pragma mark UMAppLifecycleService impl
 
 
-- (void)registerAppLifecycleListener:(id<EXAppLifecycleListener>)listener {
+- (void)registerAppLifecycleListener:(id<UMAppLifecycleListener>)listener {
   [_lifecycleListeners addObject:listener];
 }
 
-- (void)unregisterAppLifecycleListener:(id<EXAppLifecycleListener>)listener {
+- (void)unregisterAppLifecycleListener:(id<UMAppLifecycleListener>)listener {
   [_lifecycleListeners removeObject:listener];
 }
 
 - (void)setAppStateToBackground
 {
   if (_isForegrounded) {
-    [_lifecycleListeners enumerateObjectsUsingBlock:^(id<EXAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
+    [_lifecycleListeners enumerateObjectsUsingBlock:^(id<UMAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
       [obj onAppBackgrounded];
     }];
     _isForegrounded = false;
@@ -79,7 +79,7 @@ EX_REGISTER_MODULE();
 - (void)setAppStateToForeground
 {
   if (!_isForegrounded) {
-    [_lifecycleListeners enumerateObjectsUsingBlock:^(id<EXAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
+    [_lifecycleListeners enumerateObjectsUsingBlock:^(id<UMAppLifecycleListener>  _Nonnull obj, BOOL * _Nonnull stop) {
       [obj onAppForegrounded];
     }];
     _isForegrounded = true;

@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <GoogleMobileAds/GADAdReward.h>
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADRequest.h>
 #import <GoogleMobileAds/GADRequestError.h>
 #import <GoogleMobileAds/GADResponseInfo.h>
@@ -47,7 +48,7 @@ typedef void (^GADRewardedAdLoadCompletionHandler)(GADRequestError *_Nullable er
 /// successfully loaded.
 @property(nonatomic, readonly, nullable) GADAdReward *reward;
 
-/// Options specified for server-to-server user reward verification.
+/// Options specified for server-side user reward verification.
 @property(nonatomic, copy, nullable)
     GADServerSideVerificationOptions *serverSideVerificationOptions;
 
@@ -58,6 +59,9 @@ typedef void (^GADRewardedAdLoadCompletionHandler)(GADRequestError *_Nullable er
 
 /// Delegate for ad metadata changes.
 @property(nonatomic, weak, nullable) id<GADRewardedAdMetadataDelegate> adMetadataDelegate;
+
+/// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
 
 /// Presents the rewarded ad with the provided view controller and rewarded delegate to call back on
 /// various intermission events. The delegate is strongly retained by the receiver until a terminal

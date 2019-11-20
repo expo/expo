@@ -394,9 +394,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_overrideUserInterfaceStyle
 {
   if (@available(iOS 13.0, *)) {
-    NSString *userInterfaceStyle = _appRecord.appLoader.manifest[@"ios"][@"userInterfaceStyle"];
+    NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
     self.overrideUserInterfaceStyle = [self _userInterfaceStyleForString:userInterfaceStyle];
   }
+}
+
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(NSDictionary *)manifest
+{
+  if (manifest[@"ios"] && manifest[@"ios"][@"userInterfaceStyle"]) {
+    return manifest[@"ios"][@"userInterfaceStyle"];
+  }
+  return manifest[@"userInterfaceStyle"];
 }
 
 - (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {

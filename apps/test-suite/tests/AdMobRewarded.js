@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { AdMobRewarded } from 'expo-ads-admob';
+import { AdMobRewarded, setTestDeviceIDAsync } from 'expo-ads-admob';
 import { waitFor } from './helpers';
 
 export const name = 'AdMobRewarded';
@@ -17,6 +17,7 @@ const invalidAdUnitID = 'ad';
 export function test({
   describe,
   beforeAll,
+  beforeEach,
   xdescribe,
   xit,
   fit,
@@ -27,9 +28,9 @@ export function test({
   ...t
 }) {
   describe('AdMobRewarded', () => {
-    describe('setTestDeviceID', () => {
+    describe('setTestDeviceIDAsync', () => {
       it('successfully sets Test Device ID for rewarded ads', () => {
-        expect(AdMobRewarded.setTestDeviceID('EMULATOR')).not.toBeNull();
+        expect(setTestDeviceIDAsync('EMULATOR')).not.toBeNull();
       });
     });
 
@@ -49,7 +50,7 @@ export function test({
     if (Platform.OS === 'ios') {
       // NOTE(2018-03-08): Some of these tests are failing on iOS; disable for CI
       describe('requestAdAsync', () => {
-        t.xdescribe('if adUnitID is valid', () => {
+        xdescribe('if adUnitID is valid', () => {
           beforeAll(() => AdMobRewarded.setAdUnitID(validAdUnitID));
           afterEach(
             async () =>
@@ -64,7 +65,7 @@ export function test({
           });
 
           it('calls rewardedDidLoad listener', async () => {
-            const didLoadListener = t.jasmine.createSpy('rewardedVideoDidLoad');
+            const didLoadListener = jasmine.createSpy('rewardedVideoDidLoad');
             AdMobRewarded.addEventListener('rewardedVideoDidLoad', didLoadListener);
             await AdMobRewarded.requestAdAsync();
             expect(didLoadListener).toHaveBeenCalled();
@@ -85,7 +86,7 @@ export function test({
           });
 
           it('calls rewardedDidFailToLoad listener', async () => {
-            const didFailToLoadListener = t.jasmine.createSpy('rewardedVideoDidFailToLoad');
+            const didFailToLoadListener = jasmine.createSpy('rewardedVideoDidFailToLoad');
             AdMobRewarded.addEventListener('rewardedVideoDidFailToLoad', didFailToLoadListener);
             try {
               await AdMobRewarded.requestAdAsync();
@@ -97,8 +98,8 @@ export function test({
       });
 
       describe('showAdAsync', () => {
-        t.xdescribe('if an ad is prepared', () => {
-          t.beforeEach(async () => {
+        xdescribe('if an ad is prepared', () => {
+          beforeEach(async () => {
             AdMobRewarded.setAdUnitID(validAdUnitID);
             await AdMobRewarded.requestAdAsync();
             expect(await AdMobRewarded.getIsReadyAsync()).toBe(true);
@@ -110,7 +111,7 @@ export function test({
           });
 
           it('calls rewardedVideoDidOpen listener', async () => {
-            const didOpenListener = t.jasmine.createSpy('rewardedVideoDidOpen');
+            const didOpenListener = jasmine.createSpy('rewardedVideoDidOpen');
             AdMobRewarded.addEventListener('rewardedVideoDidOpen', didOpenListener);
             await AdMobRewarded.showAdAsync();
             expect(didOpenListener).toHaveBeenCalled();
@@ -120,7 +121,7 @@ export function test({
 
           // TODO: Fix
           // it('calls rewardedVideoDidStart listener', async () => {
-          //   const didStartListener = t.jasmine.createSpy('rewardedVideoDidStart');
+          //   const didStartListener = jasmine.createSpy('rewardedVideoDidStart');
           //   AdMobRewarded.addEventListener('rewardedVideoDidStart', didStartListener);
           //   await AdMobRewarded.showAdAsync();
           //   await waitFor(5000);
@@ -145,8 +146,8 @@ export function test({
       });
 
       describe('dismissAdAsync', () => {
-        t.xdescribe('if an ad is being shown', () => {
-          t.beforeEach(async () => {
+        xdescribe('if an ad is being shown', () => {
+          beforeEach(async () => {
             AdMobRewarded.setAdUnitID(validAdUnitID);
             await AdMobRewarded.requestAdAsync();
             expect(await AdMobRewarded.getIsReadyAsync()).toBe(true);
@@ -158,7 +159,7 @@ export function test({
           });
 
           it('calls rewardedVideoDidClose listener', async () => {
-            const didCloseListener = t.jasmine.createSpy('rewardedVideoDidClose');
+            const didCloseListener = jasmine.createSpy('rewardedVideoDidClose');
             AdMobRewarded.addEventListener('rewardedVideoDidClose', didCloseListener);
             await AdMobRewarded.dismissAdAsync();
             expect(didCloseListener).toHaveBeenCalled();

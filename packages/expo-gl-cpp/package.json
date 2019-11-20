@@ -1,6 +1,6 @@
 {
   "name": "expo-gl-cpp",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "description": "C++ bindings for WebGL 2.0 used in Expo GL module",
   "main": "index.js",
   "keywords": [
@@ -17,7 +17,7 @@
     "directory": "packages/expo-gl-cpp"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.1.1-rc.0"
+    "expo-module-scripts": "~1.1.1"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -25,5 +25,5 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/gl-view/",
-  "gitHead": "5d4fcf318390f59cecd1ae5d191afb15488a4447"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

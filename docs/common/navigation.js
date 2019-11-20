@@ -1,16 +1,248 @@
-const {
-  ROOT,
-  GROUPS,
-  ESSENTIALS,
-  INTRODUCTION,
-  FUNDAMENTALS,
-  GUIDES,
-  DISTRIBUTION,
-  EXPOKIT,
-  REACT_NATIVE,
-} = require('./sidebar-navigation-order');
-const navigation = require('./navigation-data');
+const prevaledNavigationData = require('./navigation-data');
 const packageVersion = require('../package.json').version;
+
+// Groups of sections
+// - Each section is a top-level folder within the version directory
+// - The groups of sections are expressed only below, there is no representation of them in the filesystem
+const GROUPS = {
+  'The Basics': ['Introduction', 'Get Started', 'Next Steps'],
+  'Managed Workflow': ['Fundamentals', 'Guides', 'Distributing Your App', 'ExpoKit'],
+  'Bare Workflow': ['Essentials'],
+  'API Reference': ['Expo SDK', 'React Native'],
+};
+
+// This array provides the ordering for pages within each section
+const sections = [
+  {
+    name: 'Introduction',
+    reference: [
+      'What is Expo?',
+      'Workflows',
+      'Walkthrough',
+      'Limitations',
+      'Frequently asked questions',
+      'Common Questions',
+    ],
+  },
+  {
+    name: 'Get Started',
+    reference: ['Installation', 'Create a new app'],
+  },
+  {
+    name: 'Next Steps',
+    reference: ['Using the documentation', 'Join the community', 'Additional resources'],
+  },
+  {
+    name: 'Guides',
+    reference: [
+      'App Icons',
+      'Assets',
+      'Error Handling',
+      'Preloading & Caching Assets',
+      'Icons',
+      'Custom Fonts',
+      'Using Custom Fonts',
+      'Routing & Navigation',
+      'Configuring StatusBar',
+      'Create a Splash Screen',
+      'Offline Support',
+      'Configuring OTA Updates',
+      'Account Permissions',
+      'Push Notifications',
+      'Using FCM for Push Notifications',
+      'Notification Channels',
+      'Testing with Jest',
+      'Using TypeScript',
+      'Using Modern JavaScript',
+      'Using ClojureScript',
+      'Using Firebase',
+      'Using GraphQL',
+      'Using Sentry',
+      'Using Bugsnag',
+      'User Interface Component Libraries',
+      'Crafting Educational Materials',
+    ],
+  },
+  {
+    name: 'Distributing Your App',
+    reference: [
+      'Overview',
+      'Building Standalone Apps',
+      'App signing',
+      'Deploying to App Stores',
+      'Release Channels',
+      'Advanced Release Channels',
+      'Hosting An App on Your Servers',
+      'Building Standalone Apps on Your CI',
+      'Uploading Apps to the Apple App Store and Google Play',
+      'App Transfers',
+      'Security',
+    ],
+  },
+  {
+    name: 'ExpoKit',
+    reference: [
+      'Overview',
+      'Detaching to ExpoKit',
+      'Ejecting to ExpoKit',
+      'Developing With ExpoKit',
+      'Advanced ExpoKit Topics',
+      'Universal Modules and ExpoKit',
+    ],
+  },
+  {
+    name: 'Fundamentals',
+    reference: [
+      'Managed Workflow Walkthrough',
+      'Up and Running',
+      'Expo CLI',
+      'Viewing Logs',
+      'Debugging',
+      'Development Mode',
+      'Common Development Errors',
+      'iOS Simulator',
+      'Android Studio Emulator',
+      'Configuration with app.json',
+      'Publishing',
+      'Release Channels',
+      'Building Standalone Apps',
+      'Upgrading Expo SDK Walkthrough',
+      'Linking',
+      'How Expo Works',
+      'Ejecting to Bare Workflow',
+      'Glossary of terms',
+      'exp Command-Line Interface',
+    ],
+  },
+  {
+    name: 'Essentials',
+    reference: [
+      'Bare Workflow Walkthrough',
+      'Up and Running',
+      'Supported Expo SDK APIs',
+      'Using Expo client',
+      'Using Expo for web',
+      'Ejecting from Managed Workflow',
+      'Migrating from ExpoKit',
+    ],
+  },
+  {
+    name: 'React Native',
+    reference: [
+      'Learn the Basics',
+      'Props',
+      'State',
+      'Style',
+      'Height and Width',
+      'Layout with Flexbox',
+      'Handling Text Input',
+      'Handling Touches',
+      'Using a ScrollView',
+      'Using List Views',
+      'Networking',
+      'Platform Specific Code',
+      'Navigating Between Screens',
+      'Images',
+      'Animations',
+      'Accessibility',
+      'Timers',
+      'Performance',
+      'Gesture Responder System',
+      'JavaScript Environment',
+      'Direct Manipulation',
+      'Color Reference',
+      'ActivityIndicator',
+      'Button',
+      'DatePickerIOS',
+      'DrawerLayoutAndroid',
+      'FlatList',
+      'Image',
+      'InputAccessoryView',
+      'KeyboardAvoidingView',
+      'ListView',
+      'MaskedViewIOS',
+      'Modal',
+      'NavigatorIOS',
+      'Picker',
+      'PickerIOS',
+      'ProgressBarAndroid',
+      'ProgressViewIOS',
+      'RefreshControl',
+      'SafeAreaView',
+      'ScrollView',
+      'SectionList',
+      'SegmentedControlIOS',
+      'Slider',
+      'SnapshotViewIOS',
+      'StatusBar',
+      'Switch',
+      'TabBarIOS.Item',
+      'TabBarIOS',
+      'Text',
+      'TextInput',
+      'ToolbarAndroid',
+      'TouchableHighlight',
+      'TouchableNativeFeedback',
+      'TouchableOpacity',
+      'TouchableWithoutFeedback',
+      'View',
+      'ViewPagerAndroid',
+      'VirtualizedList',
+      'WebView',
+      'AccessibilityInfo',
+      'ActionSheetIOS',
+      'Alert',
+      'AlertIOS',
+      'Animated',
+      'AppState',
+      'AsyncStorage',
+      'BackAndroid',
+      'BackHandler',
+      'Clipboard',
+      'DatePickerAndroid',
+      'Dimensions',
+      'Easing',
+      'Image Style Props',
+      'ImageStore',
+      'InteractionManager',
+      'Keyboard',
+      'Layout Props',
+      'LayoutAnimation',
+      'ListViewDataSource',
+      'NetInfo',
+      'PanResponder',
+      'PixelRatio',
+      'Settings',
+      'Shadow Props',
+      'Share',
+      'StatusBarIOS',
+      'StyleSheet',
+      'Systrace',
+      'Text Style Props',
+      'TimePickerAndroid',
+      'ToastAndroid',
+      'Transforms',
+      'Vibration',
+      'VibrationIOS',
+      'View Style Props',
+    ],
+  },
+];
+
+// Order of sections (mapped from directory names in navigation-data.js DIR_MAPPING)
+// TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
+// move this logic to GROUPS instead
+const ROOT = [
+  'Introduction',
+  'Get Started',
+  'Fundamentals',
+  'Guides',
+  'Distributing Your App',
+  'ExpoKit',
+  'Essentials',
+  'Expo SDK',
+  'React Native',
+];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
@@ -24,20 +256,6 @@ const sortAccordingToReference = (arr, reference) => {
   let arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
   return subSort(arrSortedByWeight, arrSortedByWeight.findIndex(o => o.weight === 1));
 };
-
-const sections = [
-  { name: 'Introduction', reference: INTRODUCTION },
-  { name: 'Guides', reference: GUIDES },
-  { name: 'Distributing Your App', reference: DISTRIBUTION },
-  { name: 'ExpoKit', reference: EXPOKIT },
-  { name: 'Fundamentals', reference: FUNDAMENTALS },
-  { name: 'Essentials', reference: ESSENTIALS },
-  { name: 'React Native', reference: REACT_NATIVE },
-  // { name: 'React Native Basics', reference: REACT_NATIVE_BASICS, },
-  // { name: 'React Native Guides', reference: REACT_NATIVE_GUIDES, },
-  // { name: 'React Native Components', reference: REACT_NATIVE_COMPONENTS, },
-  // { name: 'React Native APIs', reference: REACT_NATIVE_APIS, },
-];
 
 const sortNav = nav => {
   nav = sortAccordingToReference(nav, ROOT);
@@ -54,11 +272,17 @@ const sortNav = nav => {
   return nav;
 };
 
+// Get the name of the group that a section belongs to
+function getGroupForSectionName(sectionName) {
+  return Object.keys(GROUPS).find(groupName => GROUPS[groupName].includes(sectionName));
+}
+
 // Yikes, this groups together multiple sections under one heading
 const groupNav = nav => {
   let sections = [];
-  let groupIndex = {};
+  let groupNameToSectionIndex = {};
   nav.forEach(section => {
+    // This moves the "Overview" post to the top of the Expo SDK section
     if (section.name === 'Expo SDK') {
       let overview;
       section.posts.forEach(post => {
@@ -71,18 +295,21 @@ const groupNav = nav => {
         section.posts.unshift(overview);
       }
     }
-    let group = GROUPS[section.name];
-    if (group) {
-      let existingGroupIndex = groupIndex[group];
-      if (existingGroupIndex) {
-        sections[existingGroupIndex].children.push(section);
+
+    // If it's grouped then we add it
+    let groupName = getGroupForSectionName(section.name);
+    if (groupName) {
+      if (groupNameToSectionIndex.hasOwnProperty(groupName)) {
+        let existingSectionIndex = groupNameToSectionIndex[groupName];
+        sections[existingSectionIndex].children.push(section);
       } else {
-        groupIndex[group] = sections.length;
+        groupNameToSectionIndex[groupName] = sections.length;
         sections.push({
-          name: group,
+          name: groupName,
           children: [section],
         });
       }
+      // If it's not grouped then it just gets added to the root
     } else {
       sections.push(section);
     }
@@ -92,7 +319,7 @@ const groupNav = nav => {
 };
 
 const sortedNavigation = Object.assign(
-  ...Object.entries(navigation).map(([version, versionNavigation]) => ({
+  ...Object.entries(prevaledNavigationData).map(([version, versionNavigation]) => ({
     [version]: groupNav(sortNav(versionNavigation)),
   }))
 );

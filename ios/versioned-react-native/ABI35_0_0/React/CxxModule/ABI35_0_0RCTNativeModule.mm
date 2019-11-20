@@ -20,7 +20,7 @@
 #include <fbsystrace.h>
 #endif
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 static MethodCallResult invokeInner(ABI35_0_0RCTBridge *bridge, ABI35_0_0RCTModuleData *moduleData, unsigned int methodId, const folly::dynamic &params);

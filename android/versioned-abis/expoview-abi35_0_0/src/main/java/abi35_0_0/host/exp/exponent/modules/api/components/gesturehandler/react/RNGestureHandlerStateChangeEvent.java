@@ -1,6 +1,6 @@
 package abi35_0_0.host.exp.exponent.modules.api.components.gesturehandler.react;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import abi35_0_0.com.facebook.react.bridge.Arguments;
 import abi35_0_0.com.facebook.react.bridge.WritableMap;

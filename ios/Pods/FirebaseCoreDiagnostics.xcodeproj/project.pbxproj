@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A5ABE2296EB083096A4691DB93D5518D /* firebasecore.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = AF465D5A3287DA8757B6AD89F95531DE /* firebasecore.nanopb.c */; };
+		1AEC519C4A79197CE495A1DAF655844D /* FIRCoreDiagnostics.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CD7D5CBF92F3872669D510F23CFDF41 /* FIRCoreDiagnostics.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		35DFFA29169FEDE382F9D30344DACAD2 /* FIRCoreDiagnosticsDateFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E4D338B05E2C0202889C13ACE387F843 /* FIRCoreDiagnosticsDateFileStorage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BCCD2536B8B9EB25E556DB1A6F7613C5 /* FIRCoreDiagnosticsDateFileStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 701FA3E167197A8DA04694F905373DF8 /* FIRCoreDiagnosticsDateFileStorage.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C395D1F6F28ABAFB4CF8037BB265B3EF /* FirebaseCoreDiagnostics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ACEACBEB755CC05A42145F4DFEE55A3D /* FirebaseCoreDiagnostics-dummy.m */; };
-		C3D6BBA3F422FAE58AC5987F518E2F50 /* FIRCoreDiagnostics.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CD7D5CBF92F3872669D510F23CFDF41 /* FIRCoreDiagnostics.m */; };
-		C6DBF2AC25CC4CF8669C0160098CC205 /* FIRCoreDiagnosticsDateFileStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = E4D338B05E2C0202889C13ACE387F843 /* FIRCoreDiagnosticsDateFileStorage.m */; };
 		D51DF2B447A6166299A4F6E195CC6D60 /* firebasecore.nanopb.h in Headers */ = {isa = PBXBuildFile; fileRef = A1C487EF04DF9EA0E4FBF8804F5EE289 /* firebasecore.nanopb.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		DEC36516882F2EE9125525B38ED0D234 /* FirebaseCoreDiagnostics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = ACEACBEB755CC05A42145F4DFEE55A3D /* FirebaseCoreDiagnostics-dummy.m */; };
+		EDF7D760D99C44E03AC2D2749F47BC09 /* firebasecore.nanopb.c in Sources */ = {isa = PBXBuildFile; fileRef = AF465D5A3287DA8757B6AD89F95531DE /* firebasecore.nanopb.c */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,7 +143,7 @@
 			buildConfigurationList = B62390B7D76FC27F3634A4621905EF2E /* Build configuration list for PBXNativeTarget "FirebaseCoreDiagnostics" */;
 			buildPhases = (
 				5560AF437C0CBF5783460C638D6C17DC /* Headers */,
-				63AB3AB797F8A0EE13F54BCC6274FF95 /* Sources */,
+				4CD056AC8505B7E2DC180D5E4C8F1998 /* Sources */,
 				06D0CC7A9E87E22F00339EC105FB8D60 /* Frameworks */,
 			);
 			buildRules = (
@@ -196,14 +196,14 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		63AB3AB797F8A0EE13F54BCC6274FF95 /* Sources */ = {
+		4CD056AC8505B7E2DC180D5E4C8F1998 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3D6BBA3F422FAE58AC5987F518E2F50 /* FIRCoreDiagnostics.m in Sources */,
-				C6DBF2AC25CC4CF8669C0160098CC205 /* FIRCoreDiagnosticsDateFileStorage.m in Sources */,
-				A5ABE2296EB083096A4691DB93D5518D /* firebasecore.nanopb.c in Sources */,
-				C395D1F6F28ABAFB4CF8037BB265B3EF /* FirebaseCoreDiagnostics-dummy.m in Sources */,
+				1AEC519C4A79197CE495A1DAF655844D /* FIRCoreDiagnostics.m in Sources */,
+				35DFFA29169FEDE382F9D30344DACAD2 /* FIRCoreDiagnosticsDateFileStorage.m in Sources */,
+				EDF7D760D99C44E03AC2D2749F47BC09 /* firebasecore.nanopb.c in Sources */,
+				DEC36516882F2EE9125525B38ED0D234 /* FirebaseCoreDiagnostics-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

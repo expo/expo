@@ -12,7 +12,7 @@
 #include <folly/portability/SysMman.h>
 #include <folly/ScopeGuard.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
@@ -80,4 +80,4 @@ std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(const std::stri
 }
 
 }  // namespace ReactABI35_0_0
-}  // namespace facebook
+}  // namespace ABI35_0_0facebook

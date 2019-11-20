@@ -11,7 +11,7 @@
 #include <ABI35_0_0jsi/ABI35_0_0instrumentation.h>
 #include <ABI35_0_0jsi/ABI35_0_0jsi.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace jsi {
 
 namespace detail {
@@ -350,4 +350,4 @@ void JSError::setValue(Runtime& rt, Value&& value) {
 }
 
 } // namespace jsi
-} // namespace facebook
+} // namespace ABI35_0_0facebook

@@ -34,16 +34,21 @@ export function test({ describe, xdescribe, fail, afterEach, it, expect, jasmine
       Speech.stop();
     });
 
-    it('calls onDone', async () => {
-      const onDone = jasmine.createSpy('onDone');
-      Speech.speak(shortTextToSpeak, { onDone });
-      await waitFor(
-        Platform.select({
-          web: 1500,
-          default: 1000,
-        })
-      );
-      expect(onDone).toHaveBeenCalled();
+    it("speaks with voice and doesn't throw", async () => {
+      const [voice] = await Speech.getAvailableVoicesAsync();
+      expect(voice).toBeDefined();
+
+      const onError = jasmine.createSpy('onError');
+
+      await new Promise((resolve, reject) => {
+        try {
+          Speech.speak(shortTextToSpeak, { onError, onDone: resolve, voice: voice.identifier });
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      expect(onError).not.toHaveBeenCalled();
       Speech.stop();
     });
 
@@ -61,25 +66,25 @@ export function test({ describe, xdescribe, fail, afterEach, it, expect, jasmine
         expect(onError).not.toHaveBeenCalled();
         Speech.stop();
       });
-
-      // Actually it throws a big red exception instead of rejecting the promise.
-      // it('calls onError if language is invalid', async () => {
-      //   const onError = jasmine.createSpy('onError');
-      //   const language = 'nonexistentlanguage';
-      //   try {
-      //     Speech.speak('Short', { onError, language });
-      //     await new Promise(resolve =>
-      //       setTimeout(() => {
-      //         expect(onError).toHaveBeenCalled();
-      //         resolve();
-      //       }, 1000)
-      //     );
-      //     Speech.stop();
-      //   } catch (error) {
-      //     fail(error);
-      //   }
-      // });
     }
+
+    // Actually it throws a big red exception instead of rejecting the promise.
+    // it('calls onError if language is invalid', async () => {
+    //   const onError = jasmine.createSpy('onError');
+    //   const language = 'nonexistentlanguage';
+    //   try {
+    //     Speech.speak('Short', { onError, language });
+    //     await new Promise(resolve =>
+    //       setTimeout(() => {
+    //         expect(onError).toHaveBeenCalled();
+    //         resolve();
+    //       }, 1000)
+    //     );
+    //     Speech.stop();
+    //   } catch (error) {
+    //     fail(error);
+    //   }
+    // });
   });
 
   /*describe('Speech.stop()', () => {
@@ -113,5 +118,15 @@ export function test({ describe, xdescribe, fail, afterEach, it, expect, jasmine
         expect(isSpeaking).toBe(true);
         Speech.stop();
       });*/
+  });
+
+  describe('Speech.getAvailableVoicesAsync()', () => {
+    it('has voice with language tag', async () => {
+      const voices = await Speech.getAvailableVoicesAsync();
+
+      expect(voices.length).toBeGreaterThan(0);
+
+      expect(voices.map(voice => voice.language)).toContain('en-US');
+    });
   });
 }

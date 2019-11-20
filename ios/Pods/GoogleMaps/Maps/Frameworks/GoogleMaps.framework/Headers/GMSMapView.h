@@ -325,51 +325,51 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 /**
  * Controls whether the My Location dot and accuracy circle is enabled. Defaults to NO.
  */
-@property(nonatomic, assign, getter=isMyLocationEnabled) BOOL myLocationEnabled;
+@property(nonatomic, getter=isMyLocationEnabled) BOOL myLocationEnabled;
 
 /**
  * If My Location is enabled, reveals where the user location dot is being drawn. If it is disabled,
  * or it is enabled but no location data is available, this will be nil.  This property is
  * observable using KVO.
  */
-@property(nonatomic, strong, readonly, nullable) CLLocation *myLocation;
+@property(nonatomic, readonly, nullable) CLLocation *myLocation;
 
 /**
  * The marker that is selected.  Setting this property selects a particular marker, showing an info
  * window on it.  If this property is non-nil, setting it to nil deselects the marker, hiding the
  * info window.  This property is observable using KVO.
  */
-@property(nonatomic, strong, nullable) GMSMarker *selectedMarker;
+@property(nonatomic, nullable) GMSMarker *selectedMarker;
 
 /**
  * Controls whether the map is drawing traffic data, if available.  This is subject to the
  * availability of traffic data.  Defaults to NO.
  */
-@property(nonatomic, assign, getter=isTrafficEnabled) BOOL trafficEnabled;
+@property(nonatomic, getter=isTrafficEnabled) BOOL trafficEnabled;
 
 /**
  * Controls the type of map tiles that should be displayed.  Defaults to kGMSTypeNormal.
  */
-@property(nonatomic, assign) GMSMapViewType mapType;
+@property(nonatomic) GMSMapViewType mapType;
 
 /**
  * Controls the style of the map.
  *
  * A non-nil mapStyle will only apply if mapType is Normal.
  */
-@property(nonatomic, strong, nullable) GMSMapStyle *mapStyle;
+@property(nonatomic, nullable) GMSMapStyle *mapStyle;
 
 /**
  * Minimum zoom (the farthest the camera may be zoomed out). Defaults to kGMSMinZoomLevel. Modified
  * with -setMinZoom:maxZoom:.
  */
-@property(nonatomic, assign, readonly) float minZoom;
+@property(nonatomic, readonly) float minZoom;
 
 /**
  * Maximum zoom (the closest the camera may be to the Earth). Defaults to kGMSMaxZoomLevel. Modified
  * with -setMinZoom:maxZoom:.
  */
-@property(nonatomic, assign, readonly) float maxZoom;
+@property(nonatomic, readonly) float maxZoom;
 
 /**
  * If set, 3D buildings will be shown where available.  Defaults to YES.
@@ -377,7 +377,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  * This may be useful when adding a custom tile layer to the map, in order to make it clearer at
  * high zoom levels.  Changing this value will cause all tiles to be briefly invalidated.
  */
-@property(nonatomic, assign, getter=isBuildingsEnabled) BOOL buildingsEnabled;
+@property(nonatomic, getter=isBuildingsEnabled) BOOL buildingsEnabled;
 
 /**
  * Sets whether indoor maps are shown, where available. Defaults to YES.
@@ -385,18 +385,18 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  * If this is set to NO, caches for indoor data may be purged and any floor currently selected by
  * the end-user may be reset.
  */
-@property(nonatomic, assign, getter=isIndoorEnabled) BOOL indoorEnabled;
+@property(nonatomic, getter=isIndoorEnabled) BOOL indoorEnabled;
 
 /**
  * Gets the GMSIndoorDisplay instance which allows to observe or control aspects of indoor data
  * display.
  */
-@property(nonatomic, strong, readonly) GMSIndoorDisplay *indoorDisplay;
+@property(nonatomic, readonly) GMSIndoorDisplay *indoorDisplay;
 
 /**
  * Gets the GMSUISettings object, which controls user interface settings for the map.
  */
-@property(nonatomic, strong, readonly) GMSUISettings *settings;
+@property(nonatomic, readonly) GMSUISettings *settings;
 
 /**
  * Controls the 'visible' region of the view.  By applying padding an area around the edge of the
@@ -409,7 +409,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  *
  * This property may be animated within a UIView-based animation block.
  */
-@property(nonatomic, assign) UIEdgeInsets padding;
+@property(nonatomic) UIEdgeInsets padding;
 
 /**
  * Controls how safe area insets are added to the padding values. Like padding, safe area insets
@@ -418,7 +418,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  *
  * Defaults to kGMSMapViewPaddingAdjustmentBehaviorAlways.
  */
-@property(nonatomic, assign) GMSMapViewPaddingAdjustmentBehavior paddingAdjustmentBehavior;
+@property(nonatomic) GMSMapViewPaddingAdjustmentBehavior paddingAdjustmentBehavior;
 
 /**
  * Defaults to YES. If set to NO, GMSMapView will generate accessibility elements for overlay
@@ -437,13 +437,13 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 /**
  * Controls the rendering frame rate. Default value is kGMSFrameRateMaximum.
  */
-@property(nonatomic, assign) GMSFrameRate preferredFrameRate;
+@property(nonatomic) GMSFrameRate preferredFrameRate;
 
 /**
  * If not nil, constrains the camera target so that gestures cannot cause it to leave the specified
  * bounds.
  */
-@property(nonatomic, strong, nullable) GMSCoordinateBounds *cameraTargetBounds;
+@property(nonatomic, nullable) GMSCoordinateBounds *cameraTargetBounds;
 
 /**
  * Convenience initializer that builds and returns a GMSMapView, with a frame and camera target.

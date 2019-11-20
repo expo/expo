@@ -17,7 +17,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class NativeModule;

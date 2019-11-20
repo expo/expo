@@ -1,5 +1,6 @@
 ---
 title: MailComposer
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-mail-composer"
 ---
 
 An API to compose mails using OS specific UI.
@@ -16,7 +17,7 @@ import * as MailComposer from 'expo-mail-composer';
 
 ### `MailComposer.composeAsync(options)`
 
-Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided data.
+Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided data. On iOS you will need to be signed into the Mail app.
 
 #### Arguments
 

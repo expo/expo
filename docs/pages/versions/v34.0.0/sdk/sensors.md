@@ -1,5 +1,6 @@
 ---
 title: Sensors
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 Various APIs for accessing device sensors are included under this umbrella package called `expo-sensors`.
@@ -23,4 +24,10 @@ import {
 } from 'expo-sensors';
 ```
 
-See documentation for the sensors you are interested in using for more information.
+For more information, please see the documentation for the sensor you are interested in:
+
+- [Accelerometer](../accelerometer/)
+- [Barometer](../barometer/)
+- [Gyroscope](../gyroscope/)
+- [Magnetometer](../magnetometer/)
+- [Pedometer](../pedometer/) 

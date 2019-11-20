@@ -21,16 +21,16 @@ import { AppleAuthenticationButtonStyle, AppleAuthenticationButtonType, } from '
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-const AppleAuthenticationButton = (props) => {
+const AppleAuthenticationButton = props => {
     if (!ExpoAppleAuthenticationButtonSignInWhite) {
         if (__DEV__) {
-            console.warn('\'AppleAuthenticationButton\' is not available.');
+            console.warn("'AppleAuthenticationButton' is not available.");
         }
         return null;
     }
     const { onPress, buttonStyle, buttonType, ...restProps } = props;
     const AppleAuthenticationButtonComponent = selectButtonComponent(buttonType, buttonStyle);
-    return (<AppleAuthenticationButtonComponent onButtonPress={onPress} {...restProps}/>);
+    return <AppleAuthenticationButtonComponent onButtonPress={onPress} {...restProps}/>;
 };
 const ButtonComponents = {
     [AppleAuthenticationButtonType.SIGN_IN]: {

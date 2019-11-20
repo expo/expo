@@ -13,6 +13,9 @@ it(`renders a complex gradient`, () => {
   );
 
   expect(
-    component.find('ViewManagerAdapter_ExpoLinearGradient').prop('proxiedProperties')
+    component
+      .find('ViewManagerAdapter_ExpoLinearGradient')
+      .first()
+      .prop('proxiedProperties')
   ).toMatchSnapshot();
 });

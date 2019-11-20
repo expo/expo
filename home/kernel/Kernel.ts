@@ -41,10 +41,6 @@ export async function doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
   return await NativeKernel.doesCurrentTaskEnableDevtools();
 }
 
-export function addDevMenu(): void {
-  NativeKernel.addDevMenu();
-}
-
 export async function getDevMenuItemsToShowAsync(): Promise<{ [key: string]: KernelDevMenuItem }> {
   return await NativeKernel.getDevMenuItemsToShow();
 }

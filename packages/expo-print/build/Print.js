@@ -6,7 +6,7 @@ export async function printAsync(options) {
     if (Platform.OS === 'web') {
         return await ExponentPrint.print(options);
     }
-    if (!options.uri && !options.html && (Platform.OS === 'ios' && !options.markupFormatterIOS)) {
+    if (!options.uri && !options.html && Platform.OS === 'ios' && !options.markupFormatterIOS) {
         throw new Error('Must provide either `html` or `uri` to print');
     }
     if (options.uri && options.html) {

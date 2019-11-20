@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		18E87D9A848F9D82C7597C914946622C /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 464DC30F89930E6739D1674977F763E5 /* json_pointer.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		2A6F16B73A7952AC257FDAF6A80C12CD /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2D22E537620633E687EE4A3466EA504 /* ScopeGuard.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		099D716FAEDFD397674C5611E7155CDE /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D925DED64966005ED9C8F390FB33F7CC /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		1302359DF0B7A9CD00679D6F8F04BEC1 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29CA37D68C32096E136D3EC37C3ACA1D /* MallocImpl.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		152B646A074F85D2A1FBBA775FDCC3E1 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB583EE3B1887D35FD2DBE3A9449F23D /* Format.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		2093F86B36A43DA948147A9CF5332D5E /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2670EA675E8B416D67BD3FDC1C74A3E /* SpookyHashV2.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		263668CF8E81B50360EF994CA26538C0 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E586EA596640284384908302FE427EE4 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		30F28195AD18B3C2C9E6D35EA68D067B /* Folly-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8AC8778B2201E1D32ED3BA33EA51 /* Folly-dummy.m */; };
-		3A26F25481A3AA1064D235F1A144464A /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FB583EE3B1887D35FD2DBE3A9449F23D /* Format.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		44994A87AF8B9B60DC2CB469415E4399 /* MallocImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 29CA37D68C32096E136D3EC37C3ACA1D /* MallocImpl.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		46904F72E038A6919DBB7981DDE0CD06 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0DBE9C80CBDDC3E48906B97035465520 /* json.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4F00AC9FC3E217FEC1708E699F8E7D00 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D925DED64966005ED9C8F390FB33F7CC /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		772566124AA9FBB84E5AFDE8B295FECC /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9528774C7C3E26D32674FA3D1DF6F2D8 /* Assume.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		795CA332987071604DC3361557DFBCA2 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FFD7C9DF9B87A0241BF5D136AA3444BE /* F14Table.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		958DE3A2FFE1A669F900F476CFF646E2 /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B24112F0B02343F001DABC6F3009674E /* ColdClass.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		98F1855330DB932A0C69DAD4B64D757D /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A63FF9270174EDFE44770AB29D892CCD /* Conv.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		A401CF158A69B43BF5886530CE583059 /* Demangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E586EA596640284384908302FE427EE4 /* Demangle.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		C34684216244E3E4A1C77FA92BB9CA11 /* SpookyHashV2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2670EA675E8B416D67BD3FDC1C74A3E /* SpookyHashV2.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		CB2F5EEF819CDAA68B10546F5F164A16 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C16FB6C0752E2AC4B2579A3A3B8104AB /* String.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		D56B2290A0734099A3AA2B6F2C015F0C /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32B106B98128FB0DBB99C8C43C7CB4C /* dynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		DF1C5A05512C8B19D962B4146DA52A88 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E6C50D4CC287E8E694092883C07CAEB /* Unicode.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		384986C29EEFB981D04580FE2F9A6044 /* String.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C16FB6C0752E2AC4B2579A3A3B8104AB /* String.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		5CE05E0C66F02B9CAC71641364F24326 /* dynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32B106B98128FB0DBB99C8C43C7CB4C /* dynamic.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		648329ABF68446881B982928AE99FAD2 /* F14Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FFD7C9DF9B87A0241BF5D136AA3444BE /* F14Table.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9897E08E27407067C8FFA7D6FE5FEDB3 /* Conv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A63FF9270174EDFE44770AB29D892CCD /* Conv.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B76640E8C691CEA5D6B541BF3C2D8784 /* json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0DBE9C80CBDDC3E48906B97035465520 /* json.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D201493016EA15945E2E4EEEBB3482A8 /* json_pointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 464DC30F89930E6739D1674977F763E5 /* json_pointer.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DBD454D712AB3B96E106A30BB89E3E29 /* ScopeGuard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2D22E537620633E687EE4A3466EA504 /* ScopeGuard.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		DD4A5F6A4B111D84970397A1EF436856 /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7E6C50D4CC287E8E694092883C07CAEB /* Unicode.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		EC5D634E1E684E6F49CD150D7602633A /* Assume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9528774C7C3E26D32674FA3D1DF6F2D8 /* Assume.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		F899755A85C1EFE0A645DE37E5D1811A /* ColdClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B24112F0B02343F001DABC6F3009674E /* ColdClass.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -230,22 +230,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				772566124AA9FBB84E5AFDE8B295FECC /* Assume.cpp in Sources */,
-				958DE3A2FFE1A669F900F476CFF646E2 /* ColdClass.cpp in Sources */,
-				98F1855330DB932A0C69DAD4B64D757D /* Conv.cpp in Sources */,
-				4F00AC9FC3E217FEC1708E699F8E7D00 /* Demangle.cpp in Sources */,
-				A401CF158A69B43BF5886530CE583059 /* Demangle.cpp in Sources */,
-				D56B2290A0734099A3AA2B6F2C015F0C /* dynamic.cpp in Sources */,
-				795CA332987071604DC3361557DFBCA2 /* F14Table.cpp in Sources */,
+				EC5D634E1E684E6F49CD150D7602633A /* Assume.cpp in Sources */,
+				F899755A85C1EFE0A645DE37E5D1811A /* ColdClass.cpp in Sources */,
+				9897E08E27407067C8FFA7D6FE5FEDB3 /* Conv.cpp in Sources */,
+				099D716FAEDFD397674C5611E7155CDE /* Demangle.cpp in Sources */,
+				263668CF8E81B50360EF994CA26538C0 /* Demangle.cpp in Sources */,
+				5CE05E0C66F02B9CAC71641364F24326 /* dynamic.cpp in Sources */,
+				648329ABF68446881B982928AE99FAD2 /* F14Table.cpp in Sources */,
 				30F28195AD18B3C2C9E6D35EA68D067B /* Folly-dummy.m in Sources */,
-				3A26F25481A3AA1064D235F1A144464A /* Format.cpp in Sources */,
-				46904F72E038A6919DBB7981DDE0CD06 /* json.cpp in Sources */,
-				18E87D9A848F9D82C7597C914946622C /* json_pointer.cpp in Sources */,
-				44994A87AF8B9B60DC2CB469415E4399 /* MallocImpl.cpp in Sources */,
-				2A6F16B73A7952AC257FDAF6A80C12CD /* ScopeGuard.cpp in Sources */,
-				C34684216244E3E4A1C77FA92BB9CA11 /* SpookyHashV2.cpp in Sources */,
-				CB2F5EEF819CDAA68B10546F5F164A16 /* String.cpp in Sources */,
-				DF1C5A05512C8B19D962B4146DA52A88 /* Unicode.cpp in Sources */,
+				152B646A074F85D2A1FBBA775FDCC3E1 /* Format.cpp in Sources */,
+				B76640E8C691CEA5D6B541BF3C2D8784 /* json.cpp in Sources */,
+				D201493016EA15945E2E4EEEBB3482A8 /* json_pointer.cpp in Sources */,
+				1302359DF0B7A9CD00679D6F8F04BEC1 /* MallocImpl.cpp in Sources */,
+				DBD454D712AB3B96E106A30BB89E3E29 /* ScopeGuard.cpp in Sources */,
+				2093F86B36A43DA948147A9CF5332D5E /* SpookyHashV2.cpp in Sources */,
+				384986C29EEFB981D04580FE2F9A6044 /* String.cpp in Sources */,
+				DD4A5F6A4B111D84970397A1EF436856 /* Unicode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

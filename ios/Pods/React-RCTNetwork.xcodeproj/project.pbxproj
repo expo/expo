@@ -1,0 +1,406 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0DCBD762A2A02368FB5185A3EB8E9E29 /* RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D8EA6B31C4457C05848D8EAC089648F3 /* RCTFileRequestHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3790D2FA2A3D18495FA5F2E7172E5D45 /* RCTNetworkTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F374BCFB02CDE47974A488013D345E /* RCTNetworkTask.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		3AA28E82DE2B7DF82201F6BC325660D5 /* RCTDataRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F6C62580CE44C87DAA547288D8784A3D /* RCTDataRequestHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6E2E86FFAF9C80A54B59A84A622045F2 /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 866F2C78A98E382A8184AD15EF5412B0 /* RCTNetworking.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		723B89AA1D3BE79C36E682410849E756 /* RCTHTTPRequestHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 441F32249253931979EED949C3ED7C8A /* RCTHTTPRequestHandler.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A9B596CDF7674B4D1A0D163B4635B658 /* React-RCTNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E4331299174ADFC374D275E09146E00 /* React-RCTNetwork-dummy.m */; };
+		EDE5BDEEDE96C56F71C8D235BFD9A7A6 /* RCTNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 31E20729695989A70FF23A45F5C70777 /* RCTNetInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		44F1C6C4847F1C7F418BBBB8826C1DD9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05DB0DEF6B7E48C3657A8CCA05CA31D5 /* React-Core.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
+			remoteInfo = "React-Core";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		05DB0DEF6B7E48C3657A8CCA05CA31D5 /* React-Core */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Core"; path = "React-Core.xcodeproj"; sourceTree = "<group>"; };
+		12873ABC1218A2577273DE3294C72A11 /* React-RCTNetwork.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-RCTNetwork.xcconfig"; sourceTree = "<group>"; };
+		31E20729695989A70FF23A45F5C70777 /* RCTNetInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTNetInfo.m; sourceTree = "<group>"; };
+		35AD38F6923BEBB0F6D34CE1D6FE97B4 /* libReact-RCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-RCTNetwork.a"; path = "libReact-RCTNetwork.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		441F32249253931979EED949C3ED7C8A /* RCTHTTPRequestHandler.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTHTTPRequestHandler.mm; sourceTree = "<group>"; };
+		82F374BCFB02CDE47974A488013D345E /* RCTNetworkTask.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTNetworkTask.m; sourceTree = "<group>"; };
+		866F2C78A98E382A8184AD15EF5412B0 /* RCTNetworking.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = RCTNetworking.mm; sourceTree = "<group>"; };
+		9E4331299174ADFC374D275E09146E00 /* React-RCTNetwork-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-RCTNetwork-dummy.m"; sourceTree = "<group>"; };
+		A824DF68BD78E14F8166DB96042D971C /* React-RCTNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-RCTNetwork.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		D8EA6B31C4457C05848D8EAC089648F3 /* RCTFileRequestHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTFileRequestHandler.m; sourceTree = "<group>"; };
+		DDAEF04D46D3E0AEF29E0CE5B7DCAE04 /* React-RCTNetwork-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-RCTNetwork-prefix.pch"; sourceTree = "<group>"; };
+		F6C62580CE44C87DAA547288D8784A3D /* RCTDataRequestHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = RCTDataRequestHandler.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		60D1D1BC4A2A453C83C53604CF681B2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2006E1F3442948669CE5992D87828BAB /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				05DB0DEF6B7E48C3657A8CCA05CA31D5 /* React-Core */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		2DFD4170431205D5B4877357B18EA265 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				35AD38F6923BEBB0F6D34CE1D6FE97B4 /* libReact-RCTNetwork.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D5426DC56FE40DC62E27C9640FBF7B6 /* React-RCTNetwork */ = {
+			isa = PBXGroup;
+			children = (
+				F6C62580CE44C87DAA547288D8784A3D /* RCTDataRequestHandler.m */,
+				D8EA6B31C4457C05848D8EAC089648F3 /* RCTFileRequestHandler.m */,
+				441F32249253931979EED949C3ED7C8A /* RCTHTTPRequestHandler.mm */,
+				31E20729695989A70FF23A45F5C70777 /* RCTNetInfo.m */,
+				866F2C78A98E382A8184AD15EF5412B0 /* RCTNetworking.mm */,
+				82F374BCFB02CDE47974A488013D345E /* RCTNetworkTask.m */,
+				AD092DA72399CCE2981DC718276F72CA /* Pod */,
+				B880141288D44523DD347D2F6FBB5C27 /* Support Files */,
+			);
+			name = "React-RCTNetwork";
+			path = "../../react-native-lab/react-native/Libraries/Network";
+			sourceTree = "<group>";
+		};
+		AD092DA72399CCE2981DC718276F72CA /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				A824DF68BD78E14F8166DB96042D971C /* React-RCTNetwork.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		B190ACA32D7BF2F0CC0B6DA023852F1F = {
+			isa = PBXGroup;
+			children = (
+				2006E1F3442948669CE5992D87828BAB /* Dependencies */,
+				C71A3A7537E118AE3174F15D428F18FB /* Frameworks */,
+				2DFD4170431205D5B4877357B18EA265 /* Products */,
+				5D5426DC56FE40DC62E27C9640FBF7B6 /* React-RCTNetwork */,
+			);
+			sourceTree = "<group>";
+		};
+		B880141288D44523DD347D2F6FBB5C27 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				12873ABC1218A2577273DE3294C72A11 /* React-RCTNetwork.xcconfig */,
+				9E4331299174ADFC374D275E09146E00 /* React-RCTNetwork-dummy.m */,
+				DDAEF04D46D3E0AEF29E0CE5B7DCAE04 /* React-RCTNetwork-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-RCTNetwork";
+			sourceTree = "<group>";
+		};
+		C71A3A7537E118AE3174F15D428F18FB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		C872A8330138D4A8104BD4D25544D23D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B42CC4F102742853C37E7C4841756DBE /* React-RCTNetwork */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A502E10D37203EC7FEBD5A3B94CA8237 /* Build configuration list for PBXNativeTarget "React-RCTNetwork" */;
+			buildPhases = (
+				C872A8330138D4A8104BD4D25544D23D /* Headers */,
+				C3B9A6E653E444837EA617A9D9939F48 /* Sources */,
+				60D1D1BC4A2A453C83C53604CF681B2F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC857B405EA0F586D75FDB70770BC998 /* PBXTargetDependency */,
+			);
+			name = "React-RCTNetwork";
+			productName = "React-RCTNetwork";
+			productReference = 35AD38F6923BEBB0F6D34CE1D6FE97B4 /* libReact-RCTNetwork.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		97B88F15440BC0FFD1ED51F650A9534E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 1AB8E2A618B3C88230BBE2E884B51F9D /* Build configuration list for PBXProject "React-RCTNetwork" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B190ACA32D7BF2F0CC0B6DA023852F1F;
+			productRefGroup = 2DFD4170431205D5B4877357B18EA265 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 05DB0DEF6B7E48C3657A8CCA05CA31D5 /* React-Core */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				B42CC4F102742853C37E7C4841756DBE /* React-RCTNetwork */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C3B9A6E653E444837EA617A9D9939F48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AA28E82DE2B7DF82201F6BC325660D5 /* RCTDataRequestHandler.m in Sources */,
+				0DCBD762A2A02368FB5185A3EB8E9E29 /* RCTFileRequestHandler.m in Sources */,
+				723B89AA1D3BE79C36E682410849E756 /* RCTHTTPRequestHandler.mm in Sources */,
+				EDE5BDEEDE96C56F71C8D235BFD9A7A6 /* RCTNetInfo.m in Sources */,
+				6E2E86FFAF9C80A54B59A84A622045F2 /* RCTNetworking.mm in Sources */,
+				3790D2FA2A3D18495FA5F2E7172E5D45 /* RCTNetworkTask.m in Sources */,
+				A9B596CDF7674B4D1A0D163B4635B658 /* React-RCTNetwork-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EC857B405EA0F586D75FDB70770BC998 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "React-Core";
+			targetProxy = 44F1C6C4847F1C7F418BBBB8826C1DD9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2FBC36FC344A874519CA179D0E3741A0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12873ABC1218A2577273DE3294C72A11 /* React-RCTNetwork.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTNetwork/React-RCTNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTNetwork;
+				PRODUCT_NAME = "React-RCTNetwork";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3EB9E202010110C47157F13124F04881 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		69CD566DB9CE60070A2BE2E4FBBAB528 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 12873ABC1218A2577273DE3294C72A11 /* React-RCTNetwork.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-RCTNetwork/React-RCTNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = RCTNetwork;
+				PRODUCT_NAME = "React-RCTNetwork";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		92D14EE7C40DC6A568BC9A993781F213 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1AB8E2A618B3C88230BBE2E884B51F9D /* Build configuration list for PBXProject "React-RCTNetwork" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3EB9E202010110C47157F13124F04881 /* Debug */,
+				92D14EE7C40DC6A568BC9A993781F213 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A502E10D37203EC7FEBD5A3B94CA8237 /* Build configuration list for PBXNativeTarget "React-RCTNetwork" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2FBC36FC344A874519CA179D0E3741A0 /* Debug */,
+				69CD566DB9CE60070A2BE2E4FBBAB528 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 97B88F15440BC0FFD1ED51F650A9534E /* Project object */;
+}

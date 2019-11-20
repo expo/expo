@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Can be set to nil to clear the view.
  */
-@property(nonatomic, strong, nullable) GMSPanorama *panorama;
+@property(nonatomic, nullable) GMSPanorama *panorama;
 
 /** GMSPanoramaView delegate. */
 @property(nonatomic, weak, nullable) IBOutlet id<GMSPanoramaViewDelegate> delegate;
@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This does not limit programmatic movement of the camera.
  */
-@property(nonatomic, assign) BOOL orientationGestures;
+@property(nonatomic) BOOL orientationGestures;
 
 /**
  * Controls whether zoom gestures are enabled (default) or disabled. If enabled, users may pinch to
@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This does not limit programmatic movement of the camera.
  */
-@property(nonatomic, assign) BOOL zoomGestures;
+@property(nonatomic) BOOL zoomGestures;
 
 /**
  * Controls whether navigation gestures are enabled (default) or disabled. If enabled, users may use
@@ -152,24 +152,24 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This does not limit programmatic control of the panorama.
  */
-@property(nonatomic, assign) BOOL navigationGestures;
+@property(nonatomic) BOOL navigationGestures;
 
 /**
  * Controls whether the tappable navigation links are hidden or visible (default). Hidden navigation
  * links cannot be tapped.
  */
-@property(nonatomic, assign) BOOL navigationLinksHidden;
+@property(nonatomic) BOOL navigationLinksHidden;
 
 /**
  * Controls whether the street name overlays are hidden or visible (default).
  */
-@property(nonatomic, assign) BOOL streetNamesHidden;
+@property(nonatomic) BOOL streetNamesHidden;
 
 /**
  * Controls the panorama's camera. Setting a new camera here jumps to the new camera value, with no
  * animation.
  */
-@property(nonatomic, strong) GMSPanoramaCamera *camera;
+@property(nonatomic) GMSPanoramaCamera *camera;
 
 /**
  * Accessor for the custom CALayer type used for the layer.

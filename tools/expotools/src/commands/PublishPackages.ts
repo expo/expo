@@ -166,9 +166,9 @@ async function _runPipelineAsync(
   }
 }
 
-async function _getPackageViewFromRegistryAsync(packageName: string): Promise<PackageView | null> {
+async function _getPackageViewFromRegistryAsync(packageName: string, version?: string): Promise<PackageView | null> {
   try {
-    const json = await _spawnJSONCommandAsync('npm', ['view', packageName, '--json']);
+    const json = await _spawnJSONCommandAsync('npm', ['view', version ? `${packageName}@${version}` : packageName, '--json']);
 
     if (json && !json.error) {
       const currentVersion = json.versions[json.versions.length - 1];
@@ -475,7 +475,7 @@ async function _preparePublishAsync(
   let isSubmodule: boolean | undefined;
 
   if (isScoped) {
-    console.log(`Preparing ${chalk.green(pkg.packageName)}... 👨‍🍳`);
+    console.log(`Preparing ${chalk.bold.green(pkg.packageName)}... 👨‍🍳`);
 
     if (packageView && currentVersion) {
       // package is already published
@@ -731,7 +731,7 @@ async function _publishAsync(
 
     // Unfortunately, `npm publish` doesn't provide --json flag, so the best way to check if it succeded
     // is to check if the new package view resolves current version to the new version we just tried publishing
-    const newPackageView = await _getPackageViewFromRegistryAsync(pkg.packageName);
+    const newPackageView = await _getPackageViewFromRegistryAsync(pkg.packageName, newVersion);
 
     if (newPackageView && newPackageView.currentVersion === newVersion) {
       console.log(
@@ -749,7 +749,7 @@ async function _publishAsync(
 
       if (
         await _promptAsync(
-          'It might be an intermittent issue. Do you confirm it has been published?'
+          `It might be an intermittent issue. Do you confirm it has been published? Check out ${chalk.blue(`https://www.npmjs.com/package/${pkg.packageName}`)}.`
         )
       ) {
         return { published: true };

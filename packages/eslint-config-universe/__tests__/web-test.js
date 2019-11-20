@@ -35,10 +35,10 @@ it(`lints with the web config`, async () => {
     delete result.filePath;
     expect(result).toMatchSnapshot(relativeFilePath);
   }
-});
+}, 20000);
 
 it(`doesn't conflict with Prettier`, async () => {
   let { success, message } = await checkPrettierRulesAsync(configFile);
   expect(success).toMatchSnapshot('success');
   expect(message).toMatchSnapshot('message');
-});
+}, 10000);

@@ -7,7 +7,7 @@
 
 #include <folly/Bits.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 static uint32_t constexpr RAMBundleMagicNumber = 0xFB0BD1E5;
@@ -37,4 +37,4 @@ const char *stringForScriptTag(const ScriptTag& tag) {
 }
 
 }  // namespace ReactABI33_0_0
-}  // namespace facebook
+}  // namespace ABI33_0_0facebook

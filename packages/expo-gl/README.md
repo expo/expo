@@ -22,7 +22,7 @@ expo-gl requires that you also install and configure [expo-gl-cpp](https://githu
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-gl
+expo install expo-gl
 ```
 
 ### Compatibility

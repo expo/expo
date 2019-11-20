@@ -1,6 +1,6 @@
 {
   "name": "EXAppLoaderProvider",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Provides application loaders",
   "description": "Provides application loaders",
   "license": "MIT",

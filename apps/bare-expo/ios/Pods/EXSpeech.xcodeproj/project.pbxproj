@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6951D85CF6A8D94C07A5ABD46E71569B /* EXSpeech.m in Sources */ = {isa = PBXBuildFile; fileRef = 738FABB6C1E596D129D963C0480E9F35 /* EXSpeech.m */; };
+		7D2A3E5611BCF621BE1852F198A245B4 /* EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = C899A5C437762FA94FE680443940D652 /* EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		892D001EC4834C7B1A503AF8EAFA83D4 /* EXSpeech-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A4C980EAC9D261C4BA4CF021DA785A63 /* EXSpeech-dummy.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3E92A2ECFE7ADBF4DAE997635F537D01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E3422DCAA36451BC562729CADA1B60B4 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4EECAA31C5ADC03ACFEECFEA881BCD05 /* libEXSpeech.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSpeech.a; path = libEXSpeech.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		55B2FB9F4F6B4E782E74814D7B399FD0 /* EXSpeech-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSpeech-prefix.pch"; sourceTree = "<group>"; };
+		5E8BA4AC0A8024B6C571FBE71A8690B1 /* EXSpeech.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSpeech.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		738FABB6C1E596D129D963C0480E9F35 /* EXSpeech.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSpeech.m; path = EXSpeech/EXSpeech.m; sourceTree = "<group>"; };
+		A4C980EAC9D261C4BA4CF021DA785A63 /* EXSpeech-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSpeech-dummy.m"; sourceTree = "<group>"; };
+		C899A5C437762FA94FE680443940D652 /* EXSpeech.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSpeech.h; path = EXSpeech/EXSpeech.h; sourceTree = "<group>"; };
+		E3422DCAA36451BC562729CADA1B60B4 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		F88058A32E9899323E2BBFE38CFEB36A /* EXSpeech.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSpeech.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7B9B2A1DDE865914996F66355A422F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0F80633B203A98AFB0FCC5A4ACEA51E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4EECAA31C5ADC03ACFEECFEA881BCD05 /* libEXSpeech.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1BEBCE2538AE42700810BC4B5151F1C9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6AB96B7641452FE84DFDBD95E1DE9E37 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				E3422DCAA36451BC562729CADA1B60B4 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		6E657D862437DFA3AE7CA4CAB68CA522 /* EXSpeech */ = {
+			isa = PBXGroup;
+			children = (
+				C899A5C437762FA94FE680443940D652 /* EXSpeech.h */,
+				738FABB6C1E596D129D963C0480E9F35 /* EXSpeech.m */,
+				F5DE2BFCEB01D02973AFDACAE04172FF /* Pod */,
+				CF143E2230B99658918C817534BA77CE /* Support Files */,
+			);
+			name = EXSpeech;
+			path = "../../../../packages/expo-speech/ios";
+			sourceTree = "<group>";
+		};
+		8FD44242A745118B2E9087ED12CFAE17 = {
+			isa = PBXGroup;
+			children = (
+				6AB96B7641452FE84DFDBD95E1DE9E37 /* Dependencies */,
+				6E657D862437DFA3AE7CA4CAB68CA522 /* EXSpeech */,
+				1BEBCE2538AE42700810BC4B5151F1C9 /* Frameworks */,
+				0F80633B203A98AFB0FCC5A4ACEA51E0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CF143E2230B99658918C817534BA77CE /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F88058A32E9899323E2BBFE38CFEB36A /* EXSpeech.xcconfig */,
+				A4C980EAC9D261C4BA4CF021DA785A63 /* EXSpeech-dummy.m */,
+				55B2FB9F4F6B4E782E74814D7B399FD0 /* EXSpeech-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXSpeech";
+			sourceTree = "<group>";
+		};
+		F5DE2BFCEB01D02973AFDACAE04172FF /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				5E8BA4AC0A8024B6C571FBE71A8690B1 /* EXSpeech.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		363B9C1140C6C871AF896DC05F2CD048 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D2A3E5611BCF621BE1852F198A245B4 /* EXSpeech.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AC043527FC46D59E5210AD9D49B847FC /* EXSpeech */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF15A136AAE224BEC2FE63F0D1238C10 /* Build configuration list for PBXNativeTarget "EXSpeech" */;
+			buildPhases = (
+				363B9C1140C6C871AF896DC05F2CD048 /* Headers */,
+				AC1FD6C6DFF7443F92E5649A2AA6FB0B /* Sources */,
+				A7B9B2A1DDE865914996F66355A422F5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1704D49AAEFC1D14430DA55CE68F8088 /* PBXTargetDependency */,
+			);
+			name = EXSpeech;
+			productName = EXSpeech;
+			productReference = 4EECAA31C5ADC03ACFEECFEA881BCD05 /* libEXSpeech.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D80091DE5B30EE44D4C33905F12322EA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 702FB7BEE721C6C5B9D6C9E09614D367 /* Build configuration list for PBXProject "EXSpeech" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 8FD44242A745118B2E9087ED12CFAE17;
+			productRefGroup = 0F80633B203A98AFB0FCC5A4ACEA51E0 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = E3422DCAA36451BC562729CADA1B60B4 /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				AC043527FC46D59E5210AD9D49B847FC /* EXSpeech */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC1FD6C6DFF7443F92E5649A2AA6FB0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				892D001EC4834C7B1A503AF8EAFA83D4 /* EXSpeech-dummy.m in Sources */,
+				6951D85CF6A8D94C07A5ABD46E71569B /* EXSpeech.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1704D49AAEFC1D14430DA55CE68F8088 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 3E92A2ECFE7ADBF4DAE997635F537D01 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5FC1A3119A700CE3F6C38F508D079ACF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F88058A32E9899323E2BBFE38CFEB36A /* EXSpeech.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSpeech;
+				PRODUCT_NAME = EXSpeech;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A009CDCFC380CDCEBF205D908094E69D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		D6C1D05421701DAA65AF957688808F1E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F88058A32E9899323E2BBFE38CFEB36A /* EXSpeech.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSpeech/EXSpeech-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSpeech;
+				PRODUCT_NAME = EXSpeech;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F73A8832B6A6248C53FB59F78993CDC4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		702FB7BEE721C6C5B9D6C9E09614D367 /* Build configuration list for PBXProject "EXSpeech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F73A8832B6A6248C53FB59F78993CDC4 /* Debug */,
+				A009CDCFC380CDCEBF205D908094E69D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DF15A136AAE224BEC2FE63F0D1238C10 /* Build configuration list for PBXNativeTarget "EXSpeech" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FC1A3119A700CE3F6C38F508D079ACF /* Debug */,
+				D6C1D05421701DAA65AF957688808F1E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D80091DE5B30EE44D4C33905F12322EA /* Project object */;
+}

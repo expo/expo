@@ -1,1 +1,1 @@
-../../../FirebaseInstanceID/Firebase/InstanceID/FIRInstanceIDCheckinPreferences.h
+../../../FirebaseInstanceID/Firebase/InstanceID/Private/FIRInstanceIDCheckinPreferences.h

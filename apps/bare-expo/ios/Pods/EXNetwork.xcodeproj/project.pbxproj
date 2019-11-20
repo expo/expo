@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A51E672A1A6E7442A2D8771A9BB166A7 /* EXNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */; };
+		B3B078C7F97F76EAD4BDE68A55F75C0C /* EXNetwork-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */; };
+		CF383E9B194D71A30471938647E343C6 /* EXNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F7BA1CB5D22E55BB18743976490614B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D950A541FE3459760B4EFE7B8D21736A /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0EA852D2E09F61E87FF0091BDDA1F9DC /* libEXNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXNetwork.a; path = libEXNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXNetwork-dummy.m"; sourceTree = "<group>"; };
+		28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXNetwork.h; path = EXNetwork/EXNetwork.h; sourceTree = "<group>"; };
+		37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXNetwork.xcconfig; sourceTree = "<group>"; };
+		737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXNetwork.m; path = EXNetwork/EXNetwork.m; sourceTree = "<group>"; };
+		956843D929BFEADA8093A2C191224707 /* EXNetwork-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXNetwork-prefix.pch"; sourceTree = "<group>"; };
+		D950A541FE3459760B4EFE7B8D21736A /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		E87928ABF58A5FAFFEAA2035377B5EA6 /* EXNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FEAE0FF8A75CF5B2F08AD4FB0F79BD73 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		29194BD37CF32F38482D1DA11555943C /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */,
+				26A4236A6C8FF1F010C03D4CC03C031B /* EXNetwork-dummy.m */,
+				956843D929BFEADA8093A2C191224707 /* EXNetwork-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXNetwork";
+			sourceTree = "<group>";
+		};
+		9DD76F6B354AA9F2AF63D696426528EB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0EA852D2E09F61E87FF0091BDDA1F9DC /* libEXNetwork.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A0601E29852A6D20D297E29FF70A2A78 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BC50F43295BA888E3B006E06B85146A5 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				E87928ABF58A5FAFFEAA2035377B5EA6 /* EXNetwork.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		C26D3EDFBECA5F2C280D38D7BE273B7D = {
+			isa = PBXGroup;
+			children = (
+				EF63AC02E9CBC957C4D75D3684A78E22 /* Dependencies */,
+				D7047C8508AABAD0BAE92BE5B79DA129 /* EXNetwork */,
+				A0601E29852A6D20D297E29FF70A2A78 /* Frameworks */,
+				9DD76F6B354AA9F2AF63D696426528EB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D7047C8508AABAD0BAE92BE5B79DA129 /* EXNetwork */ = {
+			isa = PBXGroup;
+			children = (
+				28F0D83C8A9664155C20B105195A12BD /* EXNetwork.h */,
+				737F79A46665F7AAF538612C38D55BE3 /* EXNetwork.m */,
+				BC50F43295BA888E3B006E06B85146A5 /* Pod */,
+				29194BD37CF32F38482D1DA11555943C /* Support Files */,
+			);
+			name = EXNetwork;
+			path = "../../../../packages/expo-network/ios";
+			sourceTree = "<group>";
+		};
+		EF63AC02E9CBC957C4D75D3684A78E22 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				D950A541FE3459760B4EFE7B8D21736A /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D083178F5240957F98C8072B74A4DD68 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF383E9B194D71A30471938647E343C6 /* EXNetwork.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		71F2A4AC24C8FBC0E24B6A613BB4F7BC /* EXNetwork */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC50712A6D79D545272F95935F1BECAC /* Build configuration list for PBXNativeTarget "EXNetwork" */;
+			buildPhases = (
+				D083178F5240957F98C8072B74A4DD68 /* Headers */,
+				F82118ED0470D490AD7744510F4FB14B /* Sources */,
+				FEAE0FF8A75CF5B2F08AD4FB0F79BD73 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				42151CC9E4FE55FE3A32EF2E4DA94F4D /* PBXTargetDependency */,
+			);
+			name = EXNetwork;
+			productName = EXNetwork;
+			productReference = 0EA852D2E09F61E87FF0091BDDA1F9DC /* libEXNetwork.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		70122C59720579AAABF0AC08F612325B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = E7C6D1234C95D8BC519C030A067DA3B0 /* Build configuration list for PBXProject "EXNetwork" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C26D3EDFBECA5F2C280D38D7BE273B7D;
+			productRefGroup = 9DD76F6B354AA9F2AF63D696426528EB /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = D950A541FE3459760B4EFE7B8D21736A /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				71F2A4AC24C8FBC0E24B6A613BB4F7BC /* EXNetwork */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F82118ED0470D490AD7744510F4FB14B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B3B078C7F97F76EAD4BDE68A55F75C0C /* EXNetwork-dummy.m in Sources */,
+				A51E672A1A6E7442A2D8771A9BB166A7 /* EXNetwork.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		42151CC9E4FE55FE3A32EF2E4DA94F4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = F7BA1CB5D22E55BB18743976490614B4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		6D5E9BE5D3BB836CC2416A151262A9E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXNetwork;
+				PRODUCT_NAME = EXNetwork;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9EB1CCD338BBF2F5CF6EF08A0C5951CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		C7CD746F8E88DCEFF2FFAD4EE92C00C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		DC4DD1353E810311AFBFE1C23104B8D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 37561D2DE4CA0C3A4096E9795B0F013C /* EXNetwork.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXNetwork/EXNetwork-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXNetwork;
+				PRODUCT_NAME = EXNetwork;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E7C6D1234C95D8BC519C030A067DA3B0 /* Build configuration list for PBXProject "EXNetwork" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7CD746F8E88DCEFF2FFAD4EE92C00C8 /* Debug */,
+				9EB1CCD338BBF2F5CF6EF08A0C5951CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC50712A6D79D545272F95935F1BECAC /* Build configuration list for PBXNativeTarget "EXNetwork" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D5E9BE5D3BB836CC2416A151262A9E2 /* Debug */,
+				DC4DD1353E810311AFBFE1C23104B8D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 70122C59720579AAABF0AC08F612325B /* Project object */;
+}

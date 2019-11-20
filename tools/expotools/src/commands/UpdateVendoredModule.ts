@@ -34,6 +34,7 @@ interface VendoredModuleConfig {
   repoUrl: string;
   packageName?: string;
   installableInManagedApps?: boolean;
+  semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
   warnings?: string[];
@@ -48,18 +49,20 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
     repoUrl: 'https://github.com/kmagiera/react-native-gesture-handler.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/GestureHandler',
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-        targetAndroidPath: 'modules/api/components/gesturehandler/react',
+        sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {
-        sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
-        targetAndroidPath: 'modules/api/components/gesturehandler',
+        recursive: true,
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/GestureHandler',
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
+        targetAndroidPath: 'modules/api/components/gesturehandler/react',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
@@ -68,6 +71,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-reanimated': {
     repoUrl: 'https://github.com/kmagiera/react-native-reanimated.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         recursive: true,
@@ -88,6 +92,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-screens': {
     repoUrl: 'https://github.com/kmagiera/react-native-screens.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         sourceIosPath: 'ios',
@@ -102,10 +107,15 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-appearance': {
     repoUrl: 'https://github.com/expo/react-native-appearance.git',
     installableInManagedApps: true,
+    semverPrefix: '~',
     steps: [
       {
         sourceIosPath: 'ios/Appearance',
         targetIosPath: 'Api/Appearance',
+        sourceAndroidPath: 'android/src/main/java/com/reactlibrary',
+        targetAndroidPath: 'modules/api/appearance/rncappearance',
+        sourceAndroidPackage: 'com.reactlibrary',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
       },
     ],
   },
@@ -128,7 +138,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     steps: [
       {
         sourceIosPath: 'ios',
-        targetIosPath: 'Api',
+        targetIosPath: 'Api/ViewShot',
         sourceAndroidPath: 'android/src/main/java/fr/greweb/reactnativeviewshot',
         targetAndroidPath: 'modules/api/viewshot',
         sourceAndroidPackage: 'fr.greweb.reactnativeviewshot',
@@ -144,9 +154,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetIosPath: '../../../../packages/expo-branch/ios/EXBranch/RNBranch',
         sourceAndroidPath: 'android/src/main/java/io/branch/rnbranch',
         targetAndroidPath:
-          '../../../../../../../../../packages/expo-branch/android/src/main/java/expo/modules/branch/vendored',
+          '../../../../../../../../../packages/expo-branch/android/src/main/java/io/branch/rnbranch',
         sourceAndroidPackage: 'io.branch.rnbranch',
-        targetAndroidPackage: 'expo.modules.branch.vendored',
+        targetAndroidPackage: 'io.branch.rnbranch',
         recursive: false,
         updatePbxproj: false,
       },
@@ -191,6 +201,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetIosPath: 'Api/Components/GoogleMaps',
       },
       {
+        recursive: true,
         sourceIosPath: 'lib/ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
         sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
@@ -216,7 +227,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     ],
   },
   'react-native-webview': {
-    repoUrl: 'https://github.com/expo/react-native-webview.git',
+    repoUrl: 'https://github.com/react-native-community/react-native-webview.git',
     installableInManagedApps: true,
     steps: [
       {
@@ -270,6 +281,36 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         sourceAndroidPackage: 'com.reactcommunity.rndatetimepicker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.datetimepicker',
       },
+    ],
+  },
+  'react-native-masked-view': {
+    repoUrl: 'https://github.com/react-native-community/react-native-masked-view',
+    packageName: '@react-native-community/masked-view',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/MaskedView',
+        sourceAndroidPath: 'android/src/main/java/org/reactnative/maskedview',
+        targetAndroidPath: 'modules/api/components/maskedview',
+        sourceAndroidPackage: 'org.reactnative.maskedview',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maskedview',
+      }
+    ],
+  },
+  'react-native-viewpager': {
+    repoUrl: 'https://github.com/react-native-community/react-native-viewpager',
+    packageName: '@react-native-community/viewpager',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/ViewPager',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/viewpager',
+        targetAndroidPath: 'modules/api/components/viewpager',
+        sourceAndroidPackage: 'com.reactnativecommunity.viewpager',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.viewpager',
+      }
     ],
   },
   'react-native-shared-element': {
@@ -601,7 +642,7 @@ async function action(options: ActionOptions) {
     };
 
     if (moduleConfig.installableInManagedApps) {
-      bundledNativeModules[name] = `~${version}`;
+      bundledNativeModules[name] = `${moduleConfig.semverPrefix || ''}${version}`;
       console.log(
         `Updated ${chalk.green(name)} version number in ${chalk.magenta(
           'bundledNativeModules.json'

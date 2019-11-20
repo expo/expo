@@ -1,1 +1,1 @@
-../../../FirebaseInstanceID/Firebase/InstanceID/FIRInstanceID+Private.h
+../../../FirebaseInstanceID/Firebase/InstanceID/Private/FIRInstanceID+Private.h

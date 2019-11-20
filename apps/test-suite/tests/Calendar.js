@@ -238,9 +238,9 @@ export async function test({
   }
 
   describeWithPermissions('Calendar', () => {
-    describe('requestPermissionsAsync()', () => {
+    describe('requestCalendarPermissionsAsync()', () => {
       it('requests for Calendar permissions', async () => {
-        const results = await Calendar.requestPermissionsAsync();
+        const results = await Calendar.requestCalendarPermissionsAsync();
 
         expect(results.granted).toBe(true);
         expect(results.status).toBe('granted');

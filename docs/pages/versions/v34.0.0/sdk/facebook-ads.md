@@ -1,5 +1,6 @@
 ---
 title: FacebookAds
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-ads-facebook"
 ---
 
 **Facebook Audience SDK** integration.

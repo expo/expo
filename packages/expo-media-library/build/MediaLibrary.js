@@ -1,13 +1,9 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
-export var PermissionStatus;
-(function (PermissionStatus) {
-    PermissionStatus["UNDETERMINED"] = "undetermined";
-    PermissionStatus["GRANTED"] = "granted";
-    PermissionStatus["DENIED"] = "denied";
-})(PermissionStatus || (PermissionStatus = {}));
+export { PermissionStatus };
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;
@@ -82,6 +78,12 @@ export async function createAssetAsync(localUri) {
         return asset[0];
     }
     return asset;
+}
+export async function saveToLibraryAsync(localUri) {
+    if (!MediaLibrary.saveToLibraryAsync) {
+        throw new UnavailabilityError('MediaLibrary', 'saveToLibraryAsync');
+    }
+    return await MediaLibrary.saveToLibraryAsync(localUri);
 }
 export async function addAssetsToAlbumAsync(assets, album, copy = true) {
     if (!MediaLibrary.addAssetsToAlbumAsync) {

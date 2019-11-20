@@ -1,0 +1,356 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1B61109333B3772F9F1B44597D4D4EFA /* React-jsinspector-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F60328DBFBC9DFCD59791596BEFF017C /* React-jsinspector-dummy.m */; };
+		5F5055D61677A4085737671D47EDAB2C /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC13D2507F9AAEC1D92136053B2AE7E0 /* InspectorInterfaces.cpp */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		66DA1064CE8BF5D28DEBAD27060B058B /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = 043CD3A5A775CD0C1040B4C17142C838 /* InspectorInterfaces.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		043CD3A5A775CD0C1040B4C17142C838 /* InspectorInterfaces.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = InspectorInterfaces.h; sourceTree = "<group>"; };
+		464C13C972A5FBFF8F4D55E429CAE1DB /* React-jsinspector-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "React-jsinspector-prefix.pch"; sourceTree = "<group>"; };
+		6199AD6EC63B728938CE805FF3C65E62 /* React-jsinspector.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "React-jsinspector.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		75A607C753C29C9CED625610171B851C /* libReact-jsinspector.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libReact-jsinspector.a"; path = "libReact-jsinspector.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "React-jsinspector.xcconfig"; sourceTree = "<group>"; };
+		BC13D2507F9AAEC1D92136053B2AE7E0 /* InspectorInterfaces.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = InspectorInterfaces.cpp; sourceTree = "<group>"; };
+		F60328DBFBC9DFCD59791596BEFF017C /* React-jsinspector-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "React-jsinspector-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		06189590681B2340DF2331E69E16FEA0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2FDA21C7ADD0808EDF9F80AD04B332EA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3B72B2199EE931ED43AF7FCBA9AD65FD /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */,
+				F60328DBFBC9DFCD59791596BEFF017C /* React-jsinspector-dummy.m */,
+				464C13C972A5FBFF8F4D55E429CAE1DB /* React-jsinspector-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../ios/Pods/Target Support Files/React-jsinspector";
+			sourceTree = "<group>";
+		};
+		5F022F5AB67C78F64C8600E07054DE84 /* React-jsinspector */ = {
+			isa = PBXGroup;
+			children = (
+				BC13D2507F9AAEC1D92136053B2AE7E0 /* InspectorInterfaces.cpp */,
+				043CD3A5A775CD0C1040B4C17142C838 /* InspectorInterfaces.h */,
+				B08A2A2BAFA1436987F8A5A929B2837D /* Pod */,
+				3B72B2199EE931ED43AF7FCBA9AD65FD /* Support Files */,
+			);
+			name = "React-jsinspector";
+			path = "../../react-native-lab/react-native/ReactCommon/jsinspector";
+			sourceTree = "<group>";
+		};
+		86931ED7070DE8B31A51A0F2ACA2FAB3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				75A607C753C29C9CED625610171B851C /* libReact-jsinspector.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B08A2A2BAFA1436987F8A5A929B2837D /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				6199AD6EC63B728938CE805FF3C65E62 /* React-jsinspector.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		D3F07BAF8F870C64E6C2E8572DC2F8CE = {
+			isa = PBXGroup;
+			children = (
+				2FDA21C7ADD0808EDF9F80AD04B332EA /* Frameworks */,
+				86931ED7070DE8B31A51A0F2ACA2FAB3 /* Products */,
+				5F022F5AB67C78F64C8600E07054DE84 /* React-jsinspector */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		36FC3A5F4CFC6FC07A254718AE329203 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66DA1064CE8BF5D28DEBAD27060B058B /* InspectorInterfaces.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1AC0EAF3E808B6AA276E43B30A5B20AA /* React-jsinspector */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 022719D655BD874370360BFF5D133BFB /* Build configuration list for PBXNativeTarget "React-jsinspector" */;
+			buildPhases = (
+				36FC3A5F4CFC6FC07A254718AE329203 /* Headers */,
+				C9CCDF02DD776A1E32602F07A9A05E60 /* Sources */,
+				06189590681B2340DF2331E69E16FEA0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "React-jsinspector";
+			productName = "React-jsinspector";
+			productReference = 75A607C753C29C9CED625610171B851C /* libReact-jsinspector.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E10B6211379B389FA92B5D94566E148F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 6B77491E9111E49B6627B98532E05FE0 /* Build configuration list for PBXProject "React-jsinspector" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D3F07BAF8F870C64E6C2E8572DC2F8CE;
+			productRefGroup = 86931ED7070DE8B31A51A0F2ACA2FAB3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1AC0EAF3E808B6AA276E43B30A5B20AA /* React-jsinspector */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C9CCDF02DD776A1E32602F07A9A05E60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F5055D61677A4085737671D47EDAB2C /* InspectorInterfaces.cpp in Sources */,
+				1B61109333B3772F9F1B44597D4D4EFA /* React-jsinspector-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		41F53401A87FE5A33EED7C9435F2CEE1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		954EEA8783F9D8511A280AD7ED5B0801 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-jsinspector/React-jsinspector-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = jsinspector;
+				PRODUCT_NAME = "React-jsinspector";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E40F588ED5D224D5B2CF6E4A5994FA6F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		ED7455C5DEF7B5E924B735CAC4894C38 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7DC2F29F12661C24C3BC14CF11EE19F4 /* React-jsinspector.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/React-jsinspector/React-jsinspector-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = jsinspector;
+				PRODUCT_NAME = "React-jsinspector";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		022719D655BD874370360BFF5D133BFB /* Build configuration list for PBXNativeTarget "React-jsinspector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				954EEA8783F9D8511A280AD7ED5B0801 /* Debug */,
+				ED7455C5DEF7B5E924B735CAC4894C38 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6B77491E9111E49B6627B98532E05FE0 /* Build configuration list for PBXProject "React-jsinspector" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E40F588ED5D224D5B2CF6E4A5994FA6F /* Debug */,
+				41F53401A87FE5A33EED7C9435F2CEE1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E10B6211379B389FA92B5D94566E148F /* Project object */;
+}

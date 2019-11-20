@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <GoogleMobileAds/GADAdChoicesView.h>
 #import <GoogleMobileAds/GADAdLoaderDelegate.h>
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADMediaContent.h>
 #import <GoogleMobileAds/GADMediaView.h>
 #import <GoogleMobileAds/GADMuteThisAdReason.h>
@@ -18,8 +19,6 @@
 #import <GoogleMobileAds/GADVideoController.h>
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <UIKit/UIKit.h>
-
-NS_ASSUME_NONNULL_BEGIN
 
 /// Unified native ad. To request this ad type, pass kGADAdLoaderAdTypeUnifiedNative
 /// (see GADAdLoaderAdTypes.h) to the |adTypes| parameter in GADAdLoader's initializer method. If
@@ -50,6 +49,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly, copy, nullable) NSString *price;
 /// Identifies the advertiser. For example, the advertiser’s name or visible URL.
 @property(nonatomic, readonly, copy, nullable) NSString *advertiser;
+/// Media content. Set the associated media view's mediaContent property to this object to display
+/// this content.
+@property(nonatomic, readonly, nonnull) GADMediaContent *mediaContent;
+
+#pragma mark - Other properties
 
 /// Optional delegate to receive state change notifications.
 @property(nonatomic, weak, nullable) id<GADUnifiedNativeAdDelegate> delegate;
@@ -65,6 +69,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Information about the ad response that returned the ad.
 @property(nonatomic, readonly, nonnull) GADResponseInfo *responseInfo;
 
+/// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
+
 /// Indicates whether custom Mute This Ad is available for the native ad.
 @property(nonatomic, readonly, getter=isCustomMuteThisAdAvailable) BOOL customMuteThisAdAvailable;
 
@@ -72,20 +79,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// implement your own Mute This Ad feature only when customMuteThisAdAvailable is YES.
 @property(nonatomic, readonly, nullable) NSArray<GADMuteThisAdReason *> *muteThisAdReasons;
 
-/// Media content. Set the associated media view's mediaContent property to this object to display
-/// this content.
-@property(nonatomic, readonly, nonnull) GADMediaContent *mediaContent;
-
 /// Registers ad view, clickable asset views, and nonclickable asset views with this native ad.
 /// Media view shouldn't be registered as clickable.
 /// @param clickableAssetViews Dictionary of asset views that are clickable, keyed by asset IDs.
 /// @param nonclickableAssetViews Dictionary of asset views that are not clickable, keyed by asset
 ///        IDs.
-- (void)registerAdView:(UIView *)adView
+- (void)registerAdView:(nonnull UIView *)adView
        clickableAssetViews:
-           (NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)clickableAssetViews
+           (nonnull NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)clickableAssetViews
     nonclickableAssetViews:
-        (NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)nonclickableAssetViews;
+        (nonnull NSDictionary<GADUnifiedNativeAssetIdentifier, UIView *> *)nonclickableAssetViews;
 
 /// Unregisters ad view from this native ad. The corresponding asset views will also be
 /// unregistered.
@@ -116,7 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// The delegate of a GADAdLoader object implements this protocol to receive GADUnifiedNativeAd ads.
 @protocol GADUnifiedNativeAdLoaderDelegate <GADAdLoaderDelegate>
 /// Called when a unified native ad is received.
-- (void)adLoader:(GADAdLoader *)adLoader didReceiveUnifiedNativeAd:(GADUnifiedNativeAd *)nativeAd;
+- (void)adLoader:(nonnull GADAdLoader *)adLoader
+    didReceiveUnifiedNativeAd:(nonnull GADUnifiedNativeAd *)nativeAd;
 @end
 
 #pragma mark - Unified Native Ad View
@@ -154,5 +158,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, weak, nullable) IBOutlet GADAdChoicesView *adChoicesView;
 
 @end
-
-NS_ASSUME_NONNULL_END

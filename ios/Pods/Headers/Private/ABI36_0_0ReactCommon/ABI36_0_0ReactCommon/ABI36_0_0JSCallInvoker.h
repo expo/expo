@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/jscallinvoker/ReactCommon/ABI36_0_0JSCallInvoker.h

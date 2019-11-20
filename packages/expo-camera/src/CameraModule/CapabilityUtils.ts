@@ -13,7 +13,21 @@ export function convertFlashModeJSONToNative(input: string): boolean {
   }
 }
 
-export function convertAutoFocusJSONToNative(input: string): string {
+export function convertWhiteBalanceJSONToNative(input: string): MeteringMode | undefined {
+  switch (input) {
+    case 'on':
+    case 'auto':
+      return 'continuous';
+    case 'off':
+      return 'none';
+    case 'singleShot':
+      return 'single-shot';
+    default:
+      return undefined;
+  }
+}
+
+export function convertAutoFocusJSONToNative(input: string): MeteringMode | undefined {
   switch (input) {
     case 'on':
     case 'auto':
@@ -23,6 +37,6 @@ export function convertAutoFocusJSONToNative(input: string): string {
     case 'singleShot':
       return 'single-shot';
     default:
-      return input;
+      return undefined;
   }
 }

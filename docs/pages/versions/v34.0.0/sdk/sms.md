@@ -1,5 +1,6 @@
 ---
 title: SMS
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sms"
 ---
 
 Provides access to the system's UI/app for sending SMS messages.

@@ -40,6 +40,7 @@ NS_SWIFT_NAME(UserDataStore)
 + (void)setHashData:(nullable NSString *)hashData
             forType:(FBSDKAppEventUserDataType)type;
 + (nullable NSString *)getHashedData;
++ (nullable NSString *)getHashedDataForType:(FBSDKAppEventUserDataType)type;
 + (void)clearDataForType:(FBSDKAppEventUserDataType)type;
 
 @end

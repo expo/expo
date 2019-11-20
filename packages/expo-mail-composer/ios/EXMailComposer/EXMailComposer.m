@@ -35,7 +35,7 @@ UM_EXPORT_METHOD_AS(composeAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (![MFMailComposeViewController canSendMail]) {
-    reject(@"E_COMPOSE_UNAVAILABLE", @"Mail services are not available.", nil);
+    reject(@"E_COMPOSE_UNAVAILABLE", @"Mail services are not available. Make sure you're signed into the Mail app", nil);
     return;
   }
 

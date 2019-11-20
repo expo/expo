@@ -4,6 +4,7 @@
 #import <EXLocation/EXLocationDelegate.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
+#import <EXLocation/EXLocationPermissionRequester.h>
 
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -15,7 +16,10 @@
 
 #import <UMCore/UMEventEmitterService.h>
 #import <UMCore/UMAppLifecycleService.h>
+
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,7 +33,7 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
 @property (nonatomic, assign, getter=isPaused) BOOL paused;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissions;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleService;
 @property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
 
@@ -55,7 +59,8 @@ UM_EXPORT_MODULE(ExpoLocation);
   }
 
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _permissions = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXLocationPermissionRequester new]] withPermissionsManager:_permissionsManager];
   _lifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 
@@ -167,12 +172,60 @@ UM_EXPORT_METHOD_AS(watchPositionImplAsync,
   resolve([NSNull null]);
 }
 
+UM_EXPORT_METHOD_AS(getLastKnownPositionAsync,
+                    getLastKnownPositionAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (![self checkPermissions:reject]) {
+    return;
+  }
+  
+  UM_WEAKIFY(self)
+  __block CLLocationManager *lockMgr = [self locationManagerWithOptions:nil];
+  __block EXLocationDelegate *delegate;
+ 
+  delegate = [[EXLocationDelegate alloc] initWithId:nil withLocMgr:lockMgr onUpdateLocations:^(NSArray<CLLocation *> * _Nonnull locations) {
+    if (lockMgr) {
+      [lockMgr stopUpdatingLocation];
+      lockMgr = nil;
+    }
+    
+    if (delegate) {
+      if (locations.lastObject) {
+        resolve([EXLocation exportLocation:locations.lastObject]);
+      } else {
+        reject(@"E_LAST_KNOWN_LOCATION_NOT_FOUND", @"Last known location not found.", nil);
+      }
+      
+      UM_ENSURE_STRONGIFY(self)
+      [self.retainedDelegates removeObject:delegate];
+      delegate = nil;
+    }
+  } onUpdateHeadings:nil onError:^(NSError *error) {
+    if (lockMgr) {
+      [lockMgr stopUpdatingLocation];
+      lockMgr = nil;
+    }
+    
+    reject(@"E_LOCATION_UNAVAILABLE", [@"Cannot obtain last known location: " stringByAppendingString:error.description], nil);
+    
+    UM_ENSURE_STRONGIFY(self)
+    if (delegate) {
+      [self.retainedDelegates removeObject:delegate];
+      delegate = nil;
+    }
+  }];
+  
+  lockMgr.delegate = delegate;
+  [lockMgr startUpdatingLocation];
+}
+
 // Watch method for getting compass updates
 UM_EXPORT_METHOD_AS(watchDeviceHeading,
                     watchHeadingWithWatchId:(nonnull NSNumber *)watchId
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject) {
-  if (![_permissions hasGrantedPermission:@"location"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
     reject(@"E_LOCATION_UNAUTHORIZED", @"Not authorized to use location services", nil);
     return;
   }
@@ -308,14 +361,24 @@ UM_EXPORT_METHOD_AS(reverseGeocodeAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsResolver:(UMPromiseResolveBlock)resolve
-                                      rejecter:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissions) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissions askForPermission:@"location" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXLocationPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXLocationPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(hasServicesEnabledAsync,
@@ -433,17 +496,20 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
 
 # pragma mark - helpers
 
-- (CLLocationManager *)locationManagerWithOptions:(NSDictionary *)options
+- (CLLocationManager *)locationManagerWithOptions:(nullable NSDictionary *)options
 {
   CLLocationManager *locMgr = [[CLLocationManager alloc] init];
-
-  locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
-  locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
   locMgr.allowsBackgroundLocationUpdates = NO;
+  
+  if (options) {
+    locMgr.distanceFilter = options[@"distanceInterval"] ? [options[@"distanceInterval"] doubleValue] ?: kCLDistanceFilterNone : kCLLocationAccuracyHundredMeters;
+    locMgr.desiredAccuracy = [options[@"enableHighAccuracy"] boolValue] ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
+    
 
-  if (options[@"accuracy"]) {
-    EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
-    locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+    if (options[@"accuracy"]) {
+      EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
+      locMgr.desiredAccuracy = [self.class CLLocationAccuracyFromOption:accuracy];
+    }
   }
   return locMgr;
 }
@@ -454,7 +520,7 @@ UM_EXPORT_METHOD_AS(hasStartedGeofencingAsync,
     reject(@"E_LOCATION_SERVICES_DISABLED", @"Location services are disabled", nil);
     return NO;
   }
-  if (![_permissions hasGrantedPermission:@"location"]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXLocationPermissionRequester class]]) {
     reject(@"E_NO_PERMISSIONS", @"LOCATION permission is required to do this operation.", nil);
     return NO;
   }

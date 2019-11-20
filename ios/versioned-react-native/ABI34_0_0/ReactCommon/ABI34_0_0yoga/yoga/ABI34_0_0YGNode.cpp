@@ -9,8 +9,8 @@
 #include "ABI34_0_0CompactValue.h"
 #include "ABI34_0_0Utils.h"
 
-using namespace facebook;
-using facebook::ABI34_0_0yoga::detail::CompactValue;
+using namespace ABI34_0_0facebook;
+using ABI34_0_0facebook::ABI34_0_0yoga::detail::CompactValue;
 
 ABI34_0_0YGFloatOptional ABI34_0_0YGNode::getLeadingPosition(
     const ABI34_0_0YGFlexDirection axis,

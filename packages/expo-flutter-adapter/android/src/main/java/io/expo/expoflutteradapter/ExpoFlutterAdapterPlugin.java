@@ -81,7 +81,7 @@ class ExpoFlutterAdapterModule implements
         ActivityLifecycleListener, PluginRegistry.RequestPermissionsResultListener,
         EventChannel.StreamHandler, MethodCallHandler,
 
-        // Expo module interfaces
+        // Unimodule interfaces
         InternalModule, EventEmitter, UIManager, PermissionsManager, ActivityProvider {
     private Activity mActivity;
     private FlutterView mFlutterView;

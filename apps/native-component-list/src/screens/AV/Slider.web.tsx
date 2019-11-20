@@ -126,9 +126,6 @@ class Slider extends PureComponent<Props, State> {
       allMeasured: false,
       value: new Animated.Value(props.value),
     };
-  }
-
-  componentWillMount() {
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
       onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,

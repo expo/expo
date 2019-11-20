@@ -19,7 +19,7 @@ The web browser-based authentication flow is provided by the [**`expo-app-auth`*
 ## API
 
 ```js
-import { Google } from 'expo';
+import * as Google from 'expo-google-app-auth';
 ```
 
 ## Usage
@@ -95,7 +95,7 @@ The difference between this method and native authentication are very sparce. Go
 **Example**
 
 ```js
-import { Google } from 'expo';
+import * as Google from 'expo-google-app-auth';
 
 const { type, accessToken, user } = await Google.logInAsync({
   iosClientId: `<YOUR_IOS_CLIENT_ID_FOR_EXPO>`,
@@ -138,7 +138,7 @@ Invalidates the provided `accessToken`, given the client ID used to sign-in is p
 **Example**
 
 ```js
-import { Google } from 'expo';
+import * as Google from 'expo-google-app-auth';
 
 const config = {
   expoClientId: `<YOUR_WEB_CLIENT_ID>`,
@@ -189,7 +189,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 - **Add the Client IDs to your app**
 
   ```javascript
-  import Expo from 'expo';
+  import * as Google from 'expo-google-app-auth';
 
   async function signInWithGoogleAsync() {
     try {

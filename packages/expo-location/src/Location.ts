@@ -1,4 +1,9 @@
 import { EventEmitter, Platform, CodedError } from '@unimodules/core';
+import {
+  PermissionResponse as UMPermissionResponse,
+  PermissionStatus,
+} from 'unimodules-permissions-interface';
+
 import invariant from 'invariant';
 
 import ExpoLocation from './ExpoLocation';
@@ -54,6 +59,21 @@ export interface Address {
   country: string;
   postalCode: string;
   name: string;
+}
+
+export { PermissionStatus };
+
+export type PermissionDetailsLocationIOS = {
+  scope: 'whenInUse' | 'always';
+};
+
+export type PermissionDetailsLocationAndroid = {
+  scope: 'fine' | 'coarse' | 'none';
+};
+
+export interface PermissionResponse extends UMPermissionResponse {
+  ios?: PermissionDetailsLocationIOS;
+  android?: PermissionDetailsLocationAndroid;
 }
 
 interface LocationTaskOptions {
@@ -159,6 +179,10 @@ export async function getCurrentPositionAsync(
   options: LocationOptions = {}
 ): Promise<LocationData> {
   return ExpoLocation.getCurrentPositionAsync(options);
+}
+
+export async function getLastKnownPositionAsync(): Promise<LocationData> {
+  return ExpoLocation.getLastKnownPositionAsync();
 }
 
 // Start Compass Module
@@ -472,8 +496,12 @@ async function _getCurrentPositionAsyncWrapper(
   }
 }
 
-export async function requestPermissionsAsync(): Promise<void> {
-  await ExpoLocation.requestPermissionsAsync();
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.requestPermissionsAsync();
 }
 
 // --- Location service
