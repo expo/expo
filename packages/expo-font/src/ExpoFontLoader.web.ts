@@ -3,9 +3,70 @@ import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { CodedError } from '@unimodules/core';
 import { FontDisplay, FontResource } from './Font.types';
 
+function getFontFaceStyleSheet(): CSSStyleSheet | null {
+  if (!canUseDOM) {
+    return null;
+  }
+  const styleSheet = getStyleElement();
+  return styleSheet.sheet ? (styleSheet.sheet as CSSStyleSheet) : null;
+}
+
+type RuleItem = { rule: CSSFontFaceRule; index: number };
+
+function getFontFaceRules(): RuleItem[] {
+  const sheet = getFontFaceStyleSheet();
+  if (sheet) {
+    // @ts-ignore: rule iterator
+    const rules = [...sheet.cssRules];
+
+    const items: RuleItem[] = [];
+
+    for (let i = 0; i < rules.length; i++) {
+      const rule = rules[i];
+      if (rule instanceof CSSFontFaceRule) {
+        items.push({ rule, index: i });
+      }
+    }
+    return items;
+  }
+  return [];
+}
+
+function getFontFaceRulesMatchingResource(
+  fontFamilyName: string,
+  resource?: FontResource
+): RuleItem[] {
+  const rules = getFontFaceRules();
+  return rules.filter(({ rule }) => {
+    return (
+      rule.style.fontFamily === fontFamilyName &&
+      (resource && resource.display ? resource.display === (rule.style as any).fontDisplay : true)
+    );
+  });
+}
+
 export default {
   get name(): string {
     return 'ExpoFontLoader';
+  },
+
+  async unloadAllAsync(): Promise<void> {
+    if (!canUseDOM) return;
+
+    const element = document.getElementById(ID);
+    if (element && element instanceof HTMLStyleElement) {
+      document.removeChild(element);
+    }
+  },
+
+  async unloadAsync(fontFamilyName: string, resource?: FontResource): Promise<void> {
+    const sheet = getFontFaceStyleSheet();
+    if (!sheet) return;
+    const items = getFontFaceRulesMatchingResource(fontFamilyName, resource);
+
+    for (const item of items) {
+      sheet.deleteRule(item.index);
+    }
   },
 
   async loadAsync(fontFamilyName: string, resource: FontResource): Promise<void> {

@@ -2,9 +2,56 @@ import FontObserver from 'fontfaceobserver';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { CodedError } from '@unimodules/core';
 import { FontDisplay } from './Font.types';
+function getFontFaceStyleSheet() {
+    if (!canUseDOM) {
+        return null;
+    }
+    const styleSheet = getStyleElement();
+    return styleSheet.sheet ? styleSheet.sheet : null;
+}
+function getFontFaceRules() {
+    const sheet = getFontFaceStyleSheet();
+    if (sheet) {
+        // @ts-ignore: rule iterator
+        const rules = [...sheet.cssRules];
+        const items = [];
+        for (let i = 0; i < rules.length; i++) {
+            const rule = rules[i];
+            if (rule instanceof CSSFontFaceRule) {
+                items.push({ rule, index: i });
+            }
+        }
+        return items;
+    }
+    return [];
+}
+function getFontFaceRulesMatchingResource(fontFamilyName, resource) {
+    const rules = getFontFaceRules();
+    return rules.filter(({ rule }) => {
+        return (rule.style.fontFamily === fontFamilyName &&
+            (resource && resource.display ? resource.display === rule.style.fontDisplay : true));
+    });
+}
 export default {
     get name() {
         return 'ExpoFontLoader';
+    },
+    async unloadAllAsync() {
+        if (!canUseDOM)
+            return;
+        const element = document.getElementById(ID);
+        if (element && element instanceof HTMLStyleElement) {
+            document.removeChild(element);
+        }
+    },
+    async unloadAsync(fontFamilyName, resource) {
+        const sheet = getFontFaceStyleSheet();
+        if (!sheet)
+            return;
+        const items = getFontFaceRulesMatchingResource(fontFamilyName, resource);
+        for (const item of items) {
+            sheet.deleteRule(item.index);
+        }
     },
     async loadAsync(fontFamilyName, resource) {
         if (!canUseDOM) {
