@@ -8,6 +8,12 @@ export type OpenBrowserOptions = {
   enableBarCollapsing?: boolean;
   showTitle?: boolean;
 
+  /** Android only */
+  showInRecents?: boolean;
+
+  /** iOS only */
+  controlsColor?: string;
+
   // Web
   windowName?: string;
   windowFeatures?: string;
@@ -23,7 +29,8 @@ export type CustomTabsBrowsersResults = {
 };
 
 export type BrowserResult = {
-  type: 'cancel' | 'dismiss';
+  // cancel and dismiss are iOS only, opened is Android only
+  type: 'cancel' | 'dismiss' | 'opened';
 };
 
 export type RedirectResult = {

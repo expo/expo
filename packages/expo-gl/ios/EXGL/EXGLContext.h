@@ -17,13 +17,13 @@
 
 @interface EXGLContext : NSObject
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull UMModuleRegistry *)moduleRegistry;
-- (void)initialize:(void(^)(BOOL))callback;
+- (nullable instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull UMModuleRegistry *)moduleRegistry;
+- (void)initialize:(nullable void(^)(BOOL))callback;
 - (BOOL)isInitialized;
-- (EAGLContext *)createSharedEAGLContext;
-- (void)runAsync:(void(^)(void))callback;
-- (void)runInEAGLContext:(EAGLContext*)context callback:(void(^)(void))callback;
-- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+- (nullable EAGLContext *)createSharedEAGLContext;
+- (void)runAsync:(nonnull void(^)(void))callback;
+- (void)runInEAGLContext:(nonnull EAGLContext*)context callback:(nonnull void(^)(void))callback;
+- (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options resolve:(nonnull UMPromiseResolveBlock)resolve reject:(nonnull UMPromiseRejectBlock)reject;
 - (void)destroy;
 
 // "protected"

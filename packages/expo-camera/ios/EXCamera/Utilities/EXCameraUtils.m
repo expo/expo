@@ -14,17 +14,7 @@
 
 + (AVCaptureDevice *)deviceWithMediaType:(AVMediaType)mediaType preferringPosition:(AVCaptureDevicePosition)position
 {
-  NSArray *devices = [AVCaptureDevice devicesWithMediaType:mediaType];
-  AVCaptureDevice *captureDevice = [devices firstObject];
-
-  for (AVCaptureDevice *device in devices) {
-    if ([device position] == position) {
-      captureDevice = device;
-      break;
-    }
-  }
-
-  return captureDevice;
+  return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:mediaType position:position];
 }
 
 # pragma mark - Enum conversion
@@ -131,26 +121,32 @@
   return [fileURL absoluteString];
 }
 
-+ (void)updatePhotoMetadata:(CMSampleBufferRef)imageSampleBuffer withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response
++ (void)updateImageSampleMetadata:(CMSampleBufferRef)imageSampleBuffer withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response
 {
   CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
-  NSMutableDictionary *metadata = (__bridge NSMutableDictionary *)exifAttachments;
-  metadata[(NSString *)kCGImagePropertyExifPixelYDimension] = response[@"width"];
-  metadata[(NSString *)kCGImagePropertyExifPixelXDimension] = response[@"height"];
-  
+  NSDictionary *metadata = (__bridge NSDictionary *)exifAttachments;
+  [self updateExifMetadata:metadata withAdditionalData:additionalData inResponse:response];
+}
+
++ (void)updateExifMetadata:(NSDictionary *)metadata withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response
+{
+  NSMutableDictionary *mutableMetadata = [[NSMutableDictionary alloc] initWithDictionary:metadata];
+  mutableMetadata[(NSString *)kCGImagePropertyExifPixelYDimension] = response[@"width"];
+  mutableMetadata[(NSString *)kCGImagePropertyExifPixelXDimension] = response[@"height"];
+
   for (id key in additionalData) {
-    metadata[key] = additionalData[key];
+    mutableMetadata[key] = additionalData[key];
   }
-  
-  NSDictionary *gps = metadata[(NSString *)kCGImagePropertyGPSDictionary];
-  
+
+  NSDictionary *gps = mutableMetadata[(NSString *)kCGImagePropertyGPSDictionary];
+
   if (gps) {
     for (NSString *gpsKey in gps) {
-      metadata[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
+      mutableMetadata[[@"GPS" stringByAppendingString:gpsKey]] = gps[gpsKey];
     }
   }
-  
-  response[@"exif"] = metadata;
+
+  response[@"exif"] = mutableMetadata;
 }
 
 @end

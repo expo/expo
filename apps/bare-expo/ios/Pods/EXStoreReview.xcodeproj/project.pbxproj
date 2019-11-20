@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		026E2FD70D5BD3E342F7A4C70EC8A90E /* EXStoreReview-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 45675809524876031BF934292CB1D353 /* EXStoreReview-dummy.m */; };
+		47935A8EE058263146617A66DD4E92C4 /* EXStoreReviewModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E76344BA6ED904BE9A27DE6B71DECA /* EXStoreReviewModule.m */; };
+		E64CEAC098A682F3213893672B61BE80 /* EXStoreReviewModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC521801FE93690F1116D293D37610B /* EXStoreReviewModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B5B8C438D421573212B3540DD06778B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D89D8AEF10EA17B383D3838388D7280 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		07E76344BA6ED904BE9A27DE6B71DECA /* EXStoreReviewModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXStoreReviewModule.m; path = EXStoreReview/EXStoreReviewModule.m; sourceTree = "<group>"; };
+		0D89D8AEF10EA17B383D3838388D7280 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		1EC521801FE93690F1116D293D37610B /* EXStoreReviewModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXStoreReviewModule.h; path = EXStoreReview/EXStoreReviewModule.h; sourceTree = "<group>"; };
+		45675809524876031BF934292CB1D353 /* EXStoreReview-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXStoreReview-dummy.m"; sourceTree = "<group>"; };
+		595847FC41A025A3246FE2D54BF99643 /* EXStoreReview.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXStoreReview.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5AC167129EC66465B1EA65864E0CBB68 /* libEXStoreReview.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXStoreReview.a; path = libEXStoreReview.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF060F0260C97E307E654A47382A65CB /* EXStoreReview.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXStoreReview.xcconfig; sourceTree = "<group>"; };
+		DA067D44DA6CE439E9193B07ACC200BF /* EXStoreReview-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXStoreReview-prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E49C5D8CDD061C4E6801AADF57715A09 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1688A93AABD4EA6AA278BE0E4ADA9718 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				AF060F0260C97E307E654A47382A65CB /* EXStoreReview.xcconfig */,
+				45675809524876031BF934292CB1D353 /* EXStoreReview-dummy.m */,
+				DA067D44DA6CE439E9193B07ACC200BF /* EXStoreReview-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXStoreReview";
+			sourceTree = "<group>";
+		};
+		3BA00F156DF2BC6E3FF57D3336621BFB /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				0D89D8AEF10EA17B383D3838388D7280 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		968DF49A23B8B226E5A75FFC20B3E361 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				595847FC41A025A3246FE2D54BF99643 /* EXStoreReview.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		B10EF6F757CE975FE9EBF7692CA9793A = {
+			isa = PBXGroup;
+			children = (
+				3BA00F156DF2BC6E3FF57D3336621BFB /* Dependencies */,
+				E9CEE435C167E46EB281C030FE1124B4 /* EXStoreReview */,
+				EE5395B1A46D2616FB191A007BCDFF6C /* Frameworks */,
+				DD94886E2ED6BF95AD6092C4F58B07CF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DD94886E2ED6BF95AD6092C4F58B07CF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5AC167129EC66465B1EA65864E0CBB68 /* libEXStoreReview.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E9CEE435C167E46EB281C030FE1124B4 /* EXStoreReview */ = {
+			isa = PBXGroup;
+			children = (
+				1EC521801FE93690F1116D293D37610B /* EXStoreReviewModule.h */,
+				07E76344BA6ED904BE9A27DE6B71DECA /* EXStoreReviewModule.m */,
+				968DF49A23B8B226E5A75FFC20B3E361 /* Pod */,
+				1688A93AABD4EA6AA278BE0E4ADA9718 /* Support Files */,
+			);
+			name = EXStoreReview;
+			path = "../../../../packages/expo-store-review/ios";
+			sourceTree = "<group>";
+		};
+		EE5395B1A46D2616FB191A007BCDFF6C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		ABC6F57DC6DF4BA842ADF46E31D94480 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E64CEAC098A682F3213893672B61BE80 /* EXStoreReviewModule.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		F2C74458D282DA74DB95F8A7FE6A5207 /* EXStoreReview */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4008F4A8FAB4437D128D364015B25B45 /* Build configuration list for PBXNativeTarget "EXStoreReview" */;
+			buildPhases = (
+				ABC6F57DC6DF4BA842ADF46E31D94480 /* Headers */,
+				5929C4DAAD82AFDE186CACC6DE3046D7 /* Sources */,
+				E49C5D8CDD061C4E6801AADF57715A09 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				28EF0B852DC70441FE967BF5D3E7709C /* PBXTargetDependency */,
+			);
+			name = EXStoreReview;
+			productName = EXStoreReview;
+			productReference = 5AC167129EC66465B1EA65864E0CBB68 /* libEXStoreReview.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4761C32B61D805934708651DD37717BD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 16E9DCE535D9DCE4E0A76E447834239D /* Build configuration list for PBXProject "EXStoreReview" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B10EF6F757CE975FE9EBF7692CA9793A;
+			productRefGroup = DD94886E2ED6BF95AD6092C4F58B07CF /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 0D89D8AEF10EA17B383D3838388D7280 /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F2C74458D282DA74DB95F8A7FE6A5207 /* EXStoreReview */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5929C4DAAD82AFDE186CACC6DE3046D7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				026E2FD70D5BD3E342F7A4C70EC8A90E /* EXStoreReview-dummy.m in Sources */,
+				47935A8EE058263146617A66DD4E92C4 /* EXStoreReviewModule.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		28EF0B852DC70441FE967BF5D3E7709C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = B5B8C438D421573212B3540DD06778B2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		6CFA9EBD52AD2F7DBAFBBDE3669BD26D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AF060F0260C97E307E654A47382A65CB /* EXStoreReview.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXStoreReview/EXStoreReview-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXStoreReview;
+				PRODUCT_NAME = EXStoreReview;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9816D7BA794D7416F5C1F6094139153E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		B957E147B6D5C162C8A7E8F2AA90C810 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		D7F17F8B0A8E3111A3E02C01CBA8A923 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AF060F0260C97E307E654A47382A65CB /* EXStoreReview.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXStoreReview/EXStoreReview-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXStoreReview;
+				PRODUCT_NAME = EXStoreReview;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		16E9DCE535D9DCE4E0A76E447834239D /* Build configuration list for PBXProject "EXStoreReview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B957E147B6D5C162C8A7E8F2AA90C810 /* Debug */,
+				9816D7BA794D7416F5C1F6094139153E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4008F4A8FAB4437D128D364015B25B45 /* Build configuration list for PBXNativeTarget "EXStoreReview" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7F17F8B0A8E3111A3E02C01CBA8A923 /* Debug */,
+				6CFA9EBD52AD2F7DBAFBBDE3669BD26D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4761C32B61D805934708651DD37717BD /* Project object */;
+}

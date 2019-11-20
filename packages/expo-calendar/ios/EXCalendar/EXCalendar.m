@@ -7,8 +7,11 @@
 
 #import <EXCalendar/EXCalendar.h>
 #import <EXCalendar/EXCalendarConverter.h>
+#import <EXCalendar/EXCalendarPermissionRequester.h>
+#import <EXCalendar/EXRemindersPermissionRequester.h>
 
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 @interface EXCalendar ()
 
@@ -25,6 +28,11 @@ UM_EXPORT_MODULE(ExpoCalendar);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[
+                                                    [EXCalendarPermissionRequester new],
+                                                    [EXRemindersPermissionRequester new]
+                                                    ]
+                           withPermissionsManager:_permissionsManager];
 }
 
 #pragma mark -
@@ -72,6 +80,17 @@ UM_EXPORT_METHOD_AS(getCalendarsAsync,
   }
 
   resolve([EXCalendarConverter serializeCalendars:calendars]);
+}
+
+UM_EXPORT_METHOD_AS(getDefaultCalendarAsync,
+                    getDefaultCalendarAsync:(UMPromiseResolveBlock)resolve
+                    rejector:(UMPromiseRejectBlock)reject)
+{
+  EKCalendar *defaultCalendar = [self.eventStore defaultCalendarForNewEvents];
+  if (defaultCalendar == nil) {
+    return reject(@"E_CALENDARS_NOT_FOUND", @"Could not find default calendars", nil);
+  }
+  resolve([EXCalendarConverter serializeCalendar:defaultCalendar]);
 }
 
 UM_EXPORT_METHOD_AS(saveCalendarAsync,
@@ -269,11 +288,9 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
       return;
     }
   } else {
-    calendarEvent = [EKEvent eventWithEventStore:self.eventStore];
-    calendarEvent.calendar = [self.eventStore defaultCalendarForNewEvents];
-
     if (calendarId) {
       EKCalendar *calendar = [self.eventStore calendarWithIdentifier:calendarId];
+
       if (!calendar) {
         reject(@"E_INVALID_CALENDAR_ID",
              [NSString stringWithFormat:@"Calendar with id %@ could not be found", calendarId],
@@ -282,11 +299,16 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
       }
       if (calendar.allowedEntityTypes ^ EKEntityMaskEvent) {
         reject(@"E_INVALID_CALENDAR_ID",
-             [NSString stringWithFormat:@"Calendar with id %@ is not of type `event`", calendarId],
+              [NSString stringWithFormat:@"Calendar with id %@ is not of type `event`", calendarId],
              nil);
         return;
-      }
+      } 
+      
+      calendarEvent = [EKEvent eventWithEventStore:self.eventStore];
       calendarEvent.calendar = calendar;
+    } else {
+        reject(@"E_INVALID_CALENDAR_ID", @"CalendarId is required.", nil);
+        return; 
     }
   }
 
@@ -372,7 +394,7 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
     resolve(calendarEvent.calendarItemIdentifier);
   } else {
     reject(@"E_EVENT_NOT_SAVED",
-         [NSString stringWithFormat:@"Event with id %@ was not saved", calendarEvent.calendarItemIdentifier],
+         [NSString stringWithFormat:@"Event with id %@ was not saved. %@", calendarEvent.calendarItemIdentifier, error.description],
          error);
   }
 }
@@ -717,24 +739,44 @@ UM_EXPORT_METHOD_AS(getSourceByIdAsync,
   resolve([EXCalendarConverter serializeSource:source]);
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+UM_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
+                    getCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermission:@"calendar" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXCalendarPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
+                    requestCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXCalendarPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
+                    getRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXRemindersPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
                     requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (!_permissionsManager) {
-    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
-  }
-  [_permissionsManager askForPermission:@"reminders" withResult:resolve withRejecter:reject];
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXRemindersPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 #pragma mark - helpers
@@ -877,10 +919,10 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
   return EKEventAvailabilityNotSupported;
 }
 
-- (BOOL)_checkPermissions:(NSString *)permissionType reject:(UMPromiseRejectBlock)reject
+- (BOOL)_checkPermissions:(Class)permissionsRequester reject:(UMPromiseRejectBlock)reject
 {
-  if (![_permissionsManager hasGrantedPermission:permissionType]) {
-    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [permissionType uppercaseString]];
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCalendarPermissionRequester class]]) {
+    NSString *errorMessage = [NSString stringWithFormat:@"%@ permission is required to do this operation.", [[permissionsRequester permissionType] uppercaseString]];
     reject(@"E_MISSING_PERMISSION", errorMessage, nil);
     return NO;
   }
@@ -889,12 +931,12 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
 
 - (BOOL)_checkCalendarPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:@"calendar" reject:reject];
+  return [self _checkPermissions:[EXCalendarPermissionRequester class] reject:reject];
 }
 
 - (BOOL)_checkRemindersPermissions:(UMPromiseRejectBlock)reject
 {
-  return [self _checkPermissions:@"reminders" reject:reject];
+  return [self _checkPermissions:[EXRemindersPermissionRequester class] reject:reject];
 }
 
 @end

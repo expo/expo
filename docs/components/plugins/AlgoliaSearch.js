@@ -51,7 +51,6 @@ const STYLES_INPUT = css`
 
 // TODO(jim): Not particularly happy with how this component chunks in while loading.
 class AlgoliaSearch extends React.Component {
-
   processUrl(url) {
     // Update URLs for new doc URLs
     var routes = url.split('/');
@@ -68,10 +67,24 @@ class AlgoliaSearch extends React.Component {
       indexName: 'expo',
       inputSelector: '#algolia-search-box',
       enhancedSearchInput: false,
-      algoliaOptions: { 'facetFilters': [`version:${this.props.version === 'latest' ? 'v32.0.0' : this.props.version}`] },
+      transformData: hits => {
+        // modify hits to account for no anchors on page headings
+        hits.map(hit => {
+          hit.url = hit.url.replace(/#__next$/, '');
+          hit.anchor = hit.anchor.replace(/^__next$/, '');
+        });
+
+        return hits;
+      },
+      algoliaOptions: {
+        facetFilters: [
+          `version:${this.props.version === 'latest' ? LATEST_VERSION : this.props.version}`,
+        ],
+      },
       handleSelected: (input, event, suggestion) => {
         input.setVal('');
         const url = suggestion.url;
+
         let route = url.match(/https?:\/\/(.*)(\/versions\/.*)/)[2];
 
         let asPath = null;
@@ -86,13 +99,19 @@ class AlgoliaSearch extends React.Component {
           Router.push(route);
         }
 
-        document.getElementById('docsearch').blur();
+        let docSearchEl = document.getElementById('docsearch');
+        if (docSearchEl) {
+          docSearchEl.blur();
+        }
+
         const searchbox = document.querySelector('input#docsearch');
         const reset = document.querySelector('.searchbox [type="reset"]');
-        reset.className = 'searchbox__reset';
 
-        if (searchbox.value.length === 0) {
-          reset.className += ' hide';
+        if (reset) {
+          reset.className = 'searchbox__reset';
+          if (searchbox && searchbox.value.length === 0) {
+            reset.className += ' hide';
+          }
         }
 
         this.props.closeSidebar && this.props.closeSidebar();

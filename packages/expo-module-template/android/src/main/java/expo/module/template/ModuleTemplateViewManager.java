@@ -7,9 +7,8 @@ import java.util.List;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> implements ModuleRegistryConsumer {
+public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> {
   private static final String TAG = "ExpoModuleTemplateView";
 
   private ModuleRegistry mModuleRegistry;
@@ -35,7 +34,7 @@ public class ModuleTemplateViewManager extends ViewManager<ModuleTemplateView> i
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 }

@@ -100,12 +100,22 @@ static const NSString *noViewNameExceptionReasonFormat = @"You've subclassed an 
     [invocation setTarget:self];
     [invocation setSelector:selector];
     [invocation setArgument:&value atIndex:2];
+    
+    // According to objc.h, the BOOL type can be represented by `bool` or `signed char` so
+    // getArgumentTypeAtIndex can return _C_BOOL (when `bool`) or _C_CHR (when `signed char`)
+#if OBJC_BOOL_IS_BOOL
     if ([methodSignature getArgumentTypeAtIndex:2][0] == _C_BOOL) {
       // We need this intermediary variable, see
       // https://stackoverflow.com/questions/11061166/pointer-to-bool-in-objective-c
       BOOL retainedValue = [value boolValue];
       [invocation setArgument:&retainedValue atIndex:2];
     }
+#else // BOOL is represented by `signed char`
+    if ([methodSignature getArgumentTypeAtIndex:2][0] == _C_CHR) {
+      BOOL retainedValue = [value charValue];
+      [invocation setArgument:&retainedValue atIndex:2];
+    }
+#endif
     [invocation setArgument:(void *)&view atIndex:3];
     [invocation retainArguments];
     [invocation invoke];

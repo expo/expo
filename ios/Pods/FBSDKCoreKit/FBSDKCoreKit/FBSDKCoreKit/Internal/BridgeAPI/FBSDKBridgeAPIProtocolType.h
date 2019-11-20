@@ -22,4 +22,4 @@ typedef NS_ENUM(NSUInteger, FBSDKBridgeAPIProtocolType)
 {
   FBSDKBridgeAPIProtocolTypeNative,
   FBSDKBridgeAPIProtocolTypeWeb,
-};
+} NS_SWIFT_NAME(BridgeAPIProtocol.Type);

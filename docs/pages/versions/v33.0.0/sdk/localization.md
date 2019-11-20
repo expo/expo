@@ -7,7 +7,7 @@ Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `e
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-localization`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
 
 ## Usage
 
@@ -31,7 +31,7 @@ i18n.locale = Localization.locale;
 export default class LitView extends React.Component {
   render() {
     return (
-      <Text>
+      <Text style={{ flex: 1, paddingTop: 50, alignSelf: 'center' }}>
         {i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}
       </Text>
     );

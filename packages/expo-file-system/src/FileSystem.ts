@@ -1,6 +1,7 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { EventEmitter, Subscription } from '@unimodules/core';
 import UUID from 'uuid-js';
+import { Platform } from 'react-native';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+
 import ExponentFileSystem from './ExponentFileSystem';
 
 import {
@@ -22,7 +23,7 @@ if (!ExponentFileSystem) {
   );
 }
 // Prevent webpack from pruning this.
-const _unused = new EventEmitter(ExponentFileSystem);
+const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
 
 export {
   DownloadOptions,
@@ -51,7 +52,7 @@ export const { bundledAssets, bundleDirectory } = ExponentFileSystem;
 
 export async function getInfoAsync(
   fileUri: string,
-  options: { md5?: boolean; cache?: boolean } = {}
+  options: { md5?: boolean; size?: boolean } = {}
 ): Promise<FileInfo> {
   if (!ExponentFileSystem.getInfoAsync) {
     throw new UnavailabilityError('expo-file-system', 'getInfoAsync');
@@ -67,6 +68,19 @@ export async function readAsStringAsync(
     throw new UnavailabilityError('expo-file-system', 'readAsStringAsync');
   }
   return await ExponentFileSystem.readAsStringAsync(fileUri, options || {});
+}
+
+export async function getContentUriAsync(fileUri: string): Promise<string> {
+  if (Platform.OS === 'android') {
+    if (!ExponentFileSystem.getContentUriAsync) {
+      throw new UnavailabilityError('expo-file-system', 'getContentUriAsync');
+    }
+    return await ExponentFileSystem.getContentUriAsync(fileUri);
+  } else {
+    return new Promise(function(resolve, reject) {
+      resolve(fileUri);
+    });
+  }
 }
 
 export async function writeAsStringAsync(
@@ -119,6 +133,20 @@ export async function readDirectoryAsync(fileUri: string): Promise<string[]> {
     throw new UnavailabilityError('expo-file-system', 'readDirectoryAsync');
   }
   return await ExponentFileSystem.readDirectoryAsync(fileUri, {});
+}
+
+export async function getFreeDiskStorageAsync(): Promise<number> {
+  if (!ExponentFileSystem.getFreeDiskStorageAsync) {
+    throw new UnavailabilityError('expo-file-system', 'getFreeDiskStorageAsync');
+  }
+  return await ExponentFileSystem.getFreeDiskStorageAsync();
+}
+
+export async function getTotalDiskCapacityAsync(): Promise<number> {
+  if (!ExponentFileSystem.getTotalDiskCapacityAsync) {
+    throw new UnavailabilityError('expo-file-system', 'getTotalDiskCapacityAsync');
+  }
+  return await ExponentFileSystem.getTotalDiskCapacityAsync();
 }
 
 export async function downloadAsync(

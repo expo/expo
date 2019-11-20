@@ -170,20 +170,24 @@
 
 - (id)initWithCoder:(NSCoder *)coder {
     if ((self = [super init])) {
-        self.tags = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_TAGS];
-        self.alias = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_ALIAS];
-        self.type = [[coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_LINK_TYPE] integerValue];
-        self.channel = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_CHANNEL];
-        self.feature = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_FEATURE];
-        self.stage = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_STAGE];
-        self.campaign = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_CAMPAIGN];
-        self.duration = [[coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_DURATION] integerValue];
+        self.tags = [coder decodeObjectOfClass:NSArray.class forKey:BRANCH_REQUEST_KEY_URL_TAGS];
+        self.alias = [coder decodeObjectOfClass:NSString.class forKey:BRANCH_REQUEST_KEY_URL_ALIAS];
+        self.type = [[coder decodeObjectOfClass:NSNumber.class forKey:BRANCH_REQUEST_KEY_URL_LINK_TYPE] integerValue];
+        self.channel = [coder decodeObjectOfClass:NSString.class forKey:BRANCH_REQUEST_KEY_URL_CHANNEL];
+        self.feature = [coder decodeObjectOfClass:NSString.class forKey:BRANCH_REQUEST_KEY_URL_FEATURE];
+        self.stage = [coder decodeObjectOfClass:NSString.class forKey:BRANCH_REQUEST_KEY_URL_STAGE];
+        self.campaign = [coder decodeObjectOfClass:NSString.class forKey:BRANCH_REQUEST_KEY_URL_CAMPAIGN];
+        self.duration = [[coder decodeObjectOfClass:NSNumber.class forKey:BRANCH_REQUEST_KEY_URL_DURATION] integerValue];
         
-        NSString *encodedParams = [coder decodeObjectForKey:BRANCH_REQUEST_KEY_URL_DATA];
+        NSString *encodedParams = [coder decodeObjectOfClass:NSString.class forKey:BRANCH_REQUEST_KEY_URL_DATA];
         self.params = [BNCEncodingUtils decodeJsonStringToDictionary:encodedParams];
     }
 
     return self;
+}
+
++ (BOOL) supportsSecureCoding {
+    return YES;
 }
 
 @end

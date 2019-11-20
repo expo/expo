@@ -14,7 +14,7 @@
 
 @class GMSCoordinateBounds;
 
-NS_ASSUME_NONNULL_BEGIN;
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * GMSGroundOverlay specifies the available options for a ground overlay that exists on the Earth's
@@ -27,38 +27,38 @@ NS_ASSUME_NONNULL_BEGIN;
  * The position of this GMSGroundOverlay, or more specifically, the physical position of its anchor.
  * If this is changed, |bounds| will be moved around the new position.
  */
-@property(nonatomic, assign) CLLocationCoordinate2D position;
+@property(nonatomic) CLLocationCoordinate2D position;
 
 /**
  * The anchor specifies where this GMSGroundOverlay is anchored to the Earth in relation to
  * |bounds|. If this is modified, |position| will be set to the corresponding new position within
  * |bounds|.
  */
-@property(nonatomic, assign) CGPoint anchor;
+@property(nonatomic) CGPoint anchor;
 
 /**
  * Icon to render within |bounds| on the Earth. If this is nil, the overlay will not be visible
  * (unlike GMSMarker which has a default image).
  */
-@property(nonatomic, strong, nullable) UIImage *icon;
+@property(nonatomic, nullable) UIImage *icon;
 
 /**
  * Sets the opacity of the ground overlay, between 0 (completely transparent) and 1 (default)
  * inclusive.
  */
-@property(nonatomic, assign) float opacity;
+@property(nonatomic) float opacity;
 
 /**
  * Bearing of this ground overlay, in degrees. The default value, zero, points this ground overlay
  * up/down along the normal Y axis of the earth.
  */
-@property(nonatomic, assign) CLLocationDirection bearing;
+@property(nonatomic) CLLocationDirection bearing;
 
 /**
  * The 2D bounds on the Earth in which |icon| is drawn. Changing this value will adjust |position|
  * accordingly.
  */
-@property(nonatomic, strong, nullable) GMSCoordinateBounds *bounds;
+@property(nonatomic, nullable) GMSCoordinateBounds *bounds;
 
 /**
  * Convenience constructor for GMSGroundOverlay for a particular |bounds| and |icon|. Will set
@@ -82,4 +82,4 @@ NS_ASSUME_NONNULL_BEGIN;
  */
 FOUNDATION_EXTERN const CGPoint kGMSGroundOverlayDefaultAnchor;
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

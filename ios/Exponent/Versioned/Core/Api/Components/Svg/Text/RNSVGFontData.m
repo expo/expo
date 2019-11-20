@@ -30,6 +30,7 @@ RNSVGFontData *RNSVGFontData_Defaults;
         self->fontFamily = @"";
         self->fontStyle = RNSVGFontStyleNormal;
         self->fontWeight = RNSVGFontWeightNormal;
+        self->absoluteFontWeight = 400;
         self->fontFeatureSettings = @"";
         self->fontVariantLigatures = RNSVGFontVariantLigaturesNormal;
         self->textAnchor = RNSVGTextAnchorStart;
@@ -51,6 +52,60 @@ RNSVGFontData *RNSVGFontData_Defaults;
                                          fontSize:fontSize];
 }
 
+- (void)setInheritedWeight:(RNSVGFontData*) parent {
+    absoluteFontWeight = parent->absoluteFontWeight;
+    fontWeight = parent->fontWeight;
+}
+
+RNSVGFontWeight nearestFontWeight(int absoluteFontWeight) {
+    return RNSVGFontWeights[(int)round(absoluteFontWeight / 100.0)];
+}
+
+- (void)handleNumericWeight:(RNSVGFontData*)parent weight:(double)weight {
+    long roundWeight = round(weight);
+    if (roundWeight >= 1 && roundWeight <= 1000) {
+        absoluteFontWeight = (int)roundWeight;
+        fontWeight = nearestFontWeight(absoluteFontWeight);
+    } else {
+        [self setInheritedWeight:parent];
+    }
+}
+
+// https://drafts.csswg.org/css-fonts-4/#relative-weights
+int AbsoluteFontWeight(RNSVGFontWeight fontWeight, RNSVGFontData* parent) {
+    if (fontWeight == RNSVGFontWeightBolder) {
+        return bolder(parent->absoluteFontWeight);
+    } else if (fontWeight == RNSVGFontWeightLighter) {
+        return lighter(parent->absoluteFontWeight);
+    } else {
+        return RNSVGAbsoluteFontWeights[fontWeight];
+    }
+}
+
+int bolder(int inherited) {
+    if (inherited < 350) {
+        return 400;
+    } else if (inherited < 550) {
+        return 700;
+    } else if (inherited < 900) {
+        return 900;
+    } else {
+        return inherited;
+    }
+}
+
+int lighter(int inherited) {
+    if (inherited < 100) {
+        return inherited;
+    } else if (inherited < 550) {
+        return 100;
+    } else if (inherited < 750) {
+        return 400;
+    } else {
+        return 700;
+    }
+}
+
 + (instancetype)initWithNSDictionary:(NSDictionary *)font
                               parent:(RNSVGFontData *)parent {
     RNSVGFontData *data = [RNSVGFontData alloc];
@@ -69,12 +124,31 @@ RNSVGFontData *RNSVGFontData_Defaults;
     else {
         data->fontSize = parentFontSize;
     }
+
+    if ([font objectForKey:FONT_WEIGHT]) {
+        id fontWeight = [font objectForKey:FONT_WEIGHT];
+        if ([fontWeight isKindOfClass:NSNumber.class]) {
+            [data handleNumericWeight:parent weight:[fontWeight doubleValue]];
+        } else {
+            NSString* weight = fontWeight;
+            NSInteger fw = RNSVGFontWeightFromString(weight);
+            if (fw != -1) {
+                data->absoluteFontWeight = AbsoluteFontWeight(fw, parent);
+                data->fontWeight = nearestFontWeight(data->absoluteFontWeight);
+            } else if ([weight length] != 0) {
+                [data handleNumericWeight:parent weight:[weight doubleValue]];
+            } else {
+                [data setInheritedWeight:parent];
+            }
+        }
+    } else {
+        [data setInheritedWeight:parent];
+    }
+
     data->fontData = [font objectForKey:FONT_DATA] ? [font objectForKey:FONT_DATA] : parent->fontData;
     data->fontFamily = [font objectForKey:FONT_FAMILY] ? [font objectForKey:FONT_FAMILY] : parent->fontFamily;
     NSString* style = [font objectForKey:FONT_STYLE];
     data->fontStyle = style ? RNSVGFontStyleFromString(style) : parent->fontStyle;
-    NSString* weight = [font objectForKey:FONT_WEIGHT];
-    data->fontWeight = weight ? RNSVGFontWeightFromString(weight) : parent->fontWeight;
     NSString* feature = [font objectForKey:FONT_FEATURE_SETTINGS];
     data->fontFeatureSettings = feature ? [font objectForKey:FONT_FEATURE_SETTINGS] : parent->fontFeatureSettings;
     NSString* variant = [font objectForKey:FONT_VARIANT_LIGATURES];
@@ -84,25 +158,40 @@ RNSVGFontData *RNSVGFontData_Defaults;
     NSString* decoration = [font objectForKey:TEXT_DECORATION];
     data->textDecoration = decoration ? RNSVGTextDecorationFromString(decoration) : parent->textDecoration;
 
-    NSString* kerning = [font objectForKey:KERNING];
-    data->manualKerning = (kerning || parent->manualKerning );
     CGFloat fontSize = data->fontSize;
-    data->kerning = kerning ?
-    [RNSVGFontData toAbsoluteWithNSString:kerning
-                                 fontSize:fontSize]
-    : parent->kerning;
+    id kerning = [font objectForKey:KERNING];
+    data->manualKerning = (kerning || parent->manualKerning );
+    if ([kerning isKindOfClass:NSNumber.class]) {
+        NSNumber* kern = kerning;
+        data->kerning = (CGFloat)[kern doubleValue];
+    } else {
+        data->kerning = kerning ?
+        [RNSVGFontData toAbsoluteWithNSString:kerning
+                                     fontSize:fontSize]
+        : parent->kerning;
+    }
 
-    NSString* wordSpacing = [font objectForKey:WORD_SPACING];
-    data->wordSpacing = wordSpacing ?
-    [RNSVGFontData toAbsoluteWithNSString:wordSpacing
-                                 fontSize:fontSize]
-    : parent->wordSpacing;
+    id wordSpacing = [font objectForKey:WORD_SPACING];
+    if ([wordSpacing isKindOfClass:NSNumber.class]) {
+        NSNumber* ws = wordSpacing;
+        data->wordSpacing = (CGFloat)[ws doubleValue];
+    } else {
+        data->wordSpacing = wordSpacing ?
+        [RNSVGFontData toAbsoluteWithNSString:wordSpacing
+                                     fontSize:fontSize]
+        : parent->wordSpacing;
+    }
 
-    NSString* letterSpacing = [font objectForKey:LETTER_SPACING];
-    data->letterSpacing = letterSpacing ?
-    [RNSVGFontData toAbsoluteWithNSString:letterSpacing
-                                 fontSize:fontSize]
-    : parent->letterSpacing;
+    id letterSpacing = [font objectForKey:LETTER_SPACING];
+    if ([letterSpacing isKindOfClass:NSNumber.class]) {
+        NSNumber* ls = letterSpacing;
+        data->wordSpacing = (CGFloat)[ls doubleValue];
+    } else {
+        data->letterSpacing = letterSpacing ?
+        [RNSVGFontData toAbsoluteWithNSString:letterSpacing
+                                     fontSize:fontSize]
+        : parent->letterSpacing;
+    }
 
     return data;
 }

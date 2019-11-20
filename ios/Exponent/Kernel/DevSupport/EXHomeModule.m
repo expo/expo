@@ -16,8 +16,6 @@
 @property (nonatomic, strong) NSArray * _Nonnull sdkVersions;
 @property (nonatomic, weak) id<EXHomeModuleDelegate> delegate;
 
-+ (EXClientReleaseType)clientReleaseType;
-
 @end
 
 @implementation EXHomeModule
@@ -29,7 +27,7 @@
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
-    _sdkVersions = params[@"supportedSdkVersions"];
+    _sdkVersions = params[@"constants"][@"supportedExpoSdks"];
     _delegate = kernelServiceInstance;
   }
   return self;
@@ -208,16 +206,6 @@ RCT_REMAP_METHOD(removeSessionAsync,
   } else {
     reject(@"ERR_SESSION_NOT_REMOVED", @"Could not remove session", error);
   }
-}
-
-RCT_EXPORT_METHOD(addDevMenu)
-{
-  __weak typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (weakSelf.delegate) {
-      [weakSelf.delegate homeModuleDidSelectHomeDiagnostics:self];
-    }
-  });
 }
 
 RCT_REMAP_METHOD(getIsNuxFinishedAsync,

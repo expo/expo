@@ -13,21 +13,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.media.ExifInterface;
-import android.support.v4.content.FileProvider;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.exifinterface.media.ExifInterface;
+import androidx.core.content.FileProvider;
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
 
-import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.BaseDataSubscriber;
-import com.facebook.datasource.DataSource;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.common.RotationOptions;
-import com.facebook.imagepipeline.image.CloseableBitmap;
-import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import org.apache.commons.io.IOUtils;
@@ -37,9 +29,10 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.imageloader.ImageLoader;
 import org.unimodules.interfaces.permissions.Permissions;
+import org.unimodules.interfaces.permissions.PermissionsStatus;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,7 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ImagePickerModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class ImagePickerModule extends ExportedModule implements ActivityEventListener {
 
   public static final String TAG = "ExponentImagePicker";
   public static final String MISSING_ACTIVITY = "MISSING_ACTIVITY";
@@ -216,6 +209,7 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
   private boolean mInitialized = false;
   private Context mContext;
   private ModuleRegistry mModuleRegistry;
+  private ImageLoader mImageLoader;
 
   public ImagePickerModule(Context context) {
     super(context);
@@ -234,6 +228,8 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
     allowsEditing = options.containsKey(OPTION_ALLOWS_EDITING) && ((Boolean) options.get(OPTION_ALLOWS_EDITING));
     if (options.containsKey(OPTION_MEDIA_TYPES)) {
       mediaTypes = (String) options.get(OPTION_MEDIA_TYPES);
+    } else {
+      mediaTypes = "Images";
     }
     if (options.containsKey(OPTION_ASPECT)) {
       forceAspect = (ArrayList<Object>) options.get(OPTION_ASPECT);
@@ -250,6 +246,26 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
     return true;
   }
 
+  @ExpoMethod
+  public void requestCameraRollPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+  }
+
+  @ExpoMethod
+  public void getCameraRollPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+  }
+
+  @ExpoMethod
+  public void requestCameraPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getCameraPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
   // NOTE: Currently not reentrant / doesn't support concurrent requests
   @ExpoMethod
   public void launchCameraAsync(final Map<String, Object> options, final Promise promise) {
@@ -262,7 +278,9 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
       return;
     }
 
-    final Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    final Intent cameraIntent = new Intent(mediaTypes.equals("Videos") ?
+                                            MediaStore.ACTION_VIDEO_CAPTURE :
+                                            MediaStore.ACTION_IMAGE_CAPTURE);
 
     if (cameraIntent.resolveActivity(getApplication(null).getPackageManager()) == null) {
       promise.reject(new IllegalStateException("Error resolving activity"));
@@ -270,26 +288,25 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
     }
 
     Permissions permissionsModule = mModuleRegistry.getModule(Permissions.class);
-
-    String permissionsTable[] = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
-
-    permissionsModule.askForPermissions(permissionsTable, new Permissions.PermissionsRequestListener() {
-      @Override
-      public void onPermissionsResult(int[] results) {
-        if (results[0] == PackageManager.PERMISSION_GRANTED && results[1] == PackageManager.PERMISSION_GRANTED) {
-          launchCameraWithPermissionsGranted(promise, cameraIntent);
-        } else {
-          promise.reject(new SecurityException("User rejected permissions"));
-        }
+    if (permissionsModule == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsModule.askForPermissions(permissionsResponse -> {
+      if (permissionsResponse.get(Manifest.permission.WRITE_EXTERNAL_STORAGE).getStatus() == PermissionsStatus.GRANTED
+          &&  permissionsResponse.get(Manifest.permission.CAMERA).getStatus() == PermissionsStatus.GRANTED) {
+        launchCameraWithPermissionsGranted(promise, cameraIntent);
+      } else {
+        promise.reject(new SecurityException("User rejected permissions"));
       }
-    });
+    }, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA);
   }
 
   private void launchCameraWithPermissionsGranted(Promise promise, Intent cameraIntent) {
     File imageFile;
     try {
       imageFile = new File(ExpFileUtils.generateOutputPath(mContext.getCacheDir(),
-          "ImagePicker", ".jpg"));
+          "ImagePicker", mediaTypes.equals("Videos") ? ".mp4" : ".jpg"));
     } catch (IOException e) {
       e.printStackTrace();
       return;
@@ -333,19 +350,17 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
     }
 
     Intent libraryIntent = new Intent();
-    if (mediaTypes != null) {
-      if (mediaTypes.equals("Images")) {
-        libraryIntent.setType("image/*");
-      } else if (mediaTypes.equals("Videos")) {
-        libraryIntent.setType("video/*");
-      } else if (mediaTypes.equals("All")) {
-        libraryIntent.setType("*/*");
-        String[] mimetypes = {"image/*", "video/*"};
-        libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-      }
-    } else {
+
+    if (mediaTypes.equals("Images")) {
       libraryIntent.setType("image/*");
+    } else if (mediaTypes.equals("Videos")) {
+      libraryIntent.setType("video/*");
+    } else if (mediaTypes.equals("All")) {
+      libraryIntent.setType("*/*");
+      String[] mimetypes = {"image/*", "video/*"};
+      libraryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
     }
+
 
     mPromise = promise;
 
@@ -473,43 +488,21 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
                   .setOutputCompressQuality(quality == null ? DEFAULT_QUALITY : quality)
                   .start(getExperienceActivity());
             } else {
-              ImageRequest imageRequest =
-                  ImageRequestBuilder
-                      .newBuilderWithSource(uri)
-                      .setRotationOptions(RotationOptions.autoRotate())
-                      .build();
-              final DataSource<CloseableReference<CloseableImage>> dataSource
-                  = Fresco.getImagePipeline().fetchDecodedImage(imageRequest, getApplication(null));
               final Bitmap.CompressFormat finalCompressFormat = compressFormat;
-              dataSource.subscribe(new BaseDataSubscriber<CloseableReference<CloseableImage>>() {
+              mImageLoader.loadImageForManipulationFromURL(uri.toString(), new ImageLoader.ResultListener() {
                 @Override
-                protected void onNewResultImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-                  CloseableReference<CloseableImage> closeableImageRef = dataSource.getResult();
-                  if (closeableImageRef == null) {
-                    promise.reject("E_READ_ERR", "Could not open an image from " + uri);
-                    return;
-                  }
-
-                  CloseableImage closeableImage = closeableImageRef.get();
-                  if (closeableImage == null) {
-                    promise.reject("E_READ_ERR", "Could not read an image from " + uri);
-                    return;
-                  }
-
-                  int width = closeableImage.getWidth();
-                  int height = closeableImage.getHeight();
+                public void onSuccess(@NonNull Bitmap bitmap) {
+                  int width = bitmap.getWidth();
+                  int height = bitmap.getHeight();
 
                   ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
                   File file = new File(path);
 
-                  if (quality != null && closeableImage instanceof CloseableBitmap) {
-                    // We have an image and should compress its quality
-                    Bitmap bitmap = ((CloseableBitmap) closeableImage).getUnderlyingBitmap();
-                    if (bitmap != null) {
-                      saveImage(bitmap, finalCompressFormat, file, out);
-                      returnImageResult(exifData, file.toURI().toString(), width, height, out, promise);
-                      return;
-                    }
+                  // We have an image and should compress its quality
+                  if (quality != null) {
+                    saveImage(bitmap, finalCompressFormat, file, out);
+                    returnImageResult(exifData, file.toURI().toString(), width, height, out, promise);
+                    return;
                   }
 
                   // No modification requested
@@ -522,13 +515,13 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
                 }
 
                 @Override
-                protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
-                  promise.reject(new IllegalStateException("Image decoding failed."));
+                public void onFailure(@Nullable Throwable cause) {
+                  promise.reject("E_READ_ERR", "Could not open an image from " + uri);
                   if (requestCode == REQUEST_LAUNCH_CAMERA) {
                     revokeUriPermissionForCamera();
                   }
                 }
-              }, CallerThreadExecutor.getInstance());
+              });
             }
           } else {
             Bundle response = new Bundle();
@@ -747,8 +740,9 @@ public class ImagePickerModule extends ExportedModule implements ModuleRegistryC
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+    mImageLoader = moduleRegistry.getModule(ImageLoader.class);
   }
 
   private Activity getExperienceActivity() {

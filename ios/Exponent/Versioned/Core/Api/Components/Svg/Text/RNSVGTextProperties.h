@@ -86,10 +86,9 @@ NSString* RNSVGFontVariantLigaturesToString( enum RNSVGFontVariantLigatures fw )
 enum RNSVGFontVariantLigatures RNSVGFontVariantLigaturesFromString( NSString* s );
 
 typedef NS_ENUM(NSInteger, RNSVGFontWeight) {
+    // Absolute
     RNSVGFontWeightNormal,
     RNSVGFontWeightBold,
-    RNSVGFontWeightBolder,
-    RNSVGFontWeightLighter,
     RNSVGFontWeight100,
     RNSVGFontWeight200,
     RNSVGFontWeight300,
@@ -99,11 +98,29 @@ typedef NS_ENUM(NSInteger, RNSVGFontWeight) {
     RNSVGFontWeight700,
     RNSVGFontWeight800,
     RNSVGFontWeight900,
+    // Relative
+    RNSVGFontWeightBolder,
+    RNSVGFontWeightLighter,
     RNSVGFontWeightDEFAULT = RNSVGFontWeightNormal,
 };
 
-static NSString* const RNSVGFontWeightStrings[] = {@"Normal", @"Bold", @"Bolder", @"Lighter", @"100", @"200", @"300", @"400", @"500", @"600", @"700", @"800", @"900", nil};
+static NSString* const RNSVGFontWeightStrings[] = {@"normal", @"bold", @"100", @"200", @"300", @"400", @"500", @"600", @"700", @"800", @"900", @"bolder", @"lighter", nil};
 
+static int const RNSVGAbsoluteFontWeights[] = {400, 700, 100, 200, 300, 400, 500, 600, 700, 800, 900};
+
+static RNSVGFontWeight const RNSVGFontWeights[] = {
+    RNSVGFontWeight100,
+    RNSVGFontWeight100,
+    RNSVGFontWeight200,
+    RNSVGFontWeight300,
+    RNSVGFontWeightNormal,
+    RNSVGFontWeight500,
+    RNSVGFontWeight600,
+    RNSVGFontWeightBold,
+    RNSVGFontWeight800,
+    RNSVGFontWeight900,
+    RNSVGFontWeight900
+};
 
 NSString* RNSVGFontWeightToString( enum RNSVGFontWeight fw );
 

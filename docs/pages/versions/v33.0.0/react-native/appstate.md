@@ -22,11 +22,9 @@ For more information, see [Apple's documentation](https://developer.apple.com/li
 
 To see the current state, you can check `AppState.currentState`, which will be kept up-to-date. However, `currentState` will be null at launch while `AppState` retrieves it over the bridge.
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {AppState, Text} from 'react-native';
+import React, { Component } from 'react';
+import { AppState, Text } from 'react-native';
 
 class AppStateExample extends Component {
   state = {
@@ -41,23 +39,18 @@ class AppStateExample extends Component {
     AppState.removeEventListener('change', this._handleAppStateChange);
   }
 
-  _handleAppStateChange = (nextAppState) => {
-    if (
-      this.state.appState.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
+  _handleAppStateChange = nextAppState => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       console.log('App has come to the foreground!');
     }
-    this.setState({appState: nextAppState});
+    this.setState({ appState: nextAppState });
   };
 
   render() {
     return <Text>Current state is: {this.state.appState}</Text>;
   }
 }
-
 ```
-
 
 This example will only ever appear to say "Current state is: active" because the app is only visible to the user when in the `active` state, and the null state will happen only momentarily.
 
@@ -78,13 +71,9 @@ This example will only ever appear to say "Current state is: active" because the
 
 ### `addEventListener()`
 
-
 ```javascript
-
 addEventListener(type, handler);
-
 ```
-
 
 Add a handler to AppState changes by listening to the `change` event type and providing the handler
 
@@ -94,13 +83,9 @@ TODO: now that AppState is a subclass of NativeEventEmitter, we could deprecate 
 
 ### `removeEventListener()`
 
-
 ```javascript
-
 removeEventListener(type, handler);
-
 ```
-
 
 Remove a handler by passing the `change` event type and the handler
 
@@ -108,11 +93,6 @@ Remove a handler by passing the `change` event type and the handler
 
 ### `currentState`
 
-
 ```javascript
-
 AppState.currentState;
-
 ```
-
-

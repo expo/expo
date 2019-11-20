@@ -60,8 +60,8 @@ title: Image Style Props
 
 ### `borderColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -84,8 +84,8 @@ title: Image Style Props
 
 ### `backgroundColor`
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -126,8 +126,8 @@ title: Image Style Props
 
 Changes the color of all the non-transparent pixels to the tintColor.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -146,4 +146,3 @@ For details of how this works under the hood, see https://frescolib.org/docs/rou
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
 | string | No       | Android  |
-

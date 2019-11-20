@@ -3,6 +3,6 @@ export type Localization = {
   locales: string[];
   timezone: string;
   isoCurrencyCodes?: string[];
-  country?: string;
+  region?: string; // iOS
   isRTL: boolean;
 };

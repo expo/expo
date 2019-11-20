@@ -1,6 +1,6 @@
-import ExponentAV from './ExponentAV';
 import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
+import ExponentAV from './ExponentAV';
 // TODO add:
 //  disableFocusOnAndroid
 //  audio routes (at least did become noisy on android)

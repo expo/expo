@@ -13,10 +13,6 @@
  * permissions and limitations under the License.
  */
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 #import "GoogleMapsDemos/Samples/StructuredGeocoderViewController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -35,10 +31,8 @@
   GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:-33.868
                                                           longitude:151.2086
                                                                zoom:12];
-
   _mapView = [GMSMapView mapWithFrame:CGRectZero camera:camera];
   _mapView.delegate = self;
-
   _geocoder = [[GMSGeocoder alloc] init];
 
   self.view = _mapView;
@@ -46,47 +40,52 @@
 
 #pragma mark - GMSMapViewDelegate
 
-- (void)mapView:(GMSMapView *)mapView
-    didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate {
+- (void)mapView:(GMSMapView *)mapView didLongPressAtCoordinate:(CLLocationCoordinate2D)coordinate {
   // On a long press, reverse geocode this location.
+  __weak __typeof__(self) weakSelf = self;
   GMSReverseGeocodeCallback handler = ^(GMSReverseGeocodeResponse *response, NSError *error) {
-    GMSAddress *address = response.firstResult;
-    if (address) {
-      NSLog(@"Geocoder result: %@", address);
-
-      GMSMarker *marker = [GMSMarker markerWithPosition:address.coordinate];
-
-      marker.title = address.thoroughfare;
-
-      NSMutableString *snippet = [[NSMutableString alloc] init];
-      if (address.subLocality != NULL) {
-        [snippet appendString:[NSString stringWithFormat:@"subLocality: %@\n",
-                               address.subLocality]];
-      }
-      if (address.locality != NULL) {
-        [snippet appendString:[NSString stringWithFormat:@"locality: %@\n",
-                               address.locality]];
-      }
-      if (address.administrativeArea != NULL) {
-        [snippet appendString:[NSString stringWithFormat:@"administrativeArea: %@\n",
-                               address.administrativeArea]];
-      }
-      if (address.country != NULL) {
-        [snippet appendString:[NSString stringWithFormat:@"country: %@\n",
-                               address.country]];
-      }
-
-      marker.snippet = snippet;
-
-      marker.appearAnimation = kGMSMarkerAnimationPop;
-      marker.map = _mapView;
-      mapView.selectedMarker = marker;
-    } else {
-      NSLog(@"Could not reverse geocode point (%f,%f): %@",
-            coordinate.latitude, coordinate.longitude, error);
-    }
+    [weakSelf handleResponse:response coordinate:coordinate error:error];
   };
   [_geocoder reverseGeocodeCoordinate:coordinate completionHandler:handler];
+}
+
+#pragma mark - StructuredGeocoderViewController Private Category
+
+- (void)handleResponse:(nullable GMSReverseGeocodeResponse *)response
+            coordinate:(CLLocationCoordinate2D)coordinate
+                 error:(nullable NSError *)error {
+  GMSAddress *address = response.firstResult;
+  if (address) {
+    NSLog(@"Geocoder result: %@", address);
+
+    GMSMarker *marker = [GMSMarker markerWithPosition:address.coordinate];
+
+    marker.title = address.thoroughfare;
+
+    NSMutableString *snippet = [[NSMutableString alloc] init];
+    if (address.subLocality != NULL) {
+      [snippet appendString:[NSString stringWithFormat:@"subLocality: %@\n", address.subLocality]];
+    }
+    if (address.locality != NULL) {
+      [snippet appendString:[NSString stringWithFormat:@"locality: %@\n", address.locality]];
+    }
+    if (address.administrativeArea != NULL) {
+      [snippet appendString:[NSString stringWithFormat:@"administrativeArea: %@\n",
+                                                       address.administrativeArea]];
+    }
+    if (address.country != NULL) {
+      [snippet appendString:[NSString stringWithFormat:@"country: %@\n", address.country]];
+    }
+
+    marker.snippet = snippet;
+
+    marker.appearAnimation = kGMSMarkerAnimationPop;
+    marker.map = _mapView;
+    _mapView.selectedMarker = marker;
+  } else {
+    NSLog(@"Could not reverse geocode point (%f,%f): %@", coordinate.latitude, coordinate.longitude,
+          error);
+  }
 }
 
 @end

@@ -4,13 +4,14 @@ import java.util.Map;
 
 import android.content.Context;
 
+import java.util.Map;
+
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 
-public class ModuleTemplateModule extends ExportedModule implements ModuleRegistryConsumer {
+public class ModuleTemplateModule extends ExportedModule {
   private static final String NAME = "ExpoModuleTemplate";
   private static final String TAG = ModuleTemplateModule.class.getSimpleName();
 
@@ -26,7 +27,7 @@ public class ModuleTemplateModule extends ExportedModule implements ModuleRegist
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

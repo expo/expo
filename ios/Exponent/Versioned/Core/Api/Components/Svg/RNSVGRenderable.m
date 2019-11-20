@@ -11,6 +11,9 @@
 #import "RNSVGMask.h"
 #import "RNSVGViewBox.h"
 #import "RNSVGVectorEffect.h"
+#import "RNSVGBezierElement.h"
+#import "RNSVGMarker.h"
+#import "RNSVGMarkerPosition.h"
 
 @implementation RNSVGRenderable
 {
@@ -20,8 +23,11 @@
     NSArray<RNSVGLength *> *_sourceStrokeDashArray;
     CGFloat *_strokeDashArrayData;
     CGPathRef _srcHitPath;
-    CGPathRef _hitArea;
 }
+
+static RNSVGRenderable * _contextElement;
++ (RNSVGRenderable *)contextElement { return _contextElement; }
++ (void)setContextElement:(RNSVGRenderable *)contextElement { _contextElement = contextElement; }
 
 - (id)init
 {
@@ -277,6 +283,8 @@ UInt32 saturate(CGFloat value) {
     [self endTransparencyLayer:context];
 
     CGContextRestoreGState(context);
+
+    [self renderMarkers:context path:self.path rect:&rect];
 }
 
 - (void)prepareStrokeDash:(NSUInteger)count strokeDasharray:(NSArray<RNSVGLength *> *)strokeDasharray {
@@ -294,6 +302,51 @@ UInt32 saturate(CGFloat value) {
     }
 }
 
+- (void)renderMarkers:(CGContextRef)context path:(CGPathRef)path rect:(const CGRect *)rect {
+    RNSVGMarker *markerStart = (RNSVGMarker*)[self.svgView getDefinedMarker:self.markerStart];
+    RNSVGMarker *markerMid = (RNSVGMarker*)[self.svgView getDefinedMarker:self.markerMid];
+    RNSVGMarker *markerEnd = (RNSVGMarker*)[self.svgView getDefinedMarker:self.markerEnd];
+    if (markerStart || markerMid || markerEnd) {
+        _contextElement = self;
+        NSArray<RNSVGMarkerPosition*>* positions = [RNSVGMarkerPosition fromCGPath:path];
+        CGFloat width = self.strokeWidth ? [self relativeOnOther:self.strokeWidth] : 1;
+        __block CGRect bounds = CGRectNull;
+        CGMutablePathRef markerPath = CGPathCreateMutable();
+        for (RNSVGMarkerPosition* position in positions) {
+            RNSVGMarkerType type = [position type];
+            RNSVGMarker *marker;
+            switch (type) {
+                case kStartMarker:
+                    marker = markerStart;
+                    break;
+
+                case kMidMarker:
+                    marker = markerMid;
+                    break;
+
+                case kEndMarker:
+                    marker = markerEnd;
+                    break;
+            }
+            if (!marker) {
+                continue;
+            }
+
+            [marker renderMarker:context rect:*rect position:position strokeWidth:width];
+            CGAffineTransform transform = marker.transform;
+            CGPathRef hitArea = marker.hitArea;
+            CGPathAddPath(markerPath, &transform, hitArea);
+            CGRect nodeRect = marker.pathBounds;
+            if (!CGRectIsEmpty(nodeRect)) {
+                bounds = CGRectUnion(bounds, CGRectApplyAffineTransform(nodeRect, transform));
+            }
+        }
+        self.markerBounds = bounds;
+        self.markerPath = markerPath;
+        _contextElement = nil;
+    }
+}
+
 - (void)renderLayerTo:(CGContextRef)context rect:(CGRect)rect
 {
     CGPathRef path = self.path;
@@ -303,9 +356,9 @@ UInt32 saturate(CGFloat value) {
             self.path = CGPathRetain(path);
         }
         [self setHitArea:path];
-        const CGRect fillBounds = CGPathGetBoundingBox(path);
-        const CGRect strokeBounds = CGPathGetBoundingBox(self.strokePath);
-        self.pathBounds = CGRectUnion(fillBounds, strokeBounds);
+        self.fillBounds = CGPathGetBoundingBox(path);
+        self.strokeBounds = CGPathGetBoundingBox(self.strokePath);
+        self.pathBounds = CGRectUnion(self.fillBounds, self.strokeBounds);
     }
     const CGRect pathBounds = self.pathBounds;
 
@@ -313,7 +366,9 @@ UInt32 saturate(CGFloat value) {
     CGAffineTransform svgToClientTransform = CGAffineTransformConcat(current, self.svgView.invInitialCTM);
     CGRect clientRect = CGRectApplyAffineTransform(pathBounds, svgToClientTransform);
 
+    self.ctm = svgToClientTransform;
     self.clientRect = clientRect;
+    self.screenCTM = current;
 
     if (_vectorEffect == kRNSVGVectorEffectNonScalingStroke) {
         path = CGPathCreateCopyByTransformingPath(path, &svgToClientTransform);
@@ -334,11 +389,11 @@ UInt32 saturate(CGFloat value) {
     }
     self.frame = clientRect;
 
-    if (!self.fill && !self.stroke) {
+    if (self.skip || self.opacity == 0) {
         return;
     }
 
-    if (self.opacity == 0) {
+    if (!self.fill && !self.stroke) {
         return;
     }
 
@@ -361,7 +416,7 @@ UInt32 saturate(CGFloat value) {
         } else {
             CGContextSaveGState(context);
             CGContextAddPath(context, path);
-            CGContextClip(context);
+            evenodd ? CGContextEOClip(context) : CGContextClip(context);
             [self.fill paint:context
                      opacity:self.fillOpacity
                      painter:[self.svgView getDefinedPainter:self.fill.brushRef]
@@ -417,7 +472,7 @@ UInt32 saturate(CGFloat value) {
             // draw stroke
             CGContextAddPath(context, path);
             CGContextReplacePathWithStrokedPath(context);
-            CGContextClip(context);
+            evenodd ? CGContextEOClip(context) : CGContextClip(context);
 
             [self.stroke paint:context
                        opacity:self.strokeOpacity
@@ -473,13 +528,15 @@ UInt32 saturate(CGFloat value) {
     CGPoint transformed = CGPointApplyAffineTransform(point, self.invmatrix);
     transformed = CGPointApplyAffineTransform(transformed, self.invTransform);
 
-    if (!CGRectContainsPoint(self.pathBounds, transformed)) {
+    if (!CGRectContainsPoint(self.pathBounds, transformed) &&
+        !CGRectContainsPoint(self.markerBounds, transformed)) {
         return nil;
     }
 
     BOOL evenodd = self.fillRule == kRNSVGCGFCRuleEvenodd;
     if (!CGPathContainsPoint(_hitArea, nil, transformed, evenodd) &&
-        !CGPathContainsPoint(self.strokePath, nil, transformed, NO)) {
+        !CGPathContainsPoint(self.strokePath, nil, transformed, NO) &&
+        !CGPathContainsPoint(self.markerPath, nil, transformed, NO)) {
         return nil;
     }
 

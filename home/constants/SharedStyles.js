@@ -10,10 +10,10 @@ export default StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     paddingHorizontal: 15,
-    backgroundColor: Colors.greyBackground,
+    backgroundColor: Colors.light.greyBackground,
   },
   sectionLabelText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     letterSpacing: 0.92,
     ...Platform.select({
       ios: {
@@ -27,11 +27,11 @@ export default StyleSheet.create({
     }),
   },
   regularText: {
-    color: Colors.blackText,
+    color: Colors.light.blackText,
     fontSize: 13,
   },
   faintText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
   noticeTitleText: {
@@ -48,7 +48,6 @@ export default StyleSheet.create({
     }),
   },
   noticeDescriptionText: {
-    color: 'rgba(36, 44, 58, 0.7)',
     textAlign: 'center',
     marginBottom: 20,
     ...Platform.select({
@@ -67,7 +66,7 @@ export default StyleSheet.create({
   genericCardContainer: {
     backgroundColor: '#fff',
     flexGrow: 1,
-    borderBottomColor: Colors.separator,
+    borderBottomColor: Colors.light.separator,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   genericCardBody: {
@@ -81,11 +80,11 @@ export default StyleSheet.create({
     paddingTop: 10,
   },
   genericCardDescriptionText: {
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     fontSize: 13,
   },
   genericCardTitle: {
-    color: Colors.blackText,
+    color: Colors.light.blackText,
     fontSize: 16,
     marginRight: 50,
     marginBottom: 2,

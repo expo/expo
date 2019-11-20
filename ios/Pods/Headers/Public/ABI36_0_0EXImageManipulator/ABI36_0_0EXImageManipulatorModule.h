@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/EXImageManipulator/ABI36_0_0EXImageManipulator/ABI36_0_0EXImageManipulatorModule.h

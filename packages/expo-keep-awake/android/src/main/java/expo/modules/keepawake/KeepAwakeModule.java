@@ -9,10 +9,9 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.KeepAwakeManager;
 
-public class KeepAwakeModule extends ExportedModule implements ModuleRegistryConsumer {
+public class KeepAwakeModule extends ExportedModule {
   private static final String NAME = "ExpoKeepAwake";
   private final static String NO_ACTIVITY_ERROR_CODE = "NO_CURRENT_ACTIVITY";
 
@@ -28,7 +27,7 @@ public class KeepAwakeModule extends ExportedModule implements ModuleRegistryCon
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mKeepAwakeManager = moduleRegistry.getModule(KeepAwakeManager.class);
   }
 

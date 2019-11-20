@@ -5,7 +5,8 @@
 
 @interface EXFontManager : NSObject
 
-+ (EXFont *)getFontForName:(NSString *)name;
-+ (void)setFont:(EXFont *)font forName:(NSString *)name;
+- (instancetype)init;
+- (EXFont *)fontForName:(NSString *)name;
+- (void)setFont:(EXFont *)font forName:(NSString *)name;
 
 @end

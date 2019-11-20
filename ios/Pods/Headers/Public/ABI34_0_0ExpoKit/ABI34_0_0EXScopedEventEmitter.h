@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI34_0_0/Expo/Core/ScopedModule/ABI34_0_0EXScopedEventEmitter.h

@@ -7,7 +7,6 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.errors.CurrentActivityNotFoundException;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.KeepAwakeManager;
 
 import java.util.Collections;
@@ -15,13 +14,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule, ModuleRegistryConsumer {
+public class ExpoKeepAwakeManager implements KeepAwakeManager, InternalModule {
 
   private ModuleRegistry mModuleRegistry;
   private Set<String> mTags = new HashSet<>();
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 

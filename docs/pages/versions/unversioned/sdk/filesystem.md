@@ -6,7 +6,7 @@ Provides access to a file system stored locally on the device. Within the Expo c
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-file-system`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-file-system).
 
 ## API
 
@@ -296,6 +296,66 @@ Returns an object with the following fields:
   - **md5 (_boolean_)** -- If `true`, include the MD5 hash of the file in the returned object. `false` by default. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
 
 - **resumeData (_string_)** -- The string which allows the api to resume a paused download.
+
+### `FileSystem.getContentUriAsync(fileUri)`
+
+Take a `file://` URI and convert it into content URI (`content://`) so that it can be access by other applications outside of Expo.
+
+#### Example
+
+```javascript
+FileSystem.getContentUriAsync(uri).then(cUri => {
+  console.log(cUri);
+  IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+    data: cUri.uri,
+    flags: 1,
+  });
+});
+```
+
+#### Arguments
+
+- **fileUri (_string_)** -- The local URI of the file. If there is no file at this URI, an exception will be thrown.
+
+#### Returns
+
+Returns a Promise that resolves to an object with the following fields:
+
+- **uri (_string_)** -- A `content://` URI pointing to the file. This is the same as the `fileUri` input parameter but in different format.
+
+### `FileSystem.getFreeDiskStorageAsync()`
+
+Gets the available internal disk storage size, in bytes. This returns the free space on the data partition that hosts all of the internal storage for all apps on the device.
+
+#### Example
+
+```javascript
+FileSystem.getFreeDiskStorageAsync().then(freeDiskStorage => {
+  // Android: 17179869184
+  // iOS: 17179869184
+});
+```
+
+#### Returns
+
+Returns a Promise that resolves to the number of bytes available on the internal disk.
+
+### `FileSystem.getTotalDiskCapacityAsync()`
+
+Gets total internal disk storage size, in bytes. This is the total capacity of the data partition that hosts all the internal storage for all apps on the device.
+
+#### Example
+
+```javascript
+FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
+  // Android: 17179869184
+  // iOS: 17179869184
+});
+```
+
+#### Returns
+
+Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes.
 
 #### Example
 

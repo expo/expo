@@ -1,6 +1,5 @@
+import { NativeModulesProxy, Platform, UnavailabilityError } from '@unimodules/core';
 import * as TaskManager from 'expo-task-manager';
-import { UnavailabilityError } from '@unimodules/core';
-import { Platform, NativeModulesProxy } from '@unimodules/core';
 
 const { ExpoBackgroundFetch } = NativeModulesProxy;
 
@@ -36,9 +35,12 @@ export async function setMinimumIntervalAsync(minimumInterval: number): Promise<
   await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
 
-export async function registerTaskAsync(taskName: string, options: BackgroundFetchOptions = {}): Promise<void> {
+export async function registerTaskAsync(
+  taskName: string,
+  options: BackgroundFetchOptions = {}
+): Promise<void> {
   if (!ExpoBackgroundFetch.registerTaskAsync) {
-    throw new UnavailabilityError('BackgroundFetch', 'registerTaskAsync')
+    throw new UnavailabilityError('BackgroundFetch', 'registerTaskAsync');
   }
   if (!TaskManager.isTaskDefined(taskName)) {
     throw new Error(
@@ -50,12 +52,9 @@ export async function registerTaskAsync(taskName: string, options: BackgroundFet
 
 export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (!ExpoBackgroundFetch.unregisterTaskAsync) {
-    throw new UnavailabilityError('BackgroundFetch', 'unregisterTaskAsync')
+    throw new UnavailabilityError('BackgroundFetch', 'unregisterTaskAsync');
   }
   await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
 
-export {
-  BackgroundFetchResult as Result,
-  BackgroundFetchStatus as Status,
-};
+export { BackgroundFetchResult as Result, BackgroundFetchStatus as Status };

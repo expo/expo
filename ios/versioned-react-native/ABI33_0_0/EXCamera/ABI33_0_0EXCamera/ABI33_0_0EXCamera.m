@@ -451,7 +451,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
         [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
       }
     }
-    [connection setVideoOrientation:[ABI33_0_0EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+    [connection setVideoOrientation:[ABI33_0_0EXCameraUtils videoOrientationForInterfaceOrientation:[[UIApplication sharedApplication] statusBarOrientation]]];
 
     ABI33_0_0UM_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
@@ -472,6 +472,20 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       self.videoRecordedReject = reject;
     });
   }
+}
+
+- (void)maybeStartFaceDetection:(BOOL)mirrored {
+  if (self.faceDetectorManager) {
+    AVCaptureConnection *connection = [self.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+    [connection setVideoOrientation:[ABI33_0_0EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+    [self.faceDetectorManager maybeStartFaceDetectionOnSession:self.session withPreviewLayer:self.previewLayer mirrored:mirrored];
+  }
+}
+
+- (void)setPresetCamera:(NSInteger)presetCamera
+{
+  _presetCamera = presetCamera;
+  [self.faceDetectorManager updateMirrored:_presetCamera!=1];
 }
 
 - (void)stopRecording
@@ -527,9 +541,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
       });
     }]];
     
-    if (self.faceDetectorManager) {
-      [self.faceDetectorManager maybeStartFaceDetectionOnSession:self.session withPreviewLayer:self.previewLayer];
-    }
+    [self maybeStartFaceDetection:self.presetCamera!=1];
     if (self.barCodeScanner) {
       [self.barCodeScanner maybeStartBarCodeScanning];
     }
@@ -755,16 +767,14 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   [self cleanupMovieFileCapture];
   // If face detection has been running prior to recording to file
   // we reenable it here (see comment in -record).
-  if (_faceDetectorManager) {
-    [_faceDetectorManager maybeStartFaceDetectionOnSession:_session withPreviewLayer:_previewLayer];
-  }
+  [self maybeStartFaceDetection:self.presetCamera!=1];
 
   if (_session.sessionPreset != _pictureSize) {
     [self updateSessionPreset:_pictureSize];
   }
 }
 
-# pragma mark - Face detector
+# pragma mark - Face detectorUM
 
 - (id)createFaceDetectorManager
 {

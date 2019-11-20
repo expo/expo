@@ -1,0 +1,1 @@
+../../../RNGestureHandler/ios/Handlers/RNPanHandler.h

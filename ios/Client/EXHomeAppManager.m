@@ -73,9 +73,9 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
                                        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
                                        @"manifest": self.appRecord.appLoader.manifest,
                                        @"appOwnership": @"expo",
+                                       @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                      },
                                    @"exceptionsManagerDelegate": self.exceptionHandler,
-                                   @"supportedSdkVersions": [EXVersions sharedInstance].versions[@"sdkVersions"],
                                    @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
                                    @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
                                    @"manifest": self.appRecord.appLoader.manifest,

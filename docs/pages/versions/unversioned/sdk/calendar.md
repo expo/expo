@@ -6,7 +6,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-calendar`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-calendar).
 
 ## Configuration
 
@@ -32,13 +32,45 @@ Gets an array of calendar objects with details about the different calendars sto
 
 An array of [calendar objects](#calendar 'Calendar') matching the provided entity type (if provided).
 
-### `Calendar.requestRemindersPermissionsAsync()`
+### `Calendar.getDefaultCalendarAsync()`
 
-**iOS only**. Requests the user for reminders permissions, same as `Permissions.askAsync(Permissions.REMINDERS)`.
+**iOS only**. Gets an instance of the default calendar object.
 
 #### Returns
 
-Returns a promise resolving to an object with a key `granted` which value indicates whether the permission is granted or not.
+A promise resolving to [calendar object](#calendar) that is the user's default calendar.
+
+### `Calendar.requestCalendarPermissionsAsync()`
+
+Asks the user to grant permissions for accessing user's calendars. Alias for `Permissions.askAsync(Permissions.CALENDAR)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `Calendar.requestRemindersPermissionsAsync()`
+
+**iOS only**. Asks the user to grant permissions for accessing user's reminders. Alias for `Permissions.askAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `Calendar.getCalendarPermissionsAsync()`
+
+Checks user's permissions for accessing user's calendars. Alias for `Permissions.getAsync(Permissions.CALENDAR)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `Calendar.getRemindersPermissionsAsync()`
+
+**iOS only**. Checks user's permissions for accessing user's reminders. Alias for `Permissions.getAsync(Permissions.REMINDERS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ### `Calendar.createCalendarAsync(details)`
 
@@ -67,7 +99,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
   - **allowedReminders (_array_)** -- (Android only)
   - **allowedAttendeeTypes (_array_)** -- (Android only)
   - **isVisible (_boolean_)** -- (Android only)
-  - **isSynced (_boolean_)** -- (Android only)
+  - **isSynced (_boolean_)** -- (Android only) Whether or not the calendar is synced from a remote source. Unexpected behavior may occur if this is not set to `true`.
   - **accessLevel (_string_)** -- (Android only)
 
 #### Returns
@@ -137,7 +169,7 @@ Creates a new event on the specified calendar.
 
 #### Arguments
 
-- **calendarId (_string_)** -- ID of the calendar to create this event in (or `Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for events). Required.
+- **calendarId (_string_)** -- ID of the calendar to create this event in. Required.
 - **details (_object_)** --
 
   A map of details for the event to be created (see below for a description of these fields):
@@ -312,7 +344,7 @@ An [reminder object](#reminder 'Reminder') matching the provided ID, if one exis
 
 #### Arguments
 
-- **calendarId (_string_)** -- ID of the calendar to create this reminder in (or `Calendar.DEFAULT` to add the calendar to the OS-specified default calendar for reminders). Required.
+- **calendarId (_string_)** -- ID of the calendar to create this reminder in (or `null` to add the calendar to the OS-specified default calendar for reminders). Required.
 - **details (_object_)** --
 
   A map of details for the reminder to be created: (see below for a description of these fields)
@@ -405,7 +437,7 @@ A calendar record upon which events (or, on iOS, reminders) can be stored. Setti
 | source                | _Source_  | both      | Object representing the source to be used for the calendar                    |                                                                                                                                                                                                                                                                                                                                                                    |
 | color                 | _string_  | both      | Color used to display this calendar's events                                  |                                                                                                                                                                                                                                                                                                                                                                    |
 | allowsModifications   | _boolean_ | both      | Boolean value that determines whether this calendar can be modified           |                                                                                                                                                                                                                                                                                                                                                                    |
-| type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`                                                                                                                                                                                             |
+| type                  | _string_  | iOS       | Type of calendar this object represents                                       | `Calendar.CalendarType.LOCAL`, `Calendar.CalendarType.CALDAV`, `Calendar.CalendarType.EXCHANGE`, `Calendar.CalendarType.SUBSCRIBED`, `Calendar.CalendarType.BIRTHDAYS`, `Calendar.CalendarType.UNKNOWN`                                                                                                                                                            |
 | isPrimary             | _boolean_ | Android   | Boolean value indicating whether this is the device's primary calendar        |                                                                                                                                                                                                                                                                                                                                                                    |
 | name                  | _string_  | Android   | Internal system name of the calendar                                          |                                                                                                                                                                                                                                                                                                                                                                    |
 | ownerAccount          | _string_  | Android   | Name for the account that owns this calendar                                  |                                                                                                                                                                                                                                                                                                                                                                    |

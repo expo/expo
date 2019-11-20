@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.InvalidArgumentException;
@@ -15,7 +15,6 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
 import org.unimodules.interfaces.filesystem.Permission;
@@ -23,7 +22,7 @@ import org.unimodules.interfaces.filesystem.Permission;
 import java.io.File;
 import java.net.URLConnection;
 
-public class SharingModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class SharingModule extends ExportedModule implements ActivityEventListener {
   private static final int REQUEST_CODE = 8524;
   private static final String TAG = "ExpoSharing";
   private static final String MIME_TYPE_OPTIONS_KEY = "mimeType";
@@ -44,18 +43,18 @@ public class SharingModule extends ExportedModule implements ModuleRegistryConsu
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
-    if (mModuleRegistry != null) {
-      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
-      uiManager.unregisterActivityEventListener(this);
-    }
-
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+    UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+    uiManager.registerActivityEventListener(this);
+  }
 
-    if (mModuleRegistry != null) {
-      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
-      uiManager.registerActivityEventListener(this);
-    }
+  @Override
+  public void onDestroy() {
+    UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+    uiManager.unregisterActivityEventListener(this);
+
+    mModuleRegistry = null;
   }
 
   @ExpoMethod
@@ -67,7 +66,7 @@ public class SharingModule extends ExportedModule implements ModuleRegistryConsu
 
     try {
       File fileToShare = getLocalFileFoUrl(url);
-      Uri contentUri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".provider", fileToShare);
+      Uri contentUri = FileProvider.getUriForFile(mContext, mContext.getApplicationInfo().packageName + ".SharingFileProvider", fileToShare);
 
       String mimeType = params.getString(MIME_TYPE_OPTIONS_KEY);
       if (mimeType == null) {

@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/UMBarCodeScannerInterface/ABI35_0_0UMBarCodeScannerInterface/ABI35_0_0UMBarCodeScannerInterface.h

@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <GoogleMobileVision/GoogleMobileVision.h>
-#import <GoogleMVDataOutput/GoogleMVDataOutput.h>
 #import <ABI33_0_0UMFaceDetectorInterface/ABI33_0_0UMFaceDetectorManager.h>
 
 @interface ABI33_0_0EXFaceDetectorManager : NSObject <ABI33_0_0UMFaceDetectorManager>
@@ -20,6 +18,7 @@
 - (void)updateSettings:(NSDictionary *)settings;
 
 - (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
+- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL)mirrored;
 - (void)stopFaceDetection;
 
 @end

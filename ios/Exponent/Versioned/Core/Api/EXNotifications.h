@@ -27,9 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)apnsTokenStringForScopedModule:(id)scopedModule;
 - (void)getExpoPushTokenForScopedModule:(id)scopedModule
-                                success:(void (^)(NSDictionary *))success
-                                failure:(void (^)(NSString *))failure DEPRECATED_MSG_ATTRIBUTE("Use -[getExpoPushTokenForScopedModule:completionHandler] instead");
-- (void)getExpoPushTokenForScopedModule:(id)scopedModule
                       completionHandler:(void (^)(NSString * _Nullable pushToken, NSError * _Nullable error))handler;
 
 @end

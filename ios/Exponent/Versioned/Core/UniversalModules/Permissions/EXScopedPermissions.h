@@ -3,20 +3,20 @@
 #if __has_include(<EXPermissions/EXPermissions.h>)
 #import <UIKit/UIKit.h>
 #import <EXPermissions/EXPermissions.h>
+#import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXPermissionsScopedModuleDelegate
 
-- (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
-- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId DEPRECATED_ATTRIBUTE; // used in SDKs 29–32
+- (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
 - (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
 
 @end
 
 @interface EXScopedPermissions : EXPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding;
 
 @end
 

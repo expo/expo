@@ -1,0 +1,428 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */; };
+		FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		79BB8A89C1D96B3BF397B6B85883B0E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A4E14751E18F8137819ECD80562E6EF9 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		8F40AFF8B05D111E1FC15D10E68E1D57 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
+			remoteInfo = UMConstantsInterface;
+		};
+		C5B1E7134F6A93EF5CEF142148371F0E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
+			remoteInfo = "Amplitude-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAmplitude.m; path = EXAmplitude/EXAmplitude.m; sourceTree = "<group>"; };
+		174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMConstantsInterface; path = UMConstantsInterface.xcodeproj; sourceTree = "<group>"; };
+		35017F342C0C098491162978D69D0CFD /* EXAmplitude.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAmplitude.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAmplitude.a; path = libEXAmplitude.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAmplitude.h; path = EXAmplitude/EXAmplitude.h; sourceTree = "<group>"; };
+		919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAmplitude-dummy.m"; sourceTree = "<group>"; };
+		98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Amplitude-iOS"; path = "Amplitude-iOS.xcodeproj"; sourceTree = "<group>"; };
+		A347D214B7812C3CA9E8AD3D47C6DE34 /* EXAmplitude-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAmplitude-prefix.pch"; sourceTree = "<group>"; };
+		A4E14751E18F8137819ECD80562E6EF9 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAmplitude.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6327A136E639A980832C3253BB2C1E94 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49B47C1AEB7579A59A256E5EE1A1C0C7 = {
+			isa = PBXGroup;
+			children = (
+				61E01D90471B6C4016FF52EDBF1C3E05 /* Dependencies */,
+				6499B1B9553512295E06F759F4E847FE /* EXAmplitude */,
+				7947E6F8BC4765B612E1335D8ADA7DD2 /* Frameworks */,
+				67946ED29343B3D134035288A0D8C35F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		61E01D90471B6C4016FF52EDBF1C3E05 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */,
+				174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */,
+				A4E14751E18F8137819ECD80562E6EF9 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		6499B1B9553512295E06F759F4E847FE /* EXAmplitude */ = {
+			isa = PBXGroup;
+			children = (
+				79FA1C6C73DB59041D55B506B14CE844 /* EXAmplitude.h */,
+				0A58B7C50CBFBCF05E4DF866704D998D /* EXAmplitude.m */,
+				85F2E53F920742065F2F2E968963A8B4 /* Pod */,
+				760CCAE29D372A9D0B3428A9E3BCBBF0 /* Support Files */,
+			);
+			name = EXAmplitude;
+			path = "../../../../packages/expo-analytics-amplitude/ios";
+			sourceTree = "<group>";
+		};
+		67946ED29343B3D134035288A0D8C35F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		760CCAE29D372A9D0B3428A9E3BCBBF0 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */,
+				919458C54CA91599757E1097956A07E1 /* EXAmplitude-dummy.m */,
+				A347D214B7812C3CA9E8AD3D47C6DE34 /* EXAmplitude-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXAmplitude";
+			sourceTree = "<group>";
+		};
+		7947E6F8BC4765B612E1335D8ADA7DD2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		85F2E53F920742065F2F2E968963A8B4 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				35017F342C0C098491162978D69D0CFD /* EXAmplitude.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FFCFF7394E11240C54C886B42D84BC65 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8FB3F83AB2F640D8C074A0E4B442545 /* EXAmplitude.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		700BA3D76A8C4362E721FECC92A96DFB /* EXAmplitude */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */;
+			buildPhases = (
+				FFCFF7394E11240C54C886B42D84BC65 /* Headers */,
+				70E3171D93A647B463CE54006B97B93F /* Sources */,
+				6327A136E639A980832C3253BB2C1E94 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FAEEACEF67EDF77451A3350C8442FB7B /* PBXTargetDependency */,
+				E0B54D8B957D70963F95E0401EE0EEE4 /* PBXTargetDependency */,
+				29C918C7F53F959AC108CD8F38A32CEA /* PBXTargetDependency */,
+			);
+			name = EXAmplitude;
+			productName = EXAmplitude;
+			productReference = 463402081A46EB38CD3DC1CE798D7BC7 /* libEXAmplitude.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6FC0AAA50EEA13164D5D91F5F30ADE23 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = E22E019B6ECC0B93280CE180A039F586 /* Build configuration list for PBXProject "EXAmplitude" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49B47C1AEB7579A59A256E5EE1A1C0C7;
+			productRefGroup = 67946ED29343B3D134035288A0D8C35F /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = A4E14751E18F8137819ECD80562E6EF9 /* UMCore */;
+				},
+				{
+					ProjectRef = 174F3D78399E260F82FC99796095A3F7 /* UMConstantsInterface */;
+				},
+				{
+					ProjectRef = 98DE6DA074AA0A7AB4CEF2B8489A7CE2 /* Amplitude-iOS */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				700BA3D76A8C4362E721FECC92A96DFB /* EXAmplitude */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		70E3171D93A647B463CE54006B97B93F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D89B33CE235E564262A7839773ED46EF /* EXAmplitude-dummy.m in Sources */,
+				FE89BA4CF0B11367D7ED3AF382017DA8 /* EXAmplitude.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		29C918C7F53F959AC108CD8F38A32CEA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 79BB8A89C1D96B3BF397B6B85883B0E7 /* PBXContainerItemProxy */;
+		};
+		E0B54D8B957D70963F95E0401EE0EEE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMConstantsInterface;
+			targetProxy = 8F40AFF8B05D111E1FC15D10E68E1D57 /* PBXContainerItemProxy */;
+		};
+		FAEEACEF67EDF77451A3350C8442FB7B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Amplitude-iOS";
+			targetProxy = C5B1E7134F6A93EF5CEF142148371F0E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		122B41C5B4C8D5F60550EEAD7548FF0C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAmplitude;
+				PRODUCT_NAME = EXAmplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		14AE8955BDE7A570A26396A84C85CF38 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		5048970C4393CAFEF945925D5B243242 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		57FD87360A86F521E4077AECC4481CE7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B21CA6F14B0FBA8C703741CD447EF56B /* EXAmplitude.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAmplitude/EXAmplitude-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAmplitude;
+				PRODUCT_NAME = EXAmplitude;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5184269E3AFE53B5379962720E6D30CC /* Build configuration list for PBXNativeTarget "EXAmplitude" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				122B41C5B4C8D5F60550EEAD7548FF0C /* Debug */,
+				57FD87360A86F521E4077AECC4481CE7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E22E019B6ECC0B93280CE180A039F586 /* Build configuration list for PBXProject "EXAmplitude" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5048970C4393CAFEF945925D5B243242 /* Debug */,
+				14AE8955BDE7A570A26396A84C85CF38 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6FC0AAA50EEA13164D5D91F5F30ADE23 /* Project object */;
+}

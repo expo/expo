@@ -7,18 +7,17 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.RemoteInput;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.support.v4.content.pm.ShortcutInfoCompat;
-import android.support.v4.content.pm.ShortcutManagerCompat;
-import android.support.v4.graphics.drawable.IconCompat;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -48,7 +47,6 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.AppLoader;
-import host.exp.exponent.ExponentDevActivity;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ErrorActivity;
@@ -65,7 +63,6 @@ import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
-import host.exp.expoview.R;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.exceptions.ExceptionUtils;
@@ -170,10 +167,11 @@ public class Kernel extends KernelInterface {
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
-  public void startJSKernel() {
+  public void startJSKernel(AppCompatActivity activity) {
     if (Constants.isStandaloneApp()) {
       return;
     }
+    setActivityContext(activity);
 
     SoLoader.init(mContext, false);
 
@@ -245,15 +243,6 @@ public class Kernel extends KernelInterface {
     }
   }
 
-  public void reloadJSBundle() {
-    if (Constants.isStandaloneApp()) {
-      return;
-    }
-    String bundleUrl = getBundleUrl();
-    mHasError = false;
-    Exponent.getInstance().loadJSBundle(null, bundleUrl, KernelConstants.KERNEL_BUNDLE_ID, RNObject.UNVERSIONED, kernelBundleListener(), true);
-  }
-
   public static void addIntentDocumentFlags(Intent intent) {
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -274,38 +263,20 @@ public class Kernel extends KernelInterface {
           public void run() {
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
                 .setApplication(mApplicationContext)
+                .setCurrentActivity(getActivityContext())
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
                 .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
-              if (Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
-                new AlertDialog.Builder(mActivityContext)
-                    .setTitle("Please enable \"Permit drawing over other apps\"")
-                    .setMessage("Click \"ok\" to open settings. Once you've enabled the setting you'll have to restart the app.")
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                      public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + mActivityContext.getPackageName()));
-                        mActivityContext.startActivityForResult(intent, KernelConstants.OVERLAY_PERMISSION_REQUEST_CODE);
-                      }
-                    })
-                    .setCancelable(false)
-                    .show();
-                return;
-              }
-
               Exponent.enableDeveloperSupport("UNVERSIONED", mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
                   mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
             }
 
             mReactInstanceManager = builder.build();
             mReactInstanceManager.createReactContextInBackground();
-            if (getActivityContext() != null) {
-              // RN expects an activity in some places.
-              mReactInstanceManager.onHostResume(getActivityContext(), null);
-            }
+            mReactInstanceManager.onHostResume(getActivityContext(), null);
 
             mIsRunning = true;
             EventBus.getDefault().postSticky(new KernelStartedRunningEvent());
@@ -475,11 +446,6 @@ public class Kernel extends KernelInterface {
     String intentUri = uri == null ? null : uri.toString();
 
     if (bundle != null) {
-      if (bundle.getBoolean(KernelConstants.DEV_FLAG)) {
-        openDevActivity(activity);
-        return;
-      }
-
       // Notification
       String notification = bundle.getString(KernelConstants.NOTIFICATION_KEY); // deprecated
       String notificationObject = bundle.getString(KernelConstants.NOTIFICATION_OBJECT_KEY);
@@ -529,22 +495,6 @@ public class Kernel extends KernelInterface {
 
     String defaultUrl = Constants.INITIAL_URL == null ? KernelConstants.HOME_MANIFEST_URL : Constants.INITIAL_URL;
     openExperience(new KernelConstants.ExperienceOptions(defaultUrl, defaultUrl, null));
-  }
-
-  private void openDevActivity(Activity activity) {
-    ActivityManager manager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
-    for (ActivityManager.AppTask task : manager.getAppTasks()) {
-      Intent baseIntent = task.getTaskInfo().baseIntent;
-
-      if (ExponentDevActivity.class.getName().equals(baseIntent.getComponent().getClassName())) {
-        task.moveToFront();
-        return;
-      }
-    }
-
-    Intent intent = new Intent(activity, ExponentDevActivity.class);
-    Kernel.addIntentDocumentFlags(intent);
-    activity.startActivity(intent);
   }
 
   public void openExperience(final KernelConstants.ExperienceOptions options) {
@@ -627,7 +577,7 @@ public class Kernel extends KernelInterface {
       return;
     }
 
-    if (manifestUrl.equals(Constants.INITIAL_URL)) {
+    if (Constants.isStandaloneApp()) {
       openShellAppActivity(forceCache);
       return;
     }
@@ -756,6 +706,27 @@ public class Kernel extends KernelInterface {
     });
 
     killOrphanedLauncherActivities();
+  }
+
+  @DoNotStrip
+  public static void reloadVisibleExperience(final int activityId) {
+    String manifestUrl = getManifestUrlForActivityId(activityId);
+
+    if (manifestUrl != null) {
+      sInstance.reloadVisibleExperience(manifestUrl, false);
+    }
+  }
+
+  // Called from DevServerHelper via ReactNativeStaticHelpers
+  @DoNotStrip
+  public static String getManifestUrlForActivityId(final int activityId) {
+    for (ExperienceActivityTask task : sManifestUrlToExperienceActivityTask.values()) {
+      if (task.activityId == activityId) {
+        return task.manifestUrl;
+      }
+    }
+
+    return null;
   }
 
   // Called from DevServerHelper via ReactNativeStaticHelpers
@@ -1149,22 +1120,6 @@ public class Kernel extends KernelInterface {
         ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
       }
     });
-  }
-
-  public void addDevMenu() {
-    Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
-    shortcutIntent.setAction(Intent.ACTION_MAIN);
-    shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-    shortcutIntent.putExtra(KernelConstants.DEV_FLAG, true);
-
-    ShortcutInfoCompat pinShortcutInfo =
-      new ShortcutInfoCompat.Builder(mContext, "devtools_shortcut")
-              .setIcon(IconCompat.createWithResource(mContext, R.mipmap.dev_icon))
-          .setShortLabel("Dev Tools")
-          .setIntent(shortcutIntent)
-          .build();
-
-    ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
   }
 
   private void goToHome() {

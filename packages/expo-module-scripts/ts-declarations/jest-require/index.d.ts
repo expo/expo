@@ -14,7 +14,7 @@ interface NodeRequire extends NodeRequireFunction {
 }
 
 interface RequireResolve {
-  (id: string, options?: { paths?: string[]; }): string;
+  (id: string, options?: { paths?: string[] }): string;
   paths(request: string): string[] | null;
 }
 

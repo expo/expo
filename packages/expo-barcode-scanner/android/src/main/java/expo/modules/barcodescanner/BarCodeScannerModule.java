@@ -1,10 +1,11 @@
 package expo.modules.barcodescanner;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -18,16 +19,16 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import org.unimodules.interfaces.imageloader.ImageLoader;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;
 
-public class BarCodeScannerModule extends ExportedModule implements ModuleRegistryConsumer {
+public class BarCodeScannerModule extends ExportedModule {
   private static final String TAG = "ExpoBarCodeScannerModule";
   private static final String ERROR_TAG = "E_BARCODE_SCANNER";
   private final BarCodeScannerProvider mBarCodeScannerProvider;
@@ -53,7 +54,7 @@ public class BarCodeScannerModule extends ExportedModule implements ModuleRegist
       });
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -88,6 +89,16 @@ public class BarCodeScannerModule extends ExportedModule implements ModuleRegist
         });
       }
     });
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, Manifest.permission.CAMERA);
   }
 
   @ExpoMethod

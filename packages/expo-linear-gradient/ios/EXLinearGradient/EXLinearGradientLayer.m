@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import "EXLinearGradientLayer.h"
+#import <EXLinearGradient/EXLinearGradientLayer.h>
 
 @implementation EXLinearGradientLayer
 

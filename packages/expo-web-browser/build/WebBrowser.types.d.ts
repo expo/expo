@@ -6,6 +6,10 @@ export declare type OpenBrowserOptions = {
     browserPackage?: string;
     enableBarCollapsing?: boolean;
     showTitle?: boolean;
+    /** Android only */
+    showInRecents?: boolean;
+    /** iOS only */
+    controlsColor?: string;
     windowName?: string;
     windowFeatures?: string;
 };
@@ -17,7 +21,7 @@ export declare type CustomTabsBrowsersResults = {
     servicePackages: string[];
 };
 export declare type BrowserResult = {
-    type: 'cancel' | 'dismiss';
+    type: 'cancel' | 'dismiss' | 'opened';
 };
 export declare type RedirectResult = {
     type: 'success';

@@ -14,7 +14,7 @@
            @"ean13" : AVMetadataObjectTypeEAN13Code,
            @"ean8" : AVMetadataObjectTypeEAN8Code,
            @"code93" : AVMetadataObjectTypeCode93Code,
-           @"code138" : AVMetadataObjectTypeCode128Code,
+           @"code128" : AVMetadataObjectTypeCode128Code,
            @"pdf417" : AVMetadataObjectTypePDF417Code,
            @"qr" : AVMetadataObjectTypeQRCode,
            @"aztec" : AVMetadataObjectTypeAztecCode,
@@ -43,17 +43,7 @@
 + (AVCaptureDevice *)deviceWithMediaType:(AVMediaType)mediaType
                       preferringPosition:(AVCaptureDevicePosition)position
 {
-  NSArray *devices = [AVCaptureDevice devicesWithMediaType:mediaType];
-  AVCaptureDevice *captureDevice = [devices firstObject];
-  
-  for (AVCaptureDevice *device in devices) {
-    if ([device position] == position) {
-      captureDevice = device;
-      break;
-    }
-  }
-  
-  return captureDevice;
+  return [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:mediaType position:position];
 }
 
 @end

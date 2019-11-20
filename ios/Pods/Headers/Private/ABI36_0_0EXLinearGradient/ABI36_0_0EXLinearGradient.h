@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/EXLinearGradient/ABI36_0_0EXLinearGradient/ABI36_0_0EXLinearGradient.h

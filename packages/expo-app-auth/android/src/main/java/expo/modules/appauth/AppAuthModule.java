@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationException;
@@ -30,11 +30,10 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.interfaces.constants.ConstantsInterface;
 
-public class AppAuthModule extends ExportedModule implements ModuleRegistryConsumer {
+public class AppAuthModule extends ExportedModule {
   private static final String TAG = "ExpoAppAuth";
   private ModuleRegistry mModuleRegistry;
   private AuthTask mAuthTask = new AuthTask();
@@ -47,7 +46,7 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -66,9 +65,11 @@ public class AppAuthModule extends ExportedModule implements ModuleRegistryConsu
 
   private AuthorizationServiceConfiguration createOAuthServiceConfiguration(Map<String, String> config) {
     return new AuthorizationServiceConfiguration(
-        Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
         Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
-        config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT) ? null : Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
+        Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
+        config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT)
+          ? Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
+          : null
     );
   }
 

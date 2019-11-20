@@ -140,7 +140,7 @@ static inline uint64_t BNCNanoSecondsFromTimeInterval(NSTimeInterval interval) {
 - (void)clearQueue {
     @synchronized (self) {
         [self.queue removeAllObjects];
-        [self persistEventually];
+        [self persistImmediately];
     }
 }
 
@@ -243,12 +243,20 @@ static inline uint64_t BNCNanoSecondsFromTimeInterval(NSTimeInterval interval) {
         dispatch_source_set_event_handler(self.persistTimer, ^ {
             __strong __typeof(weakSelf) strongSelf = weakSelf;
             if (strongSelf) {
-                dispatch_source_cancel(strongSelf.persistTimer);
-                strongSelf.persistTimer = nil;
+                [strongSelf cancelTimer];
                 [strongSelf persistImmediately];
             }
         });
         dispatch_resume(self.persistTimer);
+    }
+}
+
+- (void) cancelTimer {
+    @synchronized (self) {
+        if (self.persistTimer) {
+            dispatch_source_cancel(self.persistTimer);
+            self.persistTimer = nil;
+        }
     }
 }
 

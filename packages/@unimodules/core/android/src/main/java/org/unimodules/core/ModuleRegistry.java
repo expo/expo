@@ -1,15 +1,15 @@
 package org.unimodules.core;
 
+import org.unimodules.core.interfaces.InternalModule;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.core.interfaces.SingletonModule;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.core.interfaces.SingletonModule;
 
 public class ModuleRegistry {
   private volatile boolean mIsInitialized = false;
@@ -18,14 +18,13 @@ public class ModuleRegistry {
   private final Map<String, ExportedModule> mExportedModulesMap = new HashMap<>();
   private final Map<Class, ExportedModule> mExportedModulesByClassMap = new HashMap<>();
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
-
-  private List<WeakReference<ModuleRegistryConsumer>> mRegistryConsumers = new ArrayList<>();
+  private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
 
   public ModuleRegistry(
-          Collection<InternalModule> internalModules,
-          Collection<ExportedModule> exportedModules,
-          Collection<ViewManager> viewManagers,
-          Collection<SingletonModule> singletonModules) {
+      Collection<InternalModule> internalModules,
+      Collection<ExportedModule> exportedModules,
+      Collection<ViewManager> viewManagers,
+      Collection<SingletonModule> singletonModules) {
     for (InternalModule internalModule : internalModules) {
       registerInternalModule(internalModule);
     }
@@ -83,7 +82,6 @@ public class ModuleRegistry {
   public void registerInternalModule(InternalModule module) {
     for (Class exportedInterface : module.getExportedInterfaces()) {
       mInternalModulesMap.put(exportedInterface, module);
-      maybeAddRegistryConsumer(module);
     }
   }
 
@@ -93,23 +91,22 @@ public class ModuleRegistry {
 
   public void registerExportedModule(ExportedModule module) {
     String moduleName = module.getName();
-
     mExportedModulesMap.put(moduleName, module);
     mExportedModulesByClassMap.put(module.getClass(), module);
-    maybeAddRegistryConsumer(module);
   }
 
   public void registerViewManager(ViewManager manager) {
     String managerName = manager.getName();
-
     mViewManagersMap.put(managerName, manager);
-    maybeAddRegistryConsumer(manager);
   }
 
   public void registerSingletonModule(SingletonModule singleton) {
     String singletonName = singleton.getName();
-
     mSingletonModulesMap.put(singletonName, singleton);
+  }
+
+  public void registerExtraListener(RegistryLifecycleListener outerListener) {
+    mExtraRegistryLifecycleListeners.add(new WeakReference<>(outerListener));
   }
 
   /********************************************************
@@ -123,15 +120,6 @@ public class ModuleRegistry {
    * when {@link ModuleRegistry} will be ready, i.e. will have
    * all the {@link InternalModule} instances registered.
    */
-  public void addRegistryConsumer(ModuleRegistryConsumer consumer) {
-    mRegistryConsumers.add(new WeakReference<>(consumer));
-  }
-
-  private void maybeAddRegistryConsumer(Object maybeConsumer) {
-    if (maybeConsumer instanceof ModuleRegistryConsumer) {
-      addRegistryConsumer((ModuleRegistryConsumer) maybeConsumer);
-    }
-  }
 
   /**
    * Call this when all the modules are initialized and registered
@@ -146,15 +134,36 @@ public class ModuleRegistry {
   }
 
   public void initialize() {
-    Collection<WeakReference> emptyReferences = new ArrayList<>();
-    for (WeakReference<ModuleRegistryConsumer> consumerWeakReference : mRegistryConsumers) {
-      ModuleRegistryConsumer consumer = consumerWeakReference.get();
-      if (consumer != null) {
-        consumer.setModuleRegistry(this);
-      } else {
-        emptyReferences.add(consumerWeakReference);
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
+    lifecycleListeners.addAll(mExportedModulesMap.values());
+    lifecycleListeners.addAll(mInternalModulesMap.values());
+    lifecycleListeners.addAll(mViewManagersMap.values());
+
+    for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
+      if (ref.get() != null) {
+        lifecycleListeners.add(ref.get());
       }
     }
-    mRegistryConsumers.removeAll(emptyReferences);
+
+    for (RegistryLifecycleListener lifecycleListener : lifecycleListeners) {
+      lifecycleListener.onCreate(this);
+    }
+  }
+
+  public void onDestroy() {
+    List<RegistryLifecycleListener> lifecycleListeners = new ArrayList<>();
+    lifecycleListeners.addAll(mExportedModulesMap.values());
+    lifecycleListeners.addAll(mInternalModulesMap.values());
+    lifecycleListeners.addAll(mViewManagersMap.values());
+
+    for (WeakReference<RegistryLifecycleListener> ref : mExtraRegistryLifecycleListeners) {
+      if (ref.get() != null) {
+        lifecycleListeners.add(ref.get());
+      }
+    }
+
+    for (RegistryLifecycleListener lifecycleListener : lifecycleListeners) {
+      lifecycleListener.onDestroy();
+    }
   }
 }

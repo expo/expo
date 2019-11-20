@@ -9,9 +9,7 @@ The most fundamental component for building a UI, `View` is a container that sup
 
 This example creates a `View` that wraps two colored boxes and a text component in a row with padding.
 
-
 ```javascript
-
 class ViewColoredBoxesWithText extends Component {
   render() {
     return (
@@ -21,16 +19,14 @@ class ViewColoredBoxesWithText extends Component {
           height: 100,
           padding: 20,
         }}>
-        <View style={{backgroundColor: 'blue', flex: 0.3}} />
-        <View style={{backgroundColor: 'red', flex: 0.5}} />
+        <View style={{ backgroundColor: 'blue', flex: 0.3 }} />
+        <View style={{ backgroundColor: 'red', flex: 0.5 }} />
         <Text>Hello World!</Text>
       </View>
     );
   }
 }
-
 ```
-
 
 > `View`s are designed to be used with [`StyleSheet`](../style/) for clarity and performance, although inline styles are also supported.
 
@@ -326,7 +322,6 @@ Controls whether the `View` can be the target of touch events.
 - `'none'`: The View is never the target of touch events.
 - `'box-none'`: The View is never the target of touch events but it's subviews can be. It behaves like if the view had the following classes in CSS:
 
-
 ```javascript
 
 .box-none {
@@ -338,9 +333,7 @@ Controls whether the `View` can be the target of touch events.
 
 ```
 
-
 - `'box-only'`: The view can be the target of touch events but it's subviews cannot be. It behaves like if the view had the following classes in CSS:
-
 
 ```javascript
 
@@ -352,7 +345,6 @@ Controls whether the `View` can be the target of touch events.
 }
 
 ```
-
 
 > Since `pointerEvents` does not affect layout/appearance, and we are already deviating from the spec by adding additional modes, we opt to not include `pointerEvents` on `style`. On some platforms, we would need to implement it as a `className` anyways. Using `style` or not is an implementation detail of the platform.
 
@@ -374,8 +366,8 @@ This is a special performance property exposed by `RCTView` and is useful for sc
 
 ### `style`
 
-| Type                               | Required |
-| ---------------------------------- | -------- |
+| Type                                | Required |
+| ----------------------------------- | -------- |
 | [view styles](../view-style-props/) | No       |
 
 ---
@@ -632,4 +624,3 @@ Determines whether this `View` is clickable or tappable for for accessibility hi
 | Type    | Required | Platform |
 | ------- | -------- | -------- |
 | boolean | No       | Android  |
-

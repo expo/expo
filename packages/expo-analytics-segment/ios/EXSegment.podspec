@@ -18,8 +18,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
-  s.dependency 'Analytics', '~> 3.5'
-
+  s.dependency 'Analytics', '~> 3.7'
 end
-
-  

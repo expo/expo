@@ -1,3 +1,4 @@
+/* global Image:true */
 import * as ImageAssets from '../ImageAssets';
 
 describe('isImageType', () => {

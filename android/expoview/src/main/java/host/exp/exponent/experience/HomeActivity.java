@@ -8,41 +8,59 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.view.View;
 
 import com.facebook.soloader.SoLoader;
 import com.squareup.leakcanary.LeakCanary;
 
+import org.unimodules.core.interfaces.Package;
+
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import de.greenrobot.event.EventBus;
-import org.unimodules.core.interfaces.Package;
 import expo.modules.analytics.amplitude.AmplitudePackage;
 import expo.modules.barcodescanner.BarCodeScannerPackage;
+import expo.modules.camera.CameraPackage;
 import expo.modules.constants.ConstantsPackage;
+import expo.modules.facedetector.FaceDetectorPackage;
 import expo.modules.filesystem.FileSystemPackage;
 import expo.modules.font.FontLoaderPackage;
 import expo.modules.keepawake.KeepAwakePackage;
+import expo.modules.medialibrary.MediaLibraryPackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.taskManager.TaskManagerPackage;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
+import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.Kernel;
+import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.expoview.BuildConfig;
 
 public class HomeActivity extends BaseExperienceActivity {
 
+  @Inject
+  ExponentManifest mExponentManifest;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mShouldDestroyRNInstanceOnExit = false;
+    NativeModuleDepsProvider.getInstance().inject(HomeActivity.class, this);
+
     mSDKVersion = RNObject.UNVERSIONED;
+    mManifest = mExponentManifest.getKernelManifest();
+    mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
+
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), this);
 
     EventBus.getDefault().registerSticky(this);
-    mKernel.startJSKernel();
+    mKernel.startJSKernel(this);
     showLoadingScreen(null);
 
     tryInstallLeakCanary(true);
@@ -108,6 +126,9 @@ public class HomeActivity extends BaseExperienceActivity {
         new BarCodeScannerPackage(),
         new KeepAwakePackage(),
         new AmplitudePackage(),
+        new CameraPackage(),
+        new FaceDetectorPackage(),
+        new MediaLibraryPackage(),
         new TaskManagerPackage() // load expo-task-manager to restore tasks once the client is opened
     );
   }

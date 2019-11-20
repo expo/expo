@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+    classpath 'com.android.tools.build:gradle:3.5.1'
   }
 }
 
@@ -13,7 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '5.0.1'
+version = '7.0.1'
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -50,7 +50,7 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 5
+    versionCode 10
     versionName '1.0.0'
   }
   lintOptions {
@@ -73,5 +73,5 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
 
-  api "com.android.support:customtabs:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "androidx.browser:browser:1.0.0"
 }

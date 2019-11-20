@@ -1,6 +1,10 @@
+export type QueryParams = { [key: string]: string | undefined };
+
 export type ParsedURL = {
+  scheme: string | null;
+  hostname: string | null;
   path: string | null;
-  queryParams: Object | null;
+  queryParams: QueryParams | null;
 };
 
 export type EventType = { url: string; nativeEvent: MessageEvent };

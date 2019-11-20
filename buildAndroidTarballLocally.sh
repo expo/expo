@@ -20,7 +20,7 @@ ln -s ${ROOT_DIR}/packages $TEMP_DIR/packages
 # generate dynamic macros
 mkdir -p $TEMP_DIR/android/expoview/src/main/java/host/exp/exponent/generated/
 cd $TEMP_DIR/tools-public
-./generate-dynamic-macros-android.sh
+et android-generate-dynamic-macros --configuration release
 rm -rf $TEMP_DIR/secrets
 
 cd $TEMP_DIR; tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .

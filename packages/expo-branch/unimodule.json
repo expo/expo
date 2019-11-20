@@ -1,0 +1,7 @@
+{
+  "name": "expo-branch",
+  "platforms": ["ios", "android"],
+  "android": {
+    "packages": ["expo.modules.branch.BranchPackage"]
+  }
+}

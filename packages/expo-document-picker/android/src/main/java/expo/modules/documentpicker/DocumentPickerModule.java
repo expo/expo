@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -26,11 +26,10 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.UIManager;
 import org.unimodules.core.utilities.FileUtilities;
 
-public class DocumentPickerModule extends ExportedModule implements ModuleRegistryConsumer, ActivityEventListener {
+public class DocumentPickerModule extends ExportedModule implements ActivityEventListener {
 
   private static final String TAG = "ExpoDocumentPicker";
 
@@ -53,7 +52,7 @@ public class DocumentPickerModule extends ExportedModule implements ModuleRegist
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
 
     if (mModuleRegistry != null) {

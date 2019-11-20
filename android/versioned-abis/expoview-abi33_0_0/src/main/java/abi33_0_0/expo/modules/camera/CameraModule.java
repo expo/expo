@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Bundle;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
@@ -24,10 +23,9 @@ import java.util.SortedSet;
 import abi33_0_0.org.unimodules.core.ExportedModule;
 import abi33_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi33_0_0.org.unimodules.core.ModuleRegistry;
-import abi33_0_0.org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import abi33_0_0.org.unimodules.core.Promise;
+import abi33_0_0.org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import abi33_0_0.org.unimodules.core.interfaces.services.UIManager;
-import abi33_0_0.org.unimodules.interfaces.imageloader.ImageLoader;
 import abi33_0_0.org.unimodules.interfaces.permissions.Permissions;
 import abi33_0_0.expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 

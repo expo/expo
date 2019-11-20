@@ -20,15 +20,17 @@ public class AuthTask {
     }
 
     public void resolve(Object value) {
-        if (mPromise == null) return;
-        mPromise.resolve(value);
+        Promise resolver = mPromise;
+        if (resolver == null) return;
         clear();
+        resolver.resolve(value);
     }
 
     public void reject(String code, String message) {
-        if (mPromise == null) return;
-        mPromise.reject(code, "GoogleSignIn." + mTag + ": " + message);
+        Promise rejecter = mPromise;
+        if (rejecter == null) return;
         clear();
+        rejecter.reject(code, "GoogleSignIn." + mTag + ": " + message);
     }
 
     private void clear() {

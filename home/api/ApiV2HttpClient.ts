@@ -1,11 +1,10 @@
 import querystring from 'querystring';
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import ApiV2Error from './ApiV2Error';
 import Config from './Config';
+import * as Kernel from '../kernel/Kernel';
 import Store from '../redux/Store';
-
-import ExponentKernel from '../universal/ExponentKernel';
 
 type RequestOptions = {
   httpMethod: 'get' | 'post';
@@ -40,9 +39,9 @@ export default class ApiV2HttpClient {
     let fetchOptions: any = {
       method: options.httpMethod,
       headers: {
-        'Expo-SDK-Version': ExponentKernel.sdkVersions,
+        'Expo-SDK-Version': Kernel.sdkVersions,
         'Expo-Platform': Platform.OS,
-        ...(session.sessionSecret ? { 'Expo-Session': session.sessionSecret } : null),
+        ...(session.sessionSecret ? { 'expo-session': session.sessionSecret } : null),
       },
     };
     if (options.body) {

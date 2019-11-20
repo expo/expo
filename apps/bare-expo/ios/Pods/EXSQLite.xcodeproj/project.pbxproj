@@ -1,0 +1,410 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		18547F0715A1C174CBE702D18B74B128 /* EXSQLite.m in Sources */ = {isa = PBXBuildFile; fileRef = B06BAD0600E1793DE43351AA20533AB0 /* EXSQLite.m */; };
+		80C2499C52E3D74EC383C9B7D161ACBE /* EXSQLite-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 735C5A2B94A394B90AE5C2D96DC606D1 /* EXSQLite-dummy.m */; };
+		BFFD921BAA03E8315205B02F171AD4EE /* EXSQLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A8D9CA691649ABD5E7F7A320B9AB86D /* EXSQLite.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		04DB95859297BB6AF33B76D8B6D9D7D4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 94911D5E1E8F28CF3885A99F2F267235 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		30AD93DE02716F59E6663D4D75CC3A02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B967A41C9278E23CE745A4B048C5C5D5 /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3A8D9CA691649ABD5E7F7A320B9AB86D /* EXSQLite.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXSQLite.h; path = EXSQLite/EXSQLite.h; sourceTree = "<group>"; };
+		735C5A2B94A394B90AE5C2D96DC606D1 /* EXSQLite-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXSQLite-dummy.m"; sourceTree = "<group>"; };
+		94911D5E1E8F28CF3885A99F2F267235 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		99AF223144170EB93110C48BB8924DED /* EXSQLite.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXSQLite.xcconfig; sourceTree = "<group>"; };
+		B06BAD0600E1793DE43351AA20533AB0 /* EXSQLite.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXSQLite.m; path = EXSQLite/EXSQLite.m; sourceTree = "<group>"; };
+		B967A41C9278E23CE745A4B048C5C5D5 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
+		EEB2B69588D5A9FA232B89A27D9653E6 /* libEXSQLite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXSQLite.a; path = libEXSQLite.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE33F2067CFADAC4881227A1C5AACCA0 /* EXSQLite.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXSQLite.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		FFA24E3EDD2B1B9238CEACED39BBAD41 /* EXSQLite-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXSQLite-prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ABBE6D5A6F285C2D589D4DFFA38C4AF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0AF2988D9050F2A576C12E0ED6527463 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				94911D5E1E8F28CF3885A99F2F267235 /* UMCore */,
+				B967A41C9278E23CE745A4B048C5C5D5 /* UMFileSystemInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		307B73A52257A5CC64AEC35FC216A36B /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				99AF223144170EB93110C48BB8924DED /* EXSQLite.xcconfig */,
+				735C5A2B94A394B90AE5C2D96DC606D1 /* EXSQLite-dummy.m */,
+				FFA24E3EDD2B1B9238CEACED39BBAD41 /* EXSQLite-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXSQLite";
+			sourceTree = "<group>";
+		};
+		361AF5281A714450616060DD5AFBF027 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				FE33F2067CFADAC4881227A1C5AACCA0 /* EXSQLite.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		67895D47E23DCB2877254AA59EF60D84 /* EXSQLite */ = {
+			isa = PBXGroup;
+			children = (
+				3A8D9CA691649ABD5E7F7A320B9AB86D /* EXSQLite.h */,
+				B06BAD0600E1793DE43351AA20533AB0 /* EXSQLite.m */,
+				361AF5281A714450616060DD5AFBF027 /* Pod */,
+				307B73A52257A5CC64AEC35FC216A36B /* Support Files */,
+			);
+			name = EXSQLite;
+			path = "../../../../packages/expo-sqlite/ios";
+			sourceTree = "<group>";
+		};
+		93910376DCF49EE5D5699CA663A6FDEB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EEB2B69588D5A9FA232B89A27D9653E6 /* libEXSQLite.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B9CE01979EFD113664CDA613F2B4C47C = {
+			isa = PBXGroup;
+			children = (
+				0AF2988D9050F2A576C12E0ED6527463 /* Dependencies */,
+				67895D47E23DCB2877254AA59EF60D84 /* EXSQLite */,
+				E9F75F27B5522BE6B8A33B0636211CD1 /* Frameworks */,
+				93910376DCF49EE5D5699CA663A6FDEB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E9F75F27B5522BE6B8A33B0636211CD1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A0C6F2448E298575FC0779290FEF7575 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFFD921BAA03E8315205B02F171AD4EE /* EXSQLite.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B8358C45B103287E90F710967785DD34 /* EXSQLite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 383C479324D98B5C06D0E0FCCB995460 /* Build configuration list for PBXNativeTarget "EXSQLite" */;
+			buildPhases = (
+				A0C6F2448E298575FC0779290FEF7575 /* Headers */,
+				EAB00EF38F0DC00FD422FFB8B2CF21B0 /* Sources */,
+				ABBE6D5A6F285C2D589D4DFFA38C4AF3 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				58303DE712EEFA54499FF530A00A9753 /* PBXTargetDependency */,
+				29AFF36D246E4BEC27F70C400D2B88FD /* PBXTargetDependency */,
+			);
+			name = EXSQLite;
+			productName = EXSQLite;
+			productReference = EEB2B69588D5A9FA232B89A27D9653E6 /* libEXSQLite.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		71836129C87D22D03A43B30D6C5857B3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 68C5BF9CAD0FFF027323D495D00FBD94 /* Build configuration list for PBXProject "EXSQLite" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B9CE01979EFD113664CDA613F2B4C47C;
+			productRefGroup = 93910376DCF49EE5D5699CA663A6FDEB /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 94911D5E1E8F28CF3885A99F2F267235 /* UMCore */;
+				},
+				{
+					ProjectRef = B967A41C9278E23CE745A4B048C5C5D5 /* UMFileSystemInterface */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				B8358C45B103287E90F710967785DD34 /* EXSQLite */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EAB00EF38F0DC00FD422FFB8B2CF21B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				80C2499C52E3D74EC383C9B7D161ACBE /* EXSQLite-dummy.m in Sources */,
+				18547F0715A1C174CBE702D18B74B128 /* EXSQLite.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		29AFF36D246E4BEC27F70C400D2B88FD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = 30AD93DE02716F59E6663D4D75CC3A02 /* PBXContainerItemProxy */;
+		};
+		58303DE712EEFA54499FF530A00A9753 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 04DB95859297BB6AF33B76D8B6D9D7D4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1C07853AAF4EC7FEE5E13F74C2A9CA2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 99AF223144170EB93110C48BB8924DED /* EXSQLite.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSQLite;
+				PRODUCT_NAME = EXSQLite;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1E9D9B3B7CF6FCE9669A041BAC2F4755 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 99AF223144170EB93110C48BB8924DED /* EXSQLite.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXSQLite/EXSQLite-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXSQLite;
+				PRODUCT_NAME = EXSQLite;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8AB5F1CE1FD60F12DE38308C27BE2B21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		E5D6ACF57F55B8EAE5AC95C503223286 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		383C479324D98B5C06D0E0FCCB995460 /* Build configuration list for PBXNativeTarget "EXSQLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C07853AAF4EC7FEE5E13F74C2A9CA2F /* Debug */,
+				1E9D9B3B7CF6FCE9669A041BAC2F4755 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		68C5BF9CAD0FFF027323D495D00FBD94 /* Build configuration list for PBXProject "EXSQLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AB5F1CE1FD60F12DE38308C27BE2B21 /* Debug */,
+				E5D6ACF57F55B8EAE5AC95C503223286 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 71836129C87D22D03A43B30D6C5857B3 /* Project object */;
+}

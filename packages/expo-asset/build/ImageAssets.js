@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import { getFilename } from './AssetUris';
 export function isImageType(type) {
     return /^(jpeg|jpg|gif|png|bmp|webp|heic)$/i.test(type);

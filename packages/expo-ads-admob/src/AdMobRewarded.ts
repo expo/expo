@@ -1,7 +1,7 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
-import { UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
+import { setTestDeviceIDAsync } from './AdMob';
 
 const moduleName = 'AdMobRewarded';
 
@@ -43,18 +43,29 @@ export default {
     await AdMobNativeModule.setAdUnitID(id);
   },
   async setTestDeviceID(id: string): Promise<void> {
-    if (!AdMobNativeModule.setTestDeviceID) {
-      throw new UnavailabilityError(moduleName, 'setTestDeviceID');
-    }
-
-    await AdMobNativeModule.setTestDeviceID(id);
+    console.warn(
+      'AdMobRewarded.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.'
+    );
+    await setTestDeviceIDAsync(id);
   },
-  async requestAdAsync(): Promise<void> {
+  async requestAdAsync(
+    options: {
+      servePersonalizedAds?: boolean;
+      additionalRequestParams?: { [key: string]: string };
+    } = {}
+  ): Promise<void> {
     if (!AdMobNativeModule.requestAd) {
       throw new UnavailabilityError(moduleName, 'requestAdAsync');
     }
 
-    await AdMobNativeModule.requestAd();
+    const params: { [key: string]: string } = {
+      ...options.additionalRequestParams,
+    };
+    if (!options.servePersonalizedAds) {
+      params.npa = '1';
+    }
+
+    await AdMobNativeModule.requestAd(params);
   },
   async showAdAsync(): Promise<void> {
     if (!AdMobNativeModule.showAd) {

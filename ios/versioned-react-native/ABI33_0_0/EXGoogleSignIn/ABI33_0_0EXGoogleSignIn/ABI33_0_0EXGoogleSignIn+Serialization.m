@@ -18,7 +18,7 @@
            @"webClientId": ABI33_0_0UMNullIfNil([input serverClientID]),
            @"shouldFetchBasicProfile": ABI33_0_0UMNullIfNil(@([input shouldFetchBasicProfile])),
            @"currentUser": ABI33_0_0UMNullIfNil([ABI33_0_0EXGoogleSignIn jsonFromGIDGoogleUser:input.currentUser]),
-           @"hasAuthInKeychain": ABI33_0_0UMNullIfNil(@([input hasAuthInKeychain]))
+           @"hasAuthInKeychain": ABI33_0_0UMNullIfNil(@([input hasPreviousSignIn]))
            };
 }
 
@@ -84,8 +84,6 @@
   switch (input) {
     case kGIDSignInErrorCodeKeychain:
       return @"A problem reading or writing to the application keychain.";
-    case kGIDSignInErrorCodeNoSignInHandlersInstalled:
-      return @"No appropriate applications are installed on the user's device which can handle sign-in. This code will only ever be returned if using webview and switching to browser have both been disabled.";
     case kGIDSignInErrorCodeHasNoAuthInKeychain:
       return @"There are no auth tokens in the keychain. This error code will be returned by signInSilently if the user has never signed in before with the given scopes, or if they have since signed out.";
     case kGIDSignInErrorCodeCanceled:

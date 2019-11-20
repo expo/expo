@@ -1,6 +1,7 @@
-import ExponentAV from './ExponentAV';
 import { Asset } from 'expo-asset';
 import { Platform } from '@unimodules/core';
+
+import ExponentAV from './ExponentAV';
 // TODO add:
 //  disableFocusOnAndroid
 //  audio routes (at least did become noisy on android)
@@ -19,10 +20,10 @@ export enum PitchCorrectionQuality {
 export type PlaybackSource =
   | number
   | {
-    uri: string;
-    overrideFileExtensionAndroid?: string;
-    headers?: { [fieldName: string]: string };
-  }
+      uri: string;
+      overrideFileExtensionAndroid?: string;
+      headers?: { [fieldName: string]: string };
+    }
   | Asset;
 
 export type PlaybackNativeSource = {

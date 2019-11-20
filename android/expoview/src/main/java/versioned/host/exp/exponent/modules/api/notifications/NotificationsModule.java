@@ -2,6 +2,7 @@
 
 package versioned.host.exp.exponent.modules.api.notifications;
 
+import com.cronutils.model.Cron;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -35,7 +36,15 @@ import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationActionCenter;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.NotificationHelper;
+import host.exp.exponent.notifications.schedulers.IntervalSchedulerModel;
+import host.exp.exponent.notifications.schedulers.SchedulerImpl;
 import host.exp.exponent.storage.ExponentSharedPreferences;
+import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
+import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
+import host.exp.exponent.notifications.schedulers.CalendarSchedulerModel;
+
+import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
+import static host.exp.exponent.notifications.helpers.ExpoCronParser.createCronInstance;
 
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
@@ -357,13 +366,120 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void cancelAllScheduledNotificationsAsync(final Promise promise) {
+  public void cancelScheduledNotificationWithStringIdAsync(final String id, final Promise promise) {
     try {
-      ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
-      manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      SchedulersManagerProxy.getInstance(getReactApplicationContext()
+          .getApplicationContext())
+          .removeScheduler(id);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
     }
   }
+
+  @ReactMethod
+  public void cancelAllScheduledNotificationsAsync(final Promise promise) {
+    try {
+      ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
+      manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+
+      String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
+
+      SchedulersManagerProxy
+          .getInstance(getReactApplicationContext().getApplicationContext())
+          .removeAll(experienceId);
+
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void scheduleNotificationWithTimer(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
+    HashMap<String, Object> options = optionsMap.toHashMap();
+    int notificationId = Math.abs( new Random().nextInt() );
+    HashMap<String, Object> hashMap = data.toHashMap();
+    if (data.hasKey("categoryId")) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
+    }
+    HashMap<String, Object> details = new HashMap<>();
+    details.put("data", hashMap);
+    String experienceId;
+
+    try {
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      details.put("experienceId", experienceId);
+    } catch (Exception e) {
+      promise.reject(new Exception("Requires Experience Id"));
+      return;
+    }
+
+    IntervalSchedulerModel intervalSchedulerModel = new IntervalSchedulerModel();
+    intervalSchedulerModel.setExperienceId(experienceId);
+    intervalSchedulerModel.setNotificationId(notificationId);
+    intervalSchedulerModel.setDetails(details);
+    intervalSchedulerModel.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
+    intervalSchedulerModel.setScheduledTime(System.currentTimeMillis() + ((Double) options.get("interval")).longValue());
+    intervalSchedulerModel.setInterval(((Double) options.get("interval")).longValue()); // on iOS we cannot change interval
+
+    SchedulerImpl scheduler = new SchedulerImpl(intervalSchedulerModel);
+
+    SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
+        scheduler,
+        (String id) -> {
+          if (id == null) {
+            promise.reject(new UnableToScheduleException());
+            return false;
+          }
+          promise.resolve(id);
+          return true;
+        }
+    );
+  }
+  
+  @ReactMethod
+  public void scheduleNotificationWithCalendar(final ReadableMap data, final ReadableMap optionsMap, final Promise promise) {
+    HashMap<String, Object> options = optionsMap.toHashMap();
+    int notificationId = Math.abs( new Random().nextInt() );
+    HashMap<String, Object> hashMap = data.toHashMap();
+    if (data.hasKey("categoryId")) {
+      hashMap.put("categoryId", getScopedIdIfNotDetached(data.getString("categoryId")));
+    }
+    HashMap<String, Object> details = new HashMap<>();
+    details.put("data", hashMap);
+    String experienceId;
+
+    try {
+      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      details.put("experienceId", experienceId);
+    } catch (Exception e) {
+      promise.reject(new Exception("Requires Experience Id"));
+      return;
+    }
+
+    Cron cron = createCronInstance(options);
+
+    CalendarSchedulerModel calendarSchedulerModel = new CalendarSchedulerModel();
+    calendarSchedulerModel.setExperienceId(experienceId);
+    calendarSchedulerModel.setNotificationId(notificationId);
+    calendarSchedulerModel.setDetails(details);
+    calendarSchedulerModel.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
+    calendarSchedulerModel.setCalendarData(cron.asString());
+
+    SchedulerImpl scheduler = new SchedulerImpl(calendarSchedulerModel);
+
+    SchedulersManagerProxy.getInstance(getReactApplicationContext().getApplicationContext()).addScheduler(
+        scheduler,
+        (String id) -> {
+          if (id == null) {
+            promise.reject(new UnableToScheduleException());
+            return false;
+          }
+          promise.resolve(id);
+          return true;
+        }
+    );
+  }
+
 }

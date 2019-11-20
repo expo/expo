@@ -28,7 +28,7 @@ public interface Package {
     return Collections.emptyList();
   }
 
-  default List<? extends SingletonModule> createSingletonModules(Context context) {
+  default List<? extends org.unimodules.core.interfaces.SingletonModule> createSingletonModules(Context context) {
     return Collections.emptyList();
   }
 }

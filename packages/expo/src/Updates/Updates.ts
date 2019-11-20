@@ -1,8 +1,21 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
+import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
 
 import ExponentUpdates from './ExponentUpdates';
+
+type Manifest = typeof Constants.manifest;
+
+type UpdateCheckResult = { isAvailable: false } | { isAvailable: true; manifest: Manifest };
+
+type UpdateFetchResult = { isNew: false } | { isNew: true; manifest: Manifest };
+
+type UpdateEvent =
+  | { type: 'downloadStart' | 'downloadProgress' | 'noUpdateAvailable' }
+  | { type: 'downloadFinished'; manifest: Manifest }
+  | { type: 'error'; message: string };
+
+type UpdateEventListener = (event: UpdateEvent) => void;
 
 export async function reload(): Promise<void> {
   await ExponentUpdates.reload();
@@ -12,21 +25,24 @@ export async function reloadFromCache(): Promise<void> {
   await ExponentUpdates.reloadFromCache();
 }
 
-export async function checkForUpdateAsync(): Promise<Object> {
+export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExponentUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
   const result = await ExponentUpdates.checkForUpdateAsync();
-  let returnObj: any = {
-    isAvailable: !!result,
-  };
-  if (result) {
-    returnObj.manifest = typeof result === 'string' ? JSON.parse(result) : result;
+  if (!result) {
+    return { isAvailable: false };
   }
-  return returnObj;
+
+  return {
+    isAvailable: true,
+    manifest: typeof result === 'string' ? JSON.parse(result) : result,
+  };
 }
 
-export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Object> {
+export async function fetchUpdateAsync({
+  eventListener,
+}: { eventListener?: UpdateEventListener } = {}): Promise<UpdateFetchResult> {
   if (!ExponentUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
@@ -40,13 +56,22 @@ export async function fetchUpdateAsync({ eventListener }: any = {}): Promise<Obj
   } finally {
     subscription && subscription.remove();
   }
-  let returnObj: any = {
-    isNew: !!result,
-  };
-  if (result) {
-    returnObj.manifest = typeof result === 'string' ? JSON.parse(result) : result;
+
+  if (!result) {
+    return { isNew: false };
   }
-  return returnObj;
+
+  return {
+    isNew: true,
+    manifest: typeof result === 'string' ? JSON.parse(result) : result,
+  };
+}
+
+export async function clearUpdateCacheExperimentalAsync(abiVersion: string): Promise<void> {
+  if (!ExponentUpdates.clearUpdateCacheAsync) {
+    throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
+  }
+  return ExponentUpdates.clearUpdateCacheAsync(abiVersion);
 }
 
 let _emitter: EventEmitter | null;
@@ -54,7 +79,7 @@ let _emitter: EventEmitter | null;
 function _getEmitter(): EventEmitter {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Exponent.nativeUpdatesEvent', _emitEvent);
+    RCTDeviceEventEmitter.addListener('Exponent.nativeUpdatesEvent', _emitEvent);
   }
   return _emitter;
 }

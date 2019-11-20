@@ -60,6 +60,25 @@ class GetQueryInfo {
       mSelection.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append(" != ").append(MediaStore.Files.FileColumns.MEDIA_TYPE_NONE);
     }
 
+    Double createdAfter = (Double) mInput.get("createdAfter");
+    Double createdBefore = (Double) mInput.get("createdBefore");
+
+    if (createdAfter != null) {
+      mSelection
+              .append(" AND ")
+              .append(MediaStore.Images.Media.DATE_TAKEN)
+              .append(" > ")
+              .append(createdAfter.longValue());
+    }
+
+    if (createdBefore != null) {
+      mSelection
+              .append(" AND ")
+              .append(MediaStore.Images.Media.DATE_TAKEN)
+              .append(" < ")
+              .append(createdBefore.longValue());
+    }
+
     mOrder = new StringBuilder();
     if (mInput.containsKey("sortBy") && ((List) mInput.get("sortBy")).size() > 0) {
       mOrder.append(mapOrderDescriptor((List) mInput.get("sortBy")));

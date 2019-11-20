@@ -1,24 +1,24 @@
-import { Asset } from 'expo-asset';
-import Constants from 'expo-constants';
-import { Platform } from '@unimodules/core';
+import {
+  getAssetForSource,
+  loadSingleFontAsync,
+  fontFamilyNeedsScoping,
+  getNativeFontName,
+} from './FontLoader';
 
-import ExpoFontLoader from './ExpoFontLoader';
+import { FontSource, FontResource } from './Font.types';
 
-/**
- * A font source can be a URI, a module ID, or an Expo Asset.
- */
-type FontSource = string | number | Asset;
-
-const isWeb = Platform.OS === 'web';
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};
 
+/**
+ * Used to transform font family names to the scoped name. This does not need to
+ * be called in standalone or bare apps but it will return unscoped font family
+ * names if it is called in those contexts.
+ * note(brentvatne): at some point we may want to warn if this is called
+ * outside of a managed app.
+ */
 export function processFontFamily(name: string | null): string | null {
-  if (typeof name !== 'string' || Constants.systemFonts.includes(name) || name === 'System') {
-    return name;
-  }
-
-  if (name.includes(Constants.sessionId)) {
+  if (!name || !fontFamilyNeedsScoping(name)) {
     return name;
   }
 
@@ -42,7 +42,7 @@ export function processFontFamily(name: string | null): string | null {
     return 'System';
   }
 
-  return `ExpoFont-${_getNativeFontName(name)}`;
+  return `ExpoFont-${getNativeFontName(name)}`;
 }
 
 export function isLoaded(name: string): boolean {
@@ -82,10 +82,10 @@ export async function loadAsync(
   if (!source) {
     throw new Error(`No source from which to load font "${name}"`);
   }
-  const asset = _getAssetForSource(source);
+  const asset = getAssetForSource(source);
   loadPromises[name] = (async () => {
     try {
-      await _loadSingleFontAsync(name, asset);
+      await loadSingleFontAsync(name, asset);
       loaded[name] = true;
     } finally {
       delete loadPromises[name];
@@ -95,39 +95,7 @@ export async function loadAsync(
   await loadPromises[name];
 }
 
-function _getAssetForSource(source: FontSource): Asset {
-  if (source instanceof Asset) {
-    return source;
-  }
-
-  if (!isWeb && typeof source === 'string') {
-    return Asset.fromURI(source);
-  }
-
-  if (isWeb || typeof source === 'number') {
-    return Asset.fromModule(source);
-  }
-
-  // @ts-ignore Error: Type 'string' is not assignable to type 'Asset'
-  // We can't have a string here, we would have thrown an error if !isWeb
-  // or returned Asset.fromModule if isWeb.
-  return source;
-}
-
-async function _loadSingleFontAsync(name: string, asset: Asset): Promise<void> {
-  await asset.downloadAsync();
-  if (!asset.downloaded) {
-    throw new Error(`Failed to download asset for font "${name}"`);
-  }
-  await ExpoFontLoader.loadAsync(_getNativeFontName(name), asset.localUri);
-}
-
-function _getNativeFontName(name: string): string {
-  if (isWeb) {
-    return name;
-  }
-  return `${Constants.sessionId}-${name}`;
-}
+export { FontSource, FontResource };
 
 declare var module: any;
 

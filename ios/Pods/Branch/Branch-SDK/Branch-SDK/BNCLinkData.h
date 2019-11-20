@@ -17,7 +17,7 @@ typedef NS_ENUM(NSUInteger, BranchLinkType) {
     BranchLinkTypeOneTimeUse = 1
 };
 
-@interface BNCLinkData : NSObject
+@interface BNCLinkData : NSObject <NSSecureCoding>
 
 @property (strong, nonatomic) NSMutableDictionary *data;
 

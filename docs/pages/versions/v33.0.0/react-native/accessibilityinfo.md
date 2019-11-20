@@ -7,9 +7,7 @@ Sometimes it's useful to know whether or not the device has a screen reader that
 
 Here's a small example illustrating how to use `AccessibilityInfo`:
 
-
 ```javascript
-
 class AccessibilityStatusExample extends React.Component {
   state = {
     reduceMotionEnabled: false,
@@ -17,61 +15,41 @@ class AccessibilityStatusExample extends React.Component {
   };
 
   componentDidMount() {
-    AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      this._handleReduceMotionToggled,
-    );
-    AccessibilityInfo.addEventListener(
-      'screenReaderChanged',
-      this._handleScreenReaderToggled,
-    );
+    AccessibilityInfo.addEventListener('reduceMotionChanged', this._handleReduceMotionToggled);
+    AccessibilityInfo.addEventListener('screenReaderChanged', this._handleScreenReaderToggled);
 
-    AccessibilityInfo.isReduceMotionEnabled().then((reduceMotionEnabled) => {
-      this.setState({reduceMotionEnabled});
+    AccessibilityInfo.isReduceMotionEnabled().then(reduceMotionEnabled => {
+      this.setState({ reduceMotionEnabled });
     });
-    AccessibilityInfo.isScreenReaderEnabled().then((screenReaderEnabled) => {
-      this.setState({screenReaderEnabled});
+    AccessibilityInfo.isScreenReaderEnabled().then(screenReaderEnabled => {
+      this.setState({ screenReaderEnabled });
     });
   }
 
   componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      'reduceMotionChanged',
-      this._handleReduceMotionToggled,
-    );
+    AccessibilityInfo.removeEventListener('reduceMotionChanged', this._handleReduceMotionToggled);
 
-    AccessibilityInfo.removeEventListener(
-      'screenReaderChanged',
-      this._handleScreenReaderToggled,
-    );
+    AccessibilityInfo.removeEventListener('screenReaderChanged', this._handleScreenReaderToggled);
   }
 
-  _handleReduceMotionToggled = (reduceMotionEnabled) => {
-    this.setState({reduceMotionEnabled});
+  _handleReduceMotionToggled = reduceMotionEnabled => {
+    this.setState({ reduceMotionEnabled });
   };
 
-  _handleScreenReaderToggled = (screenReaderEnabled) => {
-    this.setState({screenReaderEnabled});
+  _handleScreenReaderToggled = screenReaderEnabled => {
+    this.setState({ screenReaderEnabled });
   };
 
   render() {
     return (
       <View>
-        <Text>
-          The reduce motion is{' '}
-          {this.state.reduceMotionEnabled ? 'enabled' : 'disabled'}.
-        </Text>
-        <Text>
-          The screen reader is{' '}
-          {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
-        </Text>
+        <Text>The reduce motion is {this.state.reduceMotionEnabled ? 'enabled' : 'disabled'}.</Text>
+        <Text>The screen reader is {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.</Text>
       </View>
     );
   }
 }
-
 ```
-
 
 ### Methods
 
@@ -94,18 +72,15 @@ class AccessibilityStatusExample extends React.Component {
 
 ### `isBoldTextEnabled()`
 
-
 ```javascript
 
 static isBoldTextEnabled()
 
 ```
 
-
 iOS-Only. Query whether a bold text is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when bold text is enabled and `false` otherwise.
 
 ### `isGrayscaleEnabled()`
-
 
 ```javascript
 
@@ -113,11 +88,9 @@ static isGrayscaleEnabled()
 
 ```
 
-
 Query whether grayscale is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when grayscale is enabled and `false` otherwise.
 
 ### `isInvertColorsEnabled()`
-
 
 ```javascript
 
@@ -125,11 +98,9 @@ static isInvertColorsEnabled()
 
 ```
 
-
 Query whether invert colors is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when invert colors is enabled and `false` otherwise.
 
 ### `isReduceMotionEnabled()`
-
 
 ```javascript
 
@@ -137,11 +108,9 @@ static isReduceMotionEnabled()
 
 ```
 
-
 Query whether reduce motion is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when reduce motion is enabled and `false` otherwise.
 
 ### `isReduceTransparencyEnabled()`
-
 
 ```javascript
 
@@ -149,11 +118,9 @@ static isReduceTransparencyEnabled()
 
 ```
 
-
 Query whether reduce transparency is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a reduce transparency is enabled and `false` otherwise.
 
 ### `isScreenReaderEnabled()`
-
 
 ```javascript
 
@@ -161,20 +128,17 @@ static isScreenReaderEnabled()
 
 ```
 
-
 Query whether a screen reader is currently enabled. Returns a promise which resolves to a boolean. The result is `true` when a screen reader is enabled and `false` otherwise.
 
 ---
 
 ### `addEventListener()`
 
-
 ```javascript
 
 static addEventListener(eventName, handler)
 
 ```
-
 
 Add an event handler. Supported events:
 
@@ -192,13 +156,11 @@ Add an event handler. Supported events:
 
 ### `setAccessibilityFocus()`
 
-
 ```javascript
 
 static setAccessibilityFocus(reactTag)
 
 ```
-
 
 Set accessibility focus to a React component. On Android, this is equivalent to `UIManager.sendAccessibilityEvent(reactTag, UIManager.AccessibilityEventTypes.typeViewFocused);`.
 
@@ -206,13 +168,11 @@ Set accessibility focus to a React component. On Android, this is equivalent to 
 
 ### `announceForAccessibility()`
 
-
 ```javascript
 
 static announceForAccessibility(announcement)
 
 ```
-
 
 Post a string to be announced by the screen reader.
 
@@ -220,13 +180,10 @@ Post a string to be announced by the screen reader.
 
 ### `removeEventListener()`
 
-
 ```javascript
 
 static removeEventListener(eventName, handler)
 
 ```
 
-
 Remove an event handler.
-

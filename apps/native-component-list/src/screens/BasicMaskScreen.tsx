@@ -1,7 +1,8 @@
 import React from 'react';
-import { Animated, Easing, Image, MaskedViewIOS, View } from 'react-native';
+import { Animated, Easing, Image, View } from 'react-native';
+import MaskedView from '@react-native-community/masked-view';
 
-const AnimatedMaskView = Animated.createAnimatedComponent(MaskedViewIOS);
+const AnimatedMaskView = Animated.createAnimatedComponent(MaskedView);
 
 interface State {
   text: string;
@@ -16,17 +17,16 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
     text: '100',
   };
 
-  _animatedTextValue?: Animated.Value;
-  _animatedScaleValue?: Animated.Value;
+  _animatedTextValue: Animated.Value = new Animated.Value(0);
+  _animatedScaleValue: Animated.Value = new Animated.Value(0);
 
-  _interval?: number;
+  _interval: any;
 
-  componentWillMount() {
-    this._animatedTextValue = new Animated.Value(0);
+  componentDidMount() {
     Animated.loop(
       Animated.timing(this._animatedTextValue, {
         toValue: 360,
-        duration: 2000,
+        duration: 100,
         easing: Easing.linear,
       })
     ).start();
@@ -62,6 +62,7 @@ export default class BasicMaskScreen extends React.Component<{}, State> {
     }
   }
 
+  // NOTE(brentvatne): this doesn't work properly on Android yet
   render() {
     const width = 240;
     const height = 200;

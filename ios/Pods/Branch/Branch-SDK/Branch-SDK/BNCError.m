@@ -1,10 +1,12 @@
-//
-//  BNCError.m
-//  Branch-SDK
-//
-//  Created by Qinwei Gong on 11/17/14.
-//  Copyright (c) 2014 Branch Metrics. All rights reserved.
-//
+/**
+ @file          BNCError.m
+ @package       Branch-SDK
+ @brief         Branch errors.
+
+ @author        Qinwei Gong
+ @date          November 2014
+ @copyright     Copyright © 2014 Branch. All rights reserved.
+*/
 
 #import "BNCError.h"
 #import "BNCLocalization.h"

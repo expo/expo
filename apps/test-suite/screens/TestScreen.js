@@ -1,20 +1,16 @@
 'use strict';
 
 import React from 'react';
-import { NativeModules, StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
+import { StyleSheet, Platform, ScrollView, Text, View } from 'react-native';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import Immutable from 'immutable';
-
-const { ExponentTest } = NativeModules;
+import ExponentTest from '../ExponentTest';
 
 export default class TestScreen extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = TestScreen.initialState;
-    this._results = '';
-    this._failures = '';
-    this._scrollViewRef = null;
-  }
+  state = TestScreen.initialState;
+  _results = '';
+  _failures = '';
+  _scrollViewRef = null;
 
   componentDidMount() {
     const { navigation } = this.props;
@@ -119,17 +115,17 @@ export default class TestScreen extends React.Component {
           }
           const emoji = result.status === 'passed' ? ':green_heart:' : ':broken_heart:';
           console.log(`${grouping} ${emoji} ${result.fullName}`);
-          this._results += `${grouping} ${result.fullName}\n`;
+          app._results += `${grouping} ${result.fullName}\n`;
 
           if (result.status === 'failed') {
-            this._failures += `${grouping} ${result.fullName}\n`;
-            result.failedExpectations.forEach(({ matcherName, message }) => {
+            app._failures += `${grouping} ${result.fullName}\n`;
+            result.failedExpectations.forEach(({ matcherName = 'NO_MATCHER', message }) => {
               if (ExponentTest && ExponentTest.log) {
                 ExponentTest.log(`${matcherName}: ${message}`);
               }
               console.log(`${matcherName}: ${message}`);
-              this._results += `${matcherName}: ${message}\n`;
-              this._failures += `${matcherName}: ${message}\n`;
+              app._results += `${matcherName}: ${message}\n`;
+              app._failures += `${matcherName}: ${message}\n`;
             });
             failedSpecs.push(result);
           }
@@ -143,19 +139,23 @@ export default class TestScreen extends React.Component {
       jasmineDone() {
         console.log('--- tests done');
         console.log('--- sending results to runner');
-        if (app._isMounted) {
-          app.setState({ done: true, numFailed: failedSpecs.length });
-        }
+
         const result = {
           magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
           failed: failedSpecs.length,
-          results: this._results,
+          failures: app._failures,
+          results: app._results,
         };
+
+        const jsonResult = JSON.stringify(result);
+        if (app._isMounted) {
+          app.setState({ done: true, numFailed: failedSpecs.length, results: jsonResult });
+        }
+
         if (Platform.OS === 'web') {
           // This log needs to be an object for puppeteer tests
           console.log(result);
         } else {
-          const jsonResult = JSON.stringify(result);
           console.log(jsonResult);
         }
 
@@ -163,8 +163,8 @@ export default class TestScreen extends React.Component {
           ExponentTest.completed(
             JSON.stringify({
               failed: failedSpecs.length,
-              failures: this._failures,
-              results: this._results,
+              failures: app._failures,
+              results: app._results,
             })
           );
         }
@@ -233,9 +233,7 @@ export default class TestScreen extends React.Component {
       specDone(jasmineResult) {
         if (app.state.testPortal) {
           console.warn(
-            `The test portal has not been cleaned up by \`${
-              jasmineResult.fullName
-            }\`. Call \`cleanupPortal\` before finishing the test.`
+            `The test portal has not been cleaned up by \`${jasmineResult.fullName}\`. Call \`cleanupPortal\` before finishing the test.`
           );
         }
         if (app._isMounted) {
@@ -262,6 +260,7 @@ export default class TestScreen extends React.Component {
     const status = r.get('status') || 'running';
     return (
       <View
+        testID="test_suite_view_spec_container"
         key={r.get('id')}
         style={{
           paddingLeft: 10,
@@ -274,7 +273,7 @@ export default class TestScreen extends React.Component {
           }[status],
           borderLeftWidth: 3,
         }}>
-        <Text style={{ fontSize: 16 }}>
+        <Text testID="test_suite_text_spec_description" style={{ fontSize: 16 }}>
           {
             {
               running: '😮 ',
@@ -285,7 +284,9 @@ export default class TestScreen extends React.Component {
           {r.get('description')} ({status})
         </Text>
         {r.get('failedExpectations').map((e, i) => (
-          <Text key={i}>{e.get('message')}</Text>
+          <Text testID="test_suite_text_spec_exception" key={i}>
+            {e.get('message')}
+          </Text>
         ))}
       </View>
     );
@@ -306,8 +307,13 @@ export default class TestScreen extends React.Component {
           }
         : { paddingLeft: 16 };
     return (
-      <View key={r.get('result').get('id')} style={containerStyle}>
-        <Text style={titleStyle}>{r.get('result').get('description')}</Text>
+      <View
+        testID="test_suite_view_suite_container"
+        key={r.get('result').get('id')}
+        style={containerStyle}>
+        <Text testID="test_suite_text_suite_description" style={titleStyle}>
+          {r.get('result').get('description')}
+        </Text>
         {r.get('specs').map(this._renderSpecResult)}
         {r.get('children').map(r => this._renderSuiteResult(r, depth + 1))}
       </View>
@@ -323,9 +329,18 @@ export default class TestScreen extends React.Component {
   _renderDoneText = () => {
     if (this.state.done) {
       return (
-        <Text style={styles.doneMessage}>
-          All done! {this.state.numFailed} {this.state.numFailed === 1 ? 'test' : 'tests'} failed.
-        </Text>
+        <View testID="test_suite_results">
+          <Text testID="test_suite_text_results" style={styles.doneMessage}>
+            All done! {this.state.numFailed}
+            {this.state.numFailed === 1 ? ' test' : ' tests'} failed.
+          </Text>
+          <Text
+            style={{ position: 'absolute', opacity: 0 }}
+            pointerEvents="none"
+            testID="test_suite_final_results">
+            {this.state.results}
+          </Text>
+        </View>
       );
     }
   };

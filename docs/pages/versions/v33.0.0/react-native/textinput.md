@@ -7,11 +7,9 @@ A foundational component for inputting text into the app via a keyboard. Props p
 
 The simplest use case is to plop down a `TextInput` and subscribe to the `onChangeText` events to read the user input. There are also other events, such as `onSubmitEditing` and `onFocus` that can be subscribed to. A simple example:
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 
 export default class UselessTextInput extends Component {
   constructor(props) {
@@ -22,29 +20,23 @@ export default class UselessTextInput extends Component {
   render() {
     return (
       <TextInput
-        style={{height: 40, borderColor: 'gray', borderWidth: 1}}
-        onChangeText={(text) => this.setState({text})}
+        style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+        onChangeText={text => this.setState({ text })}
         value={this.state.text}
       />
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
-
 ```
-
 
 Two methods exposed via the native element are .focus() and .blur() that will focus or blur the TextInput programmatically.
 
 Note that some props are only available with `multiline={true/false}`. Additionally, border styles that apply to only one side of the element (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if `multiline=false`. To achieve the same effect, you can wrap your `TextInput` in a `View`:
 
-
 ```javascript
 
 import React, { Component } from 'react';
-import { AppRegistry, View, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 
 class UselessTextInput extends Component {
   render() {
@@ -85,15 +77,7 @@ export default class UselessTextInputMultiline extends Component {
     );
   }
 }
-
-// skip these lines if using Create React Native App
-AppRegistry.registerComponent(
- 'AwesomeProject',
- () => UselessTextInputMultiline
-);
-
 ```
-
 
 `TextInput` has by default a border at the bottom of its view. This border has its padding set by the background image provided by the system, and it cannot be changed. Solutions to avoid this is to either not set height explicitly, case in which the system will take care of displaying the border in the correct position, or to not display the border by setting `underlineColorAndroid` to transparent.
 
@@ -371,15 +355,9 @@ Say the system whether the individual fields in your app should be included in a
 
 If defined, the provided image resource will be rendered on the left. The image resource must be inside `/android/app/src/main/res/drawable` and referenced like
 
-
 ```javascript
-
-<TextInput
- inlineImageLeft='search_icon'
-/>
-
+<TextInput inlineImageLeft="search_icon" />
 ```
-
 
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
@@ -625,8 +603,8 @@ The string that will be rendered before text input has been entered.
 
 The text color of the placeholder string.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -723,8 +701,8 @@ The start and end of the text input's selection. Set start and end to the same v
 
 The highlight and cursor color of the text input.
 
-| Type               | Required |
-| ------------------ | -------- |
+| Type                | Required |
+| ------------------- | -------- |
 | [color](../colors/) | No       |
 
 ---
@@ -841,8 +819,8 @@ see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more 
 
 [Styles](../style/)
 
-| Type                  | Required |
-| --------------------- | -------- |
+| Type                   | Required |
+| ---------------------- | -------- |
 | [Text](../text/#style) | No       |
 
 ---
@@ -861,8 +839,8 @@ Set text break strategy on Android API Level 23+, possible values are `simple`, 
 
 The color of the `TextInput` underline.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -879,13 +857,9 @@ The value to show for the text input. `TextInput` is a controlled component, whi
 
 ### `clear()`
 
-
 ```javascript
-
 clear();
-
 ```
-
 
 Removes all text from the `TextInput`.
 
@@ -893,13 +867,9 @@ Removes all text from the `TextInput`.
 
 ### `isFocused()`
 
-
 ```javascript
-
 isFocused();
-
 ```
-
 
 Returns `true` if the input is currently focused; `false` otherwise.
 
@@ -907,4 +877,3 @@ Returns `true` if the input is currently focused; `false` otherwise.
 
 - [react-native#19096](https://github.com/facebook/react-native/issues/19096): Doesn't support Android's `onKeyPreIme`.
 - [react-native#19366](https://github.com/facebook/react-native/issues/19366): Calling .focus() after closing Android's keyboard via back button doesn't bring keyboard up again.
-

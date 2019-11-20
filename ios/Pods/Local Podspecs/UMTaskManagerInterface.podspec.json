@@ -1,6 +1,6 @@
 {
   "name": "UMTaskManagerInterface",
-  "version": "2.0.0",
+  "version": "4.0.0",
   "summary": "Universal module interface package for TaskManager",
   "description": "Universal module interface package for TaskManager",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "ios": "10.0"
   },
   "source": {
-    "git": "https://github.com/expo/unimodules-task-manager-interface.git"
+    "git": "https://github.com/expo/expo.git"
   },
   "source_files": "UMTaskManagerInterface/**/*.{h,m}",
   "preserve_paths": "UMTaskManagerInterface/**/*.{h,m}",

@@ -18,13 +18,11 @@ title: Dimensions
 
 ### `set()`
 
-
 ```javascript
 
 static set(dims)
 
 ```
-
 
 This should only be called from native code by sending the didUpdateDimensions event.
 
@@ -34,13 +32,11 @@ This should only be called from native code by sending the didUpdateDimensions e
 
 ### `get()`
 
-
 ```javascript
 
 static get(dim)
 
 ```
-
 
 Initial dimensions are set before `runApplication` is called so they should be available before any other require's are run, but may be updated later.
 
@@ -56,13 +52,11 @@ Example: `var {height, width} = Dimensions.get('window');`
 
 ### `addEventListener()`
 
-
 ```javascript
 
 static addEventListener(type, handler)
 
 ```
-
 
 Add an event handler. Supported events:
 
@@ -72,13 +66,10 @@ Add an event handler. Supported events:
 
 ### `removeEventListener()`
 
-
 ```javascript
 
 static removeEventListener(type, handler)
 
 ```
 
-
 Remove an event handler.
-

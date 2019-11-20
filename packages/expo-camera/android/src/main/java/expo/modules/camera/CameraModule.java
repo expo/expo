@@ -2,15 +2,20 @@ package expo.modules.camera;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Bundle;
 
 import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.cameraview.Size;
 import com.google.android.gms.vision.barcode.Barcode;
+
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.UIManager;
+import org.unimodules.interfaces.permissions.Permissions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,17 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.imageloader.ImageLoader;
-import org.unimodules.interfaces.permissions.Permissions;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 
-public class CameraModule extends ExportedModule implements ModuleRegistryConsumer {
+public class CameraModule extends ExportedModule {
   private static final String TAG = "ExponentCameraModule";
   private static final String ERROR_TAG = "E_CAMERA";
   private ModuleRegistry mModuleRegistry;
@@ -66,7 +63,7 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
   }
 
@@ -222,8 +219,7 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[] { Manifest.permission.RECORD_AUDIO });
-    if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    if (permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
       final File cacheDirectory = getContext().getCacheDir();
       addUIBlock(viewTag, new UIManager.UIBlock<ExpoCameraView>() {
         @Override
@@ -324,5 +320,25 @@ public class CameraModule extends ExportedModule implements ModuleRegistryConsum
     } else {
       manager.addUIBlock(viewTag, block, ExpoCameraView.class);
     }
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
   }
 }

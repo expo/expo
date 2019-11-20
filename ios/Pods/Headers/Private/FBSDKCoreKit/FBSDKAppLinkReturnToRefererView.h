@@ -1,1 +1,1 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/FBSDKAppLinkReturnToRefererView.h
+../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/AppLink/FBSDKAppLinkReturnToRefererView.h

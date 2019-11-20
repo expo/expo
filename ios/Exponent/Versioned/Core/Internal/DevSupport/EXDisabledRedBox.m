@@ -13,5 +13,6 @@
 - (void)updateErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack {}
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<NSDictionary *> *)stack showIfHidden:(BOOL)shouldShow {}
 - (void)dismiss {}
+- (void)setOverrideReloadAction:(dispatch_block_t __unused)block {}
 
 @end

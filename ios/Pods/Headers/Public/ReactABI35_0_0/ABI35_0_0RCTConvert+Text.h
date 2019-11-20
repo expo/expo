@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/Libraries/Text/ABI35_0_0RCTConvert+Text.h

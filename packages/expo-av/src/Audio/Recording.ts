@@ -1,4 +1,5 @@
-import { NativeModulesProxy, EventEmitter, Subscription, Platform } from '@unimodules/core';
+import { EventEmitter, Subscription, Platform } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -154,8 +155,18 @@ export type RecordingStatus = {
   durationMillis: number;
 };
 
+export { PermissionResponse, PermissionStatus };
+
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
+
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  return ExponentAV.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  return ExponentAV.requestPermissionsAsync();
+}
 
 export class Recording {
   _subscription: Subscription | null = null;
@@ -186,10 +197,10 @@ export class Recording {
 
   _pollingLoop = async () => {
     if (isAudioEnabled() && this._canRecord && this._onRecordingStatusUpdate != null) {
-      this._progressUpdateTimeoutVariable = <any>setTimeout(
+      this._progressUpdateTimeoutVariable = setTimeout(
         this._pollingLoop,
         this._progressUpdateIntervalMillis
-      );
+      ) as any;
       try {
         await this.getStatusAsync();
       } catch (error) {

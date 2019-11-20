@@ -1,7 +1,3 @@
-export var PermissionStatus;
-(function (PermissionStatus) {
-    PermissionStatus["UNDETERMINED"] = "undetermined";
-    PermissionStatus["GRANTED"] = "granted";
-    PermissionStatus["DENIED"] = "denied";
-})(PermissionStatus || (PermissionStatus = {}));
+import { PermissionStatus, } from 'unimodules-permissions-interface';
+export { PermissionStatus };
 //# sourceMappingURL=Permissions.types.js.map

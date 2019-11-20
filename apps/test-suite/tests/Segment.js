@@ -1,7 +1,7 @@
 'use strict';
 
 import * as Segment from 'expo-analytics-segment';
-
+import Constants from 'expo-constants';
 export const name = 'Segment';
 
 const ANDROID_WRITE_KEY = 'android-write-key';
@@ -84,16 +84,18 @@ export function test(t) {
       t.expect(enabled).toBe(true);
     });
 
-    t.it('Segment.setEnabledAsync() rejects with a meaningful message', async () => {
-      let error = null;
-      try {
-        await Segment.setEnabledAsync(false);
-      } catch (e) {
-        error = e;
-      }
-      t.expect(error).not.toBeNull();
-      t.expect(error).toMatch('not supported in Expo Client');
-    });
+    if (Constants.appOwnership === 'expo') {
+      t.it('Segment.setEnabledAsync() rejects with a meaningful message', async () => {
+        let error = null;
+        try {
+          await Segment.setEnabledAsync(false);
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error).not.toBeNull();
+        t.expect(error).toMatch('not supported in Expo Client');
+      });
+    }
   });
 
   t.describe('Segment.alias', () => {

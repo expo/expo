@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -12,14 +13,13 @@ import com.google.android.gms.ads.InterstitialAd;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.ModuleRegistryConsumer;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
-public class AdMobInterstitialAdModule extends ExportedModule implements ModuleRegistryConsumer {
+public class AdMobInterstitialAdModule extends ExportedModule {
   private InterstitialAd mInterstitialAd;
-  private String mTestDeviceID;
   private String mAdUnitID;
   private Promise mRequestAdPromise;
   private Promise mShowAdPromise;
@@ -55,7 +55,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   }
 
   @Override
-  public void setModuleRegistry(ModuleRegistry moduleRegistry) {
+  public void onCreate(ModuleRegistry moduleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
   }
@@ -71,13 +71,7 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
   }
 
   @ExpoMethod
-  public void setTestDeviceID(String testDeviceID, final Promise promise) {
-    mTestDeviceID = testDeviceID;
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
-  public void requestAd(final Promise promise) {
+  public void requestAd(final ReadableArguments additionalRequestParams, final Promise promise) {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
@@ -86,13 +80,12 @@ public class AdMobInterstitialAdModule extends ExportedModule implements ModuleR
           promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
         } else {
           mRequestAdPromise = promise;
-          AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
-          if (mTestDeviceID != null) {
-            if (mTestDeviceID.equals("EMULATOR")) {
-              adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-            } else {
-              adRequestBuilder = adRequestBuilder.addTestDevice(mTestDeviceID);
-            }
+          AdRequest.Builder adRequestBuilder =
+              new AdRequest.Builder()
+                  .addNetworkExtrasBundle(AdMobAdapter.class, additionalRequestParams.toBundle());
+          String testDeviceID = AdMobModule.getTestDeviceID();
+          if (testDeviceID != null) {
+            adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
           }
           AdRequest adRequest = adRequestBuilder.build();
           mInterstitialAd.loadAd(adRequest);

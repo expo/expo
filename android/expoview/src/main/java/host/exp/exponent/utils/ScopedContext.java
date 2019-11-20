@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.Display;
 
 import com.facebook.react.bridge.Arguments;
@@ -63,23 +63,9 @@ public class ScopedContext extends ContextWrapper {
     mCacheDir = new File(getBaseContext().getCacheDir() + "/ExperienceData/" + scope);
 
     if (Constants.isStandaloneApp()) {
-      if (firstStartAfterUpdate()) {
-        moveOldFiles();
-      }
       mFilesDir = getBaseContext().getFilesDir();
       mCacheDir = getBaseContext().getCacheDir();
     }
-  }
-
-  boolean firstStartAfterUpdate() {
-    return mFilesDir.exists();
-  }
-
-  // The purpose of this method is to properly move data from old scoped path to unscoped one.
-  // We need this method in case somebody wants to update standalone app.
-  // This method can be removed when sdk 32 is phased out.
-  void moveOldFiles() {
-    mFilesDir.renameTo(getBaseContext().getFilesDir());
   }
 
   @Deprecated

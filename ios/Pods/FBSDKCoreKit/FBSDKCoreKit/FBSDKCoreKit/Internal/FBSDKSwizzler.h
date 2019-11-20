@@ -29,6 +29,7 @@ typedef void (^swizzleBlock)();
 #pragma clang diagnostic pop
 
 // Rename to avoid duplicate symbol errors
+NS_SWIFT_NAME(Swizzler)
 @interface FBSDKSwizzler : NSObject
 
 + (void)swizzleSelector:(SEL)aSelector onClass:(Class)aClass withBlock:(swizzleBlock)block named:(NSString *)aName;

@@ -1,0 +1,250 @@
+{
+  "name": "ABI34_0_0ExpoKit",
+  "version": "33.0.0",
+  "summary": "ExpoKit",
+  "description": "ExpoKit allows native projects to integrate with the Expo SDK.",
+  "homepage": "http://docs.expo.io",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "requires_arc": true,
+  "platforms": {
+    "ios": "10.0"
+  },
+  "default_subspecs": "Core",
+  "source": {
+    "git": "http://github.com/expo/expo.git"
+  },
+  "subspecs": [
+    {
+      "name": "Expo",
+      "source_files": "Expo/Core/**/*.{h,m,mm}",
+      "dependencies": {
+        "ReactABI34_0_0/Core": [
+
+        ],
+        "ABI34_0_0UMCore": [
+
+        ],
+        "ABI34_0_0UMReactNativeAdapter": [
+
+        ],
+        "ABI34_0_0EXAdsAdMob": [
+
+        ],
+        "ABI34_0_0EXAdsFacebook": [
+
+        ],
+        "ABI34_0_0EXAmplitude": [
+
+        ],
+        "ABI34_0_0EXSegment": [
+
+        ],
+        "ABI34_0_0EXAppAuth": [
+
+        ],
+        "ABI34_0_0EXAppLoaderProvider": [
+
+        ],
+        "ABI34_0_0EXAV": [
+
+        ],
+        "ABI34_0_0EXBackgroundFetch": [
+
+        ],
+        "ABI34_0_0EXBarCodeScanner": [
+
+        ],
+        "ABI34_0_0EXBlur": [
+
+        ],
+        "ABI34_0_0EXBrightness": [
+
+        ],
+        "ABI34_0_0EXCalendar": [
+
+        ],
+        "ABI34_0_0EXCamera": [
+
+        ],
+        "ABI34_0_0EXConstants": [
+
+        ],
+        "ABI34_0_0EXContacts": [
+
+        ],
+        "ABI34_0_0EXCrypto": [
+
+        ],
+        "ABI34_0_0EXDocumentPicker": [
+
+        ],
+        "ABI34_0_0EXFaceDetector": [
+
+        ],
+        "ABI34_0_0EXFacebook": [
+
+        ],
+        "ABI34_0_0EXFileSystem": [
+
+        ],
+        "ABI34_0_0EXFont": [
+
+        ],
+        "ABI34_0_0EXGL": [
+
+        ],
+        "EXGL-CPP": [
+
+        ],
+        "ABI34_0_0EXGoogleSignIn": [
+
+        ],
+        "ABI34_0_0EXHaptics": [
+
+        ],
+        "ABI34_0_0EXImageManipulator": [
+
+        ],
+        "ABI34_0_0EXImagePicker": [
+
+        ],
+        "ABI34_0_0EXKeepAwake": [
+
+        ],
+        "ABI34_0_0EXLinearGradient": [
+
+        ],
+        "ABI34_0_0EXLocalAuthentication": [
+
+        ],
+        "ABI34_0_0EXLocalization": [
+
+        ],
+        "ABI34_0_0EXLocation": [
+
+        ],
+        "ABI34_0_0EXMailComposer": [
+
+        ],
+        "ABI34_0_0EXMediaLibrary": [
+
+        ],
+        "ABI34_0_0EXPermissions": [
+
+        ],
+        "ABI34_0_0EXPrint": [
+
+        ],
+        "ABI34_0_0EXRandom": [
+
+        ],
+        "ABI34_0_0EXSecureStore": [
+
+        ],
+        "ABI34_0_0EXSensors": [
+
+        ],
+        "ABI34_0_0EXSharing": [
+
+        ],
+        "ABI34_0_0EXSMS": [
+
+        ],
+        "ABI34_0_0EXSpeech": [
+
+        ],
+        "ABI34_0_0EXSQLite": [
+
+        ],
+        "ABI34_0_0EXTaskManager": [
+
+        ],
+        "ABI34_0_0EXVideoThumbnails": [
+
+        ],
+        "ABI34_0_0EXWebBrowser": [
+
+        ],
+        "ABI34_0_0UMBarCodeScannerInterface": [
+
+        ],
+        "ABI34_0_0UMCameraInterface": [
+
+        ],
+        "ABI34_0_0UMConstantsInterface": [
+
+        ],
+        "ABI34_0_0UMFaceDetectorInterface": [
+
+        ],
+        "ABI34_0_0UMFileSystemInterface": [
+
+        ],
+        "ABI34_0_0UMFontInterface": [
+
+        ],
+        "ABI34_0_0UMImageLoaderInterface": [
+
+        ],
+        "ABI34_0_0UMPermissionsInterface": [
+
+        ],
+        "ABI34_0_0UMSensorsInterface": [
+
+        ],
+        "ABI34_0_0UMTaskManagerInterface": [
+
+        ],
+        "Amplitude-iOS": [
+
+        ],
+        "Analytics": [
+
+        ],
+        "AppAuth": [
+
+        ],
+        "FBAudienceNetwork": [
+
+        ],
+        "FBSDKCoreKit": [
+
+        ],
+        "FBSDKLoginKit": [
+
+        ],
+        "GoogleSignIn": [
+
+        ],
+        "GoogleMaps": [
+
+        ],
+        "Google-Maps-iOS-Utils": [
+
+        ],
+        "lottie-ios": [
+
+        ],
+        "JKBigInteger2": [
+
+        ],
+        "Branch": [
+
+        ],
+        "Google-Mobile-Ads-SDK": [
+
+        ]
+      }
+    },
+    {
+      "name": "ExpoOptional",
+      "dependencies": {
+        "ABI34_0_0ExpoKit/Expo": [
+
+        ]
+      },
+      "source_files": "Expo/Optional/**/*.{h,m,mm}"
+    }
+  ]
+}

@@ -25,3 +25,9 @@ export declare type Voice = {
     quality: VoiceQuality;
     language: string;
 };
+export declare type WebVoice = Voice & {
+    isDefault: boolean;
+    localService: boolean;
+    name: string;
+    voiceURI: string;
+};

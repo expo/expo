@@ -93,7 +93,7 @@ NSString * _Nonnull BNCDebugStringFromObject(id _Nullable instance) {
 
     uint count = 0;
     Ivar *ivars = class_copyIvarList(class, &count);
-    for (uint i = 0; i < count; ++i) {
+    for (uint i = 0; ivars && i < count; ++i) {
         const char* encoding = ivar_getTypeEncoding(ivars[i]);
         const char* ivarName = ivar_getName(ivars[i]);
         const void* ivarPtr = nil;
@@ -174,7 +174,7 @@ NSString * _Nonnull BNCDebugStringFromObject(id _Nullable instance) {
 
     count = 0;
     objc_property_t *properties = class_copyPropertyList(class, &count);
-    for (int i = 0; i < count; ++i)
+    for (int i = 0; properties && i < count; ++i)
         [result appendFormat:@"\tProperty name: '%s'.\n", property_getName(properties[i])];
     if (properties) free(properties);
 

@@ -1,4 +1,5 @@
 import * as Localization from 'expo-localization';
+import { Platform } from 'react-native';
 import i18n from 'i18n-js';
 
 const en = {
@@ -37,14 +38,15 @@ export function test(t) {
         locales,
         timezone,
         isoCurrencyCodes,
-        country,
+        region,
         isRTL,
       } = await Localization.getLocalizationAsync();
 
       validateString(locale);
       validateString(timezone);
-      validateString(country);
-
+      if (Platform.OS === 'ios') {
+        validateString(region);
+      }
       validateStringArray(isoCurrencyCodes);
       validateStringArray(locales);
       t.expect(locales[0]).toBe(Localization.locale);
@@ -53,13 +55,15 @@ export function test(t) {
   });
 
   t.describe(`Localization defines constants`, () => {
-    t.it('Gets the current device country', async () => {
-      const result = Localization.country;
+    if (Platform.OS === 'ios') {
+      t.it('Gets the current device country', async () => {
+        const result = Localization.region;
 
-      t.expect(result).toBeDefined();
-      t.expect(typeof result).toBe('string');
-      t.expect(result.length > 0).toBe(true);
-    });
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('string');
+        t.expect(result.length > 0).toBe(true);
+      });
+    }
     t.it('Gets the current locale', async () => {
       const result = Localization.locale;
 
@@ -84,14 +88,16 @@ export function test(t) {
         t.expect(iso.length > 0).toBe(true);
       }
     });
-    t.it('Gets the current timzezone', async () => {
-      const result = Localization.timezone;
-      t.expect(result).toBeDefined();
-      t.expect(typeof result).toBe('string');
-      t.expect(result.length > 0).toBe(true);
-      // Format: expect something like America/Los_Angeles or America/Chihuahua
-      t.expect(result.split('/').length > 1).toBe(true);
-    });
+    if (Platform.OS !== 'web') {
+      t.it('Gets the current timezone', async () => {
+        const result = Localization.timezone;
+        t.expect(result).toBeDefined();
+        t.expect(typeof result).toBe('string');
+        t.expect(result.length > 0).toBe(true);
+        // Format: expect something like America/Los_Angeles or America/Chihuahua
+        t.expect(result.split('/').length > 1).toBe(true);
+      });
+    }
 
     t.it('Gets the current layout direction (ltr only)', async () => {
       const result = Localization.isRTL;

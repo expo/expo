@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Alert,
-  View,
-  StyleSheet,
-  Text,
-  Switch,
-  TextInput,
-  Picker,
-  Platform,
-} from 'react-native';
+import { Alert, View, StyleSheet, Text, Switch, TextInput, Picker, Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
 import Colors from '../constants/Colors';
@@ -28,6 +19,7 @@ interface State {
   selectedPackage?: string;
   lastWarmedPackage?: string;
   barCollapsing: boolean;
+  showInRecents: boolean;
 }
 
 export default class WebBrowserScreen extends React.Component<{}, State> {
@@ -38,6 +30,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   readonly state: State = {
     showTitle: false,
     barCollapsing: false,
+    showInRecents: false,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
   };
@@ -58,12 +51,12 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
 
   barCollapsingSwitchChanged = (barCollapsing: boolean) => {
     this.setState({ barCollapsing });
-  }
+  };
 
   showPackagesAlert = async () => {
     const result = await WebBrowser.getCustomTabsSupportingBrowsersAsync();
     Alert.alert('Result', JSON.stringify(result, null, 2));
-  }
+  };
 
   handleWarmUpClicked = async () => {
     const { selectedPackage: lastWarmedPackage } = this.state;
@@ -72,7 +65,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     });
     const result = await WebBrowser.warmUpAsync(lastWarmedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
-  }
+  };
 
   handleMayInitWithUrlClicke = async () => {
     const { selectedPackage: lastWarmedPackage } = this.state;
@@ -81,12 +74,12 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     });
     const result = await WebBrowser.mayInitWithUrlAsync(url, lastWarmedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
-  }
+  };
 
   handleCoolDownClicked = async () => {
     const result = await WebBrowser.coolDownAsync(this.state.selectedPackage);
     Alert.alert('Result', JSON.stringify(result, null, 2));
-  }
+  };
 
   handleOpenWebUrlClicked = async () => {
     const args = {
@@ -95,20 +88,24 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
+      showInRecents: this.state.showInRecents,
     };
     const result = await WebBrowser.openBrowserAsync(url, args);
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
-  }
+  };
 
   handleToolbarColorInputChanged = (toolbarColor: string) => this.setState({ toolbarColor });
 
-  handleControlsColorInputChanged = (controlsColorText: string) => this.setState({ controlsColorText });
+  handleControlsColorInputChanged = (controlsColorText: string) =>
+    this.setState({ controlsColorText });
 
   packageSelected = (value: string) => {
     this.setState({ selectedPackage: value });
-  }
+  };
 
   handleShowTitleChanged = (showTitle: boolean) => this.setState({ showTitle });
+
+  handleRecents = (showInRecents: boolean) => this.setState({ showInRecents });
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
@@ -121,7 +118,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
           value={this.state.controlsColorText}
         />
       </View>
-    )
+    );
 
   renderAndroidChoices = () =>
     Platform.OS === 'android' && (
@@ -135,22 +132,27 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
           />
         </View>
         <View style={styles.label}>
+          <Text>Recents</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.handleRecents}
+            value={this.state.showInRecents}
+          />
+        </View>
+        <View style={styles.label}>
           <Text>Force package:</Text>
           <Picker
             style={styles.picker}
             selectedValue={this.state.selectedPackage}
-            onValueChange={this.packageSelected}
-          >
+            onValueChange={this.packageSelected}>
             {this.state.packages &&
-              [{ label: '(none)', value: '' }, ...this.state.packages].map(
-                ({ value, label }) => (
-                  <Picker.Item key={value} label={label} value={value} />
-                )
-              )}
+              [{ label: '(none)', value: '' }, ...this.state.packages].map(({ value, label }) => (
+                <Picker.Item key={value} label={label} value={value} />
+              ))}
           </Picker>
         </View>
       </>
-    )
+    );
 
   renderAndroidButtons = () =>
     Platform.OS === 'android' && (
@@ -168,7 +170,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
           title="Show supporting browsers."
         />
       </>
-    )
+    );
 
   render() {
     return (

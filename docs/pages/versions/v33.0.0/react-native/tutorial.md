@@ -11,24 +11,20 @@ Let's do this thing.
 
 In accordance with the ancient traditions of our people, we must first build an app that does nothing except say "Hello, world!". Here it is:
 
-
 ```javascript
-
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
 export default class HelloWorldApp extends Component {
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Hello, world!</Text>
       </View>
     );
   }
 }
-
 ```
-
 
 If you are feeling curious, you can play around with sample code directly in the web simulators. You can also paste it into your `App.js` file to create a real app on your local machine.
 
@@ -47,4 +43,3 @@ So this code is defining `HelloWorldApp`, a new `Component`. When you're buildin
 ## This app doesn't do very much
 
 Good point. To make components do more interesting things, you need to [learn about Props](../props/).
-

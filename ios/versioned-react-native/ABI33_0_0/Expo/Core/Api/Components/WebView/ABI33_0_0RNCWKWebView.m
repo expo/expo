@@ -14,7 +14,7 @@
 #import "objc/runtime.h"
 
 static NSTimer *keyboardTimer;
-static NSString *const MessageHandlerName = @"ReactABI33_0_0NativeWebView";
+static NSString *const MessageHandlerName = @"ReactNativeWebView";
 static NSURLCredential* clientAuthenticationCredential;
 
 // runtime trick to remove WKWebView keyboard default toolbar
