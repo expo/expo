@@ -1,3 +1,4 @@
+import { CodedError } from '@unimodules/core';
 import {
   getAssetForSource,
   loadSingleFontAsync,
@@ -6,7 +7,6 @@ import {
 } from './FontLoader';
 
 import { FontDisplay, FontSource, FontResource } from './Font.types';
-import { CodedError } from '@unimodules/core';
 
 const loaded: { [name: string]: boolean } = {};
 const loadPromises: { [name: string]: Promise<void> } = {};

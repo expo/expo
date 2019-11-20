@@ -1,7 +1,7 @@
 import FontObserver from 'fontfaceobserver';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { FontDisplay, FontResource } from './Font.types';
 import { CodedError } from '@unimodules/core';
+import { FontDisplay, FontResource } from './Font.types';
 
 export default {
   get name(): string {

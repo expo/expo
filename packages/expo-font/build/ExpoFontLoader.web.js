@@ -1,5 +1,7 @@
 import FontObserver from 'fontfaceobserver';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError } from '@unimodules/core';
+import { FontDisplay } from './Font.types';
 export default {
     get name() {
         return 'ExpoFontLoader';
@@ -10,7 +12,7 @@ export default {
         }
         const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
         if (!canInjectStyle) {
-            throw new Error('E_FONT_CREATION_FAILED : document element cannot support injecting fonts');
+            throw new CodedError('ERR_WEB_ENVIRONMENT', `The browser's \`document.head\` element doesn't support injecting fonts.`);
         }
         const style = _createWebStyle(fontFamilyName, resource);
         document.head.appendChild(style);
@@ -36,6 +38,7 @@ function _createWebStyle(fontFamily, resource) {
     const fontStyle = `@font-face {
     font-family: ${fontFamily};
     src: url(${resource.uri});
+    font-display: ${resource.display || FontDisplay.AUTO};
   }`;
     const styleElement = getStyleElement();
     // @ts-ignore: TypeScript does not define HTMLStyleElement::styleSheet. This is just for IE and

@@ -2,9 +2,9 @@ import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+import { CodedError } from '@unimodules/core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontResource, FontSource } from './Font.types';
-import { CodedError } from '@unimodules/core';
 
 const isInClient = Constants.appOwnership === 'expo';
 const isInIOSStandalone = Constants.appOwnership === 'standalone' && Platform.OS === 'ios';
