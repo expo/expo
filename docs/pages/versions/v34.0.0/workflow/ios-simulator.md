@@ -49,7 +49,7 @@ You can also use this menu to open any version of the simulator that you like. Y
 
 ### The simulator opened but the Expo client app isn't opening inside of it
 
-The first time you install the app in the simulator, iOS will prompt you to ask if you'd like to open the Expo client app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
+The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo client app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
 
 ### How do I force an update to the latest version?
 
