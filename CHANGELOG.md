@@ -33,6 +33,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added @react-native-community/viewpager ([#6198](https://github.com/expo/expo/pull/6198)).
 - Added `canAskAgain` and `granted` fields to `PermissionsResponse`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 - Added support for `react-native-appearance` on Android and Web. ([#6162](https://github.com/expo/expo/pull/6162) by [@bbarthec](https://github.com/bbarthec))
+- Added `exif` and `base64` properties into the TypeScript definitions for `ImagePickerResult` in `expo-image-picker`. ([#6311](https://github.com/expo/expo/pull/6311) by [@kyletsang](https://github.com/kyletsang))
 
 ### 🐛 Bug fixes
 
