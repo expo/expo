@@ -80,17 +80,6 @@
 			);
 			name = ABI36_0_0React;
 		};
-		8B5E49179FA3D0B0764087D1128B5135 /* ABI36_0_0EXPermissions */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = A138B56AC63C03B2FB2673D6A7704204 /* Build configuration list for PBXAggregateTarget "ABI36_0_0EXPermissions" */;
-			buildPhases = (
-			);
-			dependencies = (
-				6D3352DAA75CB46A51DBA1944B572B39 /* PBXTargetDependency */,
-				65F27B340C2ABC53CA3082B26862DF00 /* PBXTargetDependency */,
-			);
-			name = ABI36_0_0EXPermissions;
-		};
 		8C2588DEAA759C7923B51966407E5436 /* ABI36_0_0UMTaskManagerInterface */ = {
 			isa = PBXAggregateTarget;
 			buildConfigurationList = 54AA21FEC797BD96D3032FA6E90B39E5 /* Build configuration list for PBXAggregateTarget "ABI36_0_0UMTaskManagerInterface" */;
@@ -271,6 +260,7 @@
 		17032BED362D5D7240C705ED6CBF1BA7 /* ABI36_0_0RCTVibration.h in Headers */ = {isa = PBXBuildFile; fileRef = EC35CEA9A29EC3E54D27A5BD8C06027C /* ABI36_0_0RCTVibration.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1742E37871DF4FB7C800A6AFCEFAD097 /* ABI36_0_0RCTCxxBridgeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F97857E435B7023111EA4D5E642C1716 /* ABI36_0_0RCTCxxBridgeDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		17657BFC3B35C8BADD307D87B277A0A3 /* ABI36_0_0EXCalendar.h in Headers */ = {isa = PBXBuildFile; fileRef = 2730696E07B15CDD0FD26BB6F624BC26 /* ABI36_0_0EXCalendar.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		177826B4CC8EFF5032B1CEBAEE46821F /* ABI36_0_0EXUserNotificationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B5F3C7F7B8440F80B4FEED516BC2C633 /* ABI36_0_0EXUserNotificationPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		177A52F0D86D4E31D1242668E237A054 /* ABI36_0_0READebugNode.m in Sources */ = {isa = PBXBuildFile; fileRef = F3376598DD47338BFA572B49E5CD6904 /* ABI36_0_0READebugNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		1792E229D5639E3B27E6D2F66E2E578E /* ABI36_0_0REAFunctionNode.h in Headers */ = {isa = PBXBuildFile; fileRef = B2CE25E81718A1736089D08F91C62327 /* ABI36_0_0REAFunctionNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		17CDAC826076643850E63A87760D1FB2 /* ABI36_0_0RCTUIManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 777D68B82522DAC8E563CEFB1A2B9647 /* ABI36_0_0RCTUIManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -419,6 +409,7 @@
 		33076E9FB6211D7CB26D9D2AD414515D /* ABI36_0_0Bitfield.h in Headers */ = {isa = PBXBuildFile; fileRef = C95127A347E24253396A6D7EEAC68378 /* ABI36_0_0Bitfield.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		338303707091A37185F8EF5BFDC2E2CA /* ABI36_0_0FBReactNativeSpec.h in Headers */ = {isa = PBXBuildFile; fileRef = CC583BF9D92D2E91C0A9740383794983 /* ABI36_0_0FBReactNativeSpec.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		34A23BBA94D04DA751AF5A56FAD8C3E3 /* ABI36_0_0AIRMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C05954A47256880037969472D59CEA /* ABI36_0_0AIRMapOverlayManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		34ADAE08E27A356E3B791E2622D0AF18 /* ABI36_0_0EXPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 466D441E6DB65811754A4E6AC070EE4E /* ABI36_0_0EXPermissions.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		353C152D064F7A77FB3B8669AEA5FB2F /* ABI36_0_0RCTImageLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 082F195EB31C55E4E087F25452C2780D /* ABI36_0_0RCTImageLoader.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-nullability-completeness -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		3554800ACE2BC8313FC4589DCBB9EAA2 /* ABI36_0_0SMCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3892A93D5E961ABA565530693AB9B566 /* ABI36_0_0SMCalloutView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		355C6EFE2C855D604103C7D9441CF51D /* ABI36_0_0EXAppleAuthentication.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FCDAD3781C88BA879E2C0D91F6B4E92 /* ABI36_0_0EXAppleAuthentication.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -490,6 +481,7 @@
 		3FB2BB9F48AFFF5696AF5661F9CD9831 /* ABI36_0_0RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A560030B1C858434C9C3053E8FA242D /* ABI36_0_0RNSScreen.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		401C1E19954F0A2171FB9682ED82804B /* ABI36_0_0RCTConvert+RNSVG.m in Sources */ = {isa = PBXBuildFile; fileRef = 2259C30E71B610C1647EDCCD76CB8504 /* ABI36_0_0RCTConvert+RNSVG.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		403785BB7A2F3F88261B8E6DF6A49DA2 /* ABI36_0_0JSBigString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DCA479FAA307C4A296FC7810DA1164AC /* ABI36_0_0JSBigString.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		40723832E13912775589135591732BC3 /* ABI36_0_0EXRemoteNotificationPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E554754A3DC37FC6F47B60F4A7BF4C2 /* ABI36_0_0EXRemoteNotificationPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		40E23002C418E4D5893C8990EE333D22 /* ABI36_0_0EXFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A015E80BC2855B611B26E42BF90DDB11 /* ABI36_0_0EXFilePermissionModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		4106E181105ABCC3476B1DA7E5A9EDA1 /* ABI36_0_0EXConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 98BFDF593B03899259CCB0C122A21F1E /* ABI36_0_0EXConstants.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		419F15861C6DBE2C021D7D42AEB00173 /* ABI36_0_0RNSVGMarkerPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 38E2D5523ACAD8DB7AE2F904BA209FB9 /* ABI36_0_0RNSVGMarkerPosition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -733,6 +725,7 @@
 		6784B111A3DBACAF45C2FEAA15EEE523 /* ABI36_0_0RNSVGPatternManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F63E39053EF44185CE7320A1134FB46 /* ABI36_0_0RNSVGPatternManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6803F0E344C2A491B1882763FF623FFD /* ABI36_0_0RNSVGTSpanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB31509DD4525ADAE40FD068D5B3FBF /* ABI36_0_0RNSVGTSpanManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6812EF8E485416869BB6648B3C2DA347 /* ABI36_0_0EXUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F93BD07E00A7E51EC42F732E6C6F8404 /* ABI36_0_0EXUtil.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		682A1170D4FCB1B0AC3B952D9B518B67 /* ABI36_0_0EXRemoteNotificationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A79D93E85025CEC92AD8EC533E4BEDE /* ABI36_0_0EXRemoteNotificationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		68587CC83D8A2F937B68A8AEFF1CB46D /* ABI36_0_0RNForceTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 3104153C629E08FF2411F030E39A05BF /* ABI36_0_0RNForceTouchHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		688A4C16CF044D821BEF390F5EB7966C /* ABI36_0_0RCTRawTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ED64ABED8E61457283C2DA1CD68FA51 /* ABI36_0_0RCTRawTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		68A56E5406B5CEAC0CB2B7333203895B /* ABI36_0_0RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5BEC9D1062A4A5DFB45AA6514F067CE /* ABI36_0_0RCTNetworking.mm */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -746,6 +739,7 @@
 		69DFDF727E091E384A641ADE3FE51C12 /* ABI36_0_0EXBaseSensorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CF08347084E9F48E6E1A0655CDE95139 /* ABI36_0_0EXBaseSensorModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		69E2053D81B1DF9B3F3555B0D4C671B0 /* ABI36_0_0EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8506EB21D0633E2FD8FFFAD472AD9B9E /* ABI36_0_0EXImageUtils.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6A0416F3C9A87A40F6C335D3A2C5AC1B /* ABI36_0_0RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FB1C48FBC9493D980BABF9DE55C6A3A /* ABI36_0_0RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		6A044C2BEE8BB940BB5C5EB6873EAEF0 /* ABI36_0_0EXUserNotificationPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E6E27A963CB14876177E41D5D268BAD /* ABI36_0_0EXUserNotificationPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		6A206869AC206A6562509AAE2D2D495C /* ABI36_0_0REAValueNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 415B2E1128B5C99BBBE3E3205A31AB7F /* ABI36_0_0REAValueNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6A3B5997EA68A4A80522AE0ABA5E1D40 /* ABI36_0_0RNSVGSymbolManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0F440871CF7ECD07CD079AF6D877CB /* ABI36_0_0RNSVGSymbolManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6A4CF079645A870D0A6151C90E78BBA4 /* ABI36_0_0RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 724C2977A2968D26464737DAF39BF4FD /* ABI36_0_0RNCAppearanceProvider.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -858,6 +852,7 @@
 		7E828988CD90887C5A7921F4EDF8CEE2 /* ABI36_0_0EXCalendarPermissionRequester.m in Sources */ = {isa = PBXBuildFile; fileRef = B74A28A74015203A558FA75FCDA43F53 /* ABI36_0_0EXCalendarPermissionRequester.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7E9CB61ACB513CD00AE4F604F6D757F8 /* ABI36_0_0RCTInputAccessoryShadowView.h in Headers */ = {isa = PBXBuildFile; fileRef = 59BDFF5A2FE6E959B786F3974A81B0D0 /* ABI36_0_0RCTInputAccessoryShadowView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7ECBEA285780EF840B08E1C479C4BBA1 /* ABI36_0_0RNSVGPattern.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BE08DDC43893C10142FD90AB530FA59 /* ABI36_0_0RNSVGPattern.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7EFF7664D268C3DA8BA44B05677E00A9 /* ABI36_0_0EXPermissions-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EC314D77FCB3C4A49A59FAEC9C761CCD /* ABI36_0_0EXPermissions-dummy.m */; };
 		7F28D45F64EF018E763C86127325689F /* ABI36_0_0RCTSurfacePresenterStub.m in Sources */ = {isa = PBXBuildFile; fileRef = EA3528375F69E221501938E46F5C91DE /* ABI36_0_0RCTSurfacePresenterStub.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7F2B0FC2027D7F4CB54DA39C360A5569 /* ABI36_0_0AIRMapMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E34428A3A7D07C877172BA29953C867B /* ABI36_0_0AIRMapMarkerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		7F31CC6D6623921C372AD13F37B3210B /* ABI36_0_0RCTModuloAnimatedNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 5CE813D0E187E552EE079DB6BA3E35A0 /* ABI36_0_0RCTModuloAnimatedNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -910,6 +905,7 @@
 		867EFDB5FFBF8702724D1358F1A495C0 /* ABI36_0_0RNSVGBrush.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A61F41F5DD543E92AC053F2B1D3A9DF /* ABI36_0_0RNSVGBrush.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		869558584A9645A828A79E32D100EB20 /* ABI36_0_0RNSVGVBMOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 1111CE53E77FFC7870CE93C9253671A5 /* ABI36_0_0RNSVGVBMOS.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		86C6676D3408434557AE8F520E580DAF /* ABI36_0_0EXAmplitude.h in Headers */ = {isa = PBXBuildFile; fileRef = 8B1C52D6207A84C0A936AFE937B72C6F /* ABI36_0_0EXAmplitude.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		871802613EADD5A4C0CA548927EA4DAA /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2B99D89BC0FF5B6BFADD25728637B /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8727D70C08B74CD5F78F756E6893F835 /* ABI36_0_0RCTTextAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CCC1183A235A26227032192C7BD1F70 /* ABI36_0_0RCTTextAttributes.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8797A97F8EE786A0AC3A5203CA51A146 /* ABI36_0_0RCTInvalidating.h in Headers */ = {isa = PBXBuildFile; fileRef = 46F5B0AF05BF87FEE2E2F56B31B08C44 /* ABI36_0_0RCTInvalidating.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		87A1DCEFB228545EDDAB460057E62287 /* ABI36_0_0EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = 335E5666D2C93C580722C7E2AC426201 /* ABI36_0_0EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -937,6 +933,7 @@
 		8C9F4A3393075D9AE473C7D417AAA071 /* ABI36_0_0REASetNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A6C66E2CABC45C3440C2F160390DBD25 /* ABI36_0_0REASetNode.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8CC922BEE7A54E907813F3CD76100ED2 /* ABI36_0_0JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CBCCB437B0B36E71B90ADD6C5A183483 /* ABI36_0_0JSIExecutor.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8CD50316C1F488D3102E9A48FE3FBD32 /* ABI36_0_0EXBarCodeScannerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D464923AE700064A05A387569209C7B /* ABI36_0_0EXBarCodeScannerModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		8CDE93AB8E330D8BEF91ADBEE2D3C1BC /* ABI36_0_0EXPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = C7EE5F67283813FF14150EAB47AB74C1 /* ABI36_0_0EXPermissions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8CF8F8A69DFC3DBE4A4DF5A14F389FA4 /* ABI36_0_0RCTDatePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52616E6A1A052B4341E0BD9A17B7A5F1 /* ABI36_0_0RCTDatePickerManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8CFA2B357D60C9DCD52A533887593BDB /* ABI36_0_0REAClockNodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 958D095EBBDB0CFB490E4DDF6CB90FC5 /* ABI36_0_0REAClockNodes.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8D6E7ABEAD18750BB1BDFC9923A98C6C /* ABI36_0_0NativeToJsBridge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2F5D9EC89F65228417E6442AF79AEAA7 /* ABI36_0_0NativeToJsBridge.cpp */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -956,6 +953,7 @@
 		8F9E2232DB3A9D7F38EAF31215356F15 /* ABI36_0_0EXFaceDetectorManagerProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 03BB2CC95A0D85168ECAA7D88540B56F /* ABI36_0_0EXFaceDetectorManagerProvider.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8FB0AD8CA255A8B3220821FB14669066 /* ABI36_0_0RCTUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = E317D8CF8FE50344D215607C0F39525C /* ABI36_0_0RCTUtils.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		8FD3BAEF1670A859EF1EE3E6B82C520B /* ABI36_0_0EXAppState.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B8DC6E07F6D1C6E005BACEB092815B0 /* ABI36_0_0EXAppState.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8FECC6EED5492B503E6B85CA040E27E1 /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = C6F0D74314BF6FF7A21A16E631B6712F /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		90826EB3F798889B58D5B0751FEC4D0E /* ABI36_0_0RCTConvert+GMSMapViewType.m in Sources */ = {isa = PBXBuildFile; fileRef = F89096F4BBF6CE049BC2D9DF5FF34D2D /* ABI36_0_0RCTConvert+GMSMapViewType.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		9083ADD380DE850AF6B02676046B5861 /* ABI36_0_0RNSVGMarkerPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 2C173879AF4CF619307A25E02D2BF470 /* ABI36_0_0RNSVGMarkerPosition.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		90AC6067E571AB196AA6175B38242859 /* ABI36_0_0RCTConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C6F61EC1B47BAB7ED85F4825FB313801 /* ABI36_0_0RCTConvert.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -2197,13 +2195,6 @@
 			remoteGlobalIDString = 24A57220F4A564139DF95123EA5422DE;
 			remoteInfo = ABI36_0_0EXSensors;
 		};
-		4C57EFF494FDBA45C30A474AC5C93ABE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D1F3ACFD820C6E21B9B1B97F41E99D32;
-			remoteInfo = ABI36_0_0UMPermissionsInterface;
-		};
 		4CBC5159557C4EDCCF46F797AB72C7F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
@@ -2212,13 +2203,6 @@
 			remoteInfo = ABI36_0_0UMCore;
 		};
 		4DD8F698A83272D3EE6BA0A4279F4EC5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5850CB66507BD2913699B9813465F9E4;
-			remoteInfo = ABI36_0_0UMCore;
-		};
-		4DE11007F6D1EA3D822BC9F4D62ACDA4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
 			proxyType = 1;
@@ -2771,6 +2755,13 @@
 			remoteGlobalIDString = 660DB54ABFA1FD5916FE6E4C5189A26E;
 			remoteInfo = "ABI36_0_0React-Core";
 		};
+		9B0A11074B69EE9AC0BF31573AC9B1FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D1F3ACFD820C6E21B9B1B97F41E99D32;
+			remoteInfo = ABI36_0_0UMPermissionsInterface;
+		};
 		9B423B4CDFE69AF66832A79012E68A77 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
@@ -2889,6 +2880,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 2AB413072384270255213059195CFF8D;
 			remoteInfo = "ABI36_0_0React-jsi";
+		};
+		AF6E6A3678FB672E8985811A59A1DCA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5850CB66507BD2913699B9813465F9E4;
+			remoteInfo = ABI36_0_0UMCore;
 		};
 		AF6F0608DC0C61294DD725984DDF2254 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3792,6 +3790,7 @@
 		2C173879AF4CF619307A25E02D2BF470 /* ABI36_0_0RNSVGMarkerPosition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNSVGMarkerPosition.h; sourceTree = "<group>"; };
 		2C6E00D2CED58AA9B562DBD702461292 /* ABI36_0_0RCTComponentData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTComponentData.m; sourceTree = "<group>"; };
 		2CAAB545A0DFC2FFC1957F2128EB28B7 /* ABI36_0_0EXDevSettingsDataSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXDevSettingsDataSource.m; sourceTree = "<group>"; };
+		2CB2B99D89BC0FF5B6BFADD25728637B /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXReactNativeUserNotificationCenterProxy.m; path = ABI36_0_0EXPermissions/ABI36_0_0EXReactNativeUserNotificationCenterProxy.m; sourceTree = "<group>"; };
 		2CD82935F2F08BA81C6983334636774F /* libABI36_0_0EXImagePicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXImagePicker.a; path = libABI36_0_0EXImagePicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CF07838B2925520077F316BDB0EC6BF /* ABI36_0_0RNSVGCircleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNSVGCircleManager.h; sourceTree = "<group>"; };
 		2D2239E80BB8995E73F03052B5878341 /* ABI36_0_0React-RCTText-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0React-RCTText-prefix.pch"; sourceTree = "<group>"; };
@@ -3899,6 +3898,7 @@
 		3A67CD8B1FD591D6D3CB58C14BA918B3 /* ABI36_0_0EXFontLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXFontLoader.h; path = ABI36_0_0EXFont/ABI36_0_0EXFontLoader.h; sourceTree = "<group>"; };
 		3A78B41A52926C28401E2D4FCF927195 /* ABI36_0_0RNSVGTextManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGTextManager.m; sourceTree = "<group>"; };
 		3AA2BD50B00390E5E94A46ED1795F817 /* ABI36_0_0UMTaskLaunchReason.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0UMTaskLaunchReason.h; path = ABI36_0_0UMTaskManagerInterface/ABI36_0_0UMTaskLaunchReason.h; sourceTree = "<group>"; };
+		3AA4A00C9D07909855F3391D7C0B3A61 /* ABI36_0_0EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		3AB86269020133F7A23CEA2BDD9F66D0 /* ABI36_0_0EXApplication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXApplication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		3AB883C847CBAC827963ED4C67FCEF07 /* ABI36_0_0YGValue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0YGValue.h; path = yoga/ABI36_0_0YGValue.h; sourceTree = "<group>"; };
 		3AC4E1CBD5B78312E96255A97AF8485F /* ABI36_0_0RCTWebSocketExecutor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTWebSocketExecutor.h; path = Libraries/WebSocket/ABI36_0_0RCTWebSocketExecutor.h; sourceTree = "<group>"; };
@@ -3947,6 +3947,7 @@
 		43B1487EB8FC294948C167D560A869C0 /* ABI36_0_0RCTPicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTPicker.m; sourceTree = "<group>"; };
 		43BF36D8A63DD8D835422ECB3AEB73E9 /* ABI36_0_0React-RCTLinking.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI36_0_0React-RCTLinking.xcconfig"; sourceTree = "<group>"; };
 		4419088FACD863921B5AEE11AAF36C00 /* ABI36_0_0RCTBridgeMethod.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTBridgeMethod.h; sourceTree = "<group>"; };
+		44373012C7FB32397DFA83BC05C9DAC5 /* ABI36_0_0EXPermissions-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0EXPermissions-prefix.pch"; sourceTree = "<group>"; };
 		4471E94A08E6C6B64C86EF91E905A1B3 /* ABI36_0_0RCTWebSocketModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTWebSocketModule.h; path = Libraries/WebSocket/ABI36_0_0RCTWebSocketModule.h; sourceTree = "<group>"; };
 		44A06170F390F911C2C795E9346135C9 /* ABI36_0_0REAModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0REAModule.m; sourceTree = "<group>"; };
 		44C4279E98946C3E47529BA9595E91AB /* ABI36_0_0EXFontScalersManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXFontScalersManager.m; sourceTree = "<group>"; };
@@ -3957,6 +3958,7 @@
 		4602256C7617776CDD1A45FB19F5A48A /* ABI36_0_0EXVideoPlayerViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0EXVideoPlayerViewController.h; sourceTree = "<group>"; };
 		4615B3A889B3750187303CC2BD50E5C3 /* ABI36_0_0EXMediaLibrary.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0EXMediaLibrary.xcconfig; sourceTree = "<group>"; };
 		4629BE08366B6B305D31629AA8D78B46 /* ABI36_0_0EXLocalAuthentication.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXLocalAuthentication.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		466D441E6DB65811754A4E6AC070EE4E /* ABI36_0_0EXPermissions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXPermissions.m; path = ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.m; sourceTree = "<group>"; };
 		46799869B0079B9F3CBA124B8CC5439C /* ABI36_0_0EXDisabledDevLoadingView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0EXDisabledDevLoadingView.h; sourceTree = "<group>"; };
 		46D3F5B4A9384B1DE364E40BDC33A3F3 /* ABI36_0_0RCTComponentEvent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTComponentEvent.m; sourceTree = "<group>"; };
 		46F5B0AF05BF87FEE2E2F56B31B08C44 /* ABI36_0_0RCTInvalidating.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTInvalidating.h; sourceTree = "<group>"; };
@@ -4048,7 +4050,6 @@
 		521F0B54A602CCF572E446B52F05C9B1 /* ABI36_0_0RCTManagedPointer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTManagedPointer.h; sourceTree = "<group>"; };
 		5246E5A7C039F1AE72170A3A51441575 /* ABI36_0_0RNSVGSymbol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNSVGSymbol.h; sourceTree = "<group>"; };
 		52616E6A1A052B4341E0BD9A17B7A5F1 /* ABI36_0_0RCTDatePickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTDatePickerManager.m; sourceTree = "<group>"; };
-		52AFD72AF9FDF7FCB84E1978A7F602BD /* ABI36_0_0EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0EXPermissions.xcconfig; sourceTree = "<group>"; };
 		52F58CD4DD429217C91502AD708A4853 /* ABI36_0_0RNSVGCircle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNSVGCircle.h; sourceTree = "<group>"; };
 		531EC874EF80A4FB8D65E9DCA8365765 /* ABI36_0_0RCTTextView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTTextView.h; sourceTree = "<group>"; };
 		536B934E2BC376E3C0AA36525B34316B /* ABI36_0_0AIRWeakMapReference.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRWeakMapReference.h; sourceTree = "<group>"; };
@@ -4134,7 +4135,9 @@
 		5DC0E9E29601ECDFEB9B7E167873F865 /* ABI36_0_0EXLocation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXLocation.h; path = ABI36_0_0EXLocation/ABI36_0_0EXLocation.h; sourceTree = "<group>"; };
 		5E3B18B1A5352AB5790F924A35AAD491 /* ABI36_0_0EXBarCodeCameraRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXBarCodeCameraRequester.m; path = ABI36_0_0EXBarCodeScanner/ABI36_0_0EXBarCodeCameraRequester.m; sourceTree = "<group>"; };
 		5E5357843507BF0078E9CA0C8E27A90D /* ABI36_0_0EXAdsDFPBannerView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXAdsDFPBannerView.h; path = ABI36_0_0EXAdsAdMob/ABI36_0_0EXAdsDFPBannerView.h; sourceTree = "<group>"; };
+		5E554754A3DC37FC6F47B60F4A7BF4C2 /* ABI36_0_0EXRemoteNotificationPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXRemoteNotificationPermissionRequester.m; sourceTree = "<group>"; };
 		5E609F00E1C5272850839F5B88B16263 /* ABI36_0_0AIRGoogleMapPolyline.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRGoogleMapPolyline.h; sourceTree = "<group>"; };
+		5E6E27A963CB14876177E41D5D268BAD /* ABI36_0_0EXUserNotificationPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0EXUserNotificationPermissionRequester.h; sourceTree = "<group>"; };
 		5E75A306BADC809AF52F6FC83FA20B29 /* ABI36_0_0RNSVGPathParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGPathParser.m; sourceTree = "<group>"; };
 		5E98F334B894F7B84CF27E3AD10AE5F0 /* ABI36_0_0UMMagnetometerUncalibratedInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0UMMagnetometerUncalibratedInterface.h; path = ABI36_0_0UMSensorsInterface/ABI36_0_0UMMagnetometerUncalibratedInterface.h; sourceTree = "<group>"; };
 		5EB79FC71CB5EE2A12135503DCCD37BE /* ABI36_0_0RCTNetworkTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTNetworkTask.h; path = Libraries/Network/ABI36_0_0RCTNetworkTask.h; sourceTree = "<group>"; };
@@ -4144,6 +4147,7 @@
 		5F2BD73F6F5568FE24A938924B309C67 /* ABI36_0_0AIRMapUrlTileManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRMapUrlTileManager.h; sourceTree = "<group>"; };
 		5F615096719C09A7E80045ADECB201F6 /* ABI36_0_0EXVideoThumbnails.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXVideoThumbnails.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5F63E39053EF44185CE7320A1134FB46 /* ABI36_0_0RNSVGPatternManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGPatternManager.m; sourceTree = "<group>"; };
+		5F85A22175ECB1B58205CB38B98F1ECF /* ABI36_0_0EXPermissions.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0EXPermissions.xcconfig; sourceTree = "<group>"; };
 		5FA83C99FE5C764EE8C9148507D9ECA2 /* ABI36_0_0RNSVGLength.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGLength.m; sourceTree = "<group>"; };
 		5FB1C48FBC9493D980BABF9DE55C6A3A /* ABI36_0_0RNSharedElementStyle.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSharedElementStyle.m; sourceTree = "<group>"; };
 		5FD79A75C9A78949392D21EA34BE559C /* ABI36_0_0RCTCxxMethod.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI36_0_0RCTCxxMethod.mm; sourceTree = "<group>"; };
@@ -4348,6 +4352,7 @@
 		7A5A3F3CEEBCFFC9D7746549F3E65B91 /* ABI36_0_0RNSVGViewBox.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGViewBox.m; sourceTree = "<group>"; };
 		7A6BCA47D07D7D2DE3048FB23066F0F9 /* ABI36_0_0UMPermissionsInterface.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0UMPermissionsInterface.h; path = ABI36_0_0UMPermissionsInterface/ABI36_0_0UMPermissionsInterface.h; sourceTree = "<group>"; };
 		7A7263E66638CE20447744125DFE1E35 /* ABI36_0_0React-CoreModules-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0React-CoreModules-prefix.pch"; sourceTree = "<group>"; };
+		7A79D93E85025CEC92AD8EC533E4BEDE /* ABI36_0_0EXRemoteNotificationPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0EXRemoteNotificationPermissionRequester.h; sourceTree = "<group>"; };
 		7A8D9CC4EFA5147DBB143D4BB577BF1F /* ABI36_0_0RCTTextViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTTextViewManager.h; sourceTree = "<group>"; };
 		7AC329AC3EBA03A4FB326F3B2DD87C35 /* ABI36_0_0RCTPicker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTPicker.h; sourceTree = "<group>"; };
 		7B1D27603FDCFDEC1D7A31AD5C6EB2B0 /* ABI36_0_0AIRMapCoordinate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRMapCoordinate.m; sourceTree = "<group>"; };
@@ -4597,6 +4602,7 @@
 		9D413609441CEF96CB05EFB30E65E98B /* ABI36_0_0RCTImageViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTImageViewManager.h; path = Libraries/Image/ABI36_0_0RCTImageViewManager.h; sourceTree = "<group>"; };
 		9D61AE2783F807C094565B464DB16FC4 /* libABI36_0_0EXLocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXLocation.a; path = libABI36_0_0EXLocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D74DDCFAF32F9666B075421F5883B41 /* ABI36_0_0EXBarCodeScanner-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0EXBarCodeScanner-dummy.m"; sourceTree = "<group>"; };
+		9D8A874E90CE9394CEDDD302AA6403D6 /* libABI36_0_0EXPermissions.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXPermissions.a; path = libABI36_0_0EXPermissions.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DA2BEE8149AB19D8416FD62032C9569 /* ABI36_0_0Utils.cpp */ = {isa = PBXFileReference; includeInIndex = 1; name = ABI36_0_0Utils.cpp; path = yoga/ABI36_0_0Utils.cpp; sourceTree = "<group>"; };
 		9DE7FCB244E27E8C704E81A29B474B81 /* ABI36_0_0RNFlingHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNFlingHandler.h; sourceTree = "<group>"; };
 		9E1866001D10EF65C39F291D4C2C58E9 /* ABI36_0_0RCTBridge.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTBridge.h; sourceTree = "<group>"; };
@@ -4784,6 +4790,7 @@
 		B596A01F092F8C3A79B0A01FEE41167A /* ABI36_0_0EXStoreReview-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0EXStoreReview-prefix.pch"; sourceTree = "<group>"; };
 		B5E99FF2EA0EC69613132DD60EA3BB3F /* ABI36_0_0EXUnversioned.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXUnversioned.h; path = Core/ABI36_0_0EXUnversioned.h; sourceTree = "<group>"; };
 		B5F1B4B495B343E35804892E28A2E102 /* ABI36_0_0RCTTouchHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTTouchHandler.h; sourceTree = "<group>"; };
+		B5F3C7F7B8440F80B4FEED516BC2C633 /* ABI36_0_0EXUserNotificationPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXUserNotificationPermissionRequester.m; sourceTree = "<group>"; };
 		B607EBB09D2D77B24D69A38FB05F87EC /* ABI36_0_0EXLinkingManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXLinkingManager.m; sourceTree = "<group>"; };
 		B659189E166C266C14198B8B9F8A8307 /* ABI36_0_0EXAppAuth.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXAppAuth.m; path = ABI36_0_0EXAppAuth/ABI36_0_0EXAppAuth.m; sourceTree = "<group>"; };
 		B66EB6B7F60E5A1FA07AC9CCE570A85B /* ABI36_0_0SMCalloutView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0SMCalloutView.h; sourceTree = "<group>"; };
@@ -4877,7 +4884,6 @@
 		C209547D5E6F7A2A51C8DFB7A52AC3C2 /* ABI36_0_0RCTAssert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTAssert.h; sourceTree = "<group>"; };
 		C22F1D3A4878A7FCE090A1B91CEE9BB6 /* ABI36_0_0RCTBundleURLProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTBundleURLProvider.h; sourceTree = "<group>"; };
 		C23D64763B715E3135745E649F516F97 /* ABI36_0_0EXFontLoaderProcessor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXFontLoaderProcessor.m; path = ABI36_0_0EXFont/ABI36_0_0EXFontLoaderProcessor.m; sourceTree = "<group>"; };
-		C2692037D17F2C94CB2A579D5E9F960E /* ABI36_0_0EXPermissions.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXPermissions.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		C26959BBDEDEDFA3117F187DB6A8E084 /* ABI36_0_0EXSensors-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0EXSensors-prefix.pch"; sourceTree = "<group>"; };
 		C2C674E033AC7E97172C3190D072D9DA /* ABI36_0_0EXAudioSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXAudioSessionManager.h; path = ABI36_0_0EXAV/ABI36_0_0EXAudioSessionManager.h; sourceTree = "<group>"; };
 		C2D789E04C5C6C39D7F00FCF00AC3285 /* ABI36_0_0UMViewManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0UMViewManager.h; path = ABI36_0_0UMCore/ABI36_0_0UMViewManager.h; sourceTree = "<group>"; };
@@ -4909,6 +4915,7 @@
 		C6270466DE7214F26C5C943A96CDD6F5 /* libABI36_0_0EXBluetooth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXBluetooth.a; path = libABI36_0_0EXBluetooth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C67825BAB41FFAD069A33A5026B0B7B7 /* ABI36_0_0JSExecutor.cpp */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI36_0_0JSExecutor.cpp; sourceTree = "<group>"; };
 		C6A66F045D3A3EE70CAF675D01BFB174 /* ABI36_0_0EXSMSModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXSMSModule.h; path = ABI36_0_0EXSMS/ABI36_0_0EXSMSModule.h; sourceTree = "<group>"; };
+		C6F0D74314BF6FF7A21A16E631B6712F /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXReactNativeUserNotificationCenterProxy.h; path = ABI36_0_0EXPermissions/ABI36_0_0EXReactNativeUserNotificationCenterProxy.h; sourceTree = "<group>"; };
 		C6F61EC1B47BAB7ED85F4825FB313801 /* ABI36_0_0RCTConvert.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTConvert.h; sourceTree = "<group>"; };
 		C6F896C19F37C06476C9CC6120297680 /* libABI36_0_0EXVideoThumbnails.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXVideoThumbnails.a; path = libABI36_0_0EXVideoThumbnails.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C6FA1246075C3ED888A07703E9659926 /* ABI36_0_0EXContacts.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXContacts.m; path = ABI36_0_0EXContacts/ABI36_0_0EXContacts.m; sourceTree = "<group>"; };
@@ -4919,6 +4926,7 @@
 		C78339545FA1132693E7732A016E41DE /* ABI36_0_0AIRGoogleMapCalloutSubview.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRGoogleMapCalloutSubview.m; sourceTree = "<group>"; };
 		C7C0E9B5E476F23A03A8A092CEB94086 /* ABI36_0_0React-Core-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0React-Core-prefix.pch"; sourceTree = "<group>"; };
 		C7C5B1D321450CAD3090CFF441A6DE46 /* ABI36_0_0RCTConvert+CoreLocation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0RCTConvert+CoreLocation.m"; sourceTree = "<group>"; };
+		C7EE5F67283813FF14150EAB47AB74C1 /* ABI36_0_0EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXPermissions.h; path = ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.h; sourceTree = "<group>"; };
 		C800EA0D47ABBDA201CCF44C622C9E1B /* ABI36_0_0TurboCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0TurboCxxModule.h; path = turbomodule/core/ABI36_0_0TurboCxxModule.h; sourceTree = "<group>"; };
 		C82878D357A998C597A7A4604653EEAF /* ABI36_0_0RCTCxxConvert.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTCxxConvert.m; sourceTree = "<group>"; };
 		C840D400774FEA6B6C28D0CD424D3E98 /* ABI36_0_0RCTHTTPRequestHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTHTTPRequestHandler.h; path = Libraries/Network/ABI36_0_0RCTHTTPRequestHandler.h; sourceTree = "<group>"; };
@@ -5180,6 +5188,7 @@
 		EB62A1ED54794D24FB9B5DE3D648D830 /* ABI36_0_0UMReactNativeAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0UMReactNativeAdapter-dummy.m"; sourceTree = "<group>"; };
 		EB7D86E3E0B1AE21E2A577ECFB05DD81 /* ABI36_0_0RCTInputAccessoryViewContent.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTInputAccessoryViewContent.m; sourceTree = "<group>"; };
 		EBF9514E9B515BD51FD6DF7CD8CF3AAF /* ABI36_0_0RCTMessageThread.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI36_0_0RCTMessageThread.mm; sourceTree = "<group>"; };
+		EC314D77FCB3C4A49A59FAEC9C761CCD /* ABI36_0_0EXPermissions-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0EXPermissions-dummy.m"; sourceTree = "<group>"; };
 		EC35CEA9A29EC3E54D27A5BD8C06027C /* ABI36_0_0RCTVibration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTVibration.h; path = Libraries/Vibration/ABI36_0_0RCTVibration.h; sourceTree = "<group>"; };
 		EC74D87BD000C07A21F2CEE1C83A941E /* libABI36_0_0EXImageManipulator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXImageManipulator.a; path = libABI36_0_0EXImageManipulator.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC8515CB6DD03ADDC34602A9A864051F /* ABI36_0_0REAStyleNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0REAStyleNode.m; sourceTree = "<group>"; };
@@ -5830,6 +5839,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E7474F7B65C4CF429895517EBB07C49B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECE6B472FD6CB95F7B26A2740BD9361F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -6662,7 +6678,7 @@
 				62055389832746150295822625587D1E /* ABI36_0_0EXMailComposer */,
 				39C1633468746CA963BECFF9F0ABEA82 /* ABI36_0_0EXMediaLibrary */,
 				EE2A7BE9F8C8E6BC1FFA12DA8487F477 /* ABI36_0_0EXNetwork */,
-				7B57C0A9C1DF0F7B30A3370CBF67C0EE /* ABI36_0_0EXPermissions */,
+				7136D9F20A9414978000FC416510F82F /* ABI36_0_0EXPermissions */,
 				3B3D496E8A6DDF8348C2FDC2BA8830C1 /* ABI36_0_0ExpoKit */,
 				85B9D6513D16B0C1841AACBC979B2152 /* ABI36_0_0EXPrint */,
 				9383FF16CDCDE00F32AB778731E1BCD6 /* ABI36_0_0EXRandom */,
@@ -6714,7 +6730,7 @@
 				D989E3A0802EA26FFDC770EB73E05804 /* ABI36_0_0Yoga */,
 				1103190FB67395B83542D3F4A8BF1371 /* Dependencies */,
 				DB10592F102847032440825FFCDAA610 /* Frameworks */,
-				F97FC14009C94CE396C7CB0F2B0A16A5 /* Products */,
+				603F97478742B72F94E953AB54D79146 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -7909,6 +7925,16 @@
 			path = React/DevSupport;
 			sourceTree = "<group>";
 		};
+		58E7306B758F5796CB5E615ED8C2E9EE /* RemoteNotification */ = {
+			isa = PBXGroup;
+			children = (
+				7A79D93E85025CEC92AD8EC533E4BEDE /* ABI36_0_0EXRemoteNotificationPermissionRequester.h */,
+				5E554754A3DC37FC6F47B60F4A7BF4C2 /* ABI36_0_0EXRemoteNotificationPermissionRequester.m */,
+			);
+			name = RemoteNotification;
+			path = RemoteNotification;
+			sourceTree = "<group>";
+		};
 		59D94110E26A81BAAF0A76F2769C35DC /* Video */ = {
 			isa = PBXGroup;
 			children = (
@@ -8048,6 +8074,92 @@
 			);
 			name = ABI36_0_0UMFontInterface;
 			path = "../versioned-react-native/ABI36_0_0/Expo/UMFontInterface";
+			sourceTree = "<group>";
+		};
+		603F97478742B72F94E953AB54D79146 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				62C420F8E6D81D6E458F649B39918356 /* libABI36_0_0EXAdsAdMob.a */,
+				2ED346FB4AE5B90A49C8457A33B1A725 /* libABI36_0_0EXAdsFacebook.a */,
+				EC876888E0FD52B70127641541B6642E /* libABI36_0_0EXAmplitude.a */,
+				CBA21173056B6C988BD6656011CC94DB /* libABI36_0_0EXAppAuth.a */,
+				BF8A34B208F678BFD3FDF7133B506543 /* libABI36_0_0EXAppleAuthentication.a */,
+				6EAB41852B0DC62F8B2AC6DFAD2AF958 /* libABI36_0_0EXApplication.a */,
+				824A7EFA9BEB567AB5CB3F53DBE3F205 /* libABI36_0_0EXAppLoaderProvider.a */,
+				4B9728E75D057E09FE0CBBC98F24B12C /* libABI36_0_0EXAV.a */,
+				FA388D3F7F73D0A801425FDE8961967D /* libABI36_0_0EXBackgroundFetch.a */,
+				AA753C7B387B04EFB3B0775AEAB13807 /* libABI36_0_0EXBarCodeScanner.a */,
+				026CC080305711B0C1AE404AAC324655 /* libABI36_0_0EXBattery.a */,
+				C6270466DE7214F26C5C943A96CDD6F5 /* libABI36_0_0EXBluetooth.a */,
+				72C5259E8E2A4ECE95772E8A4E064E21 /* libABI36_0_0EXBlur.a */,
+				5612DA7C7F6383BA235BF61D3A97035B /* libABI36_0_0EXBrightness.a */,
+				95ADFF1559C341214B272522F8CA6EE8 /* libABI36_0_0EXCalendar.a */,
+				660A153E6360920852D6C3B360FC5D44 /* libABI36_0_0EXCamera.a */,
+				91DB19DC1281DE999DC66D649FF0E0BD /* libABI36_0_0EXCellular.a */,
+				707080C29876A80FE589163BF6667B38 /* libABI36_0_0EXConstants.a */,
+				B03571597CF5D07CB9D2671C37AB4753 /* libABI36_0_0EXContacts.a */,
+				22AC010EA634E369B34D746614F8CBF0 /* libABI36_0_0EXCrypto.a */,
+				C3AA0BDE84B774D8CA8109FE14EEFFD8 /* libABI36_0_0EXDevice.a */,
+				1D44AF698E4FFFF5214B465748FBCC09 /* libABI36_0_0EXDocumentPicker.a */,
+				877187CF2469CC1DF2CEFD56DC839FFE /* libABI36_0_0EXErrorRecovery.a */,
+				7C44B625D1E3F4301F14DE38C4A8475E /* libABI36_0_0EXFacebook.a */,
+				AE86301F5909B55D89E9E3A2E72A3EAA /* libABI36_0_0EXFaceDetector.a */,
+				754026A4CBF5AC41BE06CA5FE0C38268 /* libABI36_0_0EXFileSystem.a */,
+				20952ED65A1A22FDBEDE25A666C844B0 /* libABI36_0_0EXFont.a */,
+				0599DA0FF2E80B61BA6FAA5E271DC389 /* libABI36_0_0EXGL.a */,
+				03151AE796F2C9BB01999776606F9D8C /* libABI36_0_0EXGoogleSignIn.a */,
+				92D626467738052B33F99ADB1CA9909C /* libABI36_0_0EXHaptics.a */,
+				EC74D87BD000C07A21F2CEE1C83A941E /* libABI36_0_0EXImageManipulator.a */,
+				2CD82935F2F08BA81C6983334636774F /* libABI36_0_0EXImagePicker.a */,
+				CD0DD3155EA7F56D0D75ABCA474F4997 /* libABI36_0_0EXInAppPurchases.a */,
+				54FC32149B75C4264FF470770458A313 /* libABI36_0_0EXKeepAwake.a */,
+				A95C6F83EED3973D7F8F96FB2E7B203C /* libABI36_0_0EXLinearGradient.a */,
+				BD4FEDCC2375A3DA823CB9A2810EC18D /* libABI36_0_0EXLocalAuthentication.a */,
+				C3EB06D7090C348224C6A666D637F821 /* libABI36_0_0EXLocalization.a */,
+				9D61AE2783F807C094565B464DB16FC4 /* libABI36_0_0EXLocation.a */,
+				BA76BAE63B8E7288B6AA0C0400A5FE52 /* libABI36_0_0EXMailComposer.a */,
+				AFD621E5D1244B6ECB604DD7BC766C3B /* libABI36_0_0EXMediaLibrary.a */,
+				EDA3F708FA051D2FBC1F65CAD5C4A5AA /* libABI36_0_0EXNetwork.a */,
+				9D8A874E90CE9394CEDDD302AA6403D6 /* libABI36_0_0EXPermissions.a */,
+				D590280F4487C7C7FA15544277800914 /* libABI36_0_0ExpoKit.a */,
+				AD8DE163DD5F10BF53B9D725B28DF335 /* libABI36_0_0EXPrint.a */,
+				B6A6572C98523DCB1D50AC5DA07E078D /* libABI36_0_0EXRandom.a */,
+				8252E33E822A4E3717017276854A08DF /* libABI36_0_0EXSecureStore.a */,
+				87C9272F122BE675D04F859A2BAF41BA /* libABI36_0_0EXSegment.a */,
+				E0F514677312626BC37CD515AAB6B591 /* libABI36_0_0EXSensors.a */,
+				A12EDB9F90EE62F2A0ACC6DEAB0B29B4 /* libABI36_0_0EXSharing.a */,
+				7E5260DC45230A058E0A294872B00856 /* libABI36_0_0EXSMS.a */,
+				DEE67574DB8727C7C64BAF6804DB1DA6 /* libABI36_0_0EXSpeech.a */,
+				8E4B71BB9C5E3FCF9435E8362C2E418A /* libABI36_0_0EXSQLite.a */,
+				1DFEEC16623A679638B28CB3B808D202 /* libABI36_0_0EXStoreReview.a */,
+				CF8D7153DB84A084DA4D428420172888 /* libABI36_0_0EXTaskManager.a */,
+				BC19BA4989279D6D68FD434103A0A914 /* libABI36_0_0EXUpdates.a */,
+				C6F896C19F37C06476C9CC6120297680 /* libABI36_0_0EXVideoThumbnails.a */,
+				78E8E3835B4A0838C522D26BC7EC1C5E /* libABI36_0_0EXWebBrowser.a */,
+				18996AA51404E15B063436657FB61282 /* libABI36_0_0FBReactNativeSpec.a */,
+				7F40AECAFAF8339D4CF31E51B57B02F7 /* libABI36_0_0RCTTypeSafety.a */,
+				19A5A7907BE020CA0973735544DE195E /* libABI36_0_0React-Core.a */,
+				E90A20FC8533E541A05CD68A670B3863 /* libABI36_0_0React-CoreModules.a */,
+				4E5E1743530E891710782D0B9F399D4D /* libABI36_0_0React-cxxreact.a */,
+				BF8863DDA1B0FF27C107D18B0F35B5F1 /* libABI36_0_0React-jsi.a */,
+				77FE3A7FE14BDD9CB73EE1EEB985F8F6 /* libABI36_0_0React-jsiexecutor.a */,
+				8383FA10E7098E1776ECD759E4F53387 /* libABI36_0_0React-jsinspector.a */,
+				C4390CE67B6D0601C10A134F59EFB5D2 /* libABI36_0_0React-RCTActionSheet.a */,
+				23A17AE5FC3B3AEAD26E095CE64BDC37 /* libABI36_0_0React-RCTAnimation.a */,
+				9F6D3084F115E8FDA21C6570DDFEC704 /* libABI36_0_0React-RCTBlob.a */,
+				A2176168BBBFF79AC801285D6AE7887D /* libABI36_0_0React-RCTImage.a */,
+				DA646BDF6A4D1157F58A3BE52FC0D9F2 /* libABI36_0_0React-RCTLinking.a */,
+				53F829A834A81FE290AECB6A0DD0F59A /* libABI36_0_0React-RCTNetwork.a */,
+				725F5C465BEC92F1F2E1CB500BB992DC /* libABI36_0_0React-RCTSettings.a */,
+				D844C76513FAB24A85435BABABE13D37 /* libABI36_0_0React-RCTText.a */,
+				81AC7FFF1D26F3B2CDF513712531D3CE /* libABI36_0_0React-RCTVibration.a */,
+				1B11C409CDD1F0A1295F348DF1EFF80B /* libABI36_0_0ReactCommon.a */,
+				2E5B1198FC7F38F8611F2671D123B72E /* libABI36_0_0UMCore.a */,
+				4EEED9BAC713FD8572F1186FEB2F5F2E /* libABI36_0_0UMPermissionsInterface.a */,
+				3A2FCDB16422BD1FD12958EDC5975B99 /* libABI36_0_0UMReactNativeAdapter.a */,
+				CDF8C0F7E0D746D0A989FC13EBE33C0B /* libABI36_0_0Yoga.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		606679C1C10DC46B98DD0247400A2055 /* ABI36_0_0UMBarCodeScannerInterface */ = {
@@ -8339,6 +8451,21 @@
 			path = "../../../../../Pods/Target Support Files/ABI36_0_0React-RCTBlob";
 			sourceTree = "<group>";
 		};
+		7136D9F20A9414978000FC416510F82F /* ABI36_0_0EXPermissions */ = {
+			isa = PBXGroup;
+			children = (
+				C7EE5F67283813FF14150EAB47AB74C1 /* ABI36_0_0EXPermissions.h */,
+				466D441E6DB65811754A4E6AC070EE4E /* ABI36_0_0EXPermissions.m */,
+				C6F0D74314BF6FF7A21A16E631B6712F /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.h */,
+				2CB2B99D89BC0FF5B6BFADD25728637B /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.m */,
+				922CF3D0849610EC6C8DA744B6FF506B /* Pod */,
+				AA795FD24D91888BA16A86C09C037891 /* Requesters */,
+				F44056502E17A5B20633EEAB857675EF /* Support Files */,
+			);
+			name = ABI36_0_0EXPermissions;
+			path = "../versioned-react-native/ABI36_0_0/Expo/EXPermissions";
+			sourceTree = "<group>";
+		};
 		71F3EE4F41334CF3511FB4EC8B7B9D14 /* ABI36_0_0React-RCTText */ = {
 			isa = PBXGroup;
 			children = (
@@ -8499,16 +8626,6 @@
 			);
 			name = ABI36_0_0UMConstantsInterface;
 			path = "../versioned-react-native/ABI36_0_0/Expo/UMConstantsInterface";
-			sourceTree = "<group>";
-		};
-		7B57C0A9C1DF0F7B30A3370CBF67C0EE /* ABI36_0_0EXPermissions */ = {
-			isa = PBXGroup;
-			children = (
-				87C8A596CA723580E279DAEEBC3F2856 /* Pod */,
-				9116BAF85B202B3E2411ACE292FBF76C /* Support Files */,
-			);
-			name = ABI36_0_0EXPermissions;
-			path = "../versioned-react-native/ABI36_0_0/Expo/EXPermissions";
 			sourceTree = "<group>";
 		};
 		7B77DA0181169A88844E8E49E0C4EEBC /* TextInput */ = {
@@ -8710,14 +8827,6 @@
 			isa = PBXGroup;
 			children = (
 				C43286BCC45B522DDD1E0830C624D6EE /* ABI36_0_0React-RCTLinking.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
-		87C8A596CA723580E279DAEEBC3F2856 /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				C2692037D17F2C94CB2A579D5E9F960E /* ABI36_0_0EXPermissions.podspec */,
 			);
 			name = Pod;
 			sourceTree = "<group>";
@@ -8960,15 +9069,6 @@
 			path = "../../../../Pods/Target Support Files/ABI36_0_0EXInAppPurchases";
 			sourceTree = "<group>";
 		};
-		9116BAF85B202B3E2411ACE292FBF76C /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				52AFD72AF9FDF7FCB84E1978A7F602BD /* ABI36_0_0EXPermissions.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../../../../Pods/Target Support Files/ABI36_0_0EXPermissions";
-			sourceTree = "<group>";
-		};
 		91A9558E5248798D2C7B35873613D0C1 /* ABI36_0_0EXContacts */ = {
 			isa = PBXGroup;
 			children = (
@@ -9005,6 +9105,14 @@
 			);
 			name = ABI36_0_0EXTaskManager;
 			path = "../versioned-react-native/ABI36_0_0/Expo/EXTaskManager";
+			sourceTree = "<group>";
+		};
+		922CF3D0849610EC6C8DA744B6FF506B /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				3AA4A00C9D07909855F3391D7C0B3A61 /* ABI36_0_0EXPermissions.podspec */,
+			);
+			name = Pod;
 			sourceTree = "<group>";
 		};
 		923AA481C70D896DF87659E7C89A3278 /* ABI36_0_0EXGoogleSignIn */ = {
@@ -9357,6 +9465,16 @@
 			path = "../../../../Pods/Target Support Files/ABI36_0_0EXGL";
 			sourceTree = "<group>";
 		};
+		A965892F3DFD0CE94A12D1136FD45AF5 /* UserNotification */ = {
+			isa = PBXGroup;
+			children = (
+				5E6E27A963CB14876177E41D5D268BAD /* ABI36_0_0EXUserNotificationPermissionRequester.h */,
+				B5F3C7F7B8440F80B4FEED516BC2C633 /* ABI36_0_0EXUserNotificationPermissionRequester.m */,
+			);
+			name = UserNotification;
+			path = UserNotification;
+			sourceTree = "<group>";
+		};
 		AA5DFF190D9442143C3056081CEA9729 /* ABI36_0_0EXAppLoaderProvider */ = {
 			isa = PBXGroup;
 			children = (
@@ -9368,6 +9486,16 @@
 			);
 			name = ABI36_0_0EXAppLoaderProvider;
 			path = "../versioned-react-native/ABI36_0_0/Expo/EXAppLoaderProvider";
+			sourceTree = "<group>";
+		};
+		AA795FD24D91888BA16A86C09C037891 /* Requesters */ = {
+			isa = PBXGroup;
+			children = (
+				58E7306B758F5796CB5E615ED8C2E9EE /* RemoteNotification */,
+				A965892F3DFD0CE94A12D1136FD45AF5 /* UserNotification */,
+			);
+			name = Requesters;
+			path = ABI36_0_0EXPermissions/Requesters;
 			sourceTree = "<group>";
 		};
 		AAB146C5B4D7FEAC5DDF7BF9276AF644 /* TextInput */ = {
@@ -10853,6 +10981,17 @@
 			path = "../versioned-react-native/ABI36_0_0/Expo/EXCellular";
 			sourceTree = "<group>";
 		};
+		F44056502E17A5B20633EEAB857675EF /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				5F85A22175ECB1B58205CB38B98F1ECF /* ABI36_0_0EXPermissions.xcconfig */,
+				EC314D77FCB3C4A49A59FAEC9C761CCD /* ABI36_0_0EXPermissions-dummy.m */,
+				44373012C7FB32397DFA83BC05C9DAC5 /* ABI36_0_0EXPermissions-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../Pods/Target Support Files/ABI36_0_0EXPermissions";
+			sourceTree = "<group>";
+		};
 		F47928E0AF4A05A3C1B2D3D37EE69E1E /* MaskedView */ = {
 			isa = PBXGroup;
 			children = (
@@ -10916,91 +11055,6 @@
 				AECA7796A353EDBFABEA17A7CA398A27 /* Views */,
 			);
 			name = Default;
-			sourceTree = "<group>";
-		};
-		F97FC14009C94CE396C7CB0F2B0A16A5 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				62C420F8E6D81D6E458F649B39918356 /* libABI36_0_0EXAdsAdMob.a */,
-				2ED346FB4AE5B90A49C8457A33B1A725 /* libABI36_0_0EXAdsFacebook.a */,
-				EC876888E0FD52B70127641541B6642E /* libABI36_0_0EXAmplitude.a */,
-				CBA21173056B6C988BD6656011CC94DB /* libABI36_0_0EXAppAuth.a */,
-				BF8A34B208F678BFD3FDF7133B506543 /* libABI36_0_0EXAppleAuthentication.a */,
-				6EAB41852B0DC62F8B2AC6DFAD2AF958 /* libABI36_0_0EXApplication.a */,
-				824A7EFA9BEB567AB5CB3F53DBE3F205 /* libABI36_0_0EXAppLoaderProvider.a */,
-				4B9728E75D057E09FE0CBBC98F24B12C /* libABI36_0_0EXAV.a */,
-				FA388D3F7F73D0A801425FDE8961967D /* libABI36_0_0EXBackgroundFetch.a */,
-				AA753C7B387B04EFB3B0775AEAB13807 /* libABI36_0_0EXBarCodeScanner.a */,
-				026CC080305711B0C1AE404AAC324655 /* libABI36_0_0EXBattery.a */,
-				C6270466DE7214F26C5C943A96CDD6F5 /* libABI36_0_0EXBluetooth.a */,
-				72C5259E8E2A4ECE95772E8A4E064E21 /* libABI36_0_0EXBlur.a */,
-				5612DA7C7F6383BA235BF61D3A97035B /* libABI36_0_0EXBrightness.a */,
-				95ADFF1559C341214B272522F8CA6EE8 /* libABI36_0_0EXCalendar.a */,
-				660A153E6360920852D6C3B360FC5D44 /* libABI36_0_0EXCamera.a */,
-				91DB19DC1281DE999DC66D649FF0E0BD /* libABI36_0_0EXCellular.a */,
-				707080C29876A80FE589163BF6667B38 /* libABI36_0_0EXConstants.a */,
-				B03571597CF5D07CB9D2671C37AB4753 /* libABI36_0_0EXContacts.a */,
-				22AC010EA634E369B34D746614F8CBF0 /* libABI36_0_0EXCrypto.a */,
-				C3AA0BDE84B774D8CA8109FE14EEFFD8 /* libABI36_0_0EXDevice.a */,
-				1D44AF698E4FFFF5214B465748FBCC09 /* libABI36_0_0EXDocumentPicker.a */,
-				877187CF2469CC1DF2CEFD56DC839FFE /* libABI36_0_0EXErrorRecovery.a */,
-				7C44B625D1E3F4301F14DE38C4A8475E /* libABI36_0_0EXFacebook.a */,
-				AE86301F5909B55D89E9E3A2E72A3EAA /* libABI36_0_0EXFaceDetector.a */,
-				754026A4CBF5AC41BE06CA5FE0C38268 /* libABI36_0_0EXFileSystem.a */,
-				20952ED65A1A22FDBEDE25A666C844B0 /* libABI36_0_0EXFont.a */,
-				0599DA0FF2E80B61BA6FAA5E271DC389 /* libABI36_0_0EXGL.a */,
-				03151AE796F2C9BB01999776606F9D8C /* libABI36_0_0EXGoogleSignIn.a */,
-				92D626467738052B33F99ADB1CA9909C /* libABI36_0_0EXHaptics.a */,
-				EC74D87BD000C07A21F2CEE1C83A941E /* libABI36_0_0EXImageManipulator.a */,
-				2CD82935F2F08BA81C6983334636774F /* libABI36_0_0EXImagePicker.a */,
-				CD0DD3155EA7F56D0D75ABCA474F4997 /* libABI36_0_0EXInAppPurchases.a */,
-				54FC32149B75C4264FF470770458A313 /* libABI36_0_0EXKeepAwake.a */,
-				A95C6F83EED3973D7F8F96FB2E7B203C /* libABI36_0_0EXLinearGradient.a */,
-				BD4FEDCC2375A3DA823CB9A2810EC18D /* libABI36_0_0EXLocalAuthentication.a */,
-				C3EB06D7090C348224C6A666D637F821 /* libABI36_0_0EXLocalization.a */,
-				9D61AE2783F807C094565B464DB16FC4 /* libABI36_0_0EXLocation.a */,
-				BA76BAE63B8E7288B6AA0C0400A5FE52 /* libABI36_0_0EXMailComposer.a */,
-				AFD621E5D1244B6ECB604DD7BC766C3B /* libABI36_0_0EXMediaLibrary.a */,
-				EDA3F708FA051D2FBC1F65CAD5C4A5AA /* libABI36_0_0EXNetwork.a */,
-				D590280F4487C7C7FA15544277800914 /* libABI36_0_0ExpoKit.a */,
-				AD8DE163DD5F10BF53B9D725B28DF335 /* libABI36_0_0EXPrint.a */,
-				B6A6572C98523DCB1D50AC5DA07E078D /* libABI36_0_0EXRandom.a */,
-				8252E33E822A4E3717017276854A08DF /* libABI36_0_0EXSecureStore.a */,
-				87C9272F122BE675D04F859A2BAF41BA /* libABI36_0_0EXSegment.a */,
-				E0F514677312626BC37CD515AAB6B591 /* libABI36_0_0EXSensors.a */,
-				A12EDB9F90EE62F2A0ACC6DEAB0B29B4 /* libABI36_0_0EXSharing.a */,
-				7E5260DC45230A058E0A294872B00856 /* libABI36_0_0EXSMS.a */,
-				DEE67574DB8727C7C64BAF6804DB1DA6 /* libABI36_0_0EXSpeech.a */,
-				8E4B71BB9C5E3FCF9435E8362C2E418A /* libABI36_0_0EXSQLite.a */,
-				1DFEEC16623A679638B28CB3B808D202 /* libABI36_0_0EXStoreReview.a */,
-				CF8D7153DB84A084DA4D428420172888 /* libABI36_0_0EXTaskManager.a */,
-				BC19BA4989279D6D68FD434103A0A914 /* libABI36_0_0EXUpdates.a */,
-				C6F896C19F37C06476C9CC6120297680 /* libABI36_0_0EXVideoThumbnails.a */,
-				78E8E3835B4A0838C522D26BC7EC1C5E /* libABI36_0_0EXWebBrowser.a */,
-				18996AA51404E15B063436657FB61282 /* libABI36_0_0FBReactNativeSpec.a */,
-				7F40AECAFAF8339D4CF31E51B57B02F7 /* libABI36_0_0RCTTypeSafety.a */,
-				19A5A7907BE020CA0973735544DE195E /* libABI36_0_0React-Core.a */,
-				E90A20FC8533E541A05CD68A670B3863 /* libABI36_0_0React-CoreModules.a */,
-				4E5E1743530E891710782D0B9F399D4D /* libABI36_0_0React-cxxreact.a */,
-				BF8863DDA1B0FF27C107D18B0F35B5F1 /* libABI36_0_0React-jsi.a */,
-				77FE3A7FE14BDD9CB73EE1EEB985F8F6 /* libABI36_0_0React-jsiexecutor.a */,
-				8383FA10E7098E1776ECD759E4F53387 /* libABI36_0_0React-jsinspector.a */,
-				C4390CE67B6D0601C10A134F59EFB5D2 /* libABI36_0_0React-RCTActionSheet.a */,
-				23A17AE5FC3B3AEAD26E095CE64BDC37 /* libABI36_0_0React-RCTAnimation.a */,
-				9F6D3084F115E8FDA21C6570DDFEC704 /* libABI36_0_0React-RCTBlob.a */,
-				A2176168BBBFF79AC801285D6AE7887D /* libABI36_0_0React-RCTImage.a */,
-				DA646BDF6A4D1157F58A3BE52FC0D9F2 /* libABI36_0_0React-RCTLinking.a */,
-				53F829A834A81FE290AECB6A0DD0F59A /* libABI36_0_0React-RCTNetwork.a */,
-				725F5C465BEC92F1F2E1CB500BB992DC /* libABI36_0_0React-RCTSettings.a */,
-				D844C76513FAB24A85435BABABE13D37 /* libABI36_0_0React-RCTText.a */,
-				81AC7FFF1D26F3B2CDF513712531D3CE /* libABI36_0_0React-RCTVibration.a */,
-				1B11C409CDD1F0A1295F348DF1EFF80B /* libABI36_0_0ReactCommon.a */,
-				2E5B1198FC7F38F8611F2671D123B72E /* libABI36_0_0UMCore.a */,
-				4EEED9BAC713FD8572F1186FEB2F5F2E /* libABI36_0_0UMPermissionsInterface.a */,
-				3A2FCDB16422BD1FD12958EDC5975B99 /* libABI36_0_0UMReactNativeAdapter.a */,
-				CDF8C0F7E0D746D0A989FC13EBE33C0B /* libABI36_0_0Yoga.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		FC0D061C153621BD4ABF71F16CE6B2CA /* Pod */ = {
@@ -11346,6 +11400,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EEBFCF6866408639A47D5D0FDC57E31 /* ABI36_0_0EXSMSModule.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		55CF3F33E2A3B657A9121F891C34AC29 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8CDE93AB8E330D8BEF91ADBEE2D3C1BC /* ABI36_0_0EXPermissions.h in Headers */,
+				8FECC6EED5492B503E6B85CA040E27E1 /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.h in Headers */,
+				682A1170D4FCB1B0AC3B952D9B518B67 /* ABI36_0_0EXRemoteNotificationPermissionRequester.h in Headers */,
+				6A044C2BEE8BB940BB5C5EB6873EAEF0 /* ABI36_0_0EXUserNotificationPermissionRequester.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13239,6 +13304,25 @@
 			productReference = EC74D87BD000C07A21F2CEE1C83A941E /* libABI36_0_0EXImageManipulator.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		8B5E49179FA3D0B0764087D1128B5135 /* ABI36_0_0EXPermissions */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B35893F4630708B04F449B17790A30A /* Build configuration list for PBXNativeTarget "ABI36_0_0EXPermissions" */;
+			buildPhases = (
+				55CF3F33E2A3B657A9121F891C34AC29 /* Headers */,
+				EA6264CC3D9FCC7453652D64FBA8073B /* Sources */,
+				ECE6B472FD6CB95F7B26A2740BD9361F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				806E45A774CBB843843BFC414D3B2648 /* PBXTargetDependency */,
+				DA800E6866FAF49B3D1683C08464696C /* PBXTargetDependency */,
+			);
+			name = ABI36_0_0EXPermissions;
+			productName = ABI36_0_0EXPermissions;
+			productReference = 9D8A874E90CE9394CEDDD302AA6403D6 /* libABI36_0_0EXPermissions.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		8D1C12E901F84EAB7FB8DB1B31C4E4FB /* ABI36_0_0EXConstants */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 25D22C09C77F3CDDE53984A3F98A7CC4 /* Build configuration list for PBXNativeTarget "ABI36_0_0EXConstants" */;
@@ -14001,7 +14085,7 @@
 				en,
 			);
 			mainGroup = 1C7331997A13DECEA7B446A2CE46D678;
-			productRefGroup = F97FC14009C94CE396C7CB0F2B0A16A5 /* Products */;
+			productRefGroup = 603F97478742B72F94E953AB54D79146 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -15352,6 +15436,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EA6264CC3D9FCC7453652D64FBA8073B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7EFF7664D268C3DA8BA44B05677E00A9 /* ABI36_0_0EXPermissions-dummy.m in Sources */,
+				34ADAE08E27A356E3B791E2622D0AF18 /* ABI36_0_0EXPermissions.m in Sources */,
+				871802613EADD5A4C0CA548927EA4DAA /* ABI36_0_0EXReactNativeUserNotificationCenterProxy.m in Sources */,
+				40723832E13912775589135591732BC3 /* ABI36_0_0EXRemoteNotificationPermissionRequester.m in Sources */,
+				177826B4CC8EFF5032B1CEBAEE46821F /* ABI36_0_0EXUserNotificationPermissionRequester.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EB09B58EC9F2B662A53F056443B3A510 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -16025,12 +16121,6 @@
 			target = 7292247932431DC791BD1DF50D3DF046 /* ABI36_0_0UMFileSystemInterface */;
 			targetProxy = 7B8BBFE3912B8830E6DA3AB271E30D7C /* PBXContainerItemProxy */;
 		};
-		65F27B340C2ABC53CA3082B26862DF00 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ABI36_0_0UMPermissionsInterface;
-			target = D1F3ACFD820C6E21B9B1B97F41E99D32 /* ABI36_0_0UMPermissionsInterface */;
-			targetProxy = 4C57EFF494FDBA45C30A474AC5C93ABE /* PBXContainerItemProxy */;
-		};
 		663E56F91BDBB6D228F55886EF18CDD7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = glog;
@@ -16074,12 +16164,6 @@
 			name = "ABI36_0_0React-Core";
 			target = 660DB54ABFA1FD5916FE6E4C5189A26E /* ABI36_0_0React-Core */;
 			targetProxy = 9A03191C1E0227C97060FA14F7E2D4E0 /* PBXContainerItemProxy */;
-		};
-		6D3352DAA75CB46A51DBA1944B572B39 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ABI36_0_0UMCore;
-			target = 5850CB66507BD2913699B9813465F9E4 /* ABI36_0_0UMCore */;
-			targetProxy = 4DE11007F6D1EA3D822BC9F4D62ACDA4 /* PBXContainerItemProxy */;
 		};
 		6D8CFB699938BD06F6ED169F726F33CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -16202,6 +16286,12 @@
 			name = ABI36_0_0UMCore;
 			target = 5850CB66507BD2913699B9813465F9E4 /* ABI36_0_0UMCore */;
 			targetProxy = D1B74AED640BAC8246DF88723F4BA8AB /* PBXContainerItemProxy */;
+		};
+		806E45A774CBB843843BFC414D3B2648 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ABI36_0_0UMCore;
+			target = 5850CB66507BD2913699B9813465F9E4 /* ABI36_0_0UMCore */;
+			targetProxy = AF6E6A3678FB672E8985811A59A1DCA4 /* PBXContainerItemProxy */;
 		};
 		80AC40C43D795036619543757814D39B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -16719,6 +16809,12 @@
 			target = E5D8382C1A658FAC82CFCF020BF0D9E4 /* ABI36_0_0UMConstantsInterface */;
 			targetProxy = 22C9918ED847B836FA2D822CE9279627 /* PBXContainerItemProxy */;
 		};
+		DA800E6866FAF49B3D1683C08464696C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ABI36_0_0UMPermissionsInterface;
+			target = D1F3ACFD820C6E21B9B1B97F41E99D32 /* ABI36_0_0UMPermissionsInterface */;
+			targetProxy = 9B0A11074B69EE9AC0BF31573AC9B1FA /* PBXContainerItemProxy */;
+		};
 		DB04CDA894774C54A69ABF86369B8973 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ABI36_0_0UMFileSystemInterface;
@@ -17094,20 +17190,6 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
-		};
-		0667E3EFC6C98B1B5E5D23AB4775C25D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 52AFD72AF9FDF7FCB84E1978A7F602BD /* ABI36_0_0EXPermissions.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		0778069B55DD6EFD1E7B1BFF3B113E8C /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -18112,16 +18194,26 @@
 			};
 			name = Debug;
 		};
-		505AFF800A233B913DBB683F46DD7E85 /* Release */ = {
+		4D8EDAC1C7F62492840233429A66CAC5 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 52AFD72AF9FDF7FCB84E1978A7F602BD /* ABI36_0_0EXPermissions.xcconfig */;
+			baseConfigurationReference = 5F85A22175ECB1B58205CB38B98F1ECF /* ABI36_0_0EXPermissions.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI36_0_0EXPermissions/ABI36_0_0EXPermissions-prefix.pch";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI36_0_0EXPermissions;
+				PRODUCT_NAME = ABI36_0_0EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -20530,6 +20622,30 @@
 			};
 			name = Release;
 		};
+		D93C6E5576E9F6B1AB8B1E07AD79C608 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5F85A22175ECB1B58205CB38B98F1ECF /* ABI36_0_0EXPermissions.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI36_0_0EXPermissions/ABI36_0_0EXPermissions-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI36_0_0EXPermissions;
+				PRODUCT_NAME = ABI36_0_0EXPermissions;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		D9CA6034B4DF1AC85A7E445BF3A7BB69 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 22A42AA28DF10E0CD54FDAFA1A63786A /* ABI36_0_0EXFacebook.xcconfig */;
@@ -21605,6 +21721,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		4B35893F4630708B04F449B17790A30A /* Build configuration list for PBXNativeTarget "ABI36_0_0EXPermissions" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D93C6E5576E9F6B1AB8B1E07AD79C608 /* Debug */,
+				4D8EDAC1C7F62492840233429A66CAC5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4E259EB6CCD22B8F45879517A01CE127 /* Build configuration list for PBXNativeTarget "ABI36_0_0EXSegment" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -21826,15 +21951,6 @@
 			buildConfigurations = (
 				96A79737D5529E68F08364B2B01903F2 /* Debug */,
 				52FD4FA24ABA40B631814FDAAB38A8D4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A138B56AC63C03B2FB2673D6A7704204 /* Build configuration list for PBXAggregateTarget "ABI36_0_0EXPermissions" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0667E3EFC6C98B1B5E5D23AB4775C25D /* Debug */,
-				505AFF800A233B913DBB683F46DD7E85 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

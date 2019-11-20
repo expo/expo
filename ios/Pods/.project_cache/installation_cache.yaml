@@ -4392,16 +4392,23 @@ CACHE_KEYS:
       - ABI36_0_0EXNetwork (1.0.0)
   ABI36_0_0EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0EXPermissions: ac280cb82f3e3cd709a2bd91533eccfb
-    CHECKSUM: 8be8c42e2a6f892c571283fe29f72d072819d69b
+      ABI36_0_0EXPermissions: 3f5fe7ea89bac5473e2e4e53acd2a2f4
+    CHECKSUM: c9038e520aadea3fdf58a345537906eca18553be
     FILES:
-      []
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.h"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.m"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/ABI36_0_0EXReactNativeUserNotificationCenterProxy.h"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/ABI36_0_0EXReactNativeUserNotificationCenterProxy.m"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/Requesters/RemoteNotification/ABI36_0_0EXRemoteNotificationPermissionRequester.h"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/Requesters/RemoteNotification/ABI36_0_0EXRemoteNotificationPermissionRequester.m"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/Requesters/UserNotification/ABI36_0_0EXUserNotificationPermissionRequester.h"
+      - "../versioned-react-native/ABI36_0_0/Expo/EXPermissions/ABI36_0_0EXPermissions/Requesters/UserNotification/ABI36_0_0EXUserNotificationPermissionRequester.m"
     PROJECT_NAME: ABI36_0_0
     SPECS:
       - ABI36_0_0EXPermissions (8.0.0-rc.0)
   ABI36_0_0ExpoKit:
     BUILD_SETTINGS_CHECKSUM:
-      ABI36_0_0ExpoKit: 608d63b71cff97bad29b9228ebc91ef4
+      ABI36_0_0ExpoKit: 43ea20c71ca1ab3e8a480e37f4b750bc
     CHECKSUM: 9e08430c37a7e0b16204b768f4ff406d806c40e8
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/ABI36_0_0EXUnversioned.h"
@@ -7118,16 +7125,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: d65b91ff36769f97e59a49d248ee59d5
-      Release: d65b91ff36769f97e59a49d248ee59d5
+      Debug: 5f008dc4838313eda2588cb92d6f196f
+      Release: 5f008dc4838313eda2588cb92d6f196f
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 10fab62d0fb12547bcd65d734abf8560
-      Release: 10fab62d0fb12547bcd65d734abf8560
+      Debug: 7e8118da15b12c8f5c7f4a6f150c54c6
+      Release: 7e8118da15b12c8f5c7f4a6f150c54c6
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 10fab62d0fb12547bcd65d734abf8560
-      Release: 10fab62d0fb12547bcd65d734abf8560
+      Debug: 7e8118da15b12c8f5c7f4a6f150c54c6
+      Release: 7e8118da15b12c8f5c7f4a6f150c54c6
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c
