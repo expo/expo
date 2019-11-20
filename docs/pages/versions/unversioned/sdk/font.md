@@ -73,7 +73,7 @@ Synchronously detect if the font for `fontFamily` is still being loaded
 
 ### `FontDisplay`
 
-Sets the [font-display][font-display] for a given typeface. This currently **only works on web**. The default font value on web is `FontDisplay.AUTO`. Even though setting the `fontDisplay` does nothing on native platforms, the default behavior emulates `FontDisplay.SWAP` on flagship devices like iOS, Samsung, Pixel, etc. Default functionality varies on One Plus devices. In the browser this value is set in the generated `@font-face` CSS block and not as a style property meaning you cannot dynamically change this value based on the element it's used in.
+Sets the [font-display][font-display] for a given typeface. This currently **only works on web** (support is limited so remember to [check the coverage](https://caniuse.com/#search=font-display)). The default font value on web is `FontDisplay.AUTO`. Even though setting the `fontDisplay` does nothing on native platforms, the default behavior emulates `FontDisplay.SWAP` on flagship devices like iOS, Samsung, Pixel, etc. Default functionality varies on One Plus devices. In the browser this value is set in the generated `@font-face` CSS block and not as a style property meaning you cannot dynamically change this value based on the element it's used in.
 
 - `AUTO`: (Default on web) The font display strategy is defined by the user agent or platform. This generally defaults to the text being invisible until the font is loaded. Good for buttons or banners that require a specific treatment.
 - `SWAP`: Fallback text is rendered immediately with a default font while the desired font is loaded. This is good for making the content appear to load instantly and is usally preferred.
