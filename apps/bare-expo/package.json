@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
     "android": "export NODE_ENV=\"development\" && ./scripts/start-emulator.sh",
-    "android:clean": "cd android; rm -rf ./.gradle && gradle --recompile-scripts",
+    "android:clean": "pushd android; rm -rf ./.gradle && ./gradlew --configure-on-demand; popd",
     "ios": "export NODE_ENV=\"development\" && ./scripts/start-simulator.sh",
     "test:ios": "export NODE_ENV=\"test\" && ./scripts/start-simulator.sh",
     "test:android": "export NODE_ENV=\"test\" && ./scripts/start-emulator.sh",
