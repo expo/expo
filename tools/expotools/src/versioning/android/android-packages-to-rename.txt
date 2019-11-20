@@ -1,6 +1,7 @@
 com.facebook.catalyst
 com.facebook.csslayout
 com.facebook.jni
+com.facebook.hermes
 com.facebook.perftest
 com.facebook.proguard
 com.facebook.quicklog
