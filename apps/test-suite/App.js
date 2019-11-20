@@ -16,6 +16,13 @@ const AppNavigator = createStackNavigator(
   },
   {
     headerMode: 'screen',
+    defaultNavigationOptions: {
+      headerStyle: {
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'rgba(0,0,0,0.1)',
+        boxShadow: undefined,
+      },
+    },
   }
 );
 

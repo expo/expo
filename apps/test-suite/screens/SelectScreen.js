@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   listItem: {
     paddingHorizontal: 10,
     paddingVertical: 14,
-    borderBottomWidth: 1.0 / PixelRatio.get(),
-    borderBottomColor: '#dddddd',
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
     flexDirection: 'row',
     alignItems: 'center',
   },
