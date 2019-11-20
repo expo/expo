@@ -139,11 +139,11 @@ export async function unloadAllAsync(): Promise<void> {
     throw new UnavailabilityError('expo-font', 'unloadAllAsync');
   }
 
-  for (const fontFamily of Object.keys(loadPromises)) {
-    if (loadPromises[fontFamily]) {
-      Promise.reject(loadPromises[fontFamily]);
-      delete loadPromises[fontFamily];
-    }
+  if (Object.keys(loadPromises).length) {
+    throw new CodedError(
+      `ERR_UNLOAD`,
+      `Cannot unload fonts while they're still loading: ${Object.keys(loadPromises).join(', ')}`
+    );
   }
 
   for (const fontFamily of Object.keys(loaded)) {
@@ -191,11 +191,6 @@ async function unloadFontInNamespaceAsync(
     return;
   } else {
     delete loaded[fontFamily];
-  }
-
-  if (loadPromises[fontFamily]) {
-    Promise.reject(loadPromises[fontFamily]);
-    delete loadPromises[fontFamily];
   }
 
   // Important: we want all callers that concurrently try to load the same font to await the same

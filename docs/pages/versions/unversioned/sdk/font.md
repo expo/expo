@@ -130,3 +130,4 @@ type FontSource = string | number | Asset | FontResource;
 | ERR_WEB_ENVIRONMENT | The browser's `document` element doesn't support injecting fonts. |
 | ERR_DOWNLOAD        | Failed to download the provided resource.                         |
 | ERR_FONT_FAMILY     | Invalid font family name was provided.                            |
+| ERR_UNLOAD          | Attempting to unload fonts that haven't finished loading yet.     |
