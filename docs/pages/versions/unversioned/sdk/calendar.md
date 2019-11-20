@@ -581,7 +581,7 @@ A source account that owns a particular calendar. Expo apps will typically not n
 ### `Calendar.MonthOfTheYear`
 
 | MonthOfTheYear                      | Value |
-| ----------------------------------- | :---: |
+| ----------------------------------- | ----- |
 | `MonthOfTheYear.January`            |   1   |
 | `MonthOfTheYear.February`           |   2   |
 | `MonthOfTheYear.March`              |   3   |
