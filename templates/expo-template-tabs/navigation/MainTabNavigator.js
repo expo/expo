@@ -1,49 +1,42 @@
-import React from "react";
-import { Platform } from "react-native";
-import {
-  createStackNavigator,
-  createBottomTabNavigator
-} from "react-navigation";
+import React from 'react';
+import { Platform } from 'react-native';
+import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
-import TabBarIcon from "../components/TabBarIcon";
-import HomeScreen from "../screens/HomeScreen";
-import LinksScreen from "../screens/LinksScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-
-const HomeStack = createStackNavigator({
-  Home: HomeScreen
-});
+import TabBarIcon from '../components/TabBarIcon';
+import HomeScreen from '../screens/HomeScreen';
+import LinksScreen from '../screens/LinksScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const components = [
   {
     component: HomeScreen,
-    icon: "information-circle",
-    tabBarLabel: "Home"
+    icon: 'information-circle',
+    tabBarLabel: 'Home',
   },
   {
     component: LinksScreen,
-    icon: "link",
-    tabBarLabel: "Links"
+    icon: 'link',
+    tabBarLabel: 'Links',
   },
   {
     component: SettingsScreen,
-    icon: "options",
-    tabBarLabel: "Settings"
-  }
+    icon: 'options',
+    tabBarLabel: 'Settings',
+  },
 ];
 const stacks = {};
 components.forEach(item => {
   let stack = createStackNavigator({
-    [item.tabBarLabel]: item.component
+    [item.tabBarLabel]: item.component,
   });
   stack.navigationOptions = {
     tabBarLabel: item.tabBarLabel,
     tabBarIcon: ({ focused }) => (
       <TabBarIcon
         focused={focused}
-        name={Platform.OS === "ios" ? `ios-${item.icon}` : `md-${item.icon}`}
+        name={Platform.OS === 'ios' ? `ios-${item.icon}` : `md-${item.icon}`}
       />
-    )
+    ),
   };
   stacks[item.tabBarLabel] = stack;
 });
