@@ -7,7 +7,7 @@
 
 #include <cxxReactABI34_0_0/ABI34_0_0CxxModule.h>
 
-namespace facebook { namespace xplat { namespace module {
+namespace ABI34_0_0facebook { namespace xplat { namespace module {
 
 // Allows a Cxx-module to be shared or reused across multiple ReactABI34_0_0 instances
 // Caveat: the setInstance call is not forwarded, so usages of getInstance inside your

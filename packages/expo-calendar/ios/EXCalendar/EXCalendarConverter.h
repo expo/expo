@@ -12,5 +12,6 @@
 + (NSDictionary *)serializeReminder:(EKReminder *)reminder;
 + (NSArray *)serializeReminders:(NSArray<EKReminder *> *)reminders;
 + (NSArray *)serializeAttendees:(NSArray<EKParticipant *> *)attendees;
++ (NSMutableDictionary *)serializeCalendar:(EKCalendar *)calendar;
 
 @end

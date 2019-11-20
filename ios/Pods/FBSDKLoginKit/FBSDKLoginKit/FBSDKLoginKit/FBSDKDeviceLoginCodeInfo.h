@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract Describes the initial response when starting the device login flow.
  @discussion This is used by `FBSDKDeviceLoginManager`.
  */
+NS_SWIFT_NAME(DeviceLoginCodeInfo)
 @interface FBSDKDeviceLoginCodeInfo : NSObject
 
 /*!

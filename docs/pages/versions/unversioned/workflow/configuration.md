@@ -41,12 +41,16 @@ A short description of what your app is and why it is great.
 
 ### `"slug"`
 
-**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@your-username/my-app-name` project.
+**Required**. The friendly url name for publishing. eg: `my-app-name` will refer to the `expo.io/@project-owner/my-app-name` project.
+
+### `"owner"`
+
+The primary user to use for publishing and creating builds. If not provided, defaults to the username of the current user.
 
 ### `"privacy"`
 
 Either `public` or `unlisted`. If not provided, defaults to `unlisted`. In the future `private` will be supported. `unlisted` hides the experience from search results.
- Valid values: `public`, `unlisted`
+Valid values: `public`, `unlisted`
 
 ### `"sdkVersion"`
 
@@ -69,7 +73,7 @@ If you would like to share the source code of your app on Github, enter the URL 
 ### `"orientation"`
 
 Lock your app to a specific orientation with `portrait` or `landscape`. Defaults to no lock.
- Valid values: 'default', 'portrait', 'landscape'
+Valid values: 'default', 'portrait', 'landscape'
 
 ### `"primaryColor"`
 
@@ -117,13 +121,33 @@ Any extra fields you want to pass to your experience. Values are accessible via 
 
 Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
 
-> **ExpoKit**: To change this field, edit `Info.plist`.
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAutoInitEnabled"`
+
+Whether the Facebook SDK should be initialized automatically. The default in Expo (Client and in standalone apps) is `false`.
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAutoLogAppEventsEnabled"`
+
+Whether the Facebook SDK log app events automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.)
+
+> Note that Facebook SDK must be initialized for app events to work. You may autoinitialize Facebook SDK by setting `facebookAutoInitEnabled` to `true`.
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
+
+### `"facebookAdvertiserIDCollectionEnabled"`
+
+Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
+
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
 ### `"facebookDisplayName"`
 
 Used for native Facebook login.
 
-> **ExpoKit**: To change this field, edit `Info.plist`.
+> **ExpoKit**: To change this field, edit `Info.plist` and `AndroidManifest.xml`.
 
 ### `"facebookScheme"`
 
@@ -143,20 +167,47 @@ An array of file glob strings which point to assets that will be bundled within 
 
 ### `"androidStatusBar"`
 
-Configuration for android statusbar.
+Configuration for the status bar on Android.
 
 ```javascript
 {
   "androidStatusBar": {
     /*
-      Configure the statusbar icons to have light or dark color.
+      Configures the status-bar icons to have a light or dark color.
       Valid values: "light-content", "dark-content".
     */
     "barStyle": STRING,
 
     /*
-      Configuration for android statusbar.
-      6 character long hex color string, eg: "#000000"
+      Specifies the background color of the status bar.
+      Six-character hex color string, e.g., "#000000"
+    */
+    "backgroundColor": STRING
+  }
+}
+```
+
+### `"androidNavigationBar"`
+
+Configuration for the bottom navigation bar on Android.
+
+```javascript
+{
+  "androidNavigationBar": {
+    /*
+      Determines whether to show or hide the bottom navigation bar.
+      Specify `true` to show and `false` to hide. When set to `false`, both the navigation bar and the status bar are hidden by enabling full-screen mode, as recommended by the Android documentation.
+    */
+    "visible": BOOLEAN,
+    /*
+      Configure the navigation-bar icons to have a light or dark color. Supported on Android Oreo and newer.
+      Valid values: "light-content", "dark-content".
+    */
+    "barStyle": STRING,
+
+    /*
+      Specifies the background color of the navigation bar.
+      Six-character hex color string, e.g., "#000000"
     */
     "backgroundColor": STRING
   }
@@ -178,8 +229,7 @@ Configuration for loading and splash screen for standalone apps.
 
     /*
       Determines how the "image" will be displayed in the splash loading screen.
-      Must be one of "cover" or "contain", defaults to `contain`.
-      Valid values: "cover", "contain"
+      Valid values: "cover", "contain", or "native". Defaults to "contain".
     */
     "resizeMode": STRING,
 
@@ -216,6 +266,14 @@ Configuration for remote (push) notifications.
     "color": STRING,
 
     /*
+      Whether or not to display notifications when the app is in the foreground on iOS.
+      `_displayInForeground` option in the individual push notification message overrides this option.
+      Learn more: https://docs.expo.io/versions/latest/guides/push-notifications/#3-handle-receiving-andor-selecting-the-notification
+      Defaults to `false`.
+    */
+    "iosDisplayInForeground": BOOLEAN,
+
+    /*
       Show each push notification individually "default" or collapse into one "collapse".
       Valid values: "default", "collapse"
     */
@@ -225,7 +283,13 @@ Configuration for remote (push) notifications.
       If "androidMode" is set to "collapse", this title is used for the collapsed notification message.
       eg: "#{unread_notifications} new interactions"
     */
-    "androidCollapsedTitle": STRING
+    "androidCollapsedTitle": STRING,
+
+    /*
+     The URL-safe base64-encoded VAPID public key used for web push notifications.
+     Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/#client-setup
+    */
+    "vapidPublicKey": STRING
   }
 }
 ```
@@ -280,11 +344,9 @@ Configuration for how and when the app should request OTA JavaScript updates
 
 ```
 
-> **ExpoKit**: To change the value of `enabled`, edit `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
+> **ExpoKit**: To change the value of `enabled`, edit the `areRemoteUpdatesEnabled` key in `ios/<PROJECT-NAME>/Supporting/EXShell.plist` and the `ARE_REMOTE_UPDATES_ENABLED` variable in `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java`. All other properties are set at runtime.
 
 ### `"ios"`
-
-**Standalone Apps Only**. iOS standalone app specific configuration
 
 ```javascript
 {
@@ -304,10 +366,10 @@ Configuration for how and when the app should request OTA JavaScript updates
     "bundleIdentifier": STRING,
 
     /*
-      Build number for your iOS standalone app. Corresponds to `CFBundleVersion` 
+      Build number for your iOS standalone app. Corresponds to `CFBundleVersion`
       and must match Apple's specified format.
       developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364.
-      
+
       Note- Application loader will pull the value for "Version Number" from `expo.version` and NOT from `expo.ios.buildNumber`
 
       ExpoKit: use Xcode to set this.
@@ -340,6 +402,15 @@ Configuration for how and when the app should request OTA JavaScript updates
     "supportsTablet": BOOLEAN,
 
     /*
+      If true, indicates that your standalone iOS app does not support Slide Over
+      and Split View on iPad.
+      Defaults to `true` currently, but will change to `false` in a future SDK version.
+
+      ExpoKit: use Xcode to set `UIRequiresFullScreen`.
+    */
+    "requireFullScreen": BOOLEAN,
+
+    /*
       If true, indicates that your standalone iOS app does not support handsets.
       Your app will only support tablets.
 
@@ -349,6 +420,7 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       Dictionary of arbitrary configuration to add to your standalone app's native Info.plist. Applied prior to all other Expo-specific configuration.
+      Must be customized if your app requests system permissions.
 
       No other validation is performed, so use this at your own risk of rejection from the App Store.
     */
@@ -356,7 +428,8 @@ Configuration for how and when the app should request OTA JavaScript updates
 
     /*
       An array that contains Associated Domains for the standalone app. See apple's docs for config: https://developer.apple.com/documentation/uikit/core_app/allowing_apps_and_websites_to_link_to_your_content/enabling_universal_links
-      Entries must be prefixed with "www."
+
+      Entries must follow the format "applinks:<fully qualified domain>[:port number]". See Apple's docs for details -> https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains
 
       ExpoKit: use Xcode to set this.
     */
@@ -369,6 +442,22 @@ Configuration for how and when the app should request OTA JavaScript updates
       ExpoKit: use Xcode to set this.
     */
     "usesIcloudStorage": BOOLEAN,
+
+    /*
+      A boolean indicating if the app uses Apple Sign In.
+      See AppleAuthentication docs for details.
+
+      ExpoKit: use Xcode to set this.
+    */
+    "usesAppleSignIn": BOOLEAN,
+
+    /*
+      A boolean value indicating if the app may access the notes stored in contacts.
+      See Contacts docs for details.
+
+      ExpoKit: use Xcode to set this.
+    */
+    "accessesContactNotes": BOOLEAN,
 
     /*
       Extra module configuration to be added to your app's native Info.plist.
@@ -399,6 +488,23 @@ Configuration for how and when the app should request OTA JavaScript updates
       "googleMapsApiKey": STRING,
 
       /*
+        Google Mobile Ads App ID for your standalone app.
+
+        https://developers.google.com/admob/ios/quick-start#update_your_infoplist
+      */
+      "googleMobileAdsAppId": STRING,
+
+      /*
+        A boolean indicating whether to initialize Google App Measurement and begin sending
+        user-level event data to Google immediately when the app starts. The default in Expo
+        (Client and in standalone apps) is `false`.
+
+        Sets the opposite of the given value to the following key in Info.plist:
+        https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional
+      */
+      "googleMobileAdsAutoInit": BOOLEAN,
+
+      /*
         Google Sign-In iOS SDK keys for your standalone app.
 
         developers.google.com/identity/sign-in/ios/start-integrating
@@ -406,13 +512,21 @@ Configuration for how and when the app should request OTA JavaScript updates
       "googleSignIn": {
         /*
           The reserved client ID URL scheme.
-          Can be found in GoogeService-Info.plist.
+          Can be found in GoogleService-Info.plist.
         */
         "reservedClientId": STRING
       }
     },
 
     "splash": {
+      /*
+        Local path to a .xib interface builder document which will be used as the
+        loading screen of the standalone iOS app.
+        Note that this will only be used in the standalone app (i.e., after you
+        build the app). It will not be used in the Expo client.
+      */
+      "xib": STRING,
+
       /*
         Color to fill the loading screen background 6 character long hex color string, eg: "#000000"
       */
@@ -437,7 +551,12 @@ Configuration for how and when the app should request OTA JavaScript updates
         Image size and aspect ratio are up to you.
         Must be a .png.
       */
-      "tabletImage": STRING
+      "tabletImage": STRING,
+
+      /*
+        Supported user interface styles. If left blank, "light" will be used. Use "automatic" if you would like to support either "light" or "dark" depending on iOS settings.
+      */
+      "userInterfaceStyle": "automatic" | "light" | "dark"
     }
   }
 }
@@ -638,7 +757,24 @@ Configuration for how and when the app should request OTA JavaScript updates
           Your Google Maps Android SDK API key
         */
         "apiKey": STRING
-      }
+      },
+
+      /*
+        Google Mobile Ads App ID for your standalone app.
+
+        https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml
+      */
+      "googleMobileAdsAppId": STRING,
+
+      /*
+        A boolean indicating whether to initialize Google App Measurement and begin sending
+        user-level event data to Google immediately when the app starts. The default in Expo
+        (Client and in standalone apps) is `false`.
+
+        Sets the opposite of the given value to the following tag in AndroidManifest.xml:
+        https://developers.google.com/admob/android/eu-consent#delay_app_measurement_optional
+      */
+      "googleMobileAdsAutoInit": BOOLEAN,
 
       /*
         Google Sign-In Android SDK keys for your standalone app.

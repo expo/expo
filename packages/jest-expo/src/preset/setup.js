@@ -30,15 +30,6 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
   get: () => mockNativeModules.Linking,
 });
 
-const mockPlatformConstants = {
-  configurable: true,
-  enumerable: true,
-  get: () => ({
-    forceTouchAvailable: true,
-  }),
-};
-Object.defineProperty(mockNativeModules, 'PlatformConstants', mockPlatformConstants);
-
 const publicExpoModules = require('./expoModules');
 const internalExpoModules = require('./internalExpoModules');
 const expoModules = {
@@ -112,13 +103,6 @@ mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName
   });
 });
 
-Object.defineProperty(mockNativeModules.UIManager, 'takeSnapshot', {
-  configurable: true,
-  enumerable: true,
-  writable: true,
-  value: jest.fn(),
-});
-
 const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
 mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
   ...modulesConstants,
@@ -128,18 +112,25 @@ mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
   },
 };
 
-jest.mock('expo-file-system', () => ({
-  downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
-  getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
-  readAsStringAsync: jest.fn(() => Promise.resolve()),
-  writeAsStringAsync: jest.fn(() => Promise.resolve()),
-  deleteAsync: jest.fn(() => Promise.resolve()),
-  moveAsync: jest.fn(() => Promise.resolve()),
-  copyAsync: jest.fn(() => Promise.resolve()),
-  makeDirectoryAsync: jest.fn(() => Promise.resolve()),
-  readDirectoryAsync: jest.fn(() => Promise.resolve()),
-  createDownloadResumable: jest.fn(() => Promise.resolve()),
-}));
+try {
+  jest.mock('expo-file-system', () => ({
+    downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
+    getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
+    readAsStringAsync: jest.fn(() => Promise.resolve()),
+    writeAsStringAsync: jest.fn(() => Promise.resolve()),
+    deleteAsync: jest.fn(() => Promise.resolve()),
+    moveAsync: jest.fn(() => Promise.resolve()),
+    copyAsync: jest.fn(() => Promise.resolve()),
+    makeDirectoryAsync: jest.fn(() => Promise.resolve()),
+    readDirectoryAsync: jest.fn(() => Promise.resolve()),
+    createDownloadResumable: jest.fn(() => Promise.resolve()),
+  }));
+} catch (error) {
+  // Allow this module to be optional for bare-workflow
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    throw error;
+  }
+}
 
 jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
   registerAsset: jest.fn(() => 1),
@@ -160,35 +151,32 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
-jest.mock('@unimodules/react-native-adapter', () => {
-  const ReactNativeAdapter = require.requireActual('@unimodules/react-native-adapter');
-  const { NativeModulesProxy } = ReactNativeAdapter;
+try {
+  jest.mock('@unimodules/react-native-adapter', () => {
+    const ReactNativeAdapter = require.requireActual('@unimodules/react-native-adapter');
+    const { NativeModulesProxy } = ReactNativeAdapter;
 
-  // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
-  // into the native proxy module. We're not really interested in checking whether the underlying
-  // method is called, just that the proxy method is called, since we have unit tests for the
-  // adapter and believe it works correctly.
-  //
-  // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
-  // This means the mock functions will not throw validation errors the way they would in an app.
-  for (const moduleName of Object.keys(NativeModulesProxy)) {
-    const nativeModule = NativeModulesProxy[moduleName];
-    for (const propertyName of Object.keys(nativeModule)) {
-      if (typeof nativeModule[propertyName] === 'function') {
-        nativeModule[propertyName] = jest.fn(async () => {});
+    // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call
+    // into the native proxy module. We're not really interested in checking whether the underlying
+    // method is called, just that the proxy method is called, since we have unit tests for the
+    // adapter and believe it works correctly.
+    //
+    // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
+    // This means the mock functions will not throw validation errors the way they would in an app.
+    for (const moduleName of Object.keys(NativeModulesProxy)) {
+      const nativeModule = NativeModulesProxy[moduleName];
+      for (const propertyName of Object.keys(nativeModule)) {
+        if (typeof nativeModule[propertyName] === 'function') {
+          nativeModule[propertyName] = jest.fn(async () => {});
+        }
       }
     }
-  }
 
-  return ReactNativeAdapter;
-});
-
-// The UIManager module is not idempotent and causes issues if we load it again after resetting
-// the modules with Jest.
-let UIManager;
-jest.doMock('react-native/Libraries/ReactNative/UIManager', () => {
-  if (!UIManager) {
-    UIManager = require.requireActual('react-native/Libraries/ReactNative/UIManager');
+    return ReactNativeAdapter;
+  });
+} catch (error) {
+  // Allow this module to be optional for bare-workflow
+  if (error.code !== 'MODULE_NOT_FOUND') {
+    throw error;
   }
-  return UIManager;
-});
+}

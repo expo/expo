@@ -7,71 +7,39 @@ NS_ASSUME_NONNULL_BEGIN
  * This option specifies the barcode formats that the library should detect.
  */
 typedef NS_OPTIONS(NSInteger, FIRVisionBarcodeFormat) {
-  /**
-   * Unknown format.
-   */
+  /** Unknown format. */
   FIRVisionBarcodeFormatUnKnown = 0,
-  /**
-   * All format.
-   */
+  /** All format. */
   FIRVisionBarcodeFormatAll = 0xFFFF,
-  /**
-   * Code-128 detection.
-   */
+  /** Code-128 detection. */
   FIRVisionBarcodeFormatCode128 = 0x0001,
-  /**
-   * Code-39 detection.
-   */
+  /** Code-39 detection. */
   FIRVisionBarcodeFormatCode39 = 0x0002,
-  /**
-   * Code-93 detection.
-   */
+  /** Code-93 detection. */
   FIRVisionBarcodeFormatCode93 = 0x0004,
-  /**
-   * Codabar detection.
-   */
+  /** Codabar detection. */
   FIRVisionBarcodeFormatCodaBar = 0x0008,
-  /**
-   * Data Matrix detection.
-   */
+  /** Data Matrix detection. */
   FIRVisionBarcodeFormatDataMatrix = 0x0010,
-  /**
-   * EAN-13 detection.
-   */
+  /** EAN-13 detection. */
   FIRVisionBarcodeFormatEAN13 = 0x0020,
-  /**
-   * EAN-8 detection.
-   */
+  /** EAN-8 detection. */
   FIRVisionBarcodeFormatEAN8 = 0x0040,
-  /**
-   * ITF detection.
-   */
+  /** ITF detection. */
   FIRVisionBarcodeFormatITF = 0x0080,
-  /**
-   * QR Code detection.
-   */
+  /** QR Code detection. */
   FIRVisionBarcodeFormatQRCode = 0x0100,
-  /**
-   * UPC-A detection.
-   */
+  /** UPC-A detection. */
   FIRVisionBarcodeFormatUPCA = 0x0200,
-  /**
-   * UPC-E detection.
-   */
+  /** UPC-E detection. */
   FIRVisionBarcodeFormatUPCE = 0x0400,
-  /**
-   * PDF-417 detection.
-   */
+  /** PDF-417 detection. */
   FIRVisionBarcodeFormatPDF417 = 0x0800,
-  /**
-   * Aztec code detection.
-   */
+  /** Aztec code detection. */
   FIRVisionBarcodeFormatAztec = 0x1000,
 } NS_SWIFT_NAME(VisionBarcodeFormat);
 
-/**
- * Options for specifying a Barcode detector.
- */
+/** Options for specifying a Barcode detector. */
 NS_SWIFT_NAME(VisionBarcodeDetectorOptions)
 @interface FIRVisionBarcodeDetectorOptions : NSObject
 

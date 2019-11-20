@@ -1,7 +1,8 @@
 import * as AppAuth from 'expo-app-auth';
-import { CodedError } from '@unimodules/core';
-import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+import { CodedError } from '@unimodules/core';
 
 const isInExpo = Constants.appOwnership === 'expo';
 export type GoogleLogInConfig = {
@@ -77,7 +78,7 @@ function getPlatformGUID(config: GoogleLogInConfig) {
 }
 
 // TODO: Bacon: ensure this is valid for all cases.
-const PROJECT_NUMBER_LENGTH = 11;
+const PROJECT_NUMBER_LENGTH = 11; // eslint-disable-line
 
 const PROJECT_ID_LENGTH = 32;
 
@@ -146,11 +147,9 @@ export async function logInAsync(config: GoogleLogInConfig): Promise<LogInResult
   const guid = getPlatformGUID(config);
 
   const clientId = `${guid}.apps.googleusercontent.com`;
-  const reverseClientId = `com.googleusercontent.apps.${guid}`;
-  let redirectUrl;
-  if (!isInExpo) {
-    redirectUrl = config.redirectUrl || `${reverseClientId}:/oauth2redirect/google`;
-  }
+  let redirectUrl = config.redirectUrl
+    ? config.redirectUrl
+    : `${AppAuth.OAuthRedirect}:/oauth2redirect/google`;
   try {
     const logInResult = await AppAuth.authAsync({
       issuer: 'https://accounts.google.com',

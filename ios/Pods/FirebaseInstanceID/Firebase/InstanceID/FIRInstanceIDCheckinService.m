@@ -226,7 +226,7 @@ static FIRInstanceIDURLRequestTestBlock testBlock;
     @"locale" : locale,
     @"version" : @(kCheckinVersion),
     @"digest" : checkinPreferences.digest ?: @"",
-    @"timezone" : timeZone,
+    @"time_zone" : timeZone,
     @"user_serial_number" : @(userSerialNumber),
     @"id" : @([checkinPreferences.deviceID longLongValue]),
     @"security_token" : @([checkinPreferences.secretToken longLongValue]),

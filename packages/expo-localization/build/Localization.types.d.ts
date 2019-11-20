@@ -3,6 +3,6 @@ export declare type Localization = {
     locales: string[];
     timezone: string;
     isoCurrencyCodes?: string[];
-    country?: string;
+    region?: string;
     isRTL: boolean;
 };

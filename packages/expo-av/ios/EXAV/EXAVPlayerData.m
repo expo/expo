@@ -34,7 +34,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, weak) EXAV *exAV;
 
 @property (nonatomic, assign) BOOL isLoaded;
-@property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
 
 @property (nonatomic, strong) id <NSObject> timeObserver;

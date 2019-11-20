@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI32_0_0/EXCore/ABI32_0_0EXCore/EXModuleRegistryProvider/ABI32_0_0EXModuleRegistryProvider.h

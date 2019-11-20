@@ -3,7 +3,7 @@ package abi34_0_0.expo.modules.payments.stripe;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 /**

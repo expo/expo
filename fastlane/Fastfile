@@ -72,7 +72,8 @@ platform :ios do
   before_all do
     FileUtils.mkdir_p(output_directory)
     Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
-      xcodeproj: "./ios/Exponent.xcodeproj"
+      xcodeproj: "./ios/Exponent.xcodeproj",
+      target: "Exponent"
     )
     save_original_info_plist
     set_bundle_version_from_commit_count
@@ -89,10 +90,7 @@ platform :ios do
   end
 
   lane :create_simulator_build do
-    directory = "./ios" + prompt(
-      ci_input: "./build",
-      text: "Please enter the path where we should output the sim build, relative to ./ios (i.e. ../my-simulator-build):",
-    )
+    directory = "./ios/simulator-build"
     puts "Build will be written to: " + File.expand_path(directory)
     xcbuild(
       workspace: "ios/Exponent.xcworkspace",
@@ -120,7 +118,7 @@ platform :ios do
       destination: "generic/platform=iOS",
       archive: true,
       archive_path: directory + "/Exponent.xcarchive",
-      xcargs: "CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO"
+      xcargs: "CODE_SIGNING_ALLOWED=NO APP_OWNER=Public"
     )
   end
 
@@ -130,6 +128,7 @@ platform :ios do
     )
 
     sigh(
+      app_identifier: "host.exp.Exponent",
       output_path: output_directory,
       filename: "Exponent-distribution.mobileprovision",
     )
@@ -153,7 +152,9 @@ platform :ios do
       output_name: "Exponent.ipa",
     )
 
-    deliver()
+    deliver(
+      team_id: "17102800",
+    )
   end
 
   after_all do |lane|

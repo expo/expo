@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
+import android.os.Environment;
+import android.os.StatFs;
 import android.util.Base64;
 import android.util.Log;
 
@@ -33,7 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
 import java.net.CookieHandler;
+import java.nio.file.LinkOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -302,7 +307,12 @@ public class FileSystemModule extends ExportedModule {
       if ("file".equals(uri.getScheme())) {
         File file = uriToFile(uri);
         if (file.exists()) {
-          FileUtils.forceDelete(file);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            FileUtils.forceDelete(file);
+          } else {
+            // to be removed once Android SDK 25 support is dropped
+            forceDelete(file);
+          }
           promise.resolve(null);
         } else {
           if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
@@ -508,6 +518,7 @@ public class FileSystemModule extends ExportedModule {
             }
             result.putInt("status", response.code());
             result.putBundle("headers", translateHeaders(response.headers()));
+            response.close();
             promise.resolve(result);
           }
         });
@@ -517,6 +528,42 @@ public class FileSystemModule extends ExportedModule {
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void getTotalDiskCapacityAsync(Promise promise) {
+    try {
+      StatFs root = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long blockCount = root.getBlockCountLong();
+      long blockSize = root.getBlockSizeLong();
+      BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
+      //cast down to avoid overflow
+      Double capacityDouble = Math.max(capacity.doubleValue(), Math.pow(2, 53) - 1);
+      promise.resolve(capacityDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to access total disk capacity", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getFreeDiskStorageAsync(Promise promise) {
+    try {
+      StatFs external = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long availableBlocks = external.getAvailableBlocksLong();
+      long blockSize = external.getBlockSizeLong();
+
+      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
+      Double storageDouble = Math.max(storage.doubleValue(), Math.pow(2, 53) - 1);
+      //cast down to avoid overflow
+      if (storage.longValue() > Math.pow(2, 53) - 1) {
+        storageDouble = Math.pow(2, 53) - 1;
+      }
+      promise.resolve(storageDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM", "Unable to determine free disk storage capacity", e);
     }
   }
 
@@ -544,7 +591,7 @@ public class FileSystemModule extends ExportedModule {
   private Uri contentUriFromFile(File file) {
     try {
       Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
-      return FileProvider.getUriForFile(application, application.getPackageName() + ".provider", file);
+      return FileSystemFileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
     } catch (Exception e) {
       throw e;
     }
@@ -722,6 +769,7 @@ public class FileSystemModule extends ExportedModule {
         result.putInt("status", response.code());
         result.putBundle("headers", translateHeaders(response.headers()));
 
+        response.close();
         promise.resolve(result);
         return null;
       } catch (Exception e) {
@@ -843,6 +891,39 @@ public class FileSystemModule extends ExportedModule {
   private void ensureDirExists(File dir) throws IOException {
     if (!(dir.isDirectory() || dir.mkdirs())) {
       throw new IOException("Couldn't create directory '" + dir + "'");
+    }
+  }
+
+  /**
+   * Concatenated copy of org.apache.commons.io@1.4.0#FileUtils#forceDelete
+   * Newer version of commons-io uses File#toPath() under the hood that unsupported below Android SDK 26
+   * See docs for reference https://commons.apache.org/proper/commons-io/javadocs/api-1.4/index.html
+   */
+  private void forceDelete(File file) throws IOException {
+    if (file.isDirectory()) {
+      File[] files = file.listFiles();
+      if (files == null) {
+        throw new IOException("Failed to list contents of " + file);
+      }
+
+      IOException exception = null;
+      for (File f : files) {
+        try {
+          forceDelete(f);
+        } catch (IOException ioe) {
+          exception = ioe;
+        }
+      }
+
+      if (null != exception) {
+        throw exception;
+      }
+
+      if (!file.delete()) {
+        throw new IOException("Unable to delete directory " + file + ".");
+      }
+    } else if (!file.delete()) {
+      throw new IOException( "Unable to delete file: " + file);
     }
   }
 }

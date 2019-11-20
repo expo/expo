@@ -4,7 +4,7 @@ title: AppLoading
 
 A React component that tells Expo to keep the app loading screen open if it is the first and only component rendered in your app. Unless `autoHideSplash` prop is set to `false` the loading screen will disappear and your app will be visible when the component is removed.
 
-This is incredibly useful to let you download and cache fonts, logo and icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering they start using the app.
+This is incredibly useful to let you download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering and they start using the app.
 
 ## Installation
 

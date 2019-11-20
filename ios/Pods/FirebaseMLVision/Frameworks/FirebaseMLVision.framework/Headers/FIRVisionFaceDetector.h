@@ -15,15 +15,11 @@ typedef void (^FIRVisionFaceDetectionCallback)(NSArray<FIRVisionFace *> *_Nullab
                                                NSError *_Nullable error)
     NS_SWIFT_NAME(VisionFaceDetectionCallback);
 
-/**
- * A face detector that detects faces in an image.
- */
+/** A face detector that detects faces in an image. */
 NS_SWIFT_NAME(VisionFaceDetector)
 @interface FIRVisionFaceDetector : NSObject
 
-/**
- * Unavailable. Use `Vision` factory methods.
- */
+/** Unavailable. Use `Vision` factory methods. */
 - (instancetype)init NS_UNAVAILABLE;
 
 /**

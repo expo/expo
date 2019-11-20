@@ -16,13 +16,11 @@ title: ActionSheetIOS
 
 ### `showActionSheetWithOptions()`
 
-
 ```javascript
 
 static showActionSheetWithOptions(options, callback)
 
 ```
-
 
 Display an iOS action sheet. The `options` object must contain one or more of:
 
@@ -38,36 +36,30 @@ The 'callback' function takes one parameter, the zero-based index of the selecte
 
 Minimal example:
 
-
 ```javascript
-
 ActionSheetIOS.showActionSheetWithOptions(
   {
     options: ['Cancel', 'Remove'],
     destructiveButtonIndex: 1,
     cancelButtonIndex: 0,
   },
-  (buttonIndex) => {
+  buttonIndex => {
     if (buttonIndex === 1) {
       /* destructive action */
     }
-  },
+  }
 );
-
 ```
-
 
 ---
 
 ### `showShareActionSheetWithOptions()`
-
 
 ```javascript
 
 static showShareActionSheetWithOptions(options, failureCallback, successCallback)
 
 ```
-
 
 Display the iOS share sheet. The `options` object should contain one or both of `message` and `url` and can additionally have a `subject` or `excludedActivityTypes`:
 
@@ -84,4 +76,3 @@ The 'successCallback' function takes two parameters:
 
 - a boolean value signifying success or failure
 - a string that, in the case of success, indicates the method of sharing
-

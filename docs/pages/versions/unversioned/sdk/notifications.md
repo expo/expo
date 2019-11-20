@@ -4,8 +4,6 @@ title: Notifications
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
-Want to see it in action? Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications)!
-
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.
@@ -16,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
-Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to see Notifications in action- but be sure to use a device! Push notifications don't work on simulators/emulators.
+Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications?platform=ios) to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators. For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for notifications to work.
 
 ## Subscribing to Notifications
 
@@ -55,6 +53,12 @@ An object that is passed into each event listener when a notification is receive
 Returns a Promise that resolves to a token string. This token can be provided to the Expo notifications backend to send a push notification to this device. [Read more in the Push Notifications guide](../../guides/push-notifications/#push-notifications).
 
 The Promise will be rejected if the app does not have permission to send notifications. Be sure to check the result of `Permissions.askAsync(Permissions.NOTIFICATIONS)` before attempting to get an Expo push token.
+
+#### Error Codes
+
+- `E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED` - the device was unable to register for remote notifications with Expo.
+- `E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG` - (web only) you did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/))
+- `E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED` - (web only) the device was unable to register for remote notifications with the browser endpoint.
 
 ### `Notifications.presentLocalNotificationAsync(localNotification)`
 
@@ -133,6 +137,7 @@ Registers a new set of actions under given `name`.
   - **textInput (_object_)** -- An optional object of shape: `{ submitButtonTitle: string, placeholder: string }`, which when provided, will prompt the user to enter a text value.
   - **isDestructive (_boolean_)** -- (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648199-destructive) was set)
   - **isAuthenticationRequired (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set)
+  - **doNotOpenInForeground (_boolean_)** -- (iOS only) If this property is truthy, triggering the action will not open the app in foreground (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/unnotificationactionoptionforeground) was **NOT** set)
 
 ### `Notifications.deleteCategoryAsync(name: string)`
 
@@ -175,6 +180,7 @@ An object used to describe the local notification that you would like to present
 - **categoryId (_optional_) (_string_)** -- ID of the category (first created with `Notifications.createCategoryAsync`) associated to the notification.
 - **ios (_optional_) (_object_)** -- notification configuration specific to iOS.
   - **sound** (_optional_) (_boolean_) -- if `true`, play a sound. Default: `false`.
+  - **_displayInForeground** (_optional_) (_boolean_) -- if `true`, display the notification when the app is foreground. Default: `false`.
 - **android (_optional_) (_object_)** -- notification configuration specific to Android.
   - **channelId** (_optional, but recommended_) (_string_) -- ID of the channel to post this notification to in Android 8.0+. If null, defaults to the "Default" channel which Expo will automatically create for you. If you don't want Expo to create a default channel, make sure to always specify this field for all notifications.
   - **icon** (_optional_) (_string_) -- URL of icon to display in notification drawer.
@@ -209,7 +215,7 @@ Sets the number displayed in the app icon's badge to the given number. Setting t
 
 ### `Notifications.getDevicePushTokenAsync(config)`
 
-Note: Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
+Note: **This method is only available in standalone apps.** Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
 
 Returns a native APNS, FCM or GCM token that can be used with another push notification service. If firebase cloud messaging is configured on your standalone Android app ([see guide here](../../guides/using-fcm/)), it will return an FCM token, otherwise it will return a GCM token.
 
@@ -224,3 +230,16 @@ A Promise that resolves to an object with the following fields:
 
 - **type (_string_)** -- Either "apns", "fcm", or "gcm".
 - **data (_string_)** -- The push token as a string.
+
+#### Error Codes
+
+- `E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG` - (web only) you did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/))
+- `E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED` - (web only) the device was unable to register for remote notifications with the browser endpoint.
+
+## Error Codes
+
+| Code                                               | Description                                                                                      |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED          | The device was unable to register for remote notifications with Expo.                            |
+| E_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG            | (Web only) You did not provide `owner`, `slug`, and `notification.vapidPublicKey` in `app.json` to use push notifications in Expo for Web. ([Learn more here](../../guides/using-vapid/)) |
+| E_NOTIFICATIONS_PUSH_WEB_TOKEN_REGISTRATION_FAILED | (Web only) The device was unable to register for remote notifications with the browser endpoint. |

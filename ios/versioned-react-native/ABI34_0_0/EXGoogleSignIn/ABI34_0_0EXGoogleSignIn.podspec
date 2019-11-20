@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'ABI34_0_0UMCore'
-  s.dependency 'GoogleSignIn', '~> 4.4'
+  s.dependency 'GoogleSignIn'
 end
 
   

@@ -33,6 +33,7 @@ FOUNDATION_EXPORT NSString * const kEXKernelClearJSCacheUserDefaultsKey;
 - (void)switchTasks;
 - (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
 - (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache
+- (void)reloadVisibleApp; // called in development whenever the app is reloaded
 
 /**
  *  Send a given notification.

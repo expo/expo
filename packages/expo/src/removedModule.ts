@@ -41,5 +41,5 @@ function throwError() {
   messages = [];
   packages = [];
   namedImports = [];
-  throw new Error(message); 
+  throw new Error(message);
 }

@@ -2,8 +2,7 @@ import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
 import { AsyncStorage, Platform } from 'react-native';
-import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
-import { UnavailabilityError } from '@unimodules/core';
+import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import ExponentNotifications from './ExponentNotifications';
 import {
   Notification,
@@ -18,11 +17,11 @@ let _initialNotification;
 function _maybeInitEmitter() {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Exponent.notification', _emitNotification);
+    RCTDeviceEventEmitter.addListener('Exponent.notification', emitNotification);
   }
 }
 
-function _emitNotification(notification) {
+export function emitNotification(notification) {
   if (typeof notification === 'string') {
     notification = JSON.parse(notification);
   }
@@ -60,6 +59,7 @@ function _processNotification(notification) {
 
     if (notification.ios) {
       notification = Object.assign(notification, notification.ios);
+      notification.data._displayInForeground = notification.ios._displayInForeground;
       delete notification.ios;
     }
   }
@@ -114,7 +114,6 @@ if (Platform.OS === 'android') {
   AsyncStorage.clear = async function(callback?: (error?: Error) => void): Promise<void> {
     try {
       let keys = await AsyncStorage.getAllKeys();
-      let result = null;
       if (keys && keys.length) {
         let filteredKeys = keys.filter(key => !key.startsWith(ASYNC_STORAGE_PREFIX));
         await AsyncStorage.multiRemove(filteredKeys);
@@ -362,6 +361,9 @@ export default {
 
   /* Cancel scheduled notification notification with ID */
   cancelScheduledNotificationAsync(notificationId: LocalNotificationId): Promise<void> {
+    if (Platform.OS === 'android' && typeof notificationId === 'string') {
+      return ExponentNotifications.cancelScheduledNotificationWithStringIdAsync(notificationId);
+    }
     return ExponentNotifications.cancelScheduledNotificationAsync(notificationId);
   },
 
@@ -378,7 +380,7 @@ export default {
       const initialNotification = _initialNotification;
       _initialNotification = null;
       setTimeout(() => {
-        _emitNotification(initialNotification);
+        emitNotification(initialNotification);
       }, 0);
     }
 
@@ -398,4 +400,60 @@ export default {
     }
     return ExponentNotifications.setBadgeNumberAsync(number);
   },
+
+  async scheduleNotificationWithCalendarAsync(
+    notification: LocalNotification,
+    options: {
+      year?: number;
+      month?: number;
+      hour?: number;
+      day?: number;
+      minute?: number;
+      second?: number;
+      weekDay?: number;
+      repeat?: boolean;
+    } = {}
+  ): Promise<string> {
+    const areOptionsValid: boolean =
+      (options.month == null || isInRangeInclusive(options.month, 1, 12)) &&
+      (options.day == null || isInRangeInclusive(options.day, 1, 31)) &&
+      (options.hour == null || isInRangeInclusive(options.hour, 0, 23)) &&
+      (options.minute == null || isInRangeInclusive(options.minute, 0, 59)) &&
+      (options.second == null || isInRangeInclusive(options.second, 0, 59)) &&
+      (options.weekDay == null || isInRangeInclusive(options.weekDay, 1, 7)) &&
+      (options.weekDay == null || options.day == null);
+
+    if (!areOptionsValid) {
+      throw new CodedError(
+        'WRONG_OPTIONS',
+        'Options in scheduleNotificationWithCalendarAsync call were incorrect!'
+      );
+    }
+
+    _validateNotification(notification);
+    let nativeNotification = _processNotification(notification);
+
+    return ExponentNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
+  },
+
+  async scheduleNotificationWithTimerAsync(
+    notification: LocalNotification,
+    options: {
+      interval: number;
+      repeat?: boolean;
+    }
+  ): Promise<string> {
+    if (options.interval < 1) {
+      throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
+    }
+
+    _validateNotification(notification);
+    let nativeNotification = _processNotification(notification);
+
+    return ExponentNotifications.scheduleNotificationWithTimer(nativeNotification, options);
+  },
 };
+
+function isInRangeInclusive(variable: number, min: number, max: number): boolean {
+  return variable >= min && variable <= max;
+}

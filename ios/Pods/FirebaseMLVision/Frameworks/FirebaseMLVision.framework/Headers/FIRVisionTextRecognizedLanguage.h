@@ -2,9 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Detected language from text recognition.
- */
+/** Detected language from text recognition. */
 NS_SWIFT_NAME(VisionTextRecognizedLanguage)
 @interface FIRVisionTextRecognizedLanguage : NSObject
 
@@ -14,9 +12,7 @@ NS_SWIFT_NAME(VisionTextRecognizedLanguage)
  */
 @property(nonatomic, readonly, nullable) NSString *languageCode;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

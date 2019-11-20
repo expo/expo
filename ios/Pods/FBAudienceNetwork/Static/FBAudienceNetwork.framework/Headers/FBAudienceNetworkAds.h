@@ -30,11 +30,12 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 
 /**
  Designated initializer for FBAdInitSettings
+ If an ad provided service is mediating Audience Network in their sdk, it is required to set the name of the mediation service
 
  @param placementIDs An array of placement identifiers.
- @param mediation String to identify mediation provide.
+ @param mediationService String to identify mediation provider.
  */
-- (instancetype)initWithPlacementIDs:(NSArray<NSString *> *)placementIDs mediation:(NSString *)mediation;
+- (instancetype)initWithPlacementIDs:(NSArray<NSString *> *)placementIDs mediationService:(NSString *)mediationService;
 
 /**
  An array of placement identifiers.
@@ -42,9 +43,9 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 @property (nonatomic, copy, readonly) NSArray<NSString *> *placementIDs;
 
 /**
- String to identify mediation provide.
+ String to identify mediation provider.
  */
-@property (nonatomic, copy, readonly) NSString *mediation;
+@property (nonatomic, copy, readonly) NSString *mediationService;
 
 @end
 
@@ -69,6 +70,16 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 /**
   FBAudienceNetworkAds is an entry point to AN SDK.
  */
+typedef NS_ENUM(NSInteger, FBAdFormatTypeName) {
+    FBAdFormatTypeNameUnknown = 0,
+    FBAdFormatTypeNameBanner,
+    FBAdFormatTypeNameInterstitial,
+    FBAdFormatTypeNameInstream,
+    FBAdFormatTypeNameNative,
+    FBAdFormatTypeNameNativeBanner,
+    FBAdFormatTypeNameRewardedVideo,
+};
+
 FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 @interface FBAudienceNetworkAds : NSObject
 
@@ -79,6 +90,13 @@ FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
  @param completionHandler The block which will be called when initialization finished
  */
 + (void)initializeWithSettings:(nullable FBAdInitSettings *)settings completionHandler:(nullable void (^)(FBAdInitResults *results))completionHandler;
+
+/**
+ Returns ad format type name for a given placement id.
+
+ @param placementId Placement id that is configured for the current app.
+ */
++ (FBAdFormatTypeName)adFormatTypeNameForPlacementId:(NSString *)placementId;
 
 @end
 

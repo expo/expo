@@ -79,11 +79,16 @@ FB_CLASS_EXPORT
 
 @property (nonatomic, copy, nullable) NSString *contentURL;
 @property (nonatomic, copy, nullable) NSString *extraData;
+@property (nonatomic, copy, nullable) NSString *mediationData;
 
-- (instancetype)initWithKeywords:(NSArray<FBAdExtraHintKeyword> *)keywords;
+- (instancetype)initWithKeywords:(NSArray<FBAdExtraHintKeyword> *)keywords
+    FB_DEPRECATED_WITH_MESSAGE("Keywords are no longer used in Audience Network");
 
-- (void)addKeyword:(FBAdExtraHintKeyword)keyword;
-- (void)removeKeyword:(FBAdExtraHintKeyword)keyword;
+- (void)addKeyword:(FBAdExtraHintKeyword)keyword
+    FB_DEPRECATED_WITH_MESSAGE("Keywords are no longer used in Audience Network");
+
+- (void)removeKeyword:(FBAdExtraHintKeyword)keyword
+    FB_DEPRECATED_WITH_MESSAGE("Keywords are no longer used in Audience Network");
 
 @end
 

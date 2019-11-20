@@ -98,7 +98,7 @@ class GroupView extends RenderableView {
                     ((RenderableView)node).mergeProperties(self);
                 }
 
-                int count = node.saveAndSetupCanvas(canvas);
+                int count = node.saveAndSetupCanvas(canvas, mCTM);
                 node.render(canvas, paint, opacity * mOpacity);
                 RectF r = node.getClientRect();
                 if (r != null) {
@@ -224,7 +224,9 @@ class GroupView extends RenderableView {
         if (clipPath != null) {
             if (mClipRegionPath != clipPath) {
                 mClipRegionPath = clipPath;
-                mClipRegion = getRegion(clipPath);
+                mClipBounds = new RectF();
+                clipPath.computeBounds(mClipBounds, true);
+                mClipRegion = getRegion(clipPath, mClipBounds);
             }
             if (!mClipRegion.contains(x, y)) {
                 return -1;

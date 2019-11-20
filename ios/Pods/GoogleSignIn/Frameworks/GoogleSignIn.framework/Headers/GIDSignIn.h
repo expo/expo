@@ -23,13 +23,8 @@ typedef NS_ENUM(NSInteger, GIDSignInErrorCode) {
   kGIDSignInErrorCodeUnknown = -1,
   // Indicates a problem reading or writing to the application keychain.
   kGIDSignInErrorCodeKeychain = -2,
-  // Indicates no appropriate applications are installed on the user's device which can handle
-  // sign-in. This code will only ever be returned if using webview and switching to browser have
-  // both been disabled.
-  kGIDSignInErrorCodeNoSignInHandlersInstalled = -3,
-  // Indicates there are no auth tokens in the keychain. This error code will be returned by
-  // signInSilently if the user has never signed in before with the given scopes, or if they have
-  // since signed out.
+  // Indicates there are no valid auth tokens in the keychain. This error code will be returned by
+  // |restorePreviousSignIn| if the user has not signed in before or if they have since signed out.
   kGIDSignInErrorCodeHasNoAuthInKeychain = -4,
   // Indicates the user canceled the sign in request.
   kGIDSignInErrorCodeCanceled = -5,
@@ -54,34 +49,6 @@ typedef NS_ENUM(NSInteger, GIDSignInErrorCode) {
 
 @end
 
-// A protocol which may be implemented by consumers of |GIDSignIn| to be notified of when
-// GIDSignIn has finished dispatching the sign-in request.
-//
-// This protocol is useful for developers who implement their own "Sign In with Google" button.
-// Because there may be a brief delay between when the call to |signIn| is made, and when the
-// app switch occurs, it is best practice to have the UI react to the user's input by displaying
-// a spinner or other UI element. The |signInWillDispatch| method should be used to
-// stop or hide the spinner.
-@protocol GIDSignInUIDelegate <NSObject>
-
-@optional
-
-// The sign-in flow has finished selecting how to proceed, and the UI should no longer display
-// a spinner or other "please wait" element.
-- (void)signInWillDispatch:(GIDSignIn *)signIn error:(NSError *)error;
-
-// If implemented, this method will be invoked when sign in needs to display a view controller.
-// The view controller should be displayed modally (via UIViewController's |presentViewController|
-// method, and not pushed unto a navigation controller's stack.
-- (void)signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController;
-
-// If implemented, this method will be invoked when sign in needs to dismiss a view controller.
-// Typically, this should be implemented by calling |dismissViewController| on the passed
-// view controller.
-- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController;
-
-@end
-
 // This class signs the user in with Google. It also provides single sign-on via a capable Google
 // app if one is installed.
 //
@@ -90,12 +57,10 @@ typedef NS_ENUM(NSInteger, GIDSignInErrorCode) {
 // Here is sample code to use |GIDSignIn|:
 // 1. Get a reference to the |GIDSignIn| shared instance:
 //    GIDSignIn *signIn = [GIDSignIn sharedInstance];
-// 2. Set the OAuth 2.0 scopes you want to request:
-//    [signIn setScopes:[NSArray arrayWithObject:@"https://www.googleapis.com/auth/plus.login"]];
-// 3. Call [signIn setDelegate:self];
-// 4. Set up delegate method |signIn:didSignInForUser:withError:|.
-// 5. Call |handleURL| on the shared instance from |application:openUrl:...| in your app delegate.
-// 6. Call |signIn| on the shared instance;
+// 2. Call [signIn setDelegate:self];
+// 3. Set up delegate method |signIn:didSignInForUser:withError:|.
+// 4. Call |handleURL| on the shared instance from |application:openUrl:...| in your app delegate.
+// 5. Call |signIn| on the shared instance;
 @interface GIDSignIn : NSObject
 
 // The authentication object for the current user, or |nil| if there is currently no logged in user.
@@ -104,8 +69,8 @@ typedef NS_ENUM(NSInteger, GIDSignInErrorCode) {
 // The object to be notified when authentication is finished.
 @property(nonatomic, weak) id<GIDSignInDelegate> delegate;
 
-// The object to be notified when sign in dispatch selection is finished.
-@property(nonatomic, weak) id<GIDSignInUIDelegate> uiDelegate;
+// The view controller used to present |SFSafariViewContoller| on iOS 9 and 10.
+@property(nonatomic, weak) UIViewController *presentingViewController;
 
 // The client ID of the app from the Google APIs console.  Must set for sign-in to work.
 @property(nonatomic, copy) NSString *clientID;
@@ -157,24 +122,30 @@ typedef NS_ENUM(NSInteger, GIDSignInErrorCode) {
 // Returns a shared |GIDSignIn| instance.
 + (GIDSignIn *)sharedInstance;
 
-// This method should be called from your |UIApplicationDelegate|'s
-// |application:openURL:sourceApplication:annotation|.  Returns |YES| if |GIDSignIn| handled this
-// URL.
-- (BOOL)handleURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication
-           annotation:(id)annotation;
+// Use |sharedInstance| to instantiate |GIDSignIn|.
++ (instancetype)new NS_UNAVAILABLE;
 
-// Checks whether the user has either currently signed in or has previous authentication saved in
-// keychain.
-- (BOOL)hasAuthInKeychain;
+// Use |sharedInstance| to instantiate |GIDSignIn|.
+- (instancetype)init NS_UNAVAILABLE;
 
-// Attempts to sign in a previously authenticated user without interaction.  The delegate will be
-// called at the end of this process indicating success or failure.
-- (void)signInSilently;
+// This method should be called from your |UIApplicationDelegate|'s |application:openURL:options|
+// and or |application:openURL:sourceApplication:annotation| method(s). Returns |YES| if |GIDSignIn|
+// handled this URL.
+- (BOOL)handleURL:(NSURL *)url;
 
-// Starts the sign-in process.  The delegate will be called at the end of this process.  Note that
-// this method should not be called when the app is starting up, (e.g in
-// application:didFinishLaunchingWithOptions:). Instead use the |signInSilently| method.
+// Checks if there is a previously authenticated user saved in keychain.
+- (BOOL)hasPreviousSignIn;
+
+// Attempts to restore a previously authenticated user without interaction.  The delegate will be
+// called at the end of this process indicating success or failure.  The current values of
+// |GIDSignIn|'s configuration properties will not impact the restored user.
+- (void)restorePreviousSignIn;
+
+// Starts an interactive sign-in flow using |GIDSignIn|'s configuration properties.  The delegate
+// will be called at the end of this process.  Any saved sign-in state will be replaced by the
+// result of this flow.  Note that this method should not be called when the app is starting up,
+// (e.g in application:didFinishLaunchingWithOptions:), instead use the |restorePreviousSignIn|
+// method to restore a previous sign-in.
 - (void)signIn;
 
 // Marks current user as being in the signed out state.

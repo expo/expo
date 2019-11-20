@@ -20,8 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*!
- Provides methods for posting notifications from the Bolts framework
+/**
+ Provides methods for posting notifications from App Links
  */
 @interface FBSDKMeasurementEvent (Internal)
 

@@ -1,7 +1,7 @@
 package host.exp.exponent.utils;
 
-import android.support.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-import android.support.test.internal.util.AndroidRunnerParams;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+import androidx.test.internal.util.AndroidRunnerParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -77,8 +77,8 @@ public class ExpoTestRunner extends AndroidJUnit4ClassRunner {
     }
   }
 
-  public ExpoTestRunner(Class<?> klass, AndroidRunnerParams runnerParams) throws InitializationError {
-    super(klass, runnerParams);
+  public ExpoTestRunner(Class<?> klass) throws InitializationError {
+    super(klass);
 
     ExpoTestFilter filter = new ExpoTestFilter();
     try {

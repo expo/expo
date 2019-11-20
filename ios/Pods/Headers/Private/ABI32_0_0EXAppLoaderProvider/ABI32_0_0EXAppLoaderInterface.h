@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI32_0_0/EXAppLoaderProvider/ABI32_0_0EXAppLoaderProvider/Interfaces/ABI32_0_0EXAppLoaderInterface.h

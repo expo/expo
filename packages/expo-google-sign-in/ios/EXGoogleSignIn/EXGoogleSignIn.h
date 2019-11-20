@@ -3,5 +3,5 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 #import <GoogleSignIn/GoogleSignIn.h>
 
-@interface EXGoogleSignIn : UMExportedModule <UMModuleRegistryConsumer, GIDSignInDelegate, GIDSignInUIDelegate>
+@interface EXGoogleSignIn : UMExportedModule <UMModuleRegistryConsumer, GIDSignInDelegate>
 @end

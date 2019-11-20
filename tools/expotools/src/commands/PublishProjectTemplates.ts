@@ -21,38 +21,48 @@ async function getAvailableProjectTemplatesAsync(): Promise<Template[]> {
   const templates = await fs.readdir(templatesPath);
 
   return Promise.all<Template>(
-    templates.map(async (template) => {
-      const packageJson = await JsonFile.readAsync(path.join(templatesPath, template, 'package.json'));
+    templates.map(async template => {
+      const packageJson = await JsonFile.readAsync(
+        path.join(templatesPath, template, 'package.json')
+      );
 
       return {
         name: packageJson.name,
         version: packageJson.version,
         path: path.join(templatesPath, template),
       };
-    }),
+    })
   );
 }
 
-async function shouldAssignLatestTagAsync(templateName: string, templateVersion: string): Promise<boolean> {
+async function shouldAssignLatestTagAsync(
+  templateName: string,
+  templateVersion: string
+): Promise<boolean> {
   const { assignLatestTag } = await inquirer.prompt<{ assignLatestTag: boolean }>([
     {
       type: 'confirm',
       name: 'assignLatestTag',
-      message: `Do you want to assign ${chalk.blue('latest')} tag to ${chalk.green(templateName)}@${chalk.red(templateVersion)}?`,
+      message: `Do you want to assign ${chalk.blue('latest')} tag to ${chalk.green(
+        templateName
+      )}@${chalk.red(templateVersion)}?`,
       default: true,
-    }
+    },
   ]);
   return assignLatestTag;
 }
 
 async function action(options) {
   if (!options.sdkVersion) {
-    const expoSdkVersion = (await JsonFile.readAsync(path.join(EXPO_DIR, 'packages/expo/package.json'))).version;
+    const expoSdkVersion = (await JsonFile.readAsync(
+      path.join(EXPO_DIR, 'packages/expo/package.json')
+    )).version;
     const { sdkVersion } = await inquirer.prompt<{ sdkVersion: string }>([
       {
         type: 'input',
         name: 'sdkVersion',
-        message: 'What is the Expo SDK version the project templates you\'re going to publish are compatible with?',
+        message:
+          "What is the Expo SDK version the project templates you're going to publish are compatible with?",
         default: `${semver.major(expoSdkVersion)}.0.0`,
         validate(value) {
           if (!semver.valid(value)) {
@@ -66,15 +76,22 @@ async function action(options) {
   }
 
   const availableProjectTemplates = await getAvailableProjectTemplatesAsync();
-  const projectTemplatesToPublish = options.project ? availableProjectTemplates.filter(({ name }) => name.includes(options.project)) : availableProjectTemplates;
+  const projectTemplatesToPublish = options.project
+    ? availableProjectTemplates.filter(({ name }) => name.includes(options.project))
+    : availableProjectTemplates;
 
   if (projectTemplatesToPublish.length === 0) {
-    console.log(chalk.yellow('No project templates to publish. Make sure --project flag is correct.'));
+    console.log(
+      chalk.yellow('No project templates to publish. Make sure --project flag is correct.')
+    );
     return;
   }
 
   console.log('\nFollowing project templates will be published:');
-  console.log(projectTemplatesToPublish.map(({ name }) => chalk.green(name)).join(chalk.grey(', ')), '\n');
+  console.log(
+    projectTemplatesToPublish.map(({ name }) => chalk.green(name)).join(chalk.grey(', ')),
+    '\n'
+  );
 
   for (const template of projectTemplatesToPublish) {
     const { newVersion } = await inquirer.prompt<{ newVersion: string }>([
@@ -82,7 +99,9 @@ async function action(options) {
         type: 'input',
         name: 'newVersion',
         message: `What is the new version for ${chalk.green(template.name)} package?`,
-        default: semver.lt(template.version, options.sdkVersion) ? options.sdkVersion : semver.inc(template.version, 'patch'),
+        default: semver.lt(template.version, options.sdkVersion)
+          ? options.sdkVersion
+          : semver.inc(template.version, 'patch'),
         validate(value) {
           if (!semver.valid(value)) {
             return `${value} is not a valid version.`;
@@ -92,7 +111,7 @@ async function action(options) {
           }
           return true;
         },
-      }
+      },
     ]);
 
     // Obtain the tag for the template.
@@ -102,20 +121,23 @@ async function action(options) {
         name: 'tag',
         message: `How to tag ${chalk.green(template.name)}@${chalk.red(newVersion)}?`,
         default: semver.prerelease(newVersion) ? 'next' : `sdk-${semver.major(options.sdkVersion)}`,
-      }
+      },
     ]);
 
     // Update package version in `package.json`
-    await JsonFile.setAsync(
-      path.join(template.path, 'package.json'),
-      'version',
-      newVersion,
-    );
+    await JsonFile.setAsync(path.join(template.path, 'package.json'), 'version', newVersion);
 
     const appJsonPath = path.join(template.path, 'app.json');
-    if (await fs.exists(appJsonPath) && await JsonFile.getAsync(appJsonPath, 'expo.sdkVersion', null)) {
+    if (
+      (await fs.exists(appJsonPath)) &&
+      (await JsonFile.getAsync(appJsonPath, 'expo.sdkVersion', null))
+    ) {
       // Make sure SDK version in `app.json` is correct
-      console.log(`Setting ${chalk.magenta('expo.sdkVersion')} to ${chalk.green(options.sdkVersion)} in template's app.json...`);
+      console.log(
+        `Setting ${chalk.magenta('expo.sdkVersion')} to ${chalk.green(
+          options.sdkVersion
+        )} in template's app.json...`
+      );
 
       await JsonFile.setAsync(
         path.join(template.path, 'app.json'),
@@ -124,9 +146,7 @@ async function action(options) {
       );
     }
 
-    console.log(
-      `Publishing ${chalk.green(template.name)}@${chalk.red(newVersion)}...`,
-    );
+    console.log(`Publishing ${chalk.green(template.name)}@${chalk.red(newVersion)}...`);
 
     const moreArgs: string[] = [];
 
@@ -136,25 +156,25 @@ async function action(options) {
     }
 
     // Publish to NPM registry
-    options.dry || await spawnAsync('npm', ['publish', '--access', 'public', ...moreArgs], {
-      stdio: 'inherit',
-      cwd: template.path,
-    });
+    options.dry ||
+      (await spawnAsync('npm', ['publish', '--access', 'public', ...moreArgs], {
+        stdio: 'inherit',
+        cwd: template.path,
+      }));
 
-    if (tag && await shouldAssignLatestTagAsync(template.name, newVersion)) {
+    if (tag && (await shouldAssignLatestTagAsync(template.name, newVersion))) {
       console.log(
-        `Assigning ${chalk.blue('latest')} tag to ${chalk.green(template.name)}@${chalk.red(newVersion)}...`,
+        `Assigning ${chalk.blue('latest')} tag to ${chalk.green(template.name)}@${chalk.red(
+          newVersion
+        )}...`
       );
 
       // Add the latest tag to the new version
-      options.dry || await spawnAsync(
-        'npm',
-        ['dist-tag', 'add', `${template.name}@${newVersion}`, 'latest'],
-        {
+      options.dry ||
+        (await spawnAsync('npm', ['dist-tag', 'add', `${template.name}@${newVersion}`, 'latest'], {
           stdio: 'inherit',
           cwd: template.path,
-        }
-      );
+        }));
     }
     console.log();
   }
@@ -168,14 +188,8 @@ export default program => {
       '-s, --sdkVersion [string]',
       'Expo SDK version that the templates are compatible with. (optional)'
     )
-    .option(
-      '-p, --project [string]',
-      'Name of the template project to publish. (optional)'
-    )
-    .option(
-      '-d, --dry',
-      'Run the script in the dry mode, that is without publishing.'
-    )
+    .option('-p, --project [string]', 'Name of the template project to publish. (optional)')
+    .option('-d, --dry', 'Run the script in the dry mode, that is without publishing.')
     .description('Publishes project templates under `templates` directory.')
     .asyncAction(action);
 };

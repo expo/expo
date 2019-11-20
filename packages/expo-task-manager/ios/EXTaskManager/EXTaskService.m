@@ -210,7 +210,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   }
 
   // Inform requests about finished tasks
-  for (EXTaskExecutionRequest *request in _requests) {
+  for (EXTaskExecutionRequest *request in [_requests copy]) {
     if ([request isIncludingTask:task]) {
       [request task:task didFinishWithResult:result];
     }

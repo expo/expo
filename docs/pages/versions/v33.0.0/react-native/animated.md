@@ -7,19 +7,15 @@ The `Animated` library is designed to make animations fluid, powerful, and easy 
 
 The simplest workflow for creating an animation is to create an `Animated.Value`, hook it up to one or more style attributes of an animated component, and then drive updates via animations using `Animated.timing()`:
 
-
 ```javascript
-
 Animated.timing(
   // Animate value over time
   this.state.fadeAnim, // The value to drive
   {
     toValue: 1, // Animate to final value of 1
-  },
+  }
 ).start(); // Start the animation
-
 ```
-
 
 Refer to the [Animations](../animations/#animated-api) guide to see additional examples of `Animated` in action.
 
@@ -104,7 +100,6 @@ Gestures, like panning or scrolling, and other events can map directly to animat
 
 For example, when working with horizontal scrolling gestures, you would do the following in order to map `event.nativeEvent.contentOffset.x` to `scrollX` (an `Animated.Value`):
 
-
 ```javascript
 
  onScroll={Animated.event(
@@ -118,7 +113,6 @@ For example, when working with horizontal scrolling gestures, you would do the f
  )}
 
 ```
-
 
 ### Methods
 
@@ -159,13 +153,11 @@ When the given value is a ValueXY instead of a Value, each config option may be 
 
 ### `decay()`
 
-
 ```javascript
 
 static decay(value, config)
 
 ```
-
 
 Animates a value from an initial velocity to zero based on a decay coefficient.
 
@@ -180,13 +172,11 @@ Config is an object that may have the following options:
 
 ### `timing()`
 
-
 ```javascript
 
 static timing(value, config)
 
 ```
-
 
 Animates a value along a timed easing curve. The [`Easing`](../easing/) module has tons of predefined curves, or you can use your own function.
 
@@ -202,13 +192,11 @@ Config is an object that may have the following options:
 
 ### `spring()`
 
-
 ```javascript
 
 static spring(value, config)
 
 ```
-
 
 Animates a value according to an analytical spring model based on [damped harmonic oscillation](https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator). Tracks velocity state to create fluid motions as the `toValue` updates, and can be chained together.
 
@@ -243,13 +231,11 @@ Other configuration options are as follows:
 
 ### `add()`
 
-
 ```javascript
 
 static add(a, b)
 
 ```
-
 
 Creates a new Animated value composed from two Animated values added together.
 
@@ -257,13 +243,11 @@ Creates a new Animated value composed from two Animated values added together.
 
 ### `subtract()`
 
-
 ```javascript
 
 static subtract(a, b)
 
 ```
-
 
 Creates a new Animated value composed by subtracting the second Animated value from the first Animated value.
 
@@ -271,13 +255,11 @@ Creates a new Animated value composed by subtracting the second Animated value f
 
 ### `divide()`
 
-
 ```javascript
 
 static divide(a, b)
 
 ```
-
 
 Creates a new Animated value composed by dividing the first Animated value by the second Animated value.
 
@@ -285,13 +267,11 @@ Creates a new Animated value composed by dividing the first Animated value by th
 
 ### `multiply()`
 
-
 ```javascript
 
 static multiply(a, b)
 
 ```
-
 
 Creates a new Animated value composed from two Animated values multiplied together.
 
@@ -299,13 +279,11 @@ Creates a new Animated value composed from two Animated values multiplied togeth
 
 ### `modulo()`
 
-
 ```javascript
 
 static modulo(a, modulus)
 
 ```
-
 
 Creates a new Animated value that is the (non-negative) modulo of the provided Animated value
 
@@ -313,13 +291,11 @@ Creates a new Animated value that is the (non-negative) modulo of the provided A
 
 ### `diffClamp()`
 
-
 ```javascript
 
 static diffClamp(a, min, max)
 
 ```
-
 
 Create a new Animated value that is limited between 2 values. It uses the difference between the last value so even if the value is far from the bounds it will start changing when the value starts getting closer again. (`value = clamp(value + diff, min, max)`).
 
@@ -329,13 +305,11 @@ This is useful with scroll events, for example, to show the navbar when scrollin
 
 ### `delay()`
 
-
 ```javascript
 
 static delay(time)
 
 ```
-
 
 Starts an animation after the given delay.
 
@@ -343,13 +317,11 @@ Starts an animation after the given delay.
 
 ### `sequence()`
 
-
 ```javascript
 
 static sequence(animations)
 
 ```
-
 
 Starts an array of animations in order, waiting for each to complete before starting the next. If the current running animation is stopped, no following animations will be started.
 
@@ -357,13 +329,11 @@ Starts an array of animations in order, waiting for each to complete before star
 
 ### `parallel()`
 
-
 ```javascript
 
 static parallel(animations, config?)
 
 ```
-
 
 Starts an array of animations all at the same time. By default, if one of the animations is stopped, they will all be stopped. You can override this with the `stopTogether` flag.
 
@@ -371,13 +341,11 @@ Starts an array of animations all at the same time. By default, if one of the an
 
 ### `stagger()`
 
-
 ```javascript
 
 static stagger(time, animations)
 
 ```
-
 
 Array of animations may run in parallel (overlap), but are started in sequence with successive delays. Nice for doing trailing effects.
 
@@ -385,13 +353,11 @@ Array of animations may run in parallel (overlap), but are started in sequence w
 
 ### `loop()`
 
-
 ```javascript
 
 static loop(animation, config?)
 
 ```
-
 
 Loops a given animation continuously, so that each time it reaches the end, it resets and begins again from the start. Will loop without blocking the UI thread if the child animation is set to `useNativeDriver: true`. In addition, loops can prevent `VirtualizedList`-based components from rendering more rows while the animation is running. You can pass `isInteraction: false` in the child animation config to fix this.
 
@@ -403,16 +369,13 @@ Config is an object that may have the following options:
 
 ### `event()`
 
-
 ```javascript
 
 static event(argMapping, config?)
 
 ```
 
-
 Takes an array of mappings and extracts values from each arg accordingly, then calls `setValue` on the mapped outputs. e.g.
-
 
 ```javascript
 
@@ -429,7 +392,6 @@ Takes an array of mappings and extracts values from each arg accordingly, then c
 
 ```
 
-
 Config is an object that may have the following options:
 
 - `listener`: Optional async listener.
@@ -439,13 +401,11 @@ Config is an object that may have the following options:
 
 ### `forkEvent()`
 
-
 ```javascript
 
 static forkEvent(event, listener)
 
 ```
-
 
 Advanced imperative API for snooping on animated events that are passed in through props. It permits to add a new javascript listener to an existing `AnimatedEvent`. If `animatedEvent` is a simple javascript listener, it will merge the 2 listeners into a single one, and if `animatedEvent` is null/undefined, it will assign the javascript listener directly. Use values directly where possible.
 
@@ -453,13 +413,11 @@ Advanced imperative API for snooping on animated events that are passed in throu
 
 ### `unforkEvent()`
 
-
 ```javascript
 
 static unforkEvent(event, listener)
 
 ```
-
 
 ## Properties
 
@@ -496,4 +454,3 @@ Make any React component Animatable. Used to create `Animated.View`, etc.
 ### `attachNativeEvent`
 
 Imperative API to attach an animated value to an event on a view. Prefer using `Animated.event` with `useNativeDrive: true` if possible.
-

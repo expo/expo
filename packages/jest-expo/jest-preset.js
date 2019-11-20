@@ -28,7 +28,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
   console.warn(`Expected react-native/jest-preset to define a transformIgnorePatterns array`);
 } else if (
   !isEqual(jestPreset.transformIgnorePatterns, [
-    'node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community)',
+    'node_modules/(?!(jest-)?react-native|@react-native-community)',
   ])
 ) {
   console.warn(
@@ -37,7 +37,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
 }
 
 jestPreset.transformIgnorePatterns = [
-  'node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|sentry-expo|native-base|react-native-svg)',
+  'node_modules/(?!(jest-)?react-native|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|sentry-expo|native-base|react-native-svg)',
 ];
 
 // setupFiles

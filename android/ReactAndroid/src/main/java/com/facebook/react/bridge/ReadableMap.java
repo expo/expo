@@ -1,16 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.HashMap;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Interface for a map that allows typed access to its members. Used to pass parameters from JS to
@@ -18,17 +18,37 @@ import javax.annotation.Nullable;
  */
 public interface ReadableMap {
 
-  boolean hasKey(@Nonnull String name);
-  boolean isNull(@Nonnull String name);
-  boolean getBoolean(@Nonnull String name);
-  double getDouble(@Nonnull String name);
-  int getInt(@Nonnull String name);
-  @Nullable String getString(@Nonnull String name);
-  @Nullable ReadableArray getArray(@Nonnull String name);
-  @Nullable ReadableMap getMap(@Nonnull String name);
-  @Nonnull Dynamic getDynamic(@Nonnull String name);
-  @Nonnull ReadableType getType(@Nonnull String name);
-  @Nonnull ReadableMapKeySetIterator keySetIterator();
-  @Nonnull HashMap<String, Object> toHashMap();
+  boolean hasKey(@NonNull String name);
 
+  boolean isNull(@NonNull String name);
+
+  boolean getBoolean(@NonNull String name);
+
+  double getDouble(@NonNull String name);
+
+  int getInt(@NonNull String name);
+
+  @Nullable
+  String getString(@NonNull String name);
+
+  @Nullable
+  ReadableArray getArray(@NonNull String name);
+
+  @Nullable
+  ReadableMap getMap(@NonNull String name);
+
+  @NonNull
+  Dynamic getDynamic(@NonNull String name);
+
+  @NonNull
+  ReadableType getType(@NonNull String name);
+
+  @NonNull
+  Iterator<Map.Entry<String, Object>> getEntryIterator();
+
+  @NonNull
+  ReadableMapKeySetIterator keySetIterator();
+
+  @NonNull
+  HashMap<String, Object> toHashMap();
 }

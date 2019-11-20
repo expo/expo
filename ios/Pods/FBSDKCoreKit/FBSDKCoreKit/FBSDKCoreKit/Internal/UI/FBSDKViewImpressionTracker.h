@@ -18,6 +18,7 @@
 
 #import <UIKit/UIKit.h>
 
+NS_SWIFT_NAME(ViewImpressionTracker)
 @interface FBSDKViewImpressionTracker : NSObject
 
 + (instancetype)impressionTrackerWithEventName:(NSString *)eventName;

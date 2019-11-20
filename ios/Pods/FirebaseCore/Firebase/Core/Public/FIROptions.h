@@ -91,6 +91,13 @@ NS_SWIFT_NAME(FirebaseOptions)
 @property(nonatomic, copy, nullable) NSString *storageBucket;
 
 /**
+ * The App Group identifier to share data between the application and the application extensions.
+ * The App Group must be configured in the application and on the Apple Developer Portal. Default
+ * value `nil`.
+ */
+@property(nonatomic, copy, nullable) NSString *appGroupID;
+
+/**
  * Initializes a customized instance of FIROptions from the file at the given plist file path. This
  * will read the file synchronously from disk.
  * For example,

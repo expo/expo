@@ -4,15 +4,13 @@ import plist from 'plist';
 import semver from 'semver';
 import JsonFile from '@expo/json-file';
 
-import * as Directories from './Directories';
+import { EXPO_DIR, ANDROID_DIR } from './Constants';
 
 export type Platform = 'ios' | 'android';
 
 export type SDKVersionsObject = {
   sdkVersions: string[];
-}
-
-const EXPO_DIR = Directories.getExpoRepositoryRootDir();
+};
 
 export async function sdkVersionAsync(): Promise<string> {
   const packageJson = await JsonFile.readAsync(path.join(EXPO_DIR, 'packages/expo/package.json'));
@@ -30,9 +28,20 @@ export async function iosAppVersionAsync(): Promise<string> {
   return bundleVersion;
 }
 
+export async function androidAppVersionAsync(): Promise<string> {
+  const buildGradlePath = path.join(ANDROID_DIR, 'app', 'build.gradle');
+  const buildGradleContent = await fs.readFile(buildGradlePath, 'utf8');
+  const match = buildGradleContent.match(/versionName ['"]([^'"]+?)['"]/);
+
+  if (!match) {
+    throw new Error('Can\'t obtain `versionName` from app\'s build.gradle');
+  }
+  return match[1];
+}
+
 export async function getHomeSDKVersionAsync(): Promise<string> {
   const homeAppJsonPath = path.join(EXPO_DIR, 'home', 'app.json');
-  const appJson = await JsonFile.readAsync(homeAppJsonPath, { json5: true }) as any;
+  const appJson = (await JsonFile.readAsync(homeAppJsonPath, { json5: true })) as any;
 
   if (appJson && appJson.expo && appJson.expo.sdkVersion) {
     return appJson.expo.sdkVersion as string;
@@ -41,12 +50,16 @@ export async function getHomeSDKVersionAsync(): Promise<string> {
 }
 
 export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
-  const sdkVersionsPath = path.join(EXPO_DIR, platform === 'ios' ? 'ios/Exponent/Supporting' : 'android', 'sdkVersions.json');
+  const sdkVersionsPath = path.join(
+    EXPO_DIR,
+    platform === 'ios' ? 'ios/Exponent/Supporting' : 'android',
+    'sdkVersions.json'
+  );
 
-  if (!await fs.exists(sdkVersionsPath)) {
+  if (!(await fs.exists(sdkVersionsPath))) {
     throw new Error(`File at path "${sdkVersionsPath}" not found.`);
   }
-  const { sdkVersions } = await JsonFile.readAsync(sdkVersionsPath) as SDKVersionsObject;
+  const { sdkVersions } = (await JsonFile.readAsync(sdkVersionsPath)) as SDKVersionsObject;
   return sdkVersions;
 }
 

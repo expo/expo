@@ -9,13 +9,7 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-You can also import all Expo SDK modules:
-
-```javascript
-import * as Expo from 'expo';
-```
-
-This allows you to write [`Expo.Contacts.getContactsAsync()`](../contacts/#getcontactsasync), for example.
+This allows you to write [`Contacts.getContactsAsync()`](../contacts/#getcontactsasync), for example.
 
 ## SDK Version
 
@@ -28,6 +22,7 @@ version.
 
 | Expo SDK Version | React Native Version |
 | ---------------- | :------------------: |
+| 33.0.0           |        0.59.8        |
 | 32.0.0           |        0.57.1        |
 | 31.0.0           |        0.57.1        |
 | 30.0.0           |        0.55.4        |

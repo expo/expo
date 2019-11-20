@@ -10,6 +10,8 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
 
+> **Note**: Not compatible with web.
+
 ## Configuration
 
 ### Registering your app with Facebook

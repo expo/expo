@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The callback to invoke when the text recognition completes.
  *
- * @param text Recognized text in the image or `nil` if there was an error.
+ * @param text Recognized text in the image or `nil` if there was an error or no text was detected.
  * @param error The error or `nil`.
  */
 typedef void (^FIRVisionTextRecognitionCallback)(FIRVisionText *_Nullable text,
@@ -20,30 +20,20 @@ typedef void (^FIRVisionTextRecognitionCallback)(FIRVisionText *_Nullable text,
  * An enum of text recognizer types.
  */
 typedef NS_ENUM(NSInteger, FIRVisionTextRecognizerType) {
-  /**
-   * On-Device recognizer type.
-   */
+  /** On-Device recognizer type. */
   FIRVisionTextRecognizerTypeOnDevice,
-  /**
-   * Cloud recognizer type.
-   */
+  /** Cloud recognizer type. */
   FIRVisionTextRecognizerTypeCloud,
 } NS_SWIFT_NAME(VisionTextRecognizerType);
 
-/**
- * An on-device or cloud text recognizer that recognizes text in an image.
- */
+/** An on-device or cloud text recognizer that recognizes text in an image. */
 NS_SWIFT_NAME(VisionTextRecognizer)
 @interface FIRVisionTextRecognizer : NSObject
 
-/**
- * The text recognizer type.
- */
+/** The text recognizer type. */
 @property(nonatomic, readonly) FIRVisionTextRecognizerType type;
 
-/**
- * Unavailable. Use `Vision` factory methods.
- */
+/** Unavailable. Use `Vision` factory methods. */
 - (instancetype)init NS_UNAVAILABLE;
 
 /**

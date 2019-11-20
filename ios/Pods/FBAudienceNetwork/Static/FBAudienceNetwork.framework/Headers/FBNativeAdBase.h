@@ -177,6 +177,19 @@ typedef NS_ENUM(NSInteger, FBNativeAdsCachePolicy) {
 - (void)loadAdWithBidPayload:(NSString *)bidPayload
             mediaCachePolicy:(FBNativeAdsCachePolicy)mediaCachePolicy;
 
+/**
+ Creates a new instance of a FBNativeAdBase from a bid payload. The actual subclass returned will depend on the contents of the payload.
+
+ @param placementId The placement ID of the ad.
+
+ @param bidPayload The bid payload received from the server.
+
+ @param error An out value that returns any error encountered during init.
+ */
++ (nullable instancetype)nativeAdWithPlacementId:(NSString *)placementId
+                                      bidPayload:(NSString *)bidPayload
+                                           error:(NSError * __autoreleasing *)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

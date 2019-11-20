@@ -10,6 +10,8 @@ Provides access to the system's web browser and supports handling redirects. On 
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-web-browser`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
 
+> **Note**: Not compatible with web.
+
 ## Usage
 
 <SnackEmbed snackId="@charliecruzan/webbrowserexample" />
@@ -27,7 +29,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `WebBrowser.openBrowserAsync(url)`
 
-Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use (openAuthSessionAsync)[#webbrowseropenauthsessionasync].
+Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use [openAuthSessionAsync](#webbrowseropenauthsessionasync).
 
 #### Arguments
 

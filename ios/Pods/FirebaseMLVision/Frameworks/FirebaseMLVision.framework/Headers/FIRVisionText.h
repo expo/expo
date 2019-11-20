@@ -4,25 +4,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Recognized text in an image.
- */
+/** Recognized text in an image. */
 NS_SWIFT_NAME(VisionText)
 @interface FIRVisionText : NSObject
 
-/**
- * String representation of the recognized text.
- */
+/** String representation of the recognized text. */
 @property(nonatomic, readonly) NSString *text;
 
-/**
- * An array of blocks recognized in the text.
- */
+/** An array of blocks recognized in the text. */
 @property(nonatomic, readonly) NSArray<FIRVisionTextBlock *> *blocks;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

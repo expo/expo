@@ -10,6 +10,8 @@ This module allows using Text-to-speech utility.
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-speech`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-speech).
 
+> **Note**: Not compatible with web.
+
 ## Usage
 
 <SnackEmbed snackId="@charliecruzan/speechexample" />
@@ -31,7 +33,7 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
   A map of options:
 
-  - **voice (_string_)** -- Voice identifier (**iOS only**)
+  - **voice (_string_)** -- Voice identifier
   - **language (_string_)** -- The code of a language that should be used to read the `text`, check out IETF BCP 47 to see valid codes.
   - **pitch (_number_)** -- Pitch of the voice to speak `text`. 1.0 is the normal pitch.
   - **rate (_number_)** -- Rate of the voice to speak `text`. 1.0 is the normal rate.
@@ -60,7 +62,7 @@ Determine whether the Text-to-speech utility is currently speaking. Will return 
 
 Returns a Promise that resolves to a boolean, `true` if speaking, `false` if not.
 
-### `Speech.getAvailableVoicesAsync()` (iOS only)
+### `Speech.getAvailableVoicesAsync()`
 
 Returns list of all available voices.
 

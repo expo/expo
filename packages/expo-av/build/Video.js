@@ -2,7 +2,7 @@ import omit from 'lodash/omit';
 import nullthrows from 'nullthrows';
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes } from 'react-native';
+import { findNodeHandle, Image, StyleSheet, View, ViewPropTypes, } from 'react-native';
 import { assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getNativeSourceFromSource, getUnloadedStatus, PlaybackMixin, } from './AV';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';

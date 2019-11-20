@@ -21,7 +21,7 @@
   if (type == EKCalendarTypeExchange) return @"exchange";
   if (type == EKCalendarTypeSubscription) return @"subscribed";
   if (type == EKCalendarTypeBirthday) return @"birthdays";
-  return @"none";
+  return @"unknown";
 }
 
 + (NSString *)_entityType:(EKEntityMask)entityType

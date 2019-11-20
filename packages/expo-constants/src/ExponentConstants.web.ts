@@ -1,8 +1,8 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
-const ExpoPackageJson = require('expo/package.json');
+import { PlatformManifest, WebManifest, NativeConstants } from './Constants.types';
 
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
@@ -40,7 +40,7 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: UAParser(navigator.userAgent) };
+    return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
   },
   get isHeadless(): false {
     return false;
@@ -52,15 +52,19 @@ export default {
   get isDetached(): false {
     return false;
   },
-  get expoVersion(): string {
-    return ExpoPackageJson.version;
+  get expoVersion(): string | null {
+    return this.manifest.sdkVersion || null;
   },
   get linkingUri(): string {
-    // On native this is `exp://`
-    return location.origin + location.pathname;
+    if (canUseDOM) {
+      // On native this is `exp://`
+      return location.origin + location.pathname;
+    } else {
+      return '';
+    }
   },
-  get expoRuntimeVersion(): string {
-    return ExpoPackageJson.version;
+  get expoRuntimeVersion(): string | null {
+    return this.expoVersion;
   },
   get deviceName(): string | undefined {
     const { browser, engine, os: OS } = parser.getResult();
@@ -85,15 +89,25 @@ export default {
     return null;
   },
   get manifest(): WebManifest {
+    // This is defined by @expo/webpack-config.
+    // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
   },
   get experienceUrl(): string {
-    return location.origin + location.pathname;
+    if (canUseDOM) {
+      return location.origin + location.pathname;
+    } else {
+      return '';
+    }
   },
   get debugMode(): boolean {
     return __DEV__;
   },
-  async getWebViewUserAgentAsync(): Promise<string> {
-    return navigator.userAgent;
+  async getWebViewUserAgentAsync(): Promise<string | null> {
+    if (canUseDOM) {
+      return navigator.userAgent;
+    } else {
+      return null;
+    }
   },
 } as NativeConstants;

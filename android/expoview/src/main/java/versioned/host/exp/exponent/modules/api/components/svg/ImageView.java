@@ -136,9 +136,9 @@ class ImageView extends RenderableView {
 
     @Override
     Path getPath(Canvas canvas, Paint paint) {
-        Path path = new Path();
-        path.addRect(getRect(), Path.Direction.CW);
-        return path;
+        mPath = new Path();
+        mPath.addRect(getRect(), Path.Direction.CW);
+        return mPath;
     }
 
     private void loadBitmap(final ImagePipeline imagePipeline, final ImageRequest request) {
@@ -203,8 +203,7 @@ class ImageView extends RenderableView {
         Paint alphaPaint = new Paint();
         alphaPaint.setAlpha((int) (opacity * 255));
         canvas.drawBitmap(bitmap, null, vbRect, alphaPaint);
-        //noinspection deprecation
-        canvas.getMatrix().mapRect(vbRect);
+        mCTM.mapRect(vbRect);
         this.setClientRect(vbRect);
     }
 

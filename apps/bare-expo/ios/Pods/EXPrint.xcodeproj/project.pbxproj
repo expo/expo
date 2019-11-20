@@ -1,0 +1,434 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D59FE96CA3CA5888714076510EA6C22 /* EXWKSnapshotPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 907023CFB9890AB6F652AA5A9288F470 /* EXWKSnapshotPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		3E69A3C3E0893F7C1AF89F3BF707718C /* EXWKPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = D3EC0AA57ECC8392920EDFC46CD6DD85 /* EXWKPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4EEC946FDACEC73376FBE26DB25E0C92 /* EXWKViewPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE48B0B88937ACB649BAF56C8EF68A0 /* EXWKViewPDFRenderer.m */; };
+		71F223EA78C6F48C9265C4283C0959ED /* EXPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = E4F419E6F02CA0BDD839CBEBCF44E1E8 /* EXPrint.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		75EDCFFC5177009FDC65D456C3CB842B /* EXWKSnapshotPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5723B612E57E05A7FF53D223C05C206D /* EXWKSnapshotPDFRenderer.m */; };
+		89DCD86505207CF67ECB4123197F96F5 /* EXWKPDFRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11409AAE420187D382FE0423F6B91AE1 /* EXWKPDFRenderer.m */; };
+		AE15E440F7BABAB816D1153F73A4A397 /* EXPrint-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5879DCB4737507C6372DC431B0D22640 /* EXPrint-dummy.m */; };
+		B2014A6242C9D0585CD677995B89D189 /* EXWKViewPDFRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = F1E9CA1372363E059C54911F34241169 /* EXWKViewPDFRenderer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C628A882E3B2D002A4499ED925D607F6 /* EXPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = F257CA9C2626BCBA2A295287B9E4FD28 /* EXPrint.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9515F27735A64EB00802CA6577049736 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6896CB12863AF0CEC6C87AB6BE55A1D /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+		96FAA09108BBF3548EE1A1D3C6610A45 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 207E86D566133B58D7119C07F305E304 /* UMFileSystemInterface.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
+			remoteInfo = UMFileSystemInterface;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		11409AAE420187D382FE0423F6B91AE1 /* EXWKPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKPDFRenderer.m; path = EXPrint/EXWKPDFRenderer.m; sourceTree = "<group>"; };
+		207E86D566133B58D7119C07F305E304 /* UMFileSystemInterface */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMFileSystemInterface; path = UMFileSystemInterface.xcodeproj; sourceTree = "<group>"; };
+		23555219C259DF00A3C8A50EEB709E15 /* EXPrint.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXPrint.xcconfig; sourceTree = "<group>"; };
+		5723B612E57E05A7FF53D223C05C206D /* EXWKSnapshotPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKSnapshotPDFRenderer.m; path = EXPrint/EXWKSnapshotPDFRenderer.m; sourceTree = "<group>"; };
+		5879DCB4737507C6372DC431B0D22640 /* EXPrint-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXPrint-dummy.m"; sourceTree = "<group>"; };
+		907023CFB9890AB6F652AA5A9288F470 /* EXWKSnapshotPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKSnapshotPDFRenderer.h; path = EXPrint/EXWKSnapshotPDFRenderer.h; sourceTree = "<group>"; };
+		A7956C910B7B276DCFF198DB852753D1 /* EXPrint-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXPrint-prefix.pch"; sourceTree = "<group>"; };
+		B6896CB12863AF0CEC6C87AB6BE55A1D /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		BB996DF48FE5C5674799B20BD254C4A4 /* libEXPrint.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXPrint.a; path = libEXPrint.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3EC0AA57ECC8392920EDFC46CD6DD85 /* EXWKPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKPDFRenderer.h; path = EXPrint/EXWKPDFRenderer.h; sourceTree = "<group>"; };
+		E4F419E6F02CA0BDD839CBEBCF44E1E8 /* EXPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXPrint.h; path = EXPrint/EXPrint.h; sourceTree = "<group>"; };
+		F1E9CA1372363E059C54911F34241169 /* EXWKViewPDFRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXWKViewPDFRenderer.h; path = EXPrint/EXWKViewPDFRenderer.h; sourceTree = "<group>"; };
+		F257CA9C2626BCBA2A295287B9E4FD28 /* EXPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXPrint.m; path = EXPrint/EXPrint.m; sourceTree = "<group>"; };
+		F47B053819C761623DBB6E8787797DD0 /* EXPrint.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXPrint.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		FAE48B0B88937ACB649BAF56C8EF68A0 /* EXWKViewPDFRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXWKViewPDFRenderer.m; path = EXPrint/EXWKViewPDFRenderer.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9F6131D16D28B810972FA2C7B0779229 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		11F7BBB8EA86870AB588FFC7601AF474 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				23555219C259DF00A3C8A50EEB709E15 /* EXPrint.xcconfig */,
+				5879DCB4737507C6372DC431B0D22640 /* EXPrint-dummy.m */,
+				A7956C910B7B276DCFF198DB852753D1 /* EXPrint-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXPrint";
+			sourceTree = "<group>";
+		};
+		20111354A1EC49D2707E52674975482B /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				F47B053819C761623DBB6E8787797DD0 /* EXPrint.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		5EDDF778DA5CE0AEDE0F0495166092B9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F17E76679D58AE6C9685910703A0F12 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				B6896CB12863AF0CEC6C87AB6BE55A1D /* UMCore */,
+				207E86D566133B58D7119C07F305E304 /* UMFileSystemInterface */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		A689763C83C4E06DCFB1702EF059552E = {
+			isa = PBXGroup;
+			children = (
+				5F17E76679D58AE6C9685910703A0F12 /* Dependencies */,
+				C22C0D4A0A2C7ACBE0E3540184C8176C /* EXPrint */,
+				5EDDF778DA5CE0AEDE0F0495166092B9 /* Frameworks */,
+				E57B6A014B638867619730F4012F59A2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C22C0D4A0A2C7ACBE0E3540184C8176C /* EXPrint */ = {
+			isa = PBXGroup;
+			children = (
+				E4F419E6F02CA0BDD839CBEBCF44E1E8 /* EXPrint.h */,
+				F257CA9C2626BCBA2A295287B9E4FD28 /* EXPrint.m */,
+				D3EC0AA57ECC8392920EDFC46CD6DD85 /* EXWKPDFRenderer.h */,
+				11409AAE420187D382FE0423F6B91AE1 /* EXWKPDFRenderer.m */,
+				907023CFB9890AB6F652AA5A9288F470 /* EXWKSnapshotPDFRenderer.h */,
+				5723B612E57E05A7FF53D223C05C206D /* EXWKSnapshotPDFRenderer.m */,
+				F1E9CA1372363E059C54911F34241169 /* EXWKViewPDFRenderer.h */,
+				FAE48B0B88937ACB649BAF56C8EF68A0 /* EXWKViewPDFRenderer.m */,
+				20111354A1EC49D2707E52674975482B /* Pod */,
+				11F7BBB8EA86870AB588FFC7601AF474 /* Support Files */,
+			);
+			name = EXPrint;
+			path = "../../../../packages/expo-print/ios";
+			sourceTree = "<group>";
+		};
+		E57B6A014B638867619730F4012F59A2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BB996DF48FE5C5674799B20BD254C4A4 /* libEXPrint.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		BCFDCE7771B2C0AB3E64F1BABC25B53B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				71F223EA78C6F48C9265C4283C0959ED /* EXPrint.h in Headers */,
+				3E69A3C3E0893F7C1AF89F3BF707718C /* EXWKPDFRenderer.h in Headers */,
+				1D59FE96CA3CA5888714076510EA6C22 /* EXWKSnapshotPDFRenderer.h in Headers */,
+				B2014A6242C9D0585CD677995B89D189 /* EXWKViewPDFRenderer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FEAB4A1E3F5EAA6EBAE612E8CBDD2612 /* EXPrint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FF266557DDFDEBE6380C65866E26D2D3 /* Build configuration list for PBXNativeTarget "EXPrint" */;
+			buildPhases = (
+				BCFDCE7771B2C0AB3E64F1BABC25B53B /* Headers */,
+				AB3F33973DA11774A0762284C62F11B0 /* Sources */,
+				9F6131D16D28B810972FA2C7B0779229 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				653C8078CD4A2E69771997D4CEFFCBB6 /* PBXTargetDependency */,
+				B830793854E9016E605578CDC37D475A /* PBXTargetDependency */,
+			);
+			name = EXPrint;
+			productName = EXPrint;
+			productReference = BB996DF48FE5C5674799B20BD254C4A4 /* libEXPrint.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		194539E9BCD32CBF93C74E08C3F33169 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = BC2BF1398567101A062FF443C4D1611F /* Build configuration list for PBXProject "EXPrint" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A689763C83C4E06DCFB1702EF059552E;
+			productRefGroup = E57B6A014B638867619730F4012F59A2 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = B6896CB12863AF0CEC6C87AB6BE55A1D /* UMCore */;
+				},
+				{
+					ProjectRef = 207E86D566133B58D7119C07F305E304 /* UMFileSystemInterface */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				FEAB4A1E3F5EAA6EBAE612E8CBDD2612 /* EXPrint */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AB3F33973DA11774A0762284C62F11B0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AE15E440F7BABAB816D1153F73A4A397 /* EXPrint-dummy.m in Sources */,
+				C628A882E3B2D002A4499ED925D607F6 /* EXPrint.m in Sources */,
+				89DCD86505207CF67ECB4123197F96F5 /* EXWKPDFRenderer.m in Sources */,
+				75EDCFFC5177009FDC65D456C3CB842B /* EXWKSnapshotPDFRenderer.m in Sources */,
+				4EEC946FDACEC73376FBE26DB25E0C92 /* EXWKViewPDFRenderer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		653C8078CD4A2E69771997D4CEFFCBB6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 9515F27735A64EB00802CA6577049736 /* PBXContainerItemProxy */;
+		};
+		B830793854E9016E605578CDC37D475A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMFileSystemInterface;
+			targetProxy = 96FAA09108BBF3548EE1A1D3C6610A45 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		546F7C321D2F1915C437EE60FC71B63E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		91DC3321959A56E98CE93FB78F413B86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 23555219C259DF00A3C8A50EEB709E15 /* EXPrint.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPrint;
+				PRODUCT_NAME = EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D331FB962E8B72C0E4089556F53C6F44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 23555219C259DF00A3C8A50EEB709E15 /* EXPrint.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXPrint/EXPrint-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXPrint;
+				PRODUCT_NAME = EXPrint;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D342E10E13C15D162E96260A5B901400 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BC2BF1398567101A062FF443C4D1611F /* Build configuration list for PBXProject "EXPrint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D342E10E13C15D162E96260A5B901400 /* Debug */,
+				546F7C321D2F1915C437EE60FC71B63E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FF266557DDFDEBE6380C65866E26D2D3 /* Build configuration list for PBXNativeTarget "EXPrint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D331FB962E8B72C0E4089556F53C6F44 /* Debug */,
+				91DC3321959A56E98CE93FB78F413B86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 194539E9BCD32CBF93C74E08C3F33169 /* Project object */;
+}

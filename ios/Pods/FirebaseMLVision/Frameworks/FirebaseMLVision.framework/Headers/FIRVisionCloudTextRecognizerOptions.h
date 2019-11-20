@@ -7,25 +7,17 @@ NS_ASSUME_NONNULL_BEGIN
  * An enum of model types for cloud text recognition.
  */
 typedef NS_ENUM(NSUInteger, FIRVisionCloudTextModelType) {
-  /**
-   * Sparse or regular text cloud model type.
-   */
+  /** Sparse or regular text cloud model type. */
   FIRVisionCloudTextModelTypeSparse,
-  /**
-   * Dense or document text cloud model type.
-   */
+  /** Dense or document text cloud model type. */
   FIRVisionCloudTextModelTypeDense,
 } NS_SWIFT_NAME(VisionCloudTextModelType);
 
-/**
- * Options for a cloud text recognizer.
- */
+/** Options for a cloud text recognizer. */
 NS_SWIFT_NAME(VisionCloudTextRecognizerOptions)
 @interface FIRVisionCloudTextRecognizerOptions : NSObject
 
-/**
- * Model type for cloud text recognition. The default is `VisionCloudTextModelType.sparse`.
- */
+/** Model type for cloud text recognition. The default is `VisionCloudTextModelType.sparse`. */
 @property(nonatomic) FIRVisionCloudTextModelType modelType;
 
 /**
@@ -39,9 +31,7 @@ NS_SWIFT_NAME(VisionCloudTextRecognizerOptions)
  */
 @property(nonatomic, copy, nullable) NSString *APIKeyOverride;
 
-/**
- * Designated initializer that creates a new instance of cloud text recognizer options.
- */
+/** Designated initializer that creates a new instance of cloud text recognizer options. */
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 @end

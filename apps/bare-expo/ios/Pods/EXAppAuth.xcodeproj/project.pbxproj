@@ -1,0 +1,434 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		45A7FEAAC6586D6BA9CF5CC9C57FE48A /* EXAppAuthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A614BBD3DC0BA17D6FA8ED9741B88B /* EXAppAuthAppDelegate.m */; };
+		49CF9B5F6F317BF8DF482E4FC626DF2C /* EXAppAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = B04824DFB80DF4AF0375BE54BB7B4211 /* EXAppAuth.m */; };
+		8613B91A8CABA6616C01C6EB0E3D6893 /* EXAppAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = 76545937D4206201726D19027373BB3B /* EXAppAuth.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AD47EC331E0DA701C03F3728A33D08DA /* EXAppAuthAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 503E7527E2A83560144569F310BF518C /* EXAppAuthAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		AFC2B0CAFB78BDAFC01F087D6A5EE737 /* EXAppAuthSessionsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E66EAE67E68751429316C4E0DDE2948 /* EXAppAuthSessionsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BBFA5DACB97894E8C1A6886DE0C21480 /* EXAppAuth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 5749A2DA2ECA4F04ABD350D4D8731962 /* EXAppAuth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		D5FEA8B472B7DC1BA58454C848DD1D23 /* EXAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A0344B95FC54A89272B867E81671E86 /* EXAppAuth-dummy.m */; };
+		DC4DD52E96E0FB5A039F01760A3C8C01 /* EXAppAuth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D22CF18C6BFF1DC7B3C807F8A77B84 /* EXAppAuth+JSON.m */; };
+		E3C9FD2CFB2CF5BA87034A7BA1B71F32 /* EXAppAuthSessionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C3EACF97EAE17072CA4D5D19AD8389 /* EXAppAuthSessionsManager.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8D7F59B19F56E3E391705B555230B97B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93AAEAC3460313DBEA51D918D0B627CC /* AppAuth.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 4EFA7E4CE531453CF475A9A4322A84F8;
+			remoteInfo = AppAuth;
+		};
+		F0A8DCDEAC95C922A9312C22C368EEB1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D88854D1C59679E3B4787C34B2BDCD61 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		196D071176191DDD83C41908DAB61451 /* EXAppAuth-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXAppAuth-prefix.pch"; sourceTree = "<group>"; };
+		503E7527E2A83560144569F310BF518C /* EXAppAuthAppDelegate.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppAuthAppDelegate.h; path = EXAppAuth/EXAppAuthAppDelegate.h; sourceTree = "<group>"; };
+		5749A2DA2ECA4F04ABD350D4D8731962 /* EXAppAuth+JSON.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "EXAppAuth+JSON.h"; path = "EXAppAuth/EXAppAuth+JSON.h"; sourceTree = "<group>"; };
+		76545937D4206201726D19027373BB3B /* EXAppAuth.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppAuth.h; path = EXAppAuth/EXAppAuth.h; sourceTree = "<group>"; };
+		79D22CF18C6BFF1DC7B3C807F8A77B84 /* EXAppAuth+JSON.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "EXAppAuth+JSON.m"; path = "EXAppAuth/EXAppAuth+JSON.m"; sourceTree = "<group>"; };
+		7EB3B24B1E32939D2AB27BBFB8F72D59 /* EXAppAuth.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXAppAuth.xcconfig; sourceTree = "<group>"; };
+		80A614BBD3DC0BA17D6FA8ED9741B88B /* EXAppAuthAppDelegate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppAuthAppDelegate.m; path = EXAppAuth/EXAppAuthAppDelegate.m; sourceTree = "<group>"; };
+		8A0344B95FC54A89272B867E81671E86 /* EXAppAuth-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXAppAuth-dummy.m"; sourceTree = "<group>"; };
+		93AAEAC3460313DBEA51D918D0B627CC /* AppAuth */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppAuth; path = AppAuth.xcodeproj; sourceTree = "<group>"; };
+		9DE2B3923326FD65DB0FC8FC842AAC84 /* EXAppAuth.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXAppAuth.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9E66EAE67E68751429316C4E0DDE2948 /* EXAppAuthSessionsManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXAppAuthSessionsManager.h; path = EXAppAuth/EXAppAuthSessionsManager.h; sourceTree = "<group>"; };
+		B04824DFB80DF4AF0375BE54BB7B4211 /* EXAppAuth.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppAuth.m; path = EXAppAuth/EXAppAuth.m; sourceTree = "<group>"; };
+		C7C3EACF97EAE17072CA4D5D19AD8389 /* EXAppAuthSessionsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXAppAuthSessionsManager.m; path = EXAppAuth/EXAppAuthSessionsManager.m; sourceTree = "<group>"; };
+		D88854D1C59679E3B4787C34B2BDCD61 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		FC1F2EE06DFF3602EC673A7AD75289AA /* libEXAppAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXAppAuth.a; path = libEXAppAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4EDCC30AAFD97CC7B73CE4AB10E37A65 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1168255FF0E3F1C13C678E151C50781F /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				9DE2B3923326FD65DB0FC8FC842AAC84 /* EXAppAuth.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		3D39A34ACD0E10CA0A467C6A8C83BA70 /* EXAppAuth */ = {
+			isa = PBXGroup;
+			children = (
+				76545937D4206201726D19027373BB3B /* EXAppAuth.h */,
+				B04824DFB80DF4AF0375BE54BB7B4211 /* EXAppAuth.m */,
+				5749A2DA2ECA4F04ABD350D4D8731962 /* EXAppAuth+JSON.h */,
+				79D22CF18C6BFF1DC7B3C807F8A77B84 /* EXAppAuth+JSON.m */,
+				503E7527E2A83560144569F310BF518C /* EXAppAuthAppDelegate.h */,
+				80A614BBD3DC0BA17D6FA8ED9741B88B /* EXAppAuthAppDelegate.m */,
+				9E66EAE67E68751429316C4E0DDE2948 /* EXAppAuthSessionsManager.h */,
+				C7C3EACF97EAE17072CA4D5D19AD8389 /* EXAppAuthSessionsManager.m */,
+				1168255FF0E3F1C13C678E151C50781F /* Pod */,
+				E3C0EB51C464721A170C359533BE01E5 /* Support Files */,
+			);
+			name = EXAppAuth;
+			path = "../../../../packages/expo-app-auth/ios";
+			sourceTree = "<group>";
+		};
+		5538FE6BC5409D4A7AF13775AB00C9C4 = {
+			isa = PBXGroup;
+			children = (
+				9CAA0D3C10640875CC5706B4EC056157 /* Dependencies */,
+				3D39A34ACD0E10CA0A467C6A8C83BA70 /* EXAppAuth */,
+				C9DAB046AF8F5DE618DB7E4F75344295 /* Frameworks */,
+				E9F1498E026C9C6DC4C6E3969D6299B6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9CAA0D3C10640875CC5706B4EC056157 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				93AAEAC3460313DBEA51D918D0B627CC /* AppAuth */,
+				D88854D1C59679E3B4787C34B2BDCD61 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		C9DAB046AF8F5DE618DB7E4F75344295 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E3C0EB51C464721A170C359533BE01E5 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7EB3B24B1E32939D2AB27BBFB8F72D59 /* EXAppAuth.xcconfig */,
+				8A0344B95FC54A89272B867E81671E86 /* EXAppAuth-dummy.m */,
+				196D071176191DDD83C41908DAB61451 /* EXAppAuth-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXAppAuth";
+			sourceTree = "<group>";
+		};
+		E9F1498E026C9C6DC4C6E3969D6299B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FC1F2EE06DFF3602EC673A7AD75289AA /* libEXAppAuth.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		DF7B652EBAB0A15C51F36450D3E2097B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBFA5DACB97894E8C1A6886DE0C21480 /* EXAppAuth+JSON.h in Headers */,
+				8613B91A8CABA6616C01C6EB0E3D6893 /* EXAppAuth.h in Headers */,
+				AD47EC331E0DA701C03F3728A33D08DA /* EXAppAuthAppDelegate.h in Headers */,
+				AFC2B0CAFB78BDAFC01F087D6A5EE737 /* EXAppAuthSessionsManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		5FB7695B45E2F2A9171D3B6C97B3A1A2 /* EXAppAuth */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DAEDC235277BFD5CE3F2D91F40EDE21 /* Build configuration list for PBXNativeTarget "EXAppAuth" */;
+			buildPhases = (
+				DF7B652EBAB0A15C51F36450D3E2097B /* Headers */,
+				87B25BF2B11FAE077B0752B03870286D /* Sources */,
+				4EDCC30AAFD97CC7B73CE4AB10E37A65 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DA2170D3A0BE3166C81EB00B48E8DF53 /* PBXTargetDependency */,
+				C1BB730B350238D44F7D50A29A5E570C /* PBXTargetDependency */,
+			);
+			name = EXAppAuth;
+			productName = EXAppAuth;
+			productReference = FC1F2EE06DFF3602EC673A7AD75289AA /* libEXAppAuth.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3A62DD9F722272885AF497774466DE14 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 4A8C53F60BB747DC2BA837E9BA65B45B /* Build configuration list for PBXProject "EXAppAuth" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5538FE6BC5409D4A7AF13775AB00C9C4;
+			productRefGroup = E9F1498E026C9C6DC4C6E3969D6299B6 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = D88854D1C59679E3B4787C34B2BDCD61 /* UMCore */;
+				},
+				{
+					ProjectRef = 93AAEAC3460313DBEA51D918D0B627CC /* AppAuth */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				5FB7695B45E2F2A9171D3B6C97B3A1A2 /* EXAppAuth */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		87B25BF2B11FAE077B0752B03870286D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC4DD52E96E0FB5A039F01760A3C8C01 /* EXAppAuth+JSON.m in Sources */,
+				D5FEA8B472B7DC1BA58454C848DD1D23 /* EXAppAuth-dummy.m in Sources */,
+				49CF9B5F6F317BF8DF482E4FC626DF2C /* EXAppAuth.m in Sources */,
+				45A7FEAAC6586D6BA9CF5CC9C57FE48A /* EXAppAuthAppDelegate.m in Sources */,
+				E3C9FD2CFB2CF5BA87034A7BA1B71F32 /* EXAppAuthSessionsManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C1BB730B350238D44F7D50A29A5E570C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = F0A8DCDEAC95C922A9312C22C368EEB1 /* PBXContainerItemProxy */;
+		};
+		DA2170D3A0BE3166C81EB00B48E8DF53 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AppAuth;
+			targetProxy = 8D7F59B19F56E3E391705B555230B97B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0B502498858D16845935DAB4684470FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7EB3B24B1E32939D2AB27BBFB8F72D59 /* EXAppAuth.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAppAuth/EXAppAuth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAppAuth;
+				PRODUCT_NAME = EXAppAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		14812FA2B8C473F0D900C221EB6574D0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		5C30F58F1450877906628FE66A497904 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		AD33558D9EC6A35408111456EEEF8905 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7EB3B24B1E32939D2AB27BBFB8F72D59 /* EXAppAuth.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXAppAuth/EXAppAuth-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXAppAuth;
+				PRODUCT_NAME = EXAppAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4A8C53F60BB747DC2BA837E9BA65B45B /* Build configuration list for PBXProject "EXAppAuth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				14812FA2B8C473F0D900C221EB6574D0 /* Debug */,
+				5C30F58F1450877906628FE66A497904 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4DAEDC235277BFD5CE3F2D91F40EDE21 /* Build configuration list for PBXNativeTarget "EXAppAuth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0B502498858D16845935DAB4684470FA /* Debug */,
+				AD33558D9EC6A35408111456EEEF8905 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3A62DD9F722272885AF497774466DE14 /* Project object */;
+}

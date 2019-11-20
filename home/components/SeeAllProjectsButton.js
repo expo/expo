@@ -2,12 +2,13 @@
 
 import React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import FadeIn from 'react-native-fade-in-image';
-import TouchableNativeFeedback from '@expo/react-native-touchable-native-feedback-safe';
 import { take } from 'lodash';
 
 import Colors from '../constants/Colors';
+import { Ionicons } from './Icons';
+import { StyledButton } from './Views';
+import { StyledText } from './Text';
 
 const MAX_ICON_COUNT = 4;
 
@@ -28,22 +29,23 @@ export default class SeeAllProjectsButton extends React.Component {
     let otherAppCount = appCount - Math.min(apps.length, maxIconCount);
 
     return (
-      <TouchableNativeFeedback
+      <StyledButton
         onPress={this.props.onPress}
         underlayColor="#c3c3c3"
-        fallback={TouchableHighlight}
-        style={styles.container}>
-        <Text style={styles.buttonText}>{this.props.label}</Text>
+        style={styles.container}
+        fallback={TouchableHighlight}>
+        <StyledText style={styles.buttonText} lightColor={Colors.light.blackText}>
+          {this.props.label}
+        </StyledText>
         <View style={styles.appIconContainer}>
-          {take(apps, maxIconCount).map(
-            (app, i) =>
-              app.iconUrl ? (
-                <FadeIn key={i} placeholderColor="#eee">
-                  <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
-                </FadeIn>
-              ) : (
-                <View key={i} style={styles.appIconPlaceholder} />
-              )
+          {take(apps, maxIconCount).map((app, i) =>
+            app.iconUrl ? (
+              <FadeIn key={i} placeholderColor="#eee">
+                <Image source={{ uri: app.iconUrl }} style={styles.appIcon} />
+              </FadeIn>
+            ) : (
+              <View key={i} style={styles.appIconPlaceholder} />
+            )
           )}
 
           {otherAppCount > 0 && (
@@ -55,20 +57,19 @@ export default class SeeAllProjectsButton extends React.Component {
           <Ionicons
             name="ios-arrow-forward"
             size={22}
-            color={Colors.greyText}
+            color={Colors.light.greyText}
             style={{ marginTop: -1, marginLeft: 15 }}
           />
         </View>
-      </TouchableNativeFeedback>
+      </StyledButton>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    flex: 1,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: Colors.separator,
     paddingTop: 15,
     paddingBottom: 12,
     paddingHorizontal: 15,
@@ -76,7 +77,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonText: {
-    color: Colors.blackText,
     fontSize: 15,
     ...Platform.select({
       ios: {
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   projectsNumberText: {
     fontSize: 12,
     fontWeight: '600',
-    color: Colors.greyText,
+    color: Colors.light.greyText,
     backgroundColor: 'transparent',
   },
   projectsNumberContainer: {

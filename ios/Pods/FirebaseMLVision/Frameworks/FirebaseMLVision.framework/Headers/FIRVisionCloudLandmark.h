@@ -5,9 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Set of landmark properties identified by a vision cloud detector.
- */
+/** Set of landmark properties identified by a vision cloud detector. */
 NS_SWIFT_NAME(VisionCloudLandmark)
 @interface FIRVisionCloudLandmark : NSObject
 
@@ -17,19 +15,13 @@ NS_SWIFT_NAME(VisionCloudLandmark)
  */
 @property(nonatomic, copy, readonly, nullable) NSString *entityId;
 
-/**
- * Textual description of the landmark.
- */
+/** Textual description of the landmark. */
 @property(nonatomic, copy, readonly, nullable) NSString *landmark;
 
-/**
- * Overall confidence of the result. The value is float, in range [0, 1].
- */
+/** Overall confidence of the result. The value is float, in range [0, 1]. */
 @property(nonatomic, readonly, nullable) NSNumber *confidence;
 
-/**
- * A rectangle image region to which this landmark belongs to (in the view coordinate system).
- */
+/** A rectangle image region to which this landmark belongs to (in the view coordinate system). */
 @property(nonatomic, readonly) CGRect frame;
 
 /**
@@ -39,9 +31,7 @@ NS_SWIFT_NAME(VisionCloudLandmark)
  */
 @property(nonatomic, readonly, nullable) NSArray<FIRVisionLatitudeLongitude *> *locations;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

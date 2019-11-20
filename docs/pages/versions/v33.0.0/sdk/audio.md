@@ -6,7 +6,7 @@ Provides basic sample playback and recording.
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](http://expo.io/@community/playlist) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](http://expo.io/@community/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
 ## Installation
 
@@ -170,7 +170,7 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
-The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Expo.Video`-- see the [AV documentation](../av/) for further information:
+The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](../av/) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -208,7 +208,7 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
 
-Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details.
+Note that your experience must request audio recording permissions in order for recording to function. See the [`Permissions` module](../permissions/) for more details. Additionally, audio recording is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
 #### Returns
 
@@ -322,7 +322,7 @@ try {
 
   A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record.
 
-- `recordingInstance.createNewLoadedSound()`
+- `recordingInstance.createNewLoadedSoundAsync()`
 
   Creates and loads a new `Sound` object to play back the `Recording`. Note that this will only succeed once the `Recording` is done recording (once `stopAndUnloadAsync()` has been called).
 

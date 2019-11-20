@@ -23,10 +23,10 @@
 
     ],
     "FBSDKCoreKit": [
-      "~> 4.0"
+
     ],
     "FBSDKLoginKit": [
-      "~> 4.0"
+
     ]
   }
 }

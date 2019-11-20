@@ -1,6 +1,6 @@
 // Software License Agreement (BSD License)
 //
-// Copyright (c) 2010-2016, Deusty, LLC
+// Copyright (c) 2010-2019, Deusty, LLC
 // All rights reserved.
 //
 // Redistribution and use of this software in source and binary forms,
@@ -14,7 +14,7 @@
 //   prior written permission of Deusty, LLC.
 
 #import "DDContextFilterLogFormatter.h"
-#import <libkern/OSAtomic.h>
+#import <pthread/pthread.h>
 
 #if !__has_feature(objc_arc)
 #error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
@@ -22,12 +22,12 @@
 
 @interface DDLoggingContextSet : NSObject
 
-- (void)addToSet:(NSUInteger)loggingContext;
-- (void)removeFromSet:(NSUInteger)loggingContext;
+- (void)addToSet:(NSInteger)loggingContext;
+- (void)removeFromSet:(NSInteger)loggingContext;
 
 @property (readonly, copy) NSArray *currentSet;
 
-- (BOOL)isInSet:(NSUInteger)loggingContext;
+- (BOOL)isInSet:(NSInteger)loggingContext;
 
 @end
 
@@ -52,11 +52,11 @@
     return self;
 }
 
-- (void)addToWhitelist:(NSUInteger)loggingContext {
+- (void)addToWhitelist:(NSInteger)loggingContext {
     [_contextSet addToSet:loggingContext];
 }
 
-- (void)removeFromWhitelist:(NSUInteger)loggingContext {
+- (void)removeFromWhitelist:(NSInteger)loggingContext {
     [_contextSet removeFromSet:loggingContext];
 }
 
@@ -64,7 +64,7 @@
     return [_contextSet currentSet];
 }
 
-- (BOOL)isOnWhitelist:(NSUInteger)loggingContext {
+- (BOOL)isOnWhitelist:(NSInteger)loggingContext {
     return [_contextSet isInSet:loggingContext];
 }
 
@@ -99,11 +99,11 @@
     return self;
 }
 
-- (void)addToBlacklist:(NSUInteger)loggingContext {
+- (void)addToBlacklist:(NSInteger)loggingContext {
     [_contextSet addToSet:loggingContext];
 }
 
-- (void)removeFromBlacklist:(NSUInteger)loggingContext {
+- (void)removeFromBlacklist:(NSInteger)loggingContext {
     [_contextSet removeFromSet:loggingContext];
 }
 
@@ -111,7 +111,7 @@
     return [_contextSet currentSet];
 }
 
-- (BOOL)isOnBlacklist:(NSUInteger)loggingContext {
+- (BOOL)isOnBlacklist:(NSInteger)loggingContext {
     return [_contextSet isInSet:loggingContext];
 }
 
@@ -131,7 +131,7 @@
 
 
 @interface DDLoggingContextSet () {
-    OSSpinLock _lock;
+    pthread_mutex_t _mutex;
     NSMutableSet *_set;
 }
 
@@ -143,48 +143,52 @@
 - (instancetype)init {
     if ((self = [super init])) {
         _set = [[NSMutableSet alloc] init];
-        _lock = OS_SPINLOCK_INIT;
+        pthread_mutex_init(&_mutex, NULL);
     }
 
     return self;
 }
 
-- (void)addToSet:(NSUInteger)loggingContext {
-    OSSpinLockLock(&_lock);
+- (void)dealloc {
+    pthread_mutex_destroy(&_mutex);
+}
+
+- (void)addToSet:(NSInteger)loggingContext {
+    pthread_mutex_lock(&_mutex);
     {
         [_set addObject:@(loggingContext)];
     }
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_mutex);
 }
 
-- (void)removeFromSet:(NSUInteger)loggingContext {
-    OSSpinLockLock(&_lock);
+- (void)removeFromSet:(NSInteger)loggingContext {
+    pthread_mutex_lock(&_mutex);
     {
         [_set removeObject:@(loggingContext)];
     }
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_mutex);
 }
 
 - (NSArray *)currentSet {
     NSArray *result = nil;
 
-    OSSpinLockLock(&_lock);
+    pthread_mutex_lock(&_mutex);
     {
         result = [_set allObjects];
     }
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_mutex);
 
     return result;
 }
 
-- (BOOL)isInSet:(NSUInteger)loggingContext {
+- (BOOL)isInSet:(NSInteger)loggingContext {
     BOOL result = NO;
 
-    OSSpinLockLock(&_lock);
+    pthread_mutex_lock(&_mutex);
     {
         result = [_set containsObject:@(loggingContext)];
     }
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_mutex);
 
     return result;
 }

@@ -6,9 +6,10 @@ buildscript {
     targetSdkVersion = 28
     compileSdkVersion = 28
 
+    dbFlowVersion = '4.2.4'
     buildToolsVersion = '28.0.0'
     supportLibVersion = '28.0.0'
-    kotlinVersion = '1.3.21'
+    kotlinVersion = '1.3.50'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
   repositories {
@@ -17,9 +18,9 @@ buildscript {
     maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.5.1'
     classpath 'com.google.gms:google-services:3.2.1'
-    classpath 'de.undercouch:gradle-download-task:2.0.0'
+    classpath 'de.undercouch:gradle-download-task:3.4.3'
 
     // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
     classpath 'com.amazonaws:aws-devicefarm-gradle-plugin:1.3'
@@ -36,13 +37,16 @@ allprojects {
     }
     // For old expoviews to work
     maven {
-      url "$rootDir/versioned-abis/expoview-abi31_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi32_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi36_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi33_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi34_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi35_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -67,7 +71,9 @@ allprojects {
     }
     // https://github.com/google/ExoPlayer/issues/5225#issuecomment-445739013
     maven { url 'https://google.bintray.com/exoplayer' }
-    maven { url "https://jitpack.io" }
+    // Using www.jitpack.io instead of plain jitpack.io due to
+    // https://github.com/jitpack/jitpack.io/issues/4002
+    maven { url "https://www.jitpack.io" }
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()

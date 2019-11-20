@@ -8,6 +8,8 @@ An API to modify images stored on the local file system.
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-manipulator`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
 
+> **Note**: Not compatible with web.
+
 ## API
 
 ```js

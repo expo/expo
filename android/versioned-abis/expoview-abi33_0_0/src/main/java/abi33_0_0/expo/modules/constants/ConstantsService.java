@@ -3,7 +3,7 @@ package abi33_0_0.expo.modules.constants;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 
 import com.facebook.device.yearclass.YearClass;

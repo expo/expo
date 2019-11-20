@@ -281,6 +281,10 @@ BranchStandardEvent BranchStandardEventReserve                = @"RESERVE";
     NSMutableDictionary *eventDictionary = [NSMutableDictionary new];
     eventDictionary[@"name"] = _eventName;
     
+    if (self.alias.length > 0) {
+        eventDictionary[@"customer_event_alias"] = self.alias;
+    }
+    
     NSDictionary *propertyDictionary = [self dictionary];
     if (propertyDictionary.count) {
         eventDictionary[@"event_data"] = propertyDictionary;

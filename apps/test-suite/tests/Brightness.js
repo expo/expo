@@ -10,7 +10,7 @@ export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
-  t.describe(`Brightness`, () => {
+  t.describe(name, () => {
     let originalBrightness;
 
     t.beforeAll(async () => {

@@ -17,12 +17,8 @@ export default class BarCodeScreen extends React.Component {
     scannerIsVisible: true,
   };
 
-  _hasOpenedUrl: boolean;
-  _isMounted: boolean;
-
-  componentWillMount() {
-    this._hasOpenedUrl = false;
-  }
+  _hasOpenedUrl = false;
+  _isMounted = false;
 
   componentDidMount() {
     this._isMounted = true;
@@ -99,7 +95,7 @@ const BOX_SIZE = Layout.window.width - BOX_MARGIN * 2;
 const BOX_TOP = Layout.window.height / 2 - BOX_SIZE / 2;
 const BOX_BOTTOM = BOX_TOP + BOX_SIZE;
 const BOX_LEFT = BOX_MARGIN;
-const BOX_RIGHT = Layout.window.width - BOX_MARGIN;
+const BOX_RIGHT = Layout.window.width - BOX_LEFT;
 
 const overlayBaseStyle = {
   position: 'absolute',

@@ -13,7 +13,7 @@
 
 /**
  * RNSVG nodes are implemented as base UIViews. They should be implementation for all basic
- ＊interfaces for all non-defination nodes.
+ ＊interfaces for all non-definition nodes.
  */
 
 @interface RNSVGNode : UIView
@@ -31,7 +31,12 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 @property (nonatomic, assign) RNSVGCGFCRule clipRule;
 @property (nonatomic, strong) NSString *clipPath;
 @property (nonatomic, strong) NSString *mask;
+@property (nonatomic, strong) NSString *markerStart;
+@property (nonatomic, strong) NSString *markerMid;
+@property (nonatomic, strong) NSString *markerEnd;
 @property (nonatomic, assign) BOOL responsible;
+@property (nonatomic, assign) CGAffineTransform ctm;
+@property (nonatomic, assign) CGAffineTransform screenCTM;
 @property (nonatomic, assign) CGAffineTransform matrix;
 @property (nonatomic, assign) CGAffineTransform transforms;
 @property (nonatomic, assign) CGAffineTransform invmatrix;
@@ -39,10 +44,15 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 @property (nonatomic, assign) BOOL active;
 @property (nonatomic, assign) BOOL dirty;
 @property (nonatomic, assign) BOOL merging;
+@property (nonatomic, assign) BOOL skip;
 @property (nonatomic, assign) CGPathRef path;
 @property (nonatomic, assign) CGPathRef strokePath;
+@property (nonatomic, assign) CGPathRef markerPath;
 @property (nonatomic, assign) CGRect clientRect;
 @property (nonatomic, assign) CGRect pathBounds;
+@property (nonatomic, assign) CGRect fillBounds;
+@property (nonatomic, assign) CGRect strokeBounds;
+@property (nonatomic, assign) CGRect markerBounds;
 @property (nonatomic, copy) RCTDirectEventBlock onLayout;
 
 

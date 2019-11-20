@@ -2,7 +2,7 @@
 title: Gyroscope
 ---
 
-Access the device gyroscope sensor to respond to changes in rotation in 3d space.
+Access the device gyroscope sensor to respond to changes in rotation in 3d space. Note that the gyroscope hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
 ## Installation
 
@@ -32,7 +32,7 @@ Subscribe for updates to the gyroscope.
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argumument that is an object containing keys x, y, z.
+- **listener (_function_)** -- A callback that is invoked when an gyroscope update is available. When invoked, the listener is provided a single argument that is an object containing keys x, y, z.
 
 #### Returns
 

@@ -9,7 +9,7 @@
 #include "ABI34_0_0YGMacros.h"
 
 #ifdef __cplusplus
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 namespace enums {
 
@@ -25,7 +25,7 @@ constexpr int n() {
 
 } // namespace enums
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook
 #endif
 
 #define ABI34_0_0YG_ENUM_DECL(NAME, ...)                               \
@@ -36,7 +36,7 @@ constexpr int n() {
 #define ABI34_0_0YG_ENUM_SEQ_DECL(NAME, ...)  \
   ABI34_0_0YG_ENUM_DECL(NAME, __VA_ARGS__)    \
   ABI34_0_0YG_EXTERN_C_END                    \
-  namespace facebook {               \
+  namespace ABI34_0_0facebook {               \
   namespace ABI34_0_0yoga {                   \
   namespace enums {                  \
   template <>                        \

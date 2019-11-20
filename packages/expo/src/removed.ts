@@ -5,6 +5,7 @@ import removedModule from './removedModule';
 
 declare var module: any;
 
+/* eslint-disable getter-return */
 Object.defineProperties(module.exports, {
   AdMobBanner: {
     enumerable: true,
@@ -269,6 +270,17 @@ Object.defineProperties(module.exports, {
         `import { DocumentPicker } from 'expo' -> import * as DocumentPicker from 'expo-document-picker'`,
         'DocumentPicker',
         'expo-document-picker'
+      );
+    },
+  },
+
+  ErrorRecovery: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { ErrorRecovery } from 'expo' -> import * as ErrorRecovery from 'expo-error-recovery'`,
+        'ErrorRecovery',
+        'expo-error-recovery'
       );
     },
   },
@@ -617,7 +629,11 @@ Object.defineProperties(module.exports, {
   SMS: {
     enumerable: true,
     get() {
-      removedModule(`import { SMS } from 'expo' -> import * as SMS from 'expo-sms'`, 'SMS', 'expo-sms');
+      removedModule(
+        `import { SMS } from 'expo' -> import * as SMS from 'expo-sms'`,
+        'SMS',
+        'expo-sms'
+      );
     },
   },
 
@@ -639,6 +655,17 @@ Object.defineProperties(module.exports, {
         `import { SQLite } from 'expo' -> import { SQLite } from 'expo-sqlite'`,
         'SQLite',
         'expo-sqlite'
+      );
+    },
+  },
+
+  StoreReview: {
+    enumerable: true,
+    get() {
+      removedModule(
+        `import { StoreReview } from 'expo' -> import { StoreReview } from 'expo-store-review'`,
+        'StoreReview',
+        'expo-store-review'
       );
     },
   },

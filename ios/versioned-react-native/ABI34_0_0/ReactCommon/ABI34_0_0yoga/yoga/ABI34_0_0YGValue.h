@@ -58,7 +58,7 @@ inline ABI34_0_0YGValue operator-(const ABI34_0_0YGValue& value) {
   return {-value.value, value.unit};
 }
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ABI34_0_0yoga {
 namespace literals {
 
@@ -78,6 +78,6 @@ inline ABI34_0_0YGValue operator"" _percent(unsigned long long value) {
 
 } // namespace literals
 } // namespace ABI34_0_0yoga
-} // namespace facebook
+} // namespace ABI34_0_0facebook
 
 #endif

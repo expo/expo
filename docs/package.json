@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "33.0.0",
+  "version": "35.0.0",
   "private": true,
   "scripts": {
     "dev": "node server.js",
@@ -11,8 +11,10 @@
     "test-links": "./scripts/test-links"
   },
   "dependencies": {
+    "@expo/spawn-async": "^1.5.0",
     "@mdx-js/loader": "^0.16.8",
     "@mdx-js/mdx": "^0.16.8",
+    "@sentry/browser": "^5.6.1",
     "babel-plugin-module-resolver": "3.1.1",
     "babel-plugin-preval": "^3.0.1",
     "cross-env": "^5.2.0",
@@ -29,12 +31,14 @@
     "prop-types": "15.6.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
-    "react-emotion": "^9.2.9"
+    "react-emotion": "^9.2.9",
+    "react-player": "^1.11.1",
+    "react-visibility-sensor": "^5.1.0"
   },
   "devDependencies": {
     "broken-link-checker": "^0.7.8",
     "http-server": "^0.11.1",
     "minimist": "^1.2.0",
-    "prettier": "^1.15.3"
+    "prettier": "^1.18.2"
   }
 }

@@ -118,7 +118,7 @@ await AppAuth.revokeAsync(config, options);
 
 ## `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop.
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`. 
 
 ## `AppAuth.URLSchemes`
 

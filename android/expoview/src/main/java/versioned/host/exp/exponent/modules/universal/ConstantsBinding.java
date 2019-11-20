@@ -4,7 +4,7 @@ package versioned.host.exp.exponent.modules.universal;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 
 import org.json.JSONException;
@@ -66,7 +66,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
-    constants.put("nativeAppVersion", Constants.VERSION_NAME);
+    constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
     constants.put("supportedExpoSdks", Constants.SDK_VERSIONS_LIST);
 

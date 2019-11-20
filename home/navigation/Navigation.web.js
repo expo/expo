@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { createBrowserApp } from '@react-navigation/web';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import ProjectsScreen from '../screens/ProjectsScreen';
@@ -36,7 +37,7 @@ const ProjectsStack = createStackNavigator(
     },
     defaultNavigationOptions,
     cardStyle: {
-      backgroundColor: Colors.greyBackground,
+      backgroundColor: Colors.light.greyBackground,
     },
   }
 );
@@ -92,7 +93,7 @@ const ExploreStack = createStackNavigator(
       },
     },
     cardStyle: {
-      backgroundColor: Colors.greyBackground,
+      backgroundColor: Colors.light.greyBackground,
     },
   }
 );
@@ -113,7 +114,7 @@ const ProfileStack = createStackNavigator(
       tabBarLabel: 'Profile',
     },
     cardStyle: {
-      backgroundColor: Colors.greyBackground,
+      backgroundColor: Colors.light.greyBackground,
     },
   }
 );
@@ -132,15 +133,15 @@ const TabNavigator =
         },
         tabBarOptions: {
           style: {
-            backgroundColor: Colors.tabBar,
+            backgroundColor: Colors.light.tabBar,
             borderTopColor: '#f2f2f2',
           },
         },
       })
     : createMaterialBottomTabNavigator(TabRoutes, {
         initialRouteName: 'ProjectsStack',
-        activeTintColor: Colors.tabIconSelected,
-        inactiveTintColor: Colors.tabIconDefault,
+        activeTintColor: Colors.light.tabIconSelected,
+        inactiveTintColor: Colors.light.tabIconDefault,
         navigationOptions: {
           header: null,
         },
@@ -167,7 +168,7 @@ const RootStack = createStackNavigator(
 export default createBrowserApp(RootStack);
 
 function renderIcon(IconComponent: any, iconName: string, iconSize: number, isSelected: boolean) {
-  let color = isSelected ? Colors.tabIconSelected : Colors.tabIconDefault;
+  let color = isSelected ? Colors.light.tabIconSelected : Colors.light.tabIconDefault;
 
   return <IconComponent name={iconName} size={iconSize} color={color} style={styles.icon} />;
 }

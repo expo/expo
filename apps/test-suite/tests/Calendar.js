@@ -218,9 +218,9 @@ export async function test(t) {
   }
 
   describeWithPermissions('Calendar', () => {
-    t.describe('requestPermissionsAsync()', () => {
+    t.describe('requestCalendarPermissionsAsync()', () => {
       t.it('requests for Calendar permissions', async () => {
-        const results = await Calendar.requestPermissionsAsync();
+        const results = await Calendar.requestCalendarPermissionsAsync();
 
         t.expect(results.granted).toBe(true);
         t.expect(results.status).toBe('granted');
@@ -491,14 +491,18 @@ export async function test(t) {
         });
       });
     } else {
-      expectMethodsToReject([
-        'createAttendeeAsync',
-        'updateAttendeeAsync',
-        'deleteAttendeeAsync',
-      ]);
+      expectMethodsToReject(['createAttendeeAsync', 'updateAttendeeAsync', 'deleteAttendeeAsync']);
     }
 
     if (Platform.OS === 'ios') {
+      t.describe('getDefaultCalendarAsync()', () => {
+        t.it('get default calendar', async () => {
+          const calendar = await Calendar.getDefaultCalendarAsync();
+
+          testCalendarShape(calendar);
+        });
+      });
+
       t.describe('requestRemindersPermissionsAsync()', () => {
         t.it('requests for Reminders permissions', async () => {
           const results = await Calendar.requestRemindersPermissionsAsync();

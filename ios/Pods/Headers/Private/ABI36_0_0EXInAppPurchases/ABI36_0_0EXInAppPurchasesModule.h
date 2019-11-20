@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/EXInAppPurchases/ABI36_0_0EXInAppPurchases/ABI36_0_0EXInAppPurchasesModule.h

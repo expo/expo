@@ -1,9 +1,0 @@
-framework module FirebaseCoreDiagnostics {
-  export *
-  module * { export * }
-  link "z"
-  link framework "Foundation"
-  link framework "Security"
-  link framework "SystemConfiguration"
-  link framework "UIKit"
-}

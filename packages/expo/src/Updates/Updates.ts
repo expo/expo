@@ -1,7 +1,6 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { RCTDeviceEventEmitter, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
-import DeviceEventEmitter from 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter';
 
 import ExponentUpdates from './ExponentUpdates';
 
@@ -68,12 +67,19 @@ export async function fetchUpdateAsync({
   };
 }
 
+export async function clearUpdateCacheExperimentalAsync(abiVersion: string): Promise<void> {
+  if (!ExponentUpdates.clearUpdateCacheAsync) {
+    throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
+  }
+  return ExponentUpdates.clearUpdateCacheAsync(abiVersion);
+}
+
 let _emitter: EventEmitter | null;
 
 function _getEmitter(): EventEmitter {
   if (!_emitter) {
     _emitter = new EventEmitter();
-    DeviceEventEmitter.addListener('Exponent.nativeUpdatesEvent', _emitEvent);
+    RCTDeviceEventEmitter.addListener('Exponent.nativeUpdatesEvent', _emitEvent);
   }
   return _emitter;
 }

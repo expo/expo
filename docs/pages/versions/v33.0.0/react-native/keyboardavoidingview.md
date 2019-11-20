@@ -7,17 +7,13 @@ It is a component to solve the common problem of views that need to move out of 
 
 Example usage:
 
-
 ```javascript
-
-import {KeyboardAvoidingView} from 'react-native';
+import { KeyboardAvoidingView } from 'react-native';
 
 <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
   ... your UI ...
 </KeyboardAvoidingView>;
-
 ```
-
 
 ### Example
 
@@ -75,4 +71,3 @@ Enabled or disabled KeyboardAvoidingView. The default is `true`.
 | Type    | Required |
 | ------- | -------- |
 | boolean | No       |
-

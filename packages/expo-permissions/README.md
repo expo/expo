@@ -7,9 +7,11 @@ Allows you prompt for various permissions to access device sensors, personal dat
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/permissions.md)
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/permissions/)
 
-# Installation
+# Installation in managed Expo projects
 
-This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects. You may skip the rest of the installation guide if this applies to you.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+
+# Installation in bare React Native projects
 
 For bare React Native projects, this package is included in [`react-native-unimodules`](https://github.com/unimodules/react-native-unimodules). Please refer to those installation instructions to install this package.
 

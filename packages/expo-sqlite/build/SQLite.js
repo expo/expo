@@ -4,8 +4,6 @@ import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
 const { ExponentSQLite } = NativeModulesProxy;
-;
-;
 class SQLiteDatabase {
     constructor(name) {
         this._closed = false;
@@ -71,7 +69,4 @@ export function openDatabase(name, version = '1.0', description = name, size = 1
     const dbWithExec = addExecMethod(db);
     return dbWithExec;
 }
-export default {
-    openDatabase,
-};
 //# sourceMappingURL=SQLite.js.map

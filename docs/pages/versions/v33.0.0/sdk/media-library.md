@@ -10,6 +10,8 @@ Requires `Permissions.CAMERA_ROLL` permissions.
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-media-library`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-media-library).
 
+> **Note**: Not compatible with web.
+
 ## API
 
 ```js

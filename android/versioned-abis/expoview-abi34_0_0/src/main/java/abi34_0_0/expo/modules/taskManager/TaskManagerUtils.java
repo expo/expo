@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
-import android.support.v4.util.ArraySet;
+import androidx.collection.ArraySet;
 import android.util.Log;
 
 import java.util.ArrayList;

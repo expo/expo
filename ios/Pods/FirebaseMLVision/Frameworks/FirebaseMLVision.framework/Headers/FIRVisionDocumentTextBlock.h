@@ -12,46 +12,28 @@ NS_ASSUME_NONNULL_BEGIN
  * An enum of document text block types.
  */
 typedef NS_ENUM(NSInteger, FIRVisionDocumentTextBlockType) {
-  /**
-   * Unknown document text block type.
-   */
+  /** Unknown document text block type. */
   FIRVisionDocumentTextBlockTypeUnknown,
-  /**
-   * Barcode document text block type.
-   */
+  /** Barcode document text block type. */
   FIRVisionDocumentTextBlockTypeBarcode,
-  /**
-   * Image document text block type.
-   */
+  /** Image document text block type. */
   FIRVisionDocumentTextBlockTypePicture,
-  /**
-   * Horizontal/vertical line box document text block type.
-   */
+  /** Horizontal/vertical line box document text block type. */
   FIRVisionDocumentTextBlockTypeRuler,
-  /**
-   * Table document text block type.
-   */
+  /** Table document text block type. */
   FIRVisionDocumentTextBlockTypeTable,
-  /**
-   * Regular document text block type.
-   */
+  /** Regular document text block type. */
   FIRVisionDocumentTextBlockTypeText,
 } NS_SWIFT_NAME(VisionDocumentTextBlockType);
 
-/**
- * A document text block recognized in an image that consists of an array of paragraphs.
- */
+/** A document text block recognized in an image that consists of an array of paragraphs. */
 NS_SWIFT_NAME(VisionDocumentTextBlock)
 @interface FIRVisionDocumentTextBlock : NSObject
 
-/**
- * The detected block type.
- */
+/** The detected block type. */
 @property(nonatomic, readonly) FIRVisionDocumentTextBlockType type;
 
-/**
- * String representation of the document text block that was recognized.
- */
+/** String representation of the document text block that was recognized. */
 @property(nonatomic, readonly) NSString *text;
 
 /**
@@ -66,9 +48,7 @@ NS_SWIFT_NAME(VisionDocumentTextBlock)
  */
 @property(nonatomic, readonly) CGRect frame;
 
-/**
- * The confidence of the recognized document text block.
- */
+/** The confidence of the recognized document text block. */
 @property(nonatomic, readonly) NSNumber *confidence;
 
 /**
@@ -77,14 +57,10 @@ NS_SWIFT_NAME(VisionDocumentTextBlock)
  */
 @property(nonatomic, readonly) NSArray<FIRVisionTextRecognizedLanguage *> *recognizedLanguages;
 
-/**
- * The recognized start or end of the document text block.
- */
+/** The recognized start or end of the document text block. */
 @property(nonatomic, readonly, nullable) FIRVisionTextRecognizedBreak *recognizedBreak;
 
-/**
- * Unavailable.
- */
+/** Unavailable. */
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

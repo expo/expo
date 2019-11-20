@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 import android.util.Base64;
 import android.util.Log;
 
@@ -508,6 +508,7 @@ public class FileSystemModule extends ExportedModule {
             }
             result.putInt("status", response.code());
             result.putBundle("headers", translateHeaders(response.headers()));
+            response.close();
             promise.resolve(result);
           }
         });
@@ -722,6 +723,7 @@ public class FileSystemModule extends ExportedModule {
         result.putInt("status", response.code());
         result.putBundle("headers", translateHeaders(response.headers()));
 
+        response.close();
         promise.resolve(result);
         return null;
       } catch (Exception e) {

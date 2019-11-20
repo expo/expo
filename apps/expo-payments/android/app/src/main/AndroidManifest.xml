@@ -336,13 +336,6 @@
       android:value="a25fafe9f9edee11a9882b32e0cd7a26df6e2c42"/>
     <!-- END FABRIC CONFIG -->
 
-    <!-- ADD GOOGLE MAPS CONFIG HERE -->
-    <!-- BEGIN GOOGLE MAPS CONFIG -->
-    <meta-data
-      android:name="com.google.android.geo.API_KEY"
-      android:value="AIzaSyCPyKmt6in3JwAsogYikNNjor8qgU9stRQ"/>
-    <!-- END GOOGLE MAPS CONFIG -->
-
     <!-- ADD BRANCH CONFIG HERE -->
 
     <!-- The Facebook SDK runs FacebookInitProvider on startup and crashes if there isn't an ID here -->

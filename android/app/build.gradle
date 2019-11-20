@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.26.1'
+    classpath 'io.fabric.tools:gradle:1.31.0'
   }
 }
 apply plugin: 'com.android.application'
@@ -34,23 +34,12 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 114
-    versionName '2.11.4'
+    versionCode 117
+    versionName '2.12.2'
     // END VERSIONS
-    ndk {
-      // We use different `abiFilters` for distributing
-      // to be able to bundle old, incompatible SDKs.
 
-      // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-      abiFilters 'armeabi-v7a', 'x86'
-      // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-      /* UNCOMMENT WHEN DISTRIBUTING
-      abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-      END UNCOMMENT WHEN DISTRIBUTING */
-    }
     multiDexEnabled true
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -79,6 +68,7 @@ android {
     release {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      consumerProguardFiles 'proguard-rules.pro'
       signingConfig signingConfigs.release
     }
   }
@@ -105,6 +95,11 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  resolutionStrategy.dependencySubstitution {
+    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+  }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
 
 // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -118,20 +113,20 @@ apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation 'com.android.support:multidex:1.0.1'
+  implementation 'androidx.multidex:multidex:2.0.0'
 
   // Our dependencies
-  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'androidx.appcompat:appcompat:1.1.0'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation 'androidx.appcompat:appcompat:1.1.0'
   implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:9.0.0'
+  implementation 'com.jakewharton:butterknife:10.2.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
@@ -140,10 +135,6 @@ dependencies {
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
-  implementation 'com.google.android.gms:play-services-ads:15.0.1'
-  annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
-  implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
-  implementation "com.raizlabs.android:DBFlow:2.2.1"
   implementation "com.madgag.spongycastle:core:1.53.0.0"
   implementation "com.madgag.spongycastle:prov:1.53.0.0"
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -161,7 +152,7 @@ dependencies {
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
-  implementation "com.android.support:exifinterface:${safeExtGet("supportLibVersion", "28.0.0")}"
+  implementation "androidx.exifinterface:exifinterface:1.0.0"
   implementation 'com.squareup.okio:okio:1.9.0'
   implementation 'com.facebook.soloader:soloader:0.6.0'
 
@@ -170,22 +161,27 @@ dependencies {
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
 
   // Testing
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
   // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-  androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
+  androidTestImplementation 'androidx.test:runner:1.1.0'
+  androidTestImplementation "androidx.annotation:annotation:1.0.0"
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
-  androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+  androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
+  androidTestImplementation 'junit:junit:4.12'
+  androidTestImplementation 'org.mockito:mockito-core:1.10.19'
+  testImplementation 'org.robolectric:robolectric:3.8'
+  androidTestImplementation 'androidx.test:runner:1.1.0'
+  androidTestImplementation 'androidx.test:rules:1.2.0'
+
+  testImplementation 'androidx.test:runner:1.1.0'
+  testImplementation 'androidx.test:rules:1.2.0'
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'
-  testImplementation 'org.robolectric:robolectric:3.8'
-  testImplementation 'com.android.support.test:runner:1.0.2-alpha1'
-  testImplementation 'com.android.support.test:rules:1.0.2-alpha1'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:33.0.0@aar') {
+  implementation('host.exp.exponent:expoview:36.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -203,6 +199,15 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_36
+  implementation(project(':expoview-abi36_0_0'))
+  // END_SDK_36
+
+
+  // BEGIN_SDK_35
+  implementation(project(':expoview-abi35_0_0'))
+  // END_SDK_35
+
   // BEGIN_SDK_34
   implementation(project(':expoview-abi34_0_0'))
   // END_SDK_34
@@ -211,17 +216,8 @@ dependencies {
   implementation(project(':expoview-abi33_0_0'))
   // END_SDK_33
 
-  // BEGIN_SDK_32
-  implementation(project(':expoview-abi32_0_0'))
-  // END_SDK_32
-
-  // BEGIN_SDK_31
-  implementation(project(':expoview-abi31_0_0'))
-  // END_SDK_31
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
-  // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
-  implementation 'com.amplitude:android-sdk:2.9.2'
+  implementation 'com.amplitude:android-sdk:2.23.2'
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -238,7 +234,14 @@ dependencies {
         '../enabled-modules'
       ],
       configuration: 'api',
-      target       : 'react-native'
+      target       : 'react-native',
+      exclude      : [
+        'expo-module-template',
+        'expo-bluetooth',
+        'expo-in-app-purchases',
+        'expo-payments-stripe',
+        'expo-updates'
+      ]
   ])
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE

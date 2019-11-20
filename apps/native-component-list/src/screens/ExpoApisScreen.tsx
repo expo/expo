@@ -24,7 +24,7 @@ export default class ExpoApisScreen extends React.Component {
 
   _notificationSubscription?: EventSubscription;
 
-  componentWillMount() {
+  componentDidMount() {
     if (Platform.OS !== 'web') {
       this._notificationSubscription = Notifications.addListener(this._handleNotification);
     }
@@ -86,14 +86,18 @@ export default class ExpoApisScreen extends React.Component {
       'Accelerometer',
       'ActionSheet',
       'AppAuth',
+      'Appearance',
+      'AppleAuthentication',
       'Audio',
       'AuthSession',
+      'Battery',
       'BackgroundFetch',
       'Branch',
       'Brightness',
       'Calendars',
       'Constants',
       'Contacts',
+      'Device',
       'DocumentPicker',
       'FacebookLogin',
       'FaceDetector',
@@ -119,6 +123,7 @@ export default class ExpoApisScreen extends React.Component {
       'Print',
       'MediaLibrary',
       'Recording',
+      'SafeAreaContext',
       'ScreenOrientation',
       'Sensor',
       'SecureStore',

@@ -14,11 +14,11 @@
 
 #import "ABI33_0_0RCTCxxMethod.h"
 
-using namespace facebook::ReactABI33_0_0;
+using namespace ABI33_0_0facebook::ReactABI33_0_0;
 
 @implementation ABI33_0_0RCTCxxModule
 {
-  std::unique_ptr<facebook::xplat::module::CxxModule> _module;
+  std::unique_ptr<ABI33_0_0facebook::xplat::module::CxxModule> _module;
 }
 
 + (NSString *)moduleName
@@ -44,7 +44,7 @@ using namespace facebook::ReactABI33_0_0;
   }
 }
 
-- (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule
+- (std::unique_ptr<ABI33_0_0facebook::xplat::module::CxxModule>)createModule
 {
   ABI33_0_0RCTAssert(NO, @"Subclass %@ must override createModule", [self class]);
   return nullptr;

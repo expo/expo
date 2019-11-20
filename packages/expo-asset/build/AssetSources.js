@@ -1,16 +1,11 @@
-import Constants from 'expo-constants';
 import { Platform } from '@unimodules/core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
-import { getManifestBaseUrl } from './AssetUris';
+import { manifestBaseUrl, getManifest } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest
-const assetMapOverride = Constants.manifest && Constants.manifest.assetMapOverride;
-// Compute manifest base URL if available
-const manifestBaseUrl = Constants.experienceUrl
-    ? getManifestBaseUrl(Constants.experienceUrl)
-    : null;
+const assetMapOverride = getManifest().assetMapOverride;
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
  * a { uri, hash } pair for the specific asset file.
@@ -33,7 +28,7 @@ export function selectAssetSource(meta) {
         return { uri: resolveUri(uri), hash };
     }
     // Check if the assetUrl was overridden in the manifest
-    const assetUrlOverride = Constants.manifest && Constants.manifest.assetUrlOverride;
+    const assetUrlOverride = getManifest().assetUrlOverride;
     if (assetUrlOverride) {
         const uri = path.join(assetUrlOverride, hash);
         return { uri: resolveUri(uri), hash };
@@ -48,8 +43,8 @@ export function selectAssetSource(meta) {
         return { uri, hash };
     }
     // For assets during development, we use the development server's URL origin
-    if (Constants.manifest && Constants.manifest.developer) {
-        const baseUrl = new URL(Constants.manifest.bundleUrl);
+    if (getManifest().developer) {
+        const baseUrl = new URL(getManifest().bundleUrl);
         baseUrl.set('pathname', meta.httpServerLocation + suffix);
         return { uri: baseUrl.href, hash };
     }

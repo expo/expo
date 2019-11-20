@@ -481,9 +481,31 @@ exit:
     [self postRequest:post url:url retryNumber:0 key:key callback:callback];
 }
 
-- (BOOL) isV2APIURL:(NSString*)urlstring {
-    NSRange range = [urlstring rangeOfString:@"branch.io/v2/"];
-    return (range.location != NSNotFound);
+- (BOOL)isV2APIURL:(NSString *)urlstring {
+    return [self isV2APIURL:urlstring baseURL:[self.preferenceHelper branchAPIURL]];
+}
+
+- (BOOL)isV2APIURL:(NSString *)urlstring baseURL:(NSString *)baseURL {
+    BOOL found = NO;
+    if (urlstring && baseURL) {
+        NSString *matchString = [NSString stringWithFormat:@"%@/v2/", baseURL];
+        NSRange range = [urlstring rangeOfString:matchString];
+        found = (range.location != NSNotFound);
+    }
+    return found;
+}
+
+// workaround for new V1 APIs that expect V2 API format
+- (BOOL)isNewV1API:(NSString *)urlstring {
+    NSArray<NSString *> *newV1Apis = @[ BRANCH_REQUEST_ENDPOINT_CPID, BRANCH_REQUEST_ENDPOINT_LATD ];
+    for (NSString *tmp in newV1Apis) {
+        NSRange range = [urlstring rangeOfString:tmp];
+        BOOL found = (range.location != NSNotFound);
+        if (found) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 - (void)postRequest:(NSDictionary *)post
@@ -493,7 +515,7 @@ exit:
            callback:(BNCServerCallback)callback {
 
     NSMutableDictionary *extendedParams = nil;
-    if ([self isV2APIURL:url]) {
+    if ([self isV2APIURL:url] || [self isNewV1API:url]) {
         extendedParams = [NSMutableDictionary new];
         if (post) [extendedParams addEntriesFromDictionary:post];
         NSDictionary *d = [[BNCDeviceInfo getInstance] v2dictionary];
@@ -562,12 +584,14 @@ exit:
                 dispatch_time_t dispatchTime =
                     dispatch_time(DISPATCH_TIME_NOW, self.preferenceHelper.retryInterval * NSEC_PER_SEC);
                 dispatch_after(dispatchTime, dispatch_get_main_queue(), ^{
-                    BNCLogDebug(@"Retrying request with url %@", request.URL.relativePath);
-                    // Create the next request
-                    NSURLRequest *retryRequest = retryHandler(retryNumber);
-                    [self genericHTTPRequest:retryRequest
-                                 retryNumber:(retryNumber + 1)
-                                    callback:callback retryHandler:retryHandler];
+                    if (retryHandler) {
+                        BNCLogDebug(@"Retrying request with url %@", request.URL.relativePath);
+                        // Create the next request
+                        NSURLRequest *retryRequest = retryHandler(retryNumber);
+                        [self genericHTTPRequest:retryRequest
+                                     retryNumber:(retryNumber + 1)
+                                        callback:callback retryHandler:retryHandler];
+                    }
                 });
                 
                 // Do not continue on if retrying, else the callback will be called incorrectly
@@ -870,7 +894,7 @@ exit:
     [self safeSetValue:deviceInfo.screenWidth forKey:BRANCH_REQUEST_KEY_SCREEN_WIDTH onDict:dict];
     [self safeSetValue:deviceInfo.screenHeight forKey:BRANCH_REQUEST_KEY_SCREEN_HEIGHT onDict:dict];
 
-    [self safeSetValue:deviceInfo.browserUserAgent forKey:@"user_agent" onDict:dict];
+    [self safeSetValue:[BNCDeviceInfo userAgentString] forKey:@"user_agent" onDict:dict];
     [self safeSetValue:deviceInfo.country forKey:@"country" onDict:dict];
     [self safeSetValue:deviceInfo.language forKey:@"language" onDict:dict];
     dict[@"local_ip"] = deviceInfo.localIPAddress;

@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationException;
@@ -67,7 +67,7 @@ public class AppAuthModule extends ExportedModule {
     return new AuthorizationServiceConfiguration(
         Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
         Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
-        config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT) ? null : Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
+        config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT) ? Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT)) : null
     );
   }
 

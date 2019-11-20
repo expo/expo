@@ -26,9 +26,7 @@ async function action() {
   }
 
   console.log(`Here is the diff from ${chalk.green('staging')} -> ${chalk.green('production')}:`);
-  console.log(
-    jsondiffpatch.formatters.console.format(delta, versionsProd),
-  );
+  console.log(jsondiffpatch.formatters.console.format(delta, versionsProd));
 
   const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
     {
@@ -45,7 +43,7 @@ async function action() {
 
     console.log(
       chalk.green('\nSuccessfully updated production config. You can check it out on'),
-      chalk.blue(`https://${PRODUCTION_HOST}/--/api/v2/versions`),
+      chalk.blue(`https://${PRODUCTION_HOST}/--/api/v2/versions`)
     );
   } else {
     console.log(chalk.yellow('Canceled'));

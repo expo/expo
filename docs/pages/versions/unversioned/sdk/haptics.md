@@ -20,6 +20,8 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-haptics`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-haptics).
 
+> **Note**: Not compatible with web.
+
 ## API
 
 ```js

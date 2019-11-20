@@ -5,13 +5,11 @@
 #import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
-#import "EXGoogleAuthManager.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXBranchManager.h"
 
 #import <Crashlytics/Crashlytics.h>
 #import <GoogleMaps/GoogleMaps.h>
@@ -109,7 +107,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
   // This is safe to call; if the app doesn't have permission to display user-facing notifications
   // then registering for a push token is a no-op
   [[EXKernel sharedInstance].serviceRegistry.remoteNotificationManager registerForRemoteNotifications];
-  [[EXKernel sharedInstance].serviceRegistry.branchManager application:application didFinishLaunchingWithOptions:launchOptions];
   _launchOptions = launchOptions;
 }
 
@@ -149,44 +146,15 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
   completionHandler(UIBackgroundFetchResultNoData);
 }
 
-// TODO: Remove once SDK31 is phased out
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(nonnull UIUserNotificationSettings *)notificationSettings
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:EXAppDidRegisterUserNotificationSettingsNotification object:nil];
-}
-#pragma clang diagnostic pop
-
 #pragma mark - deep linking hooks
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(id)annotation
 {
-  if ([[EXKernel sharedInstance].serviceRegistry.googleAuthManager
-       application:application openURL:url sourceApplication:sourceApplication annotation:annotation]) {
-    return YES;
-  }
-
-  if ([[EXKernel sharedInstance].serviceRegistry.branchManager
-       application:application
-       openURL:url
-       sourceApplication:sourceApplication
-       annotation:annotation]) {
-    return YES;
-  }
-
   return [EXKernelLinkingManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler
 {
-  if ([[EXKernel sharedInstance].serviceRegistry.branchManager
-       application:application
-       continueUserActivity:userActivity
-       restorationHandler:restorationHandler]) {
-    return YES;
-  }
-  
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     NSURL *webpageURL = userActivity.webpageURL;
     if ([EXEnvironment sharedEnvironment].isDetached) {

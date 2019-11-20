@@ -9,18 +9,16 @@ A React component for displaying text.
 
 In the following example, the nested title and body text will inherit the `fontFamily` from `styles.baseText`, but the title provides its own additional styles. The title and body will stack on top of each other on account of the literal newlines:
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 
 export default class TextInANest extends Component {
   constructor(props) {
     super(props);
     this.state = {
       titleText: "Bird's Nest",
-      bodyText: 'This is not really a bird nest.'
+      bodyText: 'This is not really a bird nest.',
     };
   }
 
@@ -28,11 +26,11 @@ export default class TextInANest extends Component {
     return (
       <Text style={styles.baseText}>
         <Text style={styles.titleText} onPress={this.onPressTitle}>
-          {this.state.titleText}{'\n'}{'\n'}
+          {this.state.titleText}
+          {'\n'}
+          {'\n'}
         </Text>
-        <Text numberOfLines={5}>
-          {this.state.bodyText}
-        </Text>
+        <Text numberOfLines={5}>{this.state.bodyText}</Text>
       </Text>
     );
   }
@@ -47,44 +45,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('TextInANest', () => TextInANest);
-
 ```
-
 
 ## Nested text
 
 Both iOS and Android allow you to display formatted text by annotating ranges of a string with specific formatting like bold or colored text (`NSAttributedString` on iOS, `SpannableString` on Android). In practice, this is very tedious. For React Native, we decided to use web paradigm for this where you can nest text to achieve the same effect.
 
-
 ```javascript
-
 import React, { Component } from 'react';
-import { AppRegistry, Text } from 'react-native';
+import { Text } from 'react-native';
 
 export default class BoldAndBeautiful extends Component {
   render() {
     return (
-      <Text style={{fontWeight: 'bold'}}>
+      <Text style={{ fontWeight: 'bold' }}>
         I am bold
-        <Text style={{color: 'red'}}>
-          and red
-        </Text>
+        <Text style={{ color: 'red' }}>and red</Text>
       </Text>
     );
   }
 }
-
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => BoldAndBeautiful);
-
 ```
 
-
 Behind the scenes, React Native converts this to a flat `NSAttributedString` or `SpannableString` that contains the following information:
-
 
 ```javascript
 
@@ -94,11 +77,9 @@ Behind the scenes, React Native converts this to a flat `NSAttributedString` or 
 
 ```
 
-
 ## Containers
 
 The `<Text>` element is special relative to layout: everything inside is no longer using the flexbox layout but using text layout. This means that elements inside of a `<Text>` are no longer rectangles, but wrap when they see the end of the line.
-
 
 ```javascript
 
@@ -129,27 +110,21 @@ The `<Text>` element is special relative to layout: everything inside is no long
 
 ```
 
-
 ## Limited Style Inheritance
 
 On the web, the usual way to set a font family and size for the entire document is to take advantage of inherited CSS properties like so:
 
-
 ```css
-
 html {
   font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
   font-size: 11px;
   color: #141823;
 }
-
 ```
-
 
 All elements in the document will inherit this font unless they or one of their parents specifies a new rule.
 
 In React Native, we are more strict about it: **you must wrap all the text nodes inside of a `<Text>` component**. You cannot have a text node directly under a `<View>`.
-
 
 ```javascript
 
@@ -167,54 +142,39 @@ In React Native, we are more strict about it: **you must wrap all the text nodes
 
 ```
 
-
 You also lose the ability to set up a default font for an entire subtree. Meanwhile, `fontFamily` only accepts a single font name, which is different from `font-family` in CSS. The recommended way to use consistent fonts and sizes across your application is to create a component `MyAppText` that includes them and use this component across your app. You can also use this component to make more specific components like `MyAppHeaderText` for other kinds of text.
 
-
 ```javascript
-
 <View>
-  <MyAppText>
-    Text styled with the default font for the entire application
-  </MyAppText>
+  <MyAppText>Text styled with the default font for the entire application</MyAppText>
   <MyAppHeaderText>Text styled as a header</MyAppHeaderText>
 </View>
-
 ```
-
 
 Assuming that `MyAppText` is a component that simply renders out its children into a `Text` component with styling, then `MyAppHeaderText` can be defined as follows:
 
-
 ```javascript
-
 class MyAppHeaderText extends Component {
   render() {
     return (
       <MyAppText>
-        <Text style={{fontSize: 20}}>{this.props.children}</Text>
+        <Text style={{ fontSize: 20 }}>{this.props.children}</Text>
       </MyAppText>
     );
   }
 }
-
 ```
-
 
 Composing `MyAppText` in this way ensures that we get the styles from a top-level component, but leaves us the ability to add / override them in specific use cases.
 
 React Native still has the concept of style inheritance, but limited to text subtrees. In this case, the second part will be both bold and red.
 
-
 ```javascript
-
-<Text style={{fontWeight: 'bold'}}>
+<Text style={{ fontWeight: 'bold' }}>
   I am bold
-  <Text style={{color: 'red'}}>and red</Text>
+  <Text style={{ color: 'red' }}>and red</Text>
 </Text>
-
 ```
-
 
 We believe that this more constrained way to style text will yield better apps:
 
@@ -603,8 +563,8 @@ Lets the user select text, to use the native copy and paste functionality.
 
 The highlight color of the text.
 
-| Type               | Required | Platform |
-| ------------------ | -------- | -------- |
+| Type                | Required | Platform |
+| ------------------- | -------- | -------- |
 | [color](../colors/) | No       | Android  |
 
 ---
@@ -700,4 +660,3 @@ Set text break strategy on Android API Level 23+, possible values are `simple`, 
 # Known issues
 
 - [react-native#22811](https://github.com/facebook/react-native/issues/22811): Nested Text elements do not support `numberOfLines` attribute
-

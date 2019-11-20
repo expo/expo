@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { CapturedPicture, PictureOptions, Props, RecordingOptions } from './Camera.types';
+import { CapturedPicture, PictureOptions, Props, RecordingOptions, PermissionResponse } from './Camera.types';
 export default class Camera extends React.Component<Props> {
+    static isAvailableAsync(): Promise<boolean>;
+    static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
     static Constants: {
         Type: any;
         FlashMode: any;
@@ -43,9 +45,6 @@ export default class Camera extends React.Component<Props> {
         collapsable?: PropTypes.Validator<boolean | undefined> | undefined;
         needsOffscreenAlphaCompositing?: PropTypes.Validator<boolean | undefined> | undefined;
         renderToHardwareTextureAndroid?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityActions?: PropTypes.Validator<string[] | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<(() => void) | undefined> | undefined;
         shouldRasterizeIOS?: PropTypes.Validator<boolean | undefined> | undefined;
         isTVSelectable?: PropTypes.Validator<boolean | undefined> | undefined;
         hasTVPreferredFocus?: PropTypes.Validator<boolean | undefined> | undefined;
@@ -72,20 +71,29 @@ export default class Camera extends React.Component<Props> {
         onTouchCancel?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         onTouchEndCapture?: PropTypes.Validator<((event: import("react-native").GestureResponderEvent) => void) | undefined> | undefined;
         accessible?: PropTypes.Validator<boolean | undefined> | undefined;
+        accessibilityActions?: PropTypes.Validator<readonly Readonly<{
+            name: import("react-native").AccessibilityActionName;
+            label?: string | undefined;
+        }>[] | undefined> | undefined;
         accessibilityLabel?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityRole?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "keyboardkey" | "adjustable" | "imagebutton" | undefined> | undefined;
-        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityState[] | undefined> | undefined;
+        accessibilityRole?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "keyboardkey" | "text" | "adjustable" | "imagebutton" | "header" | "summary" | "alert" | "checkbox" | "combobox" | "menu" | "menubar" | "menuitem" | "progressbar" | "radio" | "radiogroup" | "scrollbar" | "spinbutton" | "switch" | "tab" | "tablist" | "timer" | "toolbar" | undefined> | undefined;
+        accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
+        accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
+        accessibilityComponentType?: PropTypes.Validator<"none" | "button" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
         accessibilityElementsHidden?: PropTypes.Validator<boolean | undefined> | undefined;
-        accessibilityTraits?: PropTypes.Validator<"button" | "header" | "link" | "summary" | "image" | "text" | "none" | "search" | "adjustable" | "selected" | "disabled" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityTraits?: PropTypes.Validator<"none" | "button" | "link" | "search" | "image" | "text" | "adjustable" | "header" | "summary" | "disabled" | "selected" | "plays" | "key" | "frequentUpdates" | "startsMedia" | "allowsDirectInteraction" | "pageTurn" | import("react-native").AccessibilityTrait[] | undefined> | undefined;
+        accessibilityViewIsModal?: PropTypes.Validator<boolean | undefined> | undefined;
         onAccessibilityTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         onMagicTap?: PropTypes.Validator<(() => void) | undefined> | undefined;
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
     };
     static defaultProps: Props;
+    static getPermissionsAsync(): Promise<PermissionResponse>;
+    static requestPermissionsAsync(): Promise<PermissionResponse>;
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
@@ -122,4 +130,4 @@ export declare const Constants: {
     WhiteBalance: any;
     VideoQuality: any;
     VideoStabilization: any;
-};
+}, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;

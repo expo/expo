@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.devsupport;
 
@@ -35,13 +35,17 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public static String PREFS_ANIMATIONS_DEBUG_KEY = "animations_debug";
 
-    public static String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change";
+    // This option is no longer exposed in the dev menu UI.
+    // It was renamed in D15958697 so it doesn't get stuck with no way to turn it off:
+    public static String PREFS_RELOAD_ON_JS_CHANGE_KEY = "reload_on_js_change_LEGACY";
 
     public static String PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug";
 
     public static String PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement";
 
     public static String PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug";
+
+    public static String PREFS_START_SAMPLING_PROFILER_ON_INIT = "start_sampling_profiler_on_init";
 
     public final SharedPreferences mPreferences;
 
@@ -90,6 +94,10 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
         return mPreferences.getBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, true);
     }
 
+    public void setJSDevModeEnabled(boolean value) {
+        mPreferences.edit().putBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, value).apply();
+    }
+
     @Override
     public boolean isJSMinifyEnabled() {
         return mPreferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false);
@@ -97,14 +105,14 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (mListener != null) {
-            if (PREFS_FPS_DEBUG_KEY.equals(key) || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_CPP_KEY.equals(key) || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
+            if (PREFS_FPS_DEBUG_KEY.equals(key) || PREFS_RELOAD_ON_JS_CHANGE_KEY.equals(key) || PREFS_JS_DEV_MODE_DEBUG_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_KEY.equals(key) || PREFS_JS_BUNDLE_DELTAS_CPP_KEY.equals(key) || PREFS_START_SAMPLING_PROFILER_ON_INIT.equals(key) || PREFS_JS_MINIFY_DEBUG_KEY.equals(key)) {
                 mListener.onInternalSettingsChanged();
             }
         }
     }
 
     public boolean isHotModuleReplacementEnabled() {
-        return mPreferences.getBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, false);
+        return mPreferences.getBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, true);
     }
 
     public void setHotModuleReplacementEnabled(boolean enabled) {
@@ -112,11 +120,16 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
     }
 
     public boolean isReloadOnJSChangeEnabled() {
-        return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, true);
+        return false;
+    // NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for
+    // now. I managed to get into a state where fast refresh wouldn't work because live reload
+    // would kick in every time and there was no way to turn it off from the dev menu.
+    // return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);
     }
 
     public void setReloadOnJSChangeEnabled(boolean enabled) {
-        mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
+    // NOTE(brentvatne): We don't need to do anything here because this option is always false
+    // mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();
     }
 
     public boolean isElementInspectorEnabled() {
@@ -129,7 +142,7 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
 
     @SuppressLint("SharedPreferencesUse")
     public boolean isBundleDeltasEnabled() {
-        return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, true);
+        return mPreferences.getBoolean(PREFS_JS_BUNDLE_DELTAS_KEY, false);
     }
 
     @SuppressLint("SharedPreferencesUse")
@@ -160,6 +173,11 @@ public class DevInternalSettings implements DeveloperSettings, SharedPreferences
     @Override
     public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
         mPreferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, remoteJSDebugEnabled).apply();
+    }
+
+    @Override
+    public boolean isStartSamplingProfilerOnInit() {
+        return mPreferences.getBoolean(PREFS_START_SAMPLING_PROFILER_ON_INIT, false);
     }
 
     public interface Listener {

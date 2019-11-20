@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "5.0.0",
+  "version": "7.0.0",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -11,6 +11,7 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -23,7 +24,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-asset"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
@@ -32,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/asset/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/ios"
   },
   "unimodulePeerDependencies": {
     "expo-constants": "*",
@@ -46,7 +48,7 @@
   },
   "devDependencies": {
     "@types/url-parse": "^1.4.1",
-    "expo-module-scripts": "^1.0.0"
+    "expo-module-scripts": "~1.1.1"
   },
-  "gitHead": "9119d190fbbf9f6a7a9c116e068d240e60e441fc"
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

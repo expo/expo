@@ -56,7 +56,10 @@ export async function updateReactNativeUnimodulesAsync(
     versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting = {};
   }
 
-  versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting['react-native-unimodules'] = reactNativeUnimodulesVersion;
+  versions.sdkVersions[sdkVersion].packagesToInstallWhenEjecting![
+    'react-native-unimodules'
+  ] = reactNativeUnimodulesVersion;
+
   await Versions.setVersionsAsync(versions);
 }
 
@@ -65,15 +68,15 @@ export async function updateExpoKitAndroidAsync(
   appVersion: string,
   sdkVersion: string,
   expokitVersion: string,
-  expokitTag: string = "latest"
+  expokitTag: string = 'latest'
 ) {
   const key = `android-v${appVersion.trim().replace(/^v/, '')}-sdk${sdkVersion}-${uuid()}.tar.gz`;
   const androidDir = path.join(expoDir, 'android');
 
   // Populate android template files now since we take out the prebuild step later on
-  await spawnAsync('et android-generate-dynamic-macros', [], {
+  await spawnAsync('et', ['android-generate-dynamic-macros'], {
     stdio: 'inherit',
-    cwd: path.join(androidDir, 'app'),
+    cwd: path.resolve(expoDir),
   });
 
   await S3.uploadDirectoriesAsync(BUCKET, key, [

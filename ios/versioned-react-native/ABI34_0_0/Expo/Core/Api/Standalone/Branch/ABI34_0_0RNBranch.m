@@ -57,7 +57,7 @@ static NSString * const REQUIRED_BRANCH_SDK = @"0.27.0";
 
 @synthesize bridge = _bridge;
 
-ABI34_0_0EX_EXPORT_SCOPED_MODULE(ABI34_0_0RNBranch, BranchManager);
+ABI34_0_0EX_EXPORT_SCOPED_MODULE(ABI34_0_0RNBranch, ScopedBranchManager);
 
 + (Branch *)branch
 {
@@ -103,9 +103,6 @@ ABI34_0_0EX_EXPORT_SCOPED_MODULE(ABI34_0_0RNBranch, BranchManager);
     }
     if (config.delayInitToCheckForSearchAds) {
         [instance delayInitToCheckForSearchAds];
-    }
-    if (config.appleSearchAdsDebugMode) {
-        [instance setAppleSearchAdsDebugMode];
     }
 }
 
@@ -160,11 +157,6 @@ ABI34_0_0EX_EXPORT_SCOPED_MODULE(ABI34_0_0RNBranch, BranchManager);
 + (void)delayInitToCheckForSearchAds
 {
     [self.branch delayInitToCheckForSearchAds];
-}
-
-+ (void)setAppleSearchAdsDebugMode
-{
-    [self.branch setAppleSearchAdsDebugMode];
 }
 
 + (void)setRequestMetadataKey:(NSString *)key value:(NSObject *)value

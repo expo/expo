@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI35_0_0/EXGL/ABI35_0_0EXGL/ABI35_0_0EXGLCameraObject.h

@@ -34,8 +34,8 @@
 #import "BranchDelegate.h"
 #import "BranchShareLink.h"
 #import "BranchUniversalObject.h"
-#import "BranchView.h"
-#import "BranchViewHandler.h"
+#import "BranchCrossPlatformID.h"
+#import "BranchLastAttributedTouchData.h"
 #import "UIViewController+Branch.h"
 
 /**
@@ -628,14 +628,6 @@ typedef NS_ENUM(NSUInteger, BranchCreditHistoryOrder) {
 - (void)delayInitToCheckForSearchAds;
 
 /**
- Set the SDK into Apple Search Ad debug mode where it passes fake campaign params back 100%
-
- @warning This should not be used in production.
- */
-- (void)setAppleSearchAdsDebugMode;
-
-
-/**
  Specify the time to wait in seconds between retries in the case of a Branch server error
 
  @param retryInterval Number of seconds to wait between retries.
@@ -929,12 +921,14 @@ typedef NS_ENUM(NSUInteger, BranchCreditHistoryOrder) {
 
 /**
  Send a user action to the server with additional state items. Some examples actions could be things like `viewed_personal_welcome`, `purchased_an_item`, etc.
-
+ 
  @param action The action string.
  @param state The additional state items associated with the action.
- @param branchViewCallback Callback for Branch view state
+ @param branchViewCallback Callback for Branch view state.
+ 
+ @deprecated Please use userCompletedAction:action:state instead
  */
-- (void)userCompletedAction:(NSString *)action withState:(NSDictionary *)state withDelegate:(id)branchViewCallback;
+- (void)userCompletedAction:(NSString *)action withState:(NSDictionary *)state withDelegate:(id)branchViewCallback __attribute__((deprecated(("This API is deprecated. Please use userCompletedAction:action:state instead."))));
 
 /**
  Sends a user commerce event to the server.
@@ -948,12 +942,18 @@ typedef NS_ENUM(NSUInteger, BranchCreditHistoryOrder) {
  @param metadata        Optional metadata you may want add to the event.
  @param completion 		The optional completion callback.
  
- deprecated Please use BNCEvent to track commerce events instead.
+ @deprecated Please use BNCEvent to track commerce events instead.
  */
 - (void) sendCommerceEvent:(BNCCommerceEvent*)commerceEvent
 				  metadata:(NSDictionary<NSString*,id>*)metadata
-			withCompletion:(void (^) (NSDictionary*response, NSError*error))completion;
-            //__attribute__((deprecated(("Please use BranchEvent to track commerce events."))));
+			withCompletion:(void (^) (NSDictionary*response, NSError*error))completion __attribute__((deprecated(("Please use BranchEvent to track commerce events."))));
+
+
+#pragma mark - Query methods
+
+- (void)crossPlatformIdDataWithCompletion:(void(^) (BranchCrossPlatformID * _Nullable cpid))completion;
+
+- (void)lastTouchAttributedDataWithCompletion:(void(^) (BranchLastAttributedTouchData * _Nullable ltad))completion;
 
 #pragma mark - Short Url Sync methods
 

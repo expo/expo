@@ -4,8 +4,6 @@ title: Notifications
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
-Want to see it in action? Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications)!
-
 ## Installation
 
 This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps, although there are some comparable libraries that you may use instead.
@@ -16,7 +14,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
-Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to see Notifications in action- but be sure to use a device! Push notifications don't work on simulators/emulators.
+Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications?platform=ios) to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
 ## Subscribing to Notifications
 
@@ -209,7 +207,7 @@ Sets the number displayed in the app icon's badge to the given number. Setting t
 
 ### `Notifications.getDevicePushTokenAsync(config)`
 
-Note: Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
+Note: **This method is only available in standalone apps.** Most people do not need to use this. It is easier to use `getExpoPushTokenAsync` unless you have a specific reason to need the actual device tokens. We also don't guarantee that the iOS and Android clients will continue expecting the same push notification payload format.
 
 Returns a native APNS, FCM or GCM token that can be used with another push notification service. If firebase cloud messaging is configured on your standalone Android app ([see guide here](../../guides/using-fcm/)), it will return an FCM token, otherwise it will return a GCM token.
 

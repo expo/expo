@@ -61,6 +61,10 @@ Firebase Messaging works as intended."
     #endif
 #endif
 
+  #if __has_include(<FirebaseMLCommon/FirebaseMLCommon.h>)
+    #import <FirebaseMLCommon/FirebaseMLCommon.h>
+  #endif
+
   #if __has_include(<FirebaseMLModelInterpreter/FirebaseMLModelInterpreter.h>)
     #import <FirebaseMLModelInterpreter/FirebaseMLModelInterpreter.h>
   #endif
