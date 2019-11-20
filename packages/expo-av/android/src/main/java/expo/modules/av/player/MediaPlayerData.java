@@ -420,7 +420,7 @@ class MediaPlayerData extends PlayerData implements
             }
             return httpCookies;
           } else {
-            return null;
+            return Collections.emptyList();
           }
         } catch (IOException e) {
           // do nothing, we'll return an empty list

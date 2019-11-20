@@ -47,6 +47,8 @@ public:
   void loadScriptFromString(std::unique_ptr<const JSBigString> string,
                             std::string sourceURL, bool loadSynchronously);
   static bool isIndexedRAMBundle(const char *sourcePath);
+  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString>* string);
+  void loadRAMBundleFromString(std::unique_ptr<const JSBigString> script, const std::string& sourceURL);
   void loadRAMBundleFromFile(const std::string& sourcePath,
                              const std::string& sourceURL,
                              bool loadSynchronously);
@@ -70,6 +72,8 @@ public:
   ModuleRegistry &getModuleRegistry();
 
   void handleMemoryPressure(int pressureLevel);
+
+  void invokeAsync(std::function<void()>&& func);
 
 private:
   void callNativeModules(folly::dynamic &&calls, bool isEndOfBatch);

@@ -46,7 +46,7 @@ commands:
             echo " - Base ${ROOT_BRANCH} commit ${BASE_COMMIT}"
 
             # Test all top-level files and directories
-            find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
+            if ! find $PWD/* -maxdepth $SEARCH_DEPTH | while read file ; do
               baseFileHash=$(git log -1 "${BASE_COMMIT}" --format=format:%H --full-diff "${file}")
               currentFileHash=$(git log -1 --format=format:%H --full-diff "${file}")
               if ! [[ $file =~ << parameters.exclude >> ]]; then
@@ -55,13 +55,16 @@ commands:
                   if [ ! $baseFileHash = $currentFileHash ]; then
                     echo " --- ▶️ ${file}/ has been modified on this branch. Continuing the job..."
                     set +e
-                    exit 0
+                    exit 1
                   fi
                 fi
               else
                 echo " -- [excluded] ${file}"
               fi
-            done
+            done; then
+              set +e
+              exit 0
+            fi
 
             echo "⏹ No relevant file changes in the current branch; stopping tests."
 

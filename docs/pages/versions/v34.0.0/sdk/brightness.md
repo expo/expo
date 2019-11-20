@@ -3,6 +3,8 @@ title: Brightness
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-brightness"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 An API to get and set screen brightness.
 
 On Android, there is a global system-wide brightness setting, and each app has its own brightness setting that can optionally override the global setting. It is possible to set either of these values with this API. On iOS, the system brightness setting cannot be changed programmatically; instead, any changes to the screen brightness will persist until the device is locked or powered off.
@@ -16,6 +18,41 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import * as Brightness from 'expo-brightness';
 ```
+
+## Usage
+
+<SnackInline label='Basic Brightness Usage' templateId='brightness' dependencies={['expo-brightness', 'expo-permissions']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Brightness from 'expo-brightness';
+import * as Permissions from 'expo-permissions';
+
+export default class App extends React.Component {
+  componentDidMount = async () => {
+    const { status } = await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+    if (status === 'granted') {
+      Brightness.setSystemBrightnessAsync(1);
+    }
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Brightness Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
 
 ### Methods
 - [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
@@ -119,19 +156,6 @@ A `Promise` that is resolved when the brightness has been successfully set.
 
 - `ERR_BRIGHTNESS_PERMISSIONS_DENIED` - The user did not grant `SYSTEM_BRIGHTNESS` permissions.
 - `ERR_BRIGHTNESS_SYSTEM` - An unexpected OS error occurred when trying to set the system brightness. See the `nativeError` object for more information.
-
-#### Example
-
-```javascript
-await Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
-
-const { status } = await Permissions.getAsync(Permissions.SYSTEM_BRIGHTNESS);
-if (status === 'granted') {
-  Brightness.setSystemBrightnessAsync(1);
-}
-```
-
----
 
 ### `Brightness.getSystemBrightnessModeAsync()`
 

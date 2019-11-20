@@ -33,10 +33,12 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Added @react-native-community/viewpager ([#6198](https://github.com/expo/expo/pull/6198)).
 - Added `canAskAgain` and `granted` fields to `PermissionsResponse`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 - Added support for `react-native-appearance` on Android and Web. ([#6162](https://github.com/expo/expo/pull/6162) by [@bbarthec](https://github.com/bbarthec))
+- Added `Location.getLastKnownPositionAsync` to get the last known position of the device. ([#6246](https://github.com/expo/expo/pull/6246) by [@lukmccall](https://github.com/lukmccall))
 - Added `exif` and `base64` properties into the TypeScript definitions for `ImagePickerResult` in `expo-image-picker`. ([#6311](https://github.com/expo/expo/pull/6311) by [@kyletsang](https://github.com/kyletsang))
 
 ### 🐛 Bug fixes
 
+- Fixed `MediaPlayer` not working on some Android devices ([#6320](https://github.com/expo/expo/pull/6320) by [@mczernek](https://github.com/mczernek))
 - Fixed `Audio.setAudioModeAsync` to auto-fill with previously set values (falls back to default values) if not all fields are provided by [@cruzach](https://github.com/cruzach) ([#5593](https://github.com/expo/expo/pull/5593))
 - Fixed crash when `BarCodeScanner` was mounted more than 128 times. ([#5719](https://github.com/expo/expo/pull/5719) by [@geovannimp](https://github.com/geovannimp))
 - Fixed URI parsing in `expo-video-thumbnails`. ([#5711](https://github.com/expo/expo/pull/5711) by [@lukmccall](https://github.com/lukmccall))
@@ -58,6 +60,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Fixed `Permissions.getAsync` result, which was inconsistent with iOS settings. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
 - Fixed scanning `PDF417` and `Code39` in `BarCodeScanner` on iOS. ([#5976](https://github.com/expo/expo/pull/5531) by [@bbarthec](https://github.com/bbarthec))
 - Add missing `mute` property in `Camera.recordAsync` in the TypeScript definition. ([#6192](https://github.com/expo/expo/pull/6192) by [@wcandillon](https://github.com/wcandillon))
+- Warn when `Linking.makeUrl` is called in Expo client and no scheme is present in `app.json` in order to prevent standalone builds from crashing due to missing scheme. ([#6277](https://github.com/expo/expo/pull/6277) by [@brentvatne](https://github.com/brentvatne))
 - Fixed `keychainAccessible` option not having any effect on iOS (`SecureStore` module) ([#6291](https://github.com/expo/expo/pull/6291)) by [@sjchmiela](https://github.com/sjchmiela)
 
 ## 35.0.0
