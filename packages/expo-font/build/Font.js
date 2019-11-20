@@ -1,5 +1,6 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError, UnavailabilityError } from '@unimodules/core';
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';
+import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 const loaded = {};
 const loadPromises = {};
@@ -94,6 +95,67 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
         }
     })();
     await loadPromises[fontFamily];
+}
+/**
+ * Unloads all of the custom fonts. This is used for testing.
+ */
+export async function unloadAllAsync() {
+    if (!ExpoFontLoader.unloadAllAsync) {
+        throw new UnavailabilityError('expo-font', 'unloadAllAsync');
+    }
+    for (const fontFamily of Object.keys(loadPromises)) {
+        if (loadPromises[fontFamily]) {
+            Promise.reject(loadPromises[fontFamily]);
+            delete loadPromises[fontFamily];
+        }
+    }
+    for (const fontFamily of Object.keys(loaded)) {
+        delete loaded[fontFamily];
+    }
+    await ExpoFontLoader.unloadAllAsync();
+}
+/**
+ * Unload custom fonts matching the `fontFamily`s and display values provided.
+ * Because fonts are automatically unloaded on every platform this is mostly used for testing.
+ *
+ * @param fontFamilyOrFontMap the names of the custom fonts that will be unloaded.
+ * @param source when `fontFamilyOrFontMap` is a string, this should be the font source used to load the custom font originally.
+ */
+export async function unloadAsync(fontFamilyOrFontMap, options) {
+    if (!ExpoFontLoader.unloadAsync) {
+        throw new UnavailabilityError('expo-font', 'unloadAsync');
+    }
+    if (typeof fontFamilyOrFontMap === 'object') {
+        if (options) {
+            throw new CodedError(`ERR_FONT_API`, `No fontFamily can be used for the provided options: ${options}. The second argument of \`unloadAsync()\` can only be used with a \`string\` value as the first argument.`);
+        }
+        const fontMap = fontFamilyOrFontMap;
+        const names = Object.keys(fontMap);
+        await Promise.all(names.map(name => unloadFontInNamespaceAsync(name, fontMap[name])));
+        return;
+    }
+    return await unloadFontInNamespaceAsync(fontFamilyOrFontMap, options);
+}
+async function unloadFontInNamespaceAsync(fontFamily, options) {
+    if (!loaded[fontFamily]) {
+        return;
+    }
+    else {
+        delete loaded[fontFamily];
+    }
+    if (loadPromises[fontFamily]) {
+        Promise.reject(loadPromises[fontFamily]);
+        delete loadPromises[fontFamily];
+    }
+    // Important: we want all callers that concurrently try to load the same font to await the same
+    // promise. If we're here, we haven't created the promise yet. To ensure we create only one
+    // promise in the program, we need to create the promise synchronously without yielding the event
+    // loop from this point.
+    const nativeFontName = getNativeFontName(fontFamily);
+    if (!nativeFontName) {
+        throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
+    }
+    await ExpoFontLoader.unloadAsync(nativeFontName, options);
 }
 export { FontDisplay };
 //# sourceMappingURL=Font.js.map

@@ -50,3 +50,7 @@ export declare enum FontDisplay {
      */
     OPTIONAL = "optional"
 }
+/**
+ * Used to query fonts for unloading
+ */
+export declare type UnloadFontOptions = Pick<FontResource, 'display'>;

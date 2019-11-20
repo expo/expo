@@ -1,4 +1,4 @@
-import { FontDisplay, FontSource, FontResource } from './Font.types';
+import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
 /**
  * Used to transform font family names to the scoped name. This does not need to
  * be called in standalone or bare apps but it will return unscoped font family
@@ -32,4 +32,18 @@ export declare function isLoading(fontFamily: string): boolean;
 export declare function loadAsync(fontFamilyOrFontMap: string | {
     [fontFamily: string]: FontSource;
 }, source?: FontSource): Promise<void>;
-export { FontDisplay, FontSource, FontResource };
+/**
+ * Unloads all of the custom fonts. This is used for testing.
+ */
+export declare function unloadAllAsync(): Promise<void>;
+/**
+ * Unload custom fonts matching the `fontFamily`s and display values provided.
+ * Because fonts are automatically unloaded on every platform this is mostly used for testing.
+ *
+ * @param fontFamilyOrFontMap the names of the custom fonts that will be unloaded.
+ * @param source when `fontFamilyOrFontMap` is a string, this should be the font source used to load the custom font originally.
+ */
+export declare function unloadAsync(fontFamilyOrFontMap: string | {
+    [fontFamily: string]: UnloadFontOptions;
+}, options?: UnloadFontOptions): Promise<void>;
+export { FontDisplay, FontSource, FontResource, UnloadFontOptions };

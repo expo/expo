@@ -2,6 +2,7 @@ import FontObserver from 'fontfaceobserver';
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { CodedError } from '@unimodules/core';
 import { FontDisplay, FontResource } from './Font.types';
+import { UnloadFontOptions } from './Font';
 
 function getFontFaceStyleSheet(): CSSStyleSheet | null {
   if (!canUseDOM) {
@@ -34,13 +35,13 @@ function getFontFaceRules(): RuleItem[] {
 
 function getFontFaceRulesMatchingResource(
   fontFamilyName: string,
-  resource?: FontResource
+  options?: UnloadFontOptions
 ): RuleItem[] {
   const rules = getFontFaceRules();
   return rules.filter(({ rule }) => {
     return (
       rule.style.fontFamily === fontFamilyName &&
-      (resource && resource.display ? resource.display === (rule.style as any).fontDisplay : true)
+      (options && options.display ? options.display === (rule.style as any).fontDisplay : true)
     );
   });
 }
@@ -59,11 +60,10 @@ export default {
     }
   },
 
-  async unloadAsync(fontFamilyName: string, resource?: FontResource): Promise<void> {
+  async unloadAsync(fontFamilyName: string, options?: UnloadFontOptions): Promise<void> {
     const sheet = getFontFaceStyleSheet();
     if (!sheet) return;
-    const items = getFontFaceRulesMatchingResource(fontFamilyName, resource);
-
+    const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
     for (const item of items) {
       sheet.deleteRule(item.index);
     }

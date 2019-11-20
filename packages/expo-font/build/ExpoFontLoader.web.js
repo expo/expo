@@ -25,11 +25,11 @@ function getFontFaceRules() {
     }
     return [];
 }
-function getFontFaceRulesMatchingResource(fontFamilyName, resource) {
+function getFontFaceRulesMatchingResource(fontFamilyName, options) {
     const rules = getFontFaceRules();
     return rules.filter(({ rule }) => {
         return (rule.style.fontFamily === fontFamilyName &&
-            (resource && resource.display ? resource.display === rule.style.fontDisplay : true));
+            (options && options.display ? options.display === rule.style.fontDisplay : true));
     });
 }
 export default {
@@ -44,11 +44,11 @@ export default {
             document.removeChild(element);
         }
     },
-    async unloadAsync(fontFamilyName, resource) {
+    async unloadAsync(fontFamilyName, options) {
         const sheet = getFontFaceStyleSheet();
         if (!sheet)
             return;
-        const items = getFontFaceRulesMatchingResource(fontFamilyName, resource);
+        const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
         for (const item of items) {
             sheet.deleteRule(item.index);
         }

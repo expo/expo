@@ -1,5 +1,4 @@
 import * as Font from 'expo-font';
-import ExpoFontLoader from 'expo-font/build/ExpoFontLoader';
 import { Platform } from 'react-native';
 
 export const name = 'Font';
@@ -8,7 +7,7 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
   describe(name, () => {
     async function unloadFontAsync() {
       if (Platform.OS === 'web') {
-        await ExpoFontLoader.unloadAsync('cool-font');
+        await Font.unloadAsync('cool-font');
       }
     }
     beforeEach(async () => {
