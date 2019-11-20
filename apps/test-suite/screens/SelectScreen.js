@@ -19,7 +19,9 @@ function CheckListItem({ onPress, isSelected, title }) {
   return (
     <PlatformTouchable onPress={onPress}>
       <View style={styles.listItem}>
-        <MaterialIcons name={isSelected ? 'check-box' : 'check-box-outline-blank'} size={26} />
+        <View style={{ minWidth: 26, minHeight: 26 }}>
+          <MaterialIcons name={isSelected ? 'check-box' : 'check-box-outline-blank'} size={26} />
+        </View>
         <Text style={styles.label}>{title}</Text>
       </View>
     </PlatformTouchable>

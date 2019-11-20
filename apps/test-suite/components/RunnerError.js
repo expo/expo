@@ -1,10 +1,12 @@
-import Constants from 'expo-constants';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 export default function RunnerError({ children }) {
+  const { top } = useSafeArea();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, top || 18]}>
       <Text style={styles.text}>{children}</Text>
     </View>
   );
@@ -13,7 +15,6 @@ export default function RunnerError({ children }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Constants.statusBarHeight || 18,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -33,11 +33,11 @@ export default class SuiteResult extends React.Component {
     const containerStyle =
       depth === 0
         ? {
-          paddingLeft: 16,
-          paddingVertical: 16,
-          borderBottomWidth: 1,
-          borderColor: '#ddd',
-        }
+            paddingLeft: 16,
+            paddingVertical: 16,
+            borderBottomWidth: 1,
+            borderColor: '#ddd',
+          }
         : { paddingLeft: 16 };
 
     // console.log('Result', result);
