@@ -33,11 +33,11 @@ public class ManifestException extends ExponentException {
     String extraMessage = "";
     if (ExpoViewBuildConfig.DEBUG) {
       // This will get hit in a detached app.
-      extraMessage = " Are you sure XDE or exp is running?";
+      extraMessage = " Are you sure expo-cli is running?";
     }
 
     if (mManifestUrl == null) {
-      return "Could not load experience." + extraMessage;
+      return "Could not load project." + extraMessage;
     } else if (mManifestUrl.equals(Constants.INITIAL_URL)) {
       //
       return "Could not load app." + extraMessage;
@@ -51,16 +51,16 @@ public class ManifestException extends ExponentException {
             case "EXPERIENCE_NOT_FOUND": // Really doesn't exist
             case "EXPERIENCE_NOT_PUBLISHED_ERROR": // Not published
             case "EXPERIENCE_RELEASE_NOT_FOUND_ERROR": // Can't find a release for the requested release channel
-              formattedMessage = "No experience found at " + mManifestUrl + ".";
+              formattedMessage = "No project found at " + mManifestUrl + ".";
               break;
             case "EXPERIENCE_SDK_VERSION_OUTDATED":
               JSONObject metadata = mErrorJSON.getJSONObject("metadata");
               JSONArray availableSDKVersions = metadata.getJSONArray("availableSDKVersions");
               String sdkVersionRequired = availableSDKVersions.getString(0);
-              formattedMessage = "This experience uses SDK v" + sdkVersionRequired + " , but this Expo client requires at least v" + Constants.SDK_VERSIONS_LIST.get(Constants.SDK_VERSIONS_LIST.size() - 1) + ".";
+              formattedMessage = "This project uses SDK v" + sdkVersionRequired + " , but this Expo client requires at least v" + Constants.SDK_VERSIONS_LIST.get(Constants.SDK_VERSIONS_LIST.size() - 1) + ".";
               break;
             case "EXPERIENCE_SDK_VERSION_TOO_NEW":
-              formattedMessage = "This experience requires a newer version of the Expo client - please download the latest version from the Play Store.";
+              formattedMessage = "This project requires a newer version of the Expo client - please download the latest version from the Play Store.";
               break;
             case "EXPERIENCE_NOT_VIEWABLE":
               formattedMessage = rawMessage; // From server: The experience you requested is not viewable by you. You will need to log in or ask the owner to grant you access.

@@ -1,8 +1,8 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
 package com.facebook.react.devsupport;
 
@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
@@ -30,13 +31,11 @@ import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -55,11 +54,14 @@ import org.json.JSONObject;
 /**
  * Helper class for all things about the debug server running in the engineer's host machine.
  *
- * One can use 'debug_http_host' shared preferences key to provide a host name for the debug server.
- * If the setting is empty we support and detect two basic configuration that works well for android
- * emulators connection to debug server running on emulator's host:
- *  - Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2,
- *  - Genymotion emulator with default settings: 10.0.3.2
+ * <p>One can use 'debug_http_host' shared preferences key to provide a host name for the debug
+ * server. If the setting is empty we support and detect two basic configuration that works well for
+ * android emulators connection to debug server running on emulator's host:
+ *
+ * <ul>
+ *   <li>Android stock emulator with standard non-configurable local loopback alias: 10.0.2.2
+ *   <li>Genymotion emulator with default settings: 10.0.3.2
+ * </ul>
  */
 public class DevServerHelper {
 
@@ -133,6 +135,8 @@ public class DevServerHelper {
 
     public boolean mOnChangePollingEnabled;
 
+    public boolean mPackagerConnectionLock = false;
+
     @Nullable
     public JSPackagerClient mPackagerClient;
 
@@ -157,14 +161,15 @@ public class DevServerHelper {
     }
 
     public void openPackagerConnection(final String clientId, final PackagerCommandListener commandListener) {
-        if (mPackagerClient != null) {
+        if (mPackagerClient != null || mPackagerConnectionLock) {
             FLog.w(ReactConstants.TAG, "Packager connection already open, nooping.");
             return;
         }
-        new AsyncTask<Void, Void, Void>() {
+        mPackagerConnectionLock = true;
+        new AsyncTask<Void, Void, JSPackagerClient>() {
 
             @Override
-            protected Void doInBackground(Void... backgroundParams) {
+            protected JSPackagerClient doInBackground(Void... backgroundParams) {
                 Map<String, RequestHandler> handlers = new HashMap<>();
                 handlers.put("reload", new NotificationOnlyHandler() {
 
@@ -204,25 +209,44 @@ public class DevServerHelper {
                         commandListener.onPackagerDisconnected();
                     }
                 };
-                mPackagerClient = new JSPackagerClient(clientId, mSettings.getPackagerConnectionSettings(), handlers, onPackagerConnectedCallback);
-                mPackagerClient.init();
-                return null;
+                JSPackagerClient packagerClient = new JSPackagerClient(clientId, mSettings.getPackagerConnectionSettings(), handlers, onPackagerConnectedCallback);
+                packagerClient.init();
+                return packagerClient;
+            }
+
+            @Override
+            protected void onPostExecute(JSPackagerClient packagerClient) {
+                UiThreadUtil.assertOnUiThread();
+                mPackagerClient = packagerClient;
+                mPackagerConnectionLock = false;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void closePackagerConnection() {
-        new AsyncTask<Void, Void, Void>() {
+        if (mPackagerConnectionLock) {
+            FLog.w(ReactConstants.TAG, "Packager connection lock acquired, cannot close current connection.");
+            return;
+        }
+        mPackagerConnectionLock = true;
+        new AsyncTask<JSPackagerClient, Void, Void>() {
 
             @Override
-            protected Void doInBackground(Void... params) {
-                if (mPackagerClient != null) {
-                    mPackagerClient.close();
-                    mPackagerClient = null;
+            protected Void doInBackground(JSPackagerClient... params) {
+                if (params.length > 0 && params[0] != null) {
+                    JSPackagerClient packagerClient = params[0];
+                    packagerClient.close();
                 }
                 return null;
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            @Override
+            protected void onPostExecute(Void result) {
+                UiThreadUtil.assertOnUiThread();
+                mPackagerClient = null;
+                mPackagerConnectionLock = false;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mPackagerClient);
     }
 
     public void openInspectorConnection() {
@@ -271,7 +295,7 @@ public class DevServerHelper {
 
             public boolean doSync() {
                 try {
-                    String attachToNuclideUrl = getInspectorAttachUrl(title);
+                    String attachToNuclideUrl = getInspectorAttachUrl(context, title);
                     OkHttpClient client = new OkHttpClient();
                     Request request = new Request.Builder().url(attachToNuclideUrl).build();
                     client.newCall(request).execute();
@@ -285,7 +309,7 @@ public class DevServerHelper {
             @Override
             protected void onPostExecute(Boolean result) {
                 if (!result) {
-                    String message = context.getString(R.string.catalyst_debugjs_nuclide_failure);
+                    String message = context.getString(R.string.reactandroid_catalyst_debug_nuclide_error);
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                 }
             }
@@ -349,8 +373,8 @@ public class DevServerHelper {
         return String.format(Locale.US, "http://%s/inspector/device?name=%s&app=%s", mSettings.getPackagerConnectionSettings().getInspectorServerHost(), AndroidInfoHelpers.getFriendlyDeviceName(), mPackageName);
     }
 
-    private String getInspectorAttachUrl(String title) {
-        return String.format(Locale.US, "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s", AndroidInfoHelpers.getServerHost(), title, mPackageName, AndroidInfoHelpers.getFriendlyDeviceName());
+    private String getInspectorAttachUrl(Context context, String title) {
+        return String.format(Locale.US, "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s", AndroidInfoHelpers.getServerHost(context), title, mPackageName, AndroidInfoHelpers.getFriendlyDeviceName());
     }
 
     public void downloadBundleFromURL(DevBundleDownloadListener callback, File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
@@ -371,9 +395,7 @@ public class DevServerHelper {
         }
     }
 
-    /**
-   * @return the host to use when connecting to the bundle server from the host itself.
-   */
+    /** @return the host to use when connecting to the bundle server from the host itself. */
     private String getHostForJSProxy() {
         // Use custom port if configured. Note that host stays "localhost".
         String host = Assertions.assertNotNull(mSettings.getPackagerConnectionSettings().getDebugServerHost());
@@ -385,16 +407,12 @@ public class DevServerHelper {
         }
     }
 
-    /**
-   * @return whether we should enable dev mode when requesting JS bundles.
-   */
+    /** @return whether we should enable dev mode when requesting JS bundles. */
     private boolean getDevMode() {
         return mSettings.isJSDevModeEnabled();
     }
 
-    /**
-   * @return whether we should request minified JS bundles.
-   */
+    /** @return whether we should request minified JS bundles. */
     private boolean getJSMinifyMode() {
         return mSettings.isJSMinifyEnabled();
     }
@@ -452,8 +470,9 @@ public class DevServerHelper {
                     callback.onPackagerStatusFetched(false);
                     return;
                 }
-                // cannot call body.string() twice, stored it into variable. https://github.com/square/okhttp/issues/1240#issuecomment-68142603
-                String bodyString = body.string();
+                String bodyString = // cannot call body.string() twice, stored it into variable.
+                body.string();
+                // https://github.com/square/okhttp/issues/1240#issuecomment-68142603
                 if (!PACKAGER_OK_STATUS.equals(bodyString)) {
                     FLog.e(ReactConstants.TAG, "Got unexpected response from packager when requesting status: " + bodyString);
                     callback.onPackagerStatusFetched(false);
@@ -513,20 +532,19 @@ public class DevServerHelper {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (mOnChangePollingEnabled) {
-                    // this runnable is used by onchange endpoint poller to delay subsequent requests in case
-                    // of a failure, so that we don't flood network queue with frequent requests in case when
+                    // this runnable is used by onchange endpoint poller to delay subsequent requests
+                    // in case
+                    // of a failure, so that we don't flood network queue with frequent requests in
+                    // case when
                     // dev server is down
                     FLog.d(ReactConstants.TAG, "Error while requesting /onchange endpoint", e);
-                    // NOTE(expo): in case our connection closed due to a timeout, we should just retry
-                    // immediately so that there isn't a disruption in listening to the onchange endpoint
-                    int delay = (e instanceof SocketTimeoutException) ? 0 : LONG_POLL_FAILURE_DELAY_MS;
                     mRestartOnChangePollingHandler.postDelayed(new Runnable() {
 
                         @Override
                         public void run() {
                             handleOnChangePollingResponse(false);
                         }
-                    }, delay);
+                    }, LONG_POLL_FAILURE_DELAY_MS);
                 }
             }
 
@@ -551,7 +569,8 @@ public class DevServerHelper {
 
             @Override
             public void onFailure(Call call, IOException e) {
-            // ignore HTTP call response, this is just to open a debugger page and there is no reason
+            // ignore HTTP call response, this is just to open a debugger page and there is no
+            // reason
             // to report failures from here
             }
 
@@ -576,9 +595,9 @@ public class DevServerHelper {
     }
 
     /**
-   * This is a debug-only utility to allow fetching a file via packager.
-   * It's made synchronous for simplicity, but should only be used if it's absolutely
-   * necessary.
+   * This is a debug-only utility to allow fetching a file via packager. It's made synchronous for
+   * simplicity, but should only be used if it's absolutely necessary.
+   *
    * @return the file with the fetched content, or null if there's any failure.
    */
     @Nullable

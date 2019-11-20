@@ -6,24 +6,9 @@
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
-#import "../Private/FBSDKCoreKit/FBSDKInternalUtility.h"
-
-@implementation FBSDKInternalUtility (ABI33_0_0EXFacebook)
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-+ (BOOL)isRegisteredURLScheme:(NSString *)urlScheme
-{
-  // !!!: Make FB SDK think we can open fb<app id>:// urls
-  return ![@[FBSDK_CANOPENURL_FACEBOOK, FBSDK_CANOPENURL_MESSENGER, FBSDK_CANOPENURL_FBAPI, FBSDK_CANOPENURL_SHARE_EXTENSION]
-           containsObject:urlScheme];
-}
-#pragma clang diagnostic pop
-
-@end
 
 NSString * const ABI33_0_0EXFacebookLoginErrorDomain = @"E_FBLOGIN";
-NSString * const ABI33_0_0EXFacebookLoginBehaviorErrorDomain = @"E_FBLOGIN_BEHAVIOR";
+NSString * const ABI33_0_0EXFacebookLoginAppIdErrorDomain = @"E_FBLOGIN_APP_ID";
 
 @implementation ABI33_0_0EXFacebook
 
@@ -40,7 +25,9 @@ ABI33_0_0UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
     permissions = @[@"public_profile", @"email"];
   }
 
-  NSString *behavior = config[@"behavior"];
+  if (![config[@"behavior"] isEqualToString:@"browser"]) {
+    ABI33_0_0UMLogWarn(@"In the most recent version of Expo Client (which you're running) and in SDK35+ any login behavior other than `browser` will fall back to `browser`. This change is an effect of upgrading underlying Facebook SDK to latest version, which removed all other behaviors. For more details on this change please consult Expo's changelog available at https://github.com/expo/expo.");
+  }
 
   // FB SDK requires login to run on main thread
   // Needs to not race with other mutations of this global FB state
@@ -49,38 +36,18 @@ ABI33_0_0UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
     [FBSDKSettings setAppID:appId];
     FBSDKLoginManager *loginMgr = [[FBSDKLoginManager alloc] init];
 
-    loginMgr.loginBehavior = FBSDKLoginBehaviorSystemAccount;
-    if (behavior) {
-      // TODO: Support other logon behaviors?
-      //       - browser is problematic because it navigates to fb<appid>:// when done
-      //       - system is problematic because it asks whether to give 'Exponent' permissions,
-      //         just a weird user-facing UI
-      if ([behavior isEqualToString:@"native"]) {
-        loginMgr.loginBehavior = FBSDKLoginBehaviorNative;
-      } else if ([behavior isEqualToString:@"browser"]) {
-        loginMgr.loginBehavior = FBSDKLoginBehaviorBrowser;
-      } else if ([behavior isEqualToString:@"system"]) {
-        loginMgr.loginBehavior = FBSDKLoginBehaviorSystemAccount;
-      } else if ([behavior isEqualToString:@"web"]) {
-        loginMgr.loginBehavior = FBSDKLoginBehaviorWeb;
-      }
-    }
 
-    if (loginMgr.loginBehavior != FBSDKLoginBehaviorWeb) {
-      if (![[self class] facebookAppIdFromNSBundle]) {
-        // We can't reliably execute non-web login
-        // without an appId in Info.plist.
-        NSString *message = [NSString stringWithFormat:
-                             @"Tried to perform Facebook login with behavior `%@`, but "
-                             "no Facebook app id was provided. Specify Facebook app id in Info.plist "
-                             "or switch to `web` behavior.", behavior];
-        reject(ABI33_0_0EXFacebookLoginBehaviorErrorDomain, message, ABI33_0_0UMErrorWithMessage(message));
-        return;
-      }
-    }
+    if (![[self class] facebookAppIdFromNSBundle]) {
+          // We can't reliably execute login without an appId in Info.plist.
+          NSString *message = [NSString stringWithFormat:
+                               @"Tried to perform Facebook login, but no Facebook app id was provided."
+                               " Specify Facebook app id in Info.plist."];
+          reject(ABI33_0_0EXFacebookLoginAppIdErrorDomain, message, ABI33_0_0UMErrorWithMessage(message));
+          return;
+        }
 
     @try {
-      [loginMgr logInWithReadPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+      [loginMgr logInWithPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
         if (error) {
           reject(ABI33_0_0EXFacebookLoginErrorDomain, @"Error with Facebook login", error);
           return;

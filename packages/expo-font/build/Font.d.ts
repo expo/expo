@@ -1,12 +1,15 @@
-import { Asset } from 'expo-asset';
+import { FontSource, FontResource } from './Font.types';
 /**
- * A font source can be a URI, a module ID, or an Expo Asset.
+ * Used to transform font family names to the scoped name. This does not need to
+ * be called in standalone or bare apps but it will return unscoped font family
+ * names if it is called in those contexts.
+ * note(brentvatne): at some point we may want to warn if this is called
+ * outside of a managed app.
  */
-declare type FontSource = string | number | Asset;
 export declare function processFontFamily(name: string | null): string | null;
 export declare function isLoaded(name: string): boolean;
 export declare function isLoading(name: string): boolean;
 export declare function loadAsync(nameOrMap: string | {
     [name: string]: FontSource;
 }, source?: FontSource): Promise<void>;
-export {};
+export { FontSource, FontResource };

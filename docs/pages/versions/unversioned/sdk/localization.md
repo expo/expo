@@ -7,7 +7,7 @@ Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `e
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-localization`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-localization).
 
 ## Usage
 
@@ -31,7 +31,7 @@ i18n.locale = Localization.locale;
 export default class LitView extends React.Component {
   render() {
     return (
-      <Text>
+      <Text style={{ flex: 1, paddingTop: 50, alignSelf: 'center' }}>
         {i18n.t('foo')} {i18n.t('bar', { someValue: Date.now() })}
       </Text>
     );
@@ -57,9 +57,9 @@ Native device language, returned in standard format. Ex: `en`, `en-US`, `es-US`.
 
 List of all the native languages provided by the user settings. These are returned in the order the user defines in their native settings.
 
-#### `Localization.country: ?string`
+#### `Localization.region: ?string`
 
-Country code for your device.
+**Available on iOS and Web.**  Region code for your device which came from `Region` setting in `Language & Region`. Ex: `US`, `NZ`.
 
 #### `Localization.isoCurrencyCodes: ?Array<string>`
 
@@ -87,7 +87,7 @@ type NativeEvent = {
   locales: Array<string>,
   timezone: string,
   isoCurrencyCodes: ?Array<string>,
-  country: ?string,
+  region: ?string, // iOS and Web
   isRTL: boolean,
 };
 ```

@@ -6,7 +6,9 @@ An API to modify images stored on the local file system.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-image-manipulator`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-image-manipulator).
+
+> **Note**: Not compatible with web.
 
 ## API
 
@@ -49,8 +51,6 @@ import { Button, TouchableOpacity, Text, View, Image } from 'react-native';
 import { Asset } from 'expo-asset';
 import * as ImageManipulator from 'expo-image-manipulator';
 
-import Colors from '../constants/Colors';
-
 export default class ImageManipulatorSample extends React.Component {
   state = {
     ready: false,
@@ -59,7 +59,7 @@ export default class ImageManipulatorSample extends React.Component {
 
   componentDidMount() {
     (async () => {
-      const image = Asset.fromModule(require('../path/to/image.jpg'));
+      const image = Asset.fromModule(require('./assets/snack-icon.png'));
       await image.downloadAsync();
       this.setState({
         ready: true,
@@ -70,11 +70,9 @@ export default class ImageManipulatorSample extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
-        <View style={{ padding: 10 }}>
-          <Button onPress={this._rotate90andFlip} />
-          {this.state.ready && this._renderImage()}
-        </View>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        {this.state.ready && this._renderImage()}
+        <Button title="Rotate and Flip" onPress={this._rotate90andFlip} />
       </View>
     );
   }
@@ -82,15 +80,15 @@ export default class ImageManipulatorSample extends React.Component {
   _rotate90andFlip = async () => {
     const manipResult = await ImageManipulator.manipulateAsync(
       this.state.image.localUri || this.state.image.uri,
-      [{ rotate: 90 }, { flip: { vertical: true } }],
-      { format: ImageManipulator.SaveFormat.PNG }
+      [{ rotate: 90 }, { flip: ImageManipulator.FlipType.Vertical }],
+      { compress: 1, format: ImageManipulator.SaveFormat.PNG }
     );
     this.setState({ image: manipResult });
   };
 
   _renderImage = () => {
     return (
-      <View style={{ marginVertical: 10, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ marginVertical: 20, alignItems: 'center', justifyContent: 'center' }}>
         <Image
           source={{ uri: this.state.image.localUri || this.state.image.uri }}
           style={{ width: 300, height: 300, resizeMode: 'contain' }}

@@ -5,8 +5,8 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Matrix;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,13 +148,15 @@ public final class DebugViews {
                             .append("]");
                 }
             }
-
-            if (0.0f != v.getTranslationX() || 0.0f != v.getTranslationY() || 0.0f != v.getTranslationZ()) {
-                sb.append(", translate=[")
-                        .append(v.getTranslationX()).append(",")
-                        .append(v.getTranslationY()).append(",")
-                        .append(v.getTranslationZ())
-                        .append("]");
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (0.0f != v.getTranslationX() || 0.0f != v.getTranslationY() || 0.0f != v.getTranslationZ()) {
+                    sb.append(", translate=[")
+                            .append(v.getTranslationX()).append(",")
+                            .append(v.getTranslationY()).append(",")
+                            .append(v.getTranslationZ())
+                            .append("]");
+                }
             }
 
             if (1.0f != v.getScaleX() || 1.0f != v.getScaleY()) {

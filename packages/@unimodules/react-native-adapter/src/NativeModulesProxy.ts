@@ -16,7 +16,9 @@ if (NativeProxy) {
   Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
     NativeProxy[exportedMethodsKey][moduleName].forEach(methodInfo => {
-      NativeModulesProxy[moduleName][methodInfo.name] = async (...args: unknown[]): Promise<any> => {
+      NativeModulesProxy[moduleName][methodInfo.name] = async (
+        ...args: unknown[]
+      ): Promise<any> => {
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {
           throw new Error(

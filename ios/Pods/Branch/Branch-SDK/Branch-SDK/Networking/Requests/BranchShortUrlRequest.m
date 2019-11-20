@@ -139,15 +139,16 @@
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super initWithCoder:decoder])) {
-        _tags = [decoder decodeObjectForKey:@"tags"];
-        _alias = [decoder decodeObjectForKey:@"alias"];
+        _tags = [decoder decodeObjectOfClass:NSArray.class forKey:@"tags"];
+        _alias = [decoder decodeObjectOfClass:NSString.class forKey:@"alias"];
         _type = [decoder decodeIntegerForKey:@"type"];
         _matchDuration = [decoder decodeIntegerForKey:@"duration"];
-        _channel = [decoder decodeObjectForKey:@"channel"];
-        _feature = [decoder decodeObjectForKey:@"feature"];
-        _stage = [decoder decodeObjectForKey:@"stage"];
-        _campaign = [decoder decodeObjectForKey:@"campaign"];
-        _params = [BNCEncodingUtils decodeJsonStringToDictionary:[decoder decodeObjectForKey:@"params"]];
+        _channel = [decoder decodeObjectOfClass:NSString.class forKey:@"channel"];
+        _feature = [decoder decodeObjectOfClass:NSString.class forKey:@"feature"];
+        _stage = [decoder decodeObjectOfClass:NSString.class forKey:@"stage"];
+        _campaign = [decoder decodeObjectOfClass:NSString.class forKey:@"campaign"];
+        _params = [BNCEncodingUtils decodeJsonStringToDictionary:
+                    [decoder decodeObjectOfClass:NSString.class forKey:@"params"]];
         
         // Set up link data
         self.linkData = [[BNCLinkData alloc] init];

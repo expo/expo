@@ -74,7 +74,7 @@ it(`sets custom Expo headers`, async () => {
   let headers = global.fetch.mock.calls[0][1].headers;
   expect(headers['Expo-SDK-Version']).toBe('12.0.0,11.0.0');
   expect(headers['Expo-Platform']).toBe('ios');
-  expect(headers['Expo-Session']).toBeUndefined();
+  expect(headers['expo-session']).toBeUndefined();
 });
 
 it(`includes the session token`, async () => {
@@ -86,7 +86,7 @@ it(`includes the session token`, async () => {
   await client.getAsync('example');
 
   let headers = global.fetch.mock.calls[0][1].headers;
-  expect(headers['Expo-Session']).toBe('test-secret');
+  expect(headers['expo-session']).toBe('test-secret');
 });
 
 it(`handles API errors`, async () => {

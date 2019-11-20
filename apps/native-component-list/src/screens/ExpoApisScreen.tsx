@@ -24,7 +24,7 @@ export default class ExpoApisScreen extends React.Component {
 
   _notificationSubscription?: EventSubscription;
 
-  componentWillMount() {
+  componentDidMount() {
     if (Platform.OS !== 'web') {
       this._notificationSubscription = Notifications.addListener(this._handleNotification);
     }
@@ -74,7 +74,7 @@ export default class ExpoApisScreen extends React.Component {
     // if after backgrounding the app and then clicking on a notification
     // to foreground the app
     setTimeout(() => alert(message), 1000);
-  }
+  };
 
   render() {
     // @ts-ignore
@@ -86,15 +86,21 @@ export default class ExpoApisScreen extends React.Component {
       'Accelerometer',
       'ActionSheet',
       'AppAuth',
+      'Appearance',
+      'AppleAuthentication',
       'Audio',
       'AuthSession',
+      'Battery',
       'BackgroundFetch',
       'Branch',
+      'Brightness',
       'Calendars',
       'Constants',
       'Contacts',
+      'Device',
       'DocumentPicker',
       'FacebookLogin',
+      'FaceDetector',
       'FileSystem',
       'Font',
       'Geocoding',
@@ -117,6 +123,7 @@ export default class ExpoApisScreen extends React.Component {
       'Print',
       'MediaLibrary',
       'Recording',
+      'SafeAreaContext',
       'ScreenOrientation',
       'Sensor',
       'SecureStore',
@@ -139,5 +146,5 @@ export default class ExpoApisScreen extends React.Component {
         }
         return 0;
       });
-  }
+  };
 }

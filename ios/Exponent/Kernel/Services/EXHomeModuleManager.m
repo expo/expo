@@ -59,11 +59,7 @@
 
 - (void)homeModuleDidSelectRefresh:(EXHomeModule *)module
 {
-  if ([EXKernel sharedInstance].browserController) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[EXKernel sharedInstance].browserController refreshVisibleApp];
-    });
-  }
+  [[EXKernel sharedInstance] reloadVisibleApp];
 }
 
 - (void)homeModuleDidSelectCloseMenu:(EXHomeModule *)module
@@ -81,15 +77,6 @@
     dispatch_async(dispatch_get_main_queue(), ^{
       [[EXKernel sharedInstance].browserController moveHomeToVisible];
     });
-  }
-}
-
-- (void)homeModuleDidSelectHomeDiagnostics:(__unused EXHomeModule *)module
-{
-  if ([EXKernel sharedInstance].browserController) {
-    [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXKernel sharedInstance].browserController showDiagnostics];
-    }];
   }
 }
 

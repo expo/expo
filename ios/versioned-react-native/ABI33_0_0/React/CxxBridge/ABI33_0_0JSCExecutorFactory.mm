@@ -10,14 +10,14 @@
 #import <ReactABI33_0_0/ABI33_0_0RCTLog.h>
 #import <ABI33_0_0jsi/ABI33_0_0JSCRuntime.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
   std::shared_ptr<ExecutorDelegate> delegate,
   std::shared_ptr<MessageQueueThread> jsQueue) {
   return folly::make_unique<JSIExecutor>(
-    facebook::jsc::makeJSCRuntime(),
+    ABI33_0_0facebook::jsc::makeJSCRuntime(),
     delegate,
     [](const std::string &message, unsigned int logLevel) {
       _ABI33_0_0RCTLogJavaScriptInternal(
@@ -29,4 +29,4 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
 }
 
 } // namespace ReactABI33_0_0
-} // namespace facebook
+} // namespace ABI33_0_0facebook

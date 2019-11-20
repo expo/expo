@@ -16,6 +16,8 @@
 
 @interface BNCApplication : NSObject
 
++ (void)loadCurrentApplicationWithCompletion:(void (^_Nullable)(BNCApplication * _Nonnull application))completion;
+
 /// A reference to the current running application.
 + (BNCApplication*_Nonnull) currentApplication;
 
@@ -48,5 +50,8 @@
 
 /// Returns a dictionary of device / identity pairs.
 @property (atomic, readonly) NSDictionary<NSString*, NSString*>*_Nonnull deviceKeyIdentityValueDictionary;
+
+/// The team identifier for the app.
+@property (atomic, readonly) NSString*_Nullable teamID;
 
 @end

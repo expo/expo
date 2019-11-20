@@ -3,17 +3,45 @@ title: WebBrowser
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
+import SnackInline from '~/components/plugins/SnackInline';
 
-Provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
+Provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`. This library is supported on iOS and Android, not web.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-web-browser`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-web-browser).
 
 ## Usage
 
-<SnackEmbed snackId="r116LYJne" />
-<br />
+<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser"]}>
+
+```js
+import React, { Component } from 'react';
+import { Button, Text, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+
+export default class App extends Component {
+  state = {
+    result: null,
+  };
+
+  render() {
+    return (
+      <View>
+        <Button title="Open WebBrowser" onPress={this._handlePressButtonAsync} />
+        <Text>{this.state.result && JSON.stringify(this.state.result)}</Text>
+      </View>
+    );
+  }
+
+  _handlePressButtonAsync = async () => {
+    let result = await WebBrowser.openBrowserAsync('https://expo.io');
+    this.setState({ result });
+  };
+}
+```
+
+</SnackInline>
 
 ### Handling deep links from the WebBrowser
 
@@ -27,7 +55,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### `WebBrowser.openBrowserAsync(url)`
 
-Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use (openAuthSessionAsync)[#webbrowseropenauthsessionasync].
+Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), and Chrome in a new [custom tab](https://developer.chrome.com/multidevice/android/customtabs) on Android. On iOS, the modal Safari will not share cookies with the system Safari. If you need this, use [openAuthSessionAsync](#webbrowseropenauthsessionasync).
 
 #### Arguments
 
@@ -37,6 +65,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
 
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **collapseToolbar (_optional_) (_boolean_)** -- a boolean determining whether the toolbar should be hiding when a user scrolls the website
+  - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
   - **controlsColor (_optional_) (_string_)** -- (_iOS only_) tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar
   - **package (_optional_) (_string_)** -- (_Android only_). Package name of a browser to be used to handle Custom Tabs. List of available packages is to be queried by [getCustomTabsSupportingBrowsers](#webbrowsergetcustomtabssupportingbrowsers) method.
@@ -130,7 +159,7 @@ Returns a list of applications package names supporting Custom Tabs, Custom Tabs
 
 #### Returns
 
-The promise resolves with `{ browserPackages: string[], defaultPackage: string, servicePackages: string[], preferredPackage: string }`
+The promise resolves with `{ browserPackages: string[], defaultBrowserPackage: string, servicePackages: string[], preferredBrowserPackage: string }`
 
 - **browserPackages (_string[]_)** : All packages recognized by `PackageManager` as capable of handling Custom Tabs. Empty array means there is no supporting browsers on device.
 - **defaultBrowserPackage (_string_ | null)** : Default package chosen by user. Null if there is no such packages. Null usually means, that user will be prompted to choose from available packages.

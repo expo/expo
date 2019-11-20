@@ -24,7 +24,7 @@ Run `expo client:ios`
 
 You are given a choice of letting `expo-cli` create the necessary credentials for you, while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
 
-Letting Expo handle credentials for you will greatly simplify the build process. Learn more (here)[https://docs.expo.io/versions/latest/distribution/security] on what these credentials are and how we store them.
+Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](https://docs.expo.io/versions/latest/distribution/security) on what these credentials are and how we store them.
 
 ```bash
 $ expo client:ios
@@ -52,12 +52,15 @@ The password is only used to authenticate with Apple and never stored.
   [Upload an existing key]
 ```
 
-We ask you if you'd like us to handle your Distribution Certificate or use your own. If you have previously used `expo-cli` for building a standalone app for a different project, then we'll ask you if you'd like to reuse your existing Distribution Certificate. If you don't know what a Distribution Certificate is, just let us handle it for you. If you do need to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
-**Note:** this guide recommends leaving the P12's password blank, but a P12 password is required to upload your own certificate to Expo's service. Please enter a password when prompted.
+If valid credentials are found on the Expo servers from your previous use of `expo-cli` building an iOS binary, they will be automatically used.
+
+#### Distribution certificates
+
+If a Distribution Certificate cannot be found on the Expo servers, `expo-cli` will give you options to produce one. We describe these choices in more detail [here](#distribution-certificate-cli-options).
 
 #### Push Notification Credentials
 
-We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well.
+We'll also help you handle your Push Notifications service key and provisioning profile. Remember that Push Notifications service keys can be reused across different Expo apps as well. If a Push Key cannot be found on the Expo servers, `expo-cli` will give you options to produce one. We describe these choices in more detail [here](#push-key-cli-options).
 
 **Note:** Push Notifications will be disabled on the Expo client if you choose not to upload your credentials. See [here](#push-notifications-arent-working) for more details.
 
@@ -133,11 +136,23 @@ You're all set to use the custom version of the Expo client, containing features
 
 # Troubleshooting
 
-## Push Notifications aren't working
+## Optional additional configuration steps
 
+### Push Notifications
+
+**Note:** Push Notifications are currently unavailable with ad hoc clients until we complete our work to add an extra authentication layer to the Expo Push Notification service.
+
+<!--
 If you choose not to upload your Push Notifications credentials, Push Notifications will not work on the Expo client. In order to get an Expo client with Push Notifications enabled, you will need to submit another build request and upload or create your push credentials at the prompt.
 
+We also require you to be logged in order to store your Push Notification credentials.
+
 If you are experiencing a different problem with Push Notifications, refer to the [main article](https://docs.expo.io/versions/latest/guides/push-notifications/) for more information.
+-->
+
+### Google Maps
+
+You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](https://docs.expo.io/versions/latest/sdk/map-view/#deploying-google-maps-to-a-standalone-app).
 
 ## Cannot generate/revoke credentials
 
@@ -148,6 +163,63 @@ If you are part of an organization with an Apple Enterprise account, you will ne
 The administrator of the Apple Enterprise account will need to make you an App Manager and give you access to Developer Resources from the [Apple Development Portal](https://developer.apple.com/account/).
 
 ![Apple Development Portal Permissions](/static/images/adhoc-builds-apple-org.png)
+
+## App crashes / App icon is blacked out
+
+If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/images/adhoc-builds-app-crash.gif), check that your ad hoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). The Expo client ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
+
+An invalid profile can be caused by revoking the distribution certificate or disabling the iOS devices associated with the profile. You can fix this by associating valid certificates and devices to the profile and pressing `Save` from the Apple Development Portal interface.
+
+![Invalid Profile](/static/images/adhoc-builds-invalid-profile.png)
+
+# Frequently Asked Questions
+
+## Distribution certificate CLI options
+
+`expo-cli` will give you options to produce a distribution certificate, and this section describes these options in more detail.
+
+### Creating a new certificate (recommended)
+
+This will create a new iOS distribution certificate with a password. This option won't be available if you've already reached Apple's limit of two active certificates in your developer account.
+
+### Revoking existing certificates
+
+Revoking an existing distribution certificate associated with an app is safe if:
+
+- Your app is distributed through the App Store and you are **NOT** on an Apple Enterprise account.
+
+Revoking an existing distribution certificate associated with an app is **NOT** safe if:
+
+- Your app is distributed through the App Store and you are on an Apple Enterprise account.
+- Your app is distributed ad hoc (distributed outside of the App Store for testing purposes).
+
+An App Store app gets re-signed with an Apple certificate when it goes on the store with non-Enterprise accounts. Revoking the certificate therefore won't affect it. Enterprise apps and apps distributed ad hoc use the original certificate, which means revoking it will cause the app to stop functioning on all devices it is installed on.
+
+### Uploading existing certificate
+
+If you have a password-protected certificate, you can provide the path to your `.p12` file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
+
+**Note:** this guide recommends leaving the P12's password blank, but a **P12 password is required** to upload your own certificate to Expo's service. Please enter a password when prompted.
+
+## Push key CLI options
+
+`expo-cli` will give you options to produce a push key, and this section describes these options in more detail.
+
+### Creating a new push key (recommended)
+
+This will create a new push key. This option won't be available if you've already reached Apple's limit of two active keys in your developer account.
+
+### Revoking existing push keys
+
+If you revoke an existing push key, you will no longer be able to send Push Notifications to your apps with the revoked key.
+
+### Uploading an existing push key
+
+If you have your push key on file, you can provide the path to your `.p8` file for upload.
+
+### Skip uploading a push key
+
+Push Notifications will be disabled on the Expo client if you choose not to upload your credentials. See [here](#push-notifications-arent-working) for more details.
 
 ## Registering multiple iOS devices
 

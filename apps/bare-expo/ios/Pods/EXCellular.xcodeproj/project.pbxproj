@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		15A90B97809B0098AB5A96D4D7334E69 /* EXCellularModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FD01B9701D3BA735889A228E2F6B6B62 /* EXCellularModule.m */; };
+		28DFEF118D139FE7EED0880717AC30C3 /* EXCellularModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CFDF6A03C615DA4183537E0BC5B96B6 /* EXCellularModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		BFE865269296974504D60664DCEE4C10 /* EXCellular-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 80B0CBB679B87D22CBF004CA548BA9DC /* EXCellular-dummy.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DC6CDF0FFD640A5033528AA5E473DB9A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A65385E9C7881EFEAF5B6FD54A0C80D0 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0CFDF6A03C615DA4183537E0BC5B96B6 /* EXCellularModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXCellularModule.h; path = EXCellular/EXCellularModule.h; sourceTree = "<group>"; };
+		386B2017BB3CF532DDABFA9C408303E5 /* EXCellular-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXCellular-prefix.pch"; sourceTree = "<group>"; };
+		74D4A6DD5E68F37410A200120EA6C1FF /* EXCellular.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXCellular.xcconfig; sourceTree = "<group>"; };
+		80B0CBB679B87D22CBF004CA548BA9DC /* EXCellular-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXCellular-dummy.m"; sourceTree = "<group>"; };
+		A65385E9C7881EFEAF5B6FD54A0C80D0 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		BE8EFD72FB1D6DBD02B2882D3AB75439 /* libEXCellular.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXCellular.a; path = libEXCellular.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		E51D621D9ADE9B9C33FE62D19D7E0839 /* EXCellular.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXCellular.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		FD01B9701D3BA735889A228E2F6B6B62 /* EXCellularModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXCellularModule.m; path = EXCellular/EXCellularModule.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F861353E86DF493284B08848FCC73676 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0545B3AA99348163F96E889CA7EFF732 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				E51D621D9ADE9B9C33FE62D19D7E0839 /* EXCellular.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		4C96AD4C29D8ACF3BFC67B9BBAF44A0D /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				74D4A6DD5E68F37410A200120EA6C1FF /* EXCellular.xcconfig */,
+				80B0CBB679B87D22CBF004CA548BA9DC /* EXCellular-dummy.m */,
+				386B2017BB3CF532DDABFA9C408303E5 /* EXCellular-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXCellular";
+			sourceTree = "<group>";
+		};
+		8A12584BDCDE74C63BBC3550C8CA5D6E /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				A65385E9C7881EFEAF5B6FD54A0C80D0 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		982E43FE1C630AA530089860A09DEC56 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BE8EFD72FB1D6DBD02B2882D3AB75439 /* libEXCellular.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A23F83FAE12DA4730D6FE81E74EDF3C7 = {
+			isa = PBXGroup;
+			children = (
+				8A12584BDCDE74C63BBC3550C8CA5D6E /* Dependencies */,
+				C11FD3E39B027B3FB0E639DF3EE6AF65 /* EXCellular */,
+				F7A4BD4784EFFF82295ABD984638B0B9 /* Frameworks */,
+				982E43FE1C630AA530089860A09DEC56 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C11FD3E39B027B3FB0E639DF3EE6AF65 /* EXCellular */ = {
+			isa = PBXGroup;
+			children = (
+				0CFDF6A03C615DA4183537E0BC5B96B6 /* EXCellularModule.h */,
+				FD01B9701D3BA735889A228E2F6B6B62 /* EXCellularModule.m */,
+				0545B3AA99348163F96E889CA7EFF732 /* Pod */,
+				4C96AD4C29D8ACF3BFC67B9BBAF44A0D /* Support Files */,
+			);
+			name = EXCellular;
+			path = "../../../../packages/expo-cellular/ios";
+			sourceTree = "<group>";
+		};
+		F7A4BD4784EFFF82295ABD984638B0B9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		AA872AA26B1BF9717715C16C60C9E1E0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28DFEF118D139FE7EED0880717AC30C3 /* EXCellularModule.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0F0F7D35F4DD6BA6A33589D3CB5759F3 /* EXCellular */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B518F0C3E77DD46F7B910E95400F849A /* Build configuration list for PBXNativeTarget "EXCellular" */;
+			buildPhases = (
+				AA872AA26B1BF9717715C16C60C9E1E0 /* Headers */,
+				C06220BE9D21B8BF2269BD387AF94FC9 /* Sources */,
+				F861353E86DF493284B08848FCC73676 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				61D5B22C634A7D8D00E6EED20E968D89 /* PBXTargetDependency */,
+			);
+			name = EXCellular;
+			productName = EXCellular;
+			productReference = BE8EFD72FB1D6DBD02B2882D3AB75439 /* libEXCellular.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0156D798159C1B8AFCD4FA9BD0FE78 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 3EEBD4E65173A3048079554985275211 /* Build configuration list for PBXProject "EXCellular" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A23F83FAE12DA4730D6FE81E74EDF3C7;
+			productRefGroup = 982E43FE1C630AA530089860A09DEC56 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = A65385E9C7881EFEAF5B6FD54A0C80D0 /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				0F0F7D35F4DD6BA6A33589D3CB5759F3 /* EXCellular */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C06220BE9D21B8BF2269BD387AF94FC9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFE865269296974504D60664DCEE4C10 /* EXCellular-dummy.m in Sources */,
+				15A90B97809B0098AB5A96D4D7334E69 /* EXCellularModule.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		61D5B22C634A7D8D00E6EED20E968D89 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = DC6CDF0FFD640A5033528AA5E473DB9A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2B0D219673E5473CC8073CF8723B2300 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 74D4A6DD5E68F37410A200120EA6C1FF /* EXCellular.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCellular/EXCellular-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCellular;
+				PRODUCT_NAME = EXCellular;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		73CCF0FF8AED209CBF923338FD161D7D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		75B555BBA8DF8C4383FCB27DED627ED1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		7FA5960183D6314F2ED33FC62BD46C3D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 74D4A6DD5E68F37410A200120EA6C1FF /* EXCellular.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXCellular/EXCellular-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXCellular;
+				PRODUCT_NAME = EXCellular;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3EEBD4E65173A3048079554985275211 /* Build configuration list for PBXProject "EXCellular" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				75B555BBA8DF8C4383FCB27DED627ED1 /* Debug */,
+				73CCF0FF8AED209CBF923338FD161D7D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B518F0C3E77DD46F7B910E95400F849A /* Build configuration list for PBXNativeTarget "EXCellular" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B0D219673E5473CC8073CF8723B2300 /* Debug */,
+				7FA5960183D6314F2ED33FC62BD46C3D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AA0156D798159C1B8AFCD4FA9BD0FE78 /* Project object */;
+}

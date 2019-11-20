@@ -1,11 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXBranchManager.h"
 #import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
-#import "EXFileSystemManager.h"
-#import "EXGoogleAuthManager.h"
 #import "EXHomeModuleManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -21,10 +18,7 @@
 
 @interface EXKernelServiceRegistry ()
 
-@property (nonatomic, strong) EXBranchManager *branchManager;
 @property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
-@property (nonatomic, strong) EXFileSystemManager *fileSystemManager;
-@property (nonatomic, strong) EXGoogleAuthManager *googleAuthManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
@@ -44,29 +38,18 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
-    [self branchManager];
     [self cachedResourceManager];
     [self errorRecoveryManager];
     [self remoteNotificationManager];
     [self linkingManager];
     [self homeModuleManager];
     [self screenOrientationManager];
-    [self googleAuthManager];
     [self sensorManager];
-    [self fileSystemManager];
     [self updatesManager];
     [self notificationsManager];
     [self notificationCenter];
   }
   return self;
-}
-
-- (EXBranchManager *)branchManager
-{
-  if (!_branchManager) {
-    _branchManager = [[EXBranchManager alloc] init];
-  }
-  return _branchManager;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -91,22 +74,6 @@
     _errorRecoveryManager = [[EXErrorRecoveryManager alloc] init];
   }
   return _errorRecoveryManager;
-}
-
-- (EXFileSystemManager *)fileSystemManager
-{
-  if (!_fileSystemManager) {
-    _fileSystemManager = [[EXFileSystemManager alloc] init];
-  }
-  return _fileSystemManager;
-}
-
-- (EXGoogleAuthManager *)googleAuthManager
-{
-  if (!_googleAuthManager) {
-    _googleAuthManager = [[EXGoogleAuthManager alloc] init];
-  }
-  return _googleAuthManager;
 }
 
 - (EXKernelLinkingManager *)linkingManager
@@ -176,11 +143,8 @@
     // New singleton modules should register themselves in UMModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
-                                  self.branchManager,
                                   self.cachedResourceManager,
                                   self.errorRecoveryManager,
-                                  self.fileSystemManager,
-                                  self.googleAuthManager,
                                   self.homeModuleManager,
                                   self.linkingManager,
                                   self.remoteNotificationManager,

@@ -15,7 +15,7 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     lintOptions {
         disable 'InvalidPackage'
@@ -50,7 +50,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile project(':unimodules-core')
     compile project(':expo-permissions')
-    compile project(':expo-permissions-interface')
+    compile project(':unimodules-permissions-interface')
     compile project(':expo-sensors')
-    compile project(':expo-sensors-interface')
+    compile project(':unimodules-sensors-interface')
 }

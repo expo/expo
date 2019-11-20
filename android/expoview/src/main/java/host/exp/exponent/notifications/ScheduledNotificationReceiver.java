@@ -13,6 +13,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
+import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 
 public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
@@ -27,6 +28,9 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
     Bundle bundle = intent.getExtras();
     HashMap details = (HashMap) bundle.getSerializable(KernelConstants.NOTIFICATION_OBJECT_KEY);
     int notificationId = bundle.getInt(KernelConstants.NOTIFICATION_ID_KEY, 0);
+    String schedulerId = (String) details.get(SchedulersManagerProxy.SCHEDULER_ID);
+
+    SchedulersManagerProxy.getInstance(context).rescheduleOrDelete(schedulerId);
 
     NotificationHelper.showNotification(
             context,

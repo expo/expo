@@ -8,10 +8,10 @@
 #include <ABI33_0_0jsi/ABI33_0_0jsi.h>
 #include <memory.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace jsc {
 
 std::unique_ptr<jsi::Runtime> makeJSCRuntime();
 
 } // namespace jsc
-} // namespace facebook
+} // namespace ABI33_0_0facebook

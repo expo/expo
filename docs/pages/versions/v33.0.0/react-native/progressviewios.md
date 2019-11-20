@@ -79,4 +79,3 @@ The tint color of the progress bar track.
 | Type   | Required |
 | ------ | -------- |
 | string | No       |
-

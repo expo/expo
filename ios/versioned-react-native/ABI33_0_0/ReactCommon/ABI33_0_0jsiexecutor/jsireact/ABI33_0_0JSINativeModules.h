@@ -12,7 +12,7 @@
 #include <folly/Optional.h>
 #include <ABI33_0_0jsi/ABI33_0_0jsi.h>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 /**
@@ -35,4 +35,4 @@ class JSINativeModules {
 };
 
 } // namespace ReactABI33_0_0
-} // namespace facebook
+} // namespace ABI33_0_0facebook

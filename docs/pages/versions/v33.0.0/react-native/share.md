@@ -17,13 +17,11 @@ title: Share
 
 ### `share()`
 
-
 ```javascript
 
 static share(content, options)
 
 ```
-
 
 Open a dialog to share text content.
 
@@ -58,13 +56,11 @@ At least one of URL and message is required.
 
 ### `sharedAction()`
 
-
 ```javascript
 
 static sharedAction()
 
 ```
-
 
 The content was successfully shared.
 
@@ -72,30 +68,25 @@ The content was successfully shared.
 
 ### `dismissedAction()`
 
-
 ```javascript
 
 static dismissedAction()
 
 ```
 
-
 _iOS Only_. The dialog has been dismissed.
 
 ## Basic Example
 
-
 ```javascript
-
-import React, {Component} from 'react';
-import {Share, Button} from 'react-native';
+import React, { Component } from 'react';
+import { Share, Button } from 'react-native';
 
 class ShareExample extends Component {
   onShare = async () => {
     try {
       const result = await Share.share({
-        message:
-          'React Native | A framework for building native apps using React',
+        message: 'React Native | A framework for building native apps using React',
       });
 
       if (result.action === Share.sharedAction) {
@@ -116,7 +107,4 @@ class ShareExample extends Component {
     return <Button onPress={this.onShare} title="Share" />;
   }
 }
-
 ```
-
-

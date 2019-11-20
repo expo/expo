@@ -1,0 +1,23 @@
+{
+  "name": "EXErrorRecovery",
+  "version": "1.0.0",
+  "summary": "Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.",
+  "description": "Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/error-recovery/",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXErrorRecovery/**/*.{h,m}",
+  "preserve_paths": "EXErrorRecovery/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ]
+  }
+}

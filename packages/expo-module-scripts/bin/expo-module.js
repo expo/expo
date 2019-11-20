@@ -13,6 +13,7 @@ commander
     `Type check the source TypeScript without emitting JS and watch for file changes`
   )
   .command('build', `Compile the source JS or TypeScript and watch for file changes`)
+  .command('lint', `Lint the files for syntax errors, style guidance, and common warnings`)
   .command('test', `Run unit tests with an interactive watcher`)
   .command('clean', `Removes compiled files`)
 
@@ -22,6 +23,7 @@ commander
 
   // Pass-through scripts
   .command('babel', `Runs Babel CLI with the given arguments`)
+  .command('eslint', `Runs ESLint with the given arguments`)
   .command('jest', `Runs Jest with the given arguments`)
   .command('tsc', `Runs tsc with the given arguments`)
 

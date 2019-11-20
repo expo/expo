@@ -11,7 +11,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-random
+expo install expo-random
 ```
 
 ### Configure for iOS
@@ -22,7 +22,7 @@ Run `pod install` in the ios directory after installing the npm package.
 
 No additional set up necessary.
 
-# Docoumentation
+# Documentation
 
 ```js
 // in managed apps:

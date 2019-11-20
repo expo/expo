@@ -43,4 +43,9 @@ public class ScreenContainerViewManager extends ViewGroupManager<ScreenContainer
   public View getChildAt(ScreenContainer parent, int index) {
     return parent.getScreenAt(index);
   }
+
+  @Override
+  public boolean needsCustomLayoutForChildren() {
+    return true;
+  }
 }

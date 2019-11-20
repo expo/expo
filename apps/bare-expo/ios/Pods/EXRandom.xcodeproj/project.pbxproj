@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		424DF9B5616FF75672E8C02408CF7D0F /* EXRandom.h in Headers */ = {isa = PBXBuildFile; fileRef = 7909E3FD95BF9048FB771A2542A340C3 /* EXRandom.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7E9E9E60D6714E946FC8719D6ECD5C46 /* EXRandom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 58542E66C1E3327A6DB431F42F0F2C58 /* EXRandom-dummy.m */; };
+		91F5F55ACE938806C5BA42D0DFE90CB5 /* EXRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 74ABFDF64AF0187FA36A6CA0A3EA53FC /* EXRandom.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		71A467F5311C64AA39D9D6DC6A8E28CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D6ADFE68665AAE170EAF262C8B848B14 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3EBF86D82500EA756BD032F267EEE7A2 /* EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		58542E66C1E3327A6DB431F42F0F2C58 /* EXRandom-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXRandom-dummy.m"; sourceTree = "<group>"; };
+		74ABFDF64AF0187FA36A6CA0A3EA53FC /* EXRandom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXRandom.m; path = EXRandom/EXRandom.m; sourceTree = "<group>"; };
+		766034D81C11FDCE3CBF398E03375019 /* EXRandom.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXRandom.xcconfig; sourceTree = "<group>"; };
+		7909E3FD95BF9048FB771A2542A340C3 /* EXRandom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXRandom.h; path = EXRandom/EXRandom.h; sourceTree = "<group>"; };
+		ABA839BF6EF1B661F43A935E0835C42B /* libEXRandom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXRandom.a; path = libEXRandom.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D6ADFE68665AAE170EAF262C8B848B14 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		E7CDDC92B270E8ABCA8506C968934E7A /* EXRandom-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXRandom-prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BEAE2C6354B1523C06C77E85A0038A4A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		389259836FBA79F409DA40FEE4D80FA0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3D2E7096E2498A3F3AEBFD9936ED8060 /* EXRandom */ = {
+			isa = PBXGroup;
+			children = (
+				7909E3FD95BF9048FB771A2542A340C3 /* EXRandom.h */,
+				74ABFDF64AF0187FA36A6CA0A3EA53FC /* EXRandom.m */,
+				812DE2C48575D1AD09D037DB05580EBC /* Pod */,
+				DC6AE177DD1A9E7B4B6F2ED4CACC6FF0 /* Support Files */,
+			);
+			name = EXRandom;
+			path = "../../../../packages/expo-random/ios";
+			sourceTree = "<group>";
+		};
+		600BD6871B5DA12DF656FA3C6572A3B5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ABA839BF6EF1B661F43A935E0835C42B /* libEXRandom.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		74A99FCD67A915A6C442AFE5A23E524A /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				D6ADFE68665AAE170EAF262C8B848B14 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		812DE2C48575D1AD09D037DB05580EBC /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				3EBF86D82500EA756BD032F267EEE7A2 /* EXRandom.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		DC6AE177DD1A9E7B4B6F2ED4CACC6FF0 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				766034D81C11FDCE3CBF398E03375019 /* EXRandom.xcconfig */,
+				58542E66C1E3327A6DB431F42F0F2C58 /* EXRandom-dummy.m */,
+				E7CDDC92B270E8ABCA8506C968934E7A /* EXRandom-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXRandom";
+			sourceTree = "<group>";
+		};
+		EF3248404F968B773E287A4D87F4BEF4 = {
+			isa = PBXGroup;
+			children = (
+				74A99FCD67A915A6C442AFE5A23E524A /* Dependencies */,
+				3D2E7096E2498A3F3AEBFD9936ED8060 /* EXRandom */,
+				389259836FBA79F409DA40FEE4D80FA0 /* Frameworks */,
+				600BD6871B5DA12DF656FA3C6572A3B5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		413A76996CF33CEF683471A45AC655E9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				424DF9B5616FF75672E8C02408CF7D0F /* EXRandom.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		00EB4A6BB9778AFFF7F587D732973596 /* EXRandom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F9B00B953B16BEFB7A472A49D295319 /* Build configuration list for PBXNativeTarget "EXRandom" */;
+			buildPhases = (
+				413A76996CF33CEF683471A45AC655E9 /* Headers */,
+				3019E3CDF556F4AD30EA00DED0B45EC6 /* Sources */,
+				BEAE2C6354B1523C06C77E85A0038A4A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A4BA194510FE478E84D6AF85008E9BFE /* PBXTargetDependency */,
+			);
+			name = EXRandom;
+			productName = EXRandom;
+			productReference = ABA839BF6EF1B661F43A935E0835C42B /* libEXRandom.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C4239DF2869A38FC1488DF54E8170BDB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = DA6318F3F1C1D240A40D56C5915E8F3F /* Build configuration list for PBXProject "EXRandom" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EF3248404F968B773E287A4D87F4BEF4;
+			productRefGroup = 600BD6871B5DA12DF656FA3C6572A3B5 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = D6ADFE68665AAE170EAF262C8B848B14 /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				00EB4A6BB9778AFFF7F587D732973596 /* EXRandom */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3019E3CDF556F4AD30EA00DED0B45EC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7E9E9E60D6714E946FC8719D6ECD5C46 /* EXRandom-dummy.m in Sources */,
+				91F5F55ACE938806C5BA42D0DFE90CB5 /* EXRandom.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A4BA194510FE478E84D6AF85008E9BFE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 71A467F5311C64AA39D9D6DC6A8E28CE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		300933D08555CB7EDD3E961A886E0E71 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		7E3223FFA731463206A0217DA17610E5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		B9C124863BC3A39E39C3363612DDD483 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 766034D81C11FDCE3CBF398E03375019 /* EXRandom.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXRandom;
+				PRODUCT_NAME = EXRandom;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FB362D40C42C56997150BBDE49D91147 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 766034D81C11FDCE3CBF398E03375019 /* EXRandom.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXRandom/EXRandom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXRandom;
+				PRODUCT_NAME = EXRandom;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9F9B00B953B16BEFB7A472A49D295319 /* Build configuration list for PBXNativeTarget "EXRandom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B9C124863BC3A39E39C3363612DDD483 /* Debug */,
+				FB362D40C42C56997150BBDE49D91147 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DA6318F3F1C1D240A40D56C5915E8F3F /* Build configuration list for PBXProject "EXRandom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				300933D08555CB7EDD3E961A886E0E71 /* Debug */,
+				7E3223FFA731463206A0217DA17610E5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C4239DF2869A38FC1488DF54E8170BDB /* Project object */;
+}

@@ -6,7 +6,6 @@
 #import "EXAppViewController.h"
 #import "EXButtonView.h"
 #import "EXHomeAppManager.h"
-#import "EXHomeDiagnosticsViewController.h"
 #import "EXKernel.h"
 #import "EXAppLoader.h"
 #import "EXKernelAppRecord.h"
@@ -84,6 +83,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
+
+  // When foregrounding the app record we want to add it to the history to handle the edge case
+  // where a user opened a project, then went to home and cleared history, then went back to a
+  // the already open project.
+  [self addHistoryItemWithUrl:appRecord.appLoader.manifestUrl manifest:appRecord.appLoader.manifest];
+
 }
 
 - (void)toggleMenuWithCompletion:(void (^ _Nullable)(void))completion
@@ -104,18 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
   } else {
     completion();
   }
-}
-
-- (void)showDiagnostics
-{
-  __weak typeof(self) weakSelf = self;
-  [self setIsMenuVisible:NO completion:^{
-    __strong typeof(weakSelf) strongSelf = weakSelf;
-    if (strongSelf) {
-      EXHomeDiagnosticsViewController *vcDiagnostics = [[EXHomeDiagnosticsViewController alloc] init];
-      [strongSelf presentViewController:vcDiagnostics animated:NO completion:nil];
-    }
-  }];
 }
 
 - (void)showQRReader
@@ -139,11 +132,14 @@ NS_ASSUME_NONNULL_BEGIN
   }];
 }
 
-- (void)refreshVisibleApp
+// this is different from Util.reload()
+// because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
+- (void)reloadVisibleApp
 {
-  // this is different from Util.reload()
-  // because it can work even on an errored app record (e.g. with no manifest, or with no running bridge).
-  [self setIsMenuVisible:NO completion:nil];
+  if (_isMenuVisible) {
+    [self setIsMenuVisible:NO completion:nil];
+  }
+
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   [[EXKernel sharedInstance] logAnalyticsEvent:@"RELOAD_EXPERIENCE" forAppRecord:visibleApp];
   NSURL *urlToRefresh = visibleApp.appLoader.manifestUrl;

@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import { getFilename } from './AssetUris';
 
 type ImageInfo = {

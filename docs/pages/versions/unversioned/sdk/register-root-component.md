@@ -22,7 +22,7 @@ Sets the main component for Expo to use for your app.
 
 #### Arguments
 
--   **component (ReactComponent)** -- The React component class that renders the rest of your app.
+- **component (ReactComponent)** -- The React component class that renders the rest of your app.
 
 #### Returns
 
@@ -51,7 +51,6 @@ For example, let's say you want to make `"src/main.js"` the entry file
 for your app -- maybe you don't like having JavaScript files in the
 project root, for example. First, set this in `package.json`:
 
-
 ```javascript
 {
   "main": "src/main.js"
@@ -74,4 +73,3 @@ class App extends React.Component {
 
 registerRootComponent(App);
 ```
-

@@ -140,7 +140,12 @@ export default {
 
     return [media, status];
   },
-  async unloadForSound(element: HTMLMediaElement) {},
+  async unloadForSound(element: HTMLMediaElement) {
+    element.pause();
+    element.removeAttribute('src');
+    element.load();
+    return getStatusFromMedia(element);
+  },
   async setStatusForSound(
     element: HTMLMediaElement,
     status: PlaybackStatusToSet

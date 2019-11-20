@@ -6,7 +6,7 @@ Expo includes alpha support for [Branch](https://branch.io/) attribution service
 
 > **Note:** This API only works with standalone iOS builds created with [expo build:ios](../../distribution/building-standalone-apps/).
 
-> **Android Support:** This module is currently not supported on standalone or ExpoKit Android builds. If you'd like to use Branch in your Android app, we recommend that you use the [bare workflow](../../../latest/bare/hello-world/) and install the `react-native-branch` module separately. If you previously used Branch in a managed Expo Android app and would like to continue using it as before, you can build your app locally using an older version of [`turtle-cli`](../../../latest/distribution/turtle-cli/) or `expokit`. More details in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
+> **Android Support:** This module is currently not supported on standalone Android builds built with SDK33. If you'd like to use Branch in your Android app, we recommend that you upgrade to SDK34+ or use the [bare workflow](../../../latest/bare/hello-world/) and install the `react-native-branch` module separately. If you previously used Branch in a managed Expo Android app and would like to continue using it as before, you can build your app locally using an older version of [`turtle-cli`](../../../latest/distribution/turtle-cli/) or `expokit`. More details in [this blog post](https://blog.expo.io/changes-to-expo-branch-support-d002c4bc564e).
 
 ## Installation
 

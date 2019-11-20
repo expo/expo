@@ -11,17 +11,21 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.EmptyStmt;
+import com.github.javaparser.ast.stmt.LabeledStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.UnionType;
+import com.github.javaparser.ast.visitor.GenericVisitor;
 import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.ast.visitor.VoidVisitor;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -70,18 +74,18 @@ public class ReactAndroidCodeTransformer {
         "}";
   }
 
-  private static String getHandleErrorBlockString(String throwable, String title, String details, String exceptionId, String isFatal) {
-    return getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"handleReactNativeError\", Throwable.class, String.class, Object.class, Integer.class, Boolean.class", "null, " + throwable + ", " + title + ", " + details + ", " + exceptionId + ", " + isFatal);
+  private static String getHandleErrorBlockString(String title, String details, String exceptionId, String isFatal) {
+    return getCallMethodReflectionBlock("host.exp.exponent.ReactNativeStaticHelpers", "\"handleReactNativeError\", String.class, Object.class, Integer.class, Boolean.class", "null, " + title + ", " + details + ", " + exceptionId + ", " + isFatal);
   }
 
-  private static BlockStmt getHandleErrorBlock(String throwable, String title, String details, String exceptionId, String isFatal) {
-    return JavaParser.parseBlock(getHandleErrorBlockString(throwable, title, details, exceptionId, isFatal));
+  private static BlockStmt getHandleErrorBlock(String title, String details, String exceptionId, String isFatal) {
+    return JavaParser.parseBlock(getHandleErrorBlockString(title, details, exceptionId, isFatal));
   }
 
   private static CatchClause getCatchClause(String title, String details, String exceptionId, String isFatal) {
     ReferenceType t = JavaParser.parseClassOrInterfaceType("RuntimeException");
     SimpleName v = new SimpleName("expoException");
-    BlockStmt catchBlock = getHandleErrorBlock("expoException", title, details, exceptionId, isFatal);
+    BlockStmt catchBlock = getHandleErrorBlock(title, details, exceptionId, isFatal);
     return getCatchClause(Arrays.asList(t), v, catchBlock);
   }
 
@@ -184,6 +188,9 @@ public class ReactAndroidCodeTransformer {
             return hasUpToDateJSBundleInCache(n);
           case "showDevOptionsDialog":
             return showDevOptionsDialog(n);
+          case "getExponentActivityId":
+            n.setBody(JavaParser.parseBlock("{return mDevServerHelper.mSettings.exponentActivityId;}"));
+            return n;
         }
 
         return n;
@@ -196,11 +203,11 @@ public class ReactAndroidCodeTransformer {
         // In dev mode call the original methods. Otherwise open Expo error screen
         switch (methodName) {
           case "reportFatalException":
-            return exceptionsManagerModuleHandleException(n, "true");
+            return exceptionsManagerModuleHandleException(n, "message", "stack", "id", "true");
           case "reportSoftException":
-            return exceptionsManagerModuleHandleException(n, "false");
+            return exceptionsManagerModuleHandleException(n, "message", "stack", "id", "false");
           case "updateExceptionMessage":
-            return exceptionsManagerModuleHandleException(n, "false");
+            return exceptionsManagerModuleHandleException(n, "title", "details", "exceptionId", "false");
         }
 
         return n;
@@ -253,8 +260,18 @@ public class ReactAndroidCodeTransformer {
       public Node visit(String methodName, MethodDeclaration n) {
         switch (methodName) {
           case "isReloadOnJSChangeEnabled":
-            BlockStmt blockStmt = JavaParser.parseBlock("{return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, true);}");
+            BlockStmt blockStmt = JavaParser.parseBlock("{return false;}");
+            blockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): This is not possible to enable/disable so we should always disable it for"));
+            blockStmt.addOrphanComment(new LineComment(" now. I managed to get into a state where fast refresh wouldn't work because live reload"));
+            blockStmt.addOrphanComment(new LineComment(" would kick in every time and there was no way to turn it off from the dev menu."));
+            blockStmt.addOrphanComment(new LineComment(" return mPreferences.getBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, false);"));
             n.setBody(blockStmt);
+            return n;
+          case "setReloadOnJSChangeEnabled":
+            BlockStmt emptyBlockStmt = JavaParser.parseBlock("{}");
+            emptyBlockStmt.addOrphanComment(new LineComment(" NOTE(brentvatne): We don't need to do anything here because this option is always false"));
+            emptyBlockStmt.addOrphanComment(new LineComment(" mPreferences.edit().putBoolean(PREFS_RELOAD_ON_JS_CHANGE_KEY, enabled).apply();"));
+            n.setBody(emptyBlockStmt);
             return n;
         }
 
@@ -262,7 +279,7 @@ public class ReactAndroidCodeTransformer {
       }
 
       @Override
-      public String modifySource(final String source) {
+      String modifySource(String source) {
         return addBeforeEndOfClass(source, "public int exponentActivityId = -1;");
       }
     });
@@ -272,11 +289,12 @@ public class ReactAndroidCodeTransformer {
     String executionPath = ReactAndroidCodeTransformer.class.getProtectionDomain().getCodeSource().getLocation().getPath();
     String projectRoot = new File(executionPath + "../../../../../../").getCanonicalPath() + '/';
 
-    // Get current SDK version
-    File expoPackageJsonFile = new File(projectRoot + "package.json");
-    String expoPackageJsonString = FileUtils.readFileToString(expoPackageJsonFile, "UTF-8");
-    JSONObject expoPackageJson = new JSONObject(expoPackageJsonString);
-    String sdkVersion = expoPackageJson.getJSONObject("exp").getString("sdkVersion");
+    String sdkVersion;
+    try {
+      sdkVersion = args[0];
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Invalid args passed in, expected one argument -- SDK version.");
+    }
 
     // Don't want to mess up our original copy of ReactCommon and ReactAndroid if something goes wrong.
     File reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
@@ -500,13 +518,13 @@ public class ReactAndroidCodeTransformer {
     });
   }
 
-  private static Node exceptionsManagerModuleHandleException(final MethodDeclaration n, final String isFatal) {
+  private static Node exceptionsManagerModuleHandleException(final MethodDeclaration n, final String errorMessageName, final String errorDetailsName, final String errorIdName, final String isFatal) {
     String source =
         "{\n" +
             "if (mDevSupportManager.getDevSupportEnabled()) {\n" +
                 n.getBody().get().toString() + "\n" +
             "} else {\n" +
-                getHandleErrorBlockString("null", "title", "details", "exceptionId", isFatal) + "\n" +
+                getHandleErrorBlockString(errorMessageName, errorDetailsName, errorIdName, isFatal) + "\n" +
             "}\n" +
         "}\n";
 
@@ -526,11 +544,16 @@ public class ReactAndroidCodeTransformer {
     return mapBlockStatement(n, new StatementMapper() {
       @Override
       public Statement map(Statement statement) {
-        if (!statement.toString().startsWith("options.put(mApplicationContext.getString(R.string.catalyst_settings)")) {
-          return statement;
+        if (statement instanceof LabeledStmt) {
+          LabeledStmt labeledStmt = (LabeledStmt) statement;
+          if ("expo_transformer_remove".equals(labeledStmt.getLabel().getIdentifier())) {
+            Statement emptyStatement = new EmptyStmt();
+            emptyStatement.setLineComment(" code removed by ReactAndroidCodeTransformer");
+            return emptyStatement;
+          }
         }
 
-        return new EmptyStmt();
+        return statement;
       }
     });
   }

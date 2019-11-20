@@ -5,7 +5,7 @@ declare const _default: {
     readonly locales: string[];
     readonly timezone: string;
     readonly isoCurrencyCodes: string[];
-    readonly country: string | undefined;
+    readonly region: string | undefined;
     getLocalizationAsync(): Promise<Localization>;
 };
 export default _default;

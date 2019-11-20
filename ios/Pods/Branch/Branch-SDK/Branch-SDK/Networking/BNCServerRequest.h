@@ -8,7 +8,7 @@
 
 #import "BNCServerInterface.h"
 
-@interface BNCServerRequest : NSObject <NSCoding>
+@interface BNCServerRequest : NSObject <NSSecureCoding>
 
 - (void)makeRequest:(BNCServerInterface *)serverInterface key:(NSString *)key callback:(BNCServerCallback)callback;
 - (void)processResponse:(BNCServerResponse *)response error:(NSError *)error;

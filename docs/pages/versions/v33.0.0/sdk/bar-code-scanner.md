@@ -6,7 +6,9 @@ A React component that renders a viewfinder for the device's either front or bac
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-barcode-scanner`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner).
+
+> **Note**: Not compatible with web.
 
 ## Supported formats
 
@@ -17,7 +19,6 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 | code39          | Yes   | Yes     |
 | code93          | Yes   | Yes     |
 | code128         | Yes   | Yes     |
-| code138         | Yes   | No      |
 | code39mod43     | Yes   | No      |
 | datamatrix      | Yes   | Yes     |
 | ean13           | Yes   | Yes     |
@@ -44,6 +45,7 @@ import * as React from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default class BarcodeScannerExample extends React.Component {
@@ -53,9 +55,13 @@ export default class BarcodeScannerExample extends React.Component {
   };
 
   async componentDidMount() {
+    this.getPermissionsAsync();
+  }
+
+  getPermissionsAsync = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === 'granted' });
-  }
+  };
 
   render() {
     const { hasCameraPermission, scanned } = this.state;
@@ -67,11 +73,17 @@ export default class BarcodeScannerExample extends React.Component {
       return <Text>No access to camera</Text>;
     }
     return (
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+        }}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
         />
+
         {scanned && (
           <Button title={'Tap to Scan Again'} onPress={() => this.setState({ scanned: false })} />
         )}
@@ -88,15 +100,11 @@ export default class BarcodeScannerExample extends React.Component {
 
 > Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
 
-[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example).
+[Try this example on Snack](https://snack.expo.io/@documentation/barcodescanner-example?platform=ios).
 
 ## API
 
 ```js
-// in managed apps:
-import { BarCodeScanner } from 'expo';
-
-// in bare apps:
 import { BarCodeScanner } from 'expo-barcode-scanner';
 ```
 

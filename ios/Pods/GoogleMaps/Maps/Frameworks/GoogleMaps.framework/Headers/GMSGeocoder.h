@@ -12,9 +12,9 @@
 
 #import "GMSAddress.h"
 
-NS_ASSUME_NONNULL_BEGIN;
-
 @class GMSReverseGeocodeResponse;
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * \defgroup GeocoderErrorCode GMSGeocoderErrorCode
@@ -71,4 +71,4 @@ typedef void (^GMSReverseGeocodeCallback)(GMSReverseGeocodeResponse *_Nullable,
 
 @end
 
-NS_ASSUME_NONNULL_END;
+NS_ASSUME_NONNULL_END

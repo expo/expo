@@ -11,7 +11,6 @@ It is important all children are `<View>`s and not composite components. You can
 
 Example:
 
-
 ```javascript
 
 render() {
@@ -43,7 +42,6 @@ const styles = {
 }
 
 ```
-
 
 ### Props
 
@@ -199,4 +197,3 @@ A helper function to scroll to a specific page in the ViewPager. The transition 
 | idle     |             |
 | dragging |             |
 | settling |             |
-

@@ -14,7 +14,7 @@ A React component that renders a preview for the device's either front or back c
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-camera`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-camera).
 
 ## Configuration
 
@@ -89,10 +89,6 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 ## API
 
 ```js
-// in managed apps:
-import { Camera } from 'expo';
-
-// in bare apps:
 import { Camera } from 'expo-camera';
 ```
 
@@ -220,7 +216,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file (useable as the source for an `Image` element) and `width, height` specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-The local image URI is temporary. Use [`Expo.FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+The local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
 
 ### `recordAsync`
 

@@ -1,0 +1,66 @@
+{
+  "name": "jest-expo-enzyme",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "sideEffects": true,
+  "files": [
+    "build",
+    "jest-preset.js"
+  ],
+  "keywords": [
+    "react-native",
+    "react-native-web",
+    "enzyme",
+    "jest",
+    "testing",
+    "react-test-renderer",
+    "react",
+    "universal"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/expo/expo.git",
+    "directory": "packages/jest-expo-enzyme"
+  },
+  "jest": {
+    "preset": "jest-expo-enzyme"
+  },
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "peerDependencies": {
+    "react": "16.8.3",
+    "react-native": "*",
+    "react-native-web": "*"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "enzyme-to-json": "^3.4.0",
+    "jest-canvas-mock": "^2.1.1",
+    "jest-enzyme": "^7.1.0",
+    "jest-expo": "~35.0.0",
+    "react-test-renderer": "~16.9.0"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.10.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "babel-preset-expo": "^7.1.0",
+    "expo-module-scripts": "^1.1.1",
+    "react": "16.9.0"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme"
+}

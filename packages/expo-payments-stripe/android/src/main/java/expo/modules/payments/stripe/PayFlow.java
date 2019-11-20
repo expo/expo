@@ -2,7 +2,7 @@ package expo.modules.payments.stripe;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import org.unimodules.core.Promise;
@@ -13,6 +13,9 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.Map;
+
+// DO NOT EDIT THIS COMMENT - used by versioning scripts
+// ADD BUILDCONFIG IMPORT HERE
 
 public abstract class PayFlow {
 

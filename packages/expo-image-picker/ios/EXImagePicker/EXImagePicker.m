@@ -1,10 +1,13 @@
 #import <EXImagePicker/EXImagePicker.h>
+#import <EXImagePicker/EXImagePickerCameraPermissionRequester.h>
+#import <EXImagePicker/EXImagePickerCameraRollPermissionRequester.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 @import MobileCoreServices;
 @import Photos;
@@ -23,8 +26,9 @@ const CGFloat EXDefaultImageQuality = 0.2;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, assign) BOOL shouldRestoreStatusBarVisibility;
+@property (nonatomic, weak) UIScrollView *imageScrollView;
 
 @end
 
@@ -36,10 +40,6 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 {
   if (self = [super init]) {
     self.defaultOptions = @{
-                            @"title": @"Select a Photo",
-                            @"cancelButtonTitle": @"Cancel",
-                            @"takePhotoButtonTitle": @"Take Photo…",
-                            @"chooseFromLibraryButtonTitle": @"Choose from Library…",
                             @"allowsEditing" : @NO,
                             @"base64": @NO,
                             };
@@ -56,16 +56,63 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  _permissionsManager = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[
+                                                    [EXImagePickerCameraPermissionRequester new],
+                                                    [EXImagePickerCameraRollPermissionRequester new]
+                                                    ]
+                           withPermissionsManager:_permissionsManager];
+}
+
+UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
+                    getCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXImagePickerCameraPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(getCameraRollPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXImagePickerCameraRollPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
+                    requestCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXImagePickerCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCameraRollPermissionsAsync,
+                    requestCameraRollPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXImagePickerCameraRollPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
-
-  BOOL permissionsAreGranted = [self.permissionsModule hasGrantedPermission:@"cameraRoll"] &&
-                               [self.permissionsModule hasGrantedPermission:@"camera"];
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  BOOL permissionsAreGranted = [self hasCameraRollPermission] &&
+                               [self.permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraPermissionRequester class]];
 
   if (!permissionsAreGranted) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
@@ -80,7 +127,10 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![self.permissionsModule hasGrantedPermission:@"cameraRoll"]) {
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
+  if (![self hasCameraRollPermission]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
     return;
   }
@@ -100,37 +150,76 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
 - (void)launchImagePicker:(EXImagePickerTarget)target
 {
-  self.picker = [[UIImagePickerController alloc] init];
-
-  if (target == EXImagePickerTargetCamera) {
-#if TARGET_IPHONE_SIMULATOR
-    self.reject(@"CAMERA_MISSING", @"Camera not available on simulator", nil);
-    return;
-#else
-    self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    if ([[self.options objectForKey:@"cameraType"] isEqualToString:@"front"]) {
-      self.picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-    } else { // "back"
-      self.picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-    }
-#endif
-  } else { // RNImagePickerTargetLibrarySingleImage
-    self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  }
-
-  self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
-
-  if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
-    self.picker.allowsEditing = true;
-  }
-  self.picker.modalPresentationStyle = UIModalPresentationOverFullScreen; // only fullscreen styles work well with modals
-  self.picker.delegate = self;
-
   dispatch_async(dispatch_get_main_queue(), ^{
+    self.picker = [[UIImagePickerController alloc] init];
+
+    if (target == EXImagePickerTargetCamera) {
+  #if TARGET_IPHONE_SIMULATOR
+      self.reject(@"CAMERA_MISSING", @"Camera not available on simulator", nil);
+      return;
+  #else
+      self.picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+      if ([[self.options objectForKey:@"cameraType"] isEqualToString:@"front"]) {
+        self.picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+      } else { // "back"
+        self.picker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+      }
+  #endif
+    } else { // RNImagePickerTargetLibrarySingleImage
+      self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    }
+
+    self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
+
+    if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
+      self.picker.allowsEditing = true;
+    }
+    self.picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    self.picker.delegate = self;
+
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
     id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
-    [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
+    [utils.currentViewController presentViewController:self.picker animated:YES completion:^{
+      [self unlockCroppingBox:self.picker];
+    }];
   });
+}
+
+// Due to a bug that exists since iOS 6, you can't move the cropping box.
+// You can read more about this here: https://stackoverflow.com/questions/12630155/uiimagepicker-allowsediting-stuck-in-center.
+- (void)unlockCroppingBox:(UIImagePickerController *)imagePickerController
+{
+  if (!imagePickerController ||
+      !imagePickerController.allowsEditing ||
+      imagePickerController.sourceType != UIImagePickerControllerSourceTypeCamera) {
+    return;
+  }
+  
+  // undocumented class
+  Class ScrollViewClass = NSClassFromString(@"PLImageScrollView");
+  Class CropViewClass = NSClassFromString(@"PLCropOverlayCropView");
+
+  [EXImagePicker foreachSubviewIn:imagePickerController.view call:^(UIView *subview) {
+    if ([subview isKindOfClass:CropViewClass]) {
+      // 0. crop rect position
+      subview.frame = subview.superview.bounds;
+    } else if ([subview isKindOfClass:[UIScrollView class]] && [subview isKindOfClass:ScrollViewClass]) {
+      BOOL isNewImageScrollView = !self->_imageScrollView;
+      self->_imageScrollView = (UIScrollView *)subview;
+      // 1. enable scrolling
+      CGSize size = self->_imageScrollView.frame.size;
+      CGFloat inset = ABS(size.width - size.height) / 2;
+      self->_imageScrollView.contentInset = UIEdgeInsetsMake(inset, 0, inset, 0);
+      // 2. centering image by default
+      if (isNewImageScrollView) {
+        CGSize contentSize = self->_imageScrollView.contentSize;
+        if (contentSize.height > contentSize.width) {
+          CGFloat offset = round((contentSize.height - contentSize.width) / 2 - inset);
+          self->_imageScrollView.contentOffset = CGPointMake(self->_imageScrollView.contentOffset.x, offset);
+        }
+      }
+    }
+  }];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -252,20 +341,29 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
       [self updateResponse:response withMetadata:metadata];
       completionHandler();
     } else {
-      PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
-      if (assets.count > 0) {
-        PHAsset *asset = assets.firstObject;
-        PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
-        options.networkAccessAllowed = YES; // Download from iCloud if needed
-        [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
-          NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
-          [self updateResponse:response withMetadata:metadata];
-          completionHandler();
-        }];
+      PHAsset *asset;
+      if (@available(iOS 11.0, *)) {
+        asset = [info objectForKey:UIImagePickerControllerPHAsset];
       } else {
+        PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+        if (assets.count > 0) {
+          asset = assets.firstObject;
+        }
+      }
+      if (!asset) {
         UMLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
+      
+      PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
+      options.networkAccessAllowed = YES; // Download from iCloud if needed
+      UM_WEAKIFY(self)
+      [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
+        UM_ENSURE_STRONGIFY(self)
+        NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
+        [self updateResponse:response withMetadata:metadata];
+        completionHandler();
+      }];
     }
   } else {
     completionHandler();
@@ -294,16 +392,6 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 - (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
 {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-  PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[[info valueForKey:UIImagePickerControllerReferenceURL]] options:nil];
-  if (assets.count > 0) {
-    PHAsset *videoAsset = assets.firstObject;
-    response[@"width"] = @(videoAsset.pixelWidth);
-    response[@"height"] = @(videoAsset.pixelHeight);
-    response[@"duration"] = @(videoAsset.duration * 1000);
-  } else {
-    UMLogInfo(@"Could not fetch metadata for video %@", [videoURL absoluteString]);
-  }
-
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
     AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
     CMTime duration = [editedAsset duration];
@@ -318,7 +406,9 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     return;
   }
   NSString *path = [fileSystem generatePathInDirectory:directory withExtension:@".mov"];
-  [[NSFileManager defaultManager] moveItemAtURL:videoURL
+
+  // We copy the file as `moveItemAtURL:toURL:error` started throwing an error in iOS 13 due to missing permissions :O
+  [[NSFileManager defaultManager] copyItemAtURL:videoURL
                                           toURL:[NSURL fileURLWithPath:path]
                                           error:&error];
   if (error != nil) {
@@ -328,6 +418,17 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
   NSURL *fileURL = [NSURL fileURLWithPath:path];
   NSString *filePath = [fileURL absoluteString];
+  
+  // adding information about asset
+  AVURLAsset *asset = [AVURLAsset URLAssetWithURL:fileURL options:nil];
+  CGSize size = [[[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0] naturalSize];
+  response[@"width"] = @(size.width);
+  response[@"height"] = @(size.height);
+  if (!response[@"duration"]) {
+    CMTime duration = [asset duration];
+    response[@"duration"] = @(ceil((float) duration.value / duration.timescale * 1000));
+  }
+
   response[@"uri"] = filePath;
 }
 
@@ -368,7 +469,14 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   // Hiding StatusBar during picking process solves the displacement issue.
   // See https://forums.developer.apple.com/thread/98274
   if (editingEnabled && ![[UIApplication sharedApplication] isStatusBarHidden]) {
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:NO];
+    // Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
+    // that should be suppressable with -Wdeprecated-declarations, but is not.
+    // The warning suggests to use -[UIViewController prefersStatusBarHidden].
+    // Unfortunately until we stop presenting view controllers on detached VCs
+    // the setting doesn't have any effect and we need to set status bar like that.
+    SEL setStatusBarSelector = NSSelectorFromString(@"setStatusBarHidden:withAnimation:");
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    ((void (*)(id, SEL, BOOL, BOOL))[sharedApplication methodForSelector:setStatusBarSelector])(sharedApplication, setStatusBarSelector, YES, NO);
     _shouldRestoreStatusBarVisibility = YES;
   }
 }
@@ -377,7 +485,14 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 {
   if (_shouldRestoreStatusBarVisibility) {
     _shouldRestoreStatusBarVisibility = NO;
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:NO];
+    // Calling -[UIApplication setStatusBarHidden:withAnimation:] triggers a warning
+    // that should be suppressable with -Wdeprecated-declarations, but is not.
+    // The warning suggests to use -[UIViewController prefersStatusBarHidden].
+    // Unfortunately until we stop presenting view controllers on detached VCs
+    // the setting doesn't have any effect and we need to set status bar like that.
+    SEL setStatusBarSelector = NSSelectorFromString(@"setStatusBarHidden:withAnimation:");
+    UIApplication *sharedApplication = [UIApplication sharedApplication];
+    ((void (*)(id, SEL, BOOL, BOOL))[sharedApplication methodForSelector:setStatusBarSelector])(sharedApplication, setStatusBarSelector, NO, NO);
   }
 }
 
@@ -466,6 +581,23 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     [mediaTypes addObject:(NSString *)kUTTypeImage];
   }
   return mediaTypes;
+}
+
+- (BOOL)hasCameraRollPermission
+{
+  // to use UIImagePickerController on iOS 11+, we don't have to have camera Roll permission
+  if (@available(iOS 11, *)) {
+    return true;
+  }
+  return [_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollPermissionRequester class]];
+}
+
++ (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function 
+{
+  for (UIView *subview in view.subviews) {
+    function(subview);
+    [EXImagePicker foreachSubviewIn:subview call:function];
+  }
 }
 
 @end

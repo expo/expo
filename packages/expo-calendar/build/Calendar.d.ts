@@ -1,17 +1,18 @@
-declare type RecurringEventOptions = {
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+export declare type RecurringEventOptions = {
     futureEvents?: boolean;
     instanceStartDate?: string | Date;
 };
 export interface Calendar {
-    id?: string;
-    title?: string;
+    id: string;
+    title: string;
     sourceId?: string;
-    source?: Source;
+    source: Source;
     type?: string;
-    color?: string;
+    color: string;
     entityType?: string;
-    allowsModifications?: boolean;
-    allowedAvailabilities?: string[];
+    allowsModifications: boolean;
+    allowedAvailabilities: string[];
     isPrimary?: boolean;
     name?: string;
     ownerAccount?: string;
@@ -22,32 +23,32 @@ export interface Calendar {
     isSynced?: boolean;
     accessLevel?: string;
 }
-declare type Source = {
+export declare type Source = {
     id?: string;
-    type?: string;
-    name?: string;
+    type: string;
+    name: string;
     isLocalAccount?: boolean;
 };
 export declare type Event = {
-    id?: string;
-    calendarId?: string;
-    title?: string;
-    location?: string;
+    id: string;
+    calendarId: string;
+    title: string;
+    location: string;
     creationDate?: string | Date;
     lastModifiedDate?: string | Date;
-    timeZone?: string;
+    timeZone: string;
     endTimeZone?: string;
     url?: string;
-    notes?: string;
-    alarms?: Alarm[];
-    recurrenceRule?: RecurrenceRule;
-    startDate?: string | Date;
-    endDate?: string | Date;
+    notes: string;
+    alarms: Alarm[];
+    recurrenceRule: RecurrenceRule;
+    startDate: string | Date;
+    endDate: string | Date;
     originalStartDate?: string | Date;
     isDetached?: boolean;
-    allDay?: boolean;
-    availability?: string;
-    status?: string;
+    allDay: boolean;
+    availability: string;
+    status: string;
     organizer?: string;
     organizerEmail?: string;
     accessLevel?: string;
@@ -74,19 +75,19 @@ export interface Reminder {
     completed?: boolean;
     completionDate?: string | Date;
 }
-declare type Attendee = {
+export declare type Attendee = {
     id?: string;
     isCurrentUser?: boolean;
-    name?: string;
-    role?: string;
-    status?: string;
-    type?: string;
+    name: string;
+    role: string;
+    status: string;
+    type: string;
     url?: string;
     email?: string;
 };
-declare type Alarm = {
+export declare type Alarm = {
     absoluteDate?: string;
-    relativeOffset?: string;
+    relativeOffset?: number;
     structuredLocation?: {
         title?: string;
         proximity?: string;
@@ -98,35 +99,46 @@ declare type Alarm = {
     };
     method?: string;
 };
-declare type RecurrenceRule = {
+export declare type RecurrenceRule = {
     frequency: string;
     interval?: number;
     endDate?: string;
     occurrence?: number;
 };
-export declare function getCalendarsAsync(entityType?: string): Promise<void>;
-export declare function createCalendarAsync(details?: Calendar): Promise<string>;
-export declare function updateCalendarAsync(id: string, details?: Calendar): Promise<string>;
+export { PermissionResponse, PermissionStatus };
+declare type OptionalKeys<T> = {
+    [P in keyof T]?: T[P];
+};
+export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
+export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;
+export declare function updateCalendarAsync(id: string, details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function deleteCalendarAsync(id: string): Promise<void>;
 export declare function getEventsAsync(calendarIds: string[], startDate: Date, endDate: Date): Promise<Event[]>;
 export declare function getEventAsync(id: string, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<Event>;
-export declare function createEventAsync(calendarId: string, details?: Event): Promise<string>;
-export declare function updateEventAsync(id: string, details?: Event, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<string>;
+export declare function createEventAsync(calendarId: string, { id, ...details }?: OptionalKeys<Event>): Promise<string>;
+export declare function updateEventAsync(id: string, details?: OptionalKeys<Event>, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<string>;
 export declare function deleteEventAsync(id: string, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<void>;
 export declare function getAttendeesForEventAsync(id: string, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<Attendee[]>;
-export declare function createAttendeeAsync(eventId: string, details?: Attendee): Promise<string>;
-export declare function updateAttendeeAsync(id: string, details?: Attendee): Promise<string>;
+export declare function createAttendeeAsync(eventId: string, details?: OptionalKeys<Attendee>): Promise<string>;
+export declare function updateAttendeeAsync(id: string, details?: OptionalKeys<Attendee>): Promise<string>;
+export declare function getDefaultCalendarAsync(): Promise<Calendar>;
 export declare function deleteAttendeeAsync(id: string): Promise<void>;
-export declare function getRemindersAsync(calendarIds: string[], status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
+export declare function getRemindersAsync(calendarIds: Array<string | null>, status: string | null, startDate: Date, endDate: Date): Promise<Reminder[]>;
 export declare function getReminderAsync(id: string): Promise<Reminder>;
-export declare function createReminderAsync(calendarId: string, details?: Reminder): Promise<string>;
+export declare function createReminderAsync(calendarId: string | null, { id, ...details }?: Reminder): Promise<string>;
 export declare function updateReminderAsync(id: string, details?: Reminder): Promise<string>;
 export declare function deleteReminderAsync(id: string): Promise<void>;
 export declare function getSourcesAsync(): Promise<Source[]>;
 export declare function getSourceAsync(id: string): Promise<Source>;
 export declare function openEventInCalendar(id: string): void;
-export declare function requestPermissionsAsync(): Promise<void>;
-export declare function requestRemindersPermissionsAsync(): Promise<void>;
+/**
+ * @deprecated Use requestCalendarPermissionsAsync()
+ */
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getCalendarPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getRemindersPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
 export declare const EntityTypes: {
     EVENT: string;
     REMINDER: string;
@@ -150,6 +162,7 @@ export declare const CalendarType: {
     EXCHANGE: string;
     SUBSCRIBED: string;
     BIRTHDAYS: string;
+    UNKNOWN: string;
 };
 export declare const EventStatus: {
     NONE: string;
@@ -227,5 +240,3 @@ export declare const ReminderStatus: {
     COMPLETED: string;
     INCOMPLETE: string;
 };
-export declare const DEFAULT = "default";
-export {};

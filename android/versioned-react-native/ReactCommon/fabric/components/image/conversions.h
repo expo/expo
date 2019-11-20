@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <react/graphics/conversions.h>
 #include <react/imagemanager/primitives.h>
@@ -16,12 +17,15 @@ namespace react {
 
 inline void fromRawValue(const RawValue &value, ImageSource &result) {
   if (value.hasType<std::string>()) {
-    result = {.type = ImageSource::Type::Remote, .uri = (std::string)value};
+    result = {
+        /* .type = */ ImageSource::Type::Remote,
+        /* .uri = */ (std::string)value,
+    };
     return;
   }
 
-  if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
-    auto items = (std::unordered_map<std::string, RawValue>)value;
+  if (value.hasType<better::map<std::string, RawValue>>()) {
+    auto items = (better::map<std::string, RawValue>)value;
     result = {};
 
     result.type = ImageSource::Type::Remote;
@@ -31,11 +35,18 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
     }
 
     if (items.find("width") != items.end() &&
-        items.find("height") != items.end()) {
+        items.find("height") != items.end() &&
+        // The following checks have to be removed after codegen is shipped.
+        // See T45151459.
+        items.at("width").hasType<Float>() &&
+        items.at("height").hasType<Float>()) {
       result.size = {(Float)items.at("width"), (Float)items.at("height")};
     }
 
-    if (items.find("scale") != items.end()) {
+    if (items.find("scale") != items.end() &&
+        // The following checks have to be removed after codegen is shipped.
+        // See T45151459.
+        items.at("scale").hasType<Float>()) {
       result.scale = (Float)items.at("scale");
     } else {
       result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;

@@ -1,8 +1,2 @@
-export function registerAsset(asset) {
-    return _assets.push(asset);
-}
-export function getAssetByID(assetId) {
-    return _assets[assetId - 1];
-}
-const _assets = [];
+export * from 'react-native-web/dist/modules/AssetRegistry';
 //# sourceMappingURL=AssetRegistry.web.js.map

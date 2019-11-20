@@ -43,15 +43,15 @@
 {
   NSMutableDictionary *queryParameters = [[NSMutableDictionary alloc] initWithDictionary:parameters];
   queryParameters[@"display"] = @"touch";
-  NSString *bridgeArgs = [FBSDKInternalUtility JSONStringForObject:@{ FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_ACTION_ID_KEY: actionID }
-                                                             error:NULL
-                                              invalidObjectHandler:NULL];
+  NSString *bridgeArgs = [FBSDKBasicUtility JSONStringForObject:@{ FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_ACTION_ID_KEY: actionID }
+                                                          error:NULL
+                                           invalidObjectHandler:NULL];
   NSDictionary *redirectQueryParameters = @{ FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_BRIDGE_ARGS_KEY: bridgeArgs };
   NSURL *redirectURL = [FBSDKInternalUtility appURLWithHost:@"bridge"
                                                        path:methodName
                                             queryParameters:redirectQueryParameters
                                                       error:NULL];
-  [FBSDKInternalUtility dictionary:queryParameters setObject:redirectURL forKey:@"redirect_uri"];
+  [FBSDKBasicUtility dictionary:queryParameters setObject:redirectURL forKey:@"redirect_uri"];
   [queryParameters addEntriesFromDictionary:parameters];
   return [FBSDKInternalUtility facebookURLWithHostPrefix:@"m"
                                                     path:[@"/dialog/" stringByAppendingString:methodName]
@@ -81,7 +81,7 @@
     }
     default:{
       if (errorRef != NULL) {
-        *errorRef = [NSError fbErrorWithCode:errorCode
+        *errorRef = [FBSDKError errorWithCode:errorCode
                                       message:[FBSDKTypeUtility stringValue:queryParameters[@"error_message"]]];
       }
       return nil;
@@ -91,10 +91,10 @@
 
   NSError *error;
   NSString *bridgeParametersJSON = [FBSDKTypeUtility stringValue:queryParameters[FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_BRIDGE_ARGS_KEY]];
-  NSDictionary *bridgeParameters = [FBSDKInternalUtility objectForJSONString:bridgeParametersJSON error:&error];
+  NSDictionary<id, id> *bridgeParameters = [FBSDKBasicUtility objectForJSONString:bridgeParametersJSON error:&error];
   if (!bridgeParameters) {
     if (error && (errorRef != NULL)) {
-      *errorRef = [NSError fbInvalidArgumentErrorWithName:FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_BRIDGE_ARGS_KEY
+      *errorRef = [FBSDKError invalidArgumentErrorWithName:FBSDK_BRIDGE_API_PROTOCOL_WEB_V1_BRIDGE_ARGS_KEY
                                                      value:bridgeParametersJSON
                                                    message:nil
                                            underlyingError:error];

@@ -1,4 +1,5 @@
 import { Subscription } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { PlaybackStatus, PlaybackStatusToSet } from '../AV';
 import { Sound } from './Sound';
 export declare type RecordingOptions = {
@@ -92,6 +93,9 @@ export declare type RecordingStatus = {
     isDoneRecording: boolean;
     durationMillis: number;
 };
+export { PermissionResponse, PermissionStatus };
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare class Recording {
     _subscription: Subscription | null;
     _canRecord: boolean;

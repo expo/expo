@@ -26,9 +26,9 @@ import org.unimodules.interfaces.permissions.Permissions;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -94,6 +94,27 @@ public class MediaLibraryModule extends ExportedModule {
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+  }
+
+  @ExpoMethod
+  public void requestPermissionsAsync(final Promise promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+  }
+
+  @ExpoMethod
+  public void getPermissionsAsync(final Promise promise) {
+    Permissions.getPermissionsWithPermissionsManager(mModuleRegistry.getModule(Permissions.class), promise, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+  }
+
+  @ExpoMethod
+  public void saveToLibraryAsync(String localUri, Promise promise) {
+    if (isMissingWritePermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE);
+      return;
+    }
+
+    new CreateAsset(mContext, localUri, promise, false)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
   @ExpoMethod
@@ -260,9 +281,17 @@ public class MediaLibraryModule extends ExportedModule {
     if (permissionsManager == null) {
       return false;
     }
-    int[] grantResults = permissionsManager.getPermissions(new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE});
 
-    return grantResults.equals(new int[]{PERMISSION_GRANTED, PERMISSION_GRANTED});
+    return !permissionsManager.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE);
+  }
+
+  private boolean isMissingWritePermission() {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      return false;
+    }
+
+    return !permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
   }
 
   private class MediaStoreContentObserver extends ContentObserver {
@@ -306,6 +335,4 @@ public class MediaLibraryModule extends ExportedModule {
       return countCursor.getInt(0);
     }
   }
-
-
 }

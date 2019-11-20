@@ -4,20 +4,9 @@ import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 import { NativeModulesProxy } from '@unimodules/core';
 import customOpenDatabase from '@expo/websql/custom';
+import { Query, SQLiteCallback, ResultSet, ResultSetError, WebSQLDatabase } from './SQLite.types';
 
 const { ExponentSQLite } = NativeModulesProxy;
-
-type InternalQuery = { sql: string; args: unknown[] };
-
-type InternalResultSet =
-  | { error: Error }
-  | {
-      insertId?: number;
-      rowsAffected: number;
-      rows: Array<{ [column: string]: any }>;
-    };
-
-export type SQLiteCallback = (error?: Error | null, resultSet?: InternalResultSet) => void;
 
 class SQLiteDatabase {
   _name: string;
@@ -27,7 +16,7 @@ class SQLiteDatabase {
     this._name = name;
   }
 
-  exec(queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void {
+  exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void {
     if (this._closed) {
       throw new Error(`The SQLite database is closed`);
     }
@@ -49,16 +38,16 @@ class SQLiteDatabase {
   }
 }
 
-function _serializeQuery(query: InternalQuery): [string, unknown[]] {
+function _serializeQuery(query: Query): [string, unknown[]] {
   return [query.sql, Platform.OS === 'android' ? query.args.map(_escapeBlob) : query.args];
 }
 
-function _deserializeResultSet(nativeResult): InternalResultSet {
+function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
   let [errorMessage, insertId, rowsAffected, columns, rows] = nativeResult;
   // TODO: send more structured error information from the native module so we can better construct
   // a SQLException object
   if (errorMessage !== null) {
-    return { error: new Error(errorMessage) };
+    return { error: new Error(errorMessage) } as ResultSetError;
   }
 
   return {
@@ -84,9 +73,9 @@ function _escapeBlob<T>(data: T): T {
 const _openExpoSQLiteDatabase = customOpenDatabase(SQLiteDatabase);
 
 function addExecMethod(db: any): WebSQLDatabase {
-  db.exec = (queries: InternalQuery[], readOnly: boolean, callback: SQLiteCallback): void => {
+  db.exec = (queries: Query[], readOnly: boolean, callback: SQLiteCallback): void => {
     db._db.exec(queries, readOnly, callback);
-  }
+  };
   return db;
 }
 
@@ -104,9 +93,3 @@ export function openDatabase(
   const dbWithExec = addExecMethod(db);
   return dbWithExec;
 }
-
-type WebSQLDatabase = unknown;
-
-export default {
-  openDatabase,
-};

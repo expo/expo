@@ -16,7 +16,7 @@ namespace folly {
 struct dynamic;
 }
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 struct InstanceCallback;

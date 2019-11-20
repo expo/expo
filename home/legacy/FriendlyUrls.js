@@ -1,3 +1,5 @@
+// @flow
+
 import url from 'url';
 
 let FriendlyUrls = {

@@ -29,7 +29,14 @@ RCT_EXPORT_VIEW_PROPERTY(vbWidth, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(vbHeight, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(align, NSString)
 RCT_EXPORT_VIEW_PROPERTY(meetOrSlice, RNSVGVBMOS)
-RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
+RCT_CUSTOM_VIEW_PROPERTY(tintColor, id, RNSVGSvgView)
+{
+    view.tintColor = [RCTConvert UIColor:json];
+}
+RCT_CUSTOM_VIEW_PROPERTY(color, id, RNSVGSvgView)
+{
+    view.tintColor = [RCTConvert UIColor:json];
+}
 
 
 - (void)toDataURL:(nonnull NSNumber *)reactTag options:(NSDictionary *)options callback:(RCTResponseSenderBlock)callback attempt:(int)attempt {

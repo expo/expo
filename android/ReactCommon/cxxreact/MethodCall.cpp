@@ -53,7 +53,7 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
       throw std::invalid_argument(
         folly::to<std::string>(errorPrefix, "invalid callId", jsonData[REQUEST_CALLID].typeName()));
     }
-    callId = jsonData[REQUEST_CALLID].asInt();
+    callId = (int)jsonData[REQUEST_CALLID].asInt();
   }
 
   std::vector<MethodCall> methodCalls;
@@ -69,7 +69,7 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData) {
       std::move(params[i]),
       callId);
 
-    // only incremement callid if contains valid callid as callid is optional
+    // only increment callid if contains valid callid as callid is optional
     callId += (callId != -1) ? 1 : 0;
   }
 

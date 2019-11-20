@@ -7,7 +7,7 @@ In order to use `BackgroundFetch` API in standalone and detached apps on iOS, yo
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. It is not yet available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
 
 ## API
 
@@ -55,7 +55,8 @@ Background fetch task receives no data, but your task should return a value that
 This return value is to let iOS know what the result of your background fetch was, so the platform can better schedule future background fetches. Also, your app has up to 30 seconds to perform the task, otherwise your app will be terminated and future background fetches may be delayed.
 
 ```javascript
-import { BackgroundFetch, TaskManager } from 'expo';
+import * as BackgroundFetch from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
 
 TaskManager.defineTask(YOUR_TASK_NAME, () => {
   try {

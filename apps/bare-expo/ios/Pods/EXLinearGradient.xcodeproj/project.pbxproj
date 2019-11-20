@@ -1,0 +1,408 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03F7EF3E3310D7D33BA8B8676CBE6933 /* EXLinearGradientLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */; };
+		079C6BE2BCA1BF66805859B13C955CCD /* EXLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */; };
+		2271C5DE62BDA3E42803DFA7CE2CCBE7 /* EXLinearGradientLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		392ABE8AD62225B353AC77B12EBE6D44 /* EXLinearGradientManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		7D70CB55E5664751EEFEFDF7A9027353 /* EXLinearGradientManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */; };
+		AD192289C856A89E30FA11708845755A /* EXLinearGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F04F703CDAE714E411039040E0F8E7A7 /* EXLinearGradient-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		41E1F8A91E5BE156063E71E9953585B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C23B7DAF674C172C6F889FB6794E22E0 /* UMCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
+			remoteInfo = UMCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradientManager.h; path = EXLinearGradient/EXLinearGradientManager.h; sourceTree = "<group>"; };
+		2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = EXLinearGradient.xcconfig; sourceTree = "<group>"; };
+		3735C835B6743269112C98EED553CA50 /* EXLinearGradient-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EXLinearGradient-prefix.pch"; sourceTree = "<group>"; };
+		451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradientManager.m; path = EXLinearGradient/EXLinearGradientManager.m; sourceTree = "<group>"; };
+		80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradientLayer.m; path = EXLinearGradient/EXLinearGradientLayer.m; sourceTree = "<group>"; };
+		8CC2A29904195CC8B59BD15BC8D48D96 /* EXLinearGradient.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = EXLinearGradient.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradient.h; path = EXLinearGradient/EXLinearGradient.h; sourceTree = "<group>"; };
+		C23B7DAF674C172C6F889FB6794E22E0 /* UMCore */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UMCore; path = UMCore.xcodeproj; sourceTree = "<group>"; };
+		CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = EXLinearGradientLayer.h; path = EXLinearGradient/EXLinearGradientLayer.h; sourceTree = "<group>"; };
+		CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = EXLinearGradient.m; path = EXLinearGradient/EXLinearGradient.m; sourceTree = "<group>"; };
+		D40185578F9176B06F2D1B1F7318403B /* libEXLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libEXLinearGradient.a; path = libEXLinearGradient.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "EXLinearGradient-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		37DFA69BB348E8368921C737704CAD00 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3BDEA285FE507B8E7EFF6ACC0A079627 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D40185578F9176B06F2D1B1F7318403B /* libEXLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5EF7739BAA287BA11A12541397367671 = {
+			isa = PBXGroup;
+			children = (
+				7E67F194E74C0E053F9769C7C0C46584 /* Dependencies */,
+				A85C9167BDDA2A11CC6CE8AB2CC5ABCB /* EXLinearGradient */,
+				ACCD47C0734A56DB35C5B4087F0F27AB /* Frameworks */,
+				3BDEA285FE507B8E7EFF6ACC0A079627 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7E67F194E74C0E053F9769C7C0C46584 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				C23B7DAF674C172C6F889FB6794E22E0 /* UMCore */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		9A6B5FA4A65C7C87B4944EA65E9F6673 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				8CC2A29904195CC8B59BD15BC8D48D96 /* EXLinearGradient.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		9C8B3A84BAFF44941F9B05085DCF8A33 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */,
+				F6AB8A737D3BC8E246671264D3450A9D /* EXLinearGradient-dummy.m */,
+				3735C835B6743269112C98EED553CA50 /* EXLinearGradient-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../apps/bare-expo/ios/Pods/Target Support Files/EXLinearGradient";
+			sourceTree = "<group>";
+		};
+		A85C9167BDDA2A11CC6CE8AB2CC5ABCB /* EXLinearGradient */ = {
+			isa = PBXGroup;
+			children = (
+				9B1DAE9E6A668E3CF8E04BDFD34B9CF6 /* EXLinearGradient.h */,
+				CBE319FDBAEFD3D9E39DD1B2DEDE3B8A /* EXLinearGradient.m */,
+				CB19A40E13F86DB24D4AB2EC10F4307E /* EXLinearGradientLayer.h */,
+				80AAA37F7DF3F76DD94F3FDF2919A91C /* EXLinearGradientLayer.m */,
+				22614A43CFAC3BA89CDA671165DC80F6 /* EXLinearGradientManager.h */,
+				451443D3B9073CCCE34AE7026C1A6902 /* EXLinearGradientManager.m */,
+				9A6B5FA4A65C7C87B4944EA65E9F6673 /* Pod */,
+				9C8B3A84BAFF44941F9B05085DCF8A33 /* Support Files */,
+			);
+			name = EXLinearGradient;
+			path = "../../../../packages/expo-linear-gradient/ios";
+			sourceTree = "<group>";
+		};
+		ACCD47C0734A56DB35C5B4087F0F27AB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B07EE5D0FCEB54330AA88814EF74D9BE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD192289C856A89E30FA11708845755A /* EXLinearGradient.h in Headers */,
+				2271C5DE62BDA3E42803DFA7CE2CCBE7 /* EXLinearGradientLayer.h in Headers */,
+				392ABE8AD62225B353AC77B12EBE6D44 /* EXLinearGradientManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AF5113FDFEF2ECEBDD58149C34DD4634 /* EXLinearGradient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD1E4CC5BC01FDE00E8E7250F6853001 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */;
+			buildPhases = (
+				B07EE5D0FCEB54330AA88814EF74D9BE /* Headers */,
+				A0EEAB317DB6A3996D6C02670E3385ED /* Sources */,
+				37DFA69BB348E8368921C737704CAD00 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8D1AD7C20DC43026043ABD294779B12D /* PBXTargetDependency */,
+			);
+			name = EXLinearGradient;
+			productName = EXLinearGradient;
+			productReference = D40185578F9176B06F2D1B1F7318403B /* libEXLinearGradient.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CF0C2689C9993D8D724DF32CE973342C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 49018584EADA0F44CF85D11D5175DE24 /* Build configuration list for PBXProject "EXLinearGradient" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5EF7739BAA287BA11A12541397367671;
+			productRefGroup = 3BDEA285FE507B8E7EFF6ACC0A079627 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = C23B7DAF674C172C6F889FB6794E22E0 /* UMCore */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				AF5113FDFEF2ECEBDD58149C34DD4634 /* EXLinearGradient */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A0EEAB317DB6A3996D6C02670E3385ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F04F703CDAE714E411039040E0F8E7A7 /* EXLinearGradient-dummy.m in Sources */,
+				079C6BE2BCA1BF66805859B13C955CCD /* EXLinearGradient.m in Sources */,
+				03F7EF3E3310D7D33BA8B8676CBE6933 /* EXLinearGradientLayer.m in Sources */,
+				7D70CB55E5664751EEFEFDF7A9027353 /* EXLinearGradientManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8D1AD7C20DC43026043ABD294779B12D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UMCore;
+			targetProxy = 41E1F8A91E5BE156063E71E9953585B5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		861C1C473E98B9E6F9FC5696D095FA07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		BC651C3741163F4A39A59E08F9DD1F6A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D1B9107A533FCBD3B0FA577EA5EC3BD3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		F810FD2DB948A58CB57DB118D7D40A41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2EDFD29B1F0556BD723ADB01223D3FDB /* EXLinearGradient.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/EXLinearGradient/EXLinearGradient-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = EXLinearGradient;
+				PRODUCT_NAME = EXLinearGradient;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49018584EADA0F44CF85D11D5175DE24 /* Build configuration list for PBXProject "EXLinearGradient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				861C1C473E98B9E6F9FC5696D095FA07 /* Debug */,
+				D1B9107A533FCBD3B0FA577EA5EC3BD3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD1E4CC5BC01FDE00E8E7250F6853001 /* Build configuration list for PBXNativeTarget "EXLinearGradient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC651C3741163F4A39A59E08F9DD1F6A /* Debug */,
+				F810FD2DB948A58CB57DB118D7D40A41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CF0C2689C9993D8D724DF32CE973342C /* Project object */;
+}

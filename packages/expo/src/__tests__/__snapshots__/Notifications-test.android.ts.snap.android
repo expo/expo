@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`properly throws for negative number for "options.intervalMs" in scheduled notification options on android 1`] = `[Error: Pass an integer greater than zero as the value for the "intervalMs" option]`;
+
+exports[`properly throws for non-integer for "options.intervalMs" in scheduled notification options on android 1`] = `[Error: Pass an integer greater than zero as the value for the "intervalMs" option]`;
+
+exports[`properly throws if both "options.repeat" and "options.intervalMs" are set in scheduled notification options on android 1`] = `[Error: Pass either the "repeat" option or "intervalMs" option, not both]`;

@@ -5,21 +5,15 @@ title: Picker
 
 Renders the native picker component on iOS and Android. Example:
 
-
 ```javascript
-
 <Picker
   selectedValue={this.state.language}
-  style={{height: 50, width: 100}}
-  onValueChange={(itemValue, itemIndex) =>
-    this.setState({language: itemValue})
-  }>
+  style={{ height: 50, width: 100 }}
+  onValueChange={(itemValue, itemIndex) => this.setState({ language: itemValue })}>
   <Picker.Item label="Java" value="java" />
   <Picker.Item label="JavaScript" value="js" />
 </Picker>
-
 ```
-
 
 ### Props
 
@@ -118,7 +112,6 @@ Prompt string for this picker, used on Android in dialog mode as the title of th
 
 Style to apply to each of the item labels.
 
-| Type                               | Required | Platform |
-| ---------------------------------- | -------- | -------- |
+| Type                                | Required | Platform |
+| ----------------------------------- | -------- | -------- |
 | [text styles](../text-style-props/) | No       | iOS      |
-

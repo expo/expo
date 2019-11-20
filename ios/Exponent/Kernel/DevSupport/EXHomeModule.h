@@ -26,7 +26,6 @@
 - (void)homeModule:(EXHomeModule *)homeModule didFinishNux:(BOOL)isNuxFinished;
 
 - (void)homeModule:(EXHomeModule *)module didSelectDevMenuItemWithKey:(NSString *)key;
-- (void)homeModuleDidSelectHomeDiagnostics:(EXHomeModule *)module;
 - (void)homeModule:(EXHomeModule *)module didOpenUrl:(NSString *)url;
 - (void)homeModuleDidSelectRefresh:(EXHomeModule *)module;
 - (void)homeModuleDidSelectCloseMenu:(EXHomeModule *)module;

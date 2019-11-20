@@ -9,6 +9,7 @@
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTUtils.h>
 
 NSString *kEXExpoDeepLinkSeparator = @"--/";
 NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
@@ -63,7 +64,12 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
         && [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager.status == kEXReactAppManagerStatusRunning) {
       // if Home is present and running, open a new app with this url.
       // if home isn't running yet, we'll handle the LaunchOptions url after home finishes launching.
-      [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+
+      // Since this method might have been called on any thread,
+      // let's make sure we create a new app on the main queue.
+      RCTExecuteOnMainQueue(^{
+        [[EXKernel sharedInstance] createNewAppWithUrl:urlToRoute initialProps:nil];
+      });
     }
   }
 }

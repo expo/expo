@@ -1,6 +1,6 @@
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-const ExpoPackageJson = require('expo/package.json');
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
@@ -31,7 +31,7 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: UAParser(navigator.userAgent) };
+        return { web: canUseDOM ? UAParser(navigator.userAgent) : undefined };
     },
     get isHeadless() {
         return false;
@@ -44,14 +44,19 @@ export default {
         return false;
     },
     get expoVersion() {
-        return ExpoPackageJson.version;
+        return this.manifest.sdkVersion || null;
     },
     get linkingUri() {
-        // On native this is `exp://`
-        return location.origin + location.pathname;
+        if (canUseDOM) {
+            // On native this is `exp://`
+            return location.origin + location.pathname;
+        }
+        else {
+            return '';
+        }
     },
     get expoRuntimeVersion() {
-        return ExpoPackageJson.version;
+        return this.expoVersion;
     },
     get deviceName() {
         const { browser, engine, os: OS } = parser.getResult();
@@ -75,16 +80,28 @@ export default {
         return null;
     },
     get manifest() {
+        // This is defined by @expo/webpack-config.
+        // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
     get experienceUrl() {
-        return location.origin + location.pathname;
+        if (canUseDOM) {
+            return location.origin + location.pathname;
+        }
+        else {
+            return '';
+        }
     },
     get debugMode() {
         return __DEV__;
     },
     async getWebViewUserAgentAsync() {
-        return navigator.userAgent;
+        if (canUseDOM) {
+            return navigator.userAgent;
+        }
+        else {
+            return null;
+        }
     },
 };
 //# sourceMappingURL=ExponentConstants.web.js.map

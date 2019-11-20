@@ -18,15 +18,17 @@
 
 #import <Foundation/Foundation.h>
 
+NS_SWIFT_NAME(WebDialogDelegate)
 @protocol FBSDKWebDialogDelegate;
 
+NS_SWIFT_NAME(WebDialog)
 @interface FBSDKWebDialog : NSObject
 
 + (instancetype)showWithName:(NSString *)name
                   parameters:(NSDictionary *)parameters
                     delegate:(id<FBSDKWebDialogDelegate>)delegate;
 
-@property (nonatomic, assign) BOOL deferVisibility;
+@property (nonatomic, assign, getter=shouldDeferVisibility) BOOL deferVisibility;
 @property (nonatomic, weak) id<FBSDKWebDialogDelegate> delegate;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSDictionary *parameters;
@@ -35,6 +37,7 @@
 
 @end
 
+NS_SWIFT_NAME(WebDialogDelegate)
 @protocol FBSDKWebDialogDelegate <NSObject>
 
 - (void)webDialog:(FBSDKWebDialog *)webDialog didCompleteWithResults:(NSDictionary *)results;

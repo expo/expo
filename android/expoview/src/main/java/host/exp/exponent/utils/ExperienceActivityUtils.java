@@ -10,9 +10,14 @@ import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import host.exp.exponent.ABIVersion;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
+
 import org.json.JSONObject;
 
 public class ExperienceActivityUtils {
@@ -42,6 +47,43 @@ public class ExperienceActivityUtils {
         break;
     }
   }
+
+  // region user interface style - light/dark/automatic mode
+
+  public static void overrideUserInterfaceStyle(JSONObject manifest, AppCompatActivity activity) {
+    String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
+    int mode = nightModeFromString(userInterfaceStyle);
+    activity.getDelegate().setLocalNightMode(mode);
+  }
+
+  private static int nightModeFromString(@Nullable String userInterfaceStyle) {
+    if (userInterfaceStyle == null) {
+      return AppCompatDelegate.MODE_NIGHT_NO;
+    }
+    switch (userInterfaceStyle) {
+      case "automatic":
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+          return AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
+        }
+        return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+      case "dark":
+        return AppCompatDelegate.MODE_NIGHT_YES;
+      case "light":
+      default:
+        return AppCompatDelegate.MODE_NIGHT_NO;
+    }
+  }
+
+  @Nullable
+  private static String readUserInterfaceStyleFromManifest(JSONObject manifest) {
+    if (manifest.has("android") && manifest.optJSONObject("android").has("userInterfaceStyle")) {
+      return manifest.optJSONObject("android").optString("userInterfaceStyle");
+    }
+    return manifest.optString("userInterfaceStyle", "light");
+  }
+
+  // endregion
+
 
   public static void setWindowTransparency(final String sdkVersion, final JSONObject manifest, final Activity activity) {
     JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
@@ -102,5 +144,55 @@ public class ExperienceActivityUtils {
         }
       }
     });
+  }
+
+  public static void setNavigationBar(final JSONObject manifest, final Activity activity) {
+    JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
+    if (navBarOptions == null) {
+      return;
+    }
+
+    String navBarColor = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR);
+
+    // Set background color of navigation bar
+    if (navBarColor != null && ColorParser.isValid(navBarColor)) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        activity.getWindow().setNavigationBarColor(Color.parseColor(navBarColor));
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+
+    // Set icon color of navigation bar
+    String navBarAppearance = navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE);
+    if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+        if (navBarAppearance.equals("dark-content")) {
+          View decorView = activity.getWindow().getDecorView();
+          int flags = decorView.getSystemUiVisibility();
+          flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+          decorView.setSystemUiVisibility(flags);
+        }
+      } catch (Throwable e) {
+        EXL.e(TAG, e);
+      }
+    }
+
+    // Set visibility of navigation bar
+    if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)) {
+      Boolean visible = navBarOptions.optBoolean(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY);
+      if (!visible) {
+        // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
+        // design your app to hide the status bar whenever you hide the navigation bar."
+        View decorView = activity.getWindow().getDecorView();
+        int flags = decorView.getSystemUiVisibility();
+        flags |= (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        decorView.setSystemUiVisibility(flags);
+      }
+    }
   }
 }

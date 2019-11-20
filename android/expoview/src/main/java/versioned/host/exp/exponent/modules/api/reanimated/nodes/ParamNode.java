@@ -1,0 +1,47 @@
+package versioned.host.exp.exponent.modules.api.reanimated.nodes;
+
+import com.facebook.react.bridge.ReadableMap;
+import versioned.host.exp.exponent.modules.api.reanimated.NodesManager;
+
+import java.util.Stack;
+
+public class ParamNode extends ValueNode {
+
+  private final Stack<Integer> mArgsStack;
+  private String mPrevCallID;
+
+  public ParamNode(int nodeID, ReadableMap config, NodesManager nodesManager) {
+    super(nodeID, config, nodesManager);
+    mArgsStack = new Stack<>();
+  }
+
+  @Override
+  public void setValue(Object value) {
+    Node node = mNodesManager.findNodeById(mArgsStack.peek(), Node.class);
+    String callID = mUpdateContext.callID;
+    mUpdateContext.callID = mPrevCallID;
+    ((ValueNode) node).setValue(value);
+    mUpdateContext.callID = callID;
+  }
+
+  public void beginContext(Integer ref, String prevCallID) {
+    mPrevCallID = prevCallID;
+    mArgsStack.push(ref);
+  }
+
+
+  public void endContext() {
+    mArgsStack.pop();
+  }
+
+
+  @Override
+  protected Object evaluate() {
+    String callID = mUpdateContext.callID;
+    mUpdateContext.callID = mPrevCallID;
+    Node node = mNodesManager.findNodeById(mArgsStack.peek(), Node.class);
+    Object val = node.value();
+    mUpdateContext.callID = callID;
+    return val;
+  }
+}

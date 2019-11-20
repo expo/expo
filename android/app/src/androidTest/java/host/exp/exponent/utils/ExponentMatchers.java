@@ -2,7 +2,7 @@
 
 package host.exp.exponent.utils;
 
-import android.support.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import android.view.View;
 
 import org.hamcrest.Description;

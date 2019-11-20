@@ -1,0 +1,1 @@
+../../../../../versioned-react-native/ABI36_0_0/ReactNative/Libraries/LinkingIOS/ABI36_0_0RCTLinkingManager.h

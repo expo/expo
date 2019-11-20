@@ -9,6 +9,7 @@
 
 static NSString *const EXVideoReadyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const EXVideoSourceURIKeyPath = @"uri";
+static NSString *const EXVideoSourceHeadersKeyPath = @"headers";
 static NSString *const EXVideoBoundsKeyPath = @"videoBounds";
 static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenViewController";
 
@@ -31,6 +32,7 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 @property (nonatomic, strong) UIViewController *presentingViewController;
 @property (nonatomic, assign) BOOL fullscreenPlayerPresented;
 
+@property (nonatomic, strong) NSDictionary *lastSetSource;
 @property (nonatomic, strong) NSMutableDictionary *statusToSet;
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
@@ -480,19 +482,23 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setSource:(NSDictionary *)source
 {
-  __weak EXVideoView *weakSelf = self;
-  dispatch_async(_exAV.methodQueue, ^{
-    __strong EXVideoView *strongSelf = weakSelf;
-    if (strongSelf) {
-      [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
-    }
-  });
+  if (![source isEqualToDictionary:_lastSetSource]) {
+    __weak EXVideoView *weakSelf = self;
+    dispatch_async(_exAV.methodQueue, ^{
+      __strong EXVideoView *strongSelf = weakSelf;
+      if (strongSelf) {
+        [strongSelf setSource:source withStatus:nil resolver:nil rejecter:nil];
+        strongSelf.lastSetSource = source;
+      }
+    });
+  }
 }
 
 - (NSDictionary *)source
 {
   return @{
-           EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @""
+           EXVideoSourceURIKeyPath: (_data != nil && _data.url != nil) ? _data.url.absoluteString : @"",
+           EXVideoSourceHeadersKeyPath: _data.headers
            };
 }
 

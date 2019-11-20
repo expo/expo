@@ -12,7 +12,9 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-secure-store`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-secure-store).
+
+> **Note**: Not compatible with web.
 
 ## API
 
@@ -41,7 +43,7 @@ Store a key–value pair.
 
   - **keychainAccessible (_enum_)** --
     - iOS only: Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property. See Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-SW18). The available options are:
-      - `SecureStore.WHEN_UNLOCKED`: The data in the keychain item can be accessed only while the device is unlocked by the user.
+      - `SecureStore.WHEN_UNLOCKED` (default): The data in the keychain item can be accessed only while the device is unlocked by the user.
       - `SecureStore.AFTER_FIRST_UNLOCK`: The data in the keychain item cannot be accessed after a restart until the device has been unlocked once by the user. This may be useful if you need to access the item when the phone is locked.
       - `SecureStore.ALWAYS`: The data in the keychain item can always be accessed regardless of whether the device is locked. This is the least secure option.
       - `SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY`: Similar to `WHEN_UNLOCKED`, except the entry is not migrated to a new device when restoring from a backup.

@@ -18,18 +18,24 @@
 
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class FBSDKContainerViewController;
 
+NS_SWIFT_NAME(ContainerViewControllerDelegate)
 @protocol FBSDKContainerViewControllerDelegate <NSObject>
 
 - (void)viewControllerDidDisappear:(FBSDKContainerViewController *)viewController animated:(BOOL)animated;
 
 @end
 
+NS_SWIFT_NAME(FBContainerViewController)
 @interface FBSDKContainerViewController : UIViewController
 
-@property (nonatomic, weak) id<FBSDKContainerViewControllerDelegate> delegate;
+@property (nonatomic, weak, nullable) id<FBSDKContainerViewControllerDelegate> delegate;
 
 - (void)displayChildController:(UIViewController *)childController;
 
 @end
+
+NS_ASSUME_NONNULL_END

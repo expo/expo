@@ -8,9 +8,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
@@ -61,7 +63,7 @@ import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
 
-public abstract class ReactNativeActivity extends FragmentActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
   public static class ExperienceDoneLoadingEvent {
   }
@@ -88,7 +90,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   protected boolean mIsCrashed = false;
-  protected boolean mShouldDestroyRNInstanceOnExit = true;
 
   protected String mManifestUrl;
   protected String mExperienceIdString;
@@ -279,11 +280,17 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, getCurrentFocus());
-        if (didDoubleTapR) {
+
+        // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
+        boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
+        if (didDoubleTapR && !shouldReloadFromManifest) {
           // The loading screen is hidden by versioned code when reloading JS so we can't show it
           // on older sdks.
           showLoadingScreen(mManifest);
           devSupportManager.call("handleReloadJS");
+          return true;
+        } else if (didDoubleTapR && shouldReloadFromManifest) {
+          devSupportManager.call("reloadExpoApp");
           return true;
         }
       }
@@ -328,7 +335,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("destroy");
     }
 
@@ -358,7 +365,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
     mJSBundlePath = jsBundlePath;
 
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+    // TODO: remove once SDK 35 is deprecated
+    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
       new AlertDialog.Builder(this)
           .setTitle("Please enable \"Permit drawing over other apps\"")
           .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
@@ -426,6 +434,10 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
+
+    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
+      builder.call("setCurrentActivity", this);
+    }
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {

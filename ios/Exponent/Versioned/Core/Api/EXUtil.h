@@ -6,23 +6,23 @@
 
 @interface EXUtil : EXScopedBridgeModule
 
-+ (NSString *)escapedResourceName:(NSString *)name;
-+ (void)performSynchronouslyOnMainThread:(void (^)(void))block;
-+ (NSString *)hexStringWithCGColor:(CGColorRef)color;
-+ (UIColor *)colorWithRGB:(unsigned int)rgbValue;
++ (nullable NSString *)escapedResourceName:(nullable NSString *)name;
++ (void)performSynchronouslyOnMainThread:(nonnull void (^)(void))block;
++ (nonnull NSString *)hexStringWithCGColor:(nullable CGColorRef)color;
++ (nonnull UIColor *)colorWithRGB:(unsigned int)rgbValue;
 
 /**
  *  Expects @"#ABCDEF"
  */
-+ (UIColor *)colorWithHexString:(NSString *)hexString;
++ (nullable UIColor *)colorWithHexString:(nullable NSString *)hexString;
 
-- (UIViewController *)currentViewController;
+- (nullable UIViewController *)currentViewController;
 
 @end
 
 @protocol EXUtilService
 
-- (UIViewController *)currentViewController;
+- (nullable UIViewController *)currentViewController;
 - (nullable NSDictionary *)launchOptions;
 
 @end

@@ -19,12 +19,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import static versioned.host.exp.exponent.modules.api.components.svg.RenderableViewManager.*;
 
 public class SvgPackage implements ReactPackage {
 
+    @Nonnull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    public List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext) {
         return Arrays.<ViewManager>asList(
                 new GroupViewManager(),
                 new PathViewManager(),
@@ -44,12 +47,17 @@ public class SvgPackage implements ReactPackage {
                 new RadialGradientManager(),
                 new PatternManager(),
                 new MaskManager(),
+                new MarkerManager(),
                 new SvgViewManager());
     }
 
+    @Nonnull
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Collections.<NativeModule>singletonList(new SvgViewModule(reactContext));
+    public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
+        return Arrays.<NativeModule>asList(
+                new SvgViewModule(reactContext),
+                new RNSVGRenderableManager(reactContext)
+        );
     }
 
     @SuppressWarnings("unused")

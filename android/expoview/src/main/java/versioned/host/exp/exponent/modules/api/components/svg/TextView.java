@@ -30,15 +30,16 @@ import static versioned.host.exp.exponent.modules.api.components.svg.TextPropert
 
 @SuppressLint("ViewConstructor")
 class TextView extends GroupView {
+    SVGLength mInlineSize = null;
     SVGLength mTextLength = null;
-    String mBaselineShift = null;
+    private String mBaselineShift = null;
     TextLengthAdjust mLengthAdjust = TextLengthAdjust.spacing;
-    AlignmentBaseline mAlignmentBaseline;
-    @Nullable ArrayList<SVGLength> mPositionX;
-    @Nullable ArrayList<SVGLength> mPositionY;
-    @Nullable ArrayList<SVGLength> mRotate;
-    @Nullable ArrayList<SVGLength> mDeltaX;
-    @Nullable ArrayList<SVGLength> mDeltaY;
+    private AlignmentBaseline mAlignmentBaseline;
+    @Nullable private ArrayList<SVGLength> mPositionX;
+    @Nullable private ArrayList<SVGLength> mPositionY;
+    @Nullable private ArrayList<SVGLength> mRotate;
+    @Nullable private ArrayList<SVGLength> mDeltaX;
+    @Nullable private ArrayList<SVGLength> mDeltaY;
     double cachedAdvance = Double.NaN;
 
     public TextView(ReactContext reactContext) {
@@ -57,6 +58,12 @@ class TextView extends GroupView {
     void clearCache() {
         cachedAdvance = Double.NaN;
         super.clearCache();
+    }
+
+    @ReactProp(name = "inlineSize")
+    public void setInlineSize(Dynamic inlineSize) {
+        mInlineSize = SVGLength.from(inlineSize);
+        invalidate();
     }
 
     @ReactProp(name = "textLength")
@@ -141,7 +148,9 @@ class TextView extends GroupView {
             setupGlyphContext(canvas);
             clip(canvas, paint);
             getGroupPath(canvas, paint);
+            pushGlyphContext();
             drawGroup(canvas, paint, opacity);
+            popGlyphContext();
         }
     }
 
