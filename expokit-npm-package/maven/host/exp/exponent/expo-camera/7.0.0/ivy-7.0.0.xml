@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-camera" revision="7.0.0" status="integration" publication="20191119134558"/>
+  <info organisation="host.exp.exponent" module="expo-camera" revision="7.0.0" status="integration" publication="20191120124355"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -111,7 +111,6 @@
     <dependency org="com.android.tools.build" name="aapt2" rev="3.5.1-5435860" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
-    <dependency org="com.google.android.gms" name="play-services-vision" rev="15.0.2" conf="api-&gt;default"/>
     <dependency org="androidx.exifinterface" name="exifinterface" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="com.google.android" name="cameraview" rev="1.0.0" conf="api-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-core" rev="5.0.0-rc.0" conf="implementation-&gt;default"/>
@@ -122,12 +121,11 @@
     <dependency org="org.unimodules" name="unimodules-image-loader-interface" rev="5.0.0-rc.0" conf="implementation-&gt;default"/>
     <dependency org="org.unimodules" name="unimodules-camera-interface" rev="4.0.0" conf="implementation-&gt;default"/>
     <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.5.1" conf="lintClassPath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-vision" rev="15.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-base" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-basement" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.exifinterface" name="exifinterface" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.annotation" name="annotation" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="com.google.android" name="cameraview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.legacy" name="legacy-support-v4" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.core" name="core" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.annotation" name="annotation" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.collection" name="collection" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.lifecycle" name="lifecycle-runtime" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.lifecycle" name="lifecycle-common" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
@@ -154,13 +152,6 @@
     <dependency org="androidx.asynclayoutinflater" name="asynclayoutinflater" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.cursoradapter" name="cursoradapter" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.fragment" name="fragment" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-tasks" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-vision-common" rev="15.0.2" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-clearcut" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-phenotype" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android.gms" name="play-services-flags" rev="15.0.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="androidx.exifinterface" name="exifinterface" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.google.android" name="cameraview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.appcompat" name="appcompat" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.vectordrawable" name="vectordrawable" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
     <dependency org="androidx.vectordrawable" name="vectordrawable-animated" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
