@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 
 import useDimensions from '../utils/useDimensions';
 import DoneText from './DoneText';
@@ -22,18 +22,16 @@ export default function Suites({ suites, ...props }) {
   };
 
   return (
-    <ScrollView
-      style={{
-        flex: 1,
-      }}
+    <FlatList
+      style={styles.list}
       contentContainerStyle={styles.contentContainerStyle}
       ref={scrollView}
-      onContentSizeChange={onContentSizeChange}>
-      {suites.map(r => (
-        <SuiteResult key={r.get('result').get('id')} r={r} depth={0} />
-      ))}
-      <DoneText {...props} />
-    </ScrollView>
+      data={suites}
+      keyExtractor={item => item.get('result').get('id')}
+      renderItem={({ item }) => <SuiteResult r={item} depth={0} />}
+      ListFooterComponent={() => <DoneText {...props} />}
+      onContentSizeChange={onContentSizeChange}
+    />
   );
 }
 
@@ -41,5 +39,8 @@ const styles = StyleSheet.create({
   contentContainerStyle: {
     padding: 5,
     paddingBottom: Constants.statusBarHeight,
+  },
+  list: {
+    flex: 1,
   },
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function Portal({ isVisible, children }) {
   if (!children) {
@@ -7,7 +7,9 @@ export default function Portal({ isVisible, children }) {
   }
 
   return (
-    <View style={[styles.container, { opacity: isVisible ? 0.5 : 0 }]} pointerEvents="none">
+    <View
+      style={[StyleSheet.absoluteFill, styles.container, { opacity: isVisible ? 0.5 : 0 }]}
+      pointerEvents="none">
       {children}
     </View>
   );
@@ -15,11 +17,6 @@ export default function Portal({ isVisible, children }) {
 
 const styles = StyleSheet.create({
   container: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgb(255, 255, 255)',
