@@ -15,7 +15,7 @@ The 3 primary iOS credentials, all of which are associated with your Apple Devel
 - Provisioning Profiles
 - Push Notification Keys
 
-Whether you let Expo handle all your credentials, or you handle them all yourself, it's smart to understand what each of these credentials mean, when and where they're used, and what happens when they expire or are revoked.
+Whether you let Expo handle all your credentials, or you handle them all yourself, it can be valuable to understand what each of these credentials mean, when and where they're used, and what happens when they expire or are revoked.
 
 ### Distribution Certificate
 
