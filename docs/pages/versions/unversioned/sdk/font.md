@@ -126,5 +126,6 @@ type FontSource = string | number | Asset | FontResource;
 | Code                | Description                                                       |
 | ------------------- | ----------------------------------------------------------------- |
 | ERR_FONT_API        | If the arguments passed to `loadAsync` are invalid.               |
-| ERR_FONT_SOURCE     | Cannot load null or undefined font source.                        |
+| ERR_FONT_SOURCE     | The provided resource was of an incorrect type.                   |
 | ERR_WEB_ENVIRONMENT | The browser's `document` element doesn't support injecting fonts. |
+| ERR_DOWNLOAD        | Failed to download the provided resource.                         |
