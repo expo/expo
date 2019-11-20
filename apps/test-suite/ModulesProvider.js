@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { View, AsyncStorage } from 'react-native';
+// import AsyncStorage from '@react-native-community/async-storage';
 
 import { getTestModulesAsync } from './TestUtils';
 import ModulesContext from './ModulesContext';
@@ -53,7 +53,6 @@ function getCanReset(modules) {
 
 export default function ModulesProvider({ children }) {
   const [modules, setModules] = React.useState({});
-  const [screenKey, setScreen] = React.useState('screen');
   const [isTesting, setTesting] = React.useState(false);
   const [isLoaded, setLoaded] = React.useState(false);
 
@@ -75,21 +74,22 @@ export default function ModulesProvider({ children }) {
       }
     }
 
-    setModules(_modules);
-    cacheModules(_modules);
+    if (Object.keys(_modules).length) {
+      setModules(_modules);
+      cacheModules(_modules);
+    }
   }, [link]);
 
   React.useEffect(() => {
     const modulesMap = {};
     const parseModulesAsync = async () => {
       const MODULES = await getTestModulesAsync();
-
       for (let module of MODULES) {
         if (!module) continue;
         if (!module.name || module.name === '') {
           throw new Error(
             'Module name is invalid. Expected a string with the name of the test to be exported: ' +
-              JSON.stringify(module) +
+              JSON.stringify(module, null, 2) +
               ' '
           );
         }
@@ -100,7 +100,9 @@ export default function ModulesProvider({ children }) {
           ...module,
         };
       }
+
       const rehydratedModulesMap = await rehydrateModules(modulesMap);
+
       setModules(rehydratedModulesMap);
       setLoaded(true);
     };
@@ -147,7 +149,6 @@ export default function ModulesProvider({ children }) {
         onTestsComplete: isComplete => setTesting(!isComplete),
         setIsTestActive,
         onToggleAll,
-        screenKey,
       }}>
       {children}
     </ModulesContext.Provider>

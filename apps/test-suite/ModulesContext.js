@@ -1,5 +1,5 @@
-import * as React from 'react';
+import { createContext } from 'react';
 
-const ModulesContext = React.createContext('modules');
+const ModulesContext = createContext('modules');
 
 export default ModulesContext;

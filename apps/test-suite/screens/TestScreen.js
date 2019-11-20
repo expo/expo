@@ -42,7 +42,7 @@ class TestRunner extends React.Component {
     return this._lastUri || this.props.initialUri;
   }
 
-  componentWillReceiveProps({ modules: nextModules = [] }) {
+  UNSAFE_componentWillReceiveProps({ modules: nextModules = [] }) {
     const { modules = [] } = this.props;
     if (modules !== nextModules) {
       this._runTests(this.validUri);

@@ -11,7 +11,7 @@ export default class SuiteResult extends React.Component {
 
     return (
       <SpecResult
-        key={key}
+        key={`spec-result-${key}`}
         status={status}
         description={description}
         failedExpectations={failedExpectations}
@@ -33,11 +33,11 @@ export default class SuiteResult extends React.Component {
     const containerStyle =
       depth === 0
         ? {
-            paddingLeft: 16,
-            paddingVertical: 16,
-            borderBottomWidth: 1,
-            borderColor: '#ddd',
-          }
+          paddingLeft: 16,
+          paddingVertical: 16,
+          borderBottomWidth: 1,
+          borderColor: '#ddd',
+        }
         : { paddingLeft: 16 };
 
     // console.log('Result', result);
