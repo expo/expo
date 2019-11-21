@@ -45,7 +45,7 @@ open it.
 
 ## What version of the app will my users get?
 
-Your users will get the most recent compatible release that was pushed to a [release channel](../distribution/release-channels/). Factors that affect compatibility:
+Your users will get the most recent compatible release that was pushed to a [release channel](../../distribution/release-channels/). Factors that affect compatibility:
 
 - sdkVersion (standalone apps are built to support only a single SDK version)
 - platform
