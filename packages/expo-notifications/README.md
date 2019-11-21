@@ -2,7 +2,7 @@
 
 ## Instalation 
 
-`expo-notifications` needs `react-native-unimodule` to work. You can read more about it [here](https://www.npmjs.com/package/react-native-unimodules). 
+`expo-notifications` requires `react-native-unimodule` to work. You can read more about it [here](https://www.npmjs.com/package/react-native-unimodules). 
 
 Add `expo-notifications` to your project:
 execute the following command in your project root directory:
@@ -15,59 +15,82 @@ execute the following command in your project root directory:
 `AndroidManifest.xml` is a place where you can configure `expo-notifications` module. For Instance, you can choose there
 if you want to use Expo's servers as a middleman or choose that you don't want to use push notifications at all.
 
-Configuration template:
+##### Case I: Use only local notifications 
+
+Almost always you don't need to change anything in your `AndroidManifest.xml` in this scenario.
+However, if you want to choose which Activity should be launched after notification is tapped you need to inform us about it by adding `intent-filter` to your Activity in `AndroidManifest.xml`.
+If you don't do so then starting Activity will be chosen.
+
+What the `intent-filter` should look like:
 
 ```xml
+...
+ <activity
+    android:name=".ActivityName"
+    android:label="@string/app_name"
+    android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+    android:windowSoftInputMode="adjustResize">
+    <!--  start -->
+    <intent-filter>
+        <action android:name="expo.modules.notifications.ACTION_RECEIVE_NOTIFICATION" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter> 
+    <!-- end -->
+</activity>
+...
+```
 
-<!-- expo-notifications START -->
+##### Case II: Use Firebase without Expo servers 
+
+Do the same configuration as in the case I but additionally add Firebase service declaration to your `AndroidManifest.xml`. Of course, you also need to go through [Firebase installation process](https://firebase.google.com/docs/android/setup).
+
+```xml
+<application
+    android:name=".MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme">
+    
     <!-- turn on push notifications START -->
         <service
-        android:name="expo.modules.notifications.push.fcm.ExpoFcmMessagingService"
-        android:exported="false">
+            android:name="expo.modules.notifications.push.fcm.ExpoFcmMessagingService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service> 
 
         <!-- choose if you want to use expo servers START -->
-        <meta-data android:name="appId" android:value="@username/slug" /> <!-- only with expo engine -->
-        <meta-data android:name="pushNotificationEngine" android:value="expo" /> <!-- expo|bare -->
+        <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@username/slug" /> 
         <!-- choose if you want to use expo servers END -->
-
     <!-- turn on push notifications END -->
-
-    <!-- tell us which activity should be launched when notification is tapped START -->
-        <meta-data android:name="notificationReceiver" android:value="com.example.MainActivity" />
-    <!-- tell us which activity should be launched when notification is tapped END -->
-<!-- expo-notifications END -->
-
+    
+</application>
 ```
-
-##### Case I: Use only local notifications 
-
-All you need to do is provide us which Activity should be launched after notification is tapped.
-In most cases, you should provide the starting activity.
-
-##### Case II: Use Firebase without Expo servers 
-
-Do the same configuration as in the case I but additionally copy service declaration from our template to your `AndroidManifest.xml`. Of course, you also need to go through (Firebase installation process)[https://firebase.google.com/docs/android/setup].
 
 ##### Case III: Use Expo servers 
 
 Do the same as in the case I and II but additionally: 
  1. create Expo account 
  2. create `app.json` file with `slug` property 
- 3. use Expo credential manager to upload your Firebase key (link)[https://docs.expo.io/versions/v35.0.0/workflow/expo-cli/] 
+ 3. use Expo credential manager to upload your Firebase key [link](https://docs.expo.io/versions/v35.0.0/workflow/expo-cli/) 
 
 Add the following snippet to your `AndroidManifest.xml`: 
 
 ```xml
-
-<!-- choose if you want to use expo servers START -->
-    <meta-data android:name="appId" android:value="@username/slug" /> <!-- only with expo engine -->
-    <meta-data android:name="pushNotificationEngine" android:value="expo" /> <!-- expo|bare -->
-<!-- choose if you want to use expo servers END -->
-
+<application
+    android:name=".MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme">
+    <!-- choose if you want to use expo servers START -->
+        <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@username/slug" /> 
+    <!-- choose if you want to use expo servers END -->
+</application>
 ```
 
 Remember to replace `username` and `slug` with your values.
