@@ -147,7 +147,6 @@ There are four versioning algorithms available in `expo-ota`, each described by 
 - **REVISION** Update if application is different than current
 - **NEWEST** Update only if server provides version published after current version
 - **VERSION** Update only if server provides application with newer `version` defined in `app.json`. Version are compared according to [**Semver 2.0**](https://semver.org/)
-- **ANY** Always update
 
 Updates happens only, if `sdkVersion` and `releaseChannel` of currently used and provided by server applications are equal.
 
