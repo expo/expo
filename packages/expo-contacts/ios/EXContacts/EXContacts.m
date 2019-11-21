@@ -431,7 +431,7 @@ UM_EXPORT_METHOD_AS(getContainersAsync,
     if(!contactStore) return;
     NSError *error;
     
-    NSPredicate *predicate;
+    NSPredicate *predicate = nil;
     if (options[EXContactsOptionContactId]) {
         predicate = [CNContainer predicateForContainerOfContactWithIdentifier:options[EXContactsOptionContactId]];
     } else if (options[EXContactsOptionGroupId]) {

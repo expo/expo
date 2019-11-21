@@ -392,7 +392,7 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 } // Android
 
 export async function getRemindersAsync(
-  calendarIds: Array<string | null>[],
+  calendarIds: Array<string | null>,
   status: string | null,
   startDate: Date,
   endDate: Date
