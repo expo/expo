@@ -33,7 +33,7 @@ public class MainApplication extends Application implements ReactApplication {
         List<Package> basePackages = new BasePackageList().getPackageList();
         List<Package> packages = new ArrayList<>(basePackages);
         packages.add(new OtaPackage());
-        return  new ReactModuleRegistryProvider(packages, Arrays.asList());
+        return new ReactModuleRegistryProvider(packages, Arrays.asList());
     }
 
     private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -53,7 +53,11 @@ public class MainApplication extends Application implements ReactApplication {
         @Nullable
         @Override
         protected String getJSBundleFile() {
-            return expoOTA.getBundlePath();
+            if (!BuildConfig.DEBUG) {
+                return expoOTA.getBundlePath();
+            } else {
+                return null;
+            }
         }
 
         @Override
@@ -72,7 +76,9 @@ public class MainApplication extends Application implements ReactApplication {
         super.onCreate();
         SoLoader.init(this, /* native exopackage */ false);
         Stetho.initializeWithDefaults(this);
-        expoOTA = createExpoOTA();
+        if (!BuildConfig.DEBUG) {
+            expoOTA = createExpoOTA();
+        }
     }
 
     private ExpoOTA createExpoOTA() {

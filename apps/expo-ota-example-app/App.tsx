@@ -17,7 +17,7 @@ export default function App() {
         Alert.alert('Result: ', `${JSON.stringify(result)}`);
       })
       .catch(e => {
-        Alert.alert('Error!', `${JSON.stringify(e)}`);
+        Alert.alert('Error!', `${JSON.stringify(e.message)}`);
       });
   };
 
@@ -27,7 +27,7 @@ export default function App() {
         Alert.alert('Result: ', `${JSON.stringify(result)}`);
       })
       .catch(e => {
-        Alert.alert('Error!', `${JSON.stringify(e)}`);
+        Alert.alert('Error!', `${JSON.stringify(e.message)}`);
       });
   };
 
@@ -37,20 +37,28 @@ export default function App() {
         Alert.alert('Result: ', `${JSON.stringify(result)}`);
       })
       .catch(error => {
-        Alert.alert('Error!: ', `${JSON.stringify(error)}`);
+        Alert.alert('Error!: ', `${JSON.stringify(error.message)}`);
       });
   };
 
   const clearCache = () => {
-    OTA.clearUpdateCacheAsync().then(result => {
-      Alert.alert('Result: ', `${JSON.stringify(result)}`);
-    });
+    OTA.clearUpdateCacheAsync()
+      .then(result => {
+        Alert.alert('Result: ', `${JSON.stringify(result)}`);
+      })
+      .catch(e => {
+        Alert.alert('Error!', `${JSON.stringify(e.message)}`);
+      });
   };
 
   const manifest = () => {
-    OTA.readCurrentManifestAsync().then(result => {
-      Alert.alert('Result: ', `${JSON.stringify(result)}`);
-    });
+    OTA.readCurrentManifestAsync()
+      .then(result => {
+        Alert.alert('Result: ', `${JSON.stringify(result)}`);
+      })
+      .catch(e => {
+        Alert.alert('Error!', `${JSON.stringify(e.message)}`);
+      });
   };
 
   return (
