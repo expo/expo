@@ -1,16 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import {
-  Alert,
-  Button,
-  FlatList,
-  PixelRatio,
-  Platform,
-  Linking,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Button, FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-navigation';
 
 import PlatformTouchable from '../components/PlatformTouchable';
@@ -29,77 +19,8 @@ function CheckListItem({ onPress, isSelected, title }) {
   );
 }
 
-SelectionList.navigationOptions = {
-  title: 'Test Suite',
-};
-
 export default function SelectionList({ navigation }) {
   const { modules, setIsTestActive, onToggleAll } = React.useContext(ModulesContext);
-
-  function checkLinking(incomingTests) {
-    if (incomingTests) {
-      const testNames = incomingTests.split(',').map(v => v.trim());
-      const selected = modules.filter(m => testNames.includes(m.name));
-      if (!selected.length) {
-        console.log('[TEST_SUITE]', 'No selected modules', testNames);
-      }
-
-      // TODO: Bacon: update context
-      const parsedModules = modules.filter(m => testNames.includes(m.name));
-
-      navigation.navigate('RunTests');
-    }
-  }
-
-  const _handleOpenURL = ({ url }) => {
-    setTimeout(() => {
-      if (url && url.includes('select/')) {
-        checkLinking(url.split('/').pop());
-      }
-    }, 100);
-  };
-  React.useEffect(() => {
-    if (global.ErrorUtils) {
-      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
-
-      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
-        // Prevent optionalRequire from failing
-        if (
-          isFatal &&
-          (error.message.includes('Native module cannot be null') ||
-            error.message.includes(
-              `from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: `
-            ))
-        ) {
-          console.log('Caught require error');
-        } else {
-          originalErrorHandler(error, isFatal);
-        }
-      });
-    }
-    // this.modules = getTestModules();
-    // this.state = {
-    //   selected: new Set(),
-    // };
-
-    Linking.addEventListener('url', _handleOpenURL);
-
-    Linking.getInitialURL()
-      .then(url => {
-        _handleOpenURL({ url });
-        // TODO: Use Expo Linking library once parseURL is implemented for web
-        if (url && url.includes('/all')) {
-          // Test all available modules
-          onToggleAll(true);
-          navigation.navigate('RunTests');
-        }
-      })
-      .catch(err => console.error('Failed to load initial URL', err));
-
-    return () => {
-      Linking.removeEventListener('url', _handleOpenURL);
-    };
-  }, []);
 
   const selected = modules.filter(({ isActive }) => isActive);
   const allSelected = selected.length === modules.length;
@@ -126,7 +47,9 @@ export default function SelectionList({ navigation }) {
             title="Run Tests"
             onPress={() => {
               if (selected.length) {
-                navigation.navigate('RunTests');
+                navigation.navigate('run', {
+                  tests: encodeURI(selected.map(({ name }) => name).join(',')).toLowerCase(),
+                });
               } else {
                 Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
               }
@@ -169,7 +92,3 @@ const styles = StyleSheet.create({
     marginRight: Platform.OS === 'android' ? 10 : 0,
   },
 });
-
-SelectionList.navigationOptions = {
-  title: 'Test Suite',
-};

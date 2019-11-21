@@ -1,45 +1,13 @@
 import { createBrowserApp } from '@react-navigation/web';
-import * as React from 'react';
 import { Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
-import ModulesProvider from './ModulesProvider';
-import Select from './screens/SelectScreen';
-import RunTests from './screens/TestScreen';
-
-const AppNavigator = createStackNavigator(
-  {
-    select: Select,
-    RunTests,
-  },
-  {
-    headerMode: 'screen',
-    defaultNavigationOptions: {
-      headerStyle: {
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'rgba(0,0,0,0.1)',
-        boxShadow: undefined,
-      },
-    },
-  }
-);
-
-function CustomNavigator(props) {
-  return (
-    <SafeAreaProvider>
-      <ModulesProvider>
-        <AppNavigator {...props} />
-      </ModulesProvider>
-    </SafeAreaProvider>
-  );
-}
-CustomNavigator.router = AppNavigator.router;
+import AppNavigator from './AppNavigator';
 
 const createApp = Platform.select({
-  web: input => createBrowserApp(input, { history: 'hash' }),
+  web: input =>
+    createBrowserApp(createSwitchNavigator({ 'test-suite': input }), { history: 'hash' }),
   default: input => createAppContainer(input),
 });
 
-export default createApp(CustomNavigator);
+export default createApp(AppNavigator);

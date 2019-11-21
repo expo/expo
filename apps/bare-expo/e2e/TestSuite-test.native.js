@@ -32,7 +32,7 @@ describe('test-suite', () => {
       async () => {
         await device.launchApp({
           newInstance: true,
-          url: `bareexpo://test-suite/select/${testName}`,
+          url: `bareexpo://test-suite/run/${testName}`,
         });
         await sleepAsync(100);
         await detoxExpect(element(by.id('test_suite_container'))).toBeVisible();

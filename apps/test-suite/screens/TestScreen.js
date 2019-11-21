@@ -125,12 +125,14 @@ TestRunner.defaultProps = {
 function parseSelectedQueryString(modules, url = '') {
   const afterSelect = url
     .toLowerCase()
-    .split('select/')
+    .split('run/')
     .pop();
   if (!afterSelect) return [];
 
   const testNames = afterSelect.split('%2c').map(v => v.trim());
-  const selected = modules.filter(m => testNames.includes(m.name.toLowerCase()));
+  const selected = testNames.includes('all')
+    ? modules
+    : modules.filter(m => testNames.includes(m.name.toLowerCase()));
   if (!selected.length) {
     console.log('[TEST_SUITE]', 'No selected modules', testNames);
   }
@@ -140,8 +142,10 @@ function parseSelectedQueryString(modules, url = '') {
 export default function ContextTestScreen(props) {
   const { modules, onTestsComplete } = React.useContext(ModulesContext);
 
-  const link = useLinking();
+  const link = props.navigation.getParam('tests');
+  // const link = useLinking();
 
+  console.log('LINK: ', link);
   if (link === null) {
     return null;
   }
@@ -154,7 +158,3 @@ export default function ContextTestScreen(props) {
   console.log('active: ', link, selectedModules);
   return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={selectedModules} />;
 }
-
-ContextTestScreen.navigationOptions = {
-  title: 'Test Runner',
-};
