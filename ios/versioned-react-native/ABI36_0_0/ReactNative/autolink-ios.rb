@@ -20,7 +20,6 @@ def use_react_native_ABI36_0_0! (options={})
   pod 'ABI36_0_0React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-RCTBlob', :path => "#{prefix}/Libraries/Blob", :project_name => 'ABI36_0_0'
-  pod 'ABI36_0_0React-RCTCameraRoll', :path => "#{prefix}/Libraries/CameraRoll", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-RCTImage', :path => "#{prefix}/Libraries/Image", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-RCTLinking', :path => "#{prefix}/Libraries/LinkingIOS", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-RCTNetwork', :path => "#{prefix}/Libraries/Network", :project_name => 'ABI36_0_0'
@@ -28,6 +27,9 @@ def use_react_native_ABI36_0_0! (options={})
   pod 'ABI36_0_0React-RCTText', :path => "#{prefix}/Libraries/Text", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-RCTVibration', :path => "#{prefix}/Libraries/Vibration", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-Core/RCTWebSocket', :path => "#{prefix}/", :project_name => 'ABI36_0_0'
+
+  # Add RCTCameraRoll here as a temporary workaround for missing request handler for `assets-library://` media urls.
+  pod 'ABI36_0_0React-RCTCameraRoll', :path => "#{prefix}/Libraries/CameraRoll", :project_name => 'ABI36_0_0'
 
   unless production
     pod 'ABI36_0_0React-Core/DevSupport', :path => "#{prefix}/", :project_name => 'ABI36_0_0'
