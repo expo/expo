@@ -52,7 +52,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow notifications example to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow notifications example to access your device's accelerometer</string>
+	<string>Allow notifications example to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give notifications example periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -73,9 +73,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>appId</key>
+	<key>EXNotificationsAppId</key>
 	<string>@szymon20000/wfjwoghjwiljhgrowhepghwougeogheourg</string>
-	<key>engineType</key>
-	<string>expo</string>
 </dict>
 </plist>
