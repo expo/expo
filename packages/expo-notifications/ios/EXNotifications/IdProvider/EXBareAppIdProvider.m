@@ -7,7 +7,7 @@
 UM_REGISTER_MODULE()
 
 - (NSString *)getAppId {
-  NSString *appIdFromInfoPList = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"appId"];
+  NSString *appIdFromInfoPList = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"EXNotificationsAppId"];
   if (appIdFromInfoPList != nil) {
     return appIdFromInfoPList;
   }
