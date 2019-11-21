@@ -42,7 +42,6 @@
 @synthesize manifestValidator = _manifestValidator;
 @synthesize checkForUpdatesAutomatically = _checkForUpdatesAutomatically;
 
-
 - (id)initWithEmbeddedManifest
 {
   NSDictionary *embeddedManifest = [[EXEmbeddedManifestAndBundle new] readManifest];

@@ -22,7 +22,6 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         updater.updateEvents = eventEmitter
     }
 
-    @Suppress("unused")
     @ExpoMethod
     fun checkForUpdateAsync(promise: Promise) {
         updater.downloadAndVerifyManifest(manifestHandler(promise)) { e -> promise.reject("E_FETCH_MANIFEST_FAILED", e) }
@@ -37,7 +36,6 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         }
     }
 
-    @Suppress("unused")
     @ExpoMethod
     fun reload(promise: Promise) {
         try {
@@ -55,7 +53,6 @@ class OtaModule(context: Context, private val persistence: ExpoOTAPersistence, p
         promise.resolve(true)
     }
 
-    @Suppress("unused")
     @ExpoMethod
     fun fetchUpdateAsync(promise: Promise) {
         if (persistence.config != null) {

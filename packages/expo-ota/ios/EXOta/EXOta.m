@@ -29,7 +29,7 @@ EXOtaPersistance *persistance;
 
 -(id)initWithId:(NSString *)appId withConfig:(id<EXOtaConfig>)config;
 {
-  persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId];
+  persistance = [[EXOtaPersistanceFactory sharedFactory] persistanceForId:appId createIfNeeded:YES];
   persistance.config = config;
   persistance.appId = appId;
   updater =[[EXOtaUpdaterFactory sharedFactory] updaterForId:appId initWithConfig:config withPersistance:persistance];

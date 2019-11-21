@@ -99,19 +99,21 @@ object ExpoOTAPersistenceFactory {
     private val persistenceMap = HashMap<String, ExpoOTAPersistence>()
 
     @Synchronized
-    fun persistence(context: Context, id: String?): ExpoOTAPersistence {
+    fun persistence(context: Context, id: String?, createIfNeeded: Boolean): ExpoOTAPersistence? {
         return if(id == null) {
             if(persistenceMap.size == 1) {
                 persistenceMap[persistenceMap.keys.first()]!!
             } else {
-                throw IllegalStateException("Unable to determine which persistence to use! If you have more than one ExpoOTA, make sure you provide native packages manually with ids!")
+                return null
             }
         } else if (persistenceMap.containsKey(id)) {
             persistenceMap[id]!!
-        } else {
+        } else if(createIfNeeded) {
             val persistence = ExpoOTAPersistence(SharedPreferencesKeyValueStorage(context, id))
             persistenceMap[id] = persistence
             persistence
+        } else {
+            null
         }
     }
 

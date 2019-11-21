@@ -26,26 +26,32 @@ class ExpoOTA private constructor(context: Context, config: ExpoOTAConfig, priva
         }
     }
 
-    private val persistence = ExpoOTAPersistenceFactory.persistence(context, id)
-    private val updater = OtaUpdater.createUpdater(context, persistence, config, id)
+    private val persistence = ExpoOTAPersistenceFactory.persistence(context, id, true)
+    private val updater = if (persistence != null) OtaUpdater.createUpdater(context, persistence, config, id) else null
 
     init {
-        persistence.config = config
-        persistence.id = id
+        if(persistence != null) {
+            persistence.config = config
+            persistence.id = id
+        }
     }
 
-    var bundlePath = if(loadFromBundler) null else persistence.bundlePath
+    var bundlePath = if(loadFromBundler || persistence == null) null else persistence.bundlePath
 
     fun start() {
-        updater.removeOutdatedBundle()
-        if (!loadFromBundler) {
-            updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
+        if(updater != null) {
+            updater.removeOutdatedBundle()
+            if (!loadFromBundler) {
+                updater.checkAndDownloadUpdate(this::saveManifestAndBundle,{}) { Log.e("ExpoOTA", "Error while updating: ", it) }
+            }
         }
     }
 
     private fun saveManifestAndBundle(manifest: JSONObject, path: String) {
-        updater.saveDownloadedManifestAndBundlePath(manifest, path)
-        updater.markDownloadedCurrentAndCurrentOutdated()
+        if(updater != null) {
+            updater.saveDownloadedManifestAndBundlePath(manifest, path)
+            updater.markDownloadedCurrentAndCurrentOutdated()
+        }
     }
 
 }

@@ -15,11 +15,16 @@
 {
   if(embeddedManifest == nil)
   {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"shell-app-manifest" ofType:@"json"];
+    NSString *path = [self readManifestPath];
     NSData *data = [NSData dataWithContentsOfFile:path];
     embeddedManifest = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
   }
   return embeddedManifest;
+}
+
+-(NSString *) readManifestPath
+{
+  return [[NSBundle mainBundle] pathForResource:@"shell-app-manifest" ofType:@"json"];
 }
 
 -(NSString *) readBundlePath
