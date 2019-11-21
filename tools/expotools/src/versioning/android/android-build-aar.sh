@@ -117,4 +117,10 @@ sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ \/\/ BEGIN_SDK_$MAJOR_ABI_V
 BACK_BUTTON_HANDLER_CLASS='com.facebook.react.modules.core.DefaultHardwareBackBtnHandler'
 find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/ADD_NEW_SDKS_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ $ABI_VERSION\.$BACK_BUTTON_HANDLER_CLASS,$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_SDKS_HERE/"
 
+# Update classes that implement PermissionAwareActivity
+PERMISSION_AWARE_ACTIVITY_CLASS='com.facebook.react.modules.core.PermissionAwareActivity'
+PERMISSION_LISTENER_CLASS='com.facebook.react.modules.core.PermissionListener'
+find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/ADD_NEW_SDKS_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ $ABI_VERSION\.$PERMISSION_AWARE_ACTIVITY_CLASS,$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_SDKS_HERE/"
+find expoview/src/main/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION/PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ @Override$NEWLINE\ \ \ \ public\ void\ requestPermissions(String\[\]\ strings\,\ int\ i\,\ $ABI_VERSION\.$PERMISSION_LISTENER_CLASS\ permissionListener)\ {$NEWLINE\ \ \ \ \ \ super\.requestPermissions(strings\,\ i\,\ permissionListener::onRequestPermissionsResult);$NEWLINE\ \ \ \ }$NEWLINE\ \ \ \ \/\/ END_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION/"
+
 popd

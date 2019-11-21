@@ -52,6 +52,17 @@ async function removeVersionReferencesFromFileAsync(sdkMajorVersion: string, fil
   );
 }
 
+async function removeVersionedPermissionAwareActivityImplementationFromFileAsync(sdkMajorVersion: string, filePath: string) {
+  console.log(
+    `Removing code surrounded by ${chalk.gray(`// PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_${sdkMajorVersion}`)} and ${chalk.gray(`// END_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_${sdkMajorVersion}`)} from ${chalk.magenta(path.relative(EXPO_DIR, filePath))}...`
+  );
+  await transformFileAsync(
+    filePath,
+    new RegExp(`\\s*//\\s*PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_${sdkMajorVersion}(_\d+)*\\n.*?//\\s*END_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_${sdkMajorVersion}(_\d+)*`, 'gs'),
+    '',
+  );
+}
+
 async function removeVersionedExpoviewAsync(versionedExpoviewAbiPath: string) {
   console.log(`Removing versioned expoview at ${chalk.magenta(path.relative(EXPO_DIR, versionedExpoviewAbiPath))}...`);
   await fs.remove(versionedExpoviewAbiPath);
@@ -164,6 +175,9 @@ export async function removeVersionAsync(version: string) {
   await removeVersionReferencesFromFileAsync(sdkMajorVersion, rnActivityPath);
   await removeVersionReferencesFromFileAsync(sdkMajorVersion, expoviewConstantsPath);
 
+  // Remove code surrounded by PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_* andD_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_SDK_*
+  await removeVersionedPermissionAwareActivityImplementationFromFileAsync(sdkMajorVersion, rnActivityPath);
+  
   // Remove test-suite tests from the app.
   await removeTestSuiteTestsAsync(version, testSuiteTestsPath);
 
