@@ -15,7 +15,6 @@ import com.google.android.gms.ads.AdView;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class AdMobBannerView extends FrameLayout {
-  private String testDeviceID = null;
 
   private EventEmitter mEventEmitter;
   private String mSizeString;
@@ -132,21 +131,14 @@ public class AdMobBannerView extends FrameLayout {
     }
   }
 
-  public void setPropTestDeviceID(final String testDeviceID) {
-    this.testDeviceID = testDeviceID;
-  }
-
   private void loadAd(final AdView adView) {
     if (adView.getAdSize() != null && adView.getAdUnitId() != null && mAdditionalRequestParams != null) {
       AdRequest.Builder adRequestBuilder =
           new AdRequest.Builder()
               .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams);
+      String testDeviceID = AdMobModule.getTestDeviceID();
       if (testDeviceID != null) {
-        if (testDeviceID.equals("EMULATOR")) {
-          adRequestBuilder = adRequestBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
-        } else {
-          adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
-        }
+        adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
       }
       AdRequest adRequest = adRequestBuilder.build();
       adView.loadAd(adRequest);

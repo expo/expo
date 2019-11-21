@@ -34,9 +34,7 @@ import {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-const AppleAuthenticationButton: React.FunctionComponent<
-  AppleAuthenticationButtonProps
-> = props => {
+const AppleAuthenticationButton: React.FunctionComponent<AppleAuthenticationButtonProps> = props => {
   if (!ExpoAppleAuthenticationButtonSignInWhite) {
     if (__DEV__) {
       console.warn("'AppleAuthenticationButton' is not available.");

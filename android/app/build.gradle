@@ -116,17 +116,17 @@ dependencies {
   implementation 'androidx.multidex:multidex:2.0.0'
 
   // Our dependencies
-  implementation 'androidx.appcompat:appcompat:1.0.0'
+  implementation 'androidx.appcompat:appcompat:1.1.0'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'androidx.appcompat:appcompat:1.0.0'
+  implementation 'androidx.appcompat:appcompat:1.1.0'
   implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
   implementation('com.facebook.android:audience-network-sdk:5.1.1') {
     exclude module: 'play-services-ads'
   }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:9.0.0'
+  implementation 'com.jakewharton:butterknife:10.2.0'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
@@ -181,7 +181,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:35.0.0@aar') {
+  implementation('host.exp.exponent:expoview:36.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -199,6 +199,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_36
+  implementation(project(':expoview-abi36_0_0'))
+  // END_SDK_36
+
+
   // BEGIN_SDK_35
   implementation(project(':expoview-abi35_0_0'))
   // END_SDK_35
@@ -212,8 +217,7 @@ dependencies {
   // END_SDK_33
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
-  // Be careful when upgrading! Upgrading might break experience scoping. See Analytics.resetAmplitudeDatabaseHelper
-  implementation 'com.amplitude:android-sdk:2.9.2'
+  implementation 'com.amplitude:android-sdk:2.23.2'
 
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE

@@ -9,7 +9,7 @@
 
 #import <ReactABI35_0_0/ABI35_0_0RCTBridgeDelegate.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class JSExecutorFactory;
@@ -28,6 +28,6 @@ class JSExecutorFactory;
  * If not implemented, or returns an empty pointer, JSIExecutorFactory
  * will be used with a JSCRuntime.
  */
-- (std::unique_ptr<facebook::ReactABI35_0_0::JSExecutorFactory>)jsExecutorFactoryForBridge:(ABI35_0_0RCTBridge *)bridge;
+- (std::unique_ptr<ABI35_0_0facebook::ReactABI35_0_0::JSExecutorFactory>)jsExecutorFactoryForBridge:(ABI35_0_0RCTBridge *)bridge;
 
 @end

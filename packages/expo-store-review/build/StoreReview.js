@@ -1,13 +1,22 @@
 import Constants from 'expo-constants';
 import { Linking, Platform } from 'react-native';
+import { deprecate } from '@unimodules/core';
 import StoreReview from './ExpoStoreReview';
 /*
  * Platform must be iOS
  * iOS 10.3 or greater
  * `SKStoreReviewController` class is available
  */
+export async function isAvailableAsync() {
+    return StoreReview.isAvailableAsync();
+}
+/*
+ * Deprecated
+ */
 export function isSupported() {
-    return StoreReview && StoreReview.isSupported;
+    deprecate('expo-store-review', 'StoreReview.isSupported', {
+        replacement: 'StoreReview.isAvailableAsync',
+    });
 }
 /*
  * Use the iOS `SKStoreReviewController` API to prompt a user rating without leaving the app.
@@ -54,7 +63,7 @@ export function storeUrl() {
 /*
  * A flag to detect if this module can do anything
  */
-export function hasAction() {
-    return !!storeUrl() || isSupported();
+export async function hasAction() {
+    return !!storeUrl() || (await isAvailableAsync());
 }
 //# sourceMappingURL=StoreReview.js.map

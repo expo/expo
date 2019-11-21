@@ -17,9 +17,9 @@
 #include <sstream>
 #include <stdexcept>
 
-using namespace facebook::jsi;
+using namespace ABI35_0_0facebook::jsi;
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
@@ -171,8 +171,8 @@ void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
             2,
             [this](
                 Runtime& rt,
-                const facebook::jsi::Value&,
-                const facebook::jsi::Value* args,
+                const ABI35_0_0facebook::jsi::Value&,
+                const ABI35_0_0facebook::jsi::Value* args,
                 size_t count) { return nativeRequire(args, count); }));
   }
   bundleRegistry_ = std::move(r);
@@ -361,7 +361,7 @@ Value JSIExecutor::nativeRequire(const Value* args, size_t count) {
 
   runtime_->evaluateJavaScript(
       std::make_unique<StringBuffer>(module.code), module.name);
-  return facebook::jsi::Value();
+  return ABI35_0_0facebook::jsi::Value();
 }
 
 Value JSIExecutor::nativeCallSyncHook(const Value* args, size_t count) {
@@ -387,4 +387,4 @@ Value JSIExecutor::nativeCallSyncHook(const Value* args, size_t count) {
 }
 
 } // namespace ReactABI35_0_0
-} // namespace facebook
+} // namespace ABI35_0_0facebook

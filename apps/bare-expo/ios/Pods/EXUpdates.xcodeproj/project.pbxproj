@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		37E614D46C8038C14E1E4D0EE80EEAF6 /* EXUpdates-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F885E0AA772D6E4E8B9D22A3D4F6E2 /* EXUpdates-dummy.m */; };
 		5F40F195BD789973CB64C6615C2CCB89 /* EXUpdatesModule.h in Headers */ = {isa = PBXBuildFile; fileRef = C152F5AC9F32F60E1E36DA7175FF18D2 /* EXUpdatesModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		605AC3FFD2C368D53E8A2DE0A7C09B47 /* EXUpdatesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F19E4CD2D7D65963B5FAFCC5F861BEAD /* EXUpdatesModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		BB5848947380236982AEE3B2CFE42B4C /* EXUpdates-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 46F885E0AA772D6E4E8B9D22A3D4F6E2 /* EXUpdates-dummy.m */; };
+		8B214DC717E501E677412C01DAEE525B /* EXUpdatesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F19E4CD2D7D65963B5FAFCC5F861BEAD /* EXUpdatesModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = EC3BF34B6B25198D7DA0E19459960577 /* Build configuration list for PBXNativeTarget "EXUpdates" */;
 			buildPhases = (
 				DCFE75C8C3C5D547A4C01856E9CD2176 /* Headers */,
-				F4E57022328F3484B1E28921B49B3E06 /* Sources */,
+				F5BCEFFE4D3323355897182861F9384C /* Sources */,
 				A84B2740297F48F942150104216F52C0 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F4E57022328F3484B1E28921B49B3E06 /* Sources */ = {
+		F5BCEFFE4D3323355897182861F9384C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB5848947380236982AEE3B2CFE42B4C /* EXUpdates-dummy.m in Sources */,
-				605AC3FFD2C368D53E8A2DE0A7C09B47 /* EXUpdatesModule.m in Sources */,
+				37E614D46C8038C14E1E4D0EE80EEAF6 /* EXUpdates-dummy.m in Sources */,
+				8B214DC717E501E677412C01DAEE525B /* EXUpdatesModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

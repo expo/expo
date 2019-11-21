@@ -14,8 +14,8 @@
 #include "ABI34_0_0SystraceSection.h"
 #include "ABI34_0_0MessageQueueThread.h"
 
-using facebook::xplat::module::CxxModule;
-namespace facebook {
+using ABI34_0_0facebook::xplat::module::CxxModule;
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 std::function<void(folly::dynamic)> makeCallback(
@@ -142,7 +142,7 @@ void CxxNativeModule::invoke(unsigned int ReactABI34_0_0MethodId, folly::dynamic
     SystraceSection s(method.name.c_str());
     try {
       method.func(std::move(params), first, second);
-    } catch (const facebook::xplat::JsArgumentException& ex) {
+    } catch (const ABI34_0_0facebook::xplat::JsArgumentException& ex) {
       throw;
     } catch (std::exception& e) {
       LOG(ERROR) << "std::exception. Method call " << method.name.c_str() << " failed: " << e.what();

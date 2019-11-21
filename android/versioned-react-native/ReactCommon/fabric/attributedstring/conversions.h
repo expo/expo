@@ -198,7 +198,7 @@ inline std::string toString(const FontVariant &fontVariant) {
 
 inline void fromRawValue(const RawValue &value, TextAlignment &result) {
   auto string = (std::string)value;
-  if (string == "natural") {
+  if (string == "auto") {
     result = TextAlignment::Natural;
     return;
   }
@@ -214,7 +214,7 @@ inline void fromRawValue(const RawValue &value, TextAlignment &result) {
     result = TextAlignment::Right;
     return;
   }
-  if (string == "justified") {
+  if (string == "justify") {
     result = TextAlignment::Justified;
     return;
   }
@@ -276,11 +276,15 @@ inline void fromRawValue(
     result = TextDecorationLineType::Underline;
     return;
   }
-  if (string == "strikethrough") {
+
+  // TODO: remove "line-through" after deprecation
+  if (string == "strikethrough" || string == "line-through") {
     result = TextDecorationLineType::Strikethrough;
     return;
   }
-  if (string == "underline-strikethrough") {
+
+  // TODO: remove "underline line-through" after "line-through" deprecation
+  if (string == "underline-strikethrough" || string == "underline line-through") {
     result = TextDecorationLineType::UnderlineStrikethrough;
     return;
   }

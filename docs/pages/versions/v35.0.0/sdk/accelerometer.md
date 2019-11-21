@@ -1,6 +1,10 @@
 ---
 title: Accelerometer
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-sensors"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
+
 
 Access the device accelerometer sensor(s) to respond to changes in acceleration in 3d space. Note that the accelerometer hardware is [not supported in the iOS Simulator](../../workflow/ios-simulator/#limitations).
 
@@ -8,61 +12,16 @@ Access the device accelerometer sensor(s) to respond to changes in acceleration 
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
-## API
+## Usage
 
-```js
-import { Accelerometer } from 'expo-sensors';
-```
-
-### `Accelerometer.isAvailableAsync()`
-
-> You should always check the sensor availability before attempting to use it.
-
-Returns whether the accelerometer is enabled on the device.
-
-On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
-
-#### Returns
-
-- A promise that resolves to a `boolean` denoting the availability of the sensor.
-
-### `Accelerometer.addListener(listener)`
-
-Subscribe for updates to the accelerometer.
-
-#### Arguments
-
-- **listener (_function_)** -- A callback that is invoked when an
-  accelerometer update is available. When invoked, the listener is
-  provided a single argument that is an object containing keys x, y,
-  z. Each of these keys represents the acceleration along that particular axis in Gs (A G is a unit of gravitational force equal to that exerted by the earth’s gravitational field (9.81 m s<sup>-2</sup>).
-
-#### Returns
-
-- A subscription that you can call `remove()` on when you
-  would like to unsubscribe the listener.
-
-### `Accelerometer.removeAllListeners()`
-
-Remove all listeners.
-
-### `Accelerometer.setUpdateInterval(intervalMs)`
-
-Subscribe for updates to the accelerometer.
-
-#### Arguments
-
-- **intervalMs (_number_)** Desired interval in milliseconds between
-  accelerometer updates.
-
-## Example: basic subscription
+<SnackInline label="Basic Accelerometer usage" templateId="accelerometer" dependencies={["expo-sensors"]}>
 
 ```javascript
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 
-export default class AccelerometerSensor extends React.Component {
+export default class AccelerometerSensor extends React {
   state = {
     accelerometerData: {},
   };
@@ -160,6 +119,52 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 });
+``` 
+</SnackInline>
+
+## API
+
+```js
+import { Accelerometer } from 'expo-sensors';
 ```
 
-#
+### `Accelerometer.isAvailableAsync()`
+
+> You should always check the sensor availability before attempting to use it.
+
+Returns whether the accelerometer is enabled on the device.
+
+On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
+
+#### Returns
+
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
+
+### `Accelerometer.addListener(listener)`
+
+Subscribe for updates to the accelerometer.
+
+#### Arguments
+
+- **listener (_function_)** -- A callback that is invoked when an
+  accelerometer update is available. When invoked, the listener is
+  provided a single argument that is an object containing keys x, y,
+  z. Each of these keys represents the acceleration along that particular axis in Gs (A G is a unit of gravitational force equal to that exerted by the earth’s gravitational field (9.81 m s<sup>-2</sup>).
+
+#### Returns
+
+- A subscription that you can call `remove()` on when you
+  would like to unsubscribe the listener.
+
+### `Accelerometer.removeAllListeners()`
+
+Remove all listeners.
+
+### `Accelerometer.setUpdateInterval(intervalMs)`
+
+Subscribe for updates to the accelerometer.
+
+#### Arguments
+
+- **intervalMs (_number_)** Desired interval in milliseconds between
+  accelerometer updates.

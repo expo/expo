@@ -52,8 +52,8 @@ export default class ProjectTools extends React.Component {
     AppState.addEventListener('change', this._maybeResumePollingFromAppState);
   }
 
-  componentWillReceiveProps(nextProps: Props) {
-    this._maybeUpdatePollingState(nextProps);
+  componentDidUpdate(_prevProps: Props) {
+    this._maybeUpdatePollingState(this.props);
   }
 
   componentWillUnmount() {

@@ -49,9 +49,9 @@ export default class AudioPlayer extends React.Component<Props, State> {
     this._loadSoundAsync(this.props.source);
   }
 
-  componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.source !== this.props.source) {
-      this._loadSoundAsync(nextProps.source);
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.source !== this.props.source) {
+      this._loadSoundAsync(this.props.source);
     }
   }
 

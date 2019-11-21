@@ -23,7 +23,7 @@
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 // This class manages calls from JS to native code.

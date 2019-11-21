@@ -1,5 +1,6 @@
 ---
 title: Random
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-random"
 ---
 
 **`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.

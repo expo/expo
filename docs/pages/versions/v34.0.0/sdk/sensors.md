@@ -1,5 +1,6 @@
 ---
 title: Sensors
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 Various APIs for accessing device sensors are included under this umbrella package called `expo-sensors`.

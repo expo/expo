@@ -9,7 +9,7 @@
 
 #include <folly/dynamic.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 folly::dynamic convertIdToFollyDynamic(id json);

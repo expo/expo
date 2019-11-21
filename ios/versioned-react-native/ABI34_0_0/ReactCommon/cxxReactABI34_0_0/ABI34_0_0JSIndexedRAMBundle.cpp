@@ -7,7 +7,7 @@
 
 #include <folly/Memory.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> JSIndexedRAMBundle::buildFactory() {
@@ -98,4 +98,4 @@ void JSIndexedRAMBundle::readBundle(
 }
 
 }  // namespace ReactABI34_0_0
-}  // namespace facebook
+}  // namespace ABI34_0_0facebook

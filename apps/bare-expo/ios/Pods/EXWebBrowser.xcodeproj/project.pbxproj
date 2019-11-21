@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		125D786EF5B6ADC80AB84EEDDC8F974C /* EXWebBrowser.h in Headers */ = {isa = PBXBuildFile; fileRef = 3144AC7DFFB6CF6A82D74AFB47B6505A /* EXWebBrowser.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		791D3A23630F83486189543D0931A5CA /* EXWebBrowser-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CFB9EE654C342E87F9780EBDB084386A /* EXWebBrowser-dummy.m */; };
-		E7A7A111AD36854B4BC55147B12C576A /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF92F00C1628D9CEB91BC8F839CF1FB /* EXWebBrowser.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		B7CC63707C825751E5B7EDE2BE2EAEA6 /* EXWebBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF92F00C1628D9CEB91BC8F839CF1FB /* EXWebBrowser.m */; };
+		C929DBF8E899DB24A485F16838542517 /* EXWebBrowser-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = CFB9EE654C342E87F9780EBDB084386A /* EXWebBrowser-dummy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = 67065628492C2FF6554913599AB4670F /* Build configuration list for PBXNativeTarget "EXWebBrowser" */;
 			buildPhases = (
 				3EB77DABA9BEC0941F3DAC63CA04EF8C /* Headers */,
-				9C1E0C9999564571D3DB652FCD059DEE /* Sources */,
+				7A597FE7DBF6291F457CA6398AAD1664 /* Sources */,
 				AEF3748DA032FB254227C6EF62A27813 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9C1E0C9999564571D3DB652FCD059DEE /* Sources */ = {
+		7A597FE7DBF6291F457CA6398AAD1664 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				791D3A23630F83486189543D0931A5CA /* EXWebBrowser-dummy.m in Sources */,
-				E7A7A111AD36854B4BC55147B12C576A /* EXWebBrowser.m in Sources */,
+				C929DBF8E899DB24A485F16838542517 /* EXWebBrowser-dummy.m in Sources */,
+				B7CC63707C825751E5B7EDE2BE2EAEA6 /* EXWebBrowser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

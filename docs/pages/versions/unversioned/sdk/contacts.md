@@ -14,6 +14,24 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Contacts from 'expo-contacts';
 ```
 
+
+### `requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing contacts data. Alias for `Permissions.askAsync(Permissions.CONTACTS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `getPermissionsAsync()`
+
+Checks user's permissions for accessing contacts data. Alias for `Permissions.getAsync(Permissions.CONTACTS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+
 ### getContactsAsync
 
 ```js
@@ -484,7 +502,6 @@ A set of fields that define information about a single entity.
 | thumbnail | `Image` | **Deprecated**: Use `image` | ❌ | ❌ |
 | previousLastName | `string` | **Deprecated**: Use maidenName | ❌ | ❌ |
 
-
 ### Group
 
 > iOS Only
@@ -719,7 +736,7 @@ const contactField = Contact.Fields.FirstName;
 | Department              | `'department'`               | ✅  | ✅      |      |
 | ImageAvailable          | `'imageAvailable'`           | ✅  | ✅      |      |
 | Image                   | `'image'`                    | ✅  | ✅      |      |
-| Note                    | `'note'`                     | ⚠️  | ✅      | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. |
+| Note                    | `'note'`                     | ⚠️  | ✅      | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. Expo client doesn't have this entitlement. However, you can add this to a standalone app. To do this you need to set the `accessesContactNotes` key to true in your app.json file as specified [here](https://docs.expo.io/versions/latest/workflow/configuration/#ios). |
 | Dates                   | `'dates'`                    | ✅  | ✅      |      |
 | Relationships           | `'relationships'`            | ✅  | ✅      |      |
 | Nickname                | `'nickname'`                 | ✅  | ✅      |      |

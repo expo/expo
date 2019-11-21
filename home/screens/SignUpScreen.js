@@ -55,8 +55,8 @@ export default class SignUpScreen extends React.Component {
   _keyboardDidShowSubscription: { remove: Function };
   _keyboardDidHideSubscription: { remove: Function };
 
-  componentWillReceiveProps(nextProps: Object) {
-    if (nextProps.session.sessionSecret && !this.props.session.sessionSecret) {
+  componentDidUpdate(prevProps: Object) {
+    if (this.props.session.sessionSecret && !prevProps.session.sessionSecret) {
       TextInput.State.blurTextInput(TextInput.State.currentlyFocusedField());
       this.props.navigation.pop();
     }

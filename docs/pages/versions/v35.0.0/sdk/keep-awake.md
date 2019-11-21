@@ -1,5 +1,6 @@
 ---
 title: KeepAwake
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-keep-awake"
 ---
 
 A React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.

@@ -30,19 +30,37 @@ Checks whether location services are enabled by the user.
 
 #### Returns
 
-Returns a promise resolving to `true` if location services are enabled on the device, or `false` if not.
+A promise resolving to `true` if location services are enabled on the device, or `false` if not.
 
 ### `Location.requestPermissionsAsync()`
 
-Requests the user for location permissions, similarly to `Permissions.askAsync(Permissions.LOCATION)`.
+Asks the user to grant permissions for location. Alias for `Permissions.askAsync(Permissions.LOCATION)`.
 
 #### Returns
 
-Returns a promise that resolves when the permissions are granted and rejects when denied.
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+
+### `Location.getPermissionsAsync()`
+
+Checks user's permissions for accessing location. Alias for `Permissions.getAsync(Permissions.LOCATION)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+
+### `Location.getLastKnownPositionAsync()`
+
+Get the last known position of the device.
+
+#### Returns
+
+Returns a promise resolving to an object representing [Location](#type-location) type.
 
 ### `Location.getCurrentPositionAsync(options)`
 
 Get the current position of the device.
+
+> **Note:** calling it on iOS causes the location manager to obtain a location fix which may take several seconds. Consider using [Location.getLastKnownPositionAsync](#locationgetlastknownpositionasync) if you expect to get a quick response and high accuracy is not required.
 
 #### Arguments
 
@@ -56,7 +74,7 @@ Returns a promise resolving to an object representing [Location](#type-location)
 
 ### `Location.watchPositionAsync(options, callback)`
 
-Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [Location.startLocationUpdatesAsync](#locationstartlocationupdatesasync).
+Subscribe to location updates from the device. Please note that updates will only occur while the application is in the foreground. To get location updates while in background you'll need to use [Location.startLocationUpdatesAsync](#locationstartlocationupdatesasynctaskname-options).
 
 #### Arguments
 
@@ -368,6 +386,18 @@ Object of type `Region` includes following fields:
 - **longitude (_number_)** -- The longitude in degress of region's center point.
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
 - **state : [Location.GeofencingRegionState](#locationgeofencingregionstate)** -- One of [Location.GeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
+
+### `PermissionDetailsLocationIOS`
+
+Object of type `PermissionDetailsLocationIOS` contains only one field:
+
+- **scope** (_string_) - The scope of granted permission, which indicates when it's possible to use location. Possible values: `whenInUse`, `always`.
+
+### `PermissionDetailsLocationAndroid`
+
+Object of type `PermissionDetailsLocationAndroid` contains only one field:
+
+- **scope** (_string_) - The scope of granted permission, which indicates the type of location provider. Possible values: `fine`, `coarse`, `none`.
 
 ## Enums
 

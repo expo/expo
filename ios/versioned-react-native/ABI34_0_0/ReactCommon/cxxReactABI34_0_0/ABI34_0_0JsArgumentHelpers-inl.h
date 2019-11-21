@@ -6,7 +6,7 @@
 #pragma once
 #include <folly/dynamic.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace xplat {
 
 namespace detail {

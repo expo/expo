@@ -17,10 +17,10 @@
 #import "ABI34_0_0RCTCxxModule.h"
 #import "ABI34_0_0RCTNativeModule.h"
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
-using facebook::jsi::JSError;
+using ABI34_0_0facebook::jsi::JSError;
 
 std::vector<std::unique_ptr<NativeModule>> createNativeModules(NSArray<ABI34_0_0RCTModuleData *> *modules, ABI34_0_0RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
 {

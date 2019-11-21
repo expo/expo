@@ -401,6 +401,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, mManifestUrl, mSDKVersion);
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
+    ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
@@ -583,11 +584,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (pushNotificationHelper != null) {
       pushNotificationHelper.removeNotifications(this, unreadNotifications);
     }
-  }
-
-  public void onEvent(BaseExperienceActivity.ExperienceDoneLoadingEvent event) {
-    // On cold boot to this experience, wait until we're done loading to load the kernel.
-    mKernel.startJSKernel();
   }
 
   /*

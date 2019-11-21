@@ -43,7 +43,7 @@ public class AgingHash<KeyType, ValueType> {
         Iterator it = mHash.entrySet().iterator();
         while (it.hasNext()) {
             HashMap.Entry pair = (HashMap.Entry) it.next();
-            AgingItem<ValueType> item = (AgingItem) pair.getValue();
+            AgingItem<ValueType> item = (AgingItem<ValueType>) pair.getValue();
             if (now - item.getAccessTime() >= mTtlMillis) {
                 it.remove();
             }

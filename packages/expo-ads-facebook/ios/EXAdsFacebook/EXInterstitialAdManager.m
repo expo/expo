@@ -1,4 +1,3 @@
-#import <EXAdsFacebook/EXFacebookAdHelper.h>
 #import <EXAdsFacebook/EXInterstitialAdManager.h>
 #import <UMCore/UMUtilities.h>
 
@@ -37,9 +36,6 @@ UM_EXPORT_METHOD_AS(showAd,
   if (_isBackground) {
     reject(@"E_BACKGROUNDED", @"`showAd` can be called only when experience is running in foreground", nil);
     return;
-  }
-  if (![EXFacebookAdHelper facebookAppIdFromNSBundle]) {
-    UMLogWarn(@"No Facebook app id is specified. Facebook ads may have undefined behavior.");
   }
   
   _resolve = resolve;

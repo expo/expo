@@ -1,5 +1,6 @@
 ---
 title: Admob
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-ads-admob"
 ---
 
 Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) for mobile advertising. This module is largely based of the [react-native-admob](https://github.com/sbugert/react-native-admob) module, as the documentation and questions surrounding that module may prove helpful. A simple example implementing AdMob SDK can be found [here](https://github.com/deadcoder0904/expo-google-admob).

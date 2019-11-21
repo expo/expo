@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-ads-facebook
+expo install expo-ads-facebook
 ```
 
 ### Configure for iOS

@@ -41,7 +41,7 @@
 /**
  * Configure whether the JSCExecutor created should use the system JSC API or
  * alternative hooks provided. When returning YES from this method, you must have
- * previously called facebook::ReactABI35_0_0::setCustomJSCWrapper.
+ * previously called ABI35_0_0facebook::ReactABI35_0_0::setCustomJSCWrapper.
  *
  * @experimental
  */

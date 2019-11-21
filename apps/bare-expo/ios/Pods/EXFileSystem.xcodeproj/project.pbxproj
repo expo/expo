@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0188B05A0FB138B59A660960F201868E /* EXFileSystem-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 254FD0372A576FAA444189E376183DC2 /* EXFileSystem-dummy.m */; };
 		0193144631974077DFFF1AAD0BB5514E /* EXFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = D4197606E8483F971F57B69C987FA7EE /* EXFileSystem.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		151EB908E747BEA1B71766B1E18512C5 /* EXFileSystem-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 254FD0372A576FAA444189E376183DC2 /* EXFileSystem-dummy.m */; };
 		1EFC3D581406C918877C7433BA8060DF /* EXFileSystemAssetLibraryHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 8A92528DCE3471E8EFF4547EA130D3E5 /* EXFileSystemAssetLibraryHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		298513DBAE6836F455783AA1D41FB62E /* EXFileSystemAssetLibraryHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 11661F778B9E26D4476A0A9395B670BB /* EXFileSystemAssetLibraryHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		64A4FE050B36416C1A6109023EB3E6AF /* EXFilePermissionModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D5FF7639038A429C63B6561D6137C43 /* EXFilePermissionModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6C30E39ED7BEF8B2ED8C463F6F34E945 /* EXFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B386D2B6CCFDE4FC24EEC753A3FB78 /* EXFilePermissionModule.m */; };
 		714DE0FABD6CE9C3988659D225726074 /* EXDownloadDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 72656803886FBFFD3426BD66EF090FDE /* EXDownloadDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		76433C102B16EF4E4372D30D723762E6 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3778B6ECFC89B97B88BE93A9D1F271BC /* EXFileSystem.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8669CE17C1A45A47BBABBC81CB5F1C5C /* EXDownloadDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A57584C1C6E9CDCBDB897BB0C7BB254 /* EXDownloadDelegate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		8868557FF7D365633D9DA952E47F0ADB /* EXFileSystemLocalFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE277CD2F31F3D045B7400046354BC1 /* EXFileSystemLocalFileHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		7CD528FA8B8280D96FCF95C604D5F890 /* EXDownloadDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A57584C1C6E9CDCBDB897BB0C7BB254 /* EXDownloadDelegate.m */; };
 		90FBF9D286470DD6D54A439874D61E5B /* EXFileSystemLocalFileHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 4EA97052621979243B8AE38E3540708B /* EXFileSystemLocalFileHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CBCB434C40E786F489B3090B9FBC641D /* EXFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B386D2B6CCFDE4FC24EEC753A3FB78 /* EXFilePermissionModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A48BAEC1D5C60C2288046F626B678CAD /* EXFileSystemLocalFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 5DE277CD2F31F3D045B7400046354BC1 /* EXFileSystemLocalFileHandler.m */; };
+		B15EA10FD68536BFBEE1EB97374C9471 /* EXFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3778B6ECFC89B97B88BE93A9D1F271BC /* EXFileSystem.m */; };
+		C6DBC061F84B131E7B5104B7FD878583 /* EXFileSystemAssetLibraryHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 11661F778B9E26D4476A0A9395B670BB /* EXFileSystemAssetLibraryHandler.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,7 +164,7 @@
 			buildConfigurationList = 0C477AB07271F9F19604AB45D7274E13 /* Build configuration list for PBXNativeTarget "EXFileSystem" */;
 			buildPhases = (
 				7E89BA0216880AFF8FC7A1FF45FC50F9 /* Headers */,
-				ED676ED5E373925BB11DF0B9B02A646C /* Sources */,
+				A06EDA1DD816EAFC519CE1E000DC0914 /* Sources */,
 				B2089F56EB14848D474AC752512E4374 /* Frameworks */,
 			);
 			buildRules = (
@@ -213,16 +213,16 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		ED676ED5E373925BB11DF0B9B02A646C /* Sources */ = {
+		A06EDA1DD816EAFC519CE1E000DC0914 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8669CE17C1A45A47BBABBC81CB5F1C5C /* EXDownloadDelegate.m in Sources */,
-				CBCB434C40E786F489B3090B9FBC641D /* EXFilePermissionModule.m in Sources */,
-				151EB908E747BEA1B71766B1E18512C5 /* EXFileSystem-dummy.m in Sources */,
-				76433C102B16EF4E4372D30D723762E6 /* EXFileSystem.m in Sources */,
-				298513DBAE6836F455783AA1D41FB62E /* EXFileSystemAssetLibraryHandler.m in Sources */,
-				8868557FF7D365633D9DA952E47F0ADB /* EXFileSystemLocalFileHandler.m in Sources */,
+				7CD528FA8B8280D96FCF95C604D5F890 /* EXDownloadDelegate.m in Sources */,
+				6C30E39ED7BEF8B2ED8C463F6F34E945 /* EXFilePermissionModule.m in Sources */,
+				0188B05A0FB138B59A660960F201868E /* EXFileSystem-dummy.m in Sources */,
+				B15EA10FD68536BFBEE1EB97374C9471 /* EXFileSystem.m in Sources */,
+				C6DBC061F84B131E7B5104B7FD878583 /* EXFileSystemAssetLibraryHandler.m in Sources */,
+				A48BAEC1D5C60C2288046F626B678CAD /* EXFileSystemLocalFileHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

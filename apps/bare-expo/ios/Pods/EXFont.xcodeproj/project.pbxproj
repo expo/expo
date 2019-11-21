@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		178F181BD7A153188112C0F2406263A2 /* EXFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 429AB19BC629934818B51215786C6EBD /* EXFontManager.m */; };
+		1C355C70167B30A8E8FFC167B0638356 /* EXFontLoaderProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BF8BCE6F8CFED49463627097B035188 /* EXFontLoaderProcessor.m */; };
 		309815EB605985B80CD65B87DDCE7A5D /* EXFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 8EF48883728B8817FD44A40FE16B89C1 /* EXFont.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		4285AC11DEA58561FCE045196336AE72 /* EXFontScaler.m in Sources */ = {isa = PBXBuildFile; fileRef = 357DE9CB953DEA23281356E48CD11AEB /* EXFontScaler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		4D4F8797C44C4EDF9A98200C0C25B5C4 /* EXFont.m in Sources */ = {isa = PBXBuildFile; fileRef = 7881E7A90C962B932C210B04B94D681C /* EXFont.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		5B74C307F1F17FDB083D58C53E43A1EE /* EXFontScalersManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A814EB2960FEFD16663848284850BDE2 /* EXFontScalersManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		6749F8243E92EA1DCD836ECA16C44D3A /* EXFontScalersManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D5B262CD324238B36EFD0239CB718E0 /* EXFontScalersManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		6C3C4FE383C9F1EA745618524456BF4A /* EXFontLoaderProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2BF8BCE6F8CFED49463627097B035188 /* EXFontLoaderProcessor.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		746A3CBFB1C8CFE690AC0F78B966CBE3 /* EXFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = DDC24C2DC428D481D27D9EF083E68A45 /* EXFontLoader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		81B0165DD9078F2F00A74A2090D8C9A4 /* EXFontLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DA93E0F4DC3F181EE158D2778C9FC6E /* EXFontLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8DC356BA286FC7A4E402830DF8D4849B /* EXFontScaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 4284DEE05BD6F989B0E401D140576610 /* EXFontScaler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		A3636EB97BBF5F2DDC9983FDEFADF5DD /* EXFont-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C76CED7189CA82046B05576A123E3EA /* EXFont-dummy.m */; };
-		A801782B8760AC140CE128FBE10B2C43 /* EXFontManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 429AB19BC629934818B51215786C6EBD /* EXFontManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		AD9AFF830614E73AE243E98392827646 /* EXFontLoaderProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 102B34AD070B3791DA07384D5CF8A8A9 /* EXFontLoaderProcessor.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C169CB24FD0B556D845244A7A24E249F /* EXFontScalersManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A814EB2960FEFD16663848284850BDE2 /* EXFontScalersManager.m */; };
+		CB348749F3EED9E66E812DE949203C69 /* EXFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = DDC24C2DC428D481D27D9EF083E68A45 /* EXFontLoader.m */; };
+		EB0824948B6BF760FC84FB8E27BDDF1C /* EXFont-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C76CED7189CA82046B05576A123E3EA /* EXFont-dummy.m */; };
 		F84DE7C0B43709C910FE91994ADA2258 /* EXFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0EE172D76350E4FBC89D95676E9ED5 /* EXFontManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FCF50273E4097F7FAAD41BC74352C0B2 /* EXFontScaler.m in Sources */ = {isa = PBXBuildFile; fileRef = 357DE9CB953DEA23281356E48CD11AEB /* EXFontScaler.m */; };
+		FF92F50637D93441552C6D633A75F92B /* EXFont.m in Sources */ = {isa = PBXBuildFile; fileRef = 7881E7A90C962B932C210B04B94D681C /* EXFont.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,7 +180,7 @@
 			buildConfigurationList = 9F5A7F195C758AEA209715E89AB940DE /* Build configuration list for PBXNativeTarget "EXFont" */;
 			buildPhases = (
 				0A9A28D42A86224B395E46D976B8F1D3 /* Headers */,
-				673B50B6143C27B7ADE46D3F2ABFE1A4 /* Sources */,
+				BAF2750A8DA2A5B20332990CFD0CCA67 /* Sources */,
 				540B493477ED54E910ED86CC4C541CA9 /* Frameworks */,
 			);
 			buildRules = (
@@ -229,17 +229,17 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		673B50B6143C27B7ADE46D3F2ABFE1A4 /* Sources */ = {
+		BAF2750A8DA2A5B20332990CFD0CCA67 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3636EB97BBF5F2DDC9983FDEFADF5DD /* EXFont-dummy.m in Sources */,
-				4D4F8797C44C4EDF9A98200C0C25B5C4 /* EXFont.m in Sources */,
-				746A3CBFB1C8CFE690AC0F78B966CBE3 /* EXFontLoader.m in Sources */,
-				6C3C4FE383C9F1EA745618524456BF4A /* EXFontLoaderProcessor.m in Sources */,
-				A801782B8760AC140CE128FBE10B2C43 /* EXFontManager.m in Sources */,
-				4285AC11DEA58561FCE045196336AE72 /* EXFontScaler.m in Sources */,
-				5B74C307F1F17FDB083D58C53E43A1EE /* EXFontScalersManager.m in Sources */,
+				EB0824948B6BF760FC84FB8E27BDDF1C /* EXFont-dummy.m in Sources */,
+				FF92F50637D93441552C6D633A75F92B /* EXFont.m in Sources */,
+				CB348749F3EED9E66E812DE949203C69 /* EXFontLoader.m in Sources */,
+				1C355C70167B30A8E8FFC167B0638356 /* EXFontLoaderProcessor.m in Sources */,
+				178F181BD7A153188112C0F2406263A2 /* EXFontManager.m in Sources */,
+				FCF50273E4097F7FAAD41BC74352C0B2 /* EXFontScaler.m in Sources */,
+				C169CB24FD0B556D845244A7A24E249F /* EXFontScalersManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

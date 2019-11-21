@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import { Linking, Platform } from 'react-native';
+import { deprecate } from '@unimodules/core';
 
 import StoreReview from './ExpoStoreReview';
 
@@ -8,8 +9,17 @@ import StoreReview from './ExpoStoreReview';
  * iOS 10.3 or greater
  * `SKStoreReviewController` class is available
  */
-export function isSupported(): boolean {
-  return StoreReview && StoreReview.isSupported;
+export async function isAvailableAsync(): Promise<boolean> {
+  return StoreReview.isAvailableAsync();
+}
+
+/*
+ * Deprecated
+ */
+export function isSupported(): void {
+  deprecate('expo-store-review', 'StoreReview.isSupported', {
+    replacement: 'StoreReview.isAvailableAsync',
+  });
 }
 
 /*
@@ -56,6 +66,6 @@ export function storeUrl(): string | null {
 /*
  * A flag to detect if this module can do anything
  */
-export function hasAction(): boolean {
-  return !!storeUrl() || isSupported();
+export async function hasAction(): Promise<boolean> {
+  return !!storeUrl() || (await isAvailableAsync());
 }

@@ -5,6 +5,7 @@
 //  Copyright 2019 Google LLC. All rights reserved.
 //
 
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADRequest.h>
 #import <GoogleMobileAds/GADResponseInfo.h>
 #import <UIKit/UIKit.h>
@@ -35,6 +36,9 @@ typedef void (^GADAppOpenAdLoadCompletionHandler)(GADAppOpenAd *_Nullable appOpe
 
 /// Information about the ad response that returned the ad.
 @property(nonatomic, readonly, nonnull) GADResponseInfo *responseInfo;
+
+/// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
 
 @end
 

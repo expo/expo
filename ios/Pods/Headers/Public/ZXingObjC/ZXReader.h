@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/core/ZXReader.h

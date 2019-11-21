@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1DE2E0A7D2E282EA327C1ECF6607F72F /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E68737454E1C8308734BDFE15523964B /* EXKeepAwake-dummy.m */; };
-		63DC4F91E606CAE2A8C309AC4FF10EE9 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3F4AABA3BAECB2600BE79377AE3FCB /* EXKeepAwake.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E68737454E1C8308734BDFE15523964B /* EXKeepAwake-dummy.m */; };
+		7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B3F4AABA3BAECB2600BE79377AE3FCB /* EXKeepAwake.m */; };
 		CF3607FA749762EF7FA7EFB8F0549A3B /* EXKeepAwake.h in Headers */ = {isa = PBXBuildFile; fileRef = FFD518C295869A3065D10D5551257DB5 /* EXKeepAwake.h */; settings = {ATTRIBUTES = (Project, ); }; };
 /* End PBXBuildFile section */
 
@@ -127,7 +127,7 @@
 			buildConfigurationList = 514B3B43938A18F8902A85F4E991BDE6 /* Build configuration list for PBXNativeTarget "EXKeepAwake" */;
 			buildPhases = (
 				651229A5F646F0C58A99BB5E1250ECE7 /* Headers */,
-				4C01BB56F93F260D696E0041816E265F /* Sources */,
+				FD692CD9924C0E5F8A61E8CC6105E942 /* Sources */,
 				65350C7128941538850904E74678B917 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4C01BB56F93F260D696E0041816E265F /* Sources */ = {
+		FD692CD9924C0E5F8A61E8CC6105E942 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DE2E0A7D2E282EA327C1ECF6607F72F /* EXKeepAwake-dummy.m in Sources */,
-				63DC4F91E606CAE2A8C309AC4FF10EE9 /* EXKeepAwake.m in Sources */,
+				535AC6E5CAB955C4525C45001AF1B24A /* EXKeepAwake-dummy.m in Sources */,
+				7B24C4C5D9375F1A12692629EB3513B0 /* EXKeepAwake.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

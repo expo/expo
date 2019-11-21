@@ -1,5 +1,6 @@
 ---
 title: AppAuth
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-app-auth"
 ---
 
 This module provides access to the native OAuth library AppAuth by [OpenID](https://github.com/openid).

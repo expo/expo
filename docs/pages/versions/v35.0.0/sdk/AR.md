@@ -1,5 +1,6 @@
 ---
 title: AR
+sourceCodeUrl: "https://github.com/expo/expo/blob/sdk-35/packages/expo/src/AR.ts"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';

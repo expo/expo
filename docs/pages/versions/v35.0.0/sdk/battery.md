@@ -1,5 +1,6 @@
 ---
 title: Battery
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-battery"
 ---
 
 Provides battery information for the physical device, as well as corresponding event listeners.

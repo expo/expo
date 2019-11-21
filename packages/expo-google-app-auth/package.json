@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "expo-app-auth": "~7.0.0",
-    "expo-constants": "~7.0.0"
+    "expo-constants": "~8.0.0-rc.1"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }

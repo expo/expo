@@ -7,15 +7,17 @@
 
 UM_EXPORT_MODULE(ExpoStoreReview);
 
-- (NSDictionary *)constantsToExport
+UM_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailableAsync:(UMPromiseResolveBlock)resolve
+                            rejecter:(UMPromiseRejectBlock)reject)
 {
-  BOOL isSupported;
   if (@available(iOS 10.3, *)) {
-    isSupported = [SKStoreReviewController class] ? YES : NO;
+    BOOL isAvailable = [SKStoreReviewController class] ? YES : NO;
+    
+    resolve(@(isAvailable));
   } else {
-    isSupported = NO;
+    resolve(@(NO));
   }
-  return @{ @"isSupported": @(isSupported) };
 }
 
 UM_EXPORT_METHOD_AS(requestReview,

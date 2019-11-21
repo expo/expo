@@ -1,6 +1,9 @@
 ---
 title: Camera
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-camera"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
@@ -22,7 +25,7 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 
 ## Usage
 
-### Basic Example
+<SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-permissions', 'expo-camera']}>
 
 ```javascript
 import React from 'react';
@@ -81,6 +84,7 @@ export default class CameraExample extends React.Component {
   }
 }
 ```
+</SnackInline>
 
 ### Comprehensive Example
 

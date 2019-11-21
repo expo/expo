@@ -11,7 +11,7 @@
 
 #include <folly/dynamic.h>
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 struct MethodCall {

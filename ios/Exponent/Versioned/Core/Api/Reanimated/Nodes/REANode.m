@@ -41,7 +41,7 @@
     _nodeID = nodeID;
     _lastLoopID = [NSMutableDictionary dictionary];
     _memoizedValue = [NSMutableDictionary dictionary];
-    _lastLoopID[@""] = @1;
+    _lastLoopID[@""] = 0;
   }
   return self;
 }
@@ -86,7 +86,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
   if (child) {
     [_childNodes addObject:child];
-    [self dangerouslyRescheduleEvaluate];
+    [child dangerouslyRescheduleEvaluate];
   }
 }
 

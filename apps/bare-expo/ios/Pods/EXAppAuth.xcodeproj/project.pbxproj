@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		396CE8C32E12E196A97B014F8A98D510 /* EXAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A0344B95FC54A89272B867E81671E86 /* EXAppAuth-dummy.m */; };
+		45A7FEAAC6586D6BA9CF5CC9C57FE48A /* EXAppAuthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A614BBD3DC0BA17D6FA8ED9741B88B /* EXAppAuthAppDelegate.m */; };
+		49CF9B5F6F317BF8DF482E4FC626DF2C /* EXAppAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = B04824DFB80DF4AF0375BE54BB7B4211 /* EXAppAuth.m */; };
 		8613B91A8CABA6616C01C6EB0E3D6893 /* EXAppAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = 76545937D4206201726D19027373BB3B /* EXAppAuth.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AD47EC331E0DA701C03F3728A33D08DA /* EXAppAuthAppDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 503E7527E2A83560144569F310BF518C /* EXAppAuthAppDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		AFC2B0CAFB78BDAFC01F087D6A5EE737 /* EXAppAuthSessionsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E66EAE67E68751429316C4E0DDE2948 /* EXAppAuthSessionsManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		B3BD2371A34F07CA2E0A496426A1F5D0 /* EXAppAuth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D22CF18C6BFF1DC7B3C807F8A77B84 /* EXAppAuth+JSON.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		BBFA5DACB97894E8C1A6886DE0C21480 /* EXAppAuth+JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 5749A2DA2ECA4F04ABD350D4D8731962 /* EXAppAuth+JSON.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		C32944E97BC8B98DDD70AD651C0B1F64 /* EXAppAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = B04824DFB80DF4AF0375BE54BB7B4211 /* EXAppAuth.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		E4D9074DFFA9062E985D4F80F8E39C49 /* EXAppAuthSessionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C3EACF97EAE17072CA4D5D19AD8389 /* EXAppAuthSessionsManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		FE8BFB97A92BA074D5701C3EB3107F9C /* EXAppAuthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A614BBD3DC0BA17D6FA8ED9741B88B /* EXAppAuthAppDelegate.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D5FEA8B472B7DC1BA58454C848DD1D23 /* EXAppAuth-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A0344B95FC54A89272B867E81671E86 /* EXAppAuth-dummy.m */; };
+		DC4DD52E96E0FB5A039F01760A3C8C01 /* EXAppAuth+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 79D22CF18C6BFF1DC7B3C807F8A77B84 /* EXAppAuth+JSON.m */; };
+		E3C9FD2CFB2CF5BA87034A7BA1B71F32 /* EXAppAuthSessionsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C3EACF97EAE17072CA4D5D19AD8389 /* EXAppAuthSessionsManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,7 +157,7 @@
 			buildConfigurationList = 4DAEDC235277BFD5CE3F2D91F40EDE21 /* Build configuration list for PBXNativeTarget "EXAppAuth" */;
 			buildPhases = (
 				DF7B652EBAB0A15C51F36450D3E2097B /* Headers */,
-				68FF96840B2C85B056A3D2023E131ED9 /* Sources */,
+				87B25BF2B11FAE077B0752B03870286D /* Sources */,
 				4EDCC30AAFD97CC7B73CE4AB10E37A65 /* Frameworks */,
 			);
 			buildRules = (
@@ -206,15 +206,15 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		68FF96840B2C85B056A3D2023E131ED9 /* Sources */ = {
+		87B25BF2B11FAE077B0752B03870286D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3BD2371A34F07CA2E0A496426A1F5D0 /* EXAppAuth+JSON.m in Sources */,
-				396CE8C32E12E196A97B014F8A98D510 /* EXAppAuth-dummy.m in Sources */,
-				C32944E97BC8B98DDD70AD651C0B1F64 /* EXAppAuth.m in Sources */,
-				FE8BFB97A92BA074D5701C3EB3107F9C /* EXAppAuthAppDelegate.m in Sources */,
-				E4D9074DFFA9062E985D4F80F8E39C49 /* EXAppAuthSessionsManager.m in Sources */,
+				DC4DD52E96E0FB5A039F01760A3C8C01 /* EXAppAuth+JSON.m in Sources */,
+				D5FEA8B472B7DC1BA58454C848DD1D23 /* EXAppAuth-dummy.m in Sources */,
+				49CF9B5F6F317BF8DF482E4FC626DF2C /* EXAppAuth.m in Sources */,
+				45A7FEAAC6586D6BA9CF5CC9C57FE48A /* EXAppAuthAppDelegate.m in Sources */,
+				E3C9FD2CFB2CF5BA87034A7BA1B71F32 /* EXAppAuthSessionsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

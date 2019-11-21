@@ -1,5 +1,6 @@
 ---
 title: FileSystem
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-file-system"
 ---
 
 Provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file systems and has no access to the file system of other Expo apps.

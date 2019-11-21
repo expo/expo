@@ -36,7 +36,7 @@ It notifies you of exceptions that your users run into while using your app and 
 import * as Sentry from 'sentry-expo';
 
 Sentry.init({
-  dsn: 'DSN',
+  dsn: 'YOUR DSN HERE',
   enableInExpoDevelopment: true,
   debug: true
 });

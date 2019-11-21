@@ -1,0 +1,1 @@
+../../../ZXingObjC/ZXingObjC/oned/ZXEAN8Reader.h

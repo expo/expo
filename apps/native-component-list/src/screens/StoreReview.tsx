@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import * as StoreReview  from 'expo-store-review';
+import * as StoreReview from 'expo-store-review';
 
 import Button from '../components/Button';
 import CannyFooter from '../components/CannyFooter';
@@ -11,10 +11,21 @@ class StoreReviewScreen extends React.Component {
     title: 'Store Review',
   };
 
+  state = {
+    isAvailable: false,
+  };
+
+  async componentDidMount() {
+    const isAvailable = await StoreReview.isAvailableAsync();
+    this.setState({
+      isAvailable,
+    });
+  }
+
   onRequestReview = () => StoreReview.requestReview();
 
   get isSupportedText() {
-    return StoreReview.isSupported() ? 'is supported! :D' : 'is not supported! D:';
+    return this.state.isAvailable ? 'is available :D' : 'is not available! D:';
   }
 
   get storeUrl() {
@@ -22,9 +33,7 @@ class StoreReviewScreen extends React.Component {
     if (storeUrl) {
       return `On iOS <10.3, or Android devices pressing this button will open ${storeUrl}.`;
     } else {
-      return (
-      'You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.json in order to use this feature.'
-      );
+      return 'You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.json in order to use this feature.';
     }
   }
 

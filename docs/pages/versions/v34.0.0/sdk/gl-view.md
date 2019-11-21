@@ -1,5 +1,6 @@
 ---
 title: GLView
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-gl"
 ---
 
 A `View` that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.

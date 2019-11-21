@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27E61EA0D3684E0A64A179C146512487 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA5A911732E43861C3AD28557CC7D95 /* EXBlurView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		32685C930121919A05649FE178CCBD9E /* EXBlurView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6FECE1DEFC30D9AC86B887E4B0E416E0 /* EXBlurView.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		45E88F651E1BB3E95A19D98177AB026D /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF1ED54D4632DEFDA0C3B1C64223410 /* EXBlur-dummy.m */; };
 		717BB6D2344614C83273034359CBCC29 /* EXBlurViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 6315DAAA7DA1A802FAE2BE931FADF75A /* EXBlurViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EF77E3E3215AAA14B199E2683B88AA84 /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B6AAF7FBF598F28CC209489386C8C7 /* EXBlurViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
-		F2AB63D55D77ECB0D4ED2CCF842D64FD /* EXBlur-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF1ED54D4632DEFDA0C3B1C64223410 /* EXBlur-dummy.m */; };
+		941B75994A129AB55455E3E9DC0E9845 /* EXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BA5A911732E43861C3AD28557CC7D95 /* EXBlurView.m */; };
+		A34D23967FF38AADC2508E3AB62044E3 /* EXBlurViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 72B6AAF7FBF598F28CC209489386C8C7 /* EXBlurViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,7 +134,7 @@
 			buildConfigurationList = BB9863084968AFE9A8618F770AC76C0F /* Build configuration list for PBXNativeTarget "EXBlur" */;
 			buildPhases = (
 				29E00FF143FA8A8E796D11FEB3613997 /* Headers */,
-				1CD2FBD352FDDBE9B8D4A4F3BB1BE338 /* Sources */,
+				E39A0CA0E25792CD5D6EB947FC2AA353 /* Sources */,
 				86BB75521371D55B9F010EABB48913CC /* Frameworks */,
 			);
 			buildRules = (
@@ -179,13 +179,13 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1CD2FBD352FDDBE9B8D4A4F3BB1BE338 /* Sources */ = {
+		E39A0CA0E25792CD5D6EB947FC2AA353 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2AB63D55D77ECB0D4ED2CCF842D64FD /* EXBlur-dummy.m in Sources */,
-				27E61EA0D3684E0A64A179C146512487 /* EXBlurView.m in Sources */,
-				EF77E3E3215AAA14B199E2683B88AA84 /* EXBlurViewManager.m in Sources */,
+				45E88F651E1BB3E95A19D98177AB026D /* EXBlur-dummy.m in Sources */,
+				941B75994A129AB55455E3E9DC0E9845 /* EXBlurView.m in Sources */,
+				A34D23967FF38AADC2508E3AB62044E3 /* EXBlurViewManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

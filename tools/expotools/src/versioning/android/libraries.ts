@@ -25,6 +25,11 @@ export const JniLibNames = [
   'libjsinspector',
   'fabricjni',
   'turbomodulejsijni',
+  'reactnativeblob',
+  'jsijniprofiler',
+  'hermes',
+  'hermes-executor-release',
+  'hermes-executor-debug',
 ];
 
 // this list is used in the shell scripts as well as directly by expotools

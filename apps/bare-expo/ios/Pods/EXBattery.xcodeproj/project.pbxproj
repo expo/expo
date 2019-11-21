@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1CA0C761E265DFC1F8F58D55EB3DD20B /* EXBattery.h in Headers */ = {isa = PBXBuildFile; fileRef = 3C7B2D23E8682D6C383ECF7E3C12B2D9 /* EXBattery.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		7B4BA419B94EB6088B009FC78EC5C71E /* EXBattery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5260E5D178C297A54C47C51480464365 /* EXBattery-dummy.m */; };
-		C94F4A4985F5F8804115EABF488EBB1E /* EXBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F9FD535A7D65EF100F0B31F36F5F9 /* EXBattery.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		A171D9AE2B1B62B33C2F8A5F62C83EC9 /* EXBattery-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5260E5D178C297A54C47C51480464365 /* EXBattery-dummy.m */; };
+		C8046A7E54D6431327D4DB3A879E345D /* EXBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E8F9FD535A7D65EF100F0B31F36F5F9 /* EXBattery.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = EEDE382C106603AF1DC811CBC74AD5B9 /* Build configuration list for PBXNativeTarget "EXBattery" */;
 			buildPhases = (
 				3B6688F40BDF0A0FF74F0422E23EBFDD /* Headers */,
-				0BB1A21397CDF7FCABC9A5EF10B1A6C6 /* Sources */,
+				54D0644CF40445CF74C19A6C0C3EB416 /* Sources */,
 				3EA78AF9F738DA6E954F7A3A86999EE2 /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0BB1A21397CDF7FCABC9A5EF10B1A6C6 /* Sources */ = {
+		54D0644CF40445CF74C19A6C0C3EB416 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B4BA419B94EB6088B009FC78EC5C71E /* EXBattery-dummy.m in Sources */,
-				C94F4A4985F5F8804115EABF488EBB1E /* EXBattery.m in Sources */,
+				A171D9AE2B1B62B33C2F8A5F62C83EC9 /* EXBattery-dummy.m in Sources */,
+				C8046A7E54D6431327D4DB3A879E345D /* EXBattery.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

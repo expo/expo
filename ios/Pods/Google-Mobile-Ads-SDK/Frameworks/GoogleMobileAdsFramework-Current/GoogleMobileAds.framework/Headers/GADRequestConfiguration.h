@@ -27,6 +27,11 @@ GAD_EXTERN GADMaxAdContentRating _Nonnull const GADMaxAdContentRatingMatureAudie
 /// The maximum ad content rating. All Google ads will have this content rating or lower.
 @property(nonatomic, copy, nullable) GADMaxAdContentRating maxAdContentRating;
 
+/// Identifiers corresponding to test devices which will always request test ads.
+/// The test device identifier for the current device is logged to the console when the first
+/// ad request is made.
+@property(nonatomic, copy, nullable) NSArray<NSString *> *testDeviceIdentifiers;
+
 /// This method allows you to specify whether the user is under the age of consent.
 /// https://developers.google.com/admob/ios/targeting#users_under_the_age_of_consent.
 ///

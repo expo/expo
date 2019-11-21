@@ -9,8 +9,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <GoogleMobileAds/Mediation/GADMediatedNativeAd.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Notifies the Google Mobile Ads SDK about the events performed by adapters. Adapters may perform
 /// some action (e.g. opening an in app browser or opening the iTunes store) when handling callbacks
 /// from GADMediatedNativeAdDelegate. Adapters in such case should notify the Google Mobile Ads SDK
@@ -19,37 +17,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Called by the adapter when it has registered an impression on the tracked view. Adapter should
 /// only call this method if -[GADMAdNetworkAdapter handlesUserImpressions] returns YES.
-+ (void)mediatedNativeAdDidRecordImpression:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdDidRecordImpression:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Called by the adapter when it has registered a user click on the tracked view. Adapter should
 /// only call this method if -[GADMAdNetworkAdapter handlesUserClicks] returns YES.
-+ (void)mediatedNativeAdDidRecordClick:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdDidRecordClick:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Must be called by the adapter just before mediatedNativeAd has opened an in-app modal screen.
-+ (void)mediatedNativeAdWillPresentScreen:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdWillPresentScreen:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Must be called by the adapter just before the in-app modal screen opened by mediatedNativeAd is
 /// dismissed.
-+ (void)mediatedNativeAdWillDismissScreen:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdWillDismissScreen:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Must be called by the adapter after the in-app modal screen opened by mediatedNativeAd is
 /// dismissed.
-+ (void)mediatedNativeAdDidDismissScreen:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdDidDismissScreen:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Must be called by the adapter just before mediatedNativeAd leaves the application.
-+ (void)mediatedNativeAdWillLeaveApplication:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdWillLeaveApplication:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 #pragma mark - Mediated Native Video Ad Notifications
 
 /// Called by the adapter when native video playback has begun or resumed.
-+ (void)mediatedNativeAdDidPlayVideo:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdDidPlayVideo:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Called by the adapter when native video playback has paused.
-+ (void)mediatedNativeAdDidPauseVideo:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdDidPauseVideo:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 /// Called by the adapter when native video playback has ended.
-+ (void)mediatedNativeAdDidEndVideoPlayback:(id<GADMediatedNativeAd>)mediatedNativeAd;
++ (void)mediatedNativeAdDidEndVideoPlayback:(nonnull id<GADMediatedNativeAd>)mediatedNativeAd;
 
 @end
-
-NS_ASSUME_NONNULL_END

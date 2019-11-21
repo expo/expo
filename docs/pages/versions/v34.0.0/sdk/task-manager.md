@@ -1,5 +1,6 @@
 ---
 title: TaskManager
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-task-manager"
 ---
 
 An API that allows to manage tasks, especially these running while your app is in the background.

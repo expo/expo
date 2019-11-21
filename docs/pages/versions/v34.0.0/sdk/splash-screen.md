@@ -1,5 +1,6 @@
 ---
 title: SplashScreen
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/launch"
 ---
 
 A module that tells Expo to keep the splash screen visible until you make it hide.

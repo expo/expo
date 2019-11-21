@@ -1,5 +1,6 @@
 ---
 title: Payments
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-payments-stripe"
 ---
 
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).

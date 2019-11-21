@@ -18,7 +18,8 @@ if (typeof window !== 'undefined') {
 }
 
 export default class MyDocument extends Document {
-  static getInitialProps({ renderPage }) {
+  static getInitialProps(opts) {
+    const { renderPage } = opts;
     const page = renderPage();
     const styles = extractCritical(page.html);
     return { ...page, ...styles };

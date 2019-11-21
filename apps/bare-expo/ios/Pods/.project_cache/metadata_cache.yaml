@@ -86,6 +86,10 @@ EXDocumentPicker:
   LABEL: EXDocumentPicker
   PROJECT_PATH: EXDocumentPicker.xcodeproj
   UUID: 40300EFA08DDB78C6AFF84A0F118E9CD
+EXErrorRecovery:
+  LABEL: EXErrorRecovery
+  PROJECT_PATH: EXErrorRecovery.xcodeproj
+  UUID: 49603BA4A7FB1CFC9ACD589B8CE05EA2
 EXFileSystem:
   LABEL: EXFileSystem
   PROJECT_PATH: EXFileSystem.xcodeproj
@@ -366,3 +370,7 @@ Yoga:
   LABEL: Yoga
   PROJECT_PATH: Yoga.xcodeproj
   UUID: 8DB658880A3F558549A84D99BCFADCBC
+ZXingObjC:
+  LABEL: ZXingObjC
+  PROJECT_PATH: ZXingObjC.xcodeproj
+  UUID: F1A98E99C5291C55C29C32D889990685

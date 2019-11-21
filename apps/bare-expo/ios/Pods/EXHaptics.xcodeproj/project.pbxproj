@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3AC2DD456FC6804F17B95D00AC2A07E2 /* EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 51A6B0CA6EC9594FC03983BBAE4A5DCE /* EXHaptics-dummy.m */; };
+		156DD2374305DFE6803C8662DCB892A5 /* EXHaptics-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 51A6B0CA6EC9594FC03983BBAE4A5DCE /* EXHaptics-dummy.m */; };
+		1CDC402E5319AC8314E33CD2B9AF269F /* EXHapticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E2CC05B210677C4F0EBA95771C1CBE4 /* EXHapticsModule.m */; };
 		C38B6FFDAFEFF326850DD06238202868 /* EXHapticsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = E8078D3C137A5FABDA268AC2BC10C0F8 /* EXHapticsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E7B46525581527602595BC51EA587566 /* EXHapticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E2CC05B210677C4F0EBA95771C1CBE4 /* EXHapticsModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,7 +127,7 @@
 			buildConfigurationList = B9FC0D6C1ADD03E76CD7854240B51D79 /* Build configuration list for PBXNativeTarget "EXHaptics" */;
 			buildPhases = (
 				1C484CC965F3B27F936C7C78CC24AA98 /* Headers */,
-				2D9585C3ADB77A06A5C3F43F9A6F1B21 /* Sources */,
+				3D2013DDC28AE59B65F929801600AF69 /* Sources */,
 				5F29FDF0BB5B34882FA2B42DAFC66CBC /* Frameworks */,
 			);
 			buildRules = (
@@ -172,12 +172,12 @@
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2D9585C3ADB77A06A5C3F43F9A6F1B21 /* Sources */ = {
+		3D2013DDC28AE59B65F929801600AF69 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3AC2DD456FC6804F17B95D00AC2A07E2 /* EXHaptics-dummy.m in Sources */,
-				E7B46525581527602595BC51EA587566 /* EXHapticsModule.m in Sources */,
+				156DD2374305DFE6803C8662DCB892A5 /* EXHaptics-dummy.m in Sources */,
+				1CDC402E5319AC8314E33CD2B9AF269F /* EXHapticsModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

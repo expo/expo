@@ -1,4 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, Share } from 'react-native';
 import UUID from 'uuid-js';
 
@@ -232,6 +233,8 @@ export type Container = {
   type: ContainerType;
 };
 
+export { PermissionStatus, PermissionResponse };
+
 export async function shareContactAsync(
   contactId: string,
   message: string,
@@ -446,6 +449,22 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
   }
 
   return await ExpoContacts.getContainersAsync(containerQuery);
+}
+
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoContacts.getPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
+  }
+
+  return ExpoContacts.getPermissionsAsync();
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExpoContacts.requestPermissionsAsync) {
+    throw new UnavailabilityError('Contacts', 'requestPermissionsAsync');
+  }
+
+  return await ExpoContacts.requestPermissionsAsync();
 }
 
 // Legacy

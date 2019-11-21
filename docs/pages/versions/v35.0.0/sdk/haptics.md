@@ -1,5 +1,6 @@
 ---
 title: Haptics
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-haptics"
 ---
 
 Provides haptic feedback for

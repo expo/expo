@@ -1,5 +1,6 @@
 ---
 title: GoogleSignIn
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-google-sign-in"
 ---
 
 This library provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [Google](../google) or [AppAuth](../app-auth).
@@ -129,6 +130,8 @@ Asynchronously returns a boolean representing the user's authentication status.
 ### `signInSilentlyAsync(): Promise<?GoogleUser>`
 
 This method will attempt to reauthenticate the user without initializing the authentication flow. If the method is successful, the currently authenticated `GoogleUser` will be returned, otherwise the method will return `null`.
+
+On Android, the returned `GoogleUser` object may have a nonnull `serverAuthCode` rather than a `refreshToken`. If you need a refresh token, you can call Google's API directly to exchange the authorization code for a token. Instructions for how to perform this request can be found [in Google's documentation](https://developers.google.com/identity/protocols/OAuth2InstalledApp#exchange-authorization-code) ("Step 5: Exchange authorization code for refresh and access tokens"). The `clientId` in these requests is the **Web Client ID** from the Google API Console.
 
 ### `signInAsync(): Promise<?GoogleSignInAuthResult>`
 
