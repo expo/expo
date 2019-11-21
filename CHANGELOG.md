@@ -61,6 +61,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Add missing `mute` property in `Camera.recordAsync` in the TypeScript definition. ([#6192](https://github.com/expo/expo/pull/6192) by [@wcandillon](https://github.com/wcandillon))
 - Warn when `Linking.makeUrl` is called in Expo client and no scheme is present in `app.json` in order to prevent standalone builds from crashing due to missing scheme. ([#6277](https://github.com/expo/expo/pull/6277) by [@brentvatne](https://github.com/brentvatne))
 - Fixed `keychainAccessible` option not having any effect on iOS (`SecureStore` module) ([#6291](https://github.com/expo/expo/pull/6291)) by [@sjchmiela](https://github.com/sjchmiela)
+- Fixed presentation style of `WebBrowser` modal on iOS 13+ (it is now presented fullscreen instead of a modal). ([#6345](https://github.com/expo/expo/pull/6345)) by [@roothybrid7](https://github.com/roothybrid7)
 
 ## 35.0.0
 
