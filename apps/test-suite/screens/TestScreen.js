@@ -8,6 +8,8 @@ import Suites from '../components/Suites';
 import ModulesContext from '../ModulesContext';
 import setupJasmine from '../utils/setupJasmine';
 
+import useLinking from '../utils/useLinking';
+
 const initialState = {
   portalChildShouldBeVisible: false,
   state: Immutable.fromJS({
@@ -120,16 +122,37 @@ TestRunner.defaultProps = {
   modules: [],
 };
 
+function parseSelectedQueryString(modules, url = '') {
+  const afterSelect = url
+    .toLowerCase()
+    .split('select/')
+    .pop();
+  if (!afterSelect) return [];
+
+  const testNames = afterSelect.split('%2c').map(v => v.trim());
+  const selected = modules.filter(m => testNames.includes(m.name.toLowerCase()));
+  if (!selected.length) {
+    console.log('[TEST_SUITE]', 'No selected modules', testNames);
+  }
+
+  return selected;
+}
 export default function ContextTestScreen(props) {
   const { modules, onTestsComplete } = React.useContext(ModulesContext);
-  const selectedModules = props.navigation.getParam('selected');
-  const hasInputModules = selectedModules && selectedModules.length;
-  const activeModules = hasInputModules
-    ? selectedModules
-    : modules.filter(({ isActive }) => isActive);
 
-  console.log('active: ', activeModules);
-  return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={activeModules} />;
+  const link = useLinking();
+
+  if (link === null) {
+    return null;
+  }
+
+  const queryModules = parseSelectedQueryString(modules, link);
+
+  const selectedModules = queryModules.length
+    ? queryModules
+    : modules.filter(({ isActive }) => isActive);
+  console.log('active: ', link, selectedModules);
+  return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={selectedModules} />;
 }
 
 ContextTestScreen.navigationOptions = {

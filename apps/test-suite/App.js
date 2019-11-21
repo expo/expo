@@ -11,7 +11,7 @@ import RunTests from './screens/TestScreen';
 
 const AppNavigator = createStackNavigator(
   {
-    Select,
+    select: Select,
     RunTests,
   },
   {
