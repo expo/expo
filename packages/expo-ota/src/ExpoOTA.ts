@@ -48,11 +48,9 @@ export async function fetchUpdateAsync({
   if (eventListener && typeof eventListener === 'function') {
     subscription = addListener(eventListener);
   }
-  try {
-    result = await OTA.fetchUpdateAsync();
-  } finally {
-    subscription && subscription.remove();
-  }
+
+  result = await OTA.fetchUpdateAsync();
+  subscription && subscription.remove();
 
   if (!result) {
     return { isNew: false };
@@ -87,7 +85,9 @@ export async function readCurrentManifestAsync() {
   if (!OTA.readCurrentManifestAsync) {
     throw new UnavailabilityError('Updates', 'getCustomTabsSupportingBrowsersAsync');
   }
-  return OTA.readCurrentManifestAsync().then(result => typeof result === 'string' ? JSON.parse(result) : result);
+  return OTA.readCurrentManifestAsync().then(result =>
+    typeof result === 'string' ? JSON.parse(result) : result
+  );
 }
 
 export function addListener(listener: UpdateEventListener): UpdatesEventSubscribtion {

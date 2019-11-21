@@ -10,7 +10,6 @@
 #import "EXExpoPublicKeyManifestValidator.h"
 #import "EXSdkVersionComparator.h"
 #import "EXEmbeddedManifestAndBundle.h"
-#import "EXAlwaysAllowingManifestComparator.h"
 #import "EXCommitTimeManifestComparator.h"
 #import "EXRevisionIdManifestComparator.h"
 
@@ -41,7 +40,6 @@
 @synthesize manifestComparator = _manifestComparator;
 @synthesize manifestValidator = _manifestValidator;
 @synthesize checkForUpdatesAutomatically = _checkForUpdatesAutomatically;
-
 
 - (id)initWithEmbeddedManifest
 {
@@ -130,9 +128,7 @@ withCheckForUpdatesAutomatically:(BOOL)checkForUpdatesAutomatically
 
 - (id<ManifestComparator>)manifestComparatorByComparisonValue:(NSString *)manifestComparisonValue
 {
-  if([@"ANY" isEqualToString:manifestComparisonValue]) {
-    return [EXSdkVersionComparator new];
-  } else if([@"VERSION" isEqualToString:manifestComparisonValue]) {
+  if([@"VERSION" isEqualToString:manifestComparisonValue]) {
     return [[EXVersionNumberManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];
   }  else if([@"NEWEST" isEqualToString:manifestComparisonValue]) {
     return [[EXCommitTimeManifestComparator alloc] initWithNativeComparator:[EXSdkVersionComparator new]];

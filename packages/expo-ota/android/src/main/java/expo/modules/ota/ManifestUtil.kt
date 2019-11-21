@@ -68,13 +68,6 @@ class RevisionIdManifestComparator(private val nativeComparator: ManifestCompara
 
 }
 
-class AllAcceptingManifestComparator(private val nativeComparator: ManifestComparator): ManifestComparator {
-    override fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
-        return nativeComparator.shouldReplaceBundle(lastManifest, newManifest)
-    }
-
-}
-
 class SdkVersionMustBeEqualNativeComparator: ManifestComparator {
     override fun shouldReplaceBundle(lastManifest: JSONObject, newManifest: JSONObject): Boolean {
         val newVersion = newManifest.optString(MANIFEST_SDK_VERSION_KEY, "")

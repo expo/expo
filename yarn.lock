@@ -2349,6 +2349,13 @@
     lodash.unescape "4.0.1"
     semver "^6.3.0"
 
+"@unimodules/core@~5.0.0-rc.0":
+  version "5.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@unimodules/core/-/core-5.0.0-rc.0.tgz#c0ff2a295a052f92450f45c1013beb5c85363233"
+  integrity sha512-xiunps1piqIzBFl6PGuhU9TVgwXvVy8PZ6wYseo2C14+JcQvwWgkgriyMDlVhNxabGr77znEEXAxG5pHrC4Law==
+  dependencies:
+    compare-versions "^3.4.0"
+
 "@webassemblyjs/ast@1.7.11":
   version "1.7.11"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.7.11.tgz#b988582cafbb2b095e8b556526f30c90d057cace"
@@ -6693,6 +6700,25 @@ expo-cli@^3.2.3:
   optionalDependencies:
     "@expo/traveling-fastlane-darwin" "1.10.0"
     "@expo/traveling-fastlane-linux" "1.10.0"
+
+expo-constants@~8.0.0-rc.1:
+  version "8.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-8.0.0-rc.1.tgz#9cba415309ea69e07c14ec752906ae66e6012b6d"
+  integrity sha512-IfHX4/zx+5ifnmHjjgt/izAuBz23h1Mwcf0ZFSh8ISr1mBNVg4YM9mXD3YsI42y0IxMryjOrXipeWosVi0LWlg==
+  dependencies:
+    ua-parser-js "^0.7.19"
+
+expo-file-system@~8.0.0-rc.0:
+  version "8.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-8.0.0-rc.0.tgz#837066450972a917a7733da4a3771a3ebda29e14"
+  integrity sha512-KZ/zQXdT+aG08/l4ulBJUlUJAUtIyGcvjCZ9L3b165BMgFk9EWBjYwV+h278bWDrfJ3AguspDIvHxs5H3j9X2Q==
+  dependencies:
+    uuid-js "^0.7.5"
+
+expo-permissions@~8.0.0-rc.0:
+  version "8.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-8.0.0-rc.0.tgz#4fdd764ca62c8df7156e4523f6460401d7b00ae9"
+  integrity sha512-07Ru/wgKYEtSAGZlUNb0B04/fxJrNrCC04620fdPWxkYVhnw5RFV64zOMRvRM08ElMHxX4GILGK8VEOmg7GkEw==
 
 expo-three@4.0.6:
   version "4.0.6"
@@ -13000,16 +13026,6 @@ react-dom@16.9.0:
     prop-types "^15.6.2"
     scheduler "^0.15.0"
 
-react-dom@^16.8.6:
-  version "16.11.0"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.11.0.tgz#7e7c4a5a85a569d565c2462f5d345da2dd849af5"
-  integrity sha512-nrRyIUE1e7j8PaXSPtyRKtz+2y9ubW/ghNgqKFHHAHaeP0fpF5uXR+sq8IMRHC+ZUxw7W9NyCDTBtwWxvkb0iA==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    scheduler "^0.17.0"
-
 react-error-overlay@^5.1.4:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.1.6.tgz#0cd73407c5d141f9638ae1e0c63e7b2bf7e9929d"
@@ -13173,6 +13189,30 @@ react-native-tab-view@^2.9.0:
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.10.0.tgz#5e249e5650502010013449ffd4e5edc18a95364b"
   integrity sha512-qgexVz5eO4yaFjdkmn/sURXgVvaBo6pZD/q1eoca96SbPVbaH3WzVhF3bRUfeTHwZkXwznFTpS3JURqIFU8vQA==
 
+react-native-unimodules@0.7.0-rc.1:
+  version "0.7.0-rc.1"
+  resolved "https://registry.yarnpkg.com/react-native-unimodules/-/react-native-unimodules-0.7.0-rc.1.tgz#537b9bb818418f398aa873cd3dbe959735c3a828"
+  integrity sha512-qRKxMY5k7NVlHglOklUPbIawD1A6TujChe1S4tR+Yew+9SmE+JEUUhz1tjrVkOakpFOFAfiBk74Gh1KI9H0DtA==
+  dependencies:
+    "@unimodules/core" "~4.0.0"
+    "@unimodules/react-native-adapter" "~5.0.0-alpha.0"
+    chalk "^2.4.2"
+    expo-app-loader-provider "~7.0.0"
+    expo-asset "~7.0.0"
+    expo-constants "~7.0.0"
+    expo-file-system "~7.0.0"
+    expo-permissions "~7.0.0"
+    unimodules-barcode-scanner-interface "~4.0.0"
+    unimodules-camera-interface "~4.0.0"
+    unimodules-constants-interface "~4.0.0"
+    unimodules-face-detector-interface "~4.0.0"
+    unimodules-file-system-interface "~4.0.0"
+    unimodules-font-interface "~4.0.0"
+    unimodules-image-loader-interface "~4.0.0"
+    unimodules-permissions-interface "~4.0.0"
+    unimodules-sensors-interface "~4.0.0"
+    unimodules-task-manager-interface "~4.0.0"
+
 react-native-view-shot@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-2.6.0.tgz#3b23675826f67658366352c4b97b59a6aded2f43"
@@ -13200,6 +13240,41 @@ react-native-web@^0.11.0, react-native-web@^0.11.4:
   dependencies:
     escape-string-regexp "1.0.5"
     invariant "2.2.4"
+
+react-native@0.61.2:
+  version "0.61.2"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.61.2.tgz#987b91b063557f8ebec803fdfea2044a24bdbe4d"
+  integrity sha512-hhd8bYbkkZYHoOndxUwbjJ6Yd9HFn5PvwqqS41uJ1xADdw44rx/svuwmJNA1RKF7jH74uR2jpBViWYGd36zGyg==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@react-native-community/cli" "^3.0.0-alpha.1"
+    "@react-native-community/cli-platform-android" "^3.0.0-alpha.1"
+    "@react-native-community/cli-platform-ios" "^3.0.0-alpha.1"
+    abort-controller "^3.0.0"
+    art "^0.10.0"
+    base64-js "^1.1.2"
+    connect "^3.6.5"
+    create-react-class "^15.6.3"
+    escape-string-regexp "^1.0.5"
+    event-target-shim "^5.0.1"
+    fbjs "^1.0.0"
+    fbjs-scripts "^1.1.0"
+    hermes-engine "^0.2.1"
+    invariant "^2.2.4"
+    jsc-android "^245459.0.0"
+    metro-babel-register "^0.56.0"
+    metro-react-native-babel-transformer "^0.56.0"
+    metro-source-map "^0.56.0"
+    nullthrows "^1.1.0"
+    pretty-format "^24.7.0"
+    promise "^7.1.1"
+    prop-types "^15.7.2"
+    react-devtools-core "^3.6.3"
+    react-refresh "^0.4.0"
+    regenerator-runtime "^0.13.2"
+    scheduler "0.15.0"
+    stacktrace-parser "^0.1.3"
+    whatwg-fetch "^3.0.0"
 
 react-navigation-header-buttons@^1.2.1:
   version "1.2.1"
@@ -15604,6 +15679,11 @@ unicode-property-aliases-ecmascript@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/unicode-property-aliases-ecmascript/-/unicode-property-aliases-ecmascript-1.0.5.tgz#a9cc6cc7ce63a0a3023fc99e341b94431d405a57"
   integrity sha512-L5RAqCfXqAwR3RriF8pM0lU0w4Ryf/GgzONwi6KnL1taJQa7x1TCxdJnILX59WIGOwR57IVxn7Nej0fz1Ny6fw==
+
+unimodules-image-loader-interface@~5.0.0-rc.0:
+  version "5.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/unimodules-image-loader-interface/-/unimodules-image-loader-interface-5.0.0-rc.0.tgz#efc28e91634c1b3d4397ccba6a1c3cdbf78c137e"
+  integrity sha512-K1AupsNTghbFcUxyQ4VR5eKe0PVZAEp1YUNps3bSezRSf+AyIm1Ym5+dSgYH7rmDUAoS7oYWJahwVysS7RxRvQ==
 
 union-value@^1.0.0:
   version "1.0.1"

@@ -27,7 +27,7 @@ NSMutableDictionary *persistances;
   return factory;
 }
 
-- (EXOtaPersistance *)persistanceForId:(NSString * _Nullable)identifier
+- (EXOtaPersistance *)persistanceForId:(NSString * _Nullable)identifier createIfNeeded:(BOOL)create
 {
   if(identifier == nil)
   {
@@ -37,12 +37,12 @@ NSMutableDictionary *persistances;
       return values[0];
     } else
     {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unable to determine which persistence to use! If you have more than one ExpoOTA, make sure you provide native packages manually with ids!" userInfo:nil];
+      return nil;
     }
   } else
   {
     EXOtaPersistance *persistance = persistances[identifier];
-    if(persistance == nil)
+    if(persistance == nil && create)
     {
       EXKeyValueStorage *storage = [[EXKeyValueStorage alloc] initWithId:identifier];
       persistance = [[EXOtaPersistance alloc] initWithStorage:storage];

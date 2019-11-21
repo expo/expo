@@ -1,20 +1,35 @@
 package expo.modules.ota
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 
 const val EXPO_OTA_PREFERENCES = "expo_ota"
 
-class KeyValueStorage(val context: Context, val key: String) {
+interface KeyValueStorage {
+
+    fun readString(key: String, defaultValue: String? = null): String?
+
+    fun writeString(key: String, value: String?)
+
+    fun commit()
+
+    fun readBoolean(key: String, default: Boolean = false): Boolean
+
+    fun writeBoolean(key: String, value: Boolean)
+
+}
+
+class SharedPreferencesKeyValueStorage(val context: Context, val key: String): KeyValueStorage {
 
     private val sharedPreferences: SharedPreferences
         get() = context.getSharedPreferences("$EXPO_OTA_PREFERENCES-storage-$key", Context.MODE_PRIVATE)
 
-    fun readString(key: String, defaultValue: String? = null): String? {
+    override fun readString(key: String, defaultValue: String?): String? {
         return sharedPreferences.getString(key, defaultValue)
     }
 
-    fun writeString(key: String, value: String?) {
+    override fun writeString(key: String, value: String?) {
         if(value != null) {
             sharedPreferences.edit().putString(key, value).apply()
         } else {
@@ -22,15 +37,16 @@ class KeyValueStorage(val context: Context, val key: String) {
         }
     }
 
-    fun commit() {
+    @SuppressLint("ApplySharedPref")
+    override fun commit() {
         sharedPreferences.edit().commit()
     }
 
-    fun readBoolean(key: String, default: Boolean = false): Boolean {
+    override fun readBoolean(key: String, default: Boolean): Boolean {
         return sharedPreferences.getBoolean(key, default)
     }
 
-    fun writeBoolean(key: String, value: Boolean) {
+    override fun writeBoolean(key: String, value: Boolean) {
         sharedPreferences.edit().putBoolean(key, value).apply()
     }
 

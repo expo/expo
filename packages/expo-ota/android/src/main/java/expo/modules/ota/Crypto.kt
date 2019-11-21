@@ -14,19 +14,19 @@ import javax.crypto.NoSuchPaddingException
 
 interface ManifestResponseValidator {
 
-    fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit)
+    fun validate(response: JSONObject, success: (String) -> Unit, error: (Exception) -> Unit)
 
 }
 
 class DummyValidator : ManifestResponseValidator {
-    override fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
-        success(JSONObject(response.body()!!.string()).getString("manifestString"))
+    override fun validate(response: JSONObject, success: (String) -> Unit, error: (Exception) -> Unit) {
+        success(response.getString("manifestString"))
     }
 }
 
 class ExpoValidator(private val publicKeyUrl: String, private val httpClient: OkHttpClient) : ManifestResponseValidator {
 
-    override fun validate(response: Response, success: (String) -> Unit, error: (Exception) -> Unit) {
+    override fun validate(response: JSONObject, success: (String) -> Unit, error: (Exception) -> Unit) {
         val request = Request.Builder()
                 .url(publicKeyUrl)
                 .get()
@@ -46,11 +46,10 @@ class ExpoValidator(private val publicKeyUrl: String, private val httpClient: Ok
         })
     }
 
-    private fun validateResponseWithKey(response: Response, publicKey: String, success: (String) -> Unit, error: (Exception) -> Unit) {
+    private fun validateResponseWithKey(response: JSONObject, publicKey: String, success: (String) -> Unit, error: (Exception) -> Unit) {
         try {
-            val manifest = JSONObject(response.body()!!.string())
-            val manifestString = manifest.optString("manifestString")
-            val signature = manifest.optString("signature")
+            val manifestString = response.optString("manifestString")
+            val signature = response.optString("signature")
             val verified = verifyPublicRSASignature(publicKey, manifestString, signature)
             if(verified) {
                 success(manifestString)
