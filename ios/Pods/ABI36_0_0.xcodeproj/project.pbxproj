@@ -152,6 +152,7 @@
 		0352D58413E24082B1CA4EF9BE4A4D09 /* ABI36_0_0EXImageManipulatorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = D56A18FA6EFFBBEE7F74FED01C663B12 /* ABI36_0_0EXImageManipulatorModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		03DBD45D540C6EFA7B2020BE8931EC95 /* ABI36_0_0RCTConvert+CoreLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = CFC90FF2B74829CC5694D2F389CAE14F /* ABI36_0_0RCTConvert+CoreLocation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		041F64BB6548667B6B20088D893FDBC2 /* ABI36_0_0RCTBackedTextInputDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BBFBEF17182D7C3FF658F0A219FC1C2 /* ABI36_0_0RCTBackedTextInputDelegate.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		0451B33FEA3724669B1EE7C05A544942 /* ABI36_0_0RCTImagePickerManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 18020A5EA1CA9EB4EBDED7979089AC59 /* ABI36_0_0RCTImagePickerManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		046BF96B69A3D550579E81F3EEDFFB36 /* ABI36_0_0RCTConvert+AirMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 556A0CBA2468F769F8F9A18B1A26E7C5 /* ABI36_0_0RCTConvert+AirMap.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		050A6BFC3316DEB3E9AFE11868C7A776 /* ABI36_0_0RCTBaseTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F52B0D75E94CB628CB4F9D4515665F4 /* ABI36_0_0RCTBaseTextInputViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		057553FC62A13CCF9B29C0799FCC31B2 /* ABI36_0_0RCTConvert+GMSMapViewType.h in Headers */ = {isa = PBXBuildFile; fileRef = 22CE54A8EA7C6082DB713E22748B17DC /* ABI36_0_0RCTConvert+GMSMapViewType.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -579,6 +580,7 @@
 		518F93B1EB9EB06502F9D3E8071D0F53 /* ABI36_0_0RNSVGImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5200DE64636AB6F490D34874280D6646 /* ABI36_0_0RNSVGImage.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		51A8AF108A785FA07EB64EE631462DEA /* ABI36_0_0RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B26AA1FA80986202ECC2C3D3E747358 /* ABI36_0_0RNCAppearanceProviderManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		51B51FC0775392C1FFFA7BA53A1CAA7F /* ABI36_0_0UMModuleRegistryConsumer.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A45C75FA052C3CDFA740CD51A5FF9B /* ABI36_0_0UMModuleRegistryConsumer.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		51BE99917922AD30AE6630AF719C7571 /* ABI36_0_0RCTCameraRollManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 769192A023747A80900458E993D4A6E2 /* ABI36_0_0RCTCameraRollManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		51C6F2154FAC8C028E30E5DC2CC277BE /* ABI36_0_0RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 24E72C4C9C372F2EE3A9A7C2E60EF4BF /* ABI36_0_0RNCNetInfo.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		51C960DF0D537C5416490A763291529E /* ABI36_0_0RCTMultilineTextInputViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F579B69DF272257E4B41C765FEF82 /* ABI36_0_0RCTMultilineTextInputViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		51C97FCCBD85DA7DB6E1EA5F43A2A39E /* ABI36_0_0AIRGoogleMapWMSTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A08A8374D9086FAC7997E3F48ED2C580 /* ABI36_0_0AIRGoogleMapWMSTileManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -983,6 +985,7 @@
 		954FDD0AFED3122DB47143976C7D1E4D /* ABI36_0_0AIRMapLocalTile.h in Headers */ = {isa = PBXBuildFile; fileRef = 96F370D01C79A4E7A45CEE28D3E124DD /* ABI36_0_0AIRMapLocalTile.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9583D30516A5BD493B2EF22FD12800A0 /* ABI36_0_0EXDisabledDevMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = A89EF9579F33C39E63046B51575B1EE3 /* ABI36_0_0EXDisabledDevMenu.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		95EA8EA1B67C2E763FF57159D5AEF173 /* ABI36_0_0RCTConvert+UIPageViewControllerTransitionStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = B79107B9B0DC2FE3CA9C9124A814C4FB /* ABI36_0_0RCTConvert+UIPageViewControllerTransitionStyle.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		95FAEBF8BDEDBA49B8015C308FEDF2EF /* ABI36_0_0React-RCTCameraRoll-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E20BFFC49B5AEA605D36A5DDDC9E1FF4 /* ABI36_0_0React-RCTCameraRoll-dummy.m */; };
 		960A13EEBE461940FCB90F713AD60F87 /* ABI36_0_0RCTI18nUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = CC2E893E2D79FE4354636939056EB0F6 /* ABI36_0_0RCTI18nUtil.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9640AAF9A5E86C44689F832DDE83BD2E /* ABI36_0_0RCTWeakProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8562E0DB91938200435F1E0F221624B0 /* ABI36_0_0RCTWeakProxy.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		968D6E15555CDA313312517765AF4BBF /* ABI36_0_0EXInterstitialAdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FB719FB38B89B1D3FD6FF34F6314A6F6 /* ABI36_0_0EXInterstitialAdManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1069,6 +1072,7 @@
 		A23563C78156B935F96A126F8F3A4294 /* ABI36_0_0RCTFollyConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0396EDC1D670E84F26936A69E2DBE559 /* ABI36_0_0RCTFollyConvert.mm */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A273B20881DB03D7FE4CDDBBC01E0EAD /* ABI36_0_0RNViewShot.m in Sources */ = {isa = PBXBuildFile; fileRef = 61731504773C133748C3ACE1F95B9E4B /* ABI36_0_0RNViewShot.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A281621573CA58DF10BCC3AB6BF969CD /* ABI36_0_0RCTSlider.h in Headers */ = {isa = PBXBuildFile; fileRef = 036EF0E9B68518F8F5BD3AA54C7A2484 /* ABI36_0_0RCTSlider.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		A28A80B3AA75B2D11328414B709DECA4 /* ABI36_0_0RCTAssetsLibraryRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB1F11B955591DF52B9D935872C7C54 /* ABI36_0_0RCTAssetsLibraryRequestHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A2CB246A1C192D7D182C05B7576A8E47 /* ABI36_0_0threadsafe.h in Headers */ = {isa = PBXBuildFile; fileRef = 539B72262DD13C6ADCB4E1CDB8F60DE8 /* ABI36_0_0threadsafe.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		A2E29C1559A33E471B732B6C3B0B4A1E /* ABI36_0_0RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AA523187D25346CB2FF9B9EC2D0502C /* ABI36_0_0RCTFileRequestHandler.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		A2FED9EA07E6A9DE4B12D629ECA22347 /* ABI36_0_0RCTScrollableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 6E52F2349D66E21340D294182B338983 /* ABI36_0_0RCTScrollableProtocol.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1293,6 +1297,7 @@
 		C62382B8830BD0B1ADC92E9F0B44648C /* ABI36_0_0RNGestureHandlerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD596312BF98349596C27A1248BCE72 /* ABI36_0_0RNGestureHandlerRegistry.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C627BD0A0454EEB1BBD3A36F66FB4F3F /* ABI36_0_0EXAdOptionsViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 11C6D7608F0ECE849812FA4EF3A82615 /* ABI36_0_0EXAdOptionsViewManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C65576913261DFF3072F5551E0824ABA /* ABI36_0_0RNSVGCircleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B3C34BEF032BAA8C9827D182202CC2 /* ABI36_0_0RNSVGCircleManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		C66684540BF26816D96F2409FD484391 /* ABI36_0_0RCTPhotoLibraryImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = D84B0515FECB60307ACEC4F28D57F47A /* ABI36_0_0RCTPhotoLibraryImageLoader.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		C6B52376EE0E9141C6F6F34791A81D4E /* ABI36_0_0ExpoKit-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6F9331F1EF87E3D5DC62652B8AC34041 /* ABI36_0_0ExpoKit-dummy.m */; };
 		C753D0E520A4E5C6A50181151F0DF34C /* ABI36_0_0RCTInspector.h in Headers */ = {isa = PBXBuildFile; fileRef = ECB5315F57A6EE47603CF5FF04D60299 /* ABI36_0_0RCTInspector.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		C7A42DF744CC9614204929704CF1C629 /* ABI36_0_0RCTSwitchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19D6EB0064889B89F24848F6FB6D1A8A /* ABI36_0_0RCTSwitchManager.m */; settings = {COMPILER_FLAGS = "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1409,6 +1414,7 @@
 		D61A0B654B5A3CD8F0815E0EB78C1BFF /* ABI36_0_0RCTImageEditingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 42E1DF1D8C5AC44255DC937B3C332EBD /* ABI36_0_0RCTImageEditingManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D665B2A206CF95F93C788C77429B2004 /* ABI36_0_0JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = 0941C11408CDB6FAEAD30012AF13CC9B /* ABI36_0_0JSIDynamic.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D67ACD73555B26FD86CB399CD4449A77 /* ABI36_0_0FBReactNativeSpec-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A41C67BA57892FE0DD5EDC2C3157F0D0 /* ABI36_0_0FBReactNativeSpec-dummy.m */; };
+		D6BAB95B0D679C5969067BF843004390 /* ABI36_0_0RCTAssetsLibraryRequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = C059B174752440315A0BD085ADE8ED3B /* ABI36_0_0RCTAssetsLibraryRequestHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D75795871A747F3856E5453C6731D230 /* ABI36_0_0RCTLocalAssetImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = E8CC39039C95724F0B8C7B2BF3B8B2BE /* ABI36_0_0RCTLocalAssetImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D779B32B1E2FCF7D56B7A05FB40B2A03 /* ABI36_0_0AIRMapCalloutSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = BEE070AE743C5629FD2FCD90131EC497 /* ABI36_0_0AIRMapCalloutSubview.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		D780C015ADD1F02F6C2A1EE1CAC7698B /* ABI36_0_0RCTUITextField.m in Sources */ = {isa = PBXBuildFile; fileRef = BDB79F836F97E64225829B14528A26FB /* ABI36_0_0RCTUITextField.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1559,6 +1565,7 @@
 		EFE34328CEAC6405AF514010A1BEE109 /* ABI36_0_0REAEventNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D10CB4C3C2F2CE345FB296964AB3E8B /* ABI36_0_0REAEventNode.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F00360149E27106BC0E5AE969FF768EB /* ABI36_0_0RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 231DBB1A0A47AE109B68DD71316BA02F /* ABI36_0_0RNCSafeAreaView.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F015252B6C68DE5A7C0B9CD15BB080E2 /* ABI36_0_0EXCellularModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 80FD5125EC958CABEE1872B7E1B775F7 /* ABI36_0_0EXCellularModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F02C601B73660A2C8AFDBC445E58C515 /* ABI36_0_0RCTImagePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EE24726F267452AD0035D7B4219351 /* ABI36_0_0RCTImagePickerManager.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F0942E5BA499A1BB9052C38CDB943C81 /* ABI36_0_0RCTRawTextViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0ED64ABED8E61457283C2DA1CD68FA51 /* ABI36_0_0RCTRawTextViewManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F0ABF9574D413B89F62A393A0E04E3AB /* ABI36_0_0RCTDecayAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = C1F5A3DA4928661C05EE3989E45C1988 /* ABI36_0_0RCTDecayAnimation.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F0BC7482C412BE0A0312A965ABB6B026 /* ABI36_0_0EXSpeech.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ECD237139A72FA13809779DF4AF825A /* ABI36_0_0EXSpeech.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1590,6 +1597,7 @@
 		F6DE28D0DB48BBD8D2278C5C5C756FBA /* ABI36_0_0EXUpdatesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D90BE9EE99C5BB6EB1920CBBF05FBD9 /* ABI36_0_0EXUpdatesModule.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		F760B6CBE14041A6917473ADDCEE9C6E /* ABI36_0_0Yoga-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 993169DBD17F453780E18BBA6844F9C5 /* ABI36_0_0Yoga-dummy.m */; };
 		F771E6E78457BC783EAFA7AA75BBD1A0 /* ABI36_0_0RCTNativeAnimatedNodesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 95078EA80F498FE8A764A56C3896D7C9 /* ABI36_0_0RCTNativeAnimatedNodesManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		F77FEEF6E9419EF4DCA515CB4B74599C /* ABI36_0_0RCTCameraRollManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 51F1604CD50A6890F1E4E6A0426A9F7E /* ABI36_0_0RCTCameraRollManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F7CED130406C2AA8A6F935FD23F7C091 /* ABI36_0_0EXContactsPermissionRequester.h in Headers */ = {isa = PBXBuildFile; fileRef = FDDBB1E315280FE6DAE2414ADE2304AA /* ABI36_0_0EXContactsPermissionRequester.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F7FF09D8684047354DE917E6F9B695F6 /* ABI36_0_0EXSensors-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C087B93650461D27DAA8E9BE39B18396 /* ABI36_0_0EXSensors-dummy.m */; };
 		F8196E3B0EE9CCD22F517A25A898CE23 /* ABI36_0_0RCTConvert+REATransition.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B4EC1A8B3255F77B3EC68222F999CD7 /* ABI36_0_0RCTConvert+REATransition.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -1610,6 +1618,7 @@
 		FA840BF83E02405DFBED5DAFB70159B2 /* ABI36_0_0EXAmplitude-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 73CF916DCED3AEBC5A4DCB70F259153B /* ABI36_0_0EXAmplitude-dummy.m */; };
 		FAE71FF7F8BBF63E151A439659041940 /* ABI36_0_0UMAppDelegateWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 41B28D660B1DC5766F46B87166AEC8B7 /* ABI36_0_0UMAppDelegateWrapper.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FAE949352E7DBF10D8D1782869200B65 /* ABI36_0_0EXHapticsModule.h in Headers */ = {isa = PBXBuildFile; fileRef = A9E57E46E78E4A59E16C674E2D719505 /* ABI36_0_0EXHapticsModule.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		FAECF59B39A1F5CEC1AF11C9ECC9F459 /* ABI36_0_0RCTPhotoLibraryImageLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = AC950836D1583DD861906A1ECCBED371 /* ABI36_0_0RCTPhotoLibraryImageLoader.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FB267CA15D64AA06522D3E7820BF310F /* ABI36_0_0EXGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A0FE017D665B9C42F741598D7D4F129 /* ABI36_0_0EXGLView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FB63973BDB376F5AB7BC69BCEDB2F037 /* ABI36_0_0YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77583402DA7AD5132F6A3C84954B4BC7 /* ABI36_0_0YGConfig.cpp */; settings = {COMPILER_FLAGS = "-fno-omit-frame-pointer -fexceptions -Wall -Werror -std=c++1y -fPIC -fno-objc-arc -w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		FB6769CE4C165DE03F3C53C8628EF0AC /* ABI36_0_0RNSVGTextManager.h in Headers */ = {isa = PBXBuildFile; fileRef = D9718F97DF1645C2AFE0CF15368B5812 /* ABI36_0_0RNSVGTextManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -1844,6 +1853,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 660DB54ABFA1FD5916FE6E4C5189A26E;
 			remoteInfo = "ABI36_0_0React-Core";
+		};
+		1A7FE793BE448DC89F346ADB253C35A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0811C6272161B4F64AD4DA0DB2BA3723;
+			remoteInfo = "ABI36_0_0React-RCTImage";
 		};
 		1AC2CDD18E7DEDC90AC61BFDB39692B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2495,6 +2511,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 25F6A84F7C9D48E4EDC6B249BED67639;
 			remoteInfo = ABI36_0_0EXFileSystem;
+		};
+		74938F2B0CE33D7AD712202A42FDE09B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A9B35028FE0ED5F28D1E55D577C9757 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 660DB54ABFA1FD5916FE6E4C5189A26E;
+			remoteInfo = "ABI36_0_0React-Core";
 		};
 		7739A766943A2D88639C298BE52CED10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -3635,6 +3658,7 @@
 		17DA9B16485D4EB71A57917D64295342 /* ABI36_0_0RNGestureHandlerState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNGestureHandlerState.h; sourceTree = "<group>"; };
 		17E52029522F4C8F0E63C1253C3D22C4 /* ABI36_0_0EXImagePickerCameraRollPermissionRequester.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXImagePickerCameraRollPermissionRequester.h; path = ABI36_0_0EXImagePicker/ABI36_0_0EXImagePickerCameraRollPermissionRequester.h; sourceTree = "<group>"; };
 		17FC6EDCBF3A02A07724B5D57D6B217E /* ABI36_0_0EXAppleAuthenticationButtonViewManagers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXAppleAuthenticationButtonViewManagers.m; path = ABI36_0_0EXAppleAuthentication/ABI36_0_0EXAppleAuthenticationButtonViewManagers.m; sourceTree = "<group>"; };
+		18020A5EA1CA9EB4EBDED7979089AC59 /* ABI36_0_0RCTImagePickerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTImagePickerManager.h; sourceTree = "<group>"; };
 		183E0BAE58DEE5B2694C31BF60474E7C /* ABI36_0_0EXSegment-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0EXSegment-dummy.m"; sourceTree = "<group>"; };
 		184F619F9B86AD3FDE3BBEF45631AE6B /* ABI36_0_0AIRGoogleMapWMSTile.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRGoogleMapWMSTile.m; sourceTree = "<group>"; };
 		18996AA51404E15B063436657FB61282 /* libABI36_0_0FBReactNativeSpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0FBReactNativeSpec.a; path = libABI36_0_0FBReactNativeSpec.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3797,6 +3821,7 @@
 		2D2AA185CB9D5A3D6BDB7CB7DED2D6DF /* ABI36_0_0REANode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0REANode.h; sourceTree = "<group>"; };
 		2D406B8AC8E1880A7EBAD817F6E29807 /* ABI36_0_0AIRGoogleMapCircleManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRGoogleMapCircleManager.m; sourceTree = "<group>"; };
 		2D81A80A05E174BA7012562927EA9945 /* ABI36_0_0EXSMS.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0EXSMS.xcconfig; sourceTree = "<group>"; };
+		2D92C9AACDC72663DC474429283772B0 /* ABI36_0_0React-RCTCameraRoll-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0React-RCTCameraRoll-prefix.pch"; sourceTree = "<group>"; };
 		2D9AC7397ADD4AF2B89A3507FCEBEB69 /* ABI36_0_0RCTNativeAnimatedModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTNativeAnimatedModule.m; sourceTree = "<group>"; };
 		2DBD580FEEEBA1AF62AB9CB3B33E6A22 /* ABI36_0_0EXBackgroundFetch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXBackgroundFetch.h; path = ABI36_0_0EXBackgroundFetch/ABI36_0_0EXBackgroundFetch.h; sourceTree = "<group>"; };
 		2DC5E78965F24091C523BDC64E037DDD /* ABI36_0_0RNSVGFontData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGFontData.m; sourceTree = "<group>"; };
@@ -4046,6 +4071,7 @@
 		519D51FC06246FDF4D3E9538FB2E646D /* ABI36_0_0RNSVGMarkerManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNSVGMarkerManager.h; sourceTree = "<group>"; };
 		51A7D0D625741FD5298BB0558606AB3B /* ABI36_0_0EXFontScaler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXFontScaler.h; path = ABI36_0_0EXFont/ABI36_0_0EXFontScaler.h; sourceTree = "<group>"; };
 		51B37449AF0B446FCD80C6A26F68A166 /* ABI36_0_0EXAnimationViewManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXAnimationViewManager.m; sourceTree = "<group>"; };
+		51F1604CD50A6890F1E4E6A0426A9F7E /* ABI36_0_0RCTCameraRollManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTCameraRollManager.h; sourceTree = "<group>"; };
 		5200DE64636AB6F490D34874280D6646 /* ABI36_0_0RNSVGImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGImage.m; sourceTree = "<group>"; };
 		521F0B54A602CCF572E446B52F05C9B1 /* ABI36_0_0RCTManagedPointer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTManagedPointer.h; sourceTree = "<group>"; };
 		5246E5A7C039F1AE72170A3A51441575 /* ABI36_0_0RNSVGSymbol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNSVGSymbol.h; sourceTree = "<group>"; };
@@ -4309,6 +4335,7 @@
 		7653CF691A26BEBD19105AFA7D0C7E08 /* ABI36_0_0EXBattery.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXBattery.h; path = ABI36_0_0EXBattery/ABI36_0_0EXBattery.h; sourceTree = "<group>"; };
 		766680A632D97158ACFF09734377C6AB /* ABI36_0_0RCTJavaScriptLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTJavaScriptLoader.h; sourceTree = "<group>"; };
 		768BC652ED5AB1DB8E179A535C006DCF /* ABI36_0_0RCTSegmentedControlManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTSegmentedControlManager.h; sourceTree = "<group>"; };
+		769192A023747A80900458E993D4A6E2 /* ABI36_0_0RCTCameraRollManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTCameraRollManager.m; sourceTree = "<group>"; };
 		76A9291E07AE84728DCA283088B87C43 /* ABI36_0_0EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		76B8F03002BED67FC4B04C34877337C1 /* ABI36_0_0RCTRootView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTRootView.m; sourceTree = "<group>"; };
 		76DB905984FCD755783DD901B9904F0B /* ABI36_0_0JSModulesUnbundle.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0JSModulesUnbundle.h; sourceTree = "<group>"; };
@@ -4716,6 +4743,7 @@
 		ABA40A07F9BA5FC69579EF73D584413D /* ABI36_0_0FBReactNativeSpec.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0FBReactNativeSpec.xcconfig; sourceTree = "<group>"; };
 		AC1D5E7F93A722DD3C554296726984F5 /* ABI36_0_0AIRMapOverlayRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRMapOverlayRenderer.m; sourceTree = "<group>"; };
 		AC5EC772278E0D659DE49AD7703760EC /* ABI36_0_0UMCore.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0UMCore.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		AC950836D1583DD861906A1ECCBED371 /* ABI36_0_0RCTPhotoLibraryImageLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTPhotoLibraryImageLoader.h; sourceTree = "<group>"; };
 		ACBD7F2C21D974D44801F3FFA01F35E8 /* ABI36_0_0EXErrorRecoveryModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXErrorRecoveryModule.h; path = ABI36_0_0EXErrorRecovery/ABI36_0_0EXErrorRecoveryModule.h; sourceTree = "<group>"; };
 		ACC3622D346BAEBDC36DEC902ABDBD07 /* Google-Maps-iOS-Utils */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Google-Maps-iOS-Utils"; path = "Google-Maps-iOS-Utils.xcodeproj"; sourceTree = "<group>"; };
 		ACCA8574DD017D2F1AD2464EA3DEC3D7 /* ABI36_0_0EXCamera-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0EXCamera-prefix.pch"; sourceTree = "<group>"; };
@@ -4751,6 +4779,7 @@
 		B028BD9CF9CB84EE75169FFFF567E939 /* ABI36_0_0EXRandom.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXRandom.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B031A745B6C16B8793D0CA200280C79A /* ABI36_0_0RNSVGRect.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGRect.m; sourceTree = "<group>"; };
 		B03571597CF5D07CB9D2671C37AB4753 /* libABI36_0_0EXContacts.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXContacts.a; path = libABI36_0_0EXContacts.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0511ACCA04AFB2993611FD7E7F0DA8E /* libABI36_0_0React-RCTCameraRoll.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libABI36_0_0React-RCTCameraRoll.a"; path = "libABI36_0_0React-RCTCameraRoll.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B057D130074B478C051F6CB4BA4C7338 /* ABI36_0_0AIRGoogleMapCallout.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRGoogleMapCallout.h; sourceTree = "<group>"; };
 		B0655C29E4DBB213D4496507A0C4C33D /* ABI36_0_0RNAWSCognito.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNAWSCognito.h; sourceTree = "<group>"; };
 		B095D4604077A7A263BFACEBA61CA31A /* ABI36_0_0RCTBlobCollector.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = ABI36_0_0RCTBlobCollector.mm; sourceTree = "<group>"; };
@@ -4805,6 +4834,7 @@
 		B74A28A74015203A558FA75FCDA43F53 /* ABI36_0_0EXCalendarPermissionRequester.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXCalendarPermissionRequester.m; path = ABI36_0_0EXCalendar/ABI36_0_0EXCalendarPermissionRequester.m; sourceTree = "<group>"; };
 		B79107B9B0DC2FE3CA9C9124A814C4FB /* ABI36_0_0RCTConvert+UIPageViewControllerTransitionStyle.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0RCTConvert+UIPageViewControllerTransitionStyle.m"; sourceTree = "<group>"; };
 		B7A8FE2C58FE5A85A342E0673AE378B5 /* ABI36_0_0AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
+		B7CF507E451369511934C7BA8869C5EE /* ABI36_0_0React-RCTCameraRoll.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = "ABI36_0_0React-RCTCameraRoll.podspec"; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B7EEC6155FEEF43DF8CFE472F255CC3C /* ABI36_0_0RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
 		B85C9950943E0AD6C879CE52A2EA48D6 /* ABI36_0_0RNCWKProcessPoolManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNCWKProcessPoolManager.m; sourceTree = "<group>"; };
 		B880CCD1EE1E63BC17A69F3A9E69EA54 /* ABI36_0_0RCTFont.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTFont.h; sourceTree = "<group>"; };
@@ -4829,6 +4859,7 @@
 		BB66F7C3A7A0EDC6AAA076F00C857FA8 /* ABI36_0_0UMFileSystemInterface.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0UMFileSystemInterface.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		BB823FF759D91263CE591989B9B1050E /* ABI36_0_0EXGoogleSignIn.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXGoogleSignIn.m; path = ABI36_0_0EXGoogleSignIn/ABI36_0_0EXGoogleSignIn.m; sourceTree = "<group>"; };
 		BB8FCA0A8EC9C6D24251A60738C72D7F /* GoogleMaps */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoogleMaps; path = GoogleMaps.xcodeproj; sourceTree = "<group>"; };
+		BBB1F11B955591DF52B9D935872C7C54 /* ABI36_0_0RCTAssetsLibraryRequestHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTAssetsLibraryRequestHandler.m; sourceTree = "<group>"; };
 		BBCED9B67B575208FFF2E318EBC3257A /* ABI36_0_0React-Core-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0React-Core-dummy.m"; sourceTree = "<group>"; };
 		BC07E45CB2B115E86063A436F95926D3 /* ABI36_0_0AIRGoogleMapOverlayManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRGoogleMapOverlayManager.h; sourceTree = "<group>"; };
 		BC19BA4989279D6D68FD434103A0A914 /* libABI36_0_0EXUpdates.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libABI36_0_0EXUpdates.a; path = libABI36_0_0EXUpdates.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4864,6 +4895,7 @@
 		BFEA9040A1668D8E64BA0C5DE932BA44 /* ABI36_0_0UMAppLifecycleListener.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0UMAppLifecycleListener.h; sourceTree = "<group>"; };
 		C007F813EF618C69A111E1F7B29BADF8 /* ABI36_0_0UMPermissionsInterface-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0UMPermissionsInterface-prefix.pch"; sourceTree = "<group>"; };
 		C009B5C79F6919D17873BFA981E91E8E /* ABI36_0_0RCTTurboModuleManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTTurboModuleManager.h; sourceTree = "<group>"; };
+		C059B174752440315A0BD085ADE8ED3B /* ABI36_0_0RCTAssetsLibraryRequestHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTAssetsLibraryRequestHandler.h; sourceTree = "<group>"; };
 		C087B93650461D27DAA8E9BE39B18396 /* ABI36_0_0EXSensors-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0EXSensors-dummy.m"; sourceTree = "<group>"; };
 		C0B5B24842C92ADAB613D63BCD71B299 /* ABI36_0_0EXTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXTask.h; path = ABI36_0_0EXTaskManager/ABI36_0_0EXTask.h; sourceTree = "<group>"; };
 		C0CBE3BB145E175F0D0D1E16D5ADA3C0 /* ABI36_0_0AIRGoogleMapPolyline.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRGoogleMapPolyline.m; sourceTree = "<group>"; };
@@ -4926,6 +4958,7 @@
 		C78339545FA1132693E7732A016E41DE /* ABI36_0_0AIRGoogleMapCalloutSubview.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0AIRGoogleMapCalloutSubview.m; sourceTree = "<group>"; };
 		C7C0E9B5E476F23A03A8A092CEB94086 /* ABI36_0_0React-Core-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "ABI36_0_0React-Core-prefix.pch"; sourceTree = "<group>"; };
 		C7C5B1D321450CAD3090CFF441A6DE46 /* ABI36_0_0RCTConvert+CoreLocation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0RCTConvert+CoreLocation.m"; sourceTree = "<group>"; };
+		C7EE24726F267452AD0035D7B4219351 /* ABI36_0_0RCTImagePickerManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTImagePickerManager.m; sourceTree = "<group>"; };
 		C7EE5F67283813FF14150EAB47AB74C1 /* ABI36_0_0EXPermissions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0EXPermissions.h; path = ABI36_0_0EXPermissions/ABI36_0_0EXPermissions.h; sourceTree = "<group>"; };
 		C800EA0D47ABBDA201CCF44C622C9E1B /* ABI36_0_0TurboCxxModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0TurboCxxModule.h; path = turbomodule/core/ABI36_0_0TurboCxxModule.h; sourceTree = "<group>"; };
 		C82878D357A998C597A7A4604653EEAF /* ABI36_0_0RCTCxxConvert.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTCxxConvert.m; sourceTree = "<group>"; };
@@ -5067,6 +5100,7 @@
 		D80D1911348FF679FDE62EC5C37A00A5 /* ABI36_0_0RCTNativeAnimatedModule.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0RCTNativeAnimatedModule.h; path = Libraries/NativeAnimation/ABI36_0_0RCTNativeAnimatedModule.h; sourceTree = "<group>"; };
 		D81D760E00C559AF1EC8C3215F1B4267 /* ABI36_0_0RCTModalHostView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTModalHostView.h; sourceTree = "<group>"; };
 		D844C76513FAB24A85435BABABE13D37 /* libABI36_0_0React-RCTText.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libABI36_0_0React-RCTText.a"; path = "libABI36_0_0React-RCTText.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D84B0515FECB60307ACEC4F28D57F47A /* ABI36_0_0RCTPhotoLibraryImageLoader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTPhotoLibraryImageLoader.m; sourceTree = "<group>"; };
 		D8653E52CBA65F38810B89CE2E808A0D /* ABI36_0_0EXConstants-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0EXConstants-dummy.m"; sourceTree = "<group>"; };
 		D87D43675E3EB3FF7518C8A47D052D1C /* ABI36_0_0EXImagePicker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXImagePicker.m; path = ABI36_0_0EXImagePicker/ABI36_0_0EXImagePicker.m; sourceTree = "<group>"; };
 		D87DECBC5014566EBD35F1A27889321A /* ABI36_0_0UMTaskManagerInterface.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0UMTaskManagerInterface.xcconfig; sourceTree = "<group>"; };
@@ -5127,6 +5161,7 @@
 		E1FEA387A3A998907F81204CA40AECAC /* ABI36_0_0EXAppAuth-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0EXAppAuth-dummy.m"; sourceTree = "<group>"; };
 		E2006512EE784578AAF1CC2489ED1972 /* ABI36_0_0EXFont.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = ABI36_0_0EXFont.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		E2044DB1ADB2354606AEEF4744CD8FB2 /* ABI36_0_0UMFaceDetectorManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ABI36_0_0UMFaceDetectorManager.h; path = ABI36_0_0UMFaceDetectorInterface/ABI36_0_0UMFaceDetectorManager.h; sourceTree = "<group>"; };
+		E20BFFC49B5AEA605D36A5DDDC9E1FF4 /* ABI36_0_0React-RCTCameraRoll-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "ABI36_0_0React-RCTCameraRoll-dummy.m"; sourceTree = "<group>"; };
 		E25C8D5892AFBB33A938BCF537B4DFA1 /* ABI36_0_0RCTSpringAnimation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RCTSpringAnimation.m; sourceTree = "<group>"; };
 		E25E1B647A079E94B3AB469399E02A9C /* ABI36_0_0REABezierNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0REABezierNode.m; sourceTree = "<group>"; };
 		E27E676636E78EBA013A1ED2E95FBFBD /* ABI36_0_0EXVideoThumbnails.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ABI36_0_0EXVideoThumbnails.xcconfig; sourceTree = "<group>"; };
@@ -5235,6 +5270,7 @@
 		F219F5D69CAAA3B8F07FCDA364C2464A /* ABI36_0_0RNSVGDefsManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0RNSVGDefsManager.m; sourceTree = "<group>"; };
 		F22E64B71246EC0FA4E86D5BEFDC4A54 /* ABI36_0_0AIRGoogleMapCalloutManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0AIRGoogleMapCalloutManager.h; sourceTree = "<group>"; };
 		F2C3B4777C2FB96695EB5CEBB306802D /* ABI36_0_0RNCSafeAreaView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RNCSafeAreaView.h; sourceTree = "<group>"; };
+		F2CD33F9CA0900192B3436565A0CAF58 /* ABI36_0_0React-RCTCameraRoll.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "ABI36_0_0React-RCTCameraRoll.xcconfig"; sourceTree = "<group>"; };
 		F30B48C5A448E4A01C754F4D833A92F0 /* ABI36_0_0RCTUIManagerObserverCoordinator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ABI36_0_0RCTUIManagerObserverCoordinator.h; sourceTree = "<group>"; };
 		F3376598DD47338BFA572B49E5CD6904 /* ABI36_0_0READebugNode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = ABI36_0_0READebugNode.m; sourceTree = "<group>"; };
 		F38C86E58DF04FEFF089FA699E8945DF /* ABI36_0_0EXRandom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ABI36_0_0EXRandom.m; path = ABI36_0_0EXRandom/ABI36_0_0EXRandom.m; sourceTree = "<group>"; };
@@ -5334,6 +5370,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		001F32571AE988BF032EF41BB91BF6BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		03AE290FAFBD067B254C451A8E46ACC2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -6708,6 +6751,7 @@
 				88F35E0E1DB923AFC34BE2E6630164C1 /* ABI36_0_0React-RCTActionSheet */,
 				1736ED75207A0F7A09E5300ABCD6B396 /* ABI36_0_0React-RCTAnimation */,
 				45C84AAE2B5A763F2B0494028D9ED1BB /* ABI36_0_0React-RCTBlob */,
+				ACEC015D6ADBCC4AE6BC80CD756A7CC7 /* ABI36_0_0React-RCTCameraRoll */,
 				89F157E4D0410DF73A18229C1AB4361E /* ABI36_0_0React-RCTImage */,
 				9D9B3B5EFC032969F19FB2782DE3C659 /* ABI36_0_0React-RCTLinking */,
 				E4E90D7AF4B921C210CDFCC5B4BCCF25 /* ABI36_0_0React-RCTNetwork */,
@@ -6730,7 +6774,7 @@
 				D989E3A0802EA26FFDC770EB73E05804 /* ABI36_0_0Yoga */,
 				1103190FB67395B83542D3F4A8BF1371 /* Dependencies */,
 				DB10592F102847032440825FFCDAA610 /* Frameworks */,
-				603F97478742B72F94E953AB54D79146 /* Products */,
+				57123FD0CF2C527B875C5EC943418AB1 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -7751,6 +7795,14 @@
 			path = "../../../../Pods/Target Support Files/ABI36_0_0EXSharing";
 			sourceTree = "<group>";
 		};
+		508836E8D023A5E4F6BF572B6A725166 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				B7CF507E451369511934C7BA8869C5EE /* ABI36_0_0React-RCTCameraRoll.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
 		51225AC776B9CBD84ECD6D0731F8B224 /* Drivers */ = {
 			isa = PBXGroup;
 			children = (
@@ -7905,6 +7957,104 @@
 				E2006512EE784578AAF1CC2489ED1972 /* ABI36_0_0EXFont.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		57123FD0CF2C527B875C5EC943418AB1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				62C420F8E6D81D6E458F649B39918356 /* libABI36_0_0EXAdsAdMob.a */,
+				2ED346FB4AE5B90A49C8457A33B1A725 /* libABI36_0_0EXAdsFacebook.a */,
+				EC876888E0FD52B70127641541B6642E /* libABI36_0_0EXAmplitude.a */,
+				CBA21173056B6C988BD6656011CC94DB /* libABI36_0_0EXAppAuth.a */,
+				BF8A34B208F678BFD3FDF7133B506543 /* libABI36_0_0EXAppleAuthentication.a */,
+				6EAB41852B0DC62F8B2AC6DFAD2AF958 /* libABI36_0_0EXApplication.a */,
+				824A7EFA9BEB567AB5CB3F53DBE3F205 /* libABI36_0_0EXAppLoaderProvider.a */,
+				4B9728E75D057E09FE0CBBC98F24B12C /* libABI36_0_0EXAV.a */,
+				FA388D3F7F73D0A801425FDE8961967D /* libABI36_0_0EXBackgroundFetch.a */,
+				AA753C7B387B04EFB3B0775AEAB13807 /* libABI36_0_0EXBarCodeScanner.a */,
+				026CC080305711B0C1AE404AAC324655 /* libABI36_0_0EXBattery.a */,
+				C6270466DE7214F26C5C943A96CDD6F5 /* libABI36_0_0EXBluetooth.a */,
+				72C5259E8E2A4ECE95772E8A4E064E21 /* libABI36_0_0EXBlur.a */,
+				5612DA7C7F6383BA235BF61D3A97035B /* libABI36_0_0EXBrightness.a */,
+				95ADFF1559C341214B272522F8CA6EE8 /* libABI36_0_0EXCalendar.a */,
+				660A153E6360920852D6C3B360FC5D44 /* libABI36_0_0EXCamera.a */,
+				91DB19DC1281DE999DC66D649FF0E0BD /* libABI36_0_0EXCellular.a */,
+				707080C29876A80FE589163BF6667B38 /* libABI36_0_0EXConstants.a */,
+				B03571597CF5D07CB9D2671C37AB4753 /* libABI36_0_0EXContacts.a */,
+				22AC010EA634E369B34D746614F8CBF0 /* libABI36_0_0EXCrypto.a */,
+				C3AA0BDE84B774D8CA8109FE14EEFFD8 /* libABI36_0_0EXDevice.a */,
+				1D44AF698E4FFFF5214B465748FBCC09 /* libABI36_0_0EXDocumentPicker.a */,
+				877187CF2469CC1DF2CEFD56DC839FFE /* libABI36_0_0EXErrorRecovery.a */,
+				7C44B625D1E3F4301F14DE38C4A8475E /* libABI36_0_0EXFacebook.a */,
+				AE86301F5909B55D89E9E3A2E72A3EAA /* libABI36_0_0EXFaceDetector.a */,
+				754026A4CBF5AC41BE06CA5FE0C38268 /* libABI36_0_0EXFileSystem.a */,
+				20952ED65A1A22FDBEDE25A666C844B0 /* libABI36_0_0EXFont.a */,
+				0599DA0FF2E80B61BA6FAA5E271DC389 /* libABI36_0_0EXGL.a */,
+				03151AE796F2C9BB01999776606F9D8C /* libABI36_0_0EXGoogleSignIn.a */,
+				92D626467738052B33F99ADB1CA9909C /* libABI36_0_0EXHaptics.a */,
+				EC74D87BD000C07A21F2CEE1C83A941E /* libABI36_0_0EXImageManipulator.a */,
+				2CD82935F2F08BA81C6983334636774F /* libABI36_0_0EXImagePicker.a */,
+				CD0DD3155EA7F56D0D75ABCA474F4997 /* libABI36_0_0EXInAppPurchases.a */,
+				54FC32149B75C4264FF470770458A313 /* libABI36_0_0EXKeepAwake.a */,
+				A95C6F83EED3973D7F8F96FB2E7B203C /* libABI36_0_0EXLinearGradient.a */,
+				BD4FEDCC2375A3DA823CB9A2810EC18D /* libABI36_0_0EXLocalAuthentication.a */,
+				C3EB06D7090C348224C6A666D637F821 /* libABI36_0_0EXLocalization.a */,
+				9D61AE2783F807C094565B464DB16FC4 /* libABI36_0_0EXLocation.a */,
+				BA76BAE63B8E7288B6AA0C0400A5FE52 /* libABI36_0_0EXMailComposer.a */,
+				AFD621E5D1244B6ECB604DD7BC766C3B /* libABI36_0_0EXMediaLibrary.a */,
+				EDA3F708FA051D2FBC1F65CAD5C4A5AA /* libABI36_0_0EXNetwork.a */,
+				9D8A874E90CE9394CEDDD302AA6403D6 /* libABI36_0_0EXPermissions.a */,
+				D590280F4487C7C7FA15544277800914 /* libABI36_0_0ExpoKit.a */,
+				AD8DE163DD5F10BF53B9D725B28DF335 /* libABI36_0_0EXPrint.a */,
+				B6A6572C98523DCB1D50AC5DA07E078D /* libABI36_0_0EXRandom.a */,
+				8252E33E822A4E3717017276854A08DF /* libABI36_0_0EXSecureStore.a */,
+				87C9272F122BE675D04F859A2BAF41BA /* libABI36_0_0EXSegment.a */,
+				E0F514677312626BC37CD515AAB6B591 /* libABI36_0_0EXSensors.a */,
+				A12EDB9F90EE62F2A0ACC6DEAB0B29B4 /* libABI36_0_0EXSharing.a */,
+				7E5260DC45230A058E0A294872B00856 /* libABI36_0_0EXSMS.a */,
+				DEE67574DB8727C7C64BAF6804DB1DA6 /* libABI36_0_0EXSpeech.a */,
+				8E4B71BB9C5E3FCF9435E8362C2E418A /* libABI36_0_0EXSQLite.a */,
+				1DFEEC16623A679638B28CB3B808D202 /* libABI36_0_0EXStoreReview.a */,
+				CF8D7153DB84A084DA4D428420172888 /* libABI36_0_0EXTaskManager.a */,
+				BC19BA4989279D6D68FD434103A0A914 /* libABI36_0_0EXUpdates.a */,
+				C6F896C19F37C06476C9CC6120297680 /* libABI36_0_0EXVideoThumbnails.a */,
+				78E8E3835B4A0838C522D26BC7EC1C5E /* libABI36_0_0EXWebBrowser.a */,
+				18996AA51404E15B063436657FB61282 /* libABI36_0_0FBReactNativeSpec.a */,
+				7F40AECAFAF8339D4CF31E51B57B02F7 /* libABI36_0_0RCTTypeSafety.a */,
+				19A5A7907BE020CA0973735544DE195E /* libABI36_0_0React-Core.a */,
+				E90A20FC8533E541A05CD68A670B3863 /* libABI36_0_0React-CoreModules.a */,
+				4E5E1743530E891710782D0B9F399D4D /* libABI36_0_0React-cxxreact.a */,
+				BF8863DDA1B0FF27C107D18B0F35B5F1 /* libABI36_0_0React-jsi.a */,
+				77FE3A7FE14BDD9CB73EE1EEB985F8F6 /* libABI36_0_0React-jsiexecutor.a */,
+				8383FA10E7098E1776ECD759E4F53387 /* libABI36_0_0React-jsinspector.a */,
+				C4390CE67B6D0601C10A134F59EFB5D2 /* libABI36_0_0React-RCTActionSheet.a */,
+				23A17AE5FC3B3AEAD26E095CE64BDC37 /* libABI36_0_0React-RCTAnimation.a */,
+				9F6D3084F115E8FDA21C6570DDFEC704 /* libABI36_0_0React-RCTBlob.a */,
+				B0511ACCA04AFB2993611FD7E7F0DA8E /* libABI36_0_0React-RCTCameraRoll.a */,
+				A2176168BBBFF79AC801285D6AE7887D /* libABI36_0_0React-RCTImage.a */,
+				DA646BDF6A4D1157F58A3BE52FC0D9F2 /* libABI36_0_0React-RCTLinking.a */,
+				53F829A834A81FE290AECB6A0DD0F59A /* libABI36_0_0React-RCTNetwork.a */,
+				725F5C465BEC92F1F2E1CB500BB992DC /* libABI36_0_0React-RCTSettings.a */,
+				D844C76513FAB24A85435BABABE13D37 /* libABI36_0_0React-RCTText.a */,
+				81AC7FFF1D26F3B2CDF513712531D3CE /* libABI36_0_0React-RCTVibration.a */,
+				1B11C409CDD1F0A1295F348DF1EFF80B /* libABI36_0_0ReactCommon.a */,
+				2E5B1198FC7F38F8611F2671D123B72E /* libABI36_0_0UMCore.a */,
+				4EEED9BAC713FD8572F1186FEB2F5F2E /* libABI36_0_0UMPermissionsInterface.a */,
+				3A2FCDB16422BD1FD12958EDC5975B99 /* libABI36_0_0UMReactNativeAdapter.a */,
+				CDF8C0F7E0D746D0A989FC13EBE33C0B /* libABI36_0_0Yoga.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		578B0D445BF6A3FEE26C38907F796264 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F2CD33F9CA0900192B3436565A0CAF58 /* ABI36_0_0React-RCTCameraRoll.xcconfig */,
+				E20BFFC49B5AEA605D36A5DDDC9E1FF4 /* ABI36_0_0React-RCTCameraRoll-dummy.m */,
+				2D92C9AACDC72663DC474429283772B0 /* ABI36_0_0React-RCTCameraRoll-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../../../../../Pods/Target Support Files/ABI36_0_0React-RCTCameraRoll";
 			sourceTree = "<group>";
 		};
 		58C78E770F2F27C189BEB7035EEC1BF9 /* DevSupport */ = {
@@ -8074,92 +8224,6 @@
 			);
 			name = ABI36_0_0UMFontInterface;
 			path = "../versioned-react-native/ABI36_0_0/Expo/UMFontInterface";
-			sourceTree = "<group>";
-		};
-		603F97478742B72F94E953AB54D79146 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				62C420F8E6D81D6E458F649B39918356 /* libABI36_0_0EXAdsAdMob.a */,
-				2ED346FB4AE5B90A49C8457A33B1A725 /* libABI36_0_0EXAdsFacebook.a */,
-				EC876888E0FD52B70127641541B6642E /* libABI36_0_0EXAmplitude.a */,
-				CBA21173056B6C988BD6656011CC94DB /* libABI36_0_0EXAppAuth.a */,
-				BF8A34B208F678BFD3FDF7133B506543 /* libABI36_0_0EXAppleAuthentication.a */,
-				6EAB41852B0DC62F8B2AC6DFAD2AF958 /* libABI36_0_0EXApplication.a */,
-				824A7EFA9BEB567AB5CB3F53DBE3F205 /* libABI36_0_0EXAppLoaderProvider.a */,
-				4B9728E75D057E09FE0CBBC98F24B12C /* libABI36_0_0EXAV.a */,
-				FA388D3F7F73D0A801425FDE8961967D /* libABI36_0_0EXBackgroundFetch.a */,
-				AA753C7B387B04EFB3B0775AEAB13807 /* libABI36_0_0EXBarCodeScanner.a */,
-				026CC080305711B0C1AE404AAC324655 /* libABI36_0_0EXBattery.a */,
-				C6270466DE7214F26C5C943A96CDD6F5 /* libABI36_0_0EXBluetooth.a */,
-				72C5259E8E2A4ECE95772E8A4E064E21 /* libABI36_0_0EXBlur.a */,
-				5612DA7C7F6383BA235BF61D3A97035B /* libABI36_0_0EXBrightness.a */,
-				95ADFF1559C341214B272522F8CA6EE8 /* libABI36_0_0EXCalendar.a */,
-				660A153E6360920852D6C3B360FC5D44 /* libABI36_0_0EXCamera.a */,
-				91DB19DC1281DE999DC66D649FF0E0BD /* libABI36_0_0EXCellular.a */,
-				707080C29876A80FE589163BF6667B38 /* libABI36_0_0EXConstants.a */,
-				B03571597CF5D07CB9D2671C37AB4753 /* libABI36_0_0EXContacts.a */,
-				22AC010EA634E369B34D746614F8CBF0 /* libABI36_0_0EXCrypto.a */,
-				C3AA0BDE84B774D8CA8109FE14EEFFD8 /* libABI36_0_0EXDevice.a */,
-				1D44AF698E4FFFF5214B465748FBCC09 /* libABI36_0_0EXDocumentPicker.a */,
-				877187CF2469CC1DF2CEFD56DC839FFE /* libABI36_0_0EXErrorRecovery.a */,
-				7C44B625D1E3F4301F14DE38C4A8475E /* libABI36_0_0EXFacebook.a */,
-				AE86301F5909B55D89E9E3A2E72A3EAA /* libABI36_0_0EXFaceDetector.a */,
-				754026A4CBF5AC41BE06CA5FE0C38268 /* libABI36_0_0EXFileSystem.a */,
-				20952ED65A1A22FDBEDE25A666C844B0 /* libABI36_0_0EXFont.a */,
-				0599DA0FF2E80B61BA6FAA5E271DC389 /* libABI36_0_0EXGL.a */,
-				03151AE796F2C9BB01999776606F9D8C /* libABI36_0_0EXGoogleSignIn.a */,
-				92D626467738052B33F99ADB1CA9909C /* libABI36_0_0EXHaptics.a */,
-				EC74D87BD000C07A21F2CEE1C83A941E /* libABI36_0_0EXImageManipulator.a */,
-				2CD82935F2F08BA81C6983334636774F /* libABI36_0_0EXImagePicker.a */,
-				CD0DD3155EA7F56D0D75ABCA474F4997 /* libABI36_0_0EXInAppPurchases.a */,
-				54FC32149B75C4264FF470770458A313 /* libABI36_0_0EXKeepAwake.a */,
-				A95C6F83EED3973D7F8F96FB2E7B203C /* libABI36_0_0EXLinearGradient.a */,
-				BD4FEDCC2375A3DA823CB9A2810EC18D /* libABI36_0_0EXLocalAuthentication.a */,
-				C3EB06D7090C348224C6A666D637F821 /* libABI36_0_0EXLocalization.a */,
-				9D61AE2783F807C094565B464DB16FC4 /* libABI36_0_0EXLocation.a */,
-				BA76BAE63B8E7288B6AA0C0400A5FE52 /* libABI36_0_0EXMailComposer.a */,
-				AFD621E5D1244B6ECB604DD7BC766C3B /* libABI36_0_0EXMediaLibrary.a */,
-				EDA3F708FA051D2FBC1F65CAD5C4A5AA /* libABI36_0_0EXNetwork.a */,
-				9D8A874E90CE9394CEDDD302AA6403D6 /* libABI36_0_0EXPermissions.a */,
-				D590280F4487C7C7FA15544277800914 /* libABI36_0_0ExpoKit.a */,
-				AD8DE163DD5F10BF53B9D725B28DF335 /* libABI36_0_0EXPrint.a */,
-				B6A6572C98523DCB1D50AC5DA07E078D /* libABI36_0_0EXRandom.a */,
-				8252E33E822A4E3717017276854A08DF /* libABI36_0_0EXSecureStore.a */,
-				87C9272F122BE675D04F859A2BAF41BA /* libABI36_0_0EXSegment.a */,
-				E0F514677312626BC37CD515AAB6B591 /* libABI36_0_0EXSensors.a */,
-				A12EDB9F90EE62F2A0ACC6DEAB0B29B4 /* libABI36_0_0EXSharing.a */,
-				7E5260DC45230A058E0A294872B00856 /* libABI36_0_0EXSMS.a */,
-				DEE67574DB8727C7C64BAF6804DB1DA6 /* libABI36_0_0EXSpeech.a */,
-				8E4B71BB9C5E3FCF9435E8362C2E418A /* libABI36_0_0EXSQLite.a */,
-				1DFEEC16623A679638B28CB3B808D202 /* libABI36_0_0EXStoreReview.a */,
-				CF8D7153DB84A084DA4D428420172888 /* libABI36_0_0EXTaskManager.a */,
-				BC19BA4989279D6D68FD434103A0A914 /* libABI36_0_0EXUpdates.a */,
-				C6F896C19F37C06476C9CC6120297680 /* libABI36_0_0EXVideoThumbnails.a */,
-				78E8E3835B4A0838C522D26BC7EC1C5E /* libABI36_0_0EXWebBrowser.a */,
-				18996AA51404E15B063436657FB61282 /* libABI36_0_0FBReactNativeSpec.a */,
-				7F40AECAFAF8339D4CF31E51B57B02F7 /* libABI36_0_0RCTTypeSafety.a */,
-				19A5A7907BE020CA0973735544DE195E /* libABI36_0_0React-Core.a */,
-				E90A20FC8533E541A05CD68A670B3863 /* libABI36_0_0React-CoreModules.a */,
-				4E5E1743530E891710782D0B9F399D4D /* libABI36_0_0React-cxxreact.a */,
-				BF8863DDA1B0FF27C107D18B0F35B5F1 /* libABI36_0_0React-jsi.a */,
-				77FE3A7FE14BDD9CB73EE1EEB985F8F6 /* libABI36_0_0React-jsiexecutor.a */,
-				8383FA10E7098E1776ECD759E4F53387 /* libABI36_0_0React-jsinspector.a */,
-				C4390CE67B6D0601C10A134F59EFB5D2 /* libABI36_0_0React-RCTActionSheet.a */,
-				23A17AE5FC3B3AEAD26E095CE64BDC37 /* libABI36_0_0React-RCTAnimation.a */,
-				9F6D3084F115E8FDA21C6570DDFEC704 /* libABI36_0_0React-RCTBlob.a */,
-				A2176168BBBFF79AC801285D6AE7887D /* libABI36_0_0React-RCTImage.a */,
-				DA646BDF6A4D1157F58A3BE52FC0D9F2 /* libABI36_0_0React-RCTLinking.a */,
-				53F829A834A81FE290AECB6A0DD0F59A /* libABI36_0_0React-RCTNetwork.a */,
-				725F5C465BEC92F1F2E1CB500BB992DC /* libABI36_0_0React-RCTSettings.a */,
-				D844C76513FAB24A85435BABABE13D37 /* libABI36_0_0React-RCTText.a */,
-				81AC7FFF1D26F3B2CDF513712531D3CE /* libABI36_0_0React-RCTVibration.a */,
-				1B11C409CDD1F0A1295F348DF1EFF80B /* libABI36_0_0ReactCommon.a */,
-				2E5B1198FC7F38F8611F2671D123B72E /* libABI36_0_0UMCore.a */,
-				4EEED9BAC713FD8572F1186FEB2F5F2E /* libABI36_0_0UMPermissionsInterface.a */,
-				3A2FCDB16422BD1FD12958EDC5975B99 /* libABI36_0_0UMReactNativeAdapter.a */,
-				CDF8C0F7E0D746D0A989FC13EBE33C0B /* libABI36_0_0Yoga.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		606679C1C10DC46B98DD0247400A2055 /* ABI36_0_0UMBarCodeScannerInterface */ = {
@@ -9562,6 +9626,24 @@
 				0D5EA0DEF1D77C61B9C3710926E59257 /* ABI36_0_0EXDocumentPicker.podspec */,
 			);
 			name = Pod;
+			sourceTree = "<group>";
+		};
+		ACEC015D6ADBCC4AE6BC80CD756A7CC7 /* ABI36_0_0React-RCTCameraRoll */ = {
+			isa = PBXGroup;
+			children = (
+				C059B174752440315A0BD085ADE8ED3B /* ABI36_0_0RCTAssetsLibraryRequestHandler.h */,
+				BBB1F11B955591DF52B9D935872C7C54 /* ABI36_0_0RCTAssetsLibraryRequestHandler.m */,
+				51F1604CD50A6890F1E4E6A0426A9F7E /* ABI36_0_0RCTCameraRollManager.h */,
+				769192A023747A80900458E993D4A6E2 /* ABI36_0_0RCTCameraRollManager.m */,
+				18020A5EA1CA9EB4EBDED7979089AC59 /* ABI36_0_0RCTImagePickerManager.h */,
+				C7EE24726F267452AD0035D7B4219351 /* ABI36_0_0RCTImagePickerManager.m */,
+				AC950836D1583DD861906A1ECCBED371 /* ABI36_0_0RCTPhotoLibraryImageLoader.h */,
+				D84B0515FECB60307ACEC4F28D57F47A /* ABI36_0_0RCTPhotoLibraryImageLoader.m */,
+				508836E8D023A5E4F6BF572B6A725166 /* Pod */,
+				578B0D445BF6A3FEE26C38907F796264 /* Support Files */,
+			);
+			name = "ABI36_0_0React-RCTCameraRoll";
+			path = "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll";
 			sourceTree = "<group>";
 		};
 		AECA7796A353EDBFABEA17A7CA398A27 /* Views */ = {
@@ -11266,6 +11348,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				93DCB7328864BB0B51C8528B6F6C1394 /* ABI36_0_0EXCrypto.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2714AED1AC45672F1EAC19C804B96B31 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6BAB95B0D679C5969067BF843004390 /* ABI36_0_0RCTAssetsLibraryRequestHandler.h in Headers */,
+				F77FEEF6E9419EF4DCA515CB4B74599C /* ABI36_0_0RCTCameraRollManager.h in Headers */,
+				0451B33FEA3724669B1EE7C05A544942 /* ABI36_0_0RCTImagePickerManager.h in Headers */,
+				FAECF59B39A1F5CEC1AF11C9ECC9F459 /* ABI36_0_0RCTPhotoLibraryImageLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -13823,6 +13916,25 @@
 			productReference = EC876888E0FD52B70127641541B6642E /* libABI36_0_0EXAmplitude.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D9CD66A3AC28BECFB36FD7244B4B2E94 /* ABI36_0_0React-RCTCameraRoll */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5283C98EBB41F9622626F5FBBCC63A71 /* Build configuration list for PBXNativeTarget "ABI36_0_0React-RCTCameraRoll" */;
+			buildPhases = (
+				2714AED1AC45672F1EAC19C804B96B31 /* Headers */,
+				7B9A13400C0995CDEB0166FD4989E23C /* Sources */,
+				001F32571AE988BF032EF41BB91BF6BF /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				28A60828C6B9CDA13B251E97DEB1EE35 /* PBXTargetDependency */,
+				3C023E051C0F46369C7C23AA4DE5A5EA /* PBXTargetDependency */,
+			);
+			name = "ABI36_0_0React-RCTCameraRoll";
+			productName = "ABI36_0_0React-RCTCameraRoll";
+			productReference = B0511ACCA04AFB2993611FD7E7F0DA8E /* libABI36_0_0React-RCTCameraRoll.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		DBFFDD6EF0081135DDB3A825211EA670 /* ABI36_0_0EXBackgroundFetch */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D095653802B7FA3D763FC4912A39AA1 /* Build configuration list for PBXNativeTarget "ABI36_0_0EXBackgroundFetch" */;
@@ -14086,7 +14198,7 @@
 				Base,
 			);
 			mainGroup = 1C7331997A13DECEA7B446A2CE46D678;
-			productRefGroup = 603F97478742B72F94E953AB54D79146 /* Products */;
+			productRefGroup = 57123FD0CF2C527B875C5EC943418AB1 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -14262,6 +14374,7 @@
 				AF3FC25A4F3B77D9D5286DB997771F58 /* ABI36_0_0React-RCTActionSheet */,
 				76841BB49F129B32D32B589CB96BBB63 /* ABI36_0_0React-RCTAnimation */,
 				5736942C4FC6AD3F148F073ECDA11CA7 /* ABI36_0_0React-RCTBlob */,
+				D9CD66A3AC28BECFB36FD7244B4B2E94 /* ABI36_0_0React-RCTCameraRoll */,
 				0811C6272161B4F64AD4DA0DB2BA3723 /* ABI36_0_0React-RCTImage */,
 				AF0C5E68466048B1E480760252D57987 /* ABI36_0_0React-RCTLinking */,
 				BE622428948FCAE095B552C4B08D4C22 /* ABI36_0_0React-RCTNetwork */,
@@ -14692,6 +14805,18 @@
 				096C1D9501549B421D80271BC2A61393 /* ABI36_0_0EXPedometer.m in Sources */,
 				F7FF09D8684047354DE917E6F9B695F6 /* ABI36_0_0EXSensors-dummy.m in Sources */,
 				EE5776837F2B5039ED08E5EFD679B978 /* ABI36_0_0EXSensorsManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7B9A13400C0995CDEB0166FD4989E23C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A28A80B3AA75B2D11328414B709DECA4 /* ABI36_0_0RCTAssetsLibraryRequestHandler.m in Sources */,
+				51BE99917922AD30AE6630AF719C7571 /* ABI36_0_0RCTCameraRollManager.m in Sources */,
+				F02C601B73660A2C8AFDBC445E58C515 /* ABI36_0_0RCTImagePickerManager.m in Sources */,
+				C66684540BF26816D96F2409FD484391 /* ABI36_0_0RCTPhotoLibraryImageLoader.m in Sources */,
+				95FAEBF8BDEDBA49B8015C308FEDF2EF /* ABI36_0_0React-RCTCameraRoll-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -15821,6 +15946,12 @@
 			target = BE622428948FCAE095B552C4B08D4C22 /* ABI36_0_0React-RCTNetwork */;
 			targetProxy = 5428876A77CDC00D53A8CD57265FFDED /* PBXContainerItemProxy */;
 		};
+		28A60828C6B9CDA13B251E97DEB1EE35 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ABI36_0_0React-Core";
+			target = 660DB54ABFA1FD5916FE6E4C5189A26E /* ABI36_0_0React-Core */;
+			targetProxy = 74938F2B0CE33D7AD712202A42FDE09B /* PBXContainerItemProxy */;
+		};
 		2963370C571E3392541EB94EBB4DAAAA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = GoogleMaps;
@@ -15919,6 +16050,12 @@
 			name = "ABI36_0_0React-Core";
 			target = 660DB54ABFA1FD5916FE6E4C5189A26E /* ABI36_0_0React-Core */;
 			targetProxy = 386C75A311399924DFC6D25B727671F4 /* PBXContainerItemProxy */;
+		};
+		3C023E051C0F46369C7C23AA4DE5A5EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "ABI36_0_0React-RCTImage";
+			target = 0811C6272161B4F64AD4DA0DB2BA3723 /* ABI36_0_0React-RCTImage */;
+			targetProxy = 1A7FE793BE448DC89F346ADB253C35A4 /* PBXContainerItemProxy */;
 		};
 		3CA81D7F06177608F418B12E6ACD05E1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -19659,6 +19796,30 @@
 			};
 			name = Release;
 		};
+		A15F0324DBED53261F5C45EFB070DA65 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2CD33F9CA0900192B3436565A0CAF58 /* ABI36_0_0React-RCTCameraRoll.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI36_0_0React-RCTCameraRoll/ABI36_0_0React-RCTCameraRoll-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI36_0_0React;
+				PRODUCT_NAME = "ABI36_0_0React-RCTCameraRoll";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		A168A628E2AEC425C2D26FDCC685B75D /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 16F9FF8ADFF9F1467A4A83BF81077C4F /* ABI36_0_0React-RCTImage.xcconfig */;
@@ -20866,6 +21027,29 @@
 			};
 			name = Release;
 		};
+		E669F2F41D8FE14D5070A6DBFB4B3868 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F2CD33F9CA0900192B3436565A0CAF58 /* ABI36_0_0React-RCTCameraRoll.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/ABI36_0_0React-RCTCameraRoll/ABI36_0_0React-RCTCameraRoll-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = ABI36_0_0React;
+				PRODUCT_NAME = "ABI36_0_0React-RCTCameraRoll";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		E834FA6B1087D137ECD8679F21B9DD0E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 567ACA199B23B5333EF702376A9C5026 /* ABI36_0_0React.xcconfig */;
@@ -21754,6 +21938,15 @@
 			buildConfigurations = (
 				E3E1346B473A46DDF32B53724C19D6D9 /* Debug */,
 				B635B9762F140C7F122A2ED0E986A78A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5283C98EBB41F9622626F5FBBCC63A71 /* Build configuration list for PBXNativeTarget "ABI36_0_0React-RCTCameraRoll" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E669F2F41D8FE14D5070A6DBFB4B3868 /* Debug */,
+				A15F0324DBED53261F5C45EFB070DA65 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

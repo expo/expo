@@ -1144,6 +1144,9 @@ PODS:
     - ABI36_0_0React-Core/RCTWebSocket (= 0.61.4)
     - ABI36_0_0React-jsi (= 0.61.4)
     - ABI36_0_0React-RCTNetwork (= 0.61.4)
+  - ABI36_0_0React-RCTCameraRoll (0.61.4):
+    - ABI36_0_0React-Core (= 0.61.4)
+    - ABI36_0_0React-RCTImage (= 0.61.4)
   - ABI36_0_0React-RCTImage (0.61.4):
     - ABI36_0_0React-Core/RCTImageHeaders (= 0.61.4)
     - ABI36_0_0React-RCTNetwork (= 0.61.4)
@@ -2187,6 +2190,7 @@ DEPENDENCIES:
   - ABI36_0_0React-RCTActionSheet (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/ActionSheetIOS`)
   - ABI36_0_0React-RCTAnimation (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/NativeAnimation`)
   - ABI36_0_0React-RCTBlob (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/Blob`)
+  - ABI36_0_0React-RCTCameraRoll (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll`)
   - ABI36_0_0React-RCTImage (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/Image`)
   - ABI36_0_0React-RCTLinking (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/LinkingIOS`)
   - ABI36_0_0React-RCTNetwork (from `./versioned-react-native/ABI36_0_0/ReactNative/Libraries/Network`)
@@ -2900,6 +2904,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI36_0_0/ReactNative/Libraries/NativeAnimation"
   ABI36_0_0React-RCTBlob:
     :path: "./versioned-react-native/ABI36_0_0/ReactNative/Libraries/Blob"
+  ABI36_0_0React-RCTCameraRoll:
+    :path: "./versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll"
   ABI36_0_0React-RCTImage:
     :path: "./versioned-react-native/ABI36_0_0/ReactNative/Libraries/Image"
   ABI36_0_0React-RCTLinking:
@@ -3457,6 +3463,7 @@ SPEC CHECKSUMS:
   ABI36_0_0React-RCTActionSheet: 02c4b8770e5254dfc6aae2ff15cb6eace76373eb
   ABI36_0_0React-RCTAnimation: be3616b93a204afd2cb72a9f45e7768a27bed326
   ABI36_0_0React-RCTBlob: 80d01c1fefbd1e1f86aed2ad02942d63f7109782
+  ABI36_0_0React-RCTCameraRoll: b42de9ffc1aab1d2634bec074028650005474cd2
   ABI36_0_0React-RCTImage: 4891854453c9068b16206264b145988d9d0095e1
   ABI36_0_0React-RCTLinking: e4352a7092b377c39496b9b641d506f913a5a973
   ABI36_0_0React-RCTNetwork: d3de6cb9abc13e8dbe2ca94b24abb4fdeefcab06
