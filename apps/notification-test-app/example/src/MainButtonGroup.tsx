@@ -71,8 +71,10 @@ export default function getMainButtonList() {
             onPush:
                 async function () {
                     let interval = 5 * 1000;
+                    let notification: any = createNotification(this.title);
+                    notification.android = { exact:true };
                     Notifications.scheduleNotificationWithTimerAsync(
-                        createNotification(this.title),
+                        notification,
                         {
                             interval,
                             repeat: false,
