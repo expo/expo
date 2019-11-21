@@ -10,7 +10,6 @@ import setupJasmine from '../utils/setupJasmine';
 
 const initialState = {
   portalChildShouldBeVisible: false,
-  testRunnerError: null,
   state: Immutable.fromJS({
     suites: [],
     path: ['suites'], // Path to current 'children' List in state
@@ -24,46 +23,42 @@ class TestRunner extends React.Component {
   _lastUri;
 
   state = initialState;
-  // --- Lifecycle -------------------------------------------------------------
-
-  foundNewURL = ({ url }) => {
-    if (url) {
-      this._runTests(url);
-    }
-  };
-
-  // --- Test running ----------------------------------------------------------
-
-  setPortalChild = testPortal => this.setState({ testPortal });
-
-  cleanupPortal = () => new Promise(resolve => this.setState({ testPortal: null }, resolve));
-
-  get validUri() {
-    return this._lastUri || this.props.initialUri;
-  }
-
-  UNSAFE_componentWillReceiveProps({ modules: nextModules = [] }) {
-    const { modules = [] } = this.props;
-    if (modules !== nextModules) {
-      this._runTests(this.validUri);
-    }
-  }
 
   componentDidMount() {
-    this._runTests(this.validUri);
+    const { modules } = this.props;
+    this._runTests(modules);
+    this._isMounted = true;
   }
 
-  async _runTests(uri) {
-    this._lastUri = uri;
-    // If the URL contains two pluses let's keep the existing state instead of rerunning tests.
-    // This way we are able to test the Linking module.
-    if (uri && uri.indexOf('++') > -1) {
-      return;
-    }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
+  setPortalChild = testPortal => {
+    if (this._isMounted) this.setState({ testPortal });
+  };
+
+  cleanupPortal = () =>
+    new Promise((resolve, reject) => {
+      if (this._isMounted) this.setState({ testPortal: null }, resolve);
+      else reject(new Error('cannot cleanup portal after the component has unmounted'));
+    });
+
+  // UNSAFE_componentWillReceiveProps({ modules: nextModules = [] }) {
+  //   const { modules = [] } = this.props;
+  //   if (modules !== nextModules) {
+  //     this._resetAndRunTestsAsync(nextModules);
+  //   }
+  // }
+
+  _resetAndRunTestsAsync = async modules => {
     // Reset results state
     this.setState(initialState);
+    await this._runTests(modules);
+  };
 
+  _runTests = async modules => {
+    // return new Promise(async resolve => {
     const { jasmineEnv, jasmine } = await setupJasmine(
       this,
       () => {
@@ -71,38 +66,14 @@ class TestRunner extends React.Component {
       },
       () => {
         console.log('complete');
+        // resolve();
         setTimeout(() => {
           // this.props.onTestsComplete(true);
         }, 100);
       }
     );
 
-    // Load tests, confining to the ones named in the uri
-    let modules = [...this.props.modules];
-    if (uri && uri.indexOf('--/') > -1) {
-      const deepLink = uri.substring(uri.indexOf('--/') + 3);
-      const filterJSON = JSON.parse(deepLink);
-      if (filterJSON.includeModules) {
-        console.log('Only testing these modules: ' + JSON.stringify(filterJSON.includeModules));
-        const includeModulesRegexes = filterJSON.includeModules.map(m => new RegExp(m));
-        modules = modules.filter(m => {
-          for (let i = 0; i < includeModulesRegexes.length; i++) {
-            if (includeModulesRegexes[i].test(m.name)) {
-              return true;
-            }
-          }
-
-          return false;
-        });
-
-        if (modules.length === 0) {
-          this.setState({
-            testRunnerError: `No tests were found that satisfy ${deepLink}`,
-          });
-          return;
-        }
-      }
-    }
+    console.log('runTests: ', modules);
 
     await Promise.all(
       modules.map(m =>
@@ -114,10 +85,19 @@ class TestRunner extends React.Component {
     );
 
     jasmineEnv.execute();
-  }
+    // });
+  };
 
   render() {
-    const { testRunnerError, state, portalChildShouldBeVisible, testPortal } = this.state;
+    const {
+      testRunnerError,
+      results,
+      done,
+      numFailed,
+      state,
+      portalChildShouldBeVisible,
+      testPortal,
+    } = this.state;
     if (testRunnerError) {
       return <RunnerError>{testRunnerError}</RunnerError>;
     }
@@ -129,7 +109,7 @@ class TestRunner extends React.Component {
           alignItems: 'stretch',
           justifyContent: 'center',
         }}>
-        <Suites suites={state.get('suites')} />
+        <Suites numFailed={numFailed} results={results} done={done} suites={state.get('suites')} />
         <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>
       </View>
     );
@@ -142,12 +122,16 @@ TestRunner.defaultProps = {
 
 export default function ContextTestScreen(props) {
   const { modules, onTestsComplete } = React.useContext(ModulesContext);
-  const activeModules = modules.filter(({ isActive }) => isActive);
+  const selectedModules = props.navigation.getParam('selected');
+  const hasInputModules = selectedModules && selectedModules.length;
+  const activeModules = hasInputModules
+    ? selectedModules
+    : modules.filter(({ isActive }) => isActive);
+
+  console.log('active: ', activeModules);
   return <TestRunner {...props} onTestsComplete={onTestsComplete} modules={activeModules} />;
 }
 
 ContextTestScreen.navigationOptions = {
   title: 'Test Runner',
 };
-
-ContextTestScreen.path = 'select/:tests';

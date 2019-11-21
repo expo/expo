@@ -1,7 +1,7 @@
 'use strict';
 import Immutable from 'immutable';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
-import { NativeModules } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 const { ExponentTest } = NativeModules;
 
@@ -9,54 +9,60 @@ let _results = '';
 let _failures = '';
 
 // A jasmine reporter that writes results to this.state
-function jasmineSetStateReporter(jasmineEnv, app, onStart, onComplete) {
+function jasmineSetStateReporter(app, onStart, onComplete) {
   return {
     suiteStarted(jasmineResult) {
-      app.setState(({ state }) => ({
-        state: state
-          .updateIn(state.get('path'), children =>
-            children.push(
-              Immutable.fromJS({
-                result: jasmineResult,
-                children: [],
-                specs: [],
-              })
+      if (app._isMounted) {
+        app.setState(({ state }) => ({
+          state: state
+            .updateIn(state.get('path'), children =>
+              children.push(
+                Immutable.fromJS({
+                  result: jasmineResult,
+                  children: [],
+                  specs: [],
+                })
+              )
             )
-          )
-          .update('path', path => path.push(state.getIn(path).size, 'children')),
-      }));
+            .update('path', path => path.push(state.getIn(path).size, 'children')),
+        }));
+      }
     },
 
     suiteDone(jasmineResult) {
-      app.setState(({ state }) => ({
-        state: state
-          .updateIn(
+      if (app._isMounted) {
+        app.setState(({ state }) => ({
+          state: state
+            .updateIn(
+              state
+                .get('path')
+                .pop()
+                .pop(),
+              children =>
+                children.update(children.size - 1, child =>
+                  child.set('result', child.get('result'))
+                )
+            )
+            .update('path', path => path.pop().pop()),
+        }));
+      }
+    },
+
+    specStarted(jasmineResult) {
+      if (app._isMounted) {
+        app.setState(({ state }) => ({
+          state: state.updateIn(
             state
               .get('path')
               .pop()
               .pop(),
             children =>
-              children.update(children.size - 1, child => child.set('result', child.get('result')))
-          )
-          .update('path', path => path.pop().pop()),
-      }));
-    },
-
-    specStarted(jasmineResult) {
-      app.setState(({ state }) => ({
-        state: state.updateIn(
-          state
-            .get('path')
-            .pop()
-            .pop(),
-          children =>
-            children.update(
-              children.size - 1,
-              child =>
-                child && child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
-            )
-        ),
-      }));
+              children.update(children.size - 1, child =>
+                child.update('specs', specs => specs.push(Immutable.fromJS(jasmineResult)))
+              )
+          ),
+        }));
+      }
     },
 
     specDone(jasmineResult) {
@@ -65,24 +71,22 @@ function jasmineSetStateReporter(jasmineEnv, app, onStart, onComplete) {
           `The test portal has not been cleaned up by \`${jasmineResult.fullName}\`. Call \`cleanupPortal\` before finishing the test.`
         );
       }
-
-      app.setState(({ state }) => ({
-        state: state.updateIn(
-          state
-            .get('path')
-            .pop()
-            .pop(),
-          children =>
-            children.update(
-              children.size - 1,
-              child =>
-                child &&
+      if (app._isMounted) {
+        app.setState(({ state }) => ({
+          state: state.updateIn(
+            state
+              .get('path')
+              .pop()
+              .pop(),
+            children =>
+              children.update(children.size - 1, child =>
                 child.update('specs', specs =>
                   specs.set(specs.size - 1, Immutable.fromJS(jasmineResult))
                 )
-            )
-        ),
-      }));
+              )
+          ),
+        }));
+      }
     },
 
     jasmineStarted() {
@@ -95,7 +99,7 @@ function jasmineSetStateReporter(jasmineEnv, app, onStart, onComplete) {
 }
 
 // A jasmine reporter that writes results to the console
-function jasmineConsoleReporter(jasmineEnv) {
+function jasmineConsoleReporter(app) {
   const failedSpecs = [];
 
   return {
@@ -106,26 +110,24 @@ function jasmineConsoleReporter(jasmineEnv) {
         if (ExponentTest && ExponentTest.log) {
           ExponentTest.log(`${result.status === 'passed' ? 'PASS' : 'FAIL'} ${result.fullName}`);
         }
-        const emoji = result.status === 'passed' ? '💚' : '💔';
+        const emoji = result.status === 'passed' ? ':green_heart:' : ':broken_heart:';
         console.log(`${grouping} ${emoji} ${result.fullName}`);
-        _results += `${grouping} ${result.fullName}\n`;
+        app._results += `${grouping} ${result.fullName}\n`;
 
         if (result.status === 'failed') {
-          _failures += `${grouping} ${result.fullName}\n`;
-          result.failedExpectations.forEach(({ matcherName, message }) => {
+          app._failures += `${grouping} ${result.fullName}\n`;
+          result.failedExpectations.forEach(({ matcherName = 'NO_MATCHER', message }) => {
             if (ExponentTest && ExponentTest.log) {
               ExponentTest.log(`${matcherName}: ${message}`);
             }
             console.log(`${matcherName}: ${message}`);
-            _results += `${matcherName}: ${message}\n`;
-            _failures += `${matcherName}: ${message}\n`;
+            app._results += `${matcherName}: ${message}\n`;
+            app._failures += `${matcherName}: ${message}\n`;
           });
           failedSpecs.push(result);
         }
       }
     },
-
-    suiteDone(result) {},
 
     jasmineStarted() {
       console.log('--- tests started');
@@ -134,20 +136,32 @@ function jasmineConsoleReporter(jasmineEnv) {
     jasmineDone() {
       console.log('--- tests done');
       console.log('--- send results to runner');
-      const testResults = {
+
+      const result = {
         magic: '[TEST-SUITE-END]', // NOTE: Runner/Run.js waits to see this
         failed: failedSpecs.length,
-        results: _results,
+        failures: app._failures,
+        results: app._results,
       };
-      console.log(testResults);
-      let result = JSON.stringify(testResults);
-      console.log(result);
+
+      const jsonResult = JSON.stringify(result);
+      if (app._isMounted) {
+        app.setState({ done: true, numFailed: failedSpecs.length, results: jsonResult });
+      }
+
+      if (Platform.OS === 'web') {
+        // This log needs to be an object for puppeteer tests
+        console.log(result);
+      } else {
+        console.log(jsonResult);
+      }
+
       if (ExponentTest) {
-        // Native logs are truncated so log just the failures for now
         ExponentTest.completed(
           JSON.stringify({
             failed: failedSpecs.length,
-            failures: _failures,
+            failures: app._failures,
+            results: app._results,
           })
         );
       }
@@ -162,8 +176,8 @@ export default async function setupJasmine(app, onStart, onComplete) {
   const jasmineEnv = jasmineCore.getEnv();
 
   // Add our custom reporters too
-  jasmineEnv.addReporter(jasmineSetStateReporter(undefined, app, onStart, onComplete));
-  jasmineEnv.addReporter(jasmineConsoleReporter());
+  jasmineEnv.addReporter(jasmineSetStateReporter(app, onStart, onComplete));
+  jasmineEnv.addReporter(jasmineConsoleReporter(app));
 
   // Get the interface and make it support `async ` by default
   const jasmine = jasmineModule.interface(jasmineCore, jasmineEnv);
@@ -183,6 +197,7 @@ export default async function setupJasmine(app, onStart, onComplete) {
   jasmine.fit = (desc, fn, t) => oldFit.apply(jasmine, [desc, doneIfy(fn), t]);
 
   return {
+    jasmineCore,
     jasmineEnv,
     jasmine,
   };

@@ -6,6 +6,7 @@ import {
   FlatList,
   PixelRatio,
   Platform,
+  Linking,
   StyleSheet,
   Text,
   View,
@@ -28,8 +29,77 @@ function CheckListItem({ onPress, isSelected, title }) {
   );
 }
 
+SelectionList.navigationOptions = {
+  title: 'Test Suite',
+};
+
 export default function SelectionList({ navigation }) {
   const { modules, setIsTestActive, onToggleAll } = React.useContext(ModulesContext);
+
+  function checkLinking(incomingTests) {
+    if (incomingTests) {
+      const testNames = incomingTests.split(',').map(v => v.trim());
+      const selected = modules.filter(m => testNames.includes(m.name));
+      if (!selected.length) {
+        console.log('[TEST_SUITE]', 'No selected modules', testNames);
+      }
+
+      // TODO: Bacon: update context
+      const parsedModules = modules.filter(m => testNames.includes(m.name));
+
+      navigation.navigate('RunTests');
+    }
+  }
+
+  const _handleOpenURL = ({ url }) => {
+    setTimeout(() => {
+      if (url && url.includes('select/')) {
+        checkLinking(url.split('/').pop());
+      }
+    }, 100);
+  };
+  React.useEffect(() => {
+    if (global.ErrorUtils) {
+      const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
+
+      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
+        // Prevent optionalRequire from failing
+        if (
+          isFatal &&
+          (error.message.includes('Native module cannot be null') ||
+            error.message.includes(
+              `from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: `
+            ))
+        ) {
+          console.log('Caught require error');
+        } else {
+          originalErrorHandler(error, isFatal);
+        }
+      });
+    }
+    // this.modules = getTestModules();
+    // this.state = {
+    //   selected: new Set(),
+    // };
+
+    Linking.addEventListener('url', _handleOpenURL);
+
+    Linking.getInitialURL()
+      .then(url => {
+        _handleOpenURL({ url });
+        // TODO: Use Expo Linking library once parseURL is implemented for web
+        if (url && url.includes('/all')) {
+          // Test all available modules
+          onToggleAll(true);
+          navigation.navigate('RunTests');
+        }
+      })
+      .catch(err => console.error('Failed to load initial URL', err));
+
+    return () => {
+      Linking.removeEventListener('url', _handleOpenURL);
+    };
+  }, []);
 
   const selected = modules.filter(({ isActive }) => isActive);
   const allSelected = selected.length === modules.length;
@@ -49,7 +119,7 @@ export default function SelectionList({ navigation }) {
       />
       <SafeAreaView style={styles.buttonRow}>
         <View style={styles.buttonContainer}>
-          <Button title={buttonTitle} onPress={onToggleAll} />
+          <Button title={buttonTitle} onPress={() => onToggleAll()} />
         </View>
         <View style={styles.buttonContainer}>
           <Button

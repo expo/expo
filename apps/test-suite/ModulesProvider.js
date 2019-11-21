@@ -89,8 +89,8 @@ export default function ModulesProvider({ children }) {
         if (!module.name || module.name === '') {
           throw new Error(
             'Module name is invalid. Expected a string with the name of the test to be exported: ' +
-            JSON.stringify(module, null, 2) +
-            ' '
+              JSON.stringify(module, null, 2) +
+              ' '
           );
         }
         const key = module.name.replace(' ', '_');
@@ -124,11 +124,11 @@ export default function ModulesProvider({ children }) {
     cacheModules(_modules);
   };
 
-  const onToggleAll = () => {
+  const onToggleAll = isActive => {
     if (isTesting) return;
     const _modules = { ...modules };
 
-    let toggleDirection;
+    let toggleDirection = isActive;
     for (const module of Object.values(_modules)) {
       if (toggleDirection === undefined) {
         toggleDirection = !module.isActive;

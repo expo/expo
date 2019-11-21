@@ -6,7 +6,7 @@ import { Asset } from 'expo-asset';
 export const name = 'Asset';
 
 export function test({ describe, afterEach, it, expect, jasmine, ...t }) {
-  describe('Asset', () => {
+  describe(name, () => {
     [
       {
         module: require('../assets/black-128x256.png'),

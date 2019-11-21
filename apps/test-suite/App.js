@@ -26,8 +26,6 @@ const AppNavigator = createStackNavigator(
   }
 );
 
-CustomNavigator.path = 'test-suite';
-
 function CustomNavigator(props) {
   return (
     <SafeAreaProvider>

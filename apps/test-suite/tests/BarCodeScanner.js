@@ -20,7 +20,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
-  describeWithPermissions('BarCodeScanner', () => {
+  describeWithPermissions(name, () => {
     const mountAndWaitFor = (child, propName = 'ref') =>
       new Promise(resolve => {
         const response = originalMountAndWaitFor(child, propName, setPortalChild);

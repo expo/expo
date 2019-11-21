@@ -6,6 +6,8 @@ import ModulesProvider from './ModulesProvider';
 import Select from './screens/SelectScreen';
 import RunTests from './screens/TestScreen';
 
+// RunTests.path = 'select/:tests';
+
 const AppNavigator = createStackNavigator(
   {
     Select,
