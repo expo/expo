@@ -6,8 +6,8 @@ import { CodedError, RCTDeviceEventEmitter, UnavailabilityError } from '@unimodu
 import ExpoNotifications from './ExpoNotifications';
 import { Mailbox } from './Mailbox';
 import {
+  ForegroundNotification,
   Notification,
-  LocalNotification,
   Channel,
   ActionType,
   UserInteraction,
@@ -118,7 +118,7 @@ export async function deleteChannelGroupAsync(groupId: string): Promise<void> {
  */
 
 export async function presentLocalNotificationAsync(
-  notification: LocalNotification
+  notification: Notification
 ): Promise<string> {
   _validateNotification(notification);
   let nativeNotification = _processNotification(notification);
@@ -167,10 +167,13 @@ export async function setBadgeNumberAsync(number: number): Promise<void> {
   if (!ExpoNotifications.setBadgeNumberAsync) {
     throw new UnavailabilityError('Expo.Notifications', 'setBadgeNumberAsync');
   }
+  if (Platform.OS !== 'ios') {
+    return;
+  }
   return ExpoNotifications.setBadgeNumberAsync(number);
 }
 
-export async function setOnTokenChangeListener(listener: OnTokenChangeListener) {
+export async function setOnTokenChangeListenerAsync(listener: OnTokenChangeListener): Promise<void> {
   _mailbox.setOnTokenChangeListener(listener);
   await ExpoNotifications.registerForPushNotificationsAsync();
 }
@@ -178,7 +181,7 @@ export async function setOnTokenChangeListener(listener: OnTokenChangeListener) 
 export function addOnUserInteractionListener(
   listenerName: string,
   listener: OnUserInteractionListener
-) {
+): void {
   _mailbox.addOnUserInteractionListener(listenerName, listener);
   if (isItFirstListener) {
     isItFirstListener = true;
@@ -191,20 +194,20 @@ export function addOnUserInteractionListener(
 export function addOnForegroundNotificationListener(
   listenerName: string,
   listener: OnForegroundNotificationListener
-) {
+): void {
   _mailbox.addOnForegroundNotificationListener(listenerName, listener);
 }
 
-export function removeOnUserInteractionListener(listenerName: string) {
+export function removeOnUserInteractionListener(listenerName: string): void {
   _mailbox.removeOnUserInteractionListener(listenerName);
 }
 
-export function removeOnForegroundNotificationListener(listenerName: string) {
+export function removeOnForegroundNotificationListener(listenerName: string): void {
   _mailbox.removeOnForegroundNotificationListener(listenerName);
 }
 
 export async function scheduleNotificationWithCalendarAsync(
-  notification: LocalNotification,
+  notification: Notification,
   options: {
     year?: number;
     month?: number;
@@ -242,7 +245,7 @@ export async function scheduleNotificationWithCalendarAsync(
 }
 
 export async function scheduleNotificationWithTimerAsync(
-  notification: LocalNotification,
+  notification: Notification,
   options: {
     interval: number;
     repeat?: boolean;
@@ -258,41 +261,4 @@ export async function scheduleNotificationWithTimerAsync(
 
 function isInRangeInclusive(variable: number, min: number, max: number): boolean {
   return variable >= min && variable <= max;
-}
-
-/*
- * Legacy code
- */
-
-let _emitter;
-
-function _maybeInitEmitter() {
-  if (!_emitter) {
-    _emitter = new EventEmitter();
-    addOnUserInteractionListener('legacyListener', (userInteraction: UserInteraction) => {
-      let legacyMsg: Notification = {
-        data: userInteraction,
-        origin: 'selected',
-        remote: userInteraction.remote == true,
-        isMultiple: false,
-      };
-
-      _emitter.emit('notification', legacyMsg);
-    });
-    addOnForegroundNotificationListener('legacyListener', (notification: LocalNotification) => {
-      let legacyMsg: Notification = {
-        data: notification,
-        origin: 'received',
-        remote: notification.remote == true,
-        isMultiple: false,
-      };
-
-      _emitter.emit('notification', legacyMsg);
-    });
-  }
-}
-
-export function addListener(listener: (notification: Notification) => unknown): EventSubscription {
-  _maybeInitEmitter();
-  return _emitter.addListener('notification', listener);
 }

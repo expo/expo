@@ -1,4 +1,4 @@
-import { LocalNotification } from './Notifications.types';
+import { Notification as LocalNotification } from './Notifications.types';
 declare const _default: {
     presentLocalNotification(notification: LocalNotification): Promise<string>;
     scheduleLocalNotification(notification: any, options?: {

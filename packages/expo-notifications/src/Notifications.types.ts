@@ -1,13 +1,5 @@
 export type Notification = {
-  origin: 'selected' | 'received';
-  data: any;
-  remote: boolean;
-  isMultiple: boolean;
-};
-
-export type LocalNotification = {
   title: string;
-  // How should we deal with body being required on iOS but not on Android?
   body?: string;
   data?: any;
   categoryId?: string;
@@ -21,9 +13,14 @@ export type LocalNotification = {
     color?: string;
     sticky?: boolean;
     link?: string;
+    exact?: boolean;
   };
   web?: NotificationOptions;
   remote?: boolean;
+};
+
+export type ForegroundNotification = Notification & {
+  remote: boolean;
 };
 
 export type Channel = {
@@ -47,7 +44,7 @@ export type ActionType = {
   };
 };
 
-export type UserInteraction = LocalNotification & {
+export type UserInteraction = Notification & {
     actionId?: string;
     userText?: string;
 }
@@ -56,8 +53,8 @@ export type TokenMessage = {
   token: string;
 }
 
-export type OnUserInteractionListener = (userInteraction: UserInteraction) => void;
+export type OnUserInteractionListener = (userInteraction: UserInteraction) => Promise<void>;
 
-export type OnForegroundNotificationListener = (notification: LocalNotification) => void;
+export type OnForegroundNotificationListener = (notification: ForegroundNotification) => Promise<void>;
 
-export type OnTokenChangeListener = (token: string) => void;
+export type OnTokenChangeListener = (token: string) => Promise<void>;

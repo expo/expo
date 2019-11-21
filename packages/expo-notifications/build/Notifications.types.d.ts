@@ -1,10 +1,4 @@
 export declare type Notification = {
-    origin: 'selected' | 'received';
-    data: any;
-    remote: boolean;
-    isMultiple: boolean;
-};
-export declare type LocalNotification = {
     title: string;
     body?: string;
     data?: any;
@@ -19,9 +13,13 @@ export declare type LocalNotification = {
         color?: string;
         sticky?: boolean;
         link?: string;
+        exact?: boolean;
     };
     web?: NotificationOptions;
     remote?: boolean;
+};
+export declare type ForegroundNotification = Notification & {
+    remote: boolean;
 };
 export declare type Channel = {
     name: string;
@@ -42,13 +40,13 @@ export declare type ActionType = {
         placeholder: string;
     };
 };
-export declare type UserInteraction = LocalNotification & {
+export declare type UserInteraction = Notification & {
     actionId?: string;
     userText?: string;
 };
 export declare type TokenMessage = {
     token: string;
 };
-export declare type OnUserInteractionListener = (userInteraction: UserInteraction) => void;
-export declare type OnForegroundNotificationListener = (notification: LocalNotification) => void;
-export declare type OnTokenChangeListener = (token: string) => void;
+export declare type OnUserInteractionListener = (userInteraction: UserInteraction) => Promise<void>;
+export declare type OnForegroundNotificationListener = (notification: ForegroundNotification) => Promise<void>;
+export declare type OnTokenChangeListener = (token: string) => Promise<void>;

@@ -359,6 +359,7 @@ type Notification = {
     color?: string;
     sticky?: boolean;
     link?: string;
+    exact?: boolean;
   };
   web?: NotificationOptions;
   remote?: boolean;

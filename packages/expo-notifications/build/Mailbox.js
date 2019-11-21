@@ -25,19 +25,19 @@ export class Mailbox {
     setOnTokenChangeListener(onTokenChangeListner) {
         this.onTokenChangeListener = onTokenChangeListner;
     }
-    onForegroundNotification(notification) {
+    async onForegroundNotification(notification) {
         for (let listener of this.onForegroundNotificationListeners.values()) {
-            listener(notification);
+            await listener(notification);
         }
     }
-    onUserInteraction(userInteraction) {
+    async onUserInteraction(userInteraction) {
         for (let listener of this.onUserInteractionListeners.values()) {
-            listener(userInteraction);
+            await listener(userInteraction);
         }
     }
-    onTokenChange(tokenMessage) {
+    async onTokenChange(tokenMessage) {
         if (this.onTokenChangeListener != null) {
-            this.onTokenChangeListener(tokenMessage.token);
+            await this.onTokenChangeListener(tokenMessage.token);
         }
     }
 }
