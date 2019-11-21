@@ -61,6 +61,9 @@ import abi35_0_0.host.exp.exponent.modules.test.ExponentTestNativeModule;
 import abi35_0_0.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import abi35_0_0.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter;
 
+import abi35_0_0.host.exp.exponent.modules.api.components.helpshift.RNHelpshiftModule;
+import abi35_0_0.host.exp.exponent.modules.api.components.helpshift.RNHelpshiftPackage;
+
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
@@ -179,6 +182,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
+        nativeModules.add(new RNHelpshiftModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
@@ -209,7 +213,8 @@ public class ExponentPackage implements ReactPackage {
         new RNScreensPackage(),
         new RNCWebViewPackage(),
         new SafeAreaContextPackage(),
-        new RNSharedElementPackage()
+        new RNSharedElementPackage(),
+        new RNHelpshiftPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

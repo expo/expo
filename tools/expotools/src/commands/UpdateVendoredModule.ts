@@ -287,6 +287,21 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'helpshift-react-native': {
+    repoUrl: 'https://github.com/brentvatne/helpshift-react-native',
+    packageName: 'helpshift-react-native',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceIosPath: 'ios',
+        targetIosPath: 'Api/Components/Helpshift',
+        sourceAndroidPath: 'android/src/main/java/com/helpshift',
+        targetAndroidPath: 'modules/api/components/helpshift',
+        sourceAndroidPackage: 'com.helpshift',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.helpshift',
+      },
+    ],
+  },
 };
 
 async function getBundledNativeModulesAsync(): Promise<{ [key: string]: string }> {

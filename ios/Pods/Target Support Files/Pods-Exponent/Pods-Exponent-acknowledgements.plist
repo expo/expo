@@ -3300,6 +3300,16 @@ third-party archives.
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>See http://www.helpshift.com/terms/</string>
+			<key>License</key>
+			<string>Commercial</string>
+			<key>Title</key>
+			<string>Helpshift</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>Copyright (C) 2013 Jānis Kiršteins
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of

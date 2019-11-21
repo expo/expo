@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Global Attributes</key>
+	<dict>
+		<key>Font name</key>
+		<string></string>
+		<key>Font file name</key>
+		<string></string>
+		<key>Bold font name</key>
+		<string></string>
+		<key>Bold font file name</key>
+		<string></string>
+		<key>Background color</key>
+		<string></string>
+		<key>Background image</key>
+		<string></string>
+		<key>Content background color</key>
+		<string>FFFFFF</string>
+		<key>Separator line color</key>
+		<string>cbcbd0</string>
+		<key>Text color</key>
+		<string>000000</string>
+		<key>Secondary text color</key>
+		<string>aaaaaa</string>
+		<key>Placeholder text color</key>
+		<string>cbcbd0</string>
+		<key>Contact us button color</key>
+		<string></string>
+		<key>Cell selection color</key>
+		<string></string>
+		<key>Search highlight color</key>
+		<string></string>
+		<key>Status bar light content</key>
+		<string>NO</string>
+		<key>Table view detail font color</key>
+		<string></string>
+		<key>Table view destructive action font color</key>
+		<string></string>
+		<key>Table view normal action font color</key>
+		<string></string>
+		<key>Table view destructive action color</key>
+		<string></string>
+		<key>Table view normal action color</key>
+		<string></string>
+		<key>Table view icon background color</key>
+		<string>cccccc</string>
+		<key>Table view disclosure color</key>
+		<string></string>
+		<key>Table view cell extra vertical padding</key>
+		<integer>0</integer>
+		<key>Table view max lines</key>
+		<integer>3</integer>
+	</dict>
+	<key>Navigation Bar</key>
+	<dict>
+		<key>Font name</key>
+		<string></string>
+		<key>Font size</key>
+		<string></string>
+		<key>Title color</key>
+		<string></string>
+		<key>Bar button text color</key>
+		<string></string>
+		<key>Bar button font name</key>
+		<string></string>
+		<key>Bar button font size</key>
+		<string></string>
+		<key>Background color</key>
+		<string></string>
+		<key>Set Translucent</key>
+		<true/>
+		<key>Hide back button label</key>
+		<false/>
+	</dict>
+	<key>Search Bar</key>
+	<dict>
+		<key>Background color</key>
+		<string></string>
+		<key>Bar Style (iOS 11 and above)</key>
+		<string>Default</string>
+	</dict>
+	<key>Table Section Header</key>
+	<dict>
+		<key>Font name</key>
+		<string></string>
+		<key>Font size</key>
+		<string></string>
+		<key>Text color</key>
+		<string></string>
+	</dict>
+	<key>FAQ and Chat</key>
+	<dict>
+		<key>Notification color</key>
+		<string>FF0000</string>
+		<key>Chat send button color</key>
+		<string></string>
+		<key>Timestamp text color</key>
+		<string>6D6D72</string>
+		<key>FAQ yes button color</key>
+		<string></string>
+		<key>FAQ no button color</key>
+		<string></string>
+		<key>Screenshot tutorial button color</key>
+		<string></string>
+		<key>Screenshot attach button color</key>
+		<string>8D9DAF</string>
+		<key>Typing indicator color</key>
+		<string></string>
+		<key>User message text color</key>
+		<string>FFFFFF</string>
+		<key>Agent message text color</key>
+		<string>000000</string>
+		<key>User message background color</key>
+		<string>007AFF</string>
+		<key>Agent message background color</key>
+		<string>EFEFF4</string>
+		<key>Media message background color</key>
+		<string>FFFFFF</string>
+		<key>Media message border color</key>
+		<string>000000</string>
+		<key>Media message action color</key>
+		<string>007AFF</string>
+		<key>Message error color</key>
+		<string>FF3B30</string>
+		<key>Selectable Option Text Color</key>
+		<string>007AFF</string>
+		<key>Selectable Option Background Color</key>
+		<string>FFFFFF</string>
+		<key>Selectable Option Border Color</key>
+		<string>007AFF</string>
+		<key>Selectable Option Roundness</key>
+		<true/>
+		<key>Field Background color</key>
+		<string>FFFFFF</string>
+		<key>Field border color</key>
+		<string>BCBBC1</string>
+		<key>Reply footer separator color</key>
+		<string></string>
+	</dict>
+	<key>Message Retry Badge</key>
+	<dict>
+		<key>Text color</key>
+		<string></string>
+		<key>Background color</key>
+		<string></string>
+	</dict>
+	<key>Conversation Resolution</key>
+	<dict>
+		<key>Background color</key>
+		<string></string>
+		<key>Text color</key>
+		<string></string>
+		<key>Rating star color</key>
+		<string>ff8000</string>
+		<key>Yes button color</key>
+		<string></string>
+		<key>No button color</key>
+		<string></string>
+	</dict>
+</dict>
+</plist>

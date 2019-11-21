@@ -1,0 +1,301 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		5A03E5418846C60D7F3F09561FE9D346 /* Helpshift */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 1DBFDFD370ED98C68740E6EA09913226 /* Build configuration list for PBXAggregateTarget "Helpshift" */;
+			buildPhases = (
+			);
+			dependencies = (
+			);
+			name = Helpshift;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXFileReference section */
+		24824759361B0FAE2D87D2D17F97980F /* HelpshiftConfigHighContrast.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = HelpshiftConfigHighContrast.plist; path = "helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfigHighContrast.plist"; sourceTree = "<group>"; };
+		473ED70445CFAE67DE2FB187A7D3ACEE /* HelpshiftConfig.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = HelpshiftConfig.plist; path = "helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfig.plist"; sourceTree = "<group>"; };
+		61773D5C785ECAD50B17DDD0F33C14E8 /* HelpshiftSupport.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HelpshiftSupport.h; path = "helpshift-sdk-ios-v7.6.2/HelpshiftSupport.h"; sourceTree = "<group>"; };
+		77F1300C2738639F17F9753999CF0357 /* HsUIResources.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = HsUIResources.bundle; path = "helpshift-sdk-ios-v7.6.2/HsUIResources.bundle"; sourceTree = "<group>"; };
+		877C226972FA6EEEFFB44F825F8A436A /* HsLocalization.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = HsLocalization.bundle; path = "helpshift-sdk-ios-v7.6.2/HsLocalization.bundle"; sourceTree = "<group>"; };
+		8A974B9D08987E40E38FCE47C1AF9081 /* libSupport.a */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = archive.ar; name = libSupport.a; path = "helpshift-sdk-ios-v7.6.2/libSupport.a"; sourceTree = "<group>"; };
+		8FBCF63FBFF820A36F7AE4FDAED1B24D /* HelpshiftCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = HelpshiftCore.h; path = "helpshift-sdk-ios-v7.6.2/HelpshiftCore.h"; sourceTree = "<group>"; };
+		DBC30CD65B042BA9A9F8CD675B8404F1 /* HelpshiftConfigDark.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = HelpshiftConfigDark.plist; path = "helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfigDark.plist"; sourceTree = "<group>"; };
+		E086E4AFDB043D2259FE4187C3068C35 /* Helpshift.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Helpshift.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		111602ECD327C2904A18BCF2CF10FF09 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				473ED70445CFAE67DE2FB187A7D3ACEE /* HelpshiftConfig.plist */,
+				DBC30CD65B042BA9A9F8CD675B8404F1 /* HelpshiftConfigDark.plist */,
+				24824759361B0FAE2D87D2D17F97980F /* HelpshiftConfigHighContrast.plist */,
+				877C226972FA6EEEFFB44F825F8A436A /* HsLocalization.bundle */,
+				77F1300C2738639F17F9753999CF0357 /* HsUIResources.bundle */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		30E940CC964A4D426670D792A0DA6F54 = {
+			isa = PBXGroup;
+			children = (
+				4CD003B92C7214C0309D3B6CC5B4ADBE /* Frameworks */,
+				72409422D8FCA51B3A70F82A1B279212 /* Helpshift */,
+				ACC7E647E56703A825F9745613A53862 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4CD003B92C7214C0309D3B6CC5B4ADBE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5D3E753BA2F1A928CAF9E582D3EE42C8 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				E086E4AFDB043D2259FE4187C3068C35 /* Helpshift.xcconfig */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/Helpshift";
+			sourceTree = "<group>";
+		};
+		72409422D8FCA51B3A70F82A1B279212 /* Helpshift */ = {
+			isa = PBXGroup;
+			children = (
+				8FBCF63FBFF820A36F7AE4FDAED1B24D /* HelpshiftCore.h */,
+				61773D5C785ECAD50B17DDD0F33C14E8 /* HelpshiftSupport.h */,
+				BD742701439A5E03A88B81D44060E227 /* Frameworks */,
+				111602ECD327C2904A18BCF2CF10FF09 /* Resources */,
+				5D3E753BA2F1A928CAF9E582D3EE42C8 /* Support Files */,
+			);
+			name = Helpshift;
+			path = Helpshift;
+			sourceTree = "<group>";
+		};
+		ACC7E647E56703A825F9745613A53862 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BD742701439A5E03A88B81D44060E227 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8A974B9D08987E40E38FCE47C1AF9081 /* libSupport.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		F98B797B6159C5541F8B9DF44F32AB77 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = BD79881623443F9839B014B9E3EFFBF8 /* Build configuration list for PBXProject "Helpshift" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 30E940CC964A4D426670D792A0DA6F54;
+			productRefGroup = ACC7E647E56703A825F9745613A53862 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5A03E5418846C60D7F3F09561FE9D346 /* Helpshift */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		088D413D4A1E803BCAB1A669F4A493E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		5215D5964D7B3640F00965C702949738 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E086E4AFDB043D2259FE4187C3068C35 /* Helpshift.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7B6D30D141ABDFEBCD603FF05CF268CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		9A8AE253B5E108A5B9D83A69639B0DCA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E086E4AFDB043D2259FE4187C3068C35 /* Helpshift.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DBFDFD370ED98C68740E6EA09913226 /* Build configuration list for PBXAggregateTarget "Helpshift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9A8AE253B5E108A5B9D83A69639B0DCA /* Debug */,
+				5215D5964D7B3640F00965C702949738 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BD79881623443F9839B014B9E3EFFBF8 /* Build configuration list for PBXProject "Helpshift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B6D30D141ABDFEBCD603FF05CF268CD /* Debug */,
+				088D413D4A1E803BCAB1A669F4A493E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F98B797B6159C5541F8B9DF44F32AB77 /* Project object */;
+}

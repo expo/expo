@@ -28,6 +28,7 @@ const GL = optionalRequire(() => require('../screens/GL/GLScreen'));
 const GLScreens = optionalRequire(
   () => require('../screens/GL/GLScreens')
 ) as unknown as { [key: string]: React.ComponentType };
+const Helpshift = optionalRequire(() => require('../screens/HelpshiftScreen'));
 const Lottie = optionalRequire(() => require('../screens/LottieScreen'));
 const ReanimatedImagePreview = optionalRequire(() =>
   require('../screens/Reanimated/ReanimatedImagePreviewScreen')
@@ -46,6 +47,7 @@ const optionalScreens: { [key: string]: React.ComponentType | undefined } = {
   Camera,
   GL,
   ...GLScreens,
+  Helpshift,
   GestureHandlerPinch,
   GestureHandlerList,
   GestureHandlerSwipeable,

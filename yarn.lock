@@ -7206,6 +7206,12 @@ he@1.2.x:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
+"helpshift-react-native@github:brentvatne/helpshift-react-native#ff6bf9e9312cb436f0a1f13e65cb5e2cf0d73086":
+  version "7.6.2"
+  resolved "https://codeload.github.com/brentvatne/helpshift-react-native/tar.gz/ff6bf9e9312cb436f0a1f13e65cb5e2cf0d73086"
+  dependencies:
+    prop-types "^15.7.2"
+
 hex-color-regex@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"

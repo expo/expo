@@ -83,5 +83,6 @@
   "expo-device": "~1.0.0",
   "expo-network": "~1.0.0",
   "expo-store-review": "~1.0.0",
-  "expo-updates": "~0.0.1-rc.0"
+  "expo-updates": "~0.0.1-rc.0",
+  "helpshift-react-native": "github:brentvatne/helpshift-react-native#ff6bf9e9312cb436f0a1f13e65cb5e2cf0d73086"
 }

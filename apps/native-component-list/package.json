@@ -65,6 +65,7 @@
     "expo-web-browser": "~7.0.1",
     "fbemitter": "^2.1.1",
     "gl-mat4": "^1.1.4",
+    "helpshift-react-native": "github:brentvatne/helpshift-react-native#ff6bf9e9312cb436f0a1f13e65cb5e2cf0d73086",
     "hsv2rgb": "^1.1.0",
     "i18n-js": "^3.1.0",
     "lottie-react-native": "2.6.1",

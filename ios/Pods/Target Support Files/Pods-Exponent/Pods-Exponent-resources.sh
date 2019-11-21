@@ -105,6 +105,11 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_resource "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle"
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/GoogleMobileVision/GoogleMVFaceDetectorResources.bundle"
   install_resource "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HsUIResources.bundle"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HsLocalization.bundle"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfig.plist"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfigDark.plist"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfigHighContrast.plist"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_ROOT}/Amplitude-iOS/Amplitude/api.amplitude.com.der"
@@ -115,6 +120,11 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle"
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/GoogleMobileVision/GoogleMVFaceDetectorResources.bundle"
   install_resource "${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HsUIResources.bundle"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HsLocalization.bundle"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfig.plist"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfigDark.plist"
+  install_resource "${PODS_ROOT}/Helpshift/helpshift-sdk-ios-v7.6.2/HSThemes/HelpshiftConfigHighContrast.plist"
 fi
 
 mkdir -p "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"

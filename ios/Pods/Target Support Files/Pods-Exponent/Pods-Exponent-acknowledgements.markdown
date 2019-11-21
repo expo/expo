@@ -3083,6 +3083,10 @@ Copyright 2019 Google
    limitations under the License.
 
 
+## Helpshift
+
+See http://www.helpshift.com/terms/
+
 ## JKBigInteger2
 
 Copyright (C) 2013 Jānis Kiršteins

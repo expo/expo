@@ -27,6 +27,7 @@ export default class ExpoComponentsScreen extends React.Component {
       'GestureHandlerSwipeable',
       'Gif',
       'GL',
+      'Helpshift',
       'LinearGradient',
       'Lottie',
       'Maps',

@@ -755,7 +755,7 @@ PODS:
   - EXBarCodeScanner (7.0.0):
     - UMCore
     - UMImageLoaderInterface
-  - EXBattery (1.0.0):
+  - EXBattery (1.0.1):
     - UMCore
   - EXBlur (7.0.0):
     - UMCore
@@ -777,7 +777,7 @@ PODS:
     - UMPermissionsInterface
   - EXCellular (1.0.0):
     - UMCore
-  - EXConstants (7.0.0):
+  - EXConstants (7.0.1):
     - UMConstantsInterface
     - UMCore
   - EXContacts (7.0.0):
@@ -1037,6 +1037,7 @@ PODS:
   - GTMSessionFetcher/Core (1.2.2)
   - GTMSessionFetcher/Full (1.2.2):
     - GTMSessionFetcher/Core (= 1.2.2)
+  - Helpshift (7.6.2)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (2.5.3)
   - nanopb (0.3.901):
@@ -1540,6 +1541,7 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - GoogleMaps (~> 3.3)
   - GoogleSignIn (~> 5.0)
+  - Helpshift (= 7.6.2)
   - JKBigInteger2 (= 0.0.5)
   - lottie-ios (~> 2.5.0)
   - React/ART (from `../react-native-lab/react-native`)
@@ -1612,44 +1614,58 @@ DEPENDENCIES:
   - yogaABI35_0_0 (from `./versioned-react-native/ABI35_0_0/ReactCommon/ABI35_0_0yoga`)
 
 SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - AppAuth
+    - Branch
+    - CocoaLumberjack
+    - Crashlytics
+    - Fabric
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseCoreDiagnostics
+    - FirebaseCoreDiagnosticsInterop
+    - FirebaseInstanceID
+    - FirebaseMLVisionFaceModel
+    - Google-Maps-iOS-Utils
+    - GoogleAPIClientForREST
+    - GoogleDataTransport
+    - GoogleDataTransportCCTSupport
+    - GoogleMaps
+    - GoogleMobileVision
+    - GoogleToolboxForMac
+    - GoogleUtilities
+    - GTMAppAuth
+    - GTMSessionFetcher
+    - nanopb
+    - Protobuf
   trunk:
     - Amplitude-iOS
     - Analytics
     - AppAuth
     - boost-for-react-native
     - Branch
-    - CocoaLumberjack
-    - Crashlytics
-    - Fabric
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
     - Firebase
-    - FirebaseAnalytics
     - FirebaseCore
-    - FirebaseCoreDiagnostics
-    - FirebaseCoreDiagnosticsInterop
-    - FirebaseInstanceID
     - FirebaseMLCommon
     - FirebaseMLVision
-    - FirebaseMLVisionFaceModel
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleAPIClientForREST
     - GoogleAppMeasurement
-    - GoogleDataTransport
-    - GoogleDataTransportCCTSupport
     - GoogleMaps
     - GoogleMobileVision
     - GoogleSignIn
-    - GoogleToolboxForMac
     - GoogleUtilities
-    - GTMAppAuth
     - GTMSessionFetcher
+    - Helpshift
     - JKBigInteger2
     - lottie-ios
     - nanopb
-    - Protobuf
 
 EXTERNAL SOURCES:
   ABI33_0_0EXAdsAdMob:
@@ -2435,14 +2451,14 @@ SPEC CHECKSUMS:
   EXAV: 97912c6002e7d7934843f50c9080f1d7f8b99a4f
   EXBackgroundFetch: 5983dac76493f8cabb7c5366bbfae26c8e3d6764
   EXBarCodeScanner: 2443883e2a0a8075fc323dad136a73384ab71cde
-  EXBattery: 7505168d39f7b86f26bd29ff44ed2dd56b798ce9
+  EXBattery: 8ad3003fcf86f39e4e3e6412bc284c33cc07ce04
   EXBlur: eb1cf2d78e94894e0406a8df47d1c2ea1136da17
   EXBranch: b4b57a74caa8a1c97bb4b8870ba61257acf35781
   EXBrightness: 8b4827452309499d547f7887a2f0988a10234921
   EXCalendar: bf85bd9ced7ff032ccd7a2a952e18d8536b99a6a
   EXCamera: 8ad7012d4e0fef09ff35de14fcb41b410357e9be
   EXCellular: d9e0853ddc346bab7aa9fd96371b6ce4efdf7639
-  EXConstants: 31e5318521be6175009af6ccd3e97dedf39da96a
+  EXConstants: 857aa7b1c84e2878f8402d712061860bca16a697
   EXContacts: 5ec0cb83ea2ea68694eac97ddf2a5cfefb8e2286
   EXCrypto: bfcc3236abe7a6f16017f79129f3dd85f9732778
   EXDevice: fd3b1b55f2547b7d51e5e093569a1fb678cce946
@@ -2507,6 +2523,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: e7dc37039b19df7fe543479d3e4a02ac8d11bb69
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
+  Helpshift: 57b4647bd682594f346cd7ade5c0fd68fe3da443
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: a50d5c0160425cd4b01b852bb9578963e6d92d31
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
@@ -2532,6 +2549,6 @@ SPEC CHECKSUMS:
   yogaABI34_0_0: d6b988f267753a1d944343fd03668f0d194ec4bf
   yogaABI35_0_0: ba82ada0c3a58619049128d51d6de437638fe1a1
 
-PODFILE CHECKSUM: 4d2beeb21f382d16456f736463f9f3fc22db4dc0
+PODFILE CHECKSUM: fe62712c145fe5efe27b74cce34fd71507662094
 
 COCOAPODS: 1.8.0.beta.1

@@ -7,6 +7,7 @@ install! 'cocoapods',
 
 target '${TARGET_NAME}' do
 ${EXPONENT_CLIENT_DEPS}
+  pod 'Helpshift', '7.6.2', :inhibit_warnings => true
 
   # Unimodules
   require_relative '../node_modules/react-native-unimodules/cocoapods.rb'

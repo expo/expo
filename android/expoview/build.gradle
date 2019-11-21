@@ -206,6 +206,12 @@ dependencies {
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
   compileOnly 'com.amplitude:android-sdk:2.9.2'
 
+  // add helpshift
+  api 'com.android.support:design:28.0.0'
+  api 'com.android.support:recyclerview-v7:28.0.0'
+  api 'com.android.support:cardview-v7:28.0.0'
+  api 'com.helpshift:android-helpshift-aar:7.6.2'
+
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-gcm:16.1.0'
   api 'com.google.android.gms:play-services-analytics:16.0.8'

@@ -42,6 +42,8 @@ import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule;
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage;
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage;
+import versioned.host.exp.exponent.modules.api.components.helpshift.RNHelpshiftModule;
+import versioned.host.exp.exponent.modules.api.components.helpshift.RNHelpshiftPackage;
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage;
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage;
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule;
@@ -180,6 +182,7 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
+        nativeModules.add(new RNHelpshiftModule(reactContext));
         SvgPackage svgPackage = new SvgPackage();
         nativeModules.addAll(svgPackage.createNativeModules(reactContext));
 
@@ -210,7 +213,8 @@ public class ExponentPackage implements ReactPackage {
         new RNScreensPackage(),
         new RNCWebViewPackage(),
         new SafeAreaContextPackage(),
-        new RNSharedElementPackage()
+        new RNSharedElementPackage(),
+        new RNHelpshiftPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

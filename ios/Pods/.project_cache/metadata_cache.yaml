@@ -1086,6 +1086,10 @@ GTMSessionFetcher:
   LABEL: GTMSessionFetcher
   PROJECT_PATH: GTMSessionFetcher.xcodeproj
   UUID: BD7A8A3BC22FD28DCB40568BE43D7C70
+Helpshift:
+  LABEL: Helpshift
+  PROJECT_PATH: Helpshift.xcodeproj
+  UUID: 5A03E5418846C60D7F3F09561FE9D346
 JKBigInteger2:
   LABEL: JKBigInteger2
   PROJECT_PATH: JKBigInteger2.xcodeproj
