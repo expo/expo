@@ -130,12 +130,12 @@ export default class App extends React.Component {
     super(props);
 
     Notifications.addOnForegroundNotificationListener('testScreen',
-      (foregroundNotification: Notifications.ForegroundNotification) => {
+      async (foregroundNotification: Notifications.ForegroundNotification) => {
         console.log(foregroundNotification);
       }
     );
     Notifications.addOnUserInteractionListener('testScreen',
-      (userInteraction: Notifications.UserInteraction) => {
+      async (userInteraction: Notifications.UserInteraction) => {
         console.log(userInteraction);
       }
     );
@@ -196,8 +196,7 @@ State when at least one UserInteractionListener has been registered.
 ### ForegroundNotification
 Object representing notification which was about to display but app was in foreground state so module lets you decide if you want to display notification. For instance, you can show dialog or display as any other notification by passing `ForegroundNotification` to `presentLocalNotificationAsync()`.
 ### UserInteraction
-Object representing the way user interacted with notification. It contains information if user tapped particular 
-action button or for example typed something to remote input. Look to types section for more detailed description of `UserInteraction` object.
+Object representing the way user interacted with notification. It contains information if user tapped a particular action button or for example typed something to remote input. Look to types section for more detailed description of `UserInteraction` object.
 
 ## API
 
@@ -328,9 +327,9 @@ Cancels all notifications.
 
 ### Push Notifications
 
-#### `Notifications.setOnTokenChangeListener(listener: OnTokenChangeListener): Promise<void>`
+#### `Notifications.setOnTokenChangeListenerAsync(listener: OnTokenChangeListener): Promise<void>`
 Sets token lister which will be triggered if push token is created or changed.
-If you choosed to use Expo as a middleman then listener will receive ExpoPushToken and firebase token otherwise.
+If you choose to use Expo as a middleman then listener will receive ExpoPushToken and firebase token otherwise.
 Setting a token lister is also a registration for push notifications.
 
 ### Other Methods
@@ -414,19 +413,19 @@ type UserInteraction = Notification & {
 ### OnUserInteractionListener
 
 ```ts
-type OnUserInteractionListener = (userInteraction: UserInteraction) => void;
+type OnUserInteractionListener = (userInteraction: UserInteraction) => Promise<void>;
 ```
 
 ### OnForegroundNotificationListener
 
 ```ts
-type OnForegroundNotificationListener = (notification: ForegroundNotification) => void;
+type OnForegroundNotificationListener = (notification: ForegroundNotification) => Promise<void>;
 ```
 
 ### OnTokenChangeListener
 
 ```ts
-type OnTokenChangeListener = (token: string) => void;
+type OnTokenChangeListener = (token: string) => Promise<void>;
 ```
 
 ## Push Notifications
