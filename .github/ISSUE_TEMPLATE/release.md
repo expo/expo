@@ -9,11 +9,12 @@ assignees: ''
 
 ## 🎢 SDK Release
 
-### [1. Versioning](#stage-1---versioning)
+### [1. Versioning](https://git.io/JeKCx#stage-1---versioning)
 
 - [ ] [1.1. Dropping old SDKs](https://git.io/JeKCx#11-dropping-old-sdks)
 - [ ] [1.2. Update React Native](https://git.io/JeKCx#12-update-react-native)
-- [ ] [1.3. Versioning code for the new SDK](https://git.io/JeKCx#13-versioning-code-for-the-new-sdk)
+- [ ] [1.3. Unversioned Quality Assurance](https://git.io/JeKCx#13-unversioned-quality-assurance)
+- [ ] [1.4. Versioning code for the new SDK](https://git.io/JeKCx#14-versioning-code-for-the-new-sdk)
 
 ### [2. Quality Assurance](https://git.io/JeKCx#stage-2---quality-assurance)
 
@@ -23,8 +24,9 @@ assignees: ''
 ### [3. Prerelease](https://git.io/JeKCx#stage-3---prerelease)
 
 - [ ] [3.1. Tag React Native fork](https://git.io/JeKCx#31-tag-react-native-fork)
-- [ ] [3.2. Publishing prerelease packages](https://git.io/JeKCx#32-publishing-prerelease-packages)
-- [ ] [3.3. Publishing prerelease project templates](https://git.io/JeKCx#33-publishing-prerelease-project-templates)
+- [ ] [3.2. Generate new mocks](https://git.io/JeKCx#32-generate-new-mocks)
+- [ ] [3.3. Publishing prerelease packages](https://git.io/JeKCx#33-publishing-prerelease-packages)
+- [ ] [3.4. Publishing prerelease project templates](https://git.io/JeKCx#34-publishing-prerelease-project-templates)
 
 ### [4. Expo client](https://git.io/JeKCx#stage-4---expo-client)
 
