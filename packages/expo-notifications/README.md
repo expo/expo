@@ -117,22 +117,348 @@ public void onCreate() {
 
 Similarly to `AndroidManifets.xml` on Android `Info.plist` allows you to configure the behavior of `expo-notifications` on the iOS platform.
 
-Unlike on Android, you need to modify your `Info.plist` only if you want to use Expo servers.
-If that is the case, then for keys `appId` and `engineType` add values "@username/slug" and "expo", respectively.
+Unlike on Android, you need to modify `Info.plist` only if you want to use Expo servers.
+If that is the case, then for key `EXNotificationsAppId`  add value "@username/slug" just like on Android.
+More about `info.plist` [here](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html).
+
+## Example
+
+```ts
+export default class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    Notifications.addOnForegroundNotificationListener('testScreen',
+      (foregroundNotification: Notifications.ForegroundNotification) => {
+        console.log(foregroundNotification);
+      }
+    );
+    Notifications.addOnUserInteractionListener('testScreen',
+      (userInteraction: Notifications.UserInteraction) => {
+        console.log(userInteraction);
+      }
+    );
+  }
+
+  componentDidMount() {
+    this._obtainUserFacingNotifPermissionsAsync();
+  }
+
+  render() {
+    return (
+        <TouchableOpacity onPress={this._presentNotification}>
+            present notification
+        </TouchableOpacity> 
+    );
+  }
+
+  _presentNotification = async () => {
+        Notifications.presentLocalNotificationAsync(
+            {
+                title: "title",
+                body: "the best body for notification",
+                sound: true,
+            }
+        );
+  };
+
+  _obtainUserFacingNotifPermissionsAsync = async () => {
+    let permission = await Permissions.getAsync(
+      Permissions.USER_FACING_NOTIFICATIONS
+    );
+    if (permission.status !== 'granted') {
+      permission = await Permissions.askAsync(
+        Permissions.USER_FACING_NOTIFICATIONS
+      );
+      if (permission.status !== 'granted') {
+        alert(`We don't have permission to present notifications.`);
+      }
+    }
+    return permission;
+  };
+
+}
+```
+
+## Glossary
+
+### AppId
+String with format `@username/slug`.
+### Background app state
+State when no UserInteractionListener has been registered.
+### Category
+Category defines a set of actions with which a user may interact with and respond to the incoming notification. You can read more about categories [here (for iOS)](https://developer.apple.com/documentation/usernotifications/unnotificationcategory) and [here (for Android)](https://developer.android.com/guide/topics/ui/notifiers/notifications#Actions).
+### Channel
+Same as Android channel, but available for all Android versions.
+### Foreground app state
+State when at least one UserInteractionListener has been registered.
+### ForegroundNotification
+Object representing notification which was about to display but app was in foreground state so module lets you decide if you want to display notification. For instance, you can show dialog or display as any other notification by passing `ForegroundNotification` to `presentLocalNotificationAsync()`.
+### UserInteraction
+Object representing the way user interacted with notification. It contains information if user tapped particular 
+action button or for example typed something to remote input. Look to types section for more detailed description of `UserInteraction` object.
 
 ## API
 
+### Main Methods
 
+#### `Notifications.addOnUserInteractionListener()`
+
+##### Signature
+```ts
+function addOnUserInteractionListener(
+  listenerName: string,
+  listener: OnUserInteractionListener
+): void
+```
+##### Description
+Registers for UserInteraction objects which will be delivered each time user interact with notification.
+Instead of implementing one huge `OnUserInteractionListener` you can register multiple listeners each responsible 
+for different types of notifications. 
+
+#### `Notifications.addOnForegroundNotificationListener()`
+
+##### Signature
+```ts
+function addOnForegroundNotificationListener(
+  listenerName: string,
+  listener: OnForegroundNotificationListener
+): void
+```
+#### `Notifications.removeOnUserInteractionListener(listenerName: string): void`
+Unregisters `OnUserInteractionListener` listener.
+
+#### `Notifications.removeOnForegroundNotificationListener(listenerName: string): void`
+Unregisters `OnForegroundNotificationListener` listener.
+
+##### Description
+Registers for ForegroundNotification objects which will be delivered each time notification is about to display but app is foreground state.
+Just like with `OnUserInteractionListener` you can register multiple listeners each responsible 
+for different types of notifications. 
+
+If you don't want to inform user of messge included in notification by yourself and don't want to drop notification
+then you can still present notifiation:
+
+```ts
+Notifications.addOnForegroundNotificationListener('testScreen',
+    async (foregroundNotification: Notifications.ForegroundNotification) => {
+        Notifications.presentLocalNotificationAsync(foregroundNotification);
+    }
+);
+```
+
+#### `Notifications.presentLocalNotificationAsync(notification: Notification): Promise<string> `
+Presents notification right away regardless of app state (foreground/background).  
+Look at types section to find out more about notification format.
+Returns notification id which later can be used to dismiss notification.
 
 ### Categories (Action Buttons)
 
+#### `Notifications.createCategoryAsync(name: string, actions: ActionType[])`
+
+Registers a new set of actions under given `name`.
+
+#### `Notifications.deleteCategoryAsync(name: string)`
+
+Deletes category for given `name`.
+
 ### Channels and Channel Groups (Android only)
+
+_Android only_. On Android 8.0+, creates a new notification channel to which local and push notifications may be posted. Channels are visible to your users in the OS Settings app as "categories", and they can change settings or disable notifications entirely on a per-channel basis. NOTE: after calling this method, you may no longer be able to alter the settings for this channel, and cannot fully delete the channel without uninstalling the app. Notification channels are required on Android 8.0+, but use this method with caution and be sure to plan your channels carefully.
+
+According to the [Android docs](https://developer.android.com/training/notify-user/channels),
+
+> You should create a channel for each distinct type of notification you need to send. You can also create notification channels to reflect choices made by users of your app. For example, you can set up separate notification channels for each conversation group created by a user in a messaging app.
+
+On devices with Android 7.1 and below, Expo will "polyfill" channels for you by saving your channel's settings and automatically applying them to any notifications you designate with the `channelId`.
+
+#### `Notifications.createChannelAsync(id: string, channel: Channel): Promise<void>`
+Creates channel.
+#### `Notifications.deleteChannelAsync(id: string): Promise<void>`
+Deletes channel.
+#### `Notifications.createChannelGroupAsync(groupId: string, groupName: string): Promise<void>`
+Creates channel group.
+#### `Notifications.deleteChannelGroupAsync(groupId: string): Promise<void>`
+Deletes channel group.
 
 ### Scheduling
 
+#### `Notifications.scheduleNotificationWithCalendarAsync`
+
+##### Signature
+```ts
+async function scheduleNotificationWithCalendarAsync(
+  notification: ForegroundNotification,
+  options: {
+    year?: number;
+    month?: number;
+    hour?: number;
+    day?: number;
+    minute?: number;
+    second?: number;
+    weekDay?: number;
+    repeat?: boolean;
+  } = {}
+): Promise<string>
+```
+##### Description
+Schedules notification in cronlike style. 
+Returns notification id which later can be used to cancel or dismiss notification.
+
+#### `Notifications.scheduleNotificationWithTimerAsync()`
+##### Signature
+```ts
+async function scheduleNotificationWithTimerAsync(
+  notification: Notification,
+  options: {
+    interval: number;
+    repeat?: boolean;
+  }
+): Promise<string>
+```
+##### Description
+Presents notification after the specified number of seconds elapse.
+Returns notification id which later can be used to cancel or dismiss notification.
+
+#### `Notifications.cancelScheduledNotificationAsync(notificationId: string): Promise<void>`
+Cancels notification.
+#### `Notifications.cancelAllScheduledNotificationsAsync(): Promise<void>`
+Cancels all notifications.
+
+### Push Notifications
+
+#### `Notifications.setOnTokenChangeListener(listener: OnTokenChangeListener): Promise<void>`
+Sets token lister which will be triggered if push token is created or changed.
+If you choosed to use Expo as a middleman then listener will receive ExpoPushToken and firebase token otherwise.
+Setting a token lister is also a registration for push notifications.
+
+### Other Methods
+
+#### `Notifications.dismissNotificationAsync(notificationId: string): Promise<void>`
+If sticky notification is diplayed you can dismissed it with this method.
+#### `Notifications.dismissAllNotificationsAsync(): Promise<void>`
+Dismiss All notifications.
+
 ## Types
 
-## Expo Push Notifications
+### Notification
 
-### Testing
+```ts
+type Notification = {
+  title: string;
+  body?: string;
+  data?: any;
+  categoryId?: string;
+  ios?: {
+    sound?: boolean;
+    _displayInForeground?: boolean;
+  };
+  android?: {
+    channelId?: string;
+    icon?: string;
+    color?: string;
+    sticky?: boolean;
+    link?: string;
+  };
+  web?: NotificationOptions;
+  remote?: boolean;
+};
+```
+
+### ForegroundNotification
+
+```ts
+type ForegroundNotification = Notification & {
+  remote: boolean;
+};
+```
+### Channel
+
+```ts
+type Channel = {
+  name: string;
+  description?: string;
+  priority?: string;
+  sound?: boolean;
+  vibrate?: boolean | number[];
+  badge?: boolean;
+};
+```
+
+### ActionType
+
+```ts
+type ActionType = {
+  actionId: string;
+  buttonTitle: string;
+  isDestructive?: boolean;
+  isAuthenticationRequired?: boolean;
+  doNotOpenInForeground?: boolean;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+};
+```
+
+### UserInteraction
+
+```ts
+type UserInteraction = Notification & {
+    actionId?: string;
+    userText?: string;
+}
+```
+
+### OnUserInteractionListener
+
+```ts
+type OnUserInteractionListener = (userInteraction: UserInteraction) => void;
+```
+
+### OnForegroundNotificationListener
+
+```ts
+type OnForegroundNotificationListener = (notification: ForegroundNotification) => void;
+```
+
+### OnTokenChangeListener
+
+```ts
+type OnTokenChangeListener = (token: string) => void;
+```
+
+## Push Notifications
+
+### Expo as a middleman
+
+[How to send Expo push notification](https://docs.expo.io/versions/v35.0.0/guides/push-notifications/#sending-notifications).
+
+### Firebase Push Notifications
+
+Firebase message format suitable for `expo-notifications`.
+
+```json
+{ 
+    "message":{
+        "token":"your_token",
+        "data": {
+            "title": "title",
+            "message": "example content",
+            "channelId": "channelId",
+            "categoryId": "category",
+            "icon": "icon",
+            "color": "color",
+            "body": "additional data",
+            "sound": true/false
+        }
+    }
+}
+```
+
+Note that Firebase message cannot contain "notification" property because it makes `expo-notifications` unable to display notification.
+
+
+
 
