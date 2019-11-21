@@ -10,7 +10,7 @@ export function test({ describe, it, expect }) {
         expect(await StoreReview.isAvailableAsync()).toBe(true);
       });
     } else {
-      it(`is is not available`, async () => {
+      it(`is not available`, async () => {
         expect(await StoreReview.isAvailableAsync()).toBe(false);
       });
     }
