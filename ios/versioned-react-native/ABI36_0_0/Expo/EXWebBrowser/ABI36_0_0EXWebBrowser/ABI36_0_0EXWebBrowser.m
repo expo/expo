@@ -106,14 +106,13 @@ ABI36_0_0UM_EXPORT_METHOD_AS(openBrowserAsync,
   }
   safariVC.delegate = self;
 
-  // By setting the modal presentation style to OverFullScreen, we disable the "Swipe to dismiss"
-  // gesture that is causing a bug where sometimes `safariViewControllerDidFinish` is not called.
-  // There are bugs filed already about it on OpenRadar.
-  [safariVC setModalPresentationStyle: UIModalPresentationOverFullScreen];
-
   // This is a hack to present the SafariViewController modally
   UINavigationController *safariHackVC = [[UINavigationController alloc] initWithRootViewController:safariVC];
   [safariHackVC setNavigationBarHidden:true animated:false];
+  // By setting the modal presentation style to OverFullScreen, we disable the "Swipe to dismiss"
+  // gesture that is causing a bug where sometimes `safariViewControllerDidFinish` is not called.
+  // There are bugs filed already about it on OpenRadar.
+  [safariHackVC setModalPresentationStyle: UIModalPresentationOverFullScreen];
 
   UIViewController *currentViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
   while (currentViewController.presentedViewController) {
