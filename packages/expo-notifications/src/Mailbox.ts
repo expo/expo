@@ -1,9 +1,9 @@
 import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from '@unimodules/core';
 import {
+  ForegroundNotification,
   OnUserInteractionListener,
   OnForegroundNotificationListener,
   UserInteraction,
-  LocalNotification,
   OnTokenChangeListener,
   TokenMessage,
 } from './Notifications.types';
@@ -53,25 +53,25 @@ export class Mailbox {
     this.onForegroundNotificationListeners.delete(listenerName);
   }
 
-  setOnTokenChangeListener(onTokenChangeListner: OnTokenChangeListener) {
+  setOnTokenChangeListener(onTokenChangeListner: OnTokenChangeListener): void {
     this.onTokenChangeListener = onTokenChangeListner;
   }
 
-  private onForegroundNotification(notification: LocalNotification) {
+  private async onForegroundNotification(notification: ForegroundNotification) {
     for (let listener of this.onForegroundNotificationListeners.values()) {
-      listener(notification);
+      await listener(notification);
     }
   }
 
-  private onUserInteraction(userInteraction: UserInteraction) {
+  private async onUserInteraction(userInteraction: UserInteraction) {
     for (let listener of this.onUserInteractionListeners.values()) {
-      listener(userInteraction);
+      await listener(userInteraction);
     }
   }
 
-  private onTokenChange(tokenMessage: TokenMessage) {
+  private async onTokenChange(tokenMessage: TokenMessage) {
     if (this.onTokenChangeListener != null) {
-      this.onTokenChangeListener(tokenMessage.token);
+      await this.onTokenChangeListener(tokenMessage.token);
     }
   }
 }

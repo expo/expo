@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import expo.modules.notifications.configuration.Configuration;
 import expo.modules.notifications.displayers.NotificationDisplayerProvider;
 
 import static expo.modules.notifications.NotificationConstants.NOTIFICATION_BODY;
@@ -36,6 +37,9 @@ public class ExpoFcmMessagingService extends FirebaseMessagingService {
 
     if (appId == null) {
       appId = remoteMessage.getData().get("experienceId");
+    }
+    if (appId == null) {
+      appId = Configuration.DEFAULT_APP_ID;
     }
 
     /*
