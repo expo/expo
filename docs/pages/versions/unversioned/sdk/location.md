@@ -449,3 +449,5 @@ With Simulator open, go to Debug > Location and choose any option besides "None"
 Open Android Studio, and launch your AVD in the emulator. Then, on the options bar for your device, click the icon for "More" and navigate to the "Location" tab.
 
 ![Android Simulator location](/static/images/android-emulator-location.png)
+
+If you don't receive the locations in the emulator, you may have to turn off "Improve Location Accuracy" in Settings - Location in the emulator. This will turn off Wi-Fi location and only use GPS. Then you can manipulate the location with GPS data through the emulator. 
