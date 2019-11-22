@@ -355,7 +355,7 @@ workflows:
           filters:
             branches:
               only:
-                - /sdk-\d+/
+                - /sdk-\d+-.*/
                 - /.*all-ci.*/
       - shell_app_ios_build:
           requires:
@@ -365,7 +365,7 @@ workflows:
           filters:
             branches:
               only:
-                - /sdk-\d+/
+                - /sdk-\d+-.*/
                 - /.*all-ci.*/
       - shell_app_android_build:
           requires:
@@ -377,7 +377,7 @@ workflows:
           filters:
             branches:
               only:
-                - /sdk-\d+/
+                - /sdk-\d+-.*/
                 - /.*all-ci.*/
       - expo_client_build:
           requires:
