@@ -122,7 +122,7 @@ export type RecurrenceRule = {
 export { PermissionResponse, PermissionStatus };
 
 type OptionalKeys<T> = {
-  [P in keyof T]?: T[P];
+  [P in keyof T]?: T[P] | null;
 };
 
 export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
