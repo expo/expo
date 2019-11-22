@@ -10,10 +10,15 @@ public class ChannelScopeManager implements ChannelManager {
 
   private StringScoper mStringScoper = null;
 
-  ChannelManager nextChannelManager = ThreadSafeChannelManager.getInstance();
+  private ChannelManager mNextChannelManager;
 
   public ChannelScopeManager(StringScoper stringScoper) {
     mStringScoper = stringScoper;
+  }
+
+  @Override
+  public void setNextChannelManager(ChannelManager channelManager) {
+    mNextChannelManager = channelManager;
   }
 
   @Override
@@ -30,19 +35,19 @@ public class ChannelScopeManager implements ChannelManager {
   public void addChannel(String channelId, ChannelSpecification channel, Context context, Runnable continuation) {
     channelId = scope(channelId);
     channel = scope(channel);
-    nextChannelManager.addChannel(channelId, channel, context, continuation);
+    mNextChannelManager.addChannel(channelId, channel, context, continuation);
   }
 
   @Override
   public void deleteChannel(String channelId, Context context, Runnable continuation) {
     channelId = scope(channelId);
-    nextChannelManager.deleteChannel(channelId, context, continuation);
+    mNextChannelManager.deleteChannel(channelId, context, continuation);
   }
 
   @Override
   public Future<ChannelSpecification> getPropertiesForChannelId(String channelId, Context context) {
     channelId = scope(channelId);
-    return nextChannelManager.getPropertiesForChannelId(channelId, context);
+    return mNextChannelManager.getPropertiesForChannelId(channelId, context);
   }
 
   private String scope(String text) {
@@ -54,6 +59,7 @@ public class ChannelScopeManager implements ChannelManager {
     return builder.setImportance(channelSpecification.getImportance())
         .setBadge(channelSpecification.getBadge())
         .setSound(channelSpecification.getSound())
+        .setShouldVibrate(channelSpecification.getVibrationFlag())
         .setVibrate(channelSpecification.getVibrate())
         .setDescription(channelSpecification.getDescription())
         .setChannelName(channelSpecification.getChannelName())

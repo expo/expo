@@ -10,7 +10,12 @@ import java.util.concurrent.Future;
 
 public class AndroidAwareChannelManager  implements ChannelManager {
 
-  ChannelManager nextChannelManager = new PersistentChannelManager();
+  private ChannelManager nextChannelManager = null;
+
+  @Override
+  public void setNextChannelManager(ChannelManager channelManager) {
+    nextChannelManager = channelManager;
+  }
 
   @Override
   public void addChannel(String channelId, ChannelSpecification channel, final Context context) {
@@ -25,6 +30,7 @@ public class AndroidAwareChannelManager  implements ChannelManager {
         newChannel.setDescription(channel.getDescription());
       }
 
+      newChannel.enableVibration(channel.getVibrationFlag());
       newChannel.setVibrationPattern(channel.getVibrate());
 
       if (!channel.getSound()) {
@@ -43,6 +49,9 @@ public class AndroidAwareChannelManager  implements ChannelManager {
   public void deleteChannel(String channelId, final Context context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       nextChannelManager.deleteChannel(channelId, context);
+    } else {
+      NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+      notificationManager.deleteNotificationChannel(channelId);
     }
   }
 
@@ -86,6 +95,7 @@ public class AndroidAwareChannelManager  implements ChannelManager {
         .setSound(notificationChannel.getSound() != null)
         .setBadge(notificationChannel.canShowBadge())
         .setImportance(Math.max(1,notificationChannel.getImportance()))
+        .setShouldVibrate(notificationChannel.shouldVibrate())
         .build();
 
     return new SynchronicFuture(channelSpecification);

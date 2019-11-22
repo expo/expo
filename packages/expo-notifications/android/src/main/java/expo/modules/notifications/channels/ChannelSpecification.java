@@ -23,6 +23,8 @@ public class ChannelSpecification implements Serializable {
 
   private long [] vibrate;
 
+  private boolean shouldVibrate = false;
+
   private boolean badge;
 
   private boolean sound;
@@ -66,17 +68,26 @@ public class ChannelSpecification implements Serializable {
       builder.setGroupId((String) map.get(NOTIFICATION_CHANNEL_GROUP_ID));
     }
 
-    if (map.containsKey(NOTIFICATION_CHANNEL_VIBRATE) && map.get(NOTIFICATION_CHANNEL_VIBRATE) instanceof ArrayList) {
-      ArrayList arrayList = (ArrayList) map.get(NOTIFICATION_CHANNEL_VIBRATE);
+    if (map.containsKey(NOTIFICATION_CHANNEL_VIBRATE)) {
+      if (map.get(NOTIFICATION_CHANNEL_VIBRATE) instanceof ArrayList){
+        ArrayList arrayList = (ArrayList) map.get(NOTIFICATION_CHANNEL_VIBRATE);
 
-      long [] array = new long[arrayList.size()];
-      for (int i = 0; i < arrayList.size(); ++i) {
-        array[i] = ((Number) arrayList.get(i)).longValue();
+        long[] array = new long[arrayList.size()];
+        for (int i = 0; i < arrayList.size(); ++i) {
+          array[i] = ((Number) arrayList.get(i)).longValue();
+        }
+
+        builder.setVibrate(array);
+        builder.setShouldVibrate(true);
+      } else {
+        if (((Boolean) map.get(NOTIFICATION_CHANNEL_VIBRATE))) {
+          builder.setShouldVibrate(true);
+          builder.setVibrate(new long[]{0, 500});
+        } else {
+          builder.setShouldVibrate(false);
+          builder.setVibrate(new long[]{0});
+        }
       }
-
-      builder.setVibrate(array);
-    } else {
-      builder.setVibrate(new long[]{0, 500});
     }
 
     if (map.containsKey(NOTIFICATION_CHANNEL_ID)) {
@@ -107,6 +118,11 @@ public class ChannelSpecification implements Serializable {
 
     public Builder setVibrate(long [] vibrate) {
       mChannelSpecification.vibrate = vibrate;
+      return this;
+    }
+
+    public Builder setShouldVibrate(boolean should) {
+      mChannelSpecification.shouldVibrate = should;
       return this;
     }
 
@@ -150,6 +166,10 @@ public class ChannelSpecification implements Serializable {
 
   public long[] getVibrate() {
     return vibrate;
+  }
+
+  public boolean getVibrationFlag() {
+    return shouldVibrate;
   }
 
   public boolean getBadge() {
