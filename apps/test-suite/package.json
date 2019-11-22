@@ -49,7 +49,7 @@
     "lodash": "^4.17.4",
     "react": "16.9.0",
     "react-native": "0.61.4",
-    "react-native-gesture-handler": "~1.5.0",
+    "react-native-gesture-handler": "~1.5.1",
     "react-native-safe-area-view": "^0.14.8",
     "react-native-web": "^0.11.0",
     "react-navigation": "^4.1.0-alpha.1",
