@@ -1,7 +1,11 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTConvert.h>
 
+#import "RNSScreen.h"
+
 @interface RNSScreenStackHeaderConfig : UIView
+
+@property (nonatomic, weak) RNSScreenView *screenView;
 
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *titleFontFamily;
