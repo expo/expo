@@ -425,6 +425,16 @@ type ActionType = {
 };
 ```
 
+1. Action id.
+2. Title of notification button.
+3. (iOS only) If this property is truthy, on iOS the button title will be highlighted (as if   
+ [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions1648199-destructive) was set).
+4. iOS only) If this property is truthy, triggering the action will require authentication from the user (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/1648196-authenticationrequired) was set).
+5. (iOS only) If this property is truthy, triggering the action will not open the app in foreground (as if [this native option](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/unnotificationactionoptionforeground) was **NOT** set).
+6. Title of submit title.
+7. Text to display in the text input field.
+
+
 ### UserInteraction
 
 ```ts
@@ -434,6 +444,10 @@ type UserInteraction = Notification & {
     remote?: boolean;                      //3
 }
 ```
+
+1. Id of action button that was tapped.  
+2. Text tapped by user.
+3. True if it is push notification.
 
 ### OnUserInteractionListener
 

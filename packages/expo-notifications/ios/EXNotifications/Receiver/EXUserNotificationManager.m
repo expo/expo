@@ -25,8 +25,9 @@
 
   userInteractionBundle[@"remote"] =
       @([response.notification.request.trigger isKindOfClass:[UNPushNotificationTrigger class]]);
+  
   userInteractionBundle[@"actionId"] =
-      response.actionIdentifier != UNNotificationDefaultActionIdentifier ? response.actionIdentifier
+      ![response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]? response.actionIdentifier
                                                                          : nil;
   userInteractionBundle[@"userTest"] =
       [response isKindOfClass:[UNTextInputNotificationResponse class]]

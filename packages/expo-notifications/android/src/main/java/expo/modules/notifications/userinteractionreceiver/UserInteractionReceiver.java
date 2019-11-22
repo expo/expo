@@ -4,6 +4,9 @@ import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import org.unimodules.core.interfaces.Package;
+
 import androidx.core.app.NotificationManagerCompat;
 
 import expo.modules.notifications.action.NotificationActionCenter;
@@ -55,6 +58,7 @@ public class UserInteractionReceiver {
           bundle.getString(NOTIFICATION_ACTION_TYPE_KEY)
       );
     }
+
     // Add remote input
     Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
     if (remoteInput != null) {
