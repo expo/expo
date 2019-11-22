@@ -5,8 +5,7 @@
 `expo-notifications` requires `react-native-unimodule` to work. You can read more about it [here](https://www.npmjs.com/package/react-native-unimodules). 
 
 Add `expo-notifications` to your project:
-execute the following command in your project root directory:
-"yarn add expo-notifications".
+<mark>yarn add expo-notifications</mark>.
 
 ### Android
 
@@ -129,12 +128,12 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    Notifications.addOnForegroundNotificationListener('testScreen',
+    Notifications.addOnForegroundNotificationListener('main',
       async (foregroundNotification: Notifications.ForegroundNotification) => {
         console.log(foregroundNotification);
       }
     );
-    Notifications.addOnUserInteractionListener('testScreen',
+    Notifications.addOnUserInteractionListener('main',
       async (userInteraction: Notifications.UserInteraction) => {
         console.log(userInteraction);
       }
