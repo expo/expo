@@ -14,6 +14,8 @@ Using Expo with Next.js means you can share all of your existing components and 
   * [Expo projects with Next.js](#expo-projects-with-nextjs)
   * [Next.js projects with Expo](#nextjs-projects-with-expo)
   * [Shared steps](#shared-steps)
+  * [Image support](#image-support)
+  * [Font support](#font-support)
   * [Offline support](#offline-support)
   * [Using a custom server](#using-a-custom-server)
   * [Handle server requests](#handle-server-requests)
@@ -36,9 +38,6 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 In this approach you would be using SSR for web in your universal project. This is the recommended path because it gives you full access to the features of Expo and Next.js.
 
-<details><summary>Instructions</summary>
-<p>
-
 - Bootstrap your project with Expo - `expo init --template blank`
   - cd into the project
 - Install - `yarn add next @expo/next-adapter`
@@ -46,23 +45,14 @@ In this approach you would be using SSR for web in your universal project. This 
 - Add `/.next` to your `.gitignore`
 - Follow the [shared steps](#shared-steps)
 
-</p>
-</details>
-
 ### Next.js projects with Expo
 
 This approach is useful if you want to use Expo components in your web-only project.
-
-<details><summary>Instructions</summary>
-<p>
 
 - Bootstrap your project with Next.js - `npx create-next-app`
 - Install - `yarn add react-native-web @expo/next-adapter && yarn add -D babel-preset-expo`
 - Add `/.expo` to your `.gitignore`
 - Follow the [shared steps](#shared-steps)
-
-</p>
-</details>
 
 ### Shared steps
 
@@ -77,7 +67,7 @@ After following the project specific setup do these:
   `pages/_document.js`
 
   ```js
-  export { Document as default } from '@expo/next-adapter/document';
+  export { default } from '@expo/next-adapter/document';
   ```
 
 - Create a `babel.config.js` and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
@@ -117,6 +107,111 @@ After following the project specific setup do these:
 
 </p>
 </details>
+
+### Image support
+
+By default Next.js won't load your static images like an Expo project will. If you want to load static images into your `<Image />` components or use `react-native-svg` then you can do the following:
+
+- Install the plugin - `yarn add next-images`
+  - [`next-images`][next-images] injects a Webpack loader to handle fonts.
+  - [`next-optimized-images`][next-optimized-images] is another good solution that you could check out.
+- Wrap your Next.js configuration object with the the image method and the Expo method in your `next.config.js`:  
+  
+  ```js
+  const { withExpo } = require('@expo/next-adapter');
+  const withImages = require('next-images')
+
+  module.exports = withExpo(withImages({
+    projectRoot: __dirname,
+  }));
+  ```
+
+- Now restart your project and you should be able to load images!
+
+You can test your config with the following example:
+
+<details><summary>Show Example</summary>
+<p>
+
+
+```js
+import React from 'react';
+import { Image } from 'react-native';
+
+export default function ImageDemo() {
+  return (
+    <Image source={require('./assets/image.png')} style={{ flex: 1 }} />
+  )
+}
+```
+
+</p>
+</details>
+
+[next-images]: https://github.com/twopluszero/next-images
+[next-optimized-images]: https://github.com/cyrilwanner/next-optimized-images
+
+### Font support
+
+By default Next.js doesn't support static assets like an Expo project. Because this is the intended functionality of Next.js, `@expo/next-adapter` doesn't add font support by default. If you want to use libraries like `expo-font`, `@expo/vector-icons`, or `react-native-vector-icons` you'll need to change a few things.
+
+- Install the plugin - `yarn add next-fonts`
+  - [`next-fonts`][next-fonts] injects a Webpack loader to handle fonts.
+- Wrap the font method with the Expo method in your `next.config.js`:
+  - The order is important because Expo can mix in the location of vector icons to the existing font loader.
+  
+  ```js
+  const { withExpo } = require('@expo/next-adapter');
+  const withFonts = require('next-fonts');
+
+  module.exports = withExpo(withFonts({
+    projectRoot: __dirname,
+  }));
+  ```
+
+- Now restart your project and you should be able to load fonts!
+
+You can test your config with the following example:
+
+<details><summary>Show Example</summary>
+<p>
+
+```js
+import React, { useEffect, useState } from 'react';
+import * as Font from 'expo-font';
+import { Text } from 'react-native';
+
+export default function FontDemo() {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await Font.loadAsync({
+          // You can get this font on Github: https://shorturl.at/chEHS
+          'space-mono': require('./assets/SpaceMono-Regular.ttf'),
+        })
+      } catch ({ message }) {
+        // This will be called if something is broken
+        console.log(`Error loading font: ${message}`);
+      } finally {
+        setLoaded(true)
+      }
+    })()
+  }, []);
+
+  if (!loaded) return (<Text>Loading fonts...</Text>);
+
+  return (
+    <Text style={{ fontFamily: 'space-mono' }}>Hello from Space Mono</Text>
+  )
+}
+```
+
+</p>
+</details>
+
+[next-fonts]: https://github.com/rohanray/next-fonts
 
 ### Offline support
 
@@ -283,9 +378,9 @@ Wraps your [`next.config.js`](https://nextjs.org/docs#custom-configuration) and 
   - Defines the platform constants you get in React Native like `__DEV__`
 
 ```js
-import { withExpo } from '@expo/next-adapter';
+const { withExpo } = require('@expo/next-adapter');
 
-withExpo({ /* next.config.js code */ })
+module.exports = withExpo({ /* next.config.js code */ })
 ```
 
 ### Document
