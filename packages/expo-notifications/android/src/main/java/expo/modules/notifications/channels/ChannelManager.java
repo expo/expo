@@ -6,6 +6,8 @@ import java.util.concurrent.Future;
 
 public interface ChannelManager {
 
+  void setNextChannelManager(ChannelManager channelManager);
+
   void addChannel(String channelId, ChannelSpecification channel, final Context context);
 
   void deleteChannel(String channelId, final Context context);

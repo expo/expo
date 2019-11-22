@@ -400,6 +400,15 @@ type Channel = {
 };
 ```
 
+1. Channel name (used by android settings).
+2. Channel description (used by android settings).
+3. Notification priority. (range <1,5>)
+4. True if notification should play sound. (false by default);
+5. True - default vibration  (true by default)  
+   False - no vibration  
+   Array of numbers - custom vibration (example: [0, 500, 0, 500]).
+6. True - will increase badge number and False otherwise. (True by default).   
+
 ### ActionType
 
 ```ts

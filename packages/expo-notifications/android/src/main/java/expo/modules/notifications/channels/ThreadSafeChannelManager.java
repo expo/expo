@@ -8,19 +8,13 @@ import java.util.concurrent.Future;
 
 public class ThreadSafeChannelManager implements ChannelManager {
 
-  private volatile static ThreadSafeChannelManager mInstance = null;
-
-  private final ChannelManager mChannelManager = new AndroidAwareChannelManager();
+  private ChannelManager mChannelManager;
 
   private ExecutorService mSingleThreadExecutor = Executors.newSingleThreadExecutor();
 
-  private ThreadSafeChannelManager() {}
-
-  public static synchronized ChannelManager getInstance() {
-    if (mInstance == null) {
-      mInstance = new ThreadSafeChannelManager();
-    }
-    return mInstance;
+  @Override
+  public void setNextChannelManager(ChannelManager channelManager) {
+    mChannelManager = channelManager;
   }
 
   @Override

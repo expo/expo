@@ -28,6 +28,7 @@ import java.util.Random;
 
 import expo.modules.notifications.action.NotificationActionCenter;
 import expo.modules.notifications.channels.ChannelManager;
+import expo.modules.notifications.channels.ChannelManagerProvider;
 import expo.modules.notifications.channels.ChannelSpecification;
 import expo.modules.notifications.channels.ChannelScopeManager;
 import expo.modules.notifications.displayers.NotificationDisplayer;
@@ -118,9 +119,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @ExpoMethod
   public void createChannel(String channelId, final HashMap data, final Promise promise) {
-    channelId = getProperString(channelId);
     data.put(NOTIFICATION_CHANNEL_ID, channelId);
-
     ChannelSpecification channelSpecification = ChannelSpecification.createChannelSpecification(data);
 
     mChannelManager.addChannel(channelId, channelSpecification, mContext.getApplicationContext(), () -> { promise.resolve(null); });
@@ -128,7 +127,6 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
 
   @ExpoMethod
   public void deleteChannel(String channelId, final Promise promise) {
-    channelId = getProperString(channelId);
     mChannelManager.deleteChannel(channelId, mContext.getApplicationContext(), () -> { promise.resolve(null); });
   }
 
@@ -297,10 +295,9 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
     AppIdProvider appIdProvider = moduleRegistry.getModule(AppIdProvider.class);
     mAppId = appIdProvider.getAppId();
 
+    mStringScoper = mModuleRegistry.getModule(StringScoper.class);
     createDefaultChannel();
     mChannelManager = getChannelManager();
-
-    mStringScoper = mModuleRegistry.getModule(StringScoper.class);
     mNotificationScoper = new NotificationScoper(mStringScoper);
     mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
   }
@@ -316,7 +313,10 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   protected ChannelManager getChannelManager() {
-    return new ChannelScopeManager(mStringScoper);
+    ChannelManager channelManager = ChannelManagerProvider.getChannelManager();
+    ChannelManager channelScopeManager = new ChannelScopeManager(mStringScoper);
+    channelScopeManager.setNextChannelManager(channelManager);
+    return channelScopeManager;
   }
 
   @Override

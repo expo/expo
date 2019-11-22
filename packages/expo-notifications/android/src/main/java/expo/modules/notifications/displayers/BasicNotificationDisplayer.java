@@ -17,7 +17,6 @@ import expo.modules.notifications.displayers.modifiers.IntentModifier;
 import expo.modules.notifications.displayers.modifiers.LinkModifier;
 import expo.modules.notifications.displayers.modifiers.NotificationModifier;
 import expo.modules.notifications.displayers.modifiers.SoundModifer;
-import expo.modules.notifications.displayers.modifiers.VibrateModifier;
 
 public class BasicNotificationDisplayer implements NotificationDisplayer {
 
@@ -32,7 +31,6 @@ public class BasicNotificationDisplayer implements NotificationDisplayer {
 
     mModifiers.add(new MainModifier());
     mModifiers.add(new ChannelModifier());
-    mModifiers.add(new VibrateModifier());
     mModifiers.add(new SoundModifer());
     mModifiers.add(new IconModifier());
     mModifiers.add(new ImportanceModifier());

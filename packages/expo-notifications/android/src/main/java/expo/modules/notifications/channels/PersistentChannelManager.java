@@ -10,6 +10,11 @@ import java.util.concurrent.Future;
 public class PersistentChannelManager implements ChannelManager{
 
   @Override
+  public void setNextChannelManager(ChannelManager channelManager) {
+    // no-op
+  }
+
+  @Override
   public void addChannel(String channelId, ChannelSpecification channel, final Context context) {
     deleteChannel(channelId, context);
     new ChannelProperties(channel).save();
