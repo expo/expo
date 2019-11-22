@@ -22,14 +22,14 @@
 		};
 		00CB6E86794D06523947F3829CFA0A6A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5CB962274CF9FDFB809F734D380AC2D9;
 			remoteInfo = ABI36_0_0EXAppleAuthentication;
 		};
 		027BE5AF6B6E2B4A10F672895E9C1943 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 290574E0C42402A9CBC3B0AB593F6C2D;
 			remoteInfo = ABI33_0_0EXAppAuth;
@@ -50,15 +50,13 @@
 		};
 		036D58825880674DBAE602D9606C08E2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 29C31EED195D4EC4848AAF9AD3D82400 /* EXBattery.xcodeproj */;
-			containerPortal = 287716167F5F06418BC9A74E6430E595 /* EXLocalization.xcodeproj */;
+			containerPortal = 5C5A8C6D3800982D94DD2280F2892074 /* EXLocalization.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 55C7C51CE4B49B971674C896CB1DC301;
 			remoteInfo = EXLocalization;
 		};
 		0440D1726F9EA9B83F20C769471476D8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			containerPortal = F87324D4AFBB6C500D89FEDBB64C7B9E /* Amplitude-iOS.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E9F5188151EE37F157A617BBBC3DB105;
@@ -66,7 +64,7 @@
 		};
 		04A66DF5BD856B5CEFCC11496C8CF597 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 072634AD212667558DFC77486595F4ED /* EXAppAuth.xcodeproj */;
+			containerPortal = 8BA08997D391A5C4E71E814E5D97D8AC /* EXAppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5FB7695B45E2F2A9171D3B6C97B3A1A2;
 			remoteInfo = EXAppAuth;
@@ -80,8 +78,7 @@
 		};
 		05A12C76B78D435DEB88DEFEBD0EC81D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A2B6C24D3179FDAAAD0C838DFBDC367D /* RCTTypeSafety.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7688B1539830A752503FA00DC6F81F8E;
 			remoteInfo = ABI35_0_0UMCameraInterface;
@@ -95,31 +92,27 @@
 		};
 		05EE46D580338B02AD59380325194E28 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = FCDC981FBB483395E175D9227A9B30EA /* RCTRequired.xcodeproj */;
+			containerPortal = D13242D1CCF1085EF74AC95644E21E2C /* RCTRequired.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7B4E6DC12B1D694845842E9A06C59213;
 			remoteInfo = RCTRequired;
 		};
 		067C17E5F77A82A9BDA6B7E4337FD4E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C0D70EE1926450B648F104AC32CD77F5;
 			remoteInfo = ABI34_0_0EXMailComposer;
 		};
 		07C6C61867E53493001E3F260BD60536 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0BA1E848DD2F43297D651F1E891F5764;
 			remoteInfo = ABI36_0_0ExpoKit;
 		};
 		08B5D8768368108C6F491234FE4D5D17 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8B752EDE862014F391809BDDCF47DFAF /* React-RCTText.xcodeproj */;
 			containerPortal = 7B61342B9DEC6C43544EB0264B3D14E5 /* Google-Mobile-Ads-SDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 662B519EDA759B92F78065D8C998C86E;
@@ -127,23 +120,20 @@
 		};
 		094DF9121DB7012834AF5F803335DA3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D52653F71CA273650431B60CCD322572 /* React-jsinspector.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5B77D051FD5C89AC7CBB641B5EBFFD84;
 			remoteInfo = ABI36_0_0UMCameraInterface;
 		};
 		099C621D2D2CF82380B34CA042412133 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8AD97421C5C387A4BF38FAC5CCC0B41F /* EXFont.xcodeproj */;
-			containerPortal = DDE6EA0AEF1712713949EE9FF9F6271F /* React-cxxreact.xcodeproj */;
+			containerPortal = 637635BF065467868F5ADC706139E9A1 /* React-cxxreact.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD509719D4F0C3D8910F2BED0B6AB5F3;
 			remoteInfo = "React-cxxreact";
 		};
 		0B63EC7565AE7D6A530907444E17668E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			containerPortal = FBB79C521E9C395A4C684E53EB3FE784 /* lottie-ios.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2FFD4CF15B40CE17E04F3BC6AAF7035A;
@@ -158,7 +148,7 @@
 		};
 		0C5ED988723F9EEBE185DEEACE40C6C4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = CB94088263C56D4E2EB83CB081B93944;
 			remoteInfo = ABI34_0_0UMPermissionsInterface;
@@ -172,8 +162,7 @@
 		};
 		0E3D388856AD0E56412A0E9EC04207C4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C2DB2F7D1E0020E1A1FE8B8548196A59 /* EXDevice.xcodeproj */;
-			containerPortal = 24A554731EB7649CB49B510EBE9F30F0 /* ReactCommon.xcodeproj */;
+			containerPortal = 57A4648542808899B02553C841F0C609 /* ReactCommon.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2610D146B211EB79FECF83D4FA5AB36D;
 			remoteInfo = ReactCommon;
@@ -187,15 +176,13 @@
 		};
 		0ED82FBDFFAB0B5C91809811DFBE6642 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5ADF36DEEEE1DB898F3E2219FFEFA633 /* UMFaceDetectorInterface.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = CAFFCEA025B37CB249A4512801BB8C9E;
 			remoteInfo = ABI34_0_0ExpoKit;
 		};
 		0F154E0A0F5B8E85C5C41742EB1C4E0A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = 64FB6EA053040D16D666B583C31B56C3 /* GoogleAppMeasurement.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9677266E0E3834B96EA12E3394F9063D;
@@ -203,23 +190,20 @@
 		};
 		0F222A437AFD7A7D5A91B8BD693DA796 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0998DC5943E354FCC241D962975541C8 /* EXAV.xcodeproj */;
-			containerPortal = 79CD069B7FAE67F9CE75CCE31FC15326 /* EXBattery.xcodeproj */;
+			containerPortal = 29C31EED195D4EC4848AAF9AD3D82400 /* EXBattery.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5941E7B2BA388644B9A594045D22DE1D;
 			remoteInfo = EXBattery;
 		};
 		0F3F1E37928C9E5D69B7BEC1C0A5FF1D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1DB813199EF3CA2138854AE6610ED775;
 			remoteInfo = ABI34_0_0EXPermissions;
 		};
 		10119F5255018CDDD33C41258BA004D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			containerPortal = E3F4EA4DFDA311F010BE544934F5D2B0 /* GTMAppAuth.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AFFE62B58843E7D325544E4D760E8920;
@@ -227,23 +211,21 @@
 		};
 		103700BD5C116F9ACC2D4AC3A61F3371 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3F8DC0F7D0236E98441D7C2FBDA345A2;
 			remoteInfo = ABI34_0_0EXMediaLibrary;
 		};
 		10E79B72B3C02FD55EB67E3A12100DC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 57E5834396AA1357AB36A4EFBC84FF4A /* EXImagePicker.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C0515A11953BA0C7B2A8B397EF934BE2;
 			remoteInfo = ABI33_0_0UMFileSystemInterface;
 		};
 		1243E9510CC76366B648C0C4D64997B6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7EEC62172A99F4C703BE3B42D36E5819;
 			remoteInfo = ABI35_0_0EXAdsAdMob;
@@ -257,7 +239,6 @@
 		};
 		12887B29AD135EB0E359646935C6AFD5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = D9F69FA32495CB07432EFA0D40E69672 /* JKBigInteger2.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 55B5B69CD0128658056242174A61815A;
@@ -265,7 +246,6 @@
 		};
 		12E690DD2B3A59C18A019DCA43C31CE7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			containerPortal = 00894F16F307088EEF337E2CE8AE3EB0 /* Branch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 32AB2597F26D238AAF12A9F8A95B992E;
@@ -280,47 +260,41 @@
 		};
 		142B9C0D9D4A01F382552079B139B9CD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E09BAE4CFDD94BAC406F37B03C0B7A80;
 			remoteInfo = ABI35_0_0EXConstants;
 		};
 		15794CC6784D612F48BFEA35EFB451EC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4C746BC1076F7F90497818334C3AA497 /* React.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C3C33F26A7581E82E8F871CE9535B4E6;
 			remoteInfo = ABI33_0_0EXBrightness;
 		};
 		15830481124EE945A909F248EEE22388 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 64534007F979CA422D536866F50A5E38 /* EXMailComposer.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2A5353632FAA3BC2EA4183F95FF5A281;
 			remoteInfo = ABI35_0_0UMFontInterface;
 		};
 		15ECC7000F08816394BB32A93A3941A4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = CC3484FCC55EF7B64656689DA345C135 /* EXConstants.xcodeproj */;
+			containerPortal = 00C5F43FB26062B7BAC724C81AC33BC3 /* EXConstants.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F3E96ACB94E2361FA9D83BE599DEC427;
 			remoteInfo = EXConstants;
 		};
 		16992E0B427847647AA16D0F6BA7D1D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3DEED031FEB6B37555D9F06EA2AC3D98;
 			remoteInfo = ABI33_0_0EXSpeech;
 		};
 		1772E2AC27D7A71461D9C0FA7E2A4AAA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1453A0D1E2E1666B68C8BFB6F20D0C8A /* FBLazyVector.xcodeproj */;
 			containerPortal = E6A3CA6EE77E648DF46334082C6956D2 /* FirebaseCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BD5DE1E00ED67A59118DB4A3CD5F288;
@@ -328,24 +302,21 @@
 		};
 		17AA8FACAEC1BDC03E9B38E3F30FAB13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 93EF7B28D53040D0F3CE800112A02A55;
 			remoteInfo = ABI33_0_0EXSQLite;
 		};
 		1814B297E21A60D8F6D74B36EC6D5F74 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 599ECD037D82AA7672FCC54669CFE084 /* EXLocation.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AC73EB836B1C09D49D715E44A9F4603E;
 			remoteInfo = ABI35_0_0EXGoogleSignIn;
 		};
 		1870F33A821D33429937CB823FB1BFD2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 931A5B34C6F5ACF0DCB656C6BF25BDD7;
 			remoteInfo = ABI34_0_0EXLinearGradient;
@@ -359,8 +330,7 @@
 		};
 		1938A696A6408CF826A7558C7579F85A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = DD09E25553E7F6F6AD4B7AA77452CE25;
 			remoteInfo = ABI34_0_0UMImageLoaderInterface;
@@ -374,18 +344,8 @@
 		};
 		1B1904F510930167D6C99CFFE7829551 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 381AC80C81F88F0A46BC59B257855D09;
-			remoteInfo = ABI35_0_0EXAppLoaderProvider;
-		};
-		207A52391F98A40313AA01A04775F5C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
 			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 002BBA57E42F175E3AB6AA4118BC308D;
-			remoteInfo = ABI34_0_0EXAdsFacebook;
 			remoteGlobalIDString = 67FCE72D8FB3565F6D0FCD5BD54A6766;
 			remoteInfo = ABI34_0_0UMSensorsInterface;
 		};
@@ -405,32 +365,28 @@
 		};
 		1C5AE94A254CC100F0F4F70E34B7A903 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F0ABEBA6EA3D269A8E3EEF9243E51502;
 			remoteInfo = ABI36_0_0EXDocumentPicker;
 		};
 		1C744C76F530A2FFFE75C2CE8A0E901F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 23830E0B787B01A4DC8DE392FACD3021;
 			remoteInfo = ABI35_0_0EXSharing;
 		};
 		1CD2CBE51CF23A8130A0E991B4E8E255 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 87F973EA135FA5943E2F06B3E12FA1B1 /* EXAdsFacebook.xcodeproj */;
+			containerPortal = E3B6980F0C7B4A62DC2A77379EC1DE2B /* EXAdsFacebook.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E56FBC495C1E2086B744DDCAB25831F3;
 			remoteInfo = EXAdsFacebook;
 		};
 		1E336FB935E3BF0C0B07B6D8A8C022C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = C0043F51B265CBBB6CA6350BB6068AA0 /* EXAdsAdMob.xcodeproj */;
+			containerPortal = B608CA71395A33A0D0E4651E33AC2F73 /* EXAdsAdMob.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BEF6CFDFF87395C99BA42B4CFF868EAA;
 			remoteInfo = EXAdsAdMob;
@@ -444,8 +400,7 @@
 		};
 		208F1B94E3C5D2442BF91EFD6735E4FD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = A27A9531DB88B4B187C2D2DD2ABE4F0E /* EXFileSystem.xcodeproj */;
+			containerPortal = 2D12E07AAAFF92CEE5FFCCDEBF3270B7 /* EXFileSystem.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5232535845650ADAE59870B722468D8A;
 			remoteInfo = EXFileSystem;
@@ -464,14 +419,6 @@
 			remoteGlobalIDString = 026359A12CA511AF12897ED05A83462C;
 			remoteInfo = EXWebBrowser;
 		};
-		28B9293A84333C8F519D39382586A5E6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1D6F02A9C1A072FDE2298E6BF74AC711 /* EXGL-CPP.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 348F48833A31FAAF4C3FBBBCAA504BB8;
-			remoteInfo = "EXGL-CPP";
-		};
-		28E91176D8B8A9513A6A11C892AD2A90 /* PBXContainerItemProxy */ = {
 		25A92F72AC86A72662B3CCE7C9DF3049 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
@@ -481,40 +428,35 @@
 		};
 		275AEA09FA27F4FC8CDE5184BDB109EE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = A9DE93B74119926E61ECF8A638EB090F /* EXAppleAuthentication.xcodeproj */;
+			containerPortal = 325F5ADAA34CF68C075D2CFCA4955C55 /* EXAppleAuthentication.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 75D95B1FB34689F855D1F4728683DC28;
 			remoteInfo = EXAppleAuthentication;
 		};
 		279542C1E1150C194EEE539AC47555F4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9001A8BA8617B773E07B32850F8301AD /* EXSensors.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6106F8A2BA867A37340DBEF712E2D2E3;
 			remoteInfo = "ABI36_0_0React-jsinspector";
 		};
 		287BEC901FF753354A6B949BD981362B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 21017DD226B234906595B1E1FC617C1E /* EXAppLoaderProvider.xcodeproj */;
-			containerPortal = B3256E3E882864D9B39F6611D9208C6C /* UMSensorsInterface.xcodeproj */;
+			containerPortal = 9B56E3068226F4D1C6D1D45BA51DEFCE /* UMSensorsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1FDCE556B997E87DAB0DA2727CC69285;
 			remoteInfo = UMSensorsInterface;
 		};
 		298BF97C01751B3BDBA911DBA9C43843 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = CB2F7388A4CAED7DD8E35D8A0E752A61;
 			remoteInfo = ABI36_0_0EXGL;
 		};
 		2A998EBE89ED49AF0EAB8B1226CD317D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9F784041C752B6133D1B0899B83C6126;
 			remoteInfo = ABI34_0_0EXKeepAwake;
@@ -535,23 +477,20 @@
 		};
 		2DB9504423DBF0A5E25FB00D5B4ADB24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 10A12F95932E350CAF7699538E282DC1;
 			remoteInfo = ABI34_0_0EXGoogleSignIn;
 		};
 		2DBC736F01F37800BE16C746586989D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 676E2EE305CC46170510F91290F9D6D8;
 			remoteInfo = ABI33_0_0UMFontInterface;
 		};
 		2DC13D80F4F0FFA37DE256A6C7F4BBCE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			containerPortal = AD69073AA51FC8F6B34FFAFF1D365B13 /* GoogleMobileVision.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2708175A425F1F6674D0854CB8EA85C4;
@@ -573,62 +512,55 @@
 		};
 		2E4E6E0B687EDB1BFE44FE2DB880E8B5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7D66C27A295D8BBB94D815009A058F61;
 			remoteInfo = ABI35_0_0EXSQLite;
 		};
 		2E946C5DBC51B28A9447B422F7E25E2F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = CD2799BE47B5B838C19BD75DC6206A1D /* EXVideoThumbnails.xcodeproj */;
-			containerPortal = 326CC4D941F6B99B1D3234E1FDCCAB65 /* EXBarCodeScanner.xcodeproj */;
+			containerPortal = 0ED73705B7EF3E9B46C570E52152CED1 /* EXBarCodeScanner.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E6D544E86F973F511B82FE486E5E25CD;
 			remoteInfo = EXBarCodeScanner;
 		};
 		2ECC78E8BFC0F8F4F45DA9A5416521EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4741992A6654A2B89E9D0A0015487008 /* EXRandom.xcodeproj */;
-			containerPortal = 48A5020A3DA9890E5D523F1064884C80 /* EXSegment.xcodeproj */;
+			containerPortal = E16786A37EA4C5A5A67AE307A5B2EE69 /* EXSegment.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D65C18BEC619DFEA9C73805518539F66;
 			remoteInfo = EXSegment;
 		};
 		3053C0382D754969331C8048BF2A8FB6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F5DCE07A12345C610E4DDC9DD32D1639;
 			remoteInfo = ABI34_0_0EXPrint;
 		};
 		30B82B4F6FD38536B00EEDBC45B8D72A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DDB32E1C234C91075D2A15F74A939D43 /* React-jsiexecutor.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D31C222B849B43D038F07240DCF1AC6B;
 			remoteInfo = ABI36_0_0EXAmplitude;
 		};
 		311715339ACECC8B66D7F5D39490B6F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9F89089BFB912F3B2C1D0CDB08A59765;
 			remoteInfo = ABI34_0_0UMFaceDetectorInterface;
 		};
 		3129DF3CBA71D2FA08AC5853A7977634 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = EA0BA67FB1A6DFD5D9F377957A37E8BB /* EXTaskManager.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E72045AA7323DECC4B87D9B064566F43;
 			remoteInfo = ABI36_0_0EXGoogleSignIn;
 		};
 		31413ECF25063EE451610E8FDF2B80BA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			containerPortal = C351806ACCD54DCBEA30BAEF56167C38 /* glog.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86F597DC3D8F3D7A34EC5A5C413F7255;
@@ -636,15 +568,13 @@
 		};
 		31EF37019801BF2874F2FD52D6936874 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = DDCB6BCE8A255EEB890B6DC5AD503E72;
 			remoteInfo = ABI34_0_0UMConstantsInterface;
 		};
 		32233373A557A3F5B85CFE7398A8C64F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5C5A8C6D3800982D94DD2280F2892074 /* EXLocalization.xcodeproj */;
 			containerPortal = A86BA0CAF74285E69C0A5B7D1C4CF2FC /* Protobuf.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF47F3270E009392526FDEE0C3BA42AD;
@@ -652,24 +582,21 @@
 		};
 		3350ABC747F2F84E20C740575612EA21 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 2E6D180B5CE502A8A7A04EAEBC54CD8A /* Yoga.xcodeproj */;
+			containerPortal = 2DE7D5053C93B82DE731A23BBAEDF83B /* Yoga.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DB658880A3F558549A84D99BCFADCBC;
 			remoteInfo = Yoga;
 		};
 		35270561F3E68015255655E2C794046F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = E2A7F2EB98DCAEB1685B9547D2A39B6C /* EXPermissions.xcodeproj */;
+			containerPortal = B2648DD9244FD92C7A700F664EB93B7A /* EXPermissions.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 488F0C19AB92FC4B503EB55CC688FCF5;
 			remoteInfo = EXPermissions;
 		};
 		35571D22CCAC4EB1EEFBF8E8418B575D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 59CBD9D4F0A13BB1D2DCD3936FBCE6CF /* EXImageManipulator.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 85CCF66024BDEF398BD94B4EFC4C2B5A;
 			remoteInfo = ABI34_0_0EXSpeech;
@@ -690,31 +617,27 @@
 		};
 		36238100AC4FD4BEFDA5E08E846D0A15 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 1EAFBEE9DE8111B09FF2F4A4F09BFE9C /* EXBrightness.xcodeproj */;
+			containerPortal = 1FB60C95F967309203B0D241906FBF1F /* EXBrightness.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4AA3EE5BEEB58B2975A12819B1C58D97;
 			remoteInfo = EXBrightness;
 		};
 		364D837619ABA0341992DF91D573C3CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6DC928526131B3239D9466A3ABEDA38F;
 			remoteInfo = ABI36_0_0UMImageLoaderInterface;
 		};
 		36B18A9E54C972E542472C17C96A416F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 3B515EF51FCBE4FEE28482E300BE405D /* EXMailComposer.xcodeproj */;
+			containerPortal = 64534007F979CA422D536866F50A5E38 /* EXMailComposer.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2E02530F5AAAD2AC2A43FE2B8AC3E99C;
 			remoteInfo = EXMailComposer;
 		};
 		36CCA51CD5DC06FBA7A46039DE4109D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 57C2DAB2C17408488D4D72A95DDD8B50 /* React-RCTActionSheet.xcodeproj */;
 			containerPortal = 47E90CEC9442E771BF475A03171185F3 /* GoogleDataTransport.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 78B41281B6D2EAC6C3C75FFE5052E985;
@@ -722,39 +645,35 @@
 		};
 		3824F3EC36A3532BEABBC9FD5E3B1072 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F97619A9FB46645DD0EC09784B3464BE;
 			remoteInfo = ABI35_0_0EXAV;
 		};
 		38A7139BB64852F0553BF015D6610414 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 14AAED6B64489818116C53A3F468B01F /* EXCellular.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 405B0D4A4F2DDAD74861C36F748A2C78;
 			remoteInfo = ABI36_0_0RCTRequired;
 		};
 		39E365EDDC90457FAF34D5E722FB54FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 18586F5F6E9BE1101F2483B2DCF15D41;
 			remoteInfo = ABI33_0_0EXLocation;
 		};
 		3C1337AB5FE43D496AD4445AFC56D010 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 8DDCCD092EEE2EFC0E9E025984A02CD9 /* UMTaskManagerInterface.xcodeproj */;
+			containerPortal = 6E966100E3989E1CA21C940CC68FDE41 /* UMTaskManagerInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A565C99DEFBAFA44A1B5C3B49ADD8A84;
 			remoteInfo = UMTaskManagerInterface;
 		};
 		3D8620683BBE4F34B3D89FFE5FBB0C6D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 2A28CE2E7BA9F42FFC480895E4214887 /* UMCameraInterface.xcodeproj */;
+			containerPortal = 1AFD3573600BA6416F7B9045D1364A41 /* UMCameraInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86372E925D4E10D72894E239CC18BCD9;
 			remoteInfo = UMCameraInterface;
@@ -768,8 +687,7 @@
 		};
 		3F3CE6745C58A6324B753EA49E06E0A6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E34FFCED87371866940C9B03905D38A8;
 			remoteInfo = ABI35_0_0EXAppAuth;
@@ -783,15 +701,13 @@
 		};
 		409859B7B7A2C3B490B7729EB0577AEA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9255D9F6A409F29BA8F28EF910967B30;
 			remoteInfo = ABI35_0_0EXMailComposer;
 		};
 		40A0190B9308AAFD61FF1F306223A0CB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			containerPortal = 8DBE552E4E5D2579AFB190F08C0420D0 /* FBAudienceNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 51D72679DE0FCD549F01BCDBBF19E2B0;
@@ -799,8 +715,7 @@
 		};
 		4169D7368CFD8078A9BA6A60041B2268 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4F1DA71179E5943BD6BAE44D42938193;
 			remoteInfo = ABI33_0_0EXAdsFacebook;
@@ -821,16 +736,14 @@
 		};
 		43013C89AEB8BFA2D4D16D59FA76FEB7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 9B19B93B4E36968EEA26F03DB06AFA95 /* UMFontInterface.xcodeproj */;
+			containerPortal = 78C62215FA5F02190259FBD04793F196 /* UMFontInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7F4112A673122B6D50845D9BC1D9AFDB;
 			remoteInfo = UMFontInterface;
 		};
 		4388FEAC90EEBED6D64BD269EA14FF4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1391A6DF2492CA41A9DD5436F83D5C16 /* EXSMS.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 93804DEF07DBD2C92CBFFE7CC32DD5FC;
 			remoteInfo = ABI34_0_0UMFontInterface;
@@ -844,8 +757,7 @@
 		};
 		45CF650A08FEA1CEFB22F50BB29FF5FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6FB4DBA8C776042815026EF3D8E39788;
 			remoteInfo = ABI36_0_0EXLocation;
@@ -866,7 +778,6 @@
 		};
 		47EC7CCD01F4D79CFBABBFF63405A8E6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = 53C9019AB43433047E34ADC8F4D7C34C /* DoubleConversion.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 725D0E8C1060F8939288E8C91236BA4F;
@@ -874,16 +785,14 @@
 		};
 		484D8EFE79A7C04F852C50676D9DD98D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = B2000BFAE3F08EF5EC50F9ADE6131298 /* UMImageLoaderInterface.xcodeproj */;
+			containerPortal = F3B78F7515BF7B4740B31D56489E7755 /* UMImageLoaderInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A734124238F83C1FEE81C0FEDC5CDC5C;
 			remoteInfo = UMImageLoaderInterface;
 		};
 		4923F45E884EB2693F8A8CB808E18137 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = EEF81756691DA6EE057A8359457AEA77 /* FBLazyVector.xcodeproj */;
+			containerPortal = 1453A0D1E2E1666B68C8BFB6F20D0C8A /* FBLazyVector.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4B95F1280DBD545D036916608691C3EF;
 			remoteInfo = FBLazyVector;
@@ -897,40 +806,35 @@
 		};
 		49FCB57FEA02FF4D95E48DFF5D7F4E6F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = A054EA4E028905AB764BE2C20F088B65 /* React-RCTImage.xcodeproj */;
+			containerPortal = B385CD08F7197F7806E23CB2CC87F611 /* React-RCTImage.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C78CA5C5EDDCCF5EC637E0FC8BB4C96E;
 			remoteInfo = "React-RCTImage";
 		};
 		4B7821528CA204243C99DA29C852C5BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 90EAC78CA0291E971E628F2D0BC6877A;
 			remoteInfo = ABI35_0_0EXImageManipulator;
 		};
 		4B7D357AA42F98E9CEFCB33475659126 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 11C64B8C3465069502F0D928C585601B /* React-RCTNetwork.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5525AF966AE228479212FF7A78D25C18;
 			remoteInfo = ABI33_0_0UMCore;
 		};
 		4B7DBA580162F525457237AE3C17142A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 13947D2D0A838D27A0983F7954256624 /* React-jsi.xcodeproj */;
+			containerPortal = 9E1F5B0DD2DB2B8ADCB23ABBD3B241C4 /* React-jsi.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D0DB82AB65D33935072718EA2468992F;
 			remoteInfo = "React-jsi";
 		};
 		4B8F05FAB113D80C1F7264AE90E8CEC8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E621A76C4D777DA3450ADFB11C1179E9;
 			remoteInfo = ABI35_0_0EXFileSystem;
@@ -944,8 +848,7 @@
 		};
 		4BD25834A7F85A2191935CFDAECA3C64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = A67E8F9980351C24D1E32AEA15A33BEC /* React-Core.xcodeproj */;
+			containerPortal = 219D8F749B42790219CBD3768C92C33A /* React-Core.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5DA1A74647F652AE8E4DE074AFC4C6B7;
 			remoteInfo = "React-Core";
@@ -959,48 +862,42 @@
 		};
 		4D2D44485DCE4EDA0BA617FC5256AF13 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 80DF08E83BE7EA6D9CD6B8F2BC08E9B7 /* EXBranch.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A25927DA7D78D1362EBD9E456E5C8968;
 			remoteInfo = ABI35_0_0EXSpeech;
 		};
 		4D59F5E24ACC58BD5C38E8C72DDDAE9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FC7FEE6D6FA5585D227854C1306617F1;
 			remoteInfo = ABI36_0_0EXWebBrowser;
 		};
 		4DC03554E0239773CEC7F67928542D88 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E16786A37EA4C5A5A67AE307A5B2EE69 /* EXSegment.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 31DC869713590C4253894E9BD6396842;
 			remoteInfo = ABI34_0_0EXSecureStore;
 		};
 		4E07AE8D0A26D7ABC1FB75838F788366 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C9DE1F6AF5AAFB7D34F7A9D608BF22A8;
 			remoteInfo = ABI36_0_0EXFont;
 		};
 		4E68CFE516FB9DB0F3AE063C22F3FD9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B0E16A419B81E34C4F6EFB7750D1216E /* EXErrorRecovery.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9DA8B333F691C94A32FC0CA4575A70BD;
 			remoteInfo = ABI33_0_0EXAV;
 		};
 		4F3542C322D54953A7AA03583D007BF1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8964C23F9BF4B2941BEFBB9C049241A1 /* EXSharing.xcodeproj */;
-			containerPortal = CCD8F388E47240B0C42A2DF82E265296 /* EXDevice.xcodeproj */;
+			containerPortal = C2DB2F7D1E0020E1A1FE8B8548196A59 /* EXDevice.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 61CE878EC16A63D023F23DA6C1B824B9;
 			remoteInfo = EXDevice;
@@ -1014,23 +911,20 @@
 		};
 		50A0815725296846F3522DAA9715429F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 854F2782BECF9E7C804797BD6239FB1F /* EXLocalAuthentication.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 672F494E8F71D02FA3722C4CDAB1F886;
 			remoteInfo = ABI35_0_0EXDevice;
 		};
 		51C784FE6D25720904844A4292FEFA0F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1829B21C55F904F882FF351A3DFD83EF;
 			remoteInfo = ABI33_0_0UMConstantsInterface;
 		};
 		52770FEE3D7D7772282DB846BC7D3F7B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F3B78F7515BF7B4740B31D56489E7755 /* UMImageLoaderInterface.xcodeproj */;
 			containerPortal = 7E07C05A4AD9D81043E4E1F666D14F16 /* GoogleAPIClientForREST.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E899E01EE94E3AAE44DBC0A0C183AD70;
@@ -1038,15 +932,13 @@
 		};
 		52B5A62A3EA85E94D7C5976C1D6CFC02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 55C0636FEF3CF9D4B78C1752E473F775;
 			remoteInfo = ABI33_0_0EXLocalization;
 		};
 		5452C5CED9CF94F983AB133802721611 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9E1F5B0DD2DB2B8ADCB23ABBD3B241C4 /* React-jsi.xcodeproj */;
 			containerPortal = B788C8AF0DD60B2FBA8C6D0E583DACC5 /* FirebaseCoreDiagnostics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0CE453D8DBD3396B4C74B9ACD7A09387;
@@ -1054,23 +946,21 @@
 		};
 		545A145C8C79CFE2E5BF2013733E9E3B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 53A7B80BA805E671D95201A387916A42;
 			remoteInfo = ABI35_0_0EXKeepAwake;
 		};
 		5476A95DEC2C5F1590F20F041192B9E4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F5E51645893EF975D4B0983B725F55BC;
 			remoteInfo = ABI36_0_0EXLocalization;
 		};
 		548562A1D2C1761368BCB7C5711F167D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 05DF7E6FB88B48307AF74F6E7D70EC23;
 			remoteInfo = ABI36_0_0EXAV;
@@ -1084,15 +974,13 @@
 		};
 		54FF650C6B3BAB8066C2FAA4FE7A77AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = B57DEDC344C46F8B1342A4525666F999 /* React-RCTSettings.xcodeproj */;
+			containerPortal = 277C62F94ABDD049CAE910857B0C256A /* React-RCTSettings.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 02DD1E05F06C403A8300ABEFC2C29A3D;
 			remoteInfo = "React-RCTSettings";
 		};
 		55A98E352FB1CE797C25DB127C08CBCA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 860E454C4C93458C8CA3C9BA62C382B5 /* EXMediaLibrary.xcodeproj */;
 			containerPortal = BE49DF44F1AE5D91BF8E8B1EF834273E /* boost-for-react-native.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AA4CE39926C0C12D02F874C1C48A5710;
@@ -1100,7 +988,6 @@
 		};
 		5661BD1CC4B94D648BBAAFD9E6F6390D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = 3789E241987A31BE7919EC9877F6DB72 /* FirebaseAnalytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3DC59710253F562E6B3BE135BABFBA19;
@@ -1108,48 +995,42 @@
 		};
 		56EB97960138B591600A606A8E025801 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 1A5AC9AA9611FCF6A07C9DA3F1C8C36C /* UMReactNativeAdapter.xcodeproj */;
+			containerPortal = 3F6DDD55E13E184410F694AD0E139771 /* UMReactNativeAdapter.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E0F5743D6C158230DA447A63190DF2E9;
 			remoteInfo = UMReactNativeAdapter;
 		};
 		577D054A796DAC4456D8AF073A93AADF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = CDE2D1CEF7B046DB4EF1A899DCF90AA6 /* EXContacts.xcodeproj */;
+			containerPortal = C1B6AC8D54C91423BDAA642498ABFE10 /* EXContacts.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B22EE26A55A92797A576C80A1202EFFD;
 			remoteInfo = EXContacts;
 		};
 		57CD0DB06EB8ABAE58C0944AF211428F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = D15A5B30700E70F9801AD4C33F0193F5 /* EXGoogleSignIn.xcodeproj */;
+			containerPortal = 0DFF65AFFCF35F80C3355AE7CC8352F8 /* EXGoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1EBA7C3FD4A2348A1EFF618E12286F06;
 			remoteInfo = EXGoogleSignIn;
 		};
 		585EB03F8BDCF9C626972AC9D34F328E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 002BBA57E42F175E3AB6AA4118BC308D;
 			remoteInfo = ABI34_0_0EXAdsFacebook;
 		};
 		588F0EBA09215E9C714E4137E382B23E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E754BB2A2291FC557920B19345DA416F /* React-RCTLinking.xcodeproj */;
-			containerPortal = 3AB2E973A6DD111C6B489561DA0C0AB0 /* EXSMS.xcodeproj */;
+			containerPortal = 1391A6DF2492CA41A9DD5436F83D5C16 /* EXSMS.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1309E054CB75DA99E029D5D2C8C2210E;
 			remoteInfo = EXSMS;
 		};
 		59E3C283D2A2A23F84B60C5BE8F21019 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 660DB54ABFA1FD5916FE6E4C5189A26E;
 			remoteInfo = "ABI36_0_0React-Core";
@@ -1163,47 +1044,42 @@
 		};
 		5ABB382712D9007C3C7C66557749A75A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1D19494280AF67C79CB363109D7B5C89;
 			remoteInfo = ABI33_0_0EXGoogleSignIn;
 		};
 		5BF04EDC8B3DFF42D6DEBF138B2C6B7B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DF036EE33E20CF23CDA7E6DF11AAA5B4 /* EXFont.xcodeproj */;
+			containerPortal = 8AD97421C5C387A4BF38FAC5CCC0B41F /* EXFont.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0A4A001679E384FB337FF08C5D081399;
 			remoteInfo = EXFont;
 		};
 		5C9CC4AA2A2FB5D78D479215E1CB768A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8283685010CBA1C04CC35B9383471CB1;
 			remoteInfo = ABI33_0_0EXBarCodeScanner;
 		};
 		5D0B180B3AC1057AF1D3407AF9054DF1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E0FAE3884A6AFC71D5ECA637BABE57DE;
 			remoteInfo = ABI36_0_0EXAdsAdMob;
 		};
 		5F41B45E9CE1E1BF51CFDEA5F886CEB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF58F7C4534715EC8BD4B9E9B369C3F3;
 			remoteInfo = ABI34_0_0EXLocalization;
 		};
 		5F62D8C8F9D78710B8A8E7444E56EBA1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 50F957F171AD1F761C4DD4D02A44B198;
 			remoteInfo = ABI34_0_0EXLocalAuthentication;
@@ -1217,16 +1093,14 @@
 		};
 		5FC45F3F53C296D0E1AAEB1EFBA8AFD0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D03A98F2150FDA07CFC7E48445B41D96 /* EXNetwork.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6CA1A6777AB55C6353F182170142003C;
 			remoteInfo = ABI35_0_0EXPrint;
 		};
 		608A2BF39130E5747FC93C7F72B47CC7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1C12E901F84EAB7FB8DB1B31C4E4FB;
 			remoteInfo = ABI36_0_0EXConstants;
@@ -1240,7 +1114,7 @@
 		};
 		62681F04498C7C445D9821BCE193B917 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = EB9B84C29B7EC1F5C8125C6032306935;
 			remoteInfo = ABI36_0_0UMSensorsInterface;
@@ -1268,48 +1142,42 @@
 		};
 		64BE3DF12A8E01A0132C4ABC1E29BA2A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 67C41D1C8CB2ABBD29F3D63C65E67119 /* EXCamera.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7292247932431DC791BD1DF50D3DF046;
 			remoteInfo = ABI36_0_0UMFileSystemInterface;
 		};
 		653DF9BB8BFBD16D24241759BDAD56BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0A814E3B3911660CC19AE33B8C617878;
 			remoteInfo = "ABI36_0_0React-CoreModules";
 		};
 		659371BE65A3665D609DEF2851FD170C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 22C55ACAC3D762E9B8B77AC815DC5E8F;
 			remoteInfo = "ABI36_0_0React-cxxreact";
 		};
 		65B8B24E69DA6ABB837A95E89F8139DD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 48BF6891405F610D6A6E2C26612AF0F9 /* EXSpeech.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0811C6272161B4F64AD4DA0DB2BA3723;
 			remoteInfo = "ABI36_0_0React-RCTImage";
 		};
 		65C7BBC977ADBA2D98E54E773EB09539 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 70CE0D476AC9F5E3663878EE3B1A09BD /* UMCore.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E8E6E827DACB96C84580E6BDF87A2E34;
 			remoteInfo = ABI35_0_0UMImageLoaderInterface;
 		};
 		65F3EE269FB3405A9A5AEA45F7CEE7F4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B2648DD9244FD92C7A700F664EB93B7A /* EXPermissions.xcodeproj */;
-			containerPortal = 26C3290047BB46EB162B6DC5FCBBB4E0 /* UMFileSystemInterface.xcodeproj */;
+			containerPortal = 3F86FE1E6675C321560197AEF2040263 /* UMFileSystemInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1C326487F8F888A9111422C7014319AC;
 			remoteInfo = UMFileSystemInterface;
@@ -1323,15 +1191,14 @@
 		};
 		6705B0747CD88CDC9BADF53242A4ACF8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = B2FC5E47A27666B2B77132B87EC06485 /* EXImagePicker.xcodeproj */;
+			containerPortal = 57E5834396AA1357AB36A4EFBC84FF4A /* EXImagePicker.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9ACF1D2895E366F44F904503F65171CD;
 			remoteInfo = EXImagePicker;
 		};
 		67CB2A7DC5769D47B2A2F603B28B7132 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 32CCA37544FCE0E2ED0C8A35614DA24D;
 			remoteInfo = ABI35_0_0EXSegment;
@@ -1345,16 +1212,14 @@
 		};
 		67ECB4E4DB0605FDDAC2C2C1D8A70405 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1FB60C95F967309203B0D241906FBF1F /* EXBrightness.xcodeproj */;
-			containerPortal = 7063A8018416EA65421798600887CBF2 /* React-RCTActionSheet.xcodeproj */;
+			containerPortal = 57C2DAB2C17408488D4D72A95DDD8B50 /* React-RCTActionSheet.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2B622CBAFD85AC413ED6306FD8B71B00;
 			remoteInfo = "React-RCTActionSheet";
 		};
 		6B15013FF10FD884196081B4AD36A982 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B385CD08F7197F7806E23CB2CC87F611 /* React-RCTImage.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 17486247048930225D4B41654087B7B2;
 			remoteInfo = ABI36_0_0FBReactNativeSpec;
@@ -1368,39 +1233,35 @@
 		};
 		6CE2F933414751C2D1C6C3534EA4A4B6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 28E2CF0C8C01BB329761D52DDEAEACAF /* FBReactNativeSpec.xcodeproj */;
-			containerPortal = 4A18D640937C0F155BDE867830C0D2D2 /* EXLocation.xcodeproj */;
+			containerPortal = 599ECD037D82AA7672FCC54669CFE084 /* EXLocation.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9448EAC8D0286D37F065B24667BFBB8F;
 			remoteInfo = EXLocation;
 		};
 		6E726B06EAFACAC580AED6F0B2A1FA9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0DFF65AFFCF35F80C3355AE7CC8352F8 /* EXGoogleSignIn.xcodeproj */;
-			containerPortal = E8A138FD52AACF34530FFC046A752243 /* EXNetwork.xcodeproj */;
+			containerPortal = D03A98F2150FDA07CFC7E48445B41D96 /* EXNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 71F2A4AC24C8FBC0E24B6A613BB4F7BC;
 			remoteInfo = EXNetwork;
 		};
 		6E995186982C072C1533AB3B6BE95DB7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 82075345F424CC5D25E85A9D23031182 /* EXAmplitude.xcodeproj */;
+			containerPortal = 4D9169B64E9E74B977F499AEACAAF264 /* EXAmplitude.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 700BA3D76A8C4362E721FECC92A96DFB;
 			remoteInfo = EXAmplitude;
 		};
 		6FA2B1A80621990BDC37F5E0487F42AF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0B356786ECA499FC9D727AF33861F490 /* React-jsinspector.xcodeproj */;
+			containerPortal = D52653F71CA273650431B60CCD322572 /* React-jsinspector.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1AC0EAF3E808B6AA276E43B30A5B20AA;
 			remoteInfo = "React-jsinspector";
 		};
 		6FF32FDB72258CCE3EED4C078C37402F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 37AF70B5E498F5E109FFDCD17F2B9F92;
 			remoteInfo = ABI36_0_0FBLazyVector;
@@ -1414,15 +1275,13 @@
 		};
 		70B98AE701860854022042DDB701D073 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0ED73705B7EF3E9B46C570E52152CED1 /* EXBarCodeScanner.xcodeproj */;
-			containerPortal = 9F439BC1172515B901552266D77A9EE3 /* EXFacebook.xcodeproj */;
+			containerPortal = 0DABF8BAB42E61BDFFC0DA9902AE12DF /* EXFacebook.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FEAA3FBA5C5225363EE9E6D0B5B3183B;
 			remoteInfo = EXFacebook;
 		};
 		72D17A2B7D79DED0A5824B38F6ED8656 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 00C5F43FB26062B7BAC724C81AC33BC3 /* EXConstants.xcodeproj */;
 			containerPortal = 3A1625EB5CF738563E617C35771EEBC5 /* GoogleMaps.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF08434370CEBD287CA17CA7862D7C59;
@@ -1430,8 +1289,7 @@
 		};
 		742EEE066DD098F9CAA5CDBCB57F37ED /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 199E1A580A0D9CD1B5473E5D2B40E8A3;
 			remoteInfo = ABI33_0_0EXBackgroundFetch;
@@ -1445,16 +1303,14 @@
 		};
 		74E782DEF821800288AEF710FD5BE651 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = CB28ECD144EF6E87255BAB43C45ED0C6;
 			remoteInfo = ABI34_0_0UMCameraInterface;
 		};
 		7567F97B0641F65BAB0A766156B1376A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7C9223B12E5284D97ADD265EC72C5A7F;
 			remoteInfo = ABI33_0_0EXHaptics;
@@ -1468,24 +1324,21 @@
 		};
 		76AB020E8B904EB579E55EB1C67EF0C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2FEEA17869D69BB77E7AAEA39D2CE701;
 			remoteInfo = ABI35_0_0EXLocalization;
 		};
 		7726F2A6889F1DB336112B26741F758F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 08A17E954BF2614DCA4082DECEAA804C /* React-jsiexecutor.xcodeproj */;
+			containerPortal = DDB32E1C234C91075D2A15F74A939D43 /* React-jsiexecutor.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7F7693C84AD2D676CE4E5741F508C198;
 			remoteInfo = "React-jsiexecutor";
 		};
 		777A9E70E67E927EFB1039BBA5E81240 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 58FC6059538F0863952C55586C5FF1A1 /* EXSecureStore.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF9EE737083F3680AC7E3F5B7600B946;
 			remoteInfo = ABI34_0_0EXBrightness;
@@ -1506,87 +1359,77 @@
 		};
 		78BE46889974AB2CBE0C1724E4BCF571 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 57A4648542808899B02553C841F0C609 /* ReactCommon.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1EB02D7F04A669B05FA0ACE9D58BB81B;
 			remoteInfo = ABI33_0_0EXFont;
 		};
 		7927340231121BA928946DC4521BD788 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D1F3ACFD820C6E21B9B1B97F41E99D32;
 			remoteInfo = ABI36_0_0UMPermissionsInterface;
 		};
 		79E4F8F3E5ECF7E9C3F494ED8E3F9B3F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 381AC80C81F88F0A46BC59B257855D09;
 			remoteInfo = ABI35_0_0EXAppLoaderProvider;
 		};
 		7BCC061D905AF625CA6EF9C9ACD9112C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 09749DB776BF9B293540FB9891EB8E00;
 			remoteInfo = ABI35_0_0EXMediaLibrary;
 		};
 		7BD113940D166C17C0B8B30E395F26E3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6CE5485725E98462F4B7B10EB9D9E1BA /* EXSQLite.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AFA9CDFA4CAF9C961BD89D0125E475F1;
 			remoteInfo = ABI35_0_0EXBackgroundFetch;
 		};
 		7CA0790FA25A34297689CE224425118D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 0F7CE98EDFE4543758BA1E51AA76B5E7 /* EXSecureStore.xcodeproj */;
+			containerPortal = 58FC6059538F0863952C55586C5FF1A1 /* EXSecureStore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C4DBAA5ED98E7A037D09674FF42AF66F;
 			remoteInfo = EXSecureStore;
 		};
 		7D00CFA446DEA37BECB110A5E3CB3CB1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 17BE9B0F2E67FC3CFDCCD3B90CB87016;
 			remoteInfo = ABI33_0_0EXBlur;
 		};
 		7DD73E6F7EC597911AF4B4B25977977D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 42046C3B4E4F9371C122E40CE577D28E /* UMCore.xcodeproj */;
+			containerPortal = 70CE0D476AC9F5E3663878EE3B1A09BD /* UMCore.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 153171642F5C5CBC05FD3EF6B23A3F36;
 			remoteInfo = UMCore;
 		};
 		7EA8E7D66C6CDB938EF53DB41817F89C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C06EE5D237C939E61A274E853BC8D300;
 			remoteInfo = ABI34_0_0EXFacebook;
 		};
 		7F3F4925BD4420E3BC6659F6A1793D9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 93DDA026E74BC7CFC1FC5DBEA787AF19 /* React-RCTAnimation.xcodeproj */;
+			containerPortal = 6624DB1961F2CBC6A735D4D33BBB50D5 /* React-RCTAnimation.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8FD0C9BFE0E509D0066C67C06EE170B5;
 			remoteInfo = "React-RCTAnimation";
 		};
 		80E266A8D78135413953DD537D9A222F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 7F61643A682EBA11BD31A3E0B1819752 /* EXPrint.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FD0746B931E4F296DC631E54D6C8FEFB;
 			remoteInfo = ABI36_0_0UMReactNativeAdapter;
@@ -1607,7 +1450,6 @@
 		};
 		82BA91AA6D861F3DE7CD81ECA62746F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			containerPortal = 7894F45E1589C76F8A1E048171635AE3 /* Crashlytics.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2F01BBEFE801C94DF4ECE1438E00388;
@@ -1615,7 +1457,6 @@
 		};
 		83189ECAB4E5523673CDBCD11A104E92 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			containerPortal = 8451E14B134638A37E836ADC8190D393 /* Firebase.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 15B99218A87324F316F0E937B3DAAC8B;
@@ -1623,69 +1464,63 @@
 		};
 		83D409C6366EC2C7FDEE73CA7617E34F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 07E1C20C5AF157B01B63E6F947844346 /* EXKeepAwake.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FD9BB6B2601F25140F3566EDC10A9B69;
 			remoteInfo = ABI35_0_0EXImagePicker;
 		};
 		852B364C502C7F8DBF6E8C671AB0FD5C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D6B3E2F328675B75E7E3BBE4B3910E5F;
 			remoteInfo = ABI34_0_0EXDocumentPicker;
 		};
 		8590E50082D0134244C28ACF01BE60D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E3B6980F0C7B4A62DC2A77379EC1DE2B /* EXAdsFacebook.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3CF0A68EDAC597670EB9981C008A642F;
 			remoteInfo = ABI34_0_0EXAppLoaderProvider;
 		};
 		8692A6380DC70C39999C32F4DFD1A9D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8E67605BF475AD5D6615FEC15B60DB4B;
 			remoteInfo = ABI33_0_0EXAdsAdMob;
 		};
 		8755AC7BF878257EB6983B0A1C32DBD9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 0FD336941CF7D50ED51932A4A515FCA0 /* EXFaceDetector.xcodeproj */;
+			containerPortal = 822F39669F7F9B01C793AF4273FAE3E1 /* EXFaceDetector.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E3D1D7C85F27952DD8B1371AFE371A98;
 			remoteInfo = EXFaceDetector;
 		};
 		87C558FACE3EE3AFBAD26C42AAE93A2E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 49A3E4F7D35643BA1B475A41ABE55806 /* EXSpeech.xcodeproj */;
+			containerPortal = 48BF6891405F610D6A6E2C26612AF0F9 /* EXSpeech.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AC043527FC46D59E5210AD9D49B847FC;
 			remoteInfo = EXSpeech;
 		};
 		88135E5D573C8833D1F7A3EA34484791 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 232773C91AA02D1126EDEA608F5187EF /* EXGL.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E5D8382C1A658FAC82CFCF020BF0D9E4;
 			remoteInfo = ABI36_0_0UMConstantsInterface;
 		};
 		889CADB197D89D0404C5AE57591A2C40 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9F024949B20F68E2EF8ADEF9B261ECA7 /* UMBarCodeScannerInterface.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0259CA884A6F46AAD51945C237F800E4;
 			remoteInfo = ABI35_0_0EXGL;
 		};
 		8922D9206D4BA6056CCEF2659E211554 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8BA08997D391A5C4E71E814E5D97D8AC /* EXAppAuth.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C305D198115C8D322C0CB1BFAF112828;
 			remoteInfo = ABI34_0_0EXAmplitude;
@@ -1699,24 +1534,21 @@
 		};
 		8ACB253E32CD40012A94124AE13945D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 62C372D7DEBACF4ACE813C42609A7D2F;
 			remoteInfo = ABI36_0_0EXSegment;
 		};
 		8AEF32DD4FE741AD270B9B99368BF99C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 18534F66332E66892AADDE3087EFBA04;
 			remoteInfo = ABI33_0_0EXFacebook;
 		};
 		8C23ABF332E0BF37913B7769BCAF04A0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 249BA587756F1FF0D3C7C15749358FC1;
 			remoteInfo = ABI33_0_0UMCameraInterface;
@@ -1730,8 +1562,7 @@
 		};
 		8D262B749E60A6E0F17382E83E006A47 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 995C831938058015BC5C5810DC5F38F9;
 			remoteInfo = ABI35_0_0EXBlur;
@@ -1745,15 +1576,14 @@
 		};
 		8EB15FC54C4B0184147C4B35C0A2AA05 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0E063070CD1F3AD25A249BF92407323C;
 			remoteInfo = ABI33_0_0EXMailComposer;
 		};
 		8FF73CD27363E010900F39E268D908FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 56B5514EF070AAB4318398772568E92A;
 			remoteInfo = ABI33_0_0EXAmplitude;
@@ -1774,47 +1604,42 @@
 		};
 		95193378DA4449B759F8045AE6B20D82 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 552D74C8A65CE6E5A354017D30D191DE;
 			remoteInfo = ABI35_0_0UMFaceDetectorInterface;
 		};
 		97B69AE3871F7FE878F90CEBFEB05D09 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DA6AA24524C529CA5823D50496DE9FB;
 			remoteInfo = ABI34_0_0UMTaskManagerInterface;
 		};
 		98BC042571B3937501F685F17BEFEED1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C94D38EA618D901EF26EFEC1D0DE9DFE;
 			remoteInfo = ABI33_0_0EXSegment;
 		};
 		990BA2F0CD446AA47FDCE4F178A6338E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = B872826A9894EA8AFAE44A2B0E3F88F3 /* EXErrorRecovery.xcodeproj */;
+			containerPortal = B0E16A419B81E34C4F6EFB7750D1216E /* EXErrorRecovery.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 49603BA4A7FB1CFC9ACD589B8CE05EA2;
 			remoteInfo = EXErrorRecovery;
 		};
 		9978643AD128A672936508C5B885E085 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C1E98A51DA72B74576D7AF962D5AA1B6 /* UMConstantsInterface.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3BFE6D845D41FFF201A6436646AFBE62;
 			remoteInfo = ABI35_0_0EXLinearGradient;
 		};
 		99FD394945866964E4311C4012BCC112 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 42EB48D7706D3038E3A327CE35F3761A;
 			remoteInfo = ABI33_0_0EXSecureStore;
@@ -1828,31 +1653,28 @@
 		};
 		9C363BA1764490AB67C09086CE3F143A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 219D8F749B42790219CBD3768C92C33A /* React-Core.xcodeproj */;
-			containerPortal = 70AC646F2FE9B138A2715EC9F5705200 /* EXRandom.xcodeproj */;
+			containerPortal = 4741992A6654A2B89E9D0A0015487008 /* EXRandom.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 00EB4A6BB9778AFFF7F587D732973596;
 			remoteInfo = EXRandom;
 		};
 		9CA3AC966FF71999961B6420A9B9CE7F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = CCD44ADCDEA437B97B0DE8CC26FE92B0;
 			remoteInfo = ABI36_0_0EXSpeech;
 		};
 		9D12A21DDC9243D0E3E3327E8B59D8D0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = EFAB5CBACF9FB6F1F2C24457FAB8B3D0;
 			remoteInfo = ABI36_0_0RCTTypeSafety;
 		};
 		9DABAED40D1B50C07059BC6665E5A03D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9C1FDFE8E592C522C8A69D0FB1AF4CC1;
 			remoteInfo = ABI36_0_0EXFaceDetector;
@@ -1875,22 +1697,6 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 5D9A2DA57D0A10C23F447A14B5F9BE7A;
-			remoteInfo = ABI35_0_0EXSensors;
-		};
-		8EE7B071C944F6B461F2DD1F53C08B56 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 51B0CD0234C620FC6448DC002D8B019F;
-			remoteInfo = ABI35_0_0EXFaceDetector;
-		};
-		8EF0947F13D798B716F69D23B7B34DCE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 37AF70B5E498F5E109FFDCD17F2B9F92;
-			remoteInfo = ABI36_0_0FBLazyVector;
 			remoteGlobalIDString = 7B336B048C77E4528187660F8EF8C92D;
 			remoteInfo = yogaABI35_0_0;
 		};
@@ -1898,46 +1704,33 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 97CFE26DD4B508A41F3F77E89FA51EE1;
-			remoteInfo = ABI35_0_0EXCrypto;
-		};
-		9183EDDB8E53BCA71C3A3557E751923C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 277C62F94ABDD049CAE910857B0C256A /* React-RCTSettings.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 02DD1E05F06C403A8300ABEFC2C29A3D;
-			remoteInfo = "React-RCTSettings";
 			remoteGlobalIDString = 9D940F88EBFA51C534826E7A05671420;
 			remoteInfo = ABI35_0_0UMBarCodeScannerInterface;
 		};
 		A2EB22090CEFAD2438F1BF96D8980AEB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9CD7AC078D7A5808BBA9A284FC0889C6;
 			remoteInfo = ABI33_0_0UMFaceDetectorInterface;
 		};
 		A2FA83A365F62F44FFFC8E02FAD97F6F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AF0C5E68466048B1E480760252D57987;
 			remoteInfo = "ABI36_0_0React-RCTLinking";
 		};
 		A3523846EB766634663B5AF60DA7AA6A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 6740665EDC5A1205112688D63864BE6C /* EXLocalAuthentication.xcodeproj */;
+			containerPortal = 854F2782BECF9E7C804797BD6239FB1F /* EXLocalAuthentication.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D12244750972C21D688A2875A0E77F4;
 			remoteInfo = EXLocalAuthentication;
 		};
 		A3713F28BD4AF13BB311754ABA5369AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 48AF0CA77563598FEB709BDC03A03EFC /* EXAV.xcodeproj */;
+			containerPortal = 0998DC5943E354FCC241D962975541C8 /* EXAV.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 657B3E0E8F77DB91FA182432EC404FBF;
 			remoteInfo = EXAV;
@@ -1965,15 +1758,14 @@
 		};
 		A59E4F7D0DCB274BD06C429132073289 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A9091E2AE6D5E5F1E212A5CDD40AD073;
 			remoteInfo = ABI35_0_0EXCalendar;
 		};
 		A62F4C6DAC0BAB72B957F0F9F7DFA120 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 55F206718ED1DCCEE6CE21287E8A0C08;
 			remoteInfo = ABI33_0_0EXPrint;
@@ -1987,23 +1779,21 @@
 		};
 		A6C6555C9FA52657269BE61737DC3094 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9451B0BABEB2CAC452B0D0F3B637B167;
 			remoteInfo = ABI34_0_0EXRandom;
 		};
 		A7974D5D31148F076A9831B2B7B13851 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 345113430F20725146270FC080F70EA4 /* EXDocumentPicker.xcodeproj */;
+			containerPortal = 5FE5885182E7DC32697B6B06294E51D5 /* EXDocumentPicker.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 40300EFA08DDB78C6AFF84A0F118E9CD;
 			remoteInfo = EXDocumentPicker;
 		};
 		A81ABA63E9296B404DC13AD1EE51F7F2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6C20BAE17D07E9653D1E53DA1033AC2A;
 			remoteInfo = ABI36_0_0EXFacebook;
@@ -2017,24 +1807,21 @@
 		};
 		A8AB71B5F290092BEC65DEC0E739C69E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2ED2D63315B12690E9B7EFD0D4E5F901;
 			remoteInfo = ABI35_0_0UMConstantsInterface;
 		};
 		A8BC57DBC8FFE0E3F990126B9B6543B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 44282C9BC94EE000F6F1E807864D1F58;
 			remoteInfo = ABI35_0_0EXNetwork;
 		};
 		A8BF2C7BECBF1FF5DF27F85BE0932527 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3C6BCAD41127FB8BBDC8E53B05B42C2A;
 			remoteInfo = ABI35_0_0EXLocation;
@@ -2043,21 +1830,11 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = CAFFCEA025B37CB249A4512801BB8C9E;
-			remoteInfo = ABI34_0_0ExpoKit;
-		};
-		A17A8C69624FBB458AD7C21C050BE5D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2ED2D63315B12690E9B7EFD0D4E5F901;
-			remoteInfo = ABI35_0_0UMConstantsInterface;
 			remoteGlobalIDString = 35D952E13EBF77350BD8276412764D7F;
 			remoteInfo = ABI34_0_0EXGL;
 		};
 		AA057035C6A0D2CC12FD897D7B6DE514 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			containerPortal = 3639267A6E3EDBF0608A8A28FF56D6D2 /* GoogleUtilities.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80B861CBFC18436AFD9A3703F00CEEC4;
@@ -2065,30 +1842,28 @@
 		};
 		AA2C6E46E30BDC10BDDC94A859BBF9AB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 11FEF688B695FC4178B1F28668C91A08;
 			remoteInfo = ABI33_0_0EXVideoThumbnails;
 		};
 		ABC3608233F66285231D6903E53D0966 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BB7FAF466C67A7B090F67F327FA08502;
 			remoteInfo = ABI36_0_0EXSMS;
 		};
 		ABFC4A6885BA2BB7E41049B45B2BC779 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 152A75C0E146DACCED6B4FBEDEE535F1 /* React-RCTText.xcodeproj */;
+			containerPortal = 8B752EDE862014F391809BDDCF47DFAF /* React-RCTText.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F0809BF90AC70C40646AB597C21CC420;
 			remoteInfo = "React-RCTText";
 		};
 		AC1F11503549A24FA67BA31489AD58F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = F3EBE5D9CBD989A398645441A300329D /* EXBranch.xcodeproj */;
+			containerPortal = 80DF08E83BE7EA6D9CD6B8F2BC08E9B7 /* EXBranch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6B47FA6D658B6D4521D692AE24630902;
 			remoteInfo = EXBranch;
@@ -2109,8 +1884,7 @@
 		};
 		AE729B081F0C498FC0ADA4BA8D3A6A28 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3F6DDD55E13E184410F694AD0E139771 /* UMReactNativeAdapter.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 80BC23A7F6593A54FF3D1900637780FA;
 			remoteInfo = ABI33_0_0EXContacts;
@@ -2124,56 +1898,49 @@
 		};
 		AF7BE2E4C3037B639F7DDE7FD64EE32D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E6D5BA2BC9ECC5EB0E2A3A5EC431F899;
 			remoteInfo = ABI35_0_0ExpoKit;
 		};
 		AF8BBFAE03BFC75748E3EAF8AA3CFEA2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B7E441324D21E10FDB9EF8E407F24763;
 			remoteInfo = ABI33_0_0EXTaskManager;
 		};
 		AFA85D1BE5B93B9155A8755CE8FBB618 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 805FA72DE29DECC3445041D10969C1F0;
 			remoteInfo = ABI34_0_0EXSensors;
 		};
 		B00CA9D9B212FAA161BAD3B2CA434E0F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 900AFB113BC300FC3E24EC9C1C820FD1 /* EXTaskManager.xcodeproj */;
+			containerPortal = EA0BA67FB1A6DFD5D9F377957A37E8BB /* EXTaskManager.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 86D546D1F048CDA66BE7589194F91D23;
 			remoteInfo = EXTaskManager;
 		};
 		B2895FC9166F9C43C0969A1418E2B147 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 637635BF065467868F5ADC706139E9A1 /* React-cxxreact.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D9CD66A3AC28BECFB36FD7244B4B2E94;
 			remoteInfo = "ABI36_0_0React-RCTCameraRoll";
 		};
 		B2AD6E0C5E034B0C25052023CFD883B2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 9B56E3068226F4D1C6D1D45BA51DEFCE /* UMSensorsInterface.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 23C0AD20537DDB5142CE14319CB7C4D7;
 			remoteInfo = ABI33_0_0EXLinearGradient;
 		};
 		B2B8E3D70701E5B0B3DAEE288C9BE654 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9C585A73AEBCE9CED7810AB69DA7EB7A;
 			remoteInfo = ABI35_0_0EXFacebook;
@@ -2187,7 +1954,6 @@
 		};
 		B35B42FD5FCF19F40DCFB4D7EC397237 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			containerPortal = FC72C798634949C83990DDCECEA40664 /* GoogleToolboxForMac.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 6A6C31AF5480BB69EDDFCD50D28967CD;
@@ -2195,8 +1961,7 @@
 		};
 		B4DB32C92B893D7683C9B372D1879E44 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 9336C99E584CCB126DF8C0AEFA1DED58 /* EXBackgroundFetch.xcodeproj */;
+			containerPortal = 8E181A168C1068988974A109C0ECEC00 /* EXBackgroundFetch.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 280658D584B63A5E8CB5F0405789A353;
 			remoteInfo = EXBackgroundFetch;
@@ -2210,29 +1975,27 @@
 		};
 		B6C7D5E2822912786EA03CA23798ABF0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 28DEE0468765841E400BDAA9D6F7271C /* React-CoreModules.xcodeproj */;
+			containerPortal = 14DA10B13090CBD6CF8ED9A99217D595 /* React-CoreModules.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 42F070932EC272C376353459CE0FA76E;
 			remoteInfo = "React-CoreModules";
 		};
 		B7A40CBC25093DE03601CB6B89BB540E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 45069BD7DEDE6F177C2D1366344012AB /* EXPrint.xcodeproj */;
+			containerPortal = 7F61643A682EBA11BD31A3E0B1819752 /* EXPrint.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FEAB4A1E3F5EAA6EBAE612E8CBDD2612;
 			remoteInfo = EXPrint;
 		};
 		B908B89417BB77676A60CEC1DCEE39BA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 590A3E798A39202CDBA4A6F0E30A9C62 /* EXCrypto.xcodeproj */;
+			containerPortal = 119E3B925D8A6FFEF269EC9F2890986C /* EXCrypto.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7313EAFC3221A55173D00B5135657D25;
 			remoteInfo = EXCrypto;
 		};
 		B914F0ABC68974789545D07F9F5EC622 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			containerPortal = 8D92E3CFF174DB51C2ACD6A19A41D840 /* GTMSessionFetcher.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BD7A8A3BC22FD28DCB40568BE43D7C70;
@@ -2240,47 +2003,42 @@
 		};
 		B95BA1121A369950B8F779C3D243D8F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4A9C57747EEC52B472307A2E2AD27128;
 			remoteInfo = ABI36_0_0EXSQLite;
 		};
 		B9BD6F285E74E455EEDF9AA2909F99BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 41D6B97ECED623C58ACD6EA39DF92517;
 			remoteInfo = ABI35_0_0EXLocalAuthentication;
 		};
 		BAD004B53ADD6AADD007F6D5202A4105 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = EA26FA8A5E7478EDE7A4751E0B9AEDA2;
 			remoteInfo = "ABI36_0_0React-RCTText";
 		};
 		BBA1B1BC9B1576C657FF03F43FD63B35 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5F8ADA0B20353D0D1CD871C544EE5D4D;
 			remoteInfo = ABI35_0_0EXCellular;
 		};
 		BBA60D7EC2B361A91C08F1D2BE48152F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 51A180A442E70FC29208F9502712DBF4 /* UMPermissionsInterface.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C98FFE10626D4EBC2D27BD0D7283E103;
 			remoteInfo = ABI35_0_0UMTaskManagerInterface;
 		};
 		BBFE8FCF491E24CE283B2A19A8F1F321 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 952702C2BCA8BD4077147A001FDB221E /* EXLinearGradient.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7BE70AA152E2E052C467FC5608D85114;
 			remoteInfo = ABI34_0_0EXSegment;
@@ -2294,7 +2052,6 @@
 		};
 		BD864EDDAC71345D3628E1DD3424659C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			containerPortal = 4561AE78A0E15BDEE5D5FC3C48B25530 /* FirebaseCoreDiagnosticsInterop.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 82BE183BB67FD85793E8A161FAEDC1AF;
@@ -2302,7 +2059,6 @@
 		};
 		BE7A59353E67C5A287E89FCEE9BE3D1D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			containerPortal = 28AC770D90C1A2E76547858754E25132 /* GoogleSignIn.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 70D52585A9FA4EEA343010638ADABC11;
@@ -2310,8 +2066,7 @@
 		};
 		BF363F242C7F1358B0F02FD3565BDAEA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 63C31B00C9244D2E6515AE4423E6D2F6;
 			remoteInfo = ABI34_0_0EXWebBrowser;
@@ -2325,7 +2080,7 @@
 		};
 		BF9FF1D8F98C10BA2F60B764EE70A8DF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 25F6A84F7C9D48E4EDC6B249BED67639;
 			remoteInfo = ABI36_0_0EXFileSystem;
@@ -2337,42 +2092,30 @@
 			remoteGlobalIDString = D8D59AAB809693DB02967107370F4619;
 			remoteInfo = "React-RCTBlob";
 		};
-		B7B6264649E48929763DDA2120B876EE /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B608CA71395A33A0D0E4651E33AC2F73 /* EXAdsAdMob.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BEF6CFDFF87395C99BA42B4CFF868EAA;
-			remoteInfo = EXAdsAdMob;
-		};
-		B85A26EDA4D34D0F126FD09C0A40C61E /* PBXContainerItemProxy */ = {
 		C108D3A07F07F893E9A711F10FA4910F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C0859112CE2260149545E48F4C92C8F5;
 			remoteInfo = ABI36_0_0UMFontInterface;
 		};
 		C10A1BD32C71C507C365747201B76323 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 04CF86E65F94AD932F717623ED9701B0 /* EXGL.xcodeproj */;
+			containerPortal = 232773C91AA02D1126EDEA608F5187EF /* EXGL.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 78CC35D6F49ACC0F72F0095F78EFDCE7;
 			remoteInfo = EXGL;
 		};
 		C1E2131E3B11B74D49E753A2DA0BC3DA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = A23DA4026E51004C4D036CB12AEC82F9 /* EXStoreReview.xcodeproj */;
+			containerPortal = 27E2CA4A5DF7F02620AC987959967775 /* EXStoreReview.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F2C74458D282DA74DB95F8A7FE6A5207;
 			remoteInfo = EXStoreReview;
 		};
 		C24FEC764DBF1E6769A86B1ABC957155 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 325F5ADAA34CF68C075D2CFCA4955C55 /* EXAppleAuthentication.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = ACFBE65059CADE919C518AA9EDF15D1E;
 			remoteInfo = ABI33_0_0EXAppLoaderProvider;
@@ -2386,38 +2129,34 @@
 		};
 		C32295C873EC7353C21B9431DC6D7C91 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C675D0AE52D2D47CF35D1ED29AFD60E9;
 			remoteInfo = ABI36_0_0EXInAppPurchases;
 		};
 		C3335880DF7530DA2BCE9F8A056C46DE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = ED5FBF6A0162CF63962F8772FF9478C0;
 			remoteInfo = ABI33_0_0EXImagePicker;
 		};
 		C5051BADFCAFDCA66E00BF3FE7138259 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3F64962F497C4FA226B9FE597A3249CD;
 			remoteInfo = ABI35_0_0UMSensorsInterface;
 		};
 		C675973B5F34E17F62F8790B74667C38 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5F46F682691A0F37D86392491DE83242 /* React-RCTVibration.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F63A01FF19529B178FDF1CDB30923CC7;
 			remoteInfo = ABI35_0_0EXWebBrowser;
 		};
 		C6D684C0A32F69AF2D7D476330E2EAA9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = BDE3ECAAB73D1B0B3BF36BECC5B0D020 /* ZXingObjC.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F1A98E99C5291C55C29C32D889990685;
@@ -2432,8 +2171,7 @@
 		};
 		C73788DB82348313C5BB3C69EA1CF195 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8E181A168C1068988974A109C0ECEC00 /* EXBackgroundFetch.xcodeproj */;
-			containerPortal = 92EFD5359691B127E01948E7422EE1D2 /* EXKeepAwake.xcodeproj */;
+			containerPortal = 07E1C20C5AF157B01B63E6F947844346 /* EXKeepAwake.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E593B1631324E147D59AE9990EDA53A2;
 			remoteInfo = EXKeepAwake;
@@ -2447,8 +2185,7 @@
 		};
 		C7B2998DB5EA711B182DFB722474F1C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = E8EC91EF8D25F594A94E65D174F99CA1 /* UMFaceDetectorInterface.xcodeproj */;
+			containerPortal = 5ADF36DEEEE1DB898F3E2219FFEFA633 /* UMFaceDetectorInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8DC606D9CFDD04C553C81728629364B3;
 			remoteInfo = UMFaceDetectorInterface;
@@ -2469,54 +2206,49 @@
 		};
 		C820267B39B0E5F3D6C3DC0529865B93 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 7776BA6613A8F4248BB84E26BD530C47 /* React-RCTVibration.xcodeproj */;
+			containerPortal = 5F46F682691A0F37D86392491DE83242 /* React-RCTVibration.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 502D208480A94D02F62BB739D7512657;
 			remoteInfo = "React-RCTVibration";
 		};
 		C82A8959E5A8C6DC2BF3526A72710667 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = 9C9AF1EAAC36411942A9993CC6C6E2F1 /* EXImageManipulator.xcodeproj */;
+			containerPortal = 59CBD9D4F0A13BB1D2DCD3936FBCE6CF /* EXImageManipulator.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = C3AA7C99B7CAD2FC22B8AA8928D7DF6F;
 			remoteInfo = EXImageManipulator;
 		};
 		C89BFC122701DEC0DEBC1A1CB81AEC90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 4D9169B64E9E74B977F499AEACAAF264 /* EXAmplitude.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 28193B5CB4459F8A6B9E2E277101450C;
 			remoteInfo = ABI34_0_0EXLocation;
 		};
 		C8C81DCF8C729ECCFDC892EBAA63E5B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 49F4F487016EB7953198C74EB8C6040A;
 			remoteInfo = ABI35_0_0UMFileSystemInterface;
 		};
 		C9E713BA44E1B68EA56FE98CB384E2AC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 27E2CA4A5DF7F02620AC987959967775 /* EXStoreReview.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 97CFE26DD4B508A41F3F77E89FA51EE1;
 			remoteInfo = ABI35_0_0EXCrypto;
 		};
 		CA278E816DA3DB66345FA4B25F6BB6DC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0DABF8BAB42E61BDFFC0DA9902AE12DF /* EXFacebook.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 00AEC55E46D8D1CB2A6278962F78C590;
 			remoteInfo = ABI36_0_0EXTaskManager;
 		};
 		CA86A4DF0D7CB466E8AE6D9EEE5CA1C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BF34537E2C93B096A108CF4A63A52DC0;
 			remoteInfo = ABI35_0_0UMReactNativeAdapter;
@@ -2537,15 +2269,13 @@
 		};
 		CB8AE7E6530AA716FB9CAD5113E01E64 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2E8CA802526BF2DEC3347427546ED710;
 			remoteInfo = ABI34_0_0EXContacts;
 		};
 		CB8C383F2925446732B092C894846C1F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			containerPortal = DD0D6BD33F8475F33AC6D320F2EE67F0 /* FirebaseMLVision.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 3D5358053745F186EF3299093007AD97;
@@ -2567,23 +2297,21 @@
 		};
 		CC7030D73464D70757DF4602D6E86CF7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F96FEDB9FD5635A87A917C06B0177320;
 			remoteInfo = ABI35_0_0EXAmplitude;
 		};
 		CC88CE6543FC9D5F00239AA420AC29B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = E2B6FA5AC65FAA65175AB37C9D60448C;
 			remoteInfo = ABI34_0_0EXCrypto;
 		};
 		CCB2C396F491CDAC92A85C62952A4065 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F72EDFBD49BC30C07DAF2DCDD599DAD9;
 			remoteInfo = ABI35_0_0EXBattery;
@@ -2597,30 +2325,28 @@
 		};
 		CE08A432EA2D1A6070934AA539621718 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 071390C01CF3A15E90B069CF6850E056;
 			remoteInfo = ABI33_0_0EXImageManipulator;
 		};
 		CEAF027DC8D351B15000CA1A5FCC6BF4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9F80F6E94F04D246A73FBD91C055F43C;
 			remoteInfo = ABI33_0_0UMBarCodeScannerInterface;
 		};
 		CEC0150B8817831AA474F663497EA6B7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = ADE3674CD49DF9CCA284E9EA5F8DA16E;
 			remoteInfo = ABI36_0_0EXCamera;
 		};
 		CED5A918B11F718F82EDF79AB76FD743 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E491659E5822D73C0F64F56BFBB8648D /* EXVideoThumbnails.xcodeproj */;
+			containerPortal = CD2799BE47B5B838C19BD75DC6206A1D /* EXVideoThumbnails.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 16ED442C06F5D444E672AE845A57E796;
 			remoteInfo = EXVideoThumbnails;
@@ -2641,16 +2367,14 @@
 		};
 		CFB9AED669E7DBEB31644103454CDF48 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5FE5885182E7DC32697B6B06294E51D5 /* EXDocumentPicker.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 65D12B15B47AFAAF101764411DA21172;
 			remoteInfo = ABI36_0_0EXDevice;
 		};
 		CFCA4FC485FE0E00496716DC6B6740C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 23D2A6BC118C940EDA15649D13E3F4EE;
 			remoteInfo = ABI36_0_0EXBattery;
@@ -2664,8 +2388,7 @@
 		};
 		D074979EEFDA3CBEDEA981947281DF5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 694345EFCED85DE2FD164F8647197883 /* UMConstantsInterface.xcodeproj */;
+			containerPortal = C1E98A51DA72B74576D7AF962D5AA1B6 /* UMConstantsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 46F82E84687582F366B907E2BD5F1EA2;
 			remoteInfo = UMConstantsInterface;
@@ -2686,7 +2409,7 @@
 		};
 		D1DCE31EC111ACD416AC2BDEFA8E1405 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FDF88C74615556B3437A159C18D3C9CD;
 			remoteInfo = ABI36_0_0EXBrightness;
@@ -2700,8 +2423,7 @@
 		};
 		D25FCC948E291D8DA1C3B99183952FD9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 822F39669F7F9B01C793AF4273FAE3E1 /* EXFaceDetector.xcodeproj */;
-			containerPortal = 8CD3C03649C6DE032401E07CACFED0F5 /* React-RCTLinking.xcodeproj */;
+			containerPortal = E754BB2A2291FC557920B19345DA416F /* React-RCTLinking.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = FF1621D1C3F9AF33EDD2BF51FEDEB3D8;
 			remoteInfo = "React-RCTLinking";
@@ -2715,23 +2437,20 @@
 		};
 		D4032F20201EF947F6329CB97AF48EE9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6F0FA873BCF51300262F9EF799F62C8B /* EXBlur.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 478786E4A8A04FB2F14820AD11525942;
 			remoteInfo = ABI33_0_0UMTaskManagerInterface;
 		};
 		D49992127362F273F55206B3CDE0F864 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6E966100E3989E1CA21C940CC68FDE41 /* UMTaskManagerInterface.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BCD417EF394C8430CC9CAB3956CD445D;
 			remoteInfo = ABI34_0_0UMFileSystemInterface;
 		};
 		D4B7B83F3D10578EECAEE0CDF26429EF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6E4B879B04BCCC69E89874CEAA6D4C72 /* EXApplication.xcodeproj */;
 			containerPortal = 8947BC93F2F6880BAB6DD5DD515D89F3 /* Fabric.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 033C78D4EF039D72394D82A45D46E8D1;
@@ -2746,23 +2465,20 @@
 		};
 		D50C8FB15FEB4C07879AE9F14A23C3BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 0DC285494EEAECDB0DC05C9878558413 /* EXCalendar.xcodeproj */;
+			containerPortal = DCE6D130C83BB1A7EA463C5F10BEDF10 /* EXCalendar.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0F2988851D689F1E41CFC89C31422758;
 			remoteInfo = EXCalendar;
 		};
 		D6FE92DDFB8BC92A44560EF7B1409B34 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 102B95FF58D0C3D8D1BA0911F2036831;
 			remoteInfo = ABI36_0_0EXSharing;
 		};
 		D86167A8E473E9DC243F62E29D02C6FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2D12E07AAAFF92CEE5FFCCDEBF3270B7 /* EXFileSystem.xcodeproj */;
 			containerPortal = 3E837151546834EAEB6108CF926A165D /* GoogleDataTransportCCTSupport.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 11C41BD6B3D59337B4AE45F453918096;
@@ -2770,7 +2486,7 @@
 		};
 		D873B770E6B943C9B0B642D88AE73C53 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6C3C2B5A4DB4A5EE4774ECCDE63CF65F /* EXSensors.xcodeproj */;
+			containerPortal = 9001A8BA8617B773E07B32850F8301AD /* EXSensors.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5F5B88A2576A073FBDD91B02A10308F1;
 			remoteInfo = EXSensors;
@@ -2791,22 +2507,20 @@
 		};
 		D99D00DD40064878326D9F4E54A13E9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = AAD7D7E24DFF436760BBEF8D74D36625 /* EXGL-CPP.xcodeproj */;
+			containerPortal = 1D6F02A9C1A072FDE2298E6BF74AC711 /* EXGL-CPP.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 348F48833A31FAAF4C3FBBBCAA504BB8;
 			remoteInfo = "EXGL-CPP";
 		};
 		D9F8381679365ABDACC9C95B3E64E800 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B30ACF5B6AECD7D82EE8064987369D5F;
 			remoteInfo = "ABI36_0_0React-RCTVibration";
 		};
 		DA30CB6AAF27387D27C5C144EF97B243 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 14DA10B13090CBD6CF8ED9A99217D595 /* React-CoreModules.xcodeproj */;
 			containerPortal = 73E622F70C0CE4A7D4ABC2D1BC6CE121 /* FBSDKCoreKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 322040CF2C7D2642650A8BFCDB4B2AD3;
@@ -2814,47 +2528,42 @@
 		};
 		DA61CA601A58CF3454B79B1E2143EF7F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5AE8F3D523F073729FA5D5429A2A5F02;
 			remoteInfo = ABI34_0_0EXFaceDetector;
 		};
 		DB35E8D23484C6AC8F3C2156DB185AC7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8C2588DEAA759C7923B51966407E5436;
 			remoteInfo = ABI36_0_0UMTaskManagerInterface;
 		};
 		DD2451C6628C0A17E1770BA39390966B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = B28AADF8FDCFA2BA8450A3E9E9718F29 /* React.xcodeproj */;
+			containerPortal = 4C746BC1076F7F90497818334C3AA497 /* React.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 94DA87F24FB4B93E5D08FE961D5E5A3E;
 			remoteInfo = React;
 		};
 		DD2DF5ED7B8C5076A8DDB357E3DCAF68 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = B574EF210B13D0C387DE3D5563D2B4E6 /* UMBarCodeScannerInterface.xcodeproj */;
+			containerPortal = 9F024949B20F68E2EF8ADEF9B261ECA7 /* UMBarCodeScannerInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 971E60E1AF9163E7E08105622FC91C16;
 			remoteInfo = UMBarCodeScannerInterface;
 		};
 		DE3BDF435919F9DFC4DCA6A662722E3F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C1B6AC8D54C91423BDAA642498ABFE10 /* EXContacts.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4BA2FA6F41C4239EC3026F5BD7634BEE;
 			remoteInfo = ABI34_0_0EXAV;
 		};
 		DF4A3C0950B116274EF04AAF203E1C10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 602EDE7A7627506E517C6A377AAD59FF /* FBReactNativeSpec.xcodeproj */;
+			containerPortal = 28E2CF0C8C01BB329761D52DDEAEACAF /* FBReactNativeSpec.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5CDFFFDA1BEA16A0D3629FE9F761022A;
 			remoteInfo = FBReactNativeSpec;
@@ -2875,7 +2584,6 @@
 		};
 		E109DF34505E85510C06F0D72BB97083 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			containerPortal = 6768F91DEEB9AED7D658A190F526E9EE /* FirebaseMLVisionFaceModel.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D61B01865B69609E47812F6C78446AFB;
@@ -2890,32 +2598,28 @@
 		};
 		E17515FC010826AE716E59F2A58EE207 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1AFD3573600BA6416F7B9045D1364A41 /* UMCameraInterface.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B8B3D596320C7D61B8FF3561B57261D6;
 			remoteInfo = ABI34_0_0EXCalendar;
 		};
 		E1ED9177B0D481D8BED36456E0C2CA47 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 7F8F82D5DAFF50FD606C4C86DBF87674 /* RCTTypeSafety.xcodeproj */;
+			containerPortal = A2B6C24D3179FDAAAD0C838DFBDC367D /* RCTTypeSafety.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9C3601DE72183D42B9DC3FF333D35CF7;
 			remoteInfo = RCTTypeSafety;
 		};
 		E209BF33B6859749E44C680A71EE0DDE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 7CB9DCDC3DE47A0027C308B58AA8FEE3;
 			remoteInfo = ABI36_0_0React;
 		};
 		E210BEB6376A5B9C6AED42EC0A2F637A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D4558EFA6A55593DF763549623714F3B;
 			remoteInfo = ABI33_0_0EXRandom;
@@ -2929,31 +2633,28 @@
 		};
 		E222557ADB7FB09B74FD11F3D994E68B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5D9A2DA57D0A10C23F447A14B5F9BE7A;
 			remoteInfo = ABI35_0_0EXSensors;
 		};
 		E26E81F20F883A530B98C1ADDC6FFC60 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DCE6D130C83BB1A7EA463C5F10BEDF10 /* EXCalendar.xcodeproj */;
-			containerPortal = 8453CB50663B6130F105597132EA0D75 /* UMPermissionsInterface.xcodeproj */;
+			containerPortal = 51A180A442E70FC29208F9502712DBF4 /* UMPermissionsInterface.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 12FF61416C5E794E9DEAC78D381D9726;
 			remoteInfo = UMPermissionsInterface;
 		};
 		E2A2C627C3AA6734DBA46F9521D452D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 6624DB1961F2CBC6A735D4D33BBB50D5 /* React-RCTAnimation.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 9B46945ADCE2523672D28357176A9C75;
 			remoteInfo = ABI35_0_0UMPermissionsInterface;
 		};
 		E34C63F6DB4654B1442304F9E2458DDA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8A7591ADD4408D12896A23D2FC3BB2F1;
 			remoteInfo = ABI35_0_0EXFont;
@@ -2974,8 +2675,7 @@
 		};
 		ECBF22AA9EB3CF244EBDEAE4F5FCC12F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 78C62215FA5F02190259FBD04793F196 /* UMFontInterface.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 364BCB0FDF28EB854C2ACC10625C38CA;
 			remoteInfo = ABI35_0_0EXCamera;
@@ -2989,16 +2689,14 @@
 		};
 		EF86BDE81943B0446D139BBA8DDDB252 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 6777BC81ACC81D788951AEB9E1E9D3DC /* ABI33_0_0.xcodeproj */;
+			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 29CAEF828D29084D2E5C21EA9C01F503;
 			remoteInfo = ABI33_0_0EXSensors;
 		};
 		F007A04261BFB200A47EB8E3373902E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = ACDBFCB748E15F2377E191CC2E9C6C2E;
 			remoteInfo = ABI35_0_0EXSecureStore;
@@ -3012,24 +2710,21 @@
 		};
 		F24494F34ACB988700D2F4A31DB12CB0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D13242D1CCF1085EF74AC95644E21E2C /* RCTRequired.xcodeproj */;
-			containerPortal = 933497775ECAE87A9CCE98E688FFAA21 /* EXCellular.xcodeproj */;
+			containerPortal = 14AAED6B64489818116C53A3F468B01F /* EXCellular.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 0F0F7D35F4DD6BA6A33589D3CB5759F3;
 			remoteInfo = EXCellular;
 		};
 		F2AA225AFDBB2DEED1ED0068E077538D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 119D5E407FEB2BC316C7F4FB8978F96D /* ABI35_0_0.xcodeproj */;
+			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 33A96B208E6EDCFB9088D2459CE35B18;
 			remoteInfo = ABI35_0_0EXSMS;
 		};
 		F2ADDAEA4B30D7B3F9B9DBBA759275C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = E2010A832B43970A5BD04EFE5915254D /* EXMediaLibrary.xcodeproj */;
+			containerPortal = 860E454C4C93458C8CA3C9BA62C382B5 /* EXMediaLibrary.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 422CF65902B3ABF0E6A47527F9209CC8;
 			remoteInfo = EXMediaLibrary;
@@ -3043,16 +2738,14 @@
 		};
 		F4ADCFCB4A6FAA087A5E6E70C6AC9C4A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3F86FE1E6675C321560197AEF2040263 /* UMFileSystemInterface.xcodeproj */;
-			containerPortal = D3F6A0B2FF684A2EF45F624F485D305E /* EXApplication.xcodeproj */;
+			containerPortal = 6E4B879B04BCCC69E89874CEAA6D4C72 /* EXApplication.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 2C391225329DE46C6566ED1ADF52F10D;
 			remoteInfo = EXApplication;
 		};
 		F51045305EB304C36E4B0385A9E6B943 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 2DE7D5053C93B82DE731A23BBAEDF83B /* Yoga.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 5B9074BFA32AD91A96FFB7503FE0EFB0;
 			remoteInfo = ABI36_0_0EXLocalAuthentication;
@@ -3066,46 +2759,41 @@
 		};
 		F5C31A086E9DF2180A0048F5729566BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 9DD49B0B00E11F1BB16A46E4C7760FF9 /* EXCamera.xcodeproj */;
+			containerPortal = 67C41D1C8CB2ABBD29F3D63C65E67119 /* EXCamera.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 4B109C23F45DFD6B4CA40B87D733EB11;
 			remoteInfo = EXCamera;
 		};
 		F5F8139A9F6744B9271B608AA63FA014 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = ABD36AB1B093EF6366FCA062C5454122;
 			remoteInfo = ABI36_0_0EXPrint;
 		};
 		F63CAAA4F2A0F29C3615B7E38BAABA85 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = DBFFDD6EF0081135DDB3A825211EA670;
 			remoteInfo = ABI36_0_0EXBackgroundFetch;
 		};
 		F646180EDB9D8A106845D928F2F61E17 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
-			containerPortal = 51A8B4D1DC279C628B4764C7EEBFF0D7 /* EXBlur.xcodeproj */;
+			containerPortal = 6F0FA873BCF51300262F9EF799F62C8B /* EXBlur.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D08BCCD5DE12C8EFB6429B9126525E9F;
 			remoteInfo = EXBlur;
 		};
 		F6D5E5BBEFE240563C48C3E4656DBA81 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 5BAD8119A8A3DF06D6C4F8623FDE62D1 /* EXAppLoaderProvider.xcodeproj */;
+			containerPortal = 21017DD226B234906595B1E1FC617C1E /* EXAppLoaderProvider.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = BCF55F45F804FC2D6BC57983597F3174;
 			remoteInfo = EXAppLoaderProvider;
 		};
 		F7210E0C7B6CD5E4C8F0AFF2B2D185E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = C060C7B2576B9BE210A1652F90003EF4 /* nanopb.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 052B66B57BF269A4B160A5659F7D46D4;
@@ -3127,23 +2815,20 @@
 		};
 		F9809CD83221373D1661002DCB1F6912 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 93DDFD2F05E88D4E45071239DAB7DD1C /* EXSharing.xcodeproj */;
+			containerPortal = 8964C23F9BF4B2941BEFBB9C049241A1 /* EXSharing.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 1458926EF4B0A3DF1C40B5639E7358B1;
 			remoteInfo = EXSharing;
 		};
 		FA6969AD9865A71C10BE096B4E48A450 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 087CBDC6111C285722CA84B7BAC8BE3C;
 			remoteInfo = ABI34_0_0UMReactNativeAdapter;
 		};
 		FBBED47492632DFD9FC09029EEEED4F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = C46DA044C2B78A31AA6522BD48F8E245 /* FBSDKLoginKit.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 99D9EFC28DE380315427F305282258E8;
@@ -3151,59 +2836,55 @@
 		};
 		FC808CB8E3CFCA25EB1B6DEDC1B026A3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 85A76EAC42D140E44A74AF5DBAAFEBBB /* EXLinearGradient.xcodeproj */;
+			containerPortal = 952702C2BCA8BD4077147A001FDB221E /* EXLinearGradient.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = AF5113FDFEF2ECEBDD58149C34DD4634;
 			remoteInfo = EXLinearGradient;
 		};
 		FE0BA8B449FA1F79A94752FD3BEA2744 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8A75497FB8E339D17F172AB91BF8EE04;
 			remoteInfo = ABI34_0_0EXBarCodeScanner;
 		};
 		FE28BAE32859695F28C924A1E67CB3E6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 338EAF14F0CFCD8E352C76A75956202D /* ABI35_0_0.xcodeproj */;
-			containerPortal = 28A46F56C4FB943613EDD8EB261E667E /* EXSQLite.xcodeproj */;
+			containerPortal = 6CE5485725E98462F4B7B10EB9D9E1BA /* EXSQLite.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B8358C45B103287E90F710967785DD34;
 			remoteInfo = EXSQLite;
 		};
 		FE73721F5F71931A03871EECE591C5DA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = A46EC90DC4917CF4E001E0E918FC8404;
 			remoteInfo = ABI34_0_0EXAdsAdMob;
 		};
 		FE7B2BD9BD4CD239DA48FBEE8BECB071 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 119E3B925D8A6FFEF269EC9F2890986C /* EXCrypto.xcodeproj */;
-			containerPortal = 8CB5703746327EF2967829790BD7A1AC /* ABI34_0_0.xcodeproj */;
+			containerPortal = 36912306A429C6B0D9ABD884468492FB /* ABI34_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 49A9EA3A62970D9A0446A877034A6406;
 			remoteInfo = ABI34_0_0EXSQLite;
 		};
 		FF907CA91CB33465D5E04D69468E59C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0393CD4578C8CB9B1AA5BCCA9F56126E /* React-RCTNetwork.xcodeproj */;
+			containerPortal = 11C64B8C3465069502F0D928C585601B /* React-RCTNetwork.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = B42CC4F102742853C37E7C4841756DBE;
 			remoteInfo = "React-RCTNetwork";
 		};
 		FFD401BEC149249B030B682122341E75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFDEBCE4DCB504EA7DE39D7016E814A8 /* ABI36_0_0.xcodeproj */;
+			containerPortal = B31F5B0919EC75D230920848CAAA709C /* ABI36_0_0.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 57E58B91B2FD0AEFD4849D17874EFA32;
 			remoteInfo = ABI36_0_0EXApplication;
 		};
 		FFD6FD213D66E12379CD8C9DAF214355 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = B5ED99908873164AA1A104E38722E9F6 /* ABI33_0_0.xcodeproj */;
 			containerPortal = A7E8D7083D022870355BECC88F6DDDDC /* Folly.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 14BB2B7275726942E762F076FA966088;
