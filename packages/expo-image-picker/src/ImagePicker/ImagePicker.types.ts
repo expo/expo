@@ -6,19 +6,19 @@ export const MediaTypeOptions = {
   Images: 'Images',
 } as const;
 
-export const ExportPresets = {
-  LowQuality: 'LowQuality',
-  MediumQuality: 'MediumQuality',
-  HighestQuality: 'HighestQuality',
-  Passthrough: 'Passthrough',
-  H264_640x480: 'H264_640x480',
-  H264_960x540: 'H264_960x540',
-  H264_1280x720: 'H264_1280x720',
-  H264_1920x1080: 'H264_1920x1080',
-  H264_3840x2160: 'H264_3840x2160',
-  HEVC_1920x1080: 'HEVC_1920x1080',
-  HEVC_3840x2160: 'HEVC_3840x2160',
-} as const;
+export enum ExportPresets {
+  LowQuality = 0,
+  MediumQuality = 1,
+  HighestQuality = 2,
+  Passthrough = 3,
+  H264_640x480 = 4,
+  H264_960x540 = 5,
+  H264_1280x720 = 6,
+  H264_1920x1080 = 7,
+  H264_3840x2160 = 8,
+  HEVC_1920x1080 = 9,
+  HEVC_3840x2160 = 10,
+}
 
 export type ImageInfo = {
   uri: string;

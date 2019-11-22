@@ -42,7 +42,6 @@ UM_EXPORT_MODULE(ExponentImagePicker);
     self.defaultOptions = @{
                             @"allowsEditing": @NO,
                             @"base64": @NO,
-                            @"exportPreset": @"Passthrough",
                             };
     self.shouldRestoreStatusBarVisibility = NO;
   }
@@ -173,7 +172,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
     
     if (@available(iOS 11.0, *)) {
-      self.picker.videoExportPreset = [self mapPreset:self.options[@"exportPreset"]];
+      self.picker.videoExportPreset = [self mapJSPresetToNativePreset:self.options[@"exportPreset"]];
     }
     
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
@@ -399,7 +398,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
              updateResponse:(NSMutableDictionary *)response
           completionHandler:(void (^)(void))completionHandler
 {
-  NSURL *videoURL = info[UIImagePickerControllerMediaURL] ? info[UIImagePickerControllerMediaURL] : info[UIImagePickerControllerReferenceURL];
+  NSURL *videoURL = info[UIImagePickerControllerMediaURL] ?: info[UIImagePickerControllerReferenceURL];
   if (videoURL == nil) {
     self.reject(@"E_COULDNT_OPEN_FILE", @"Couldn't open video", nil);
     return;
@@ -607,31 +606,26 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 }
 
 
-- (NSString *)mapPreset:(NSString *)preset API_AVAILABLE(ios(11));
+- (NSString *)mapJSPresetToNativePreset:(NSNumber *)preset API_AVAILABLE(ios(11));
 {
   static NSDictionary* presetsMap = nil;
   if (!presetsMap) {
     presetsMap = @{
-        @"Passthrough": AVAssetExportPresetPassthrough,
-        @"LowQuality": AVAssetExportPresetLowQuality,
-        @"MediumQuality": AVAssetExportPresetMediumQuality,
-        @"HighestQuality": AVAssetExportPresetHighestQuality,
-        @"H264_640x480": AVAssetExportPreset640x480,
-        @"H264_960x540": AVAssetExportPreset960x540,
-        @"H264_1280x720": AVAssetExportPreset1280x720,
-        @"H264_1920x1080": AVAssetExportPreset1920x1080,
-        @"H264_3840x2160": AVAssetExportPreset3840x2160,
-        @"H264_960x540": AVAssetExportPreset960x540,
-        @"HEVC_1920x1080": AVAssetExportPresetHEVC1920x1080,
-        @"HEVC_3840x2160": AVAssetExportPresetHEVC3840x2160
+        @0: AVAssetExportPresetLowQuality,
+        @1: AVAssetExportPresetMediumQuality,
+        @2: AVAssetExportPresetHighestQuality,
+        @3: AVAssetExportPresetPassthrough,
+        @4: AVAssetExportPreset640x480,
+        @5: AVAssetExportPreset960x540,
+        @6: AVAssetExportPreset1280x720,
+        @7: AVAssetExportPreset1920x1080,
+        @8: AVAssetExportPreset3840x2160,
+        @9: AVAssetExportPresetHEVC1920x1080,
+        @10: AVAssetExportPresetHEVC3840x2160
     };
   }
   
-  NSString *presetSystemString = [presetsMap objectForKey:preset];
-  if (presetSystemString == nil) {
-    return AVAssetExportPresetPassthrough;
-  }
-  return presetSystemString;
+  return presetsMap[preset] ?: AVAssetExportPresetPassthrough;
 }
 
 + (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function 
