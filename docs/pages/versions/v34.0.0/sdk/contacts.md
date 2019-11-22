@@ -3,11 +3,55 @@ title: Contacts
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-contacts"
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 Provides access to the phone's system contacts.
 
 ## Installation
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-contacts`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
+
+## Usage
+
+<SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts', 'expo-permissions']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Contacts from 'expo-contacts';
+import * as Permissions from 'expo-permissions';
+
+export default class App extends React.Component {
+  componentDidMount = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
+    if (status === 'granted') {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.Emails],
+      });
+
+      if (data.length > 0) {
+        const contact = data[0];
+        console.log(contact);
+      }
+    }
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Contacts Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
 
 ## API
 

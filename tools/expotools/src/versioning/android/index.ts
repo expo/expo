@@ -201,13 +201,13 @@ function processLine(line: string, abiVersion: string) {
     line.startsWith('LOCAL_SHARED_LIBRARIES') ||
     line.startsWith('LOCAL_STATIC_LIBRARIES')
   ) {
-    let splitLine = line.split(':=');
+    let splitLine = line.split('=');
     let libs = splitLine[1].split(' ');
     for (let i = 0; i < libs.length; i++) {
       libs[i] = renameLib(libs[i], abiVersion);
     }
     splitLine[1] = libs.join(' ');
-    line = splitLine.join(':=');
+    line = splitLine.join('=');
   }
 
   return line;

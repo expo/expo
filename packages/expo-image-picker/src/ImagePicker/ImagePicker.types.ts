@@ -11,6 +11,8 @@ export type ImageInfo = {
   width: number;
   height: number;
   type?: 'image' | 'video';
+  exif?: { [key: string]: any };
+  base64?: string;
 };
 
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="host.exp.exponent" module="expo-device" revision="1.0.0" status="integration" publication="20190910165018"/>
+  <info organisation="host.exp.exponent" module="expo-device" revision="1.0.0" status="integration" publication="20191119134620"/>
   <configurations>
     <conf name="_internal_aapt2_binary" visibility="private" transitive="false"/>
     <conf name="androidApis" visibility="public"/>
@@ -53,6 +53,7 @@
     <conf name="implementation" visibility="private" extends="api"/>
     <conf name="lintChecks" visibility="private"/>
     <conf name="lintClassPath" visibility="private"/>
+    <conf name="lintPublish" visibility="private"/>
     <conf name="provided" visibility="private"/>
     <conf name="publish" visibility="private"/>
     <conf name="releaseAnnotationProcessor" visibility="private"/>
@@ -107,43 +108,47 @@
     <artifact name="expo-device" type="aar" ext="aar" conf="archives,default"/>
   </publications>
   <dependencies>
-    <dependency org="com.android.tools.build" name="aapt2" rev="3.3.2-5309881" conf="_internal_aapt2_binary-&gt;default">
+    <dependency org="com.android.tools.build" name="aapt2" rev="3.5.1-5435860" conf="_internal_aapt2_binary-&gt;default">
       <artifact name="aapt2" type="jar" ext="jar" m:classifier="osx" conf="_internal_aapt2_binary"/>
     </dependency>
     <dependency org="com.facebook.device.yearclass" name="yearclass" rev="2.1.0" conf="api-&gt;default"/>
-    <dependency org="com.android.support" name="support-v4" rev="28.0.0" conf="api-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-core" rev="3.0.2" conf="implementation-&gt;default"/>
-    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="3.0.0" conf="implementation-&gt;default"/>
-    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.3.2" conf="lintClassPath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-v4" rev="1.0.0" conf="api-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-core" rev="5.0.0-rc.0" conf="implementation-&gt;default"/>
+    <dependency org="org.unimodules" name="unimodules-permissions-interface" rev="4.0.0" conf="implementation-&gt;default"/>
+    <dependency org="com.android.tools.lint" name="lint-gradle" rev="26.5.1" conf="lintClassPath-&gt;default"/>
     <dependency org="com.facebook.device.yearclass" name="yearclass" rev="2.1.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-v4" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-compat" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-annotations" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="collections" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="runtime" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="common" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.core" name="common" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="versionedparcelable" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-media-compat" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-core-utils" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="documentfile" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="loader" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="livedata" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.core" name="runtime" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="livedata-core" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="android.arch.lifecycle" name="viewmodel" rev="1.1.1" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="localbroadcastmanager" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="print" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-core-ui" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="customview" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="viewpager" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="coordinatorlayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="drawerlayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="slidingpanelayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="interpolator" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="swiperefreshlayout" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="asynclayoutinflater" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="cursoradapter" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
-    <dependency org="com.android.support" name="support-fragment" rev="28.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-v4" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.core" name="core" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.annotation" name="annotation" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.collection" name="collection" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.lifecycle" name="lifecycle-runtime" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.lifecycle" name="lifecycle-common" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.arch.core" name="core-common" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.versionedparcelable" name="versionedparcelable" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.media" name="media" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-core-utils" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.documentfile" name="documentfile" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.loader" name="loader" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.lifecycle" name="lifecycle-livedata" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.arch.core" name="core-runtime" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.lifecycle" name="lifecycle-livedata-core" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.lifecycle" name="lifecycle-viewmodel" rev="2.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.localbroadcastmanager" name="localbroadcastmanager" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.print" name="print" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.legacy" name="legacy-support-core-ui" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.customview" name="customview" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.viewpager" name="viewpager" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.coordinatorlayout" name="coordinatorlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.drawerlayout" name="drawerlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.slidingpanelayout" name="slidingpanelayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.interpolator" name="interpolator" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.swiperefreshlayout" name="swiperefreshlayout" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.asynclayoutinflater" name="asynclayoutinflater" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.cursoradapter" name="cursoradapter" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="androidx.fragment" name="fragment" rev="1.0.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-jdk7" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.jetbrains.kotlin" name="kotlin-stdlib-common" rev="1.3.41" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
+    <dependency org="org.jetbrains" name="annotations" rev="13.0" transitive="false" conf="releaseCompileClasspath-&gt;default"/>
   </dependencies>
 </ivy-module>

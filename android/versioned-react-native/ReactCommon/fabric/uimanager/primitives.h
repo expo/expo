@@ -5,13 +5,11 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/core/EventHandler.h>
 #include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
-
-using RuntimeExecutor = std::function<void(
-    std::function<void(facebook::jsi::Runtime &runtime)> &&callback)>;
 
 struct EventHandlerWrapper : public EventHandler {
   EventHandlerWrapper(jsi::Function eventHandler)
@@ -82,10 +80,16 @@ inline static SurfaceId surfaceIdFromValue(
   return (SurfaceId)value.getNumber();
 }
 
-inline static ComponentName componentNameFromValue(
+inline static std::string stringFromValue(
     jsi::Runtime &runtime,
     const jsi::Value &value) {
   return value.getString(runtime).utf8(runtime);
+}
+
+inline static folly::dynamic commandArgsFromValue(
+    jsi::Runtime &runtime,
+    const jsi::Value &value) {
+  return jsi::dynamicFromValue(runtime, value);
 }
 
 } // namespace react

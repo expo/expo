@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.BaseExperienceActivity;
+import host.exp.exponent.experience.ReactNativeActivity;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.expoview.Exponent;
@@ -41,7 +42,7 @@ public class ScopedPermissionsRequester {
     mExperienceId = experienceId;
   }
 
-  public void requestPermissions(BaseExperienceActivity currentActivity, final String experienceName, final String[] permissions, final PermissionListener listener) {
+  public void requestPermissions(ReactNativeActivity currentActivity, final String experienceName, final String[] permissions, final PermissionListener listener) {
     mPermissionListener = listener;
     mExperienceName = experienceName;
     mPermissionsResult = new HashMap<>();

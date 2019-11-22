@@ -139,7 +139,7 @@ export declare type RecurrenceRule = {
 };
 export { PermissionResponse, PermissionStatus };
 declare type OptionalKeys<T> = {
-    [P in keyof T]?: T[P];
+    [P in keyof T]?: T[P] | null;
 };
 export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
 export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;

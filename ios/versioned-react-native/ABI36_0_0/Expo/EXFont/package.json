@@ -1,0 +1,49 @@
+{
+  "name": "expo-font",
+  "version": "7.0.0",
+  "description": "Load fonts at runtime and use them in React Native components.",
+  "main": "build/Font.js",
+  "types": "build/Font.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "font"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-font"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io/versions/latest/sdk/font/",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "unimodulePeerDependencies": {
+    "expo-asset": "*",
+    "expo-constants": "*",
+    "@unimodules/core": "*",
+    "unimodules-font-interface": "*"
+  },
+  "dependencies": {
+    "fontfaceobserver": "^2.1.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "~1.1.1"
+  },
+  "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
+}

@@ -18,6 +18,11 @@
 #endif
 
 #import "GTMSessionFetcher.h"
+#if TARGET_OS_OSX && GTMSESSION_RECONNECT_BACKGROUND_SESSIONS_ON_LAUNCH
+// To reconnect background sessions on Mac outside +load requires importing and linking
+// AppKit to access the NSApplicationDidFinishLaunching symbol.
+#import <AppKit/AppKit.h>
+#endif
 
 #import <sys/utsname.h>
 
@@ -85,6 +90,34 @@ GTM_ASSUME_NONNULL_END
        || (TARGET_OS_IPHONE && defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0))
     #define GTM_TARGET_SUPPORTS_APP_TRANSPORT_SECURITY 1
   #endif
+#endif
+
+#if ((defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST) || \
+     (TARGET_OS_OSX && defined(__MAC_10_15) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_15) || \
+     (TARGET_OS_IOS && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_13_0) || \
+     (TARGET_OS_WATCH && defined(__WATCHOS_6_0) && __WATCHOS_VERSION_MIN_REQUIRED >= __WATCHOS_6_0) || \
+     (TARGET_OS_TV && defined(__TVOS_13_0) && __TVOS_VERSION_MIN_REQUIRED >= __TVOS_13_0))
+#define GTM_SDK_REQUIRES_TLSMINIMUMSUPPORTEDPROTOCOLVERSION 1
+#define GTM_SDK_SUPPORTS_TLSMINIMUMSUPPORTEDPROTOCOLVERSION 1
+#elif ((TARGET_OS_OSX && defined(__MAC_10_15) && __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_15) || \
+       (TARGET_OS_IOS && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0) || \
+       (TARGET_OS_WATCH && defined(__WATCHOS_6_0) && __WATCHOS_VERSION_MAX_ALLOWED >= __WATCHOS_6_0) || \
+       (TARGET_OS_TV && defined(__TVOS_13_0) && __TVOS_VERSION_MAX_ALLOWED >= __TVOS_13_0))
+#define GTM_SDK_REQUIRES_TLSMINIMUMSUPPORTEDPROTOCOLVERSION 0
+#define GTM_SDK_SUPPORTS_TLSMINIMUMSUPPORTEDPROTOCOLVERSION 1
+#else
+#define GTM_SDK_REQUIRES_TLSMINIMUMSUPPORTEDPROTOCOLVERSION 0
+#define GTM_SDK_SUPPORTS_TLSMINIMUMSUPPORTEDPROTOCOLVERSION 0
+#endif
+
+#if ((defined(TARGET_OS_MACCATALYST) && TARGET_OS_MACCATALYST) || \
+     (TARGET_OS_OSX && defined(__MAC_10_15) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_15) || \
+     (TARGET_OS_IOS && defined(__IPHONE_13_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_13_0) || \
+     (TARGET_OS_WATCH && defined(__WATCHOS_6_0) && __WATCHOS_VERSION_MIN_REQUIRED >= __WATCHOS_6_0) || \
+     (TARGET_OS_TV && defined(__TVOS_13_0) && __TVOS_VERSION_MIN_REQUIRED >= __TVOS_13_0))
+#define GTM_SDK_REQUIRES_SECTRUSTEVALUATEWITHERROR 1
+#else
+#define GTM_SDK_REQUIRES_SECTRUSTEVALUATEWITHERROR 0
 #endif
 
 @interface GTMSessionFetcher ()
@@ -212,9 +245,32 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
 
 #if !GTMSESSION_UNIT_TESTING
 + (void)load {
+#if GTMSESSION_RECONNECT_BACKGROUND_SESSIONS_ON_LAUNCH && TARGET_OS_IPHONE
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self
+         selector:@selector(reconnectFetchersForBackgroundSessionsOnAppLaunch:)
+             name:UIApplicationDidFinishLaunchingNotification
+           object:nil];
+#elif GTMSESSION_RECONNECT_BACKGROUND_SESSIONS_ON_LAUNCH && TARGET_OS_OSX
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self
+         selector:@selector(reconnectFetchersForBackgroundSessionsOnAppLaunch:)
+             name:NSApplicationDidFinishLaunchingNotification
+           object:nil];
+#else
   [self fetchersForBackgroundSessions];
-}
 #endif
+}
+
++ (void)reconnectFetchersForBackgroundSessionsOnAppLaunch:(NSNotification *)notification {
+  // Give all other app-did-launch handlers a chance to complete before
+  // reconnecting the fetchers. Not doing this may lead to reconnecting
+  // before the app delegate has a chance to run.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self fetchersForBackgroundSessions];
+  });
+}
+#endif  // !GTMSESSION_UNIT_TESTING
 
 + (instancetype)fetcherWithRequest:(GTM_NULLABLE NSURLRequest *)request {
   return [[self alloc] initWithRequest:request configuration:nil];
@@ -619,7 +675,17 @@ static GTMSessionFetcherTestBlock GTM_NULLABLE_TYPE gGlobalTestBlock;
         _configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
       }
 #if !GTM_ALLOW_INSECURE_REQUESTS
+#if GTM_SDK_REQUIRES_TLSMINIMUMSUPPORTEDPROTOCOLVERSION
+      _configuration.TLSMinimumSupportedProtocolVersion = tls_protocol_version_TLSv12;
+#elif GTM_SDK_SUPPORTS_TLSMINIMUMSUPPORTEDPROTOCOLVERSION
+      if (@available(iOS 13, tvOS 13, watchOS 6, macOS 10.15, *)) {
+        _configuration.TLSMinimumSupportedProtocolVersion = tls_protocol_version_TLSv12;
+      } else {
+        _configuration.TLSMinimumSupportedProtocol = kTLSProtocol12;
+      }
+#else
       _configuration.TLSMinimumSupportedProtocol = kTLSProtocol12;
+#endif  // GTM_SDK_REQUIRES_TLSMINIMUMSUPPORTEDPROTOCOLVERSION
 #endif
     }  // !_configuration
     _configuration.HTTPCookieStorage = self.cookieStorage;
@@ -1046,6 +1112,7 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
     GTMSessionFetcherReceivedProgressBlock receivedProgressBlock = _receivedProgressBlock;
     GTMSessionFetcherWillCacheURLResponseBlock willCacheURLResponseBlock =
         _willCacheURLResponseBlock;
+    GTMSessionFetcherChallengeBlock challengeBlock = _challengeBlock;
 
     // Simulate receipt of redirection.
     if (willRedirectBlock) {
@@ -1063,34 +1130,32 @@ NSData * GTM_NULLABLE_TYPE GTMDataFromInputStream(NSInputStream *inputStream, NS
     // It might be nice to eventually let the user determine which testBlock
     // fetches get challenged rather than always executing the supplied
     // challenge block.
-    if (_challengeBlock) {
+    if (challengeBlock) {
       [self invokeOnCallbackUnsynchronizedQueueAfterUserStopped:YES
                                                           block:^{
-        if (self->_challengeBlock) {
-          NSURL *requestURL = self->_request.URL;
-          NSString *host = requestURL.host;
-          NSURLProtectionSpace *pspace =
-              [[NSURLProtectionSpace alloc] initWithHost:host
-                                                    port:requestURL.port.integerValue
-                                                protocol:requestURL.scheme
-                                                   realm:nil
-                                    authenticationMethod:NSURLAuthenticationMethodHTTPBasic];
-          id<NSURLAuthenticationChallengeSender> unusedSender =
-              (id<NSURLAuthenticationChallengeSender>)[NSNull null];
-          NSURLAuthenticationChallenge *challenge =
-              [[NSURLAuthenticationChallenge alloc] initWithProtectionSpace:pspace
-                                                         proposedCredential:nil
-                                                       previousFailureCount:0
-                                                            failureResponse:nil
-                                                                      error:nil
-                                                                     sender:unusedSender];
-          self->_challengeBlock(self, challenge, ^(NSURLSessionAuthChallengeDisposition disposition,
-                                             NSURLCredential * GTM_NULLABLE_TYPE credential){
-            // We could change the responseData and responseError based on the disposition,
-            // but it's easier for apps to just supply the expected data and error
-            // directly to the test block. So this simulation ignores the disposition.
-          });
-        }
+        NSURL *requestURL = self->_request.URL;
+        NSString *host = requestURL.host;
+        NSURLProtectionSpace *pspace =
+            [[NSURLProtectionSpace alloc] initWithHost:host
+                                                  port:requestURL.port.integerValue
+                                              protocol:requestURL.scheme
+                                                 realm:nil
+                                  authenticationMethod:NSURLAuthenticationMethodHTTPBasic];
+        id<NSURLAuthenticationChallengeSender> unusedSender =
+            (id<NSURLAuthenticationChallengeSender>)[NSNull null];
+        NSURLAuthenticationChallenge *challenge =
+            [[NSURLAuthenticationChallenge alloc] initWithProtectionSpace:pspace
+                                                       proposedCredential:nil
+                                                     previousFailureCount:0
+                                                          failureResponse:nil
+                                                                    error:nil
+                                                                   sender:unusedSender];
+        challengeBlock(self, challenge, ^(NSURLSessionAuthChallengeDisposition disposition,
+                                          NSURLCredential * GTM_NULLABLE_TYPE credential){
+          // We could change the responseData and responseError based on the disposition,
+          // but it's easier for apps to just supply the expected data and error
+          // directly to the test block. So this simulation ignores the disposition.
+        });
       }];
     }
 
@@ -2325,8 +2390,24 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
     // It looks like the implementation of SecTrustEvaluate() on Mac grabs a global lock,
     // so it may be redundant for us to also lock, but it's easy to synchronize here
     // anyway.
-    SecTrustResultType trustEval = kSecTrustResultInvalid;
     BOOL shouldAllow;
+#if GTM_SDK_REQUIRES_SECTRUSTEVALUATEWITHERROR
+    CFErrorRef errorRef = NULL;
+    @synchronized ([GTMSessionFetcher class]) {
+      GTMSessionMonitorSynchronized([GTMSessionFetcher class]);
+
+      // SecTrustEvaluateWithError handles both the "proceed" and "unspecified" cases,
+      // so it is not necessary to check the trust result the evaluation returns true.
+      shouldAllow = SecTrustEvaluateWithError(serverTrust, &errorRef);
+    }
+
+    if (errorRef) {
+      GTMSESSION_LOG_DEBUG(@"Error %d evaluating trust for %@",
+                           (int)CFErrorGetCode(errorRef), request);
+      CFRelease(errorRef);
+    }
+#else
+    SecTrustResultType trustEval = kSecTrustResultInvalid;
     OSStatus trustError;
     @synchronized([GTMSessionFetcher class]) {
       GTMSessionMonitorSynchronized([GTMSessionFetcher class]);
@@ -2350,6 +2431,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
                              CFBridgingRelease(SecTrustCopyProperties(serverTrust)));
       }
     }
+#endif  // GTM_SDK_REQUIRES_SECTRUSTEVALUATEWITHERROR
     handler(serverTrust, shouldAllow);
 
     CFRelease(serverTrust);

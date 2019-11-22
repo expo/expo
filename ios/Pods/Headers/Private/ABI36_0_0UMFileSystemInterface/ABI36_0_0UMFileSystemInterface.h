@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/UMFileSystemInterface/ABI36_0_0UMFileSystemInterface/ABI36_0_0UMFileSystemInterface.h

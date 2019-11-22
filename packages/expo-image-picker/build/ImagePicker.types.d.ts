@@ -9,6 +9,10 @@ export declare type ImageInfo = {
     width: number;
     height: number;
     type?: 'image' | 'video';
+    exif?: {
+        [key: string]: any;
+    };
+    base64?: string;
 };
 export declare type ImagePickerResult = {
     cancelled: true;

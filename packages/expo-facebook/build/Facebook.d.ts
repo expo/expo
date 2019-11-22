@@ -1,7 +1,11 @@
 export declare type FacebookLoginResult = {
-    type: string;
-    token?: string;
-    expires?: number;
+    type: 'cancel';
+} | {
+    type: 'success';
+    token: string;
+    expires: number;
+    permissions: string[];
+    declinedPermissions: string[];
 };
 export declare type FacebookOptions = {
     permissions?: string[];
