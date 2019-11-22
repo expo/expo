@@ -330,10 +330,15 @@ UM_EXPORT_METHOD_AS(saveEventAsync,
     calendarEvent.notes = nil;
   }
 
-  if (timeZone) {
-    calendarEvent.timeZone = [NSTimeZone timeZoneWithName:timeZone];
-  } else if (details[@"timeZone"] == [NSNull null]) {
+  if (details[@"timeZone"] == [NSNull null]) {
     calendarEvent.timeZone = nil;
+  } else if (timeZone) {
+    NSTimeZone *eventTimeZone = [NSTimeZone timeZoneWithName:timeZone];
+    if (eventTimeZone) {
+      calendarEvent.timeZone = eventTimeZone;
+    } else {
+      return reject(@"E_EVENT_INVALID_TIMEZONE", @"Invalid timeZone", nil);
+    }
   }
 
   if (alarms) {
@@ -604,10 +609,15 @@ UM_EXPORT_METHOD_AS(saveReminderAsync,
     reminder.notes = nil;
   }
 
-  if (timeZone) {
-    reminder.timeZone = [NSTimeZone timeZoneWithName:timeZone];
-  } else if (details[@"timeZone"] == [NSNull null]) {
+  if (details[@"timeZone"] == [NSNull null]) {
     reminder.timeZone = nil;
+  } else if (timeZone) {
+    NSTimeZone *eventTimeZone = [NSTimeZone timeZoneWithName:timeZone];
+    if (eventTimeZone) {
+      reminder.timeZone = eventTimeZone;
+    } else {
+      return reject(@"E_EVENT_INVALID_TIMEZONE", @"Invalid timeZone", nil);
+    }
   }
 
   if (alarms) {
