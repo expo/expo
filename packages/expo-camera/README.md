@@ -26,7 +26,7 @@ expo install expo-camera
 Add `NSCameraUsageDescription` key to your `Info.plist`:
 
 ```xml
-<key>NSCalendarsUsageDescription</key>
+<key>NSCameraUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to use the camera</string>
 ```
 
