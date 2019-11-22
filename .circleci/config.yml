@@ -682,7 +682,7 @@ jobs:
           working_directory: ~/expo/tools/expotools
       - restore_cache:
           key: client-android-apk-{{ .Revision }}
-      - run: expotools client-build --platform android --release
+      - run: expotools client-build --platform android
 
   client_android_release_google_play:
     executor: js
