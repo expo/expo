@@ -5656,6 +5656,22 @@ CACHE_KEYS:
     PROJECT_NAME: ABI36_0_0
     SPECS:
       - ABI36_0_0React-RCTBlob (0.61.4)
+  ABI36_0_0React-RCTCameraRoll:
+    BUILD_SETTINGS_CHECKSUM:
+      ABI36_0_0React-RCTCameraRoll: 4972252b2af195ad3aabdb275bb68f6b
+    CHECKSUM: b42de9ffc1aab1d2634bec074028650005474cd2
+    FILES:
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTAssetsLibraryRequestHandler.h"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTAssetsLibraryRequestHandler.m"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTCameraRollManager.h"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTCameraRollManager.m"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTImagePickerManager.h"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTImagePickerManager.m"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTPhotoLibraryImageLoader.h"
+      - "../versioned-react-native/ABI36_0_0/ReactNative/Libraries/CameraRoll/ABI36_0_0RCTPhotoLibraryImageLoader.m"
+    PROJECT_NAME: ABI36_0_0
+    SPECS:
+      - ABI36_0_0React-RCTCameraRoll (0.61.4)
   ABI36_0_0React-RCTImage:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0React-RCTImage: f44c4f5efa1aa40c03decfa78ea2e053
@@ -7125,16 +7141,16 @@ CACHE_KEYS:
       - nanopb/encode (0.3.901)
   Pods-Exponent:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 5f008dc4838313eda2588cb92d6f196f
-      Release: 5f008dc4838313eda2588cb92d6f196f
+      Debug: f1d931dbfce19c0a049cc9c50342119b
+      Release: f1d931dbfce19c0a049cc9c50342119b
   Pods-ExponentIntegrationTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7e8118da15b12c8f5c7f4a6f150c54c6
-      Release: 7e8118da15b12c8f5c7f4a6f150c54c6
+      Debug: 6f968735eb5f2e008fa585a70dff74c1
+      Release: 6f968735eb5f2e008fa585a70dff74c1
   Pods-Tests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 7e8118da15b12c8f5c7f4a6f150c54c6
-      Release: 7e8118da15b12c8f5c7f4a6f150c54c6
+      Debug: 6f968735eb5f2e008fa585a70dff74c1
+      Release: 6f968735eb5f2e008fa585a70dff74c1
   Protobuf:
     BUILD_SETTINGS_CHECKSUM:
       Protobuf: e9ec876cfd5ece357978b5d515d5282c

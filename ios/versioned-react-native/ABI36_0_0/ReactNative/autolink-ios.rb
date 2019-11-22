@@ -28,6 +28,9 @@ def use_react_native_ABI36_0_0! (options={})
   pod 'ABI36_0_0React-RCTVibration', :path => "#{prefix}/Libraries/Vibration", :project_name => 'ABI36_0_0'
   pod 'ABI36_0_0React-Core/RCTWebSocket', :path => "#{prefix}/", :project_name => 'ABI36_0_0'
 
+  # Add RCTCameraRoll here as a temporary workaround for missing request handler for `assets-library://` media urls.
+  pod 'ABI36_0_0React-RCTCameraRoll', :path => "#{prefix}/Libraries/CameraRoll", :project_name => 'ABI36_0_0'
+
   unless production
     pod 'ABI36_0_0React-Core/DevSupport', :path => "#{prefix}/", :project_name => 'ABI36_0_0'
   end
