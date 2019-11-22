@@ -37,7 +37,7 @@ export default function getChannelButtonList() {
                             description: "channel description",
                             sound: true,
                             priority: 5,
-                            vibrate: [0, 250, 250, 250],
+                            vibrate: false,
                             badge: true,
                             groupId: "first",
                         },
