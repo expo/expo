@@ -53,7 +53,6 @@ public class ExpoFcmMessagingService extends FirebaseMessagingService {
     bundle.putString(NOTIFICATION_TITLE, remoteMessage.getData().get(NOTIFICATION_TITLE));
     bundle.putString(NOTIFICATION_CATEGORY, remoteMessage.getData().get(NOTIFICATION_CATEGORY));
     bundle.putString(NOTIFICATION_ICON, remoteMessage.getData().get(NOTIFICATION_ICON));
-    bundle.putString(NOTIFICATION_COLOR, remoteMessage.getData().get(NOTIFICATION_COLOR));
     bundle.putString(NOTIFICATION_DATA, remoteMessage.getData().get("body"));
     bundle.putString(NOTIFICATION_SOUND, remoteMessage.getData().get(NOTIFICATION_SOUND));
     bundle.putBoolean(NOTIFICATION_REMOTE, true);

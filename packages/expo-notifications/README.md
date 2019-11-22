@@ -345,44 +345,58 @@ Dismiss All notifications.
 
 ```ts
 type Notification = {
-  title: string;
-  body?: string;
-  data?: any;
-  categoryId?: string;
-  ios?: {
-    sound?: boolean;
-    _displayInForeground?: boolean;
+  title: string;                            //1
+  body?: string;                            //2
+  data?: any;                               //3
+  categoryId?: string;                      //4    
+  ios?: {                   
+    sound?: boolean;                        //5    
+    _displayInForeground?: boolean;         //6
   };
-  android?: {
-    channelId?: string;
-    icon?: string;
-    color?: string;
-    sticky?: boolean;
-    link?: string;
-    exact?: boolean;
+  android?: {                               
+    channelId?: string;                     //7
+    icon?: string;                          //8
+    sticky?: boolean;                       //9
+    link?: string;                          //10
+    exact?: boolean;                        //11
   };
-  web?: NotificationOptions;
-  remote?: boolean;
+  web?: NotificationOptions;                //12
 };
 ```
+
+1. Title of notification.
+2. Notification message.
+3. Addition object for your data which you will receive later.
+4. Id of category.
+5. Should sound be played when notification is displayed (false by default).
+6. Currently noop.
+7. Id of channel.
+8. Icon URI. Only large icon can be modified programmatically.
+   In order to change small icon go to `Notification Icon` section.
+9. true - if notification shouldn't be dismissed automatically (false by default).
+10. Link that should be opend after notification is tapped.
+    Example: 'https://.expo.io/'.
+11. true - if notification time has to be exact. (Battery draining, false by default)
+12. Currently noop.
 
 ### ForegroundNotification
 
 ```ts
 type ForegroundNotification = Notification & {
-  remote: boolean;
+  remote: boolean; // true if it's push notification
 };
 ```
+
 ### Channel
 
 ```ts
 type Channel = {
-  name: string;
-  description?: string;
-  priority?: string;
-  sound?: boolean;
-  vibrate?: boolean | number[];
-  badge?: boolean;
+  name: string;                            //1
+  description?: string;                    //2
+  priority?: string;                       //3
+  sound?: boolean;                         //4
+  vibrate?: boolean | number[];            //5
+  badge?: boolean;                         //6
 };
 ```
 
@@ -390,14 +404,14 @@ type Channel = {
 
 ```ts
 type ActionType = {
-  actionId: string;
-  buttonTitle: string;
-  isDestructive?: boolean;
-  isAuthenticationRequired?: boolean;
-  doNotOpenInForeground?: boolean;
+  actionId: string;                        //1
+  buttonTitle: string;                     //2
+  isDestructive?: boolean;                 //3
+  isAuthenticationRequired?: boolean;      //4
+  doNotOpenInForeground?: boolean;         //5 
   textInput?: {
-    submitButtonTitle: string;
-    placeholder: string;
+    submitButtonTitle: string;             //6  
+    placeholder: string;                   //7
   };
 };
 ```
@@ -406,8 +420,9 @@ type ActionType = {
 
 ```ts
 type UserInteraction = Notification & {
-    actionId?: string;
-    userText?: string;
+    actionId?: string;                     //1 
+    userText?: string;                     //2
+    remote?: boolean;                      //3
 }
 ```
 
@@ -459,6 +474,6 @@ Firebase message format suitable for `expo-notifications`.
 
 Note that Firebase message cannot contain "notification" property because it makes `expo-notifications` unable to display notification.
 
+## Notification Icon
 
-
-
+ToDo use app icon if there is no other.

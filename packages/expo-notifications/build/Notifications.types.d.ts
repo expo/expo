@@ -10,13 +10,11 @@ export declare type Notification = {
     android?: {
         channelId?: string;
         icon?: string;
-        color?: string;
         sticky?: boolean;
         link?: string;
         exact?: boolean;
     };
     web?: NotificationOptions;
-    remote?: boolean;
 };
 export declare type ForegroundNotification = Notification & {
     remote: boolean;
@@ -24,7 +22,7 @@ export declare type ForegroundNotification = Notification & {
 export declare type Channel = {
     name: string;
     description?: string;
-    priority?: string;
+    priority?: number;
     sound?: boolean;
     vibrate?: boolean | number[];
     badge?: boolean;
@@ -43,6 +41,7 @@ export declare type ActionType = {
 export declare type UserInteraction = Notification & {
     actionId?: string;
     userText?: string;
+    remote?: boolean;
 };
 export declare type TokenMessage = {
     token: string;
