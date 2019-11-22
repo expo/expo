@@ -340,6 +340,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Several Haptic enum types have been renamed: NotificationTypes → NotificationFeedbackType, ImpactStyles → ImpactFeedbackStyle
 - Several AR enum types have been renamed: BlendShapes → BlendShape, FaceAnchorProps → FaceAnchorProp, PlaneDetectionTypes → PlaneDetection, WorldAlignmentTypes → WorldAlignment, EventTypes → EventType, AnchorTypes → AnchorType, AnchorEventTypes → AnchorEventType, FrameAttributes → FrameAttribute, TrackingStates → TrackingState, TrackingStateReasons → TrackingStateReason, TrackingConfigurations → TrackingConfiguration
 - `Audio.Sound.create` has been renamed to `createAsync`
+- Upgrade Babel to `7.0.0` by [@ide](https://github.com/ide) ([#2373](https://github.com/expo/expo/pull/2373))
 
 ### 🎉 New features
 
