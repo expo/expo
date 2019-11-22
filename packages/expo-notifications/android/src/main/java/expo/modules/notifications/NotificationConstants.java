@@ -50,4 +50,4 @@ public class NotificationConstants {
   public static final String ACTION_TEXT_INPUT = "textInput";
   public static final String ACTION_PLACEHOLDER = "placeholder";
   public static final String ACTION_SUBMIT_BUTTON_TITLE = "submitButtonTitle";
- }
+}
