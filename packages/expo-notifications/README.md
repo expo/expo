@@ -497,6 +497,9 @@ Firebase message format suitable for `expo-notifications`.
 
 Note that Firebase message cannot contain "notification" property because it makes `expo-notifications` unable to display notification.
 
-## Notification Icon
+## Notification Icon (Android only)
 
-ToDo use app icon if there is no other.
+> If you don't provide notification icon and try to display notification then app will crash!.
+
+All you need to do is add notification icon as drawable resource under the name of `notification_icon`.
+More about it [here](https://developer.android.com/studio/write/image-asset-studio).
