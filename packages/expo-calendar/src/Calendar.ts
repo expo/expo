@@ -112,11 +112,43 @@ export type Alarm = {
   method?: string; // Method, Android
 };
 
+export enum DayOfTheWeek {
+  Sunday = 1,
+  Monday = 2,
+  Tuesday = 3,
+  Wednesday = 4,
+  Thursday = 5,
+  Friday = 6,
+  Saturday = 7,
+}
+
+export enum MonthOfTheYear {
+  January = 1,
+  February = 2,
+  March = 3,
+  April = 4,
+  May = 5,
+  June = 6,
+  July = 7,
+  August = 8,
+  September = 9,
+  October = 10,
+  November = 11,
+  December = 12,
+}
+
 export type RecurrenceRule = {
   frequency: string; // Frequency
   interval?: number;
   endDate?: string;
   occurrence?: number;
+
+  daysOfTheWeek?: Array<{ dayOfTheWeek: DayOfTheWeek; weekNumber?: number }>;
+  daysOfTheMonth?: number[];
+  monthsOfTheYear?: MonthOfTheYear[];
+  weeksOfTheYear?: number[];
+  daysOfTheYear?: number[];
+  setPositions?: number[];
 };
 
 export { PermissionResponse, PermissionStatus };
