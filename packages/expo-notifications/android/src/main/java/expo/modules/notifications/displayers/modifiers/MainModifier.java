@@ -22,10 +22,6 @@ public class MainModifier implements  NotificationModifier {
       builder.setContentTitle(notification.getString(NOTIFICATION_TITLE));
     }
 
-    if (notification.containsKey(NOTIFICATION_COLOR) && notification.getString(NOTIFICATION_COLOR) != null) {
-      builder.setColor(notification.getInt(NOTIFICATION_COLOR));
-    }
-
     if (notification.containsKey(NOTIFICATION_BODY)) {
       builder.setContentText((String) notification.get(NOTIFICATION_BODY));
       builder.setStyle(new NotificationCompat.BigTextStyle().
