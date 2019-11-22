@@ -4,8 +4,8 @@
 #import <React/RCTEventEmitter.h>
 
 #import "RNHelpshift.h"
-#import "HelpshiftCore.h"
-#import "HelpshiftSupport.h"
+#import <Helpshift/HelpshiftCore.h>
+#import <Helpshift/HelpshiftSupport.h>
 
 @implementation RNHelpshift
 
