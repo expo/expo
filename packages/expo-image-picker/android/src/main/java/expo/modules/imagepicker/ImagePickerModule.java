@@ -491,7 +491,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
                   .start(getExperienceActivity());
             } else {
               // No modification requested
-              if (quality == null || quality == DEFAULT_QUALITY) {
+              if (quality == null || quality == 100) {
                 try (ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null) {
                   File file = new File(path);
                   copyImage(uri, file, out);
