@@ -113,7 +113,7 @@ By default Next.js won't load your static images like an Expo project will. If y
 - Install the plugin - `yarn add next-images`
   - [`next-images`][next-images] injects a Webpack loader to handle fonts.
   - [`next-optimized-images`][next-optimized-images] is another good solution that you could check out.
-- Wrap the image method with the Expo method in your `next.config.js`:  
+- Wrap your Next.js configuration object with the the image method and the Expo method in your `next.config.js`:  
   
   ```js
   const { withExpo } = require('@expo/next-adapter');
