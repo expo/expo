@@ -3153,6 +3153,8 @@ CACHE_KEYS:
       - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/GoogleMaps/ABI35_0_0AIRGoogleMapWMSTileManager.m"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/GoogleMaps/ABI35_0_0RCTConvert+GMSMapViewType.h"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/GoogleMaps/ABI35_0_0RCTConvert+GMSMapViewType.m"
+      - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/Helpshift/ABI35_0_0RNHelpshift.h"
+      - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/Helpshift/ABI35_0_0RNHelpshift.m"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/Lottie/ABI35_0_0EXAnimationViewManager.h"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/Lottie/ABI35_0_0EXAnimationViewManager.m"
       - "../versioned-react-native/ABI35_0_0/Expo/Core/Api/Components/Lottie/ABI35_0_0EXContainerView.h"

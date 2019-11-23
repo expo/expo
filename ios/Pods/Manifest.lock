@@ -1638,6 +1638,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
+    - Helpshift
     - nanopb
     - Protobuf
   trunk:
@@ -1662,7 +1663,6 @@ SPEC REPOS:
     - GoogleSignIn
     - GoogleUtilities
     - GTMSessionFetcher
-    - Helpshift
     - JKBigInteger2
     - lottie-ios
     - nanopb
