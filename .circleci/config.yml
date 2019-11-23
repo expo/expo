@@ -330,7 +330,7 @@ workflows:
           filters:
             branches:
               only:
-                - /.*sdk-\d+/
+                - /.*sdk-\d+-.*/
                 - /.*all-ci.*/
       - client_android_apk_release:
           requires:
