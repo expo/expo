@@ -2,6 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '10.0'
 
 target '${TARGET_NAME}' do
+pod 'Helpshift', '7.6.2', :inhibit_warnings => true
 ${EXPOKIT_DEPENDENCY}
 ${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
 ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
