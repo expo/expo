@@ -52,11 +52,8 @@ export default function App() {
 ```js
 import * as Brightness from 'expo-brightness';
 ```
+**[Methods](#methods)**
 
-### Methods
-
-- [`Brightness.requestPermissionsAsync()`](#brightnessrequestpermissionsasync)
-- [`Brightness.getPermissionsAsync()`](#brightnessgetpermissionsasync)
 - [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
 - [`Brightness.setBrightnessAsync(brightnessValue)`](#brightnesssetbrightnessasyncbrightnessvalue)
 - [`Brightness.useSystemBrightnessAsync()`](#brightnessusesystembrightnessasync)
@@ -66,13 +63,11 @@ import * as Brightness from 'expo-brightness';
 - [`Brightness.getSystemBrightnessModeAsync()`](#brightnessgetsystembrightnessmodeasync)
 - [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#brightnesssetsystembrightnessmodeasyncbrightnessmode)
 
-### Enum Types
+**[Enum Types](#enum-types)**
 
 - [`Brightness.BrightnessMode`](#brightnessbrightnessmode)
 
-### Errors
-
-- [Error Codes](#error-codes)
+**[Error Codes](#error-codes-6)**
 
 ## Methods
 

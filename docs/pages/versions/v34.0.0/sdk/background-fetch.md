@@ -16,6 +16,13 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as BackgroundFetch from 'expo-background-fetch';
 ```
 
+**Methods**
+
+- [`BackgroundFetch.getStatusAsync()`](#backgroundfetchgetstatusasync)
+- [`BackgroundFetch.registerTaskAsync(taskName, options)`](#backgroundfetchregistertaskasynctaskname-options)
+- [`BackgroundFetch.unregisterTaskAsync(taskName)`](#backgroundfetchunregistertaskasynctaskname)
+- [`BackgroundFetch.setMinimumIntervalAsync(minimumInterval)`](#backgroundfetchsetminimumintervalasyncminimuminterval)
+
 ### `BackgroundFetch.getStatusAsync()`
 
 Gets a status of background fetch.

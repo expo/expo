@@ -98,6 +98,13 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
+**Methods**
+
+- [`Accelerometer.isAvailableAsync()`](#accelerometerisavailableasync)
+- [`Accelerometer.addListener(listener)`](#accelerometeraddlistener)
+- [`Accelerometer.removeAllListeners()`](#accelerometerremovealllisteners)
+- [`Accelerometer.setUpdateInterval(intervalMs)`](#accelerometersetupdateintervalintervalms)
+
 ### `Accelerometer.isAvailableAsync()`
 
 > You should always check the sensor availability before attempting to use it.
