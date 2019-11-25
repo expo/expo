@@ -4,6 +4,19 @@ export declare enum MediaTypeOptions {
     Videos = "Videos",
     Images = "Images"
 }
+export declare enum VideoExportPreset {
+    Passthrough = 0,
+    LowQuality = 1,
+    MediumQuality = 2,
+    HighestQuality = 3,
+    H264_640x480 = 4,
+    H264_960x540 = 5,
+    H264_1280x720 = 6,
+    H264_1920x1080 = 7,
+    H264_3840x2160 = 8,
+    HEVC_1920x1080 = 9,
+    HEVC_3840x2160 = 10
+}
 export declare type ImageInfo = {
     uri: string;
     width: number;
@@ -27,6 +40,7 @@ export declare type ImagePickerOptions = {
     mediaTypes?: MediaTypeOptions;
     exif?: boolean;
     base64?: boolean;
+    videoExportPreset?: VideoExportPreset;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
