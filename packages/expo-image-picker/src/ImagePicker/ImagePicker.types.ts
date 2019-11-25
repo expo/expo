@@ -4,7 +4,7 @@ export enum MediaTypeOptions {
   All = 'All',
   Videos = 'Videos',
   Images = 'Images',
-} 
+}
 
 export enum VideoExportPreset {
   Passthrough = 0,
