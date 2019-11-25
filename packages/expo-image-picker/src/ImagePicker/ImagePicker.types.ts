@@ -36,14 +36,14 @@ export type ImagePickerOptions = {
   aspect?: [number, number];
   quality?: number;
   allowsMultipleSelection?: boolean;
-  mediaTypes?: typeof MediaTypeOptions[keyof typeof MediaTypeOptions];
+  mediaTypes?: MediaTypeOptions;
   exif?: boolean;
   base64?: boolean;
   exportPreset?: ExportPreset;
 };
 
 export type OpenFileBrowserOptions = {
-  mediaTypes: typeof MediaTypeOptions[keyof typeof MediaTypeOptions];
+  mediaTypes: MediaTypeOptions;
   capture?: boolean;
   allowsMultipleSelection: boolean;
 };

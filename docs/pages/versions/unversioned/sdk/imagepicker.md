@@ -74,7 +74,7 @@ Display the system UI for choosing an image or a video from the phone's library.
 
   Option for videos:
 
-  - **exportPreset (_[ImagePicker.ExportPreset](#imagepickerexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset, which will be used to compress selected video. Defaults to `ImagePicker.ExportPreset.Passthrough`.
+  - **exportPreset (_[ImagePicker.ExportPreset](#imagepickerexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.ExportPreset.Passthrough`.
 
 **Animated GIFs support** If the selected image is an animated GIF, the result image will be an animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`. Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the result (on Android the result will be a PNG, on iOS — GIF).
 
@@ -106,7 +106,7 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   Option for videos:
 
-  - **exportPreset (_[ImagePicker.ExportPresets](#imagepickerexportpresets)_)** -- **Available on iOS 11+ only.** Specify preset, which will be used to compress selected video. Defaults to `ImagePicker.ExportPresets.Passthrough`.
+  - **exportPreset (_[ImagePicker.ExportPresets](#imagepickerexportpresets)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.ExportPresets.Passthrough`.
 
 #### Returns
 

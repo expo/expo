@@ -400,6 +400,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 {
   NSURL *videoURL = info[UIImagePickerControllerMediaURL] ?: info[UIImagePickerControllerReferenceURL];
   if (videoURL == nil) {
+    // not calling completionHandler here, as it's only purpose is to resolve the promise and we rejected it right here
     self.reject(@"E_COULDNT_OPEN_FILE", @"Couldn't open video", nil);
     return;
   }
