@@ -15,7 +15,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `react-native-view-shot` updated from `2.6.0` to `3.0.2`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
 - `react-native-webview` updated from `7.0.5` to `7.4.3`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
 - `react-native-safe-area-context` updated from `0.5.0` to `0.6.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
-- `react-native-screens` updated from `1.0.0-alpha.23` to `2.0.0-alpha.11`. ([#6258](https://github.com/expo/expo/pull/6258) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-screens` updated from `1.0.0-alpha.23` to `2.0.0-alpha.12`. ([#6258](https://github.com/expo/expo/pull/6258) by [@sjchmiela](https://github.com/sjchmiela) and [#6357](https://github.com/expo/expo/pull/6357) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
