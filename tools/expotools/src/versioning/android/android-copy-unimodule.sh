@@ -41,4 +41,6 @@ java -jar $TOOLS_DIR/android-manifest-merger-3898d3a.jar \
      --out $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml \
      --log WARNING
 
+rm $UNIMODULE_MANIFEST_PATH
+
 popd
