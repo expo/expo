@@ -18,7 +18,13 @@ UM_EXPORT_MODULE(ExpoBattery);
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"isSupported": @YES };
+  BOOL _isSupported = YES;
+  
+  #if TARGET_OS_SIMULATOR
+    _isSupported = NO;
+  #endif
+  
+  return @{ @"isSupported": @(_isSupported) };
 }
 
 - (dispatch_queue_t)methodQueue
