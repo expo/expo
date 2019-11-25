@@ -6701,7 +6701,7 @@ CACHE_KEYS:
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: ad5a84d3e3d454ff0e6490217ff0487c
-    CHECKSUM: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
+    CHECKSUM: a8da2bebf970af22e4714cc24fc5fab124ee315c
     FILES:
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"

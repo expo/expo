@@ -11,14 +11,14 @@
 #include <ABI36_0_0cxxreact/ABI36_0_0JSBigString.h>
 #include <ABI36_0_0cxxreact/ABI36_0_0JSModulesUnbundle.h>
 
-#ifndef ABI36_0_0RN_EXPORT
-#define ABI36_0_0RN_EXPORT __attribute__((visibility("default")))
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
 namespace ABI36_0_0facebook {
 namespace ABI36_0_0React {
 
-class ABI36_0_0RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
+class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
 public:
   static std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> buildFactory();
 
