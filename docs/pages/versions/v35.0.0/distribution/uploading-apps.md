@@ -66,18 +66,17 @@ To upload your iOS app to TestFlight, run `expo upload:ios`. You can set followi
 
 ### Manually uploading your app
 
-In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using Application loader. In order to do this, there are a few prequisite steps which you may not have followed previously if this is your first app submission to Apple:
+In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
 
 1. Make sure you have logged into iTunes connect at least once with your Apple ID and accepted the terms.
-2. Login to https://appleid.apple.com
-3. Generate an app specific password by going to Accounts > Manage > Generate App Specific Password. Make a note of this password as it will be needed later.
-4. *(optional)* Previously, Application Loader would validate your IPA submission prior to uploading it. If you want to validate the application submission, run `xcrun altool --validate-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`
-5. Run `xcrun altool --upload-app -f path/to/the/standalone-app.ipa -u youremail@apple.com`.
-6. You will be prompted for the app specific password generated in step 3.
+2. Download Transporter from the [App Store](https://apps.apple.com/app/transporter/id1450874784).
+3. Sign in with your Apple ID.
+4. Add the IPA either by dragging it onto the Transporter window or by selecting it from the file dialog opened with **+** or **Add App** button.
+5. Submit the IPA by clicking the **Deliver** button.
 
-This process can take a few minutes. If you're concerned the process is hung up, you can pass the `--verbose` flag to see it working. After this process is complete, you can check the status of your app submission to TestFlight in App Store Connect (http://appstoreconnect.apple.com):
+This process can take a few minutes. After this process is complete, you can check the status of your app submission to TestFlight in [App Store Connect](https://appstoreconnect.apple.com):
 
-1. Login to http://appstoreconnect.apple.com with your Apple ID and regular password (NOT your app specific password)
+1. Login to https://appstoreconnect.apple.com with your Apple ID and regular password (NOT your app specific password)
 2. Select 'My Apps' and you should see your app listed.
 3. Click 'TestFlight' from the menu bar at the top.
 4. This will show your current app builds that are available for testing.
