@@ -60,7 +60,7 @@ Display the system UI for choosing an image or a video from the phone's library.
 
   A map of options for both:
 
-  - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)]_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
+  - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image/video after it is picked. Images: On Android the user can crop and rotate the image and on iOS simply crop it. Videos: On iOS user can trim the video. Defaults to `false`.
   - **allowsMultipleSelection (_boolean_)** -- (Web only) Whether or not to allow selecting multiple media files at once.
 
@@ -74,7 +74,7 @@ Display the system UI for choosing an image or a video from the phone's library.
 
   Option for videos:
 
-  - **exportPreset (_[ImagePicker.ExportPreset](#imagepickerexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.ExportPreset.Passthrough`.
+  - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
 
 **Animated GIFs support** If the selected image is an animated GIF, the result image will be an animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`. Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the result (on Android the result will be a PNG, on iOS — GIF).
 
@@ -94,7 +94,7 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   A map of options:
 
-  - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_])** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
+  - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image after it is picked. On Android the user can crop and rotate the image and on iOS simply crop it. Defaults to `false`.
 
   A map of options for images:
@@ -106,7 +106,7 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   Option for videos:
 
-  - **exportPreset (_[ImagePicker.ExportPresets](#imagepickerexportpresets)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.ExportPresets.Passthrough`.
+  - **videoExportPreset (_[ImagePicker.VideoExportPreset](#imagepickervideoexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset which will be used to compress selected video. Defaults to `ImagePicker.VideoExportPreset.Passthrough`.
 
 #### Returns
 
@@ -130,7 +130,7 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
-## Constants
+## Enums
 
 ### `ImagePicker.MediaTypeOptions`
 
@@ -140,20 +140,18 @@ When you run this example and pick an image, you will see the image that you pic
 | `MediaTypeOptions.Images` | Only images        | both      |
 | `MediaTypeOptions.Videos` | Only videos        | both      |
 
-## Enums
+### `ImagePicker.VideoExportPreset`
 
-### `ImagePicker.ExportPreset`
-
-| Preset                        | Value | Resolution            | Video compression algorithm | Audio compression algorithm |
-| ----------------------------- | ----- | --------------------- | --------------------------- | --------------------------- |
-| `ExportPreset.Passthrough`    | 0     | Unchanged             | None                        | None                        |
-| `ExportPreset.LowQuality`     | 1     | Depends on the device | H.264                       | AAC                         |
-| `ExportPreset.MediumQuality`  | 2     | Depends on the device | H.264                       | AAC                         |
-| `ExportPreset.HighestQuality` | 3     | Depends on the device | H.264                       | AAC                         |
-| `ExportPreset.H264_640x480`   | 4     | 640 x 480             | H.264                       | AAC                         |
-| `ExportPreset.H264_960x540`   | 5     | 960 x 540             | H.264                       | AAC                         |
-| `ExportPreset.H264_1280x720`  | 6     | 1280 x 720            | H.264                       | AAC                         |
-| `ExportPreset.H264_1920x1080` | 7     | 1920 x 1080           | H.264                       | AAC                         |
-| `ExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
-| `ExportPreset.HEVC1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
-| `ExportPreset.HEVC3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+| Preset                             | Value | Resolution            | Video compression algorithm | Audio compression algorithm |
+| ---------------------------------- | ----- | --------------------- | --------------------------- | --------------------------- |
+| `VideoExportPreset.Passthrough`    | 0     | Unchanged             | None                        | None                        |
+| `VideoExportPreset.LowQuality`     | 1     | Depends on the device | H.264                       | AAC                         |
+| `VideoExportPreset.MediumQuality`  | 2     | Depends on the device | H.264                       | AAC                         |
+| `VideoExportPreset.HighestQuality` | 3     | Depends on the device | H.264                       | AAC                         |
+| `VideoExportPreset.H264_640x480`   | 4     | 640 x 480             | H.264                       | AAC                         |
+| `VideoExportPreset.H264_960x540`   | 5     | 960 x 540             | H.264                       | AAC                         |
+| `VideoExportPreset.H264_1280x720`  | 6     | 1280 x 720            | H.264                       | AAC                         |
+| `VideoExportPreset.H264_1920x1080` | 7     | 1920 x 1080           | H.264                       | AAC                         |
+| `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
+| `VideoExportPreset.HEVC1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
+| `VideoExportPreset.HEVC3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |

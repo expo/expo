@@ -172,7 +172,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
     
     if (@available(iOS 11.0, *)) {
-      self.picker.videoExportPreset = [self importExportPreset:self.options[@"exportPreset"]];
+      self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
     }
     
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
@@ -607,7 +607,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 }
 
 
-- (NSString *)importExportPreset:(NSNumber *)preset API_AVAILABLE(ios(11));
+- (NSString *)importVideoExportPreset:(NSNumber *)preset API_AVAILABLE(ios(11));
 {
   static NSDictionary* presetsMap = nil;
   if (!presetsMap) {

@@ -87,7 +87,7 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
         it('exporPreset should affect video dimensions', async () => {
           const video = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-            exportPreset: ImagePicker.ExportPreset.H264_640x480,
+            videoExportPreset: ImagePicker.VideoExportPreset.H264_640x480,
           });
 
           testMediaObjectShape(video, 'video');

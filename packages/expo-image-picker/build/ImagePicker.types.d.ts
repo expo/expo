@@ -1,10 +1,10 @@
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-export declare const MediaTypeOptions: {
-    readonly All: "All";
-    readonly Videos: "Videos";
-    readonly Images: "Images";
-};
-export declare enum ExportPreset {
+export declare enum MediaTypeOptions {
+    All = "All",
+    Videos = "Videos",
+    Images = "Images"
+}
+export declare enum VideoExportPreset {
     Passthrough = 0,
     LowQuality = 1,
     MediumQuality = 2,
@@ -37,13 +37,13 @@ export declare type ImagePickerOptions = {
     aspect?: [number, number];
     quality?: number;
     allowsMultipleSelection?: boolean;
-    mediaTypes?: typeof MediaTypeOptions[keyof typeof MediaTypeOptions];
+    mediaTypes?: MediaTypeOptions;
     exif?: boolean;
     base64?: boolean;
-    exportPreset?: ExportPreset;
+    videoExportPreset?: VideoExportPreset;
 };
 export declare type OpenFileBrowserOptions = {
-    mediaTypes: typeof MediaTypeOptions[keyof typeof MediaTypeOptions];
+    mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
 };

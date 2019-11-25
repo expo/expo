@@ -1,22 +1,23 @@
 import { PermissionStatus } from 'unimodules-permissions-interface';
-export const MediaTypeOptions = {
-    All: 'All',
-    Videos: 'Videos',
-    Images: 'Images',
-};
-export var ExportPreset;
-(function (ExportPreset) {
-    ExportPreset[ExportPreset["Passthrough"] = 0] = "Passthrough";
-    ExportPreset[ExportPreset["LowQuality"] = 1] = "LowQuality";
-    ExportPreset[ExportPreset["MediumQuality"] = 2] = "MediumQuality";
-    ExportPreset[ExportPreset["HighestQuality"] = 3] = "HighestQuality";
-    ExportPreset[ExportPreset["H264_640x480"] = 4] = "H264_640x480";
-    ExportPreset[ExportPreset["H264_960x540"] = 5] = "H264_960x540";
-    ExportPreset[ExportPreset["H264_1280x720"] = 6] = "H264_1280x720";
-    ExportPreset[ExportPreset["H264_1920x1080"] = 7] = "H264_1920x1080";
-    ExportPreset[ExportPreset["H264_3840x2160"] = 8] = "H264_3840x2160";
-    ExportPreset[ExportPreset["HEVC_1920x1080"] = 9] = "HEVC_1920x1080";
-    ExportPreset[ExportPreset["HEVC_3840x2160"] = 10] = "HEVC_3840x2160";
-})(ExportPreset || (ExportPreset = {}));
+export var MediaTypeOptions;
+(function (MediaTypeOptions) {
+    MediaTypeOptions["All"] = "All";
+    MediaTypeOptions["Videos"] = "Videos";
+    MediaTypeOptions["Images"] = "Images";
+})(MediaTypeOptions || (MediaTypeOptions = {}));
+export var VideoExportPreset;
+(function (VideoExportPreset) {
+    VideoExportPreset[VideoExportPreset["Passthrough"] = 0] = "Passthrough";
+    VideoExportPreset[VideoExportPreset["LowQuality"] = 1] = "LowQuality";
+    VideoExportPreset[VideoExportPreset["MediumQuality"] = 2] = "MediumQuality";
+    VideoExportPreset[VideoExportPreset["HighestQuality"] = 3] = "HighestQuality";
+    VideoExportPreset[VideoExportPreset["H264_640x480"] = 4] = "H264_640x480";
+    VideoExportPreset[VideoExportPreset["H264_960x540"] = 5] = "H264_960x540";
+    VideoExportPreset[VideoExportPreset["H264_1280x720"] = 6] = "H264_1280x720";
+    VideoExportPreset[VideoExportPreset["H264_1920x1080"] = 7] = "H264_1920x1080";
+    VideoExportPreset[VideoExportPreset["H264_3840x2160"] = 8] = "H264_3840x2160";
+    VideoExportPreset[VideoExportPreset["HEVC_1920x1080"] = 9] = "HEVC_1920x1080";
+    VideoExportPreset[VideoExportPreset["HEVC_3840x2160"] = 10] = "HEVC_3840x2160";
+})(VideoExportPreset || (VideoExportPreset = {}));
 export { PermissionStatus };
 //# sourceMappingURL=ImagePicker.types.js.map

@@ -1,8 +1,8 @@
-import { ImagePickerResult, MediaTypeOptions, ImagePickerOptions, PermissionResponse, ExportPreset } from './ImagePicker.types';
+import { ImagePickerResult, MediaTypeOptions, ImagePickerOptions, PermissionResponse, VideoExportPreset } from './ImagePicker.types';
 export declare function getCameraPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getCameraRollPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestCameraPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestCameraRollPermissionsAsync(): Promise<PermissionResponse>;
 export declare function launchImageLibraryAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
 export declare function launchCameraAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ExportPreset };
+export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, VideoExportPreset };
