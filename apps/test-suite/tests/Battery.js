@@ -5,20 +5,28 @@ import { Platform } from '@unimodules/core';
 export const name = 'Battery';
 
 export async function test({ describe, it, expect, jasmine }) {
-  const isSupported = Device.isDevice || Platform.OS === 'android';
+  const isExpectedToSupport = Device.isDevice || Platform.OS === 'android';
 
-  describe(`isSupported`, () => {
+  describe(`isAvailableAsync`, () => {
     it(
-      isSupported
-        ? `should be true for android or ios devices`
-        : `should be false on ios simulator`,
-      () => {
-        expect(Battery.isSupported).toEqual(isSupported);
+      isExpectedToSupport
+        ? `should be true for Android or iOS devices`
+        : `should be false on iOS simulator`,
+      async () => {
+        expect(await Battery.isAvailableAsync()).toEqual(isExpectedToSupport);
       }
     );
   });
 
-  if (isSupported) {
+  describe(`isSupported (deprecated)`, () => {
+    it('should be equal to the result of isAvailableAsync()', async () => {
+      expect(await Battery.isAvailableAsync()).toEqual(Battery.isSupported);
+    });
+  });
+
+  const isAvailable = await Battery.isAvailableAsync();
+
+  if (isAvailable) {
     describe(`getBatteryLevelAsync()`, () => {
       it(`returns a number between 0 and 1`, async () => {
         let batteryLevel = await Battery.getBatteryLevelAsync();
