@@ -23,8 +23,8 @@ class PermissionsInternalModule(val context: Context): InternalModule, Permissio
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     val activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
         ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
-    val activityDelegate = AwareActivityDelegate(activityProvider, PERMISSIONS_REQUEST)
-    val askedPermissionsCache = SharedPreferencesCacheDelegate(context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE))
+    val activityDelegate = PermissionsAwareActivityDelegate(activityProvider, PERMISSIONS_REQUEST)
+    val askedPermissionsCache = SharedPreferencesPermissionCache(context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE))
     mPermissionsService = PermissionsService(context, askedPermissionsCache, activityDelegate)
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(mPermissionsService as LifecycleEventListener)
   }

@@ -8,10 +8,10 @@ import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import org.unimodules.core.interfaces.ActivityProvider
 
-class AwareActivityDelegate(val activityProvider: ActivityProvider, val requestCode: Int) : ActivityDelegate {
+class PermissionsAwareActivityDelegate(val activityProvider: ActivityProvider, val requestCode: Int) : PermissionsActivityDelegate {
 
-  override fun getApplicationContext(): Context {
-    return activityProvider.currentActivity.applicationContext
+  override fun getApplicationContext(): Context? {
+    return activityProvider.currentActivity?.applicationContext
   }
 
   override fun canAskAgain(permission: String): Boolean {
@@ -21,18 +21,19 @@ class AwareActivityDelegate(val activityProvider: ActivityProvider, val requestC
   }
 
   override fun getPermission(permission: String): Int {
-    activityProvider.currentActivity?.let {
+    return activityProvider.currentActivity?.let {
       if (it is PermissionAwareActivity) {
-        return ContextCompat.checkSelfPermission(it, permission)
+        ContextCompat.checkSelfPermission(it, permission)
+      } else {
+        PackageManager.PERMISSION_DENIED
       }
-    }
-    return PackageManager.PERMISSION_DENIED
+    } ?: PackageManager.PERMISSION_DENIED
   }
 
   override fun askForPermissions(permissions: Array<out String>, listener: PermissionListener) {
-    activityProvider.currentActivity?.run {
-      if (this is PermissionAwareActivity) {
-        this.requestPermissions(permissions, requestCode, listener)
+    activityProvider.currentActivity?.let {
+      if (it is PermissionAwareActivity) {
+        it.requestPermissions(permissions, requestCode, listener)
       } else {
         listener.onRequestPermissionsResult(requestCode, permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED })
       }

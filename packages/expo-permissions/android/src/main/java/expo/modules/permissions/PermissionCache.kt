@@ -1,6 +1,6 @@
 package expo.modules.permissions
 
-interface PermissionsCacheDelegate {
+interface PermissionCache {
 
   fun contains(permission: String): Boolean
 

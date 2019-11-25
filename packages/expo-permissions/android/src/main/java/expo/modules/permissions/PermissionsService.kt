@@ -22,8 +22,8 @@ private const val PERMISSIONS_REQUEST: Int = 13
 internal const val ERROR_TAG = "E_PERMISSIONS"
 
 class PermissionsService(val context: Context,
-                         private val mAskedPermissionsCache: PermissionsCacheDelegate,
-                         private val mActivityDelegate: ActivityDelegate) : Permissions, LifecycleEventListener {
+                         private val mAskedPermissionCache: PermissionCache,
+                         private val mPermissionsActivityDelegate: PermissionsActivityDelegate) : Permissions, LifecycleEventListener {
 
   // state holders for asking for writing permissions
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
@@ -90,7 +90,7 @@ class PermissionsService(val context: Context,
         mAskAsyncListener = newListener
         mAskAsyncRequestedPermissions = permissionsToAsk
 
-        mAskedPermissionsCache.add(listOf(Manifest.permission.WRITE_SETTINGS))
+        mAskedPermissionCache.add(listOf(Manifest.permission.WRITE_SETTINGS))
         askForWriteSettingsPermissionFirst()
       } else {
         askForManifestPermissions(permissionsToAsk, newListener)
@@ -127,7 +127,7 @@ class PermissionsService(val context: Context,
     return when (permission) {
       // we need to handle this permission in different way
       Manifest.permission.WRITE_SETTINGS -> hasWriteSettingsPermission()
-      else -> mActivityDelegate.getPermission(permission) == PackageManager.PERMISSION_GRANTED
+      else -> mPermissionsActivityDelegate.getPermission(permission) == PackageManager.PERMISSION_GRANTED
     }
   }
 
@@ -142,13 +142,13 @@ class PermissionsService(val context: Context,
   private fun getPermissionResponseFromNativeResponse(permission: String, result: Int): PermissionsResponse {
     val status = when {
       result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
-      mAskedPermissionsCache.contains(permission) -> PermissionsStatus.DENIED
+      mAskedPermissionCache.contains(permission) -> PermissionsStatus.DENIED
       else -> PermissionsStatus.UNDETERMINED
     }
     return PermissionsResponse(
         status,
         if (status == PermissionsStatus.DENIED) {
-          mActivityDelegate.canAskAgain(permission)
+          mPermissionsActivityDelegate.canAskAgain(permission)
         } else {
           true
         }
@@ -162,8 +162,8 @@ class PermissionsService(val context: Context,
    * @param permissions [android.Manifest.permission]
    */
   private fun askForManifestPermissions(permissions: Array<out String>, listener: PermissionsResponseListener) {
-    mAskedPermissionsCache.add(permissions.toList())
-    mActivityDelegate.askForPermissions(permissions, PermissionListener { requestCode, receivePermissions, grantResults ->
+    mAskedPermissionCache.add(permissions.toList())
+    mPermissionsActivityDelegate.askForPermissions(permissions, PermissionListener { requestCode, receivePermissions, grantResults ->
       if (requestCode == PERMISSIONS_REQUEST) {
         listener.onResult(parseNativeResult(receivePermissions, grantResults))
         true
@@ -197,7 +197,7 @@ class PermissionsService(val context: Context,
 
   private fun hasWriteSettingsPermission(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      Settings.System.canWrite(mActivityDelegate.getApplicationContext())
+      Settings.System.canWrite(mPermissionsActivityDelegate.getApplicationContext())
     } else {
       true
     }
