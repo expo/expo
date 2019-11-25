@@ -4,17 +4,16 @@ import * as Crypto from 'expo-crypto';
 
 export default function App() {
   useEffect(() => {
+    (async () => {
+      const digest = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        'Github stars are neat 🌟'
+      );
+      console.log('Digest: ', digest);
+      /* Some crypto operation... */
+    })();
     runCrypto();
   }, []);
-
-  const runCrypto = async () => {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      'Github stars are neat 🌟'
-    );
-    console.log('Digest: ', digest);
-    /* Some crypto operation... */
-  };
 
   return (
     <View

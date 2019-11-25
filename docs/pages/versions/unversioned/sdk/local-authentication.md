@@ -1,5 +1,6 @@
 ---
 title: LocalAuthentication
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-local-authentication"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';

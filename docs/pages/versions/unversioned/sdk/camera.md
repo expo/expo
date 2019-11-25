@@ -1,6 +1,9 @@
 ---
 title: Camera
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-camera"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
@@ -22,65 +25,61 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 
 ## Usage
 
-### Basic Example
+<SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-camera']}>
 
-```javascript
-import React from 'react';
+```js
+import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import { Camera } from 'expo-camera';
+import { Camera } from 'expo-camera'; 
 
-export default class CameraExample extends React.Component {
-  state = {
-    hasCameraPermission: null,
-    type: Camera.Constants.Type.back,
-  };
+export default function App() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
 
-  async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
   }
-
-  render() {
-    const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
-      return <View />;
-    } else if (hasCameraPermission === false) {
-      return <Text>No access to camera</Text>;
-    } else {
-      return (
-        <View style={{ flex: 1 }}>
-          <Camera style={{ flex: 1 }} type={this.state.type}>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'transparent',
-                flexDirection: 'row',
-              }}>
-              <TouchableOpacity
-                style={{
-                  flex: 0.1,
-                  alignSelf: 'flex-end',
-                  alignItems: 'center',
-                }}
-                onPress={() => {
-                  this.setState({
-                    type:
-                      this.state.type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back,
-                  });
-                }}>
-                <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
-              </TouchableOpacity>
-            </View>
-          </Camera>
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+  return (
+    <View style={{ flex: 1 }}>
+      <Camera style={{ flex: 1 }} type={type}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent',
+            flexDirection: 'row',
+          }}>
+          <TouchableOpacity
+            style={{
+              flex: 0.1,
+              alignSelf: 'flex-end',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}>
+            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+          </TouchableOpacity>
         </View>
-      );
-    }
-  }
+      </Camera>
+    </View>
+  );
 }
 ```
+</SnackInline>
 
 ### Comprehensive Example
 

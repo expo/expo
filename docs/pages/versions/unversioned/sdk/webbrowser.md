@@ -1,5 +1,6 @@
 ---
 title: WebBrowser
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-web-browser"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';

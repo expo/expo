@@ -1,5 +1,6 @@
 ---
 title: ViewPager
+sourceCodeUrl: "https://github.com/react-native-community/react-native-viewpager"
 ---
 
 A component that provides the layout and gestures to scroll between pages of content, like a carousel.

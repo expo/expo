@@ -4,16 +4,14 @@ import * as Calendar from 'expo-calendar';
 
 export default function App() {
   useEffect(() => {
-    checkPermissions();
+    (async () => {
+      const { status } = await Calendar.requestPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync();
+        console.log({ calendars });
+      }
+    })();
   }, []);
-
-  const checkPermissions = async () => {
-    const { status } = await Calendar.requestPermissionsAsync();
-    if (status === 'granted') {
-      const calendars = await Calendar.getCalendarsAsync();
-      console.log({ calendars });
-    }
-  };
 
   return (
     <View
