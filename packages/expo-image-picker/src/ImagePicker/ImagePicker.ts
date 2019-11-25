@@ -6,7 +6,7 @@ import {
   MediaTypeOptions,
   ImagePickerOptions,
   PermissionResponse,
-  ExportPresets,
+  ExportPreset,
 } from './ImagePicker.types';
 
 export async function getCameraPermissionsAsync(): Promise<PermissionResponse> {
@@ -43,4 +43,4 @@ export async function launchCameraAsync(
   return await ExponentImagePicker.launchCameraAsync(options);
 }
 
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ExportPresets };
+export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ExportPreset };

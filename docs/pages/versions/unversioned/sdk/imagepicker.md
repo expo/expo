@@ -74,7 +74,7 @@ Display the system UI for choosing an image or a video from the phone's library.
 
   Option for videos:
 
-  - **exportPreset (_[ImagePicker.ExportPresets](#imagepickerexportpresets)_)** -- **Available on iOS 11+ only.** Specify preset, which will be used to compress selected video. Defaults to `ImagePicker.ExportPresets.Passthrough`.
+  - **exportPreset (_[ImagePicker.ExportPreset](#imagepickerexportpreset)_)** -- **Available on iOS 11+ only.** Specify preset, which will be used to compress selected video. Defaults to `ImagePicker.ExportPreset.Passthrough`.
 
 **Animated GIFs support** If the selected image is an animated GIF, the result image will be an animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`. Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the result (on Android the result will be a PNG, on iOS — GIF).
 
@@ -140,19 +140,20 @@ When you run this example and pick an image, you will see the image that you pic
 | `MediaTypeOptions.Images` | Only images        | both      |
 | `MediaTypeOptions.Videos` | Only videos        | both      |
 
-### `ImagePicker.ExportPresets`
+## Enums
 
-| Preset                         | Resolution            | Video compression algorithm | Audio compression algorithm |
-| ------------------------------ | --------------------- | --------------------------- | --------------------------- |
-| `ExportPresets.Passthrough`    | Unchanged             | None                        | None                        |
-| `ExportPresets.LowQuality`     | Depends on the device | H.264                       | AAC                         |
-| `ExportPresets.MediumQuality`  | Depends on the device | H.264                       | AAC                         |
-| `ExportPresets.HighestQuality` | Depends on the device | H.264                       | AAC                         |
-| `ExportPresets.H264_640x480`   | 640 x 480             | H.264                       | AAC                         |
-| `ExportPresets.H264_960x540`   | 960 x 540             | H.264                       | AAC                         |
-| `ExportPresets.H264_1280x720`  | 1280 x 720            | H.264                       | AAC                         |
-| `ExportPresets.H264_1920x1080` | 1920 x 1080           | H.264                       | AAC                         |
-| `ExportPresets.H264_1920x1080` | 1920 x 1080           | H.264                       | AAC                         |
-| `ExportPresets.H264_3840x2160` | 3840 x 2160           | H.264                       | AAC                         |
-| `ExportPresets.HEVC1920x1080`  | 1920 x 1080           | HEVC                        | AAC                         |
-| `ExportPresets.HEVC3840x2160`  | 3840 x 2160           | HEVC                        | AAC                         |
+### `ImagePicker.ExportPreset`
+
+| Preset                        | Value | Resolution            | Video compression algorithm | Audio compression algorithm |
+| ----------------------------- | ----- | --------------------- | --------------------------- | --------------------------- |
+| `ExportPreset.Passthrough`    | 0     | Unchanged             | None                        | None                        |
+| `ExportPreset.LowQuality`     | 1     | Depends on the device | H.264                       | AAC                         |
+| `ExportPreset.MediumQuality`  | 2     | Depends on the device | H.264                       | AAC                         |
+| `ExportPreset.HighestQuality` | 3     | Depends on the device | H.264                       | AAC                         |
+| `ExportPreset.H264_640x480`   | 4     | 640 x 480             | H.264                       | AAC                         |
+| `ExportPreset.H264_960x540`   | 5     | 960 x 540             | H.264                       | AAC                         |
+| `ExportPreset.H264_1280x720`  | 6     | 1280 x 720            | H.264                       | AAC                         |
+| `ExportPreset.H264_1920x1080` | 7     | 1920 x 1080           | H.264                       | AAC                         |
+| `ExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
+| `ExportPreset.HEVC1920x1080`  | 9     | 1920 x 1080           | HEVC                        | AAC                         |
+| `ExportPreset.HEVC3840x2160`  | 10    | 3840 x 2160           | HEVC                        | AAC                         |

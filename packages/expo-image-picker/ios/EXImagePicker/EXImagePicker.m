@@ -172,7 +172,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
     
     if (@available(iOS 11.0, *)) {
-      self.picker.videoExportPreset = [self mapJSPresetToNativePreset:self.options[@"exportPreset"]];
+      self.picker.videoExportPreset = [self importExportPreset:self.options[@"exportPreset"]];
     }
     
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
@@ -606,15 +606,15 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 }
 
 
-- (NSString *)mapJSPresetToNativePreset:(NSNumber *)preset API_AVAILABLE(ios(11));
+- (NSString *)importExportPreset:(NSNumber *)preset API_AVAILABLE(ios(11));
 {
   static NSDictionary* presetsMap = nil;
   if (!presetsMap) {
     presetsMap = @{
-        @0: AVAssetExportPresetLowQuality,
-        @1: AVAssetExportPresetMediumQuality,
-        @2: AVAssetExportPresetHighestQuality,
-        @3: AVAssetExportPresetPassthrough,
+        @0: AVAssetExportPresetPassthrough,
+        @1: AVAssetExportPresetLowQuality,
+        @2: AVAssetExportPresetMediumQuality,
+        @3: AVAssetExportPresetHighestQuality,
         @4: AVAssetExportPreset640x480,
         @5: AVAssetExportPreset960x540,
         @6: AVAssetExportPreset1280x720,

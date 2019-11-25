@@ -4,11 +4,11 @@ export declare const MediaTypeOptions: {
     readonly Videos: "Videos";
     readonly Images: "Images";
 };
-export declare enum ExportPresets {
-    LowQuality = 0,
-    MediumQuality = 1,
-    HighestQuality = 2,
-    Passthrough = 3,
+export declare enum ExportPreset {
+    Passthrough = 0,
+    LowQuality = 1,
+    MediumQuality = 2,
+    HighestQuality = 3,
     H264_640x480 = 4,
     H264_960x540 = 5,
     H264_1280x720 = 6,
@@ -40,7 +40,7 @@ export declare type ImagePickerOptions = {
     mediaTypes?: typeof MediaTypeOptions[keyof typeof MediaTypeOptions];
     exif?: boolean;
     base64?: boolean;
-    exportPreset?: typeof ExportPresets[keyof typeof ExportPresets];
+    exportPreset?: ExportPreset;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: typeof MediaTypeOptions[keyof typeof MediaTypeOptions];
