@@ -14,13 +14,11 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Battery from 'expo-battery';
 ```
 
-Note: On iOS simulators, battery monitoring is not possible. You can confirm by checking [`Battery.isSupported`](#batteryissupported).
-
-### Properties
-- [`Battery.isSupported`](#batteryissupported)
+Note: On iOS simulators, battery monitoring is not possible. You can confirm by running [`Battery.isAvailableAsync()`](#batteryisavailableasync).
 
 ### Methods
 
+- [`Battery.isAvailableAsync`](#batteryisavailableasync)
 - [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
 - [`Battery.getBatteryStateAsync()`](#batterygetbatterystateasync)
 - [`Battery.isLowPowerModeEnabledAsync()`](#batteryislowpowermodeenabledasync)
@@ -40,13 +38,11 @@ Note: On iOS simulators, battery monitoring is not possible. You can confirm by 
 
 - [Error Codes](#error-codes)
 
-## Properties
-
-### `Battery.isSupported`
-
-Shows whether this battery API is supported on the current device. The value of this property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web, it depends on whether the browser supports the web battery API.
-
 ## Methods
+
+### `Battery.isAvailableAsync()`
+
+Resolves with whether this battery API is available on the current device. The value of this property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web, it depends on whether the browser supports the web battery API.
 
 ### `Battery.getBatteryLevelAsync()`
 
