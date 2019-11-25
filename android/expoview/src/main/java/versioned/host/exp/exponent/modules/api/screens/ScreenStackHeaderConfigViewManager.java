@@ -52,6 +52,12 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
     return true;
   }
 
+  @Override
+  protected void onAfterUpdateTransaction(ScreenStackHeaderConfig parent) {
+    super.onAfterUpdateTransaction(parent);
+    parent.onUpdate();
+  }
+
   @ReactProp(name = "title")
   public void setTitle(ScreenStackHeaderConfig config, String title) {
     config.setTitle(title);

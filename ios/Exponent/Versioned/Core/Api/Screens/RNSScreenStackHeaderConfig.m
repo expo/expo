@@ -66,13 +66,36 @@
   return _reactSubviews;
 }
 
-- (UIViewController*)screen
+- (UIView *)reactSuperview
 {
-  UIView *superview = self.superview;
-  if ([superview isKindOfClass:[RNSScreenView class]]) {
-    return ((RNSScreenView *)superview).controller;
+  return _screenView;
+}
+
+- (void)removeFromSuperview
+{
+  [super removeFromSuperview];
+  _screenView = nil;
+}
+
+- (void)updateViewControllerIfNeeded
+{
+  UIViewController *vc = _screenView.controller;
+  UINavigationController *nav = (UINavigationController*) vc.parentViewController;
+  if (vc != nil && nav.visibleViewController == vc) {
+    [RNSScreenStackHeaderConfig updateViewController:self.screenView.controller withConfig:self];
   }
-  return nil;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+  [self updateViewControllerIfNeeded];
+}
+
+- (void)didUpdateReactSubviews
+{
+  [super didUpdateReactSubviews];
+  [self updateViewControllerIfNeeded];
 }
 
 + (void)setAnimatedConfig:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig *)config
@@ -142,6 +165,11 @@
 }
 
 + (void)willShowViewController:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig *)config
+{
+  [self updateViewController:vc withConfig:config];
+}
+
++ (void)updateViewController:(UIViewController *)vc withConfig:(RNSScreenStackHeaderConfig *)config
 {
   UINavigationItem *navitem = vc.navigationItem;
   UINavigationController *navctr = (UINavigationController *)vc.parentViewController;
