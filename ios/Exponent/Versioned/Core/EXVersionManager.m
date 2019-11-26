@@ -21,6 +21,7 @@
 #import <React/RCTExceptionsManager.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTPackagerConnection.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 
@@ -110,6 +111,11 @@ void EXRegisterScopedModule(Class moduleClass, ...)
       [[NSNotificationCenter defaultCenter]
      postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
   }];
+
+  if ([self _isDevModeEnabledForBridge:bridge]) {
+    // Set the bundle url for the packager connection manually
+    [[RCTPackagerConnection sharedPackagerConnection] setBundleURL:[bridge bundleURL]];
+  }
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
   [[NSNotificationCenter defaultCenter]
