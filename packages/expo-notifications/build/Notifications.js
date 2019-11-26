@@ -140,9 +140,7 @@ export function addOnUserInteractionListener(listener) {
     const subscription = _mailbox.addOnUserInteractionListener(listener);
     if (isItFirstListener) {
         isItFirstListener = true;
-        setTimeout(async () => {
-            ExpoNotifications.flushPendingUserInteractionsAsync();
-        }, 0);
+        setTimeout(ExpoNotifications.flushPendingUserInteractionsAsync, 0);
     }
     return subscription;
 }
