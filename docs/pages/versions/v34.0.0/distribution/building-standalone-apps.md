@@ -88,7 +88,7 @@ If you don't know what this means, let us handle it! :)
 
 ### If you choose to build for iOS
 
-You are given a choice of letting the `expo` client create the
+You are given a choice of letting the Expo client create the
 necessary credentials for you, while still having a chance to provide
 your own overrides. Your Apple ID and password are used locally and
 never saved on Expo's servers.
