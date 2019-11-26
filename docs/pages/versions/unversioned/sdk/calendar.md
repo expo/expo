@@ -2,7 +2,7 @@
 title: Calendar
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-calendar"
 ---
-
+ 
 import SnackInline from '~/components/plugins/SnackInline';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
@@ -15,7 +15,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
 
-## Usage
+## Example Usage
 
 <SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar']}>
 
@@ -56,7 +56,47 @@ export default function App() {
 import * as Calendar from 'expo-calendar';
 ```
 
-> See the bottom of this page for a complete list of all possible fields for the objects used in this API.
+**[Methods](#methods)**
+
+- [`Calendar.getCalendarsAsync(entityType)`](#calendargetcalendarsasyncentitytype)
+- [`Calendar.requestRemindersPermissionsAsync()`](#calendarrequestreminderspermissionsasync)
+- [`Calendar.createCalendarAsync(details)`](#calendarcreatecalendarasyncdetails)
+- [`Calendar.updateCalendarAsync(id, details)`](#calendarupdatecalendarasyncid-details)
+- [`Calendar.deleteCalendarAsync(id)`](#calendardeletecalendarasyncid)
+- [`Calendar.getEventsAsync(calendarIds, startDate, endDate)`](#calendargeteventsasynccalendarids-startdate-enddate)
+- [`Calendar.getEventAsync(id, recurringEventOptions)`](#calendargeteventasyncid-recurringeventoptions)
+- [`Calendar.createEventAsync(calendarId, details)`](#calendarcreateeventasynccalendarid-details)
+- [`Calendar.updateEventAsync(id, details, recurringEventOptions)`](#calendarupdateeventasyncid-details-recurringeventoptions)
+- [`Calendar.deleteEventAsync(id, recurringEventOptions)`](#calendardeleteeventasyncid-recurringeventoptions)
+- [`Calendar.getAttendeesForEventAsync(eventId, recurringEventOptions)`](#calendargetattendeesforeventasynceventid-recurringeventoptions)
+- [`Calendar.createAttendeeAsync(eventId, details)`](#calendarcreateattendeeasynceventid-details)
+- [`Calendar.updateAttendeeAsync(id, details)`](#calendarupdateattendeeasyncid-details)
+- [`Calendar.deleteAttendeeAsync(id)`](#calendardeleteattendeeasyncid)
+- [`Calendar.getRemindersAsync(calendarIds, status, startDate, endDate)`](#calendargetremindersasynccalendarids-status-startdate-enddate)
+- [`Calendar.getReminderAsync(id)`](#calendargetreminderasyncid)
+- [`Calendar.createReminderAsync(calendarId, details)`](#calendarcreatereminderasynccalendarid-details)
+- [`Calendar.updateReminderAsync(id, details)`](#calendarupdatereminderasyncid-details)
+- [`Calendar.deleteReminderAsync(id)`](#calendardeletereminderasyncid)
+- [`Calendar.getSourcesAsync()`](#calendargetsourcesasync)
+- [`Calendar.getSourceAsync(id)`](#calendargetsourceasyncid)
+- [`Calendar.openEventInCalendar(id)`](#calendaropeneventincalendarid)
+
+**[Object Types](#object-types)**
+
+- [`Calendar`](#calendar)
+- [`Event`](#event)
+- [`Reminder`](#reminder-ios-only)
+- [`Attendee`](#attendee)
+- [`RecurrenceRule`](#recurrencerule)
+- [`Alarm`](#alarm)
+- [`Source`](#source)
+
+**[Enum Types](#enum-types)**
+
+- [`Calendar.DayOfTheWeek`](#calendardayoftheweek)
+- [`Calendar.MonthOfTheYear`](#calendarmonthoftheyear)
+
+## Methods
 
 ### `Calendar.getCalendarsAsync(entityType)`
 
@@ -461,7 +501,7 @@ A [source object](#source 'Source') matching the provided ID, if one exists.
 
 - **id (_string_)** -- ID of the event to open. Required.
 
-## List of object properties
+## Object Types
 
 ### Calendar
 
@@ -602,7 +642,7 @@ A source account that owns a particular calendar. Expo apps will typically not n
 | type           | _string_  | both      | Type of account that owns this calendar               | on iOS, one of `Calendar.SourceType.LOCAL`, `Calendar.SourceType.EXCHANGE`, `Calendar.SourceType.CALDAV`, `Calendar.SourceType.MOBILEME`, `Calendar.SourceType.SUBSCRIBED`, or `Calendar.SourceType.BIRTHDAYS` |
 | isLocalAccount | _boolean_ | Android   | Whether this source is the local phone account        |                                                                                                                                                                                                                |
 
-## Enums
+## Enum Types
 
 ### `Calendar.DayOfTheWeek`
 

@@ -11,7 +11,7 @@ Access the device barometer sensor to respond to changes in air pressure. `press
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-sensors`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-sensors).
 
-## Usage
+## Example Usage
 
 <SnackInline label='Basic Barometer usage' templateId='barometer' dependencies={['expo-sensors']}>
 
@@ -75,12 +75,19 @@ export default function App() {
 import { Barometer } from 'expo-sensors';
 ```
 
-| OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
-| ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
-| Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
-| Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
-|         |
+**[Methods](#methods)**
+
+- [`Barometer.isAvailableAsync()`](#barometerisavailableasync)
+- [`Barometer.addListener((data: BarometerMeasurement) => void)`](#barometeraddlistenerdata-barometermeasurement--void)
+- [`Barometer.removeAllListeners`](#barometerremovealllisteners)
+
+**[Types](#types)**
+
+- [`BarometerMeasurement`](#barometermeasurement)
+
+**[Units and Providers](#units-and-providers)**
+
+## Methods
 
 ### `Barometer.isAvailableAsync()`
 
@@ -118,7 +125,7 @@ const subscription = Barometer.addListener(({ pressure, relativeAltitude }) => {
 
 ### `Barometer.removeAllListeners()`
 
-Remove all listeners.
+Removes all listeners.
 
 ## Types
 
@@ -138,3 +145,11 @@ type BarometerMeasurement = {
 | ---------------- | -------------------- | -------- | --- | ------- | --- |
 | pressure         | `number`             | `hPa`    | ✅  | ✅      | ❌  |
 | relativeAltitude | `number | undefined` | `meters` | ✅  | ❌      | ❌  |
+
+## Units and Providers
+
+| OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
+| ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
+| Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
+| Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
