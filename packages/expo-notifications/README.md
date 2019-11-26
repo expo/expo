@@ -486,8 +486,7 @@ Firebase message format suitable for `expo-notifications`.
             "message": "example content",
             "channelId": "channelId",
             "categoryId": "category",
-            "icon": "icon",
-            "color": "color",
+            "icon": "icon URI",
             "body": "additional data",
             "sound": true/false
         }
