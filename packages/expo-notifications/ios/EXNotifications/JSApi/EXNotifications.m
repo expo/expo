@@ -54,8 +54,8 @@ UM_EXPORT_METHOD_AS(flushPendingUserInteractionsAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(presentLocalNotification,
-                    presentLocalNotification:(NSDictionary *)payload
+UM_EXPORT_METHOD_AS(presentLocalNotificationAsync,
+                    presentLocalNotificationAsync:(NSDictionary *)payload
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
   if (!payload[@"data"]) {
@@ -88,8 +88,8 @@ UM_EXPORT_METHOD_AS(presentLocalNotification,
        }];
 }
 
-UM_EXPORT_METHOD_AS(scheduleNotificationWithTimer,
-                    scheduleNotificationWithTimer:(NSDictionary *)payload
+UM_EXPORT_METHOD_AS(scheduleNotificationWithTimerAsync,
+                    scheduleNotificationWithTimerAsync:(NSDictionary *)payload
                     withOptions:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
@@ -117,8 +117,8 @@ UM_EXPORT_METHOD_AS(scheduleNotificationWithTimer,
                             }];
 }
 
-UM_EXPORT_METHOD_AS(scheduleNotificationWithCalendar,
-                    scheduleNotificationWithCalendar:(NSDictionary *)payload
+UM_EXPORT_METHOD_AS(scheduleNotificationWithCalendarAsync,
+                    scheduleNotificationWithCalendarAsync:(NSDictionary *)payload
                     withOptions:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {

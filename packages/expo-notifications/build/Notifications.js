@@ -55,30 +55,30 @@ export async function deleteCategoryAsync(categoryId) {
 export async function createChannelAsync(id, channel) {
     if (Platform.OS !== 'android') {
         console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
-        return Promise.resolve();
+        return;
     }
-    return ExpoNotifications.createChannel(id, channel);
+    return ExpoNotifications.createChannelAsync(id, channel);
 }
 export async function deleteChannelAsync(id) {
     if (Platform.OS !== 'android') {
         console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
-        return Promise.resolve();
+        return;
     }
-    return ExpoNotifications.deleteChannel(id);
+    return ExpoNotifications.deleteChannelAsync(id);
 }
 export async function createChannelGroupAsync(groupId, groupName) {
     if (Platform.OS !== 'android') {
         console.warn(`createChannelGroupAsync(...) has no effect on ${Platform.OS}`);
         return;
     }
-    return ExpoNotifications.createChannelGroup(groupId, groupName);
+    return ExpoNotifications.createChannelGroupAsync(groupId, groupName);
 }
 export async function deleteChannelGroupAsync(groupId) {
     if (Platform.OS !== 'android') {
         console.warn(`deleteChannelGroupAsync(...) has no effect on ${Platform.OS}`);
         return;
     }
-    return ExpoNotifications.deleteChannelGroup(groupId);
+    return ExpoNotifications.deleteChannelGroupAsync(groupId);
 }
 /**
  * @remarks
@@ -87,27 +87,27 @@ export async function deleteChannelGroupAsync(groupId) {
 export async function presentLocalNotificationAsync(notification) {
     _validateNotification(notification);
     let nativeNotification = _processNotification(notification);
-    return await ExpoNotifications.presentLocalNotification(nativeNotification);
+    return await ExpoNotifications.presentLocalNotificationAsync(nativeNotification);
 }
 /**
  * @remarks
  * Dismiss currently shown notification with ID (Android only)
  */
 export async function dismissNotificationAsync(notificationId) {
-    if (!ExpoNotifications.dismissNotification) {
+    if (!ExpoNotifications.dismissNotificationAsync) {
         throw new UnavailabilityError('Expo.Notifications', 'dismissNotification');
     }
-    return await ExpoNotifications.dismissNotification(notificationId);
+    return await ExpoNotifications.dismissNotificationAsync(notificationId);
 }
 /**
  * @remarks
  * Dismiss all currently shown notifications (Android only)
  */
 export async function dismissAllNotificationsAsync() {
-    if (!ExpoNotifications.dismissAllNotifications) {
+    if (!ExpoNotifications.dismissAllNotificationsAsync) {
         throw new UnavailabilityError('Expo.Notifications', 'dismissAllNotifications');
     }
-    return await ExpoNotifications.dismissAllNotifications();
+    return await ExpoNotifications.dismissAllNotificationsAsync();
 }
 /**
  * @remarks
@@ -169,16 +169,16 @@ export async function scheduleNotificationWithCalendarAsync(notification, option
         options.weekDay = 7;
     }
     _validateNotification(notification);
-    let nativeNotification = _processNotification(notification);
-    return ExpoNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
+    const nativeNotification = _processNotification(notification);
+    return ExpoNotifications.scheduleNotificationWithCalendarAsync(nativeNotification, options);
 }
 export async function scheduleNotificationWithTimerAsync(notification, options) {
     if (options.interval < 1) {
         throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
     }
     _validateNotification(notification);
-    let nativeNotification = _processNotification(notification);
-    return ExpoNotifications.scheduleNotificationWithTimer(nativeNotification, options);
+    const nativeNotification = _processNotification(notification);
+    return ExpoNotifications.scheduleNotificationWithTimerAsync(nativeNotification, options);
 }
 function isInRangeInclusive(variable, min, max) {
     return variable >= min && variable <= max;

@@ -83,17 +83,17 @@ export async function deleteCategoryAsync(categoryId: string): Promise<void> {
 export async function createChannelAsync(id: string, channel: Channel): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
-    return Promise.resolve();
+    return;
   }
-  return ExpoNotifications.createChannel(id, channel);
+  return ExpoNotifications.createChannelAsync(id, channel);
 }
 
 export async function deleteChannelAsync(id: string): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
-    return Promise.resolve();
+    return;
   }
-  return ExpoNotifications.deleteChannel(id);
+  return ExpoNotifications.deleteChannelAsync(id);
 }
 
 export async function createChannelGroupAsync(groupId: string, groupName: string): Promise<void> {
@@ -101,7 +101,7 @@ export async function createChannelGroupAsync(groupId: string, groupName: string
     console.warn(`createChannelGroupAsync(...) has no effect on ${Platform.OS}`);
     return;
   }
-  return ExpoNotifications.createChannelGroup(groupId, groupName);
+  return ExpoNotifications.createChannelGroupAsync(groupId, groupName);
 }
 
 export async function deleteChannelGroupAsync(groupId: string): Promise<void> {
@@ -109,7 +109,7 @@ export async function deleteChannelGroupAsync(groupId: string): Promise<void> {
     console.warn(`deleteChannelGroupAsync(...) has no effect on ${Platform.OS}`);
     return;
   }
-  return ExpoNotifications.deleteChannelGroup(groupId);
+  return ExpoNotifications.deleteChannelGroupAsync(groupId);
 }
 
 /**
@@ -122,7 +122,7 @@ export async function presentLocalNotificationAsync(
 ): Promise<string> {
   _validateNotification(notification);
   let nativeNotification = _processNotification(notification);
-  return await ExpoNotifications.presentLocalNotification(nativeNotification);
+  return await ExpoNotifications.presentLocalNotificationAsync(nativeNotification);
 }
 
 /**
@@ -130,20 +130,20 @@ export async function presentLocalNotificationAsync(
  * Dismiss currently shown notification with ID (Android only)
  */
 export async function dismissNotificationAsync(notificationId: string): Promise<void> {
-  if (!ExpoNotifications.dismissNotification) {
+  if (!ExpoNotifications.dismissNotificationAsync) {
     throw new UnavailabilityError('Expo.Notifications', 'dismissNotification');
   }
-  return await ExpoNotifications.dismissNotification(notificationId);
+  return await ExpoNotifications.dismissNotificationAsync(notificationId);
 }
 /**
  * @remarks
  * Dismiss all currently shown notifications (Android only)
  */
 export async function dismissAllNotificationsAsync(): Promise<void> {
-  if (!ExpoNotifications.dismissAllNotifications) {
+  if (!ExpoNotifications.dismissAllNotificationsAsync) {
     throw new UnavailabilityError('Expo.Notifications', 'dismissAllNotifications');
   }
-  return await ExpoNotifications.dismissAllNotifications();
+  return await ExpoNotifications.dismissAllNotificationsAsync();
 }
 /**
  * @remarks
@@ -240,8 +240,8 @@ export async function scheduleNotificationWithCalendarAsync(
   }
 
   _validateNotification(notification);
-  let nativeNotification = _processNotification(notification);
-  return ExpoNotifications.scheduleNotificationWithCalendar(nativeNotification, options);
+  const nativeNotification = _processNotification(notification);
+  return ExpoNotifications.scheduleNotificationWithCalendarAsync(nativeNotification, options);
 }
 
 export async function scheduleNotificationWithTimerAsync(
@@ -255,8 +255,8 @@ export async function scheduleNotificationWithTimerAsync(
     throw new CodedError('WRONG_OPTIONS', 'Interval must be not less then 1');
   }
   _validateNotification(notification);
-  let nativeNotification = _processNotification(notification);
-  return ExpoNotifications.scheduleNotificationWithTimer(nativeNotification, options);
+  const nativeNotification = _processNotification(notification);
+  return ExpoNotifications.scheduleNotificationWithTimerAsync(nativeNotification, options);
 }
 
 function isInRangeInclusive(variable: number, min: number, max: number): boolean {

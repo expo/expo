@@ -118,7 +118,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void createChannel(String channelId, final HashMap data, final Promise promise) {
+  public void createChannelAsync(String channelId, final HashMap data, final Promise promise) {
     data.put(NOTIFICATION_CHANNEL_ID, channelId);
     ChannelSpecification channelSpecification = ChannelSpecification.createChannelSpecification(data);
 
@@ -126,12 +126,12 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void deleteChannel(String channelId, final Promise promise) {
+  public void deleteChannelAsync(String channelId, final Promise promise) {
     mChannelManager.deleteChannel(channelId, mContext.getApplicationContext(), () -> { promise.resolve(null); });
   }
 
   @ExpoMethod
-  public void createChannelGroup(String groupId, String groupName, final Promise promise) {
+  public void createChannelGroupAsync(String groupId, String groupName, final Promise promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       groupId = getProperString(groupId);
       NotificationManager notificationManager =
@@ -142,7 +142,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void deleteChannelGroup(String groupId, final Promise promise) {
+  public void deleteChannelGroupAsync(String groupId, final Promise promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       groupId = getProperString(groupId);
       NotificationManager notificationManager =
@@ -153,7 +153,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void presentLocalNotification(HashMap data, final Promise promise) {
+  public void presentLocalNotificationAsync(HashMap data, final Promise promise) {
     data = mNotificationScoper.scope(data);
 
     Bundle bundle = new MapArguments(data).toBundle();
@@ -173,7 +173,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void dismissNotification(final String notificationId, final Promise promise) {
+  public void dismissNotificationAsync(final String notificationId, final Promise promise) {
     int id = Integer.parseInt(notificationId);
     NotificationManager notificationManager = (NotificationManager) mContext
         .getSystemService(Context.NOTIFICATION_SERVICE);
@@ -182,7 +182,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void dismissAllNotifications(final Promise promise) {
+  public void dismissAllNotificationsAsync(final Promise promise) {
     NotificationManager notificationManager = (NotificationManager) mContext
         .getSystemService(Context.NOTIFICATION_SERVICE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -206,7 +206,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
         .getApplicationContext())
         .removeScheduler(notificationId);
 
-    dismissNotification(notificationId, promise);
+    dismissNotificationAsync(notificationId, promise);
   }
 
   @ExpoMethod
@@ -215,7 +215,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
         .getInstance(mContext.getApplicationContext())
         .removeAll(mAppId);
 
-    dismissAllNotifications(promise);
+    dismissAllNotificationsAsync(promise);
   }
 
   @ExpoMethod
@@ -225,7 +225,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void scheduleNotificationWithTimer(HashMap<String, Object> data, final HashMap<String, Object> options, final Promise promise) {
+  public void scheduleNotificationWithTimerAsync(HashMap<String, Object> data, final HashMap<String, Object> options, final Promise promise) {
     data = mNotificationScoper.scope(data);
     data.put(NOTIFICATION_APP_ID_KEY, mAppId);
 
@@ -257,7 +257,7 @@ public class NotificationsModule extends ExportedModule implements RegistryLifec
   }
 
   @ExpoMethod
-  public void scheduleNotificationWithCalendar(HashMap data, final HashMap options, final Promise promise) {
+  public void scheduleNotificationWithCalendarAsync(HashMap data, final HashMap options, final Promise promise) {
     data = mNotificationScoper.scope(data);
     data.put(NOTIFICATION_APP_ID_KEY, mAppId);
 
