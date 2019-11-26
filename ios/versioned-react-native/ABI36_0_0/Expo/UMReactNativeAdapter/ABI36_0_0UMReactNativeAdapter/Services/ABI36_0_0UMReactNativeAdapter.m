@@ -170,13 +170,14 @@ ABI36_0_0UM_REGISTER_MODULE();
 {
   if ([_bridge respondsToSelector:@selector(jsContextRef)]) {
     return _bridge.jsContextRef;
-  } else { 
+  } else if (_bridge.runtime) {
     // In ABI36_0_0React-native 0.59 vm is abstracted by JSI and all JSC specific references are removed
     // To access jsc context we are extracting specific offset in jsi::Runtime, JSGlobalContextRef
     // is first field inside Runtime class and in memory it's preceded only by pointer to virtual method table.
     // WARNING: This is temporary solution that may break with new ABI36_0_0React-native releases.
     return *(((JSGlobalContextRef *)(_bridge.runtime)) + 1);
   }
+  return nil;
 }
 
 # pragma mark - ABI36_0_0UMImageLoader
