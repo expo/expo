@@ -25,6 +25,8 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
     com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
 
+    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+    // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // BEGIN_SDK_36
     @Override
     public void requestPermissions(String[] strings, int i, abi36_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
@@ -32,5 +34,6 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
     }
     // END_SDK_36
     // ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_HERE
-
+    // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
