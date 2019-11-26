@@ -101,12 +101,14 @@ function round(n) {
 import { Accelerometer } from 'expo-sensors';
 ```
 
-**Methods**
+**[Methods](#methods)**
 
 - [`Accelerometer.isAvailableAsync()`](#accelerometerisavailableasync)
 - [`Accelerometer.addListener(listener)`](#accelerometeraddlistener)
 - [`Accelerometer.removeAllListeners()`](#accelerometerremovealllisteners)
 - [`Accelerometer.setUpdateInterval(intervalMs)`](#accelerometersetupdateintervalintervalms)
+
+## Methods
 
 ### `Accelerometer.isAvailableAsync()`
 

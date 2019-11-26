@@ -11,7 +11,11 @@ Provides access to the phone's system contacts.
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-contacts`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
 
-## Usage
+## Configuration
+
+In Managed apps, `Contacts` requires `Permissions.CONTACTS`.
+
+## Example Usage
 
 <SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts']}>
 
@@ -58,8 +62,64 @@ export default function App() {
 import * as Contacts from 'expo-contacts';
 ```
 
+**[Methods](#methods)**
 
-### `requestPermissionsAsync()`
+- [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync)
+- [`Contacts.getPermissionsAsync()`](#contactsgetpermissionsasync)
+- [`Contacts.getContactsAsync(contactQuery)`](#contactsgetcontactsasynccontactquery)
+- [`Contacts.getContactByIdAsync(contactId, fields)`](#contactsgetcontactbyidasynccontactid-fields)
+- [`Contacts.addContactAsync(contact, containerId)`](#contactsaddcontactasynccontact-containerid)
+- [`Contacts.updateContactAsync(contact)`](#contactsupdatecontactasynccontact)
+- [`Contacts.presentFormAsync(contactId, contact, formOptions)`](#contactspresentformasynccontactid-contact-formoptions)
+- [`Contacts.removeContactAsync(contactId)`](#contactsremovecontactasynccontactid)
+- [`Contacts.writeContactToFileAsync(contactQuery)`](#contactswritecontacttofileasynccontactquery)
+
+**[iOS-only Methods](#iosonly-methods)**
+
+- [`Contacts.addExistingGroupToContainerAsync(groupId, containerId)`](#contactsaddexistinggrouptocontainerasyncgroupid-containerid)
+- [`Contacts.createGroupAsync(groupName, containerId?)`](#contactscreategroupasyncgroupname-containerid)
+- [`Contacts.updateGroupNameAsync(groupName, groupId)`](#contactsupdategroupnameasyncgroupname-groupid)
+- [`Contacts.removeGroupAsync(groupId)`](#contactsremovegroupasyncgroupid)
+- [`Contacts.addExistingContactToGroupAsync(contactId, groupId)`](#contactsaddexistingcontacttogroupasynccontactid-groupid)
+- [`Contacts.removeContactFromGroupAsync(contactId, groupId)`](#contactsremovecontactfromgroupasynccontactid-groupid)
+- [`Contacts.getGroupsAsync(query)`](#contactsgetgroupsasyncquery)
+- [`Contacts.getDefaultContainerIdAsync()`](#contactsgetdefaultcontaineridasync)
+- [`Contacts.getContainersAsync(containerQuery)`](#contactsgetcontainersasynccontainerquery)
+
+**[Types](#types)**
+
+- [`Contact`](#contact)
+- [`Group`](#group)
+- [`Container`](#container)
+- [`Date`](#date)
+- [`Relationship`](#relationship)
+- [`Email`](#email)
+- [`PhoneNumber`](#phonenumber)
+- [`Address`](#address)
+- [`SocialProfile`](#socialprofile)
+- [`InstantMessageAddress`](#instantmessageaddress)
+- [`UrlAddress`](#urladdress)
+- [`Image`](#image)
+- [`FormOptions`](#formoptions)
+- [`ContactQuery`](#contactquery)
+- [`GroupQuery`](#groupquery)
+- [`ContainerQuery`](#containerquery)
+- [`ContactResponse`](#contactresponse)
+
+**[Constants](#constants)**
+
+- [`Field`](#field)
+- [`FormType`](#formtype)
+- [`ContactType`](#contacttype)
+- [`SortType`](#sorttype)
+- [`ContainerType`](#containertype)
+- [`CalendarFormat`](#calendarformat)
+
+**[Breaking Changes](#breaking-changes)**
+
+## Methods
+
+### `Contacts.requestPermissionsAsync()`
 
 Asks the user to grant permissions for accessing contacts data. Alias for `Permissions.askAsync(Permissions.CONTACTS)`.
 
@@ -67,7 +127,7 @@ Asks the user to grant permissions for accessing contacts data. Alias for `Permi
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
-### `getPermissionsAsync()`
+### `Contacts.getPermissionsAsync()`
 
 Checks user's permissions for accessing contacts data. Alias for `Permissions.getAsync(Permissions.CONTACTS)`.
 
@@ -76,10 +136,10 @@ Checks user's permissions for accessing contacts data. Alias for `Permissions.ge
 A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 
-### getContactsAsync
+### `Contacts.getContactsAsync(contactQuery)`
 
 ```js
-getContactsAsync(contactQuery: ContactQuery): Promise<ContactResponse>
+Contacts.getContactsAsync(contactQuery: ContactQuery): Promise<ContactResponse>
 ```
 
 Return a list of contacts that fit a given criteria.
@@ -110,10 +170,10 @@ if (data.length > 0) {
 }
 ```
 
-### getContactByIdAsync
+### `Contacts.getContactByIdAsync(contactId, fields)`
 
 ```js
-getContactByIdAsync(contactId: string, fields: FieldType[]): Promise<Contact>
+Contacts.getContactByIdAsync(contactId: string, fields: FieldType[]): Promise<Contact>
 ```
 
 Returns a contact matching the input id. Used for gathering precise data about a contact.
@@ -140,10 +200,10 @@ if (contact) {
 }
 ```
 
-### addContactAsync
+### `Contacts.addContactAsync(contact, containerId)`
 
 ```js
-addContactAsync(contact: Contact, containerId: string): Promise<string>
+Contacts.addContactAsync(contact: Contact, containerId: string): Promise<string>
 ```
 
 Creates a new contact and adds it to the system.
@@ -174,12 +234,12 @@ const contact = {
 const contactId = await Contacts.addContactAsync(contact);
 ```
 
-### updateContactAsync
+### `Contacts.updateContactAsync(contact)`
 
 > iOS Only - temporary
 
 ```js
-updateContactAsync(contact: Contact): Promise<string>
+Contacts.updateContactAsync(contact: Contact): Promise<string>
 ```
 
 Mutate the information of an existing contact.
@@ -187,10 +247,10 @@ Mutate the information of an existing contact.
 > On Android, you can use `presentFormAsync` to make edits to contacts.
 > Due to an iOS bug, `nonGregorianBirthday` cannot be modified.
 
-### presentFormAsync
+### `Contacts.presentFormAsync(contactId, contact, formOptions)`
 
 ```js
-presentFormAsync(contactId: string, contact: Contact, formOptions: FormOptions): Promise<any>
+Contacts.presentFormAsync(contactId: string, contact: Contact, formOptions: FormOptions): Promise<any>
 ```
 
 Present a native form for manipulating contacts
@@ -233,12 +293,12 @@ const contact = {
 await Contacts.updateContactAsync(contact);
 ```
 
-### removeContactAsync
+### `Contacts.removeContactAsync(contactId)`
 
 > iOS Only - temporary
 
 ```js
-removeContactAsync(contactId: string): Promise<any>
+Contacts.removeContactAsync(contactId: string): Promise<any>
 ```
 
 Delete a contact from the system.
@@ -255,10 +315,10 @@ Delete a contact from the system.
 await Contacts.removeContactAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
-### writeContactToFileAsync
+### `Contacts.writeContactToFileAsync(contactQuery)`
 
 ```js
-writeContactToFileAsync(contactQuery: ContactQuery): Promise<string>
+Contacts.writeContactToFileAsync(contactQuery: ContactQuery): Promise<string>
 ```
 
 Query a set of contacts and write them to a local uri that can be used for sharing with `ReactNative.Share`.
@@ -286,14 +346,14 @@ Share.share({ url: localUri, message: 'Call me!' });
 
 ---
 
-## IOS Only Functions
+## IOS-Only Methods
 
 iOS contacts have a multi-layered grouping system that you can access through this API.
 
-### addExistingGroupToContainerAsync
+### `Contacts.addExistingGroupToContainerAsync(groupId, containerId)`
 
 ```js
-addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>
+Contacts.addExistingGroupToContainerAsync(groupId: string, containerId: string): Promise<any>
 ```
 
 Add a group to a container.
@@ -314,10 +374,10 @@ await Contacts.addExistingGroupToContainerAsync(
 );
 ```
 
-### createGroupAsync
+### `Contacts.createGroupAsync(groupName, containerId?)`
 
 ```js
-createGroupAsync(groupName: string, containerId?: string): Promise<string>
+Contacts.createGroupAsync(groupName: string, containerId?: string): Promise<string>
 ```
 
 Create a group with a name, and add it to a container. If the container is undefined, the default container will be targeted.
@@ -341,10 +401,10 @@ Create a group with a name, and add it to a container. If the container is undef
 const groupId = await Contacts.createGroupAsync('Sailor Moon');
 ```
 
-### updateGroupNameAsync
+### `Contacts.updateGroupNameAsync(groupName, groupId)`
 
 ```js
-updateGroupNameAsync(groupName: string, groupId: string): Promise<any>
+Contacts.updateGroupNameAsync(groupName: string, groupId: string): Promise<any>
 ```
 
 Change the name of an existing group.
@@ -362,10 +422,10 @@ Change the name of an existing group.
 await Contacts.updateGroupName('Sailor Moon', '161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
-### removeGroupAsync
+### `Contacts.removeGroupAsync(groupId)`
 
 ```js
-removeGroupAsync(groupId: string): Promise<any>
+Contacts.removeGroupAsync(groupId: string): Promise<any>
 ```
 
 Delete a group from the device.
@@ -382,10 +442,10 @@ Delete a group from the device.
 await Contacts.removeGroupAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 ```
 
-### addExistingContactToGroupAsync
+### `Contacts.addExistingContactToGroupAsync(contactId, groupId)`
 
 ```js
-addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any>
+Contacts.addExistingContactToGroupAsync(contactId: string, groupId: string): Promise<any>
 ```
 
 Add a contact as a member to a group. A contact can be a member of multiple groups.
@@ -406,10 +466,10 @@ await Contacts.addExistingContactToGroupAsync(
 );
 ```
 
-### removeContactFromGroupAsync
+### `Contacts.removeContactFromGroupAsync(contactId, groupId)`
 
 ```js
-removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any>
+Contacts.removeContactFromGroupAsync(contactId: string, groupId: string): Promise<any>
 ```
 
 Remove a contact's membership from a given group. This will not delete the contact.
@@ -430,10 +490,10 @@ await Contacts.removeContactFromGroupAsync(
 );
 ```
 
-### getGroupsAsync
+### `Contacts.getGroupsAsync(query)`
 
 ```js
-getGroupsAsync(query: GroupQuery): Promise<Group[]>
+Contacts.getGroupsAsync(query: GroupQuery): Promise<Group[]>
 ```
 
 Query and return a list of system groups.
@@ -457,10 +517,10 @@ const groups = await Contacts.getGroupsAsync({ groupName: 'sailor moon' });
 const allGroups = await Contacts.getGroupsAsync({});
 ```
 
-### getDefaultContainerIdAsync
+### `Contacts.getDefaultContainerIdAsync()`
 
 ```js
-getDefaultContainerIdAsync(): Promise<string>
+Contacts.getDefaultContainerIdAsync(): Promise<string>
 ```
 
 Get the default container's ID.
@@ -477,10 +537,10 @@ Get the default container's ID.
 const containerId = await Contacts.getDefaultContainerIdAsync();
 ```
 
-### getContainersAsync
+### `Contacts.getContainersAsync(containerQuery)`
 
 ```js
-getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>
+Contacts.getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>
 ```
 
 Query a list of system containers.
@@ -500,7 +560,7 @@ Query a list of system containers.
 **Example**
 
 ```js
-const allContainers = await getContainersAsync({
+const allContainers = await Contacts.getContainersAsync({
   contactId: '665FDBCFAE55-D614-4A15-8DC6-161A368D',
 });
 ```
@@ -511,40 +571,40 @@ const allContainers = await getContainersAsync({
 
 A set of fields that define information about a single entity.
 
-| Name | Type | Description | iOS | Android | Note 
-| ----------------- | ------------------- | -------------------------------------------------- | --- | --- | --- |
-| id | `string` | Immutable identifierused for querying and indexing. | ✅ | ✅ |
-| name | `string` | Full name with proper format.                    | ✅ | ✅ |
-| firstName| `string` | Given name. | ✅ | ✅ |
-| middleName | `string` | Middle name. | ✅ | ✅ |
-| lastName | `string` | Family name. | ✅ | ✅ |
-| maidenName | `string` | Maiden name. | ✅ | ✅ |
-| namePrefix | `string` | Dr. Mr. Mrs. Ect... | ✅ | ✅ |
-| nameSuffix | `string` | Jr. Sr. Ect... | ✅ | ✅ |
-| nickname | `string` | An alias to the proper name. | ✅| ✅|
-| phoneticFirstName | `string` | Pronunciation of the first name. |✅|✅|
-| phoneticMiddleName | `string` | Pronunciation of the middle name. | ✅ | ✅ |
-| phoneticLastName | `string` | Pronunciation of the last name. | ✅ | ✅ |
-| company | `string` | Organization the entity belongs to. | ✅ | ✅ |
-| jobTitle | `string` | Job description. | ✅ |✅ |
-| department | `string` | Job department. | ✅ | ✅ |
-| note | `string` | Additional information. | ⚠️ | ✅ | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. |
-| imageAvailable | `boolean` | Used for efficient retrieval of images. | ✅ | ✅ |
-| image | `Image` | Thumbnail image (ios: 320x320) | ✅ | ✅ |
-| rawImage | `Image` | Raw image without cropping, usually large. | ✅ | ✅ |
-| contactType | `ContactType` | Denoting a person or company. | ✅ | ✅ |
-| birthday | `Date` | Birthday information in JS format. | ✅ | ✅ |
-| dates | `Date[]` | A list of other relevant user dates. | ✅ | ✅ |
-| relationships |`Relationship[]` | Names of other relevant user connections |✅ | ✅ |
-| emails | `Email[]` | Email addresses | ✅ | ✅ |
-| phoneNumbers | `PhoneNumber[]` | Phone numbers | ✅ | ✅ |
-| addresses | `Address[]` | Locations | ✅ | ✅ |
-| instantMessageAddresses |` InstantMessageAddress[]` | IM connections | ✅ | ✅ |
-| urlAddresses | `UrlAddress[]` | Web Urls | ✅ | ✅ |
-| nonGregorianBirthday | `Date` | Birthday that doesn't conform to the Gregorian calendar format | ✅ | ❌ |
-| socialProfiles | `SocialProfile[]` | Social networks | ✅ | ❌ |
-| thumbnail | `Image` | **Deprecated**: Use `image` | ❌ | ❌ |
-| previousLastName | `string` | **Deprecated**: Use maidenName | ❌ | ❌ |
+| Name                    | Type                      | Description                                                    | iOS | Android |
+| ----------------------- | ------------------------- | -------------------------------------------------------------- | --- | ------- |
+| id                      | `string`                  | Immutable identifier used for querying and indexing.           | ✅  | ✅      |
+| name                    | `string`                  | Full name with proper format.                                  | ✅  | ✅      |
+| firstName               | `string`                  | Given name.                                                    | ✅  | ✅      |
+| middleName              | `string`                  | Middle name.                                                   | ✅  | ✅      |
+| lastName                | `string`                  | Family name.                                                   | ✅  | ✅      |
+| maidenName              | `string`                  | Maiden name.                                                   | ✅  | ✅      |
+| namePrefix              | `string`                  | Dr. Mr. Mrs. Ect...                                            | ✅  | ✅      |
+| nameSuffix              | `string`                  | Jr. Sr. Ect...                                                 | ✅  | ✅      |
+| nickname                | `string`                  | An alias to the proper name.                                   | ✅  | ✅      |
+| phoneticFirstName       | `string`                  | Pronunciation of the first name.                               | ✅  | ✅      |
+| phoneticMiddleName      | `string`                  | Pronunciation of the middle name.                              | ✅  | ✅      |
+| phoneticLastName        | `string`                  | Pronunciation of the last name.                                | ✅  | ✅      |
+| company                 | `string`                  | Organization the entity belongs to.                            | ✅  | ✅      |
+| jobTitle                | `string`                  | Job description.                                               | ✅  | ✅      |
+| department              | `string`                  | Job department.                                                | ✅  | ✅      |
+| note                    | `string`                  | Additional information.                                        | ✅  | ✅      |
+| imageAvailable          | `boolean`                 | Used for efficient retrieval of images.                        | ✅  | ✅      |
+| image                   | `Image`                   | Thumbnail image (ios: 320x320)                                 | ✅  | ✅      |
+| rawImage                | `Image`                   | Raw image without cropping, usually large.                     | ✅  | ✅      |
+| contactType             | `ContactType`             | Denoting a person or company.                                  | ✅  | ✅      |
+| birthday                | `Date`                    | Birthday information in JS format.                             | ✅  | ✅      |
+| dates                   | `Date[]`                  | A list of other relevant user dates.                           | ✅  | ✅      |
+| relationships           | `Relationship[]`          | Names of other relevant user connections                       | ✅  | ✅      |
+| emails                  | `Email[]`                 | Email addresses                                                | ✅  | ✅      |
+| phoneNumbers            | `PhoneNumber[]`           | Phone numbers                                                  | ✅  | ✅      |
+| addresses               | `Address[]`               | Locations                                                      | ✅  | ✅      |
+| instantMessageAddresses | `InstantMessageAddress[]` | IM connections                                                 | ✅  | ✅      |
+| urlAddresses            | `UrlAddress[]`            | Web Urls                                                       | ✅  | ✅      |
+| nonGregorianBirthday    | `Date`                    | Birthday that doesn't conform to the Gregorian calendar format | ✅  | ❌      |
+| socialProfiles          | `SocialProfile[]`         | Social networks                                                | ✅  | ❌      |
+| thumbnail               | `Image`                   | Deprecated: Use `image`                                        | ❌  | ❌      |
+| previousLastName        | `string`                  | Deprecated: Use `maidenName`                                   | ❌  | ❌      |
 
 ### Group
 
@@ -757,40 +817,40 @@ The return value for queried contact operations like `getContactsAsync`.
 const contactField = Contact.Fields.FirstName;
 ```
 
-| Name                    | Value                        | iOS | Android | Note |
-| ----------------------- | ---------------------------- | --- | ------- | ---- |
-| ID                      | `'id'`                       | ✅  | ✅      |      |
-| Name                    | `'name'`                     | ✅  | ✅      |      |
-| FirstName               | `'firstName'`                | ✅  | ✅      |      |
-| MiddleName              | `'middleName'`               | ✅  | ✅      |      |
-| LastName                | `'lastName'`                 | ✅  | ✅      |      |
-| NamePrefix              | `'namePrefix'`               | ✅  | ✅      |      |
-| NameSuffix              | `'nameSuffix'`               | ✅  | ✅      |      |
-| PhoneticFirstName       | `'phoneticFirstName'`        | ✅  | ✅      |      |
-| PhoneticMiddleName      | `'phoneticMiddleName'`       | ✅  | ✅      |      |
-| PhoneticLastName        | `'phoneticLastName'`         | ✅  | ✅      |      |
-| Birthday                | `'birthday'`                 | ✅  | ✅      |      |
-| Emails                  | `'emails'`                   | ✅  | ✅      |      |
-| PhoneNumbers            | `'phoneNumbers'`             | ✅  | ✅      |      |
-| Addresses               | `'addresses'`                | ✅  | ✅      |      |
-| InstantMessageAddresses | `'instantMessageAddresses'`  | ✅  | ✅      |      |
-| UrlAddresses            | `'urlAddresses'`             | ✅  | ✅      |      |
-| Company                 | `'company'`                  | ✅  | ✅      |      |
-| JobTitle                | `'jobTitle'`                 | ✅  | ✅      |      |
-| Department              | `'department'`               | ✅  | ✅      |      |
-| ImageAvailable          | `'imageAvailable'`           | ✅  | ✅      |      |
-| Image                   | `'image'`                    | ✅  | ✅      |      |
-| Note                    | `'note'`                     | ⚠️  | ✅      | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. Expo client doesn't have this entitlement. However, you can add this to a standalone app. To do this you need to set the `accessesContactNotes` key to true in your app.json file as specified [here](https://docs.expo.io/versions/latest/workflow/configuration/#ios). |
-| Dates                   | `'dates'`                    | ✅  | ✅      |      |
-| Relationships           | `'relationships'`            | ✅  | ✅      |      |
-| Nickname                | `'nickname'`                 | ✅  | ✅      |      |
-| RawImage                | `'rawImage'`                 | ✅  | ✅      |      |
-| MaidenName              | `'maidenName'`               | ✅  | ✅      |      |
-| ContactType             | `'contactType'`              | ✅  | ✅      |      |
-| SocialProfiles          | `'socialProfiles'`           | ✅  | ❌      |      |
-| NonGregorianBirthday    | `'nonGregorianBirthday'`     | ✅  | ❌      |      |
-| Thumbnail               | Deprecated: use `Image`      | ❌  | ❌      |      |
-| PreviousLastName        | Deprecated: use `MaidenName` | ❌  | ❌      |      |
+| Name                    | Value                        | iOS | Android |
+| ----------------------- | ---------------------------- | --- | ------- |
+| ID                      | `'id'`                       | ✅  | ✅      |
+| Name                    | `'name'`                     | ✅  | ✅      |
+| FirstName               | `'firstName'`                | ✅  | ✅      |
+| MiddleName              | `'middleName'`               | ✅  | ✅      |
+| LastName                | `'lastName'`                 | ✅  | ✅      |
+| NamePrefix              | `'namePrefix'`               | ✅  | ✅      |
+| NameSuffix              | `'nameSuffix'`               | ✅  | ✅      |
+| PhoneticFirstName       | `'phoneticFirstName'`        | ✅  | ✅      |
+| PhoneticMiddleName      | `'phoneticMiddleName'`       | ✅  | ✅      |
+| PhoneticLastName        | `'phoneticLastName'`         | ✅  | ✅      |
+| Birthday                | `'birthday'`                 | ✅  | ✅      |
+| Emails                  | `'emails'`                   | ✅  | ✅      |
+| PhoneNumbers            | `'phoneNumbers'`             | ✅  | ✅      |
+| Addresses               | `'addresses'`                | ✅  | ✅      |
+| InstantMessageAddresses | `'instantMessageAddresses'`  | ✅  | ✅      |
+| UrlAddresses            | `'urlAddresses'`             | ✅  | ✅      |
+| Company                 | `'company'`                  | ✅  | ✅      |
+| JobTitle                | `'jobTitle'`                 | ✅  | ✅      |
+| Department              | `'department'`               | ✅  | ✅      |
+| ImageAvailable          | `'imageAvailable'`           | ✅  | ✅      |
+| Image                   | `'image'`                    | ✅  | ✅      |
+| Note                    | `'note'`                     | ✅  | ✅      |
+| Dates                   | `'dates'`                    | ✅  | ✅      |
+| Relationships           | `'relationships'`            | ✅  | ✅      |
+| Nickname                | `'nickname'`                 | ✅  | ✅      |
+| RawImage                | `'rawImage'`                 | ✅  | ✅      |
+| MaidenName              | `'maidenName'`               | ✅  | ✅      |
+| ContactType             | `'contactType'`              | ✅  | ✅      |
+| SocialProfiles          | `'socialProfiles'`           | ✅  | ❌      |
+| NonGregorianBirthday    | `'nonGregorianBirthday'`     | ✅  | ❌      |
+| Thumbnail               | Deprecated: use `Image`      | ❌  | ❌      |
+| PreviousLastName        | Deprecated: use `MaidenName` | ❌  | ❌      |
 
 ### FormType
 

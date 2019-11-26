@@ -18,7 +18,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Amplitude from 'expo-analytics-amplitude';
 ```
 
-**Methods**
+**[Methods](#methods)**
 
 - [`Amplitude.initialize(apiKey)`](#amplitudeinitializeapikey)
 - [`Amplitude.setUserId(userId)`](#amplitudesetuseriduserid)
@@ -27,6 +27,8 @@ import * as Amplitude from 'expo-analytics-amplitude';
 - [`Amplitude.logEvent(eventName)`](#amplitudelogeventeventname)
 - [`Amplitude.logEventWithProperties(eventName, properties)`](#amplitudelogeventwithpropertieseventname-properties)
 - [`Amplitude.setGroup(groupType, groupNames)`](#amplitudesetgroupgrouptype-groupnames)
+
+## Methods
 
 ### `Amplitude.initialize(apiKey)`
 
