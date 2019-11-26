@@ -23,6 +23,7 @@
 #import <ABI36_0_0React/ABI36_0_0RCTRedBox.h>
 #import <ABI36_0_0React/ABI36_0_0RCTModuleData.h>
 #import <ABI36_0_0React/ABI36_0_0RCTUtils.h>
+#import <ABI36_0_0React/ABI36_0_0RCTPackagerConnection.h>
 
 #import <ABI36_0_0React/ABI36_0_0RCTAsyncLocalStorage.h>
 
@@ -110,6 +111,11 @@ void ABI36_0_0EXRegisterScopedModule(Class moduleClass, ...)
       [[NSNotificationCenter defaultCenter]
      postNotificationName:@"EXReloadActiveAppRequest" object:nil];
   }];
+
+  if ([self _isDevModeEnabledForBridge:bridge]) {
+    // Set the bundle url for the packager connection manually
+    [[ABI36_0_0RCTPackagerConnection sharedPackagerConnection] setBundleURL:[bridge bundleURL]];
+  }
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the ABI36_0_0RCTBatchedBridge constructor
   [[NSNotificationCenter defaultCenter]
