@@ -83,7 +83,7 @@ export async function deleteCategoryAsync(categoryId: string): Promise<void> {
 
 export async function createChannelAsync(id: string, channel: Channel): Promise<void> {
   if (Platform.OS !== 'android') {
-    console.warn(`createChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
+    throw new UnavailabilityError('Expo.Notifications', 'createChannelAsync');
     return;
   }
   return ExpoNotifications.createChannelAsync(id, channel);
@@ -91,24 +91,21 @@ export async function createChannelAsync(id: string, channel: Channel): Promise<
 
 export async function deleteChannelAsync(id: string): Promise<void> {
   if (Platform.OS !== 'android') {
-    console.warn(`deleteChannelAndroidAsync(...) has no effect on ${Platform.OS}`);
-    return;
+    throw new UnavailabilityError('Expo.Notifications', 'deleteChannelAsync');
   }
   return ExpoNotifications.deleteChannelAsync(id);
 }
 
 export async function createChannelGroupAsync(groupId: string, groupName: string): Promise<void> {
   if (Platform.OS !== 'android') {
-    console.warn(`createChannelGroupAsync(...) has no effect on ${Platform.OS}`);
-    return;
+    throw new UnavailabilityError('Expo.Notifications', 'createChannelGroupAsync');
   }
   return ExpoNotifications.createChannelGroupAsync(groupId, groupName);
 }
 
 export async function deleteChannelGroupAsync(groupId: string): Promise<void> {
   if (Platform.OS !== 'android') {
-    console.warn(`deleteChannelGroupAsync(...) has no effect on ${Platform.OS}`);
-    return;
+    throw new UnavailabilityError('Expo.Notifications', 'deleteChannelGroupAsync');
   }
   return ExpoNotifications.deleteChannelGroupAsync(groupId);
 }
