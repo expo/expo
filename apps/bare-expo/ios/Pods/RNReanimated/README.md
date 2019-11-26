@@ -103,7 +103,7 @@ Allows for the framework to automatically delay beginning of transitions across 
 
 ### `<Transition.In>`
 
-Allows to specify how views that get mounted durion animation transition get animated. In addition to the above parameters you can specify the type of animation using `type` prop. The possible values are: `fade`, `scale`, `slide-top`, `slide-bottom`, `slide-left`, `slide-right`.
+Allows to specify how views that get mounted during animation transition get animated. In addition to the above parameters you can specify the type of animation using `type` prop. The possible values are: `fade`, `scale`, `slide-top`, `slide-bottom`, `slide-left`, `slide-right`.
 
 ### `<Transition.Out>`
 
@@ -224,23 +224,25 @@ block([
 
 The `useCode` hook acts as an alternative to the `Animated.Code` component.
 ```js
-Animated.useCode(node, deps)
+Animated.useCode(() => node, deps)
 ```
 It's passed an animated node and an array of dependencies, and updates that node both when the component mounts and every time a value in that array changes. It does nothing on versions of React Native that don't support hooks (<0.59).
 ```js
 const [offset, setOffset] = React.useState(20);
 Animated.useCode(
-  set(transX1, add(_transX, offset)),
+  () => set(transX1, add(_transX, offset)),
   [offset]
 );
 ```
+
+We recommend to use `useCode()` with the `react-hooks/exhaustive-deps` [eslint rule](https://www.npmjs.com/package/eslint-plugin-react-hooks).
 
 ## Event handling with reanimated nodes
 
 `react-native-reanimated`'s new syntax is possible to be used with `Animated.event`. Instead of providing only a mapping from event fields to animated nodes, it is allowed to write a function that takes reanimated values map as an input and return a block (or any other reanimated function) that will be then used to handle the event.
 
 This syntax allows for providing some post-processing for the event data that does not fit well as a dependency of other nodes we connect to `Animated.View` component props.
-[See example](https://github.com/kmagiera/react-native-reanimated/blob/master/Example/movable/index.js)
+[See example](https://github.com/kmagiera/react-native-reanimated/blob/master/Example/PanRotateAndZoom/index.js)
 ```js
 this.onGestureEvent = event([
   {
@@ -659,6 +661,25 @@ Returns an accumulated value of the given node. This node stores a sum of all ev
 Works the same way as with the original `Animated` library.
 
 ---
+### `proc`
+
+Returns a callable function node that can be used to define expressions that can be called from other nodes. 
+
+Example:
+
+```js
+// Global constant
+const myProc = proc((a, b) => multiply(a,b));
+
+// In your component
+const style = { width: proc(10, 10 )};
+```
+
+A proc node should be declared as a global constant in your code and not recreated from inside components.
+
+It is not possible to reference nodes that are not passed as parameters.
+
+---
 ### `interpolate`
 ```js
 interpolate(node, {
@@ -884,6 +905,14 @@ In order to run it you need to pull in the repository, enter `Example/` folder a
 Then run `react-native run-android` or `react-native run-ios` (depending on which platform you want to run the Example app on).
 
 You will need to have an Android or iOS device or emulator connected as well as `react-native-cli` package installed globally.
+
+## Jest
+
+In order to use `react-native-reanimated` with Jest, you need to add the following mock implementation at the top of your test:
+
+```js
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+```
 
 ## License
 

@@ -47,6 +47,6 @@ export default {
    * Sets URL prefix
    */
   setUrlPrefix(urlPrefix: string): void {
-    CTKAdSettingsManager.setUrlPrefix(urlPrefix);
+    CTKAdSettingsManager.setUrlPrefix(urlPrefix || null);
   },
 };

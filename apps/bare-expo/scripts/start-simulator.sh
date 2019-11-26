@@ -9,7 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo " ☛  Bootstrapping Expo in ${CURRENT_ENV} mode"
 
-"$DIR/setup-project.sh"
+"$DIR/setup-ios-project.sh"
 
 "$DIR/start-metro.sh" "$port"
 

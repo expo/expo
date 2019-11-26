@@ -1,15 +1,6 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import UAParser from 'ua-parser-js';
 import uuidv4 from 'uuid/v4';
-import { CodedError } from '@unimodules/core';
-function getExpoPackage() {
-    try {
-        return require('expo/package.json');
-    }
-    catch (error) {
-        throw new CodedError('ERR_CONSTANTS', 'expoVersion & expoRuntimeVersion require the expo package to be installed.');
-    }
-}
 const parser = new UAParser();
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
@@ -53,7 +44,7 @@ export default {
         return false;
     },
     get expoVersion() {
-        return getExpoPackage().version;
+        return this.manifest.sdkVersion || null;
     },
     get linkingUri() {
         if (canUseDOM) {
@@ -65,7 +56,7 @@ export default {
         }
     },
     get expoRuntimeVersion() {
-        return getExpoPackage().version;
+        return this.expoVersion;
     },
     get deviceName() {
         const { browser, engine, os: OS } = parser.getResult();

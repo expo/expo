@@ -27,7 +27,7 @@
 #include <mutex>
 #include <string>
 
-namespace facebook {
+namespace ABI33_0_0facebook {
 namespace ReactABI33_0_0 {
 
 Instance::~Instance() {
@@ -181,4 +181,4 @@ void Instance::handleMemoryPressure(int pressureLevel) {
 }
 
 } // namespace ReactABI33_0_0
-} // namespace facebook
+} // namespace ABI33_0_0facebook

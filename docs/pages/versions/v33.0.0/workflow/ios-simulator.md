@@ -24,6 +24,19 @@ Run your app with `expo-cli` and press `i` from the command line or `Run on iOS 
 
 <Video file="open-in-ios-simulator.mp4" />
 
+## Limitations
+
+Although the iOS simulator is great for rapid development, it does come with a few limitations. [Apple's documentation](https://help.apple.com/simulator/mac/current/#/devb0244142d) goes into more detail, but we'll list out a few of the main differences that affect Expo APIs here.
+
+The following hardware is unavailable in Simulator:
+
+- Audio Input
+- Barometer
+- Camera
+- Motion Support (accelerometer and gyroscope)
+
+It should also be noted that Simulator suspends background apps and processes on iOS 11 and later.
+
 ## Troubleshooting
 
 ### The CLI seems to be stuck on "Trying to open the project in iOS simulator..."
@@ -36,12 +49,12 @@ You can also use this menu to open any version of the simulator that you like. Y
 
 ### The simulator opened but the Expo client app isn't opening inside of it
 
-The first time you install the app in the simulator, iOS will prompt you to ask if you'd like to open the Expo client app. You may need to interact with the simulator (click around, drag something) for this prompt to show up. Press OK when it shows up.
+The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo client app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
 
 ### How do I force an update to the latest version?
 
-You can run `expo client:install:ios` to download and install the latest Expo client version in the simulator.
+Run `expo client:install:ios` to download and install the latest Expo client version in the simulator.
 
-### expo-cli is printing some esoteric error message about xcrun, what do I do?
+### expo-cli is printing an error message about xcrun, what do I do?
 
 Run `expo client:install:ios` again to uninstall and reinstall the Expo client app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!

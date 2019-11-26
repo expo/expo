@@ -10,13 +10,12 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const Text = require('Text');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const React = require('react');
 
-const renderApplication = require('renderApplication');
+const renderApplication = require('react-native/Libraries/ReactNative/renderApplication');
+
+const {StyleSheet, Text, View} = require('react-native');
 
 type FlexTestAppProps = $ReadOnly<{||}>;
 class FlexTestApp extends React.Component<FlexTestAppProps> {
@@ -90,9 +89,7 @@ const FlexWithTextStyles = StyleSheet.create({
 });
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionTestApp extends React.Component<
-  AbsolutePositionTestAppProps,
-> {
+class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
   render() {
     return (
       <View
@@ -115,9 +112,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 });
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionBottomRightTestApp extends React.Component<
-  AbsolutePositionBottomRightTestAppProps,
-> {
+class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
   render() {
     return (
       <View
@@ -178,7 +173,7 @@ const CenteredTextViewStyles = StyleSheet.create({
   },
 });
 
-let flushUpdatePositionInList = null;
+let flushUpdatePositionInList: null | (() => void) = null;
 
 type UpdatePositionInListTestAppProps = $ReadOnly<{||}>;
 type UpdatePositionInListTestAppState = {|

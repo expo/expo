@@ -24,7 +24,7 @@
 
 @end
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 template <typename T, typename P>

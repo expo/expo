@@ -1,10 +1,7 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,32 +11,21 @@ import android.view.WindowManager;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import androidx.annotation.Nullable;
+
 public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnGlobalLayoutListener {
   public interface OnInsetsChangeListener {
     void onInsetsChange(SafeAreaView view, EdgeInsets insets);
   }
 
-  private @Nullable
-  OnInsetsChangeListener mInsetsChangeListener;
+  private @Nullable OnInsetsChangeListener mInsetsChangeListener;
   private WindowManager mWindowManager;
-  private @Nullable
-  EdgeInsets mLastInsets;
+  private @Nullable EdgeInsets mLastInsets;
 
   public SafeAreaView(Context context) {
     super(context);
 
     mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-  }
-
-  private Activity getActivity() {
-    Context context = getContext();
-    while (context instanceof ContextWrapper) {
-      if (context instanceof Activity) {
-        return (Activity) context;
-      }
-      context = ((ContextWrapper) context).getBaseContext();
-    }
-    return null;
   }
 
   private EdgeInsets getSafeAreaInsets() {

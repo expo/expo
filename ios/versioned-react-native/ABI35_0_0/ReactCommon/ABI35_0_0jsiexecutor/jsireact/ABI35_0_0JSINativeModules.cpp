@@ -11,9 +11,9 @@
 
 #include <string>
 
-using namespace facebook::jsi;
+using namespace ABI35_0_0facebook::jsi;
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 JSINativeModules::JSINativeModules(
@@ -86,4 +86,4 @@ folly::Optional<Object> JSINativeModules::createModule(
 }
 
 } // namespace ReactABI35_0_0
-} // namespace facebook
+} // namespace ABI35_0_0facebook

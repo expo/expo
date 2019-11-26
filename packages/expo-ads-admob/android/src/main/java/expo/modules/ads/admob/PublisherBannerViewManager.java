@@ -36,7 +36,6 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
 
   public static final String PROP_BANNER_SIZE = "bannerSize";
   public static final String PROP_AD_UNIT_ID = "adUnitID";
-  public static final String PROP_TEST_DEVICE_ID = "testDeviceID";
   public static final String PROP_ADDITIONAL_REQUEST_PARAMS = "additionalRequestParams";
 
   private EventEmitter mEventEmitter;
@@ -78,11 +77,6 @@ public class PublisherBannerViewManager extends ViewManager<PublisherBannerView>
   @ExpoProp(name = PROP_AD_UNIT_ID)
   public void setAdUnitID(PublisherBannerView view, final String adUnitID) {
     view.setAdUnitID(adUnitID);
-  }
-
-  @ExpoProp(name = PROP_TEST_DEVICE_ID)
-  public void setPropTestDeviceID(PublisherBannerView view, final String testDeviceID) {
-    view.setPropTestDeviceID(testDeviceID);
   }
 
   @ExpoProp(name = PROP_ADDITIONAL_REQUEST_PARAMS)

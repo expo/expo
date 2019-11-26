@@ -27,8 +27,8 @@ const STYLES_H2 = css`
   font-family: ${Constants.fonts.book};
   line-height: 1.75rem;
   font-size: 1.5rem;
-  margin-bottom: 1.8rem;
-  margin-top: 2rem;
+  margin-bottom: 1rem;
+  margin-top: 2.2rem;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid ${Constants.colors.border};
 `;

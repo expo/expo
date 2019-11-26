@@ -1,5 +1,5 @@
 package abi35_0_0.expo.modules.sharing;
 
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 public class SharingFileProvider extends FileProvider {}

@@ -1,12 +1,13 @@
 ---
 title: Battery
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-battery"
 ---
 
 Provides battery information for the physical device, as well as corresponding event listeners.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-battery).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-battery`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-battery).
 
 ## API
 
@@ -14,10 +15,11 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import * as Battery from 'expo-battery';
 ```
 
-Note: On iOS simulators, battery monitoring is not possible.
+Note: On iOS simulators, battery monitoring is not possible. You can confirm by running [`Battery.isAvailableAsync()`](#batteryisavailableasync).
 
 ### Methods
 
+- [`Battery.isAvailableAsync`](#batteryisavailableasync)
 - [`Battery.getBatteryLevelAsync()`](#batterygetbatterylevelasync)
 - [`Battery.getBatteryStateAsync()`](#batterygetbatterystateasync)
 - [`Battery.isLowPowerModeEnabledAsync()`](#batteryislowpowermodeenabledasync)
@@ -38,6 +40,10 @@ Note: On iOS simulators, battery monitoring is not possible.
 - [Error Codes](#error-codes)
 
 ## Methods
+
+### `Battery.isAvailableAsync()`
+
+Resolves with whether this battery API is available on the current device. The value of this property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web, it depends on whether the browser supports the web battery API.
 
 ### `Battery.getBatteryLevelAsync()`
 

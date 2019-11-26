@@ -138,7 +138,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  facebook::ReactABI33_0_0::BundleHeader header;
+  ABI33_0_0facebook::ReactABI33_0_0::BundleHeader header;
   size_t readResult = fread(&header, sizeof(header), 1, bundle);
   fclose(bundle);
   if (readResult != 1) {
@@ -151,12 +151,12 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
   }
 
-  facebook::ReactABI33_0_0::ScriptTag tag = facebook::ReactABI33_0_0::parseTypeFromHeader(header);
+  ABI33_0_0facebook::ReactABI33_0_0::ScriptTag tag = ABI33_0_0facebook::ReactABI33_0_0::parseTypeFromHeader(header);
   switch (tag) {
-  case facebook::ReactABI33_0_0::ScriptTag::RAMBundle:
+  case ABI33_0_0facebook::ReactABI33_0_0::ScriptTag::RAMBundle:
     break;
 
-  case facebook::ReactABI33_0_0::ScriptTag::String: {
+  case ABI33_0_0facebook::ReactABI33_0_0::ScriptTag::String: {
 #if ABI33_0_0RCT_ENABLE_INSPECTOR
     NSData *source = [NSData dataWithContentsOfFile:scriptURL.path
                                             options:NSDataReadingMappedIfSafe
@@ -175,7 +175,7 @@ ABI33_0_0RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return nil;
 #endif
   }
-  case facebook::ReactABI33_0_0::ScriptTag::BCBundle:
+  case ABI33_0_0facebook::ReactABI33_0_0::ScriptTag::BCBundle:
     if (runtimeBCVersion == JSNoBytecodeFileFormatVersion || runtimeBCVersion < 0) {
       if (error) {
         *error = [NSError errorWithDomain:ABI33_0_0RCTJavaScriptLoaderErrorDomain

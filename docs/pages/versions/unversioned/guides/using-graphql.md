@@ -232,8 +232,8 @@ import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 
 class FeedPage extends React.Component {
-  componentWillReceiveProps(nextProps) {
-    if (this.props.location.key !== nextProps.location.key) {
+  componentDidUpdate(prevProps) {
+    if (this.props.location.key !== prevProps.location.key) {
       this.props.feedQuery.refetch()
     }
   }

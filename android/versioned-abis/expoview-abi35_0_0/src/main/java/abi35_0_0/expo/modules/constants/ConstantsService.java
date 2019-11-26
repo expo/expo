@@ -5,7 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 

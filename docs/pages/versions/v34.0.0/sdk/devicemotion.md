@@ -1,5 +1,6 @@
 ---
 title: DeviceMotion
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-sensors"
 ---
 
 Access the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.

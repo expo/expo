@@ -76,14 +76,19 @@ class RectView extends RenderableView {
         double y = relativeOnHeight(mY);
         double w = relativeOnWidth(mW);
         double h = relativeOnHeight(mH);
-        double rx = relativeOnWidth(mRx);
-        double ry = relativeOnHeight(mRy);
 
-        if (rx != 0 || ry != 0) {
-            if (rx == 0) {
+        if (mRx != null || mRy != null) {
+            double rx = 0d;
+            double ry = 0d;
+            if (mRx == null) {
+                ry = relativeOnHeight(mRy);
                 rx = ry;
-            } else if (ry == 0) {
+            } else if (mRy == null) {
+                rx = relativeOnWidth(mRx);
                 ry = rx;
+            } else {
+                rx = relativeOnWidth(mRx);
+                ry = relativeOnHeight(mRy);
             }
 
             if (rx > w / 2) {

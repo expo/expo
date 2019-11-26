@@ -1,5 +1,6 @@
 ---
 title: MediaLibrary
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-media-library"
 ---
 
 Provides access to user's media library.

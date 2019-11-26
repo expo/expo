@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "~1.1.1",
-    "react": "16.8.3"
+    "react": "16.9.0"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd",
   "bugs": {

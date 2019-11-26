@@ -24,7 +24,7 @@ export default class MediaDetailsScreen extends React.Component<
     details: null,
   };
 
-  async componentWillMount() {
+  async componentDidMount() {
     const { asset } = this.props.navigation.state.params!;
     const details = await MediaLibrary.getAssetInfoAsync(asset);
     this.setState({ details });

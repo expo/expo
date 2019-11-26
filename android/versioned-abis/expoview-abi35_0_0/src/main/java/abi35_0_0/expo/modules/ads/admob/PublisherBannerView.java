@@ -2,7 +2,7 @@ package abi35_0_0.expo.modules.ads.admob;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.widget.FrameLayout;
 

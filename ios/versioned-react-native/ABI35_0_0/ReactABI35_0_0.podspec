@@ -283,7 +283,7 @@ Pod::Spec.new do |s|
 
   s.subspec "RCTCameraRoll" do |ss|
     ss.dependency             "ReactABI35_0_0/Core"
-    ss.dependency             'React/RCTImage'
+    ss.dependency             'ReactABI35_0_0/RCTImage'
     ss.source_files         = "Libraries/CameraRoll/*.{h,m}"
   end
 

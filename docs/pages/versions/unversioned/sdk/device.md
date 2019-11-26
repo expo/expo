@@ -1,12 +1,13 @@
 ---
 title: Device
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-device"
 ---
 
 Provides access to system information about the physical device, such as its manufacturer and model.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-device).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-device`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-device).
 
 ## API
 

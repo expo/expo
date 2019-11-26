@@ -20,13 +20,9 @@ type State = {
 };
 
 export default class RootErrorBoundary extends React.Component<Props, State> {
-  state = {
-    error: null,
-  };
+  constructor(props: Props) {
+    super(props);
 
-  _appLoadingIsMounted = false;
-
-  componentWillMount() {
     // In production the app will just hard crash on errors, unless the developer decides to handle
     // them by overriding the global error handler and swallowing the error, in which case they are
     // responsible for determining how to recover from this state.
@@ -37,7 +33,13 @@ export default class RootErrorBoundary extends React.Component<Props, State> {
         this._unsubscribeFromGlobalErrors
       );
     }
+
+    this.state = {
+      error: null,
+    };
   }
+
+  _appLoadingIsMounted = false;
 
   _subscribeToGlobalErrors = () => {
     this._appLoadingIsMounted = true;

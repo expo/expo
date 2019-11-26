@@ -1,5 +1,6 @@
 ---
 title: AppleAuthentication
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-apple-authentication"
 ---
 
 This library provides Apple authentication for iOS standalone apps in the managed and bare workflows. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
@@ -17,17 +18,22 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 3. You need to choose a primary app for the Apple Sign In configuration. This is the app whose icon will show up in the Apple Sign In system UI. If you have a set of related apps you might choose the "main" app as the primary, but most likely you'll want to just use the app you're working on now as the primary.
 4. In the list of identifiers, click on the one corresponding to your primary app. Enable the "Sign In with Apple" capability, click "Edit", and choose the "Enable as a primary App ID" option. Save the new configuration.
 5. If you chose a different app to be the primary, you'll also need to open up the configuration page for your current app, enable the "Sign In with Apple" capability, click "Edit" and choose the "Group with an existing primary App ID" option. Save this configuration as well.
-6. Finally, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
+6. Next, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
+7. Finally, when you want to make a standalone build to test with, run `expo build:ios --clear-provisioning-profile --revoke-credentials` so that your provisioning profile is regenerated with the new entitlement.
 
 ## Development and Testing
 
-You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in production.
+You can test this library in development in the iOS Expo client without following any of the instructions above; however, you'll need to do this setup in order to use Apple Authentication in your standalone app. When you sign into the Expo client, the identifiers and values you receive will likely be different than what you'll receive in standalone apps.
 
 You can do limited testing of this library on the iOS simulator. However, not all methods will behave the same as on a device, so we highly recommend testing on a real device when possible while developing.
 
+## Verifying the Response from Apple
+
+Apple's response includes a signed JWT with information about the user. To ensure that the response came from Apple, you can cryptographically verify the signature with Apple's public key, which is published at https://appleid.apple.com/auth/keys. This process is not specific to Expo.
+
 ## API
 
-```ts
+```js
 import * as AppleAuthentication from 'expo-apple-authentication';
 ```
 
@@ -114,6 +120,8 @@ You should only attempt to render this if [`AppleAuthentication.isAvailableAsync
 
 The properties of this component extend from `View`; however, you should not attempt to set `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the predefined color styles and the `cornerRadius` property to change the border radius of the button.
 
+Make sure to attach height and width via the `style` props as without these styles, the button will not appear on the screen. 
+
 #### `AppleAuthentication.AppleAuthenticationButtonProps`
 
 - **onPress (_function_)** - The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) in here.
@@ -132,7 +140,8 @@ function YourComponent() {
       buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
       buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
       cornerRadius={5}
-      onPress={() => {
+      style={{ width: 200, height: 44 }}
+      onPress={async () => {
         try {
           const credential = await AppleAuthentication.signInAsync({
             requestedScopes: [

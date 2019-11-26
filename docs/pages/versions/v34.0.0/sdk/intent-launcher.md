@@ -1,5 +1,6 @@
 ---
 title: IntentLauncher
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-intent-launcher"
 ---
 
 Provides a way to launch android intents. e.g. - opening a specific settings screen.

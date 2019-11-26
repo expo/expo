@@ -8,7 +8,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - Either you do not have `expo-cli` installed or it is not properly configured in your `$PATH`.
 
-- [Install expo-cli](../../introduction/installation/) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
+- [Install expo-cli](../../get-started/installation/) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
 
 ### Metro bundler ECONNREFUSED 127.0.0.1:19001
 

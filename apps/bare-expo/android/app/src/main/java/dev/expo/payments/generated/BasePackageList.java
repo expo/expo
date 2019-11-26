@@ -23,6 +23,7 @@ public class BasePackageList {
         new expo.modules.crypto.CryptoPackage(),
         new expo.modules.device.DevicePackage(),
         new expo.modules.documentpicker.DocumentPickerPackage(),
+        new expo.modules.errorrecovery.ErrorRecoveryPackage(),
         new expo.modules.filesystem.FileSystemPackage(),
         new expo.modules.font.FontLoaderPackage(),
         new expo.modules.gl.GLPackage(),

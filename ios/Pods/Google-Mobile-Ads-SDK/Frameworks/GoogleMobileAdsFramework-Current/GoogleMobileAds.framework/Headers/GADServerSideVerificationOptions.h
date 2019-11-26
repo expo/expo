@@ -7,14 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-/// Options for server-to-server verification callbacks for a rewarded ad.
+/// Options for server-side verification callbacks for a rewarded ad.
 @interface GADServerSideVerificationOptions : NSObject <NSCopying>
 
-/// A unique identifier used to identify the user when making server-to-server reward callbacks.
-/// This value will be passed as a parameter of the callback URL to the publisher's server.
+/// A unique identifier used to identify the user when making server-side verification reward
+/// callbacks. This value will be passed as a parameter of the callback URL to the publisher's
+/// server.
 @property(nonatomic, copy, nullable) NSString *userIdentifier;
 
-/// Optional custom reward string to include in the server-to-server callback.
+/// Optional custom reward string to include in the server-side verification callback.
 @property(nonatomic, copy, nullable) NSString *customRewardString;
 
 @end

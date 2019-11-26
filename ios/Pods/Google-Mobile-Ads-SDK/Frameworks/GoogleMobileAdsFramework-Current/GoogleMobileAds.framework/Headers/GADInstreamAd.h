@@ -5,7 +5,9 @@
 //  Copyright 2019 Google LLC. All rights reserved.
 //
 
+#import <GoogleMobileAds/GADAdValue.h>
 #import <GoogleMobileAds/GADMediaAspectRatio.h>
+#import <GoogleMobileAds/GADMediaContent.h>
 #import <GoogleMobileAds/GADRequest.h>
 #import <GoogleMobileAds/GADResponseInfo.h>
 #import <GoogleMobileAds/GADVideoController.h>
@@ -35,19 +37,13 @@ typedef void (^GADInstreamAdLoadCompletionHandler)(GADInstreamAd *_Nullable inst
 + (void)loadAdWithAdTag:(nonnull NSString *)adTag
       completionHandler:(nonnull GADInstreamAdLoadCompletionHandler)completionHandler;
 
-/// Video controller for controlling to the video rendered by the instream ad.
-@property(nonatomic, readonly, nullable) GADVideoController *videoController;
+/// Media content metadata and controls.
+@property(nonatomic, readonly, nonnull) GADMediaContent *mediaContent;
 
 /// Information about the ad response that returned the ad.
 @property(nonatomic, readonly, nonnull) GADResponseInfo *responseInfo;
 
-/// Video duration.
-@property(nonatomic, readonly) NSTimeInterval duration;
-
-/// Video's current time.
-@property(nonatomic, readonly) NSTimeInterval currentTime;
-
-/// Video aspect ratio (width/height).
-@property(nonatomic, readonly) CGFloat aspectRatio;
+/// Called when the ad is estimated to have earned money. Available for whitelisted accounts only.
+@property(nonatomic, nullable, copy) GADPaidEventHandler paidEventHandler;
 
 @end

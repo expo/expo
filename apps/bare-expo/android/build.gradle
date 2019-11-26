@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
@@ -5,7 +7,8 @@ buildscript {
         buildToolsVersion = "28.0.3"
         minSdkVersion = 21
         compileSdkVersion = 28
-        targetSdkVersion = 27
+        targetSdkVersion = 28
+        // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "28.0.0"
     }
     repositories {
@@ -13,27 +16,39 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
+def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+
+ext {
+    reactNativeVersion = packageJson.dependencies["react-native"]
+}
+
 allprojects {
+    configurations.all {
+        resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+    }
+
     repositories {
         mavenLocal()
-        google()
-        jcenter()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../../../node_modules/jsc-android/dist")
+        }
+
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.7'
-    distributionUrl = distributionUrl.replace("bin", "all")
-}

@@ -1,41 +1,35 @@
 PODS:
-  - EXCore (2.0.0)
-  - EXPermissions (2.0.0):
-    - EXCore
-    - EXPermissionsInterface
-  - EXPermissionsInterface (2.0.0):
-    - EXCore
+  - EXPermissions (6.0.0):
+    - UMCore
+    - UMPermissionsInterface
   - expo_flutter_adapter (0.0.1):
     - Flutter
   - expo_permissions (0.0.1):
     - Flutter
   - expo_sensors (0.0.1):
     - Flutter
-  - EXSensors (2.0.0):
-    - EXCore
-    - EXSensorsInterface
-  - EXSensorsInterface (2.0.0):
-    - EXCore
+  - EXSensors (6.0.0):
+    - UMCore
+    - UMSensorsInterface
   - Flutter (1.0.0)
+  - UMCore (3.0.2)
+  - UMPermissionsInterface (3.0.0)
+  - UMSensorsInterface (3.0.0)
 
 DEPENDENCIES:
-  - EXCore (from `../node_modules/expo-core/ios`)
-  - EXPermissions (from `../node_modules/expo-permissions/ios`)
-  - EXPermissionsInterface (from `../node_modules/expo-permissions-interface/ios`)
+  - EXPermissions (from `../../../expo-permissions/ios`)
   - expo_flutter_adapter (from `Pods/.symlinks/plugins/expo_flutter_adapter/ios`)
   - expo_permissions (from `Pods/.symlinks/plugins/expo_permissions/ios`)
   - expo_sensors (from `Pods/.symlinks/plugins/expo_sensors/ios`)
-  - EXSensors (from `../node_modules/expo-sensors/ios`)
-  - EXSensorsInterface (from `../node_modules/expo-sensors-interface/ios`)
+  - EXSensors (from `../../../expo-sensors/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios`)
+  - "UMCore (from `../../../@unimodules/core/ios`)"
+  - UMPermissionsInterface (from `../../../unimodules-permissions-interface/ios`)
+  - UMSensorsInterface (from `../../../unimodules-sensors-interface/ios`)
 
 EXTERNAL SOURCES:
-  EXCore:
-    :path: "../node_modules/expo-core/ios"
   EXPermissions:
-    :path: "../node_modules/expo-permissions/ios"
-  EXPermissionsInterface:
-    :path: "../node_modules/expo-permissions-interface/ios"
+    :path: "../../../expo-permissions/ios"
   expo_flutter_adapter:
     :path: Pods/.symlinks/plugins/expo_flutter_adapter/ios
   expo_permissions:
@@ -43,23 +37,27 @@ EXTERNAL SOURCES:
   expo_sensors:
     :path: Pods/.symlinks/plugins/expo_sensors/ios
   EXSensors:
-    :path: "../node_modules/expo-sensors/ios"
-  EXSensorsInterface:
-    :path: "../node_modules/expo-sensors-interface/ios"
+    :path: "../../../expo-sensors/ios"
   Flutter:
     :path: Pods/.symlinks/flutter/ios
+  UMCore:
+    :path: "../../../@unimodules/core/ios"
+  UMPermissionsInterface:
+    :path: "../../../unimodules-permissions-interface/ios"
+  UMSensorsInterface:
+    :path: "../../../unimodules-sensors-interface/ios"
 
 SPEC CHECKSUMS:
-  EXCore: 81304a0284b7f2e0f691b8a6bc642854e730f5e2
-  EXPermissions: dd31cb432c078eed1f4c1e290bc32649d5280bd3
-  EXPermissionsInterface: 76f80a0dcd16afde36498e3d3aa168cb43999558
-  expo_flutter_adapter: 7e896acbcd8c4da143f0a6375d5af956154242a4
-  expo_permissions: 625b0ae1155810e5891df06feef86af44228903a
-  expo_sensors: 169e499146b9966ffe9539b1f1bfdc13554eafd5
-  EXSensors: 6aa3b3b9906beb0b574a88943d171ebc226b0fe5
-  EXSensorsInterface: 9e845bc03ad23a846fa6bcd4e2a60f1d0b1a6906
-  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
+  EXPermissions: 99e52dc3e5f8e55153f1958004f6df2a30a1f2f5
+  expo_flutter_adapter: 622519a3fdda5677685bf8484f5ffc3c875f49d0
+  expo_permissions: 3be8e8f6ee7b979b71ac976a67c6f8f9cad2a6a0
+  expo_sensors: 5f3f6ae535fb4d37c8fcfd9e43a3177fddea6746
+  EXSensors: d6878e6848acfb67a93b8bf7f790a93f9a47008b
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  UMCore: 733094f43f7244c60ce1f0592d00013ed68fa52c
+  UMPermissionsInterface: 938d010c74c43fcefc9bb990633a7c5a1631267e
+  UMSensorsInterface: 0ed023ce9b96f2ca6fada7bda05b7760da60b293
 
-PODFILE CHECKSUM: a1d5878d34906d9539cefd078104709223ffa495
+PODFILE CHECKSUM: 7266c692412c005dcad4010be664f9f98863c6b4
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.8.0.beta.2

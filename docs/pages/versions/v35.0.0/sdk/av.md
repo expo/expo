@@ -1,5 +1,6 @@
 ---
 title: AV
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-av"
 ---
 
 The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.
@@ -315,7 +316,7 @@ This default initial status can be overwritten by setting the optional `initialS
 
 When asked to seek an A/V item, native player in iOS sometimes may seek to a slightly different time. This technique, mentioned in [Apple documentation](https://developer.apple.com/documentation/avfoundation/avplayer/1387741-seek#discussion), is used to shorten the time of the `seekTo` call (the player may decide to play immediately from a different time than requested, instead of decoding the exact requested part and playing it with the decoding delay).
 
-If you matter about the precision more than about the delay, you can specify the tolerance with which the player will seek according to your needs.
+If precision is important, you can specify the tolerance with which the player will seek. However, this will result in an increased delay.
 
 ## Example usage
 

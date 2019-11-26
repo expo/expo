@@ -473,6 +473,7 @@
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 1D27564BB990E3F72332953D;
 			projectDirPath = "";

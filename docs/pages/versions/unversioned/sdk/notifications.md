@@ -1,10 +1,9 @@
 ---
 title: Notifications
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Notifications"
 ---
 
 Provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
-
-Want to see it in action? Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications)!
 
 ## Installation
 
@@ -16,7 +15,7 @@ This API is pre-installed in [managed](../../introduction/managed-vs-bare/#manag
 import { Notifications } from 'expo';
 ```
 
-Checkout [this Snack](https://snack.expo.io/@documentation/pushnotifications) to see Notifications in action- but be sure to use a device! Push notifications don't work on simulators/emulators. For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for notifications to work.
+Check out [this Snack](https://snack.expo.io/@documentation/pushnotifications?platform=ios) to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators. For Expo for Web, unless you're using localhost, your web page has to support HTTPS in order for notifications to work.
 
 ## Subscribing to Notifications
 

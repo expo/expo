@@ -1,5 +1,6 @@
 ---
 title: GestureHandler
+sourceCodeUrl: "https://github.com/kmagiera/react-native-gesture-handler"
 ---
 
 An API for handling complex gestures. From the project's README:

@@ -1,6 +1,33 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
+export var DayOfTheWeek;
+(function (DayOfTheWeek) {
+    DayOfTheWeek[DayOfTheWeek["Sunday"] = 1] = "Sunday";
+    DayOfTheWeek[DayOfTheWeek["Monday"] = 2] = "Monday";
+    DayOfTheWeek[DayOfTheWeek["Tuesday"] = 3] = "Tuesday";
+    DayOfTheWeek[DayOfTheWeek["Wednesday"] = 4] = "Wednesday";
+    DayOfTheWeek[DayOfTheWeek["Thursday"] = 5] = "Thursday";
+    DayOfTheWeek[DayOfTheWeek["Friday"] = 6] = "Friday";
+    DayOfTheWeek[DayOfTheWeek["Saturday"] = 7] = "Saturday";
+})(DayOfTheWeek || (DayOfTheWeek = {}));
+export var MonthOfTheYear;
+(function (MonthOfTheYear) {
+    MonthOfTheYear[MonthOfTheYear["January"] = 1] = "January";
+    MonthOfTheYear[MonthOfTheYear["February"] = 2] = "February";
+    MonthOfTheYear[MonthOfTheYear["March"] = 3] = "March";
+    MonthOfTheYear[MonthOfTheYear["April"] = 4] = "April";
+    MonthOfTheYear[MonthOfTheYear["May"] = 5] = "May";
+    MonthOfTheYear[MonthOfTheYear["June"] = 6] = "June";
+    MonthOfTheYear[MonthOfTheYear["July"] = 7] = "July";
+    MonthOfTheYear[MonthOfTheYear["August"] = 8] = "August";
+    MonthOfTheYear[MonthOfTheYear["September"] = 9] = "September";
+    MonthOfTheYear[MonthOfTheYear["October"] = 10] = "October";
+    MonthOfTheYear[MonthOfTheYear["November"] = 11] = "November";
+    MonthOfTheYear[MonthOfTheYear["December"] = 12] = "December";
+})(MonthOfTheYear || (MonthOfTheYear = {}));
+export { PermissionStatus };
 export async function getCalendarsAsync(entityType) {
     if (!ExpoCalendar.getCalendarsAsync) {
         throw new UnavailabilityError('Calendar', 'getCalendarsAsync');
@@ -279,11 +306,30 @@ export function openEventInCalendar(id) {
     }
     return ExpoCalendar.openEventInCalendar(parseInt(id, 10));
 } // Android
+/**
+ * @deprecated Use requestCalendarPermissionsAsync()
+ */
 export async function requestPermissionsAsync() {
-    if (!ExpoCalendar.requestPermissionsAsync) {
-        throw new UnavailabilityError('Calendar', 'requestPermissionsAsync');
+    console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');
+    return requestCalendarPermissionsAsync();
+}
+export async function getCalendarPermissionsAsync() {
+    if (!ExpoCalendar.getCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getCalendarPermissionsAsync');
     }
-    return await ExpoCalendar.requestPermissionsAsync();
+    return ExpoCalendar.getCalendarPermissionsAsync();
+}
+export async function getRemindersPermissionsAsync() {
+    if (!ExpoCalendar.getRemindersPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'getRemindersPermissionsAsync');
+    }
+    return ExpoCalendar.getRemindersPermissionsAsync();
+}
+export async function requestCalendarPermissionsAsync() {
+    if (!ExpoCalendar.requestCalendarPermissionsAsync) {
+        throw new UnavailabilityError('Calendar', 'requestCalendarPermissionsAsync');
+    }
+    return await ExpoCalendar.requestCalendarPermissionsAsync();
 }
 export async function requestRemindersPermissionsAsync() {
     if (!ExpoCalendar.requestRemindersPermissionsAsync) {

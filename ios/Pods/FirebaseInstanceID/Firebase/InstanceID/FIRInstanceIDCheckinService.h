@@ -16,6 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <FirebaseInstanceID/FIRInstanceID+Private.h>
 #import "FIRInstanceIDUtilities.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -30,20 +31,6 @@ FOUNDATION_EXPORT NSString *const kFIRInstanceIDGServicesDictionaryKey;
 FOUNDATION_EXPORT NSString *const kFIRInstanceIDDeviceDataVersionKey;
 
 @class FIRInstanceIDCheckinPreferences;
-
-/**
- *  @related FIRInstanceIDCheckinService
- *
- *  The completion handler invoked once the fetch from Checkin server finishes.
- *  For successful fetches we returned checkin information by the checkin service
- *  and `nil` error, else we return the appropriate error object as reported by the
- *  Checkin Service.
- *
- *  @param checkinPreferences The checkin preferences as fetched from the server.
- *  @param error              The error object which fetching GServices data.
- */
-typedef void (^FIRInstanceIDDeviceCheckinCompletion)(
-    FIRInstanceIDCheckinPreferences *_Nullable checkinPreferences, NSError *_Nullable error);
 
 /**
  *  Register the device with Checkin Service and get back the `authID`, `secret

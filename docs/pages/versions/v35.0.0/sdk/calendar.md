@@ -1,6 +1,9 @@
 ---
 title: Calendar
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-calendar"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -11,6 +14,42 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ## Configuration
 
 In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
+
+## Usage
+
+<SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar', 'expo-permissions']}>
+
+```javascript
+import React from 'react';
+import { View, Text } from 'react-native';
+import * as Calendar from 'expo-calendar';
+import * as Permissions from 'expo-permissions';
+
+export default class App extends React.Component {
+  componentDidMount = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CALENDAR);
+    if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync();
+        console.log({calendars})
+    }
+  };
+
+  render() {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: '#fff',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Calendar Module Example</Text>
+      </View>
+    );
+  }
+}
+```
+</SnackInline>
 
 ## API
 
@@ -75,7 +114,7 @@ Creates a new calendar on the device, allowing events to be added later and disp
   - **allowedReminders (_array_)** -- (Android only)
   - **allowedAttendeeTypes (_array_)** -- (Android only)
   - **isVisible (_boolean_)** -- (Android only)
-  - **isSynced (_boolean_)** -- (Android only)
+  - **isSynced (_boolean_)** -- (Android only) Whether or not the calendar is synced from a remote source. Unexpected behavior may occur if this is not set to `true`.
   - **accessLevel (_string_)** -- (Android only)
 
 #### Returns

@@ -22,7 +22,7 @@
 #endif
 
 class FBJSRuntime;
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace jsi {
 
 namespace detail {
@@ -1157,6 +1157,6 @@ class JSError : public JSIException {
 };
 
 } // namespace jsi
-} // namespace facebook
+} // namespace ABI34_0_0facebook
 
 #include <ABI34_0_0jsi/ABI34_0_0jsi-inl.h>

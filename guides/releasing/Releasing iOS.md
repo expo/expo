@@ -67,8 +67,9 @@
 **How:**
 
 - Bump Expo client versions (CFBundleVersion, CFBundleShortVersionString) in `ios/Exponent/Supporting/Info.plist`.
-- As of latest time of writing, Xcode's "automatic provisioning" isn't working well with fastlane, so you might want to switch to manual provisioning in your working copy of Exponent.xcodeproj.
-- Apple seems to invalidate our provisioning profiles whenever somebody new gets added or removed from the team. If you are using manual provisioning, it is sometimes helpful to log in, clear invalid profiles, and create/download a new one. If you do this, please name the profile something very specific, like 'Expo Client App Store August 20 2018'!
+- If it's the first time you're making the iOS release build on this computer, you'll need to download our distribution certificates and provisioning profiles. We use Fastlane Match and Google Cloud Storage for this.
+  - Firstly, you need to authenticate yourself on Google Cloud. Run `gcloud auth application-default login` and log in to Google Cloud Console in your browser.
+  - Now your computer should be able to download distribution credentials from Google Cloud Storage - to do this, run `fastlane match` in the repo's root directory and enter your Apple Developer account credentials when it prompts for them.
 - Make sure build's metadata are up to date (see files under `fastlane/metadata/en-US`).
 - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it.
 - Wait for Apple to finish processing your new build. This step can take another 30+ minutes (but sometimes just a few).

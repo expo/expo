@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 public class LocationTaskService extends Service {

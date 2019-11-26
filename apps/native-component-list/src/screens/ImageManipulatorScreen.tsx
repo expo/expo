@@ -31,18 +31,16 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
     ready: false,
   };
 
-  componentWillMount() {
-    (async () => {
-      const image = Asset.fromModule(
-        require('../../assets/images/example2.jpg')
-      );
-      await image.downloadAsync();
-      this.setState({
-        ready: true,
-        image,
-        original: image,
-      });
-    })();
+  async componentDidMount() {
+    const image = Asset.fromModule(
+      require('../../assets/images/example2.jpg')
+    );
+    await image.downloadAsync();
+    this.setState({
+      ready: true,
+      image,
+      original: image,
+    });
   }
 
   render() {

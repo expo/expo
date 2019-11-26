@@ -1,6 +1,9 @@
 ---
 title: Contacts
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-contacts"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 Provides access to the phone's system contacts.
 
@@ -8,11 +11,70 @@ Provides access to the phone's system contacts.
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-contacts`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-contacts).
 
+## Usage
+
+<SnackInline label='Basic Contacts Usage' templateId='contacts' dependencies={['expo-contacts']}>
+
+```js
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
+import * as Contacts from 'expo-contacts';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status === 'granted') {
+        const { data } = await Contacts.getContactsAsync({
+          fields: [Contacts.Fields.Emails],
+        });
+
+        if (data.length > 0) {
+          const contact = data[0];
+          console.log(contact);
+        }
+      }
+    })();
+  }, []);
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text>Contacts Module Example</Text>
+    </View>
+  );
+}
+```
+</SnackInline>
+
 ## API
 
 ```js
 import * as Contacts from 'expo-contacts';
 ```
+
+
+### `requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing contacts data. Alias for `Permissions.askAsync(Permissions.CONTACTS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `getPermissionsAsync()`
+
+Checks user's permissions for accessing contacts data. Alias for `Permissions.getAsync(Permissions.CONTACTS)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
 
 ### getContactsAsync
 
@@ -449,40 +511,40 @@ const allContainers = await getContainersAsync({
 
 A set of fields that define information about a single entity.
 
-| Name                    | Type                      | Description                                                    | iOS | Android | Note |
-| ----------------------- | ------------------------- | -------------------------------------------------------------- | --- | ------- |      |
-| id                      | `string`                  | Immutable identifier used for querying and indexing.           | ✅  | ✅      |      |
-| name                    | `string`                  | Full name with proper format.                                  | ✅  | ✅      |      |
-| firstName               | `string`                  | Given name.                                                    | ✅  | ✅      |      |
-| middleName              | `string`                  | Middle name.                                                   | ✅  | ✅      |      |
-| lastName                | `string`                  | Family name.                                                   | ✅  | ✅      |      |
-| maidenName              | `string`                  | Maiden name.                                                   | ✅  | ✅      |      |
-| namePrefix              | `string`                  | Dr. Mr. Mrs. Ect...                                            | ✅  | ✅      |      |
-| nameSuffix              | `string`                  | Jr. Sr. Ect...                                                 | ✅  | ✅      |      |
-| nickname                | `string`                  | An alias to the proper name.                                   | ✅  | ✅      |      |
-| phoneticFirstName       | `string`                  | Pronunciation of the first name.                               | ✅  | ✅      |      |
-| phoneticMiddleName      | `string`                  | Pronunciation of the middle name.                              | ✅  | ✅      |      |
-| phoneticLastName        | `string`                  | Pronunciation of the last name.                                | ✅  | ✅      |      |
-| company                 | `string`                  | Organization the entity belongs to.                            | ✅  | ✅      |      |
-| jobTitle                | `string`                  | Job description.                                               | ✅  | ✅      |      |
-| department              | `string`                  | Job department.                                                | ✅  | ✅      |      |
-| note                    | `string`                  | Additional information.                                        | ⚠️  | ✅      | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. |
-| imageAvailable          | `boolean`                 | Used for efficient retrieval of images.                        | ✅  | ✅      |      |
-| image                   | `Image`                   | Thumbnail image (ios: 320x320)                                 | ✅  | ✅      |      |
-| rawImage                | `Image`                   | Raw image without cropping, usually large.                     | ✅  | ✅      |      |
-| contactType             | `ContactType`             | Denoting a person or company.                                  | ✅  | ✅      |      |
-| birthday                | `Date`                    | Birthday information in JS format.                             | ✅  | ✅      |      |
-| dates                   | `Date[]`                  | A list of other relevant user dates.                           | ✅  | ✅      |      |
-| relationships           | `Relationship[]`          | Names of other relevant user connections                       | ✅  | ✅      |      |
-| emails                  | `Email[]`                 | Email addresses                                                | ✅  | ✅      |      |
-| phoneNumbers            | `PhoneNumber[]`           | Phone numbers                                                  | ✅  | ✅      |      |
-| addresses               | `Address[]`               | Locations                                                      | ✅  | ✅      |      |
-| instantMessageAddresses | `InstantMessageAddress[]` | IM connections                                                 | ✅  | ✅      |      |
-| urlAddresses            | `UrlAddress[]`            | Web Urls                                                       | ✅  | ✅      |      |
-| nonGregorianBirthday    | `Date`                    | Birthday that doesn't conform to the Gregorian calendar format | ✅  | ❌      |      |
-| socialProfiles          | `SocialProfile[]`         | Social networks                                                | ✅  | ❌      |      |
-| thumbnail               | `Image`                   | Deprecated: Use `image`                                        | ❌  | ❌      |      |
-| previousLastName        | `string`                  | Deprecated: Use `maidenName`                                   | ❌  | ❌      |      |
+| Name | Type | Description | iOS | Android | Note 
+| ----------------- | ------------------- | -------------------------------------------------- | --- | --- | --- |
+| id | `string` | Immutable identifierused for querying and indexing. | ✅ | ✅ |
+| name | `string` | Full name with proper format.                    | ✅ | ✅ |
+| firstName| `string` | Given name. | ✅ | ✅ |
+| middleName | `string` | Middle name. | ✅ | ✅ |
+| lastName | `string` | Family name. | ✅ | ✅ |
+| maidenName | `string` | Maiden name. | ✅ | ✅ |
+| namePrefix | `string` | Dr. Mr. Mrs. Ect... | ✅ | ✅ |
+| nameSuffix | `string` | Jr. Sr. Ect... | ✅ | ✅ |
+| nickname | `string` | An alias to the proper name. | ✅| ✅|
+| phoneticFirstName | `string` | Pronunciation of the first name. |✅|✅|
+| phoneticMiddleName | `string` | Pronunciation of the middle name. | ✅ | ✅ |
+| phoneticLastName | `string` | Pronunciation of the last name. | ✅ | ✅ |
+| company | `string` | Organization the entity belongs to. | ✅ | ✅ |
+| jobTitle | `string` | Job description. | ✅ |✅ |
+| department | `string` | Job department. | ✅ | ✅ |
+| note | `string` | Additional information. | ⚠️ | ✅ | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. |
+| imageAvailable | `boolean` | Used for efficient retrieval of images. | ✅ | ✅ |
+| image | `Image` | Thumbnail image (ios: 320x320) | ✅ | ✅ |
+| rawImage | `Image` | Raw image without cropping, usually large. | ✅ | ✅ |
+| contactType | `ContactType` | Denoting a person or company. | ✅ | ✅ |
+| birthday | `Date` | Birthday information in JS format. | ✅ | ✅ |
+| dates | `Date[]` | A list of other relevant user dates. | ✅ | ✅ |
+| relationships |`Relationship[]` | Names of other relevant user connections |✅ | ✅ |
+| emails | `Email[]` | Email addresses | ✅ | ✅ |
+| phoneNumbers | `PhoneNumber[]` | Phone numbers | ✅ | ✅ |
+| addresses | `Address[]` | Locations | ✅ | ✅ |
+| instantMessageAddresses |` InstantMessageAddress[]` | IM connections | ✅ | ✅ |
+| urlAddresses | `UrlAddress[]` | Web Urls | ✅ | ✅ |
+| nonGregorianBirthday | `Date` | Birthday that doesn't conform to the Gregorian calendar format | ✅ | ❌ |
+| socialProfiles | `SocialProfile[]` | Social networks | ✅ | ❌ |
+| thumbnail | `Image` | **Deprecated**: Use `image` | ❌ | ❌ |
+| previousLastName | `string` | **Deprecated**: Use maidenName | ❌ | ❌ |
 
 ### Group
 
@@ -718,7 +780,7 @@ const contactField = Contact.Fields.FirstName;
 | Department              | `'department'`               | ✅  | ✅      |      |
 | ImageAvailable          | `'imageAvailable'`           | ✅  | ✅      |      |
 | Image                   | `'image'`                    | ✅  | ✅      |      |
-| Note                    | `'note'`                     | ⚠️  | ✅      | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. |
+| Note                    | `'note'`                     | ⚠️  | ✅      | On iOS 13 and above, your app must have the `com.apple.developer.contacts.notes` entitlement. You must contact Apple and receive approval for this entitlement. Read [the Apple docs](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes) to learn more. Expo client doesn't have this entitlement. However, you can add this to a standalone app. To do this you need to set the `accessesContactNotes` key to true in your app.json file as specified [here](https://docs.expo.io/versions/latest/workflow/configuration/#ios). |
 | Dates                   | `'dates'`                    | ✅  | ✅      |      |
 | Relationships           | `'relationships'`            | ✅  | ✅      |      |
 | Nickname                | `'nickname'`                 | ✅  | ✅      |      |

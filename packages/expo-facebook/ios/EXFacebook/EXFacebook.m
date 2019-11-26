@@ -14,12 +14,72 @@ NSString * const EXFacebookLoginAppIdErrorDomain = @"E_FBLOGIN_APP_ID";
 
 UM_EXPORT_MODULE(ExponentFacebook)
 
-UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
-                    logInWithReadPermissionsWithAppId:(NSString *)appId
-                    config:(NSDictionary *)config
+UM_EXPORT_METHOD_AS(setAutoLogAppEventsEnabledAsync,
+                    setAutoLogAppEventsEnabled:(BOOL)enabled
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
+  [FBSDKSettings setAutoLogAppEventsEnabled:enabled];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
+                    setAutoInitEnabled:(BOOL)enabled
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // If enabled is true, the line below will initialize the SDK.
+  // This behavior is different than on Android where one needs
+  // to initialize the SDK explicitly. We have no power over this,
+  // and to mitigate this difference we will NOT add initializing
+  // to the respective method on Android, but we will instruct users
+  // to initialize the SDK manually on both platforms instead.
+  [FBSDKSettings setAutoInitEnabled:enabled];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(initializeAsync,
+                    initializeWithAppId:(NSString *)appId
+                    appName:(NSString *)appName
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // Caller overrides buildtime settings
+  if (appId) {
+    [FBSDKSettings setAppID:appId];
+  }
+  if (![FBSDKSettings appID]) {
+    reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
+    return;
+  }
+  // Caller overrides buildtime settings
+  if (appName) {
+    [FBSDKSettings setDisplayName:appName];
+  }
+  [FBSDKApplicationDelegate initializeSDK:nil];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(setAdvertiserIDCollectionEnabledAsync,
+                    setAdvertiserIDCollectionEnabled:(BOOL)enabled
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  // Caller overrides buildtime settings
+  [FBSDKSettings setAdvertiserIDCollectionEnabled:enabled];
+  resolve(nil);
+}
+
+UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
+                    logInWithReadPermissionsWithConfig:(NSDictionary *)config
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  if (![FBSDKSettings appID]) {
+    reject(@"E_CONF_ERROR", @"No FacebookAppId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
+    return;
+  }
+
   NSArray *permissions = config[@"permissions"];
   if (!permissions) {
     permissions = @[@"public_profile", @"email"];
@@ -28,17 +88,8 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
   // FB SDK requires login to run on main thread
   // Needs to not race with other mutations of this global FB state
   dispatch_async(dispatch_get_main_queue(), ^{
-    [FBSDKSettings setAppID:appId];
     FBSDKLoginManager *loginMgr = [[FBSDKLoginManager alloc] init];
     [loginMgr logOut];
-    if (![[self class] facebookAppIdFromNSBundle]) {
-      // We can't reliably execute login without an appId in Info.plist.
-      NSString *message = [NSString stringWithFormat:
-                           @"Tried to perform Facebook login, but no Facebook app id was provided."
-                           " Specify Facebook app id in Info.plist."];
-      reject(EXFacebookLoginAppIdErrorDomain, message, UMErrorWithMessage(message));
-      return;
-    }
 
     @try {
       [loginMgr logInWithPermissions:permissions fromViewController:nil handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
@@ -49,11 +100,6 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
 
         if (result.isCancelled || !result.token) {
           resolve(@{ @"type": @"cancel" });
-          return;
-        }
-
-        if (![result.token.appID isEqualToString:appId]) {
-          reject(EXFacebookLoginErrorDomain, @"Logged into wrong app, try again?", nil);
           return;
         }
 
@@ -79,11 +125,6 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
       reject(error.domain, exception.reason, error);
     }
   });
-}
-
-+ (id)facebookAppIdFromNSBundle
-{
-  return [[NSBundle mainBundle].infoDictionary objectForKey:@"FacebookAppID"];
 }
 
 @end

@@ -121,7 +121,7 @@ class TSpanView extends TextView {
         FontData font = gc.getFont();
         TextPaint tp = new TextPaint(paint);
         applyTextPropertiesToPaint(tp, font);
-        applySpacingAndFeatuers(tp, font);
+        applySpacingAndFeatures(tp, font);
         double fontSize = gc.getFontSize();
 
         Layout.Alignment align;
@@ -225,7 +225,7 @@ class TSpanView extends TextView {
         FontData font = gc.getFont();
         applyTextPropertiesToPaint(paint, font);
 
-        applySpacingAndFeatuers(paint, font);
+        applySpacingAndFeatures(paint, font);
 
         cachedAdvance = paint.measureText(line);
         return cachedAdvance;
@@ -237,7 +237,7 @@ class TSpanView extends TextView {
     final static String additionalLigatures = "'hlig', 'cala', ";
     final static String fontWeightTag = "'wght' ";
 
-    private void applySpacingAndFeatuers(Paint paint, FontData font) {
+    private void applySpacingAndFeatures(Paint paint, FontData font) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             double letterSpacing = font.letterSpacing;
             paint.setLetterSpacing((float) (letterSpacing / (font.fontSize * mScale)));
@@ -1158,15 +1158,8 @@ class TSpanView extends TextView {
         int x = Math.round(dst[0]);
         int y = Math.round(dst[1]);
 
-        if (mRegion == null && mFillPath != null) {
-            mRegion = getRegion(mFillPath);
-        }
-        if (mRegion == null && mPath != null) {
-            mRegion = getRegion(mPath);
-        }
-        if (mStrokeRegion == null && mStrokePath != null) {
-            mStrokeRegion = getRegion(mStrokePath);
-        }
+        initBounds();
+
         if (
             (mRegion == null || !mRegion.contains(x, y)) &&
             (mStrokeRegion == null || !mStrokeRegion.contains(x, y))
@@ -1176,10 +1169,6 @@ class TSpanView extends TextView {
 
         Path clipPath = getClipPath();
         if (clipPath != null) {
-            if (mClipRegionPath != clipPath) {
-                mClipRegionPath = clipPath;
-                mClipRegion = getRegion(clipPath);
-            }
             if (!mClipRegion.contains(x, y)) {
                 return -1;
             }

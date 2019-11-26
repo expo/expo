@@ -1,5 +1,6 @@
 ---
 title: Appearance
+sourceCodeUrl: "https://github.com/expo/react-native-appearance"
 ---
 
 Detect preferred color scheme (light, dark, or no preference) on iOS 13+.
@@ -8,7 +9,21 @@ Detect preferred color scheme (light, dark, or no preference) on iOS 13+.
 
 To install this API in a [managed](../../introduction/managed-vs-bare/#managed-workflow) or [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, run `expo install react-native-appearance`. In bare apps, make sure you also follow the [react-native-appearance linking and configuration instructions](https://github.com/expo/react-native-appearance#linking).
 
-> **Note:** In managed apps you will need to also configure `userInterfaceStyle` property in the [`ios` object in `app.json`](../../workflow/configuration/#ios) and set it to `"automatic"`.
+## Configuration
+
+You can configure supported appearance styles in managed apps inside `app.json` with the `ios.userInterfaceStyle` key. If this key is absent, the `light` style will be forced. If you'd like to allow the user to switch their preferred style in operating system preferences and detect that with the `Appearance` API, you should set `userInterfaceStyle` to `"automatic"`:
+
+```json
+{
+  "expo": {
+    "ios": {
+      "userInterfaceStyle": "automatic"
+    }
+  }
+}
+```
+
+In bare apps, you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`.
 
 ## API
 

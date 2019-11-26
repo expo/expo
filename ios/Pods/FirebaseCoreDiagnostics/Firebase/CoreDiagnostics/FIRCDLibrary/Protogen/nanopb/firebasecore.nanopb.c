@@ -26,28 +26,19 @@
 
 
 
-const pb_field_t logs_proto_mobilesdk_ios_ICoreConfiguration_fields[34] = {
+const pb_field_t logs_proto_mobilesdk_ios_ICoreConfiguration_fields[22] = {
     PB_FIELD(  1, UENUM   , OPTIONAL, STATIC  , FIRST, logs_proto_mobilesdk_ios_ICoreConfiguration, configuration_type, configuration_type, 0),
-    PB_FIELD(  2, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, version_name, configuration_type, 0),
-    PB_FIELD(  3, INT64   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, build_number, version_name, 0),
-    PB_FIELD(  4, UENUM   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, build_type, build_number, 0),
-    PB_FIELD(  5, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, plist_version, build_type, 0),
-    PB_FIELD(  6, UENUM   , REPEATED, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, sdk_service_enabled, plist_version, 0),
-    PB_FIELD(  7, UENUM   , REPEATED, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, sdk_service_installed, sdk_service_enabled, 0),
+    PB_FIELD(  7, UENUM   , REPEATED, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, sdk_service_installed, configuration_type, 0),
     PB_FIELD(  9, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, device_model, sdk_service_installed, 0),
     PB_FIELD( 10, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, app_id, device_model, 0),
-    PB_FIELD( 11, INT64   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, project_number, app_id, 0),
-    PB_FIELD( 12, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, bundle_id, project_number, 0),
-    PB_FIELD( 13, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, client_id, bundle_id, 0),
-    PB_FIELD( 14, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, install, client_id, 0),
-    PB_FIELD( 16, UENUM   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, pod_name, install, 0),
+    PB_FIELD( 12, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, bundle_id, app_id, 0),
+    PB_FIELD( 16, UENUM   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, pod_name, bundle_id, 0),
     PB_FIELD( 18, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, icore_version, pod_name, 0),
     PB_FIELD( 19, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, sdk_version, icore_version, 0),
     PB_FIELD( 20, UENUM   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, sdk_name, sdk_version, 0),
     PB_FIELD( 21, INT32   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, app_count, sdk_name, 0),
     PB_FIELD( 22, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, os_version, app_count, 0),
-    PB_FIELD( 23, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, itunes_id, os_version, 0),
-    PB_FIELD( 24, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, min_supported_ios_version, itunes_id, 0),
+    PB_FIELD( 24, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, min_supported_ios_version, os_version, 0),
     PB_FIELD( 25, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, use_default_app, min_supported_ios_version, 0),
     PB_FIELD( 26, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, deployed_in_app_store, use_default_app, 0),
     PB_FIELD( 27, INT32   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, dynamic_framework_count, deployed_in_app_store, 0),
@@ -55,11 +46,8 @@ const pb_field_t logs_proto_mobilesdk_ios_ICoreConfiguration_fields[34] = {
     PB_FIELD( 29, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, using_zip_file, apple_framework_version, 0),
     PB_FIELD( 30, UENUM   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, deployment_type, using_zip_file, 0),
     PB_FIELD( 31, BYTES   , OPTIONAL, POINTER , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, platform_info, deployment_type, 0),
-    PB_FIELD( 32, INT64   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, app_extensions, platform_info, 0),
-    PB_FIELD( 33, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, swizzling_enabled, app_extensions, 0),
-    PB_FIELD( 34, INT32   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, log_error_count, swizzling_enabled, 0),
-    PB_FIELD( 35, INT32   , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, log_warning_count, log_error_count, 0),
-    PB_FIELD( 36, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, using_gdt, log_warning_count, 0),
+    PB_FIELD( 33, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, swizzling_enabled, platform_info, 0),
+    PB_FIELD( 36, BOOL    , OPTIONAL, STATIC  , OTHER, logs_proto_mobilesdk_ios_ICoreConfiguration, using_gdt, swizzling_enabled, 0),
     PB_LAST_FIELD
 };
 

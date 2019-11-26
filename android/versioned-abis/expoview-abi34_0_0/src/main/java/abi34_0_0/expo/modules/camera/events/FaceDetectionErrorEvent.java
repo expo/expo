@@ -1,7 +1,7 @@
 package abi34_0_0.expo.modules.camera.events;
 
 import android.os.Bundle;
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 
 import abi34_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import abi34_0_0.org.unimodules.interfaces.facedetector.FaceDetector;

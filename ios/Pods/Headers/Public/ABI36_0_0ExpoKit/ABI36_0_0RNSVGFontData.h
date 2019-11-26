@@ -1,0 +1,1 @@
+../../../../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Api/Components/Svg/Text/ABI36_0_0RNSVGFontData.h

@@ -40,7 +40,8 @@ export function getTestModules() {
     require('./tests/Constants'),
     require('./tests/FileSystem'),
     require('./tests/Font'),
-    require('./tests/Permissions')
+    require('./tests/Permissions'),
+    require('./tests/ImagePicker')
   );
 
   // Universally tested APIs
@@ -55,7 +56,9 @@ export function getTestModules() {
       require('./tests/Contacts'),
       require('./tests/Haptics'),
       require('./tests/Localization'),
-      require('./tests/SecureStore')
+      require('./tests/SecureStore'),
+      require('./tests/SMS'),
+      require('./tests/StoreReview')
     );
     return modules;
   }
@@ -110,14 +113,16 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Location')));
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(optionalRequire(() => require('./tests/Linking')));
+    // Has uncontrolled view controllers
+    modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/Permissions')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
     modules.push(optionalRequire(() => require('./tests/Notifications')));
 
+    modules.push(optionalRequire(() => require('./tests/Battery')));
     if (Constants.isDevice) {
-      modules.push(optionalRequire(() => require('./tests/Battery')));
       modules.push(optionalRequire(() => require('./tests/Brightness')));
     }
     // Crashes app when mounting component

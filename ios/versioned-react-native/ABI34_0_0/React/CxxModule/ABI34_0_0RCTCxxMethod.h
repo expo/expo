@@ -12,6 +12,6 @@
 
 @interface ABI34_0_0RCTCxxMethod : NSObject <ABI34_0_0RCTBridgeMethod>
 
-- (instancetype)initWithCxxMethod:(const facebook::xplat::module::CxxModule::Method &)cxxMethod;
+- (instancetype)initWithCxxMethod:(const ABI34_0_0facebook::xplat::module::CxxModule::Method &)cxxMethod;
 
 @end

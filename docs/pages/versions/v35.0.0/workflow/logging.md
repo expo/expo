@@ -20,6 +20,16 @@ When you start a project with Expo CLI, it also opens Expo Dev Tools in your bro
 
 While it's usually not necessary, if you want to see logs for everything happening on your device, even the logs from other apps and the OS itself, you can use one of the following approaches.
 
+### View logs for your iPhone or iPad
+
+The following instructions apply to macOS.
+
+- `brew install --HEAD libimobiledevice -g`
+- Plug your phone in
+- `idevicepair pair`
+- Press accept on your device
+- Run `idevicesyslog`
+
 ### View logs for an iOS simulator
 
 #### Option 1: Use GUI log
@@ -32,15 +42,9 @@ While it's usually not necessary, if you want to see logs for everything happeni
 - Find the device / OS version that the simulator you are using, eg: `iPhone 6s (9.2) [5083E2F9-29B4-421C-BDB5-893952F2B780]`
 - The part in the brackets at the end is the device code, so you can now do this: `tail -f ~/Library/Logs/CoreSimulator/DEVICE_CODE/system.log`, eg: `tail -f ~/Library/Logs/CoreSimulator/5083E2F9-29B4-421C-BDB5-893952F2B780/system.log`
 
-### View logs for your iPhone
-
-- `brew install libimobiledevice`
-- Plug your phone in
-- `idevicepair pair`
-- Press accept on your device
-- Run `idevicesyslog`
-
 ### View logs from Android device or emulator
+
+The following instructions apply to any OS that supports Android development.
 
 - Ensure Android SDK is installed
 - Ensure that [USB debugging is enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) (not necessary for emulator).

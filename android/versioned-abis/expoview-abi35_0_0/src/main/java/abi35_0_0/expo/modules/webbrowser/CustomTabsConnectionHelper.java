@@ -3,9 +3,9 @@ package abi35_0_0.expo.modules.webbrowser;
 import android.content.ComponentName;
 import android.content.Context;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsClient;
-import android.support.customtabs.CustomTabsServiceConnection;
-import android.support.customtabs.CustomTabsSession;
+import androidx.browser.customtabs.CustomTabsClient;
+import androidx.browser.customtabs.CustomTabsServiceConnection;
+import androidx.browser.customtabs.CustomTabsSession;
 
 import abi35_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 

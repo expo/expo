@@ -6,15 +6,68 @@ This is the log of notable changes to the Expo client that are developer-facing.
 
 ### 📚 3rd party library updates
 
+- `@react-native-community/netinfo` updated from `3.2.1` to `4.6.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-branch` updated from `3.1.1` to `4.2.1`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-gesture-handler` updated from `1.4.0` to `1.5.1`. ([#6127](https://github.com/expo/expo/pull/6127) by [@tsapeta](https://github.com/tsapeta) and [8b0e1b6](https://github.com/expo/expo/commit/8b0e1b6852bf631558d7b6b47d1db782c1c3d528) by [@esamelson](https://github.com/esamelson))
+- `react-native-maps` updated from `0.25.0` to `0.26.1`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-reanimated` updated from `1.3.0` to `1.4.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-svg` updated from `9.9.5` to `9.13.3`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-view-shot` updated from `2.6.0` to `3.0.2`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-webview` updated from `7.0.5` to `7.4.3`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-safe-area-context` updated from `0.5.0` to `0.6.0`. ([#6176](https://github.com/expo/expo/pull/6176) by [@sjchmiela](https://github.com/sjchmiela))
+- `react-native-screens` updated from `1.0.0-alpha.23` to `2.0.0-alpha.12`. ([#6258](https://github.com/expo/expo/pull/6258) by [@sjchmiela](https://github.com/sjchmiela) and [#6357](https://github.com/expo/expo/pull/6357) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🛠 Breaking changes
 
-- **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`.
+- **`jest-expo`**: Removed `mockPlatformIOS()`, `mockPlatformAndroid()`, `mockPlatformWeb()`, `describeCrossPlatform()` in favor of platform specific presets like `jest-expo/universal`. ([#5645](https://github.com/expo/expo/pull/5645) by [@EvanBacon](https://github.com/EvanBacon))
+- **`expo`**: Removed Branch export from `expo/Branch`. ([#6190](https://github.com/expo/expo/pull/6190) by [@sjchmiela](https://github.com/sjchmiela))
+- **`expo-analytics-segment`**: Fixed `enabled` behavior inverted on iOS. ([#6242](https://github.com/expo/expo/pull/6242) by [@sjchmiela](https://github.com/sjchmiela))
+- **`expo-location`**: `Location.requestPermissionsAsync()` is no longer being rejected when permissions were not granted. Instead it returns `PermissionsResponse` object, which is similar to the result of `Permissions.askAsync(Permissions.Location)`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- **`expo-store-review`**: Replace `StoreReview.isSupported` method with `StoreReview.isAvailableAsync` returning promise instead of boolean. ([#6195](https://github.com/expo/expo/pull/6195) by [@danibonilha](https://github.com/danibonilha))
+- **`expo-calendar`**: Methods creating or updating calendar events now reject when passed `timeZone` is invalid. ([#6326](https://github.com/expo/expo/pull/6326) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
-- Added rich content supports for push notifications. ([#4787](https://github.com/expo/expo/pull/4787) by [@hesyifei](https://github.com/hesyifei))
+- Added `MediaLibrary.saveToAssetsAsync` function that can work without `CAMERA_ROLL` permission. ([#5678](https://github.com/expo/expo/pull/5678) by [@lukmccall](https://github.com/lukmccall))
+- Added support for `Speech.getAvailableVoicesAsync()` on Android. ([#5887](f0a9d8ce87451dbce8c0a309ff917c8b26472861) by [@Mitch528](https://github.com/Mitch528))
+- Added `@react-native-community/masked-view` in version `0.1.5`. ([#6193](https://github.com/expo/expo/pull/6193) by [@brentvatne](https://github.com/brentvatne))
+- Added `@react-native-community/viewpager` in version `2.0.2`. ([#6198](https://github.com/expo/expo/pull/6198) by [@brentvatne](https://github.com/brentvatne))
+- Added `@react-native-community/datetimepicker` in version `2.1.0`. ([#6087](https://github.com/expo/expo/pull/6087) by [@tsapeta](https://github.com/tsapeta))
+- Added `canAskAgain` and `granted` fields to `PermissionsResponse`. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- Added support for `react-native-appearance` on Android and Web. ([#6162](https://github.com/expo/expo/pull/6162) by [@bbarthec](https://github.com/bbarthec))
+- Added `Location.getLastKnownPositionAsync` to get the last known position of the device. ([#6246](https://github.com/expo/expo/pull/6246) by [@lukmccall](https://github.com/lukmccall))
+- Added support for complex recurrence rules for events and reminders on iOS. ([#6300](https://github.com/expo/expo/pull/6300) by [@tasn](https://github.com/tasn))
+- Added `exif` and `base64` properties into the TypeScript definitions for `ImagePickerResult` in `expo-image-picker`. ([#6311](https://github.com/expo/expo/pull/6311) by [@kyletsang](https://github.com/kyletsang))
+- Added a `videoExportPreset` field to `ImagePickerOptions`, which sets dimensions and compression algorithm for exported video on iOS. ([#6046](https://github.com/expo/expo/pull/6046) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
+
+- Fixed `MediaPlayer` not working on some Android devices ([#6320](https://github.com/expo/expo/pull/6320) by [@mczernek](https://github.com/mczernek))
+- Fixed `Audio.setAudioModeAsync` to auto-fill with previously set values (falls back to default values) if not all fields are provided. ([#5593](https://github.com/expo/expo/pull/5593) by [@cruzach](https://github.com/cruzach))
+- Fixed crash when `BarCodeScanner` was mounted more than 128 times. ([#5719](https://github.com/expo/expo/pull/5719) by [@geovannimp](https://github.com/geovannimp))
+- Fixed URI parsing in `expo-video-thumbnails`. ([#5711](https://github.com/expo/expo/pull/5711) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `MediaLibrary` methods crashing on Android 10. ([#5905](https://github.com/expo/expo/pull/5905) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `MediaLibrary.getMomentsAsync` crashing if `locationNames` array is null. ([#5937](https://github.com/expo/expo/pull/5937) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `MediaLibrary.getAlbumsAsync()` not getting albums in folders on iOS. ([#5857](https://github.com/expo/expo/pull/5857) by [@lukmccall](https://github.com/lukmccall))
+- Fixed unclosed http connections in `FileSystem.downloadAsync` method. ([#5840](https://github.com/expo/expo/pull/5840) by [@bbarthec](https://github.com/bbarthec))
+- Fixed `ImagePicker` ignoring orientation of the application. ([#5946](https://github.com/expo/expo/pull/5946) by [@lukmccall](https://github.com/lukmccall))
+- Fixed cropping tool in `ImagePicker`, which was not moving on iOS. ([#5965](https://github.com/expo/expo/pull/5965) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `Calendar.getCalendarsAsync` rejecting on iOS 13, when `source.name` is null. ([#5994](https://github.com/expo/expo/pull/5994) by [@lukmccall](https://github.com/lukmccall))
+- Fixed handling URI with no scheme in `ExpoFileSystem`. ([#5904](https://github.com/expo/expo/pull/5904) by [@bbarthec](https://github.com/bbarthec))
+- Fixed `FileSystem#deleteAsync` in older Android SDKs. ([#5923](https://github.com/expo/expo/pull/5923) by [@bbarthec](https://github.com/bbarthec))
+- Fixed image cropping on Android in `expo-image-manipulator`. ([#5828](https://github.com/expo/expo/pull/5828) by [@matiasmelendi](https://github.com/matiasmelendi))
+- Fixed type problem with `EXiOSOperatingSystemVersion` struct in `expo-gl-cpp`. ([#6063](https://github.com/expo/expo/pull/6063) by [@crubier](https://github.com/crubier))
+- Fixed blinking `Camera.Constants.FlashMode.torch` on iOS in `Camera`. ([#6128](https://github.com/expo/expo/pull/6128) by [@bbarthec](https://github.com/bbarthec))
+- Fixed race condition in `GoogleSignIn` on iOS. ([#5872](https://github.com/expo/expo/pull/5872) by [@vonovak](https://github.com/vonovak)])
+- Fixed `Contacts.presentFormAsync` pre-filling, when `bool` value was provided. ([#5522](https://github.com/expo/expo/pull/5522) by [@lukmccall](https://github.com/lukmccall))
+- Fixed crashes when the user tries to download a file through `react-native-webview` without granted storage permission on Android. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `Permissions.getAsync` result, which was inconsistent with iOS settings. ([#5061](https://github.com/expo/expo/pull/5061) by [@lukmccall](https://github.com/lukmccall))
+- Fixed scanning `PDF417` and `Code39` in `BarCodeScanner` on iOS. ([#5976](https://github.com/expo/expo/pull/5531) by [@bbarthec](https://github.com/bbarthec))
+- Add missing `mute` property in `Camera.recordAsync` in the TypeScript definition. ([#6192](https://github.com/expo/expo/pull/6192) by [@wcandillon](https://github.com/wcandillon))
+- Warn when `Linking.makeUrl` is called in Expo client and no scheme is present in `app.json` in order to prevent standalone builds from crashing due to missing scheme. ([#6277](https://github.com/expo/expo/pull/6277) by [@brentvatne](https://github.com/brentvatne))
+- Fixed `keychainAccessible` option not having any effect on iOS (`SecureStore` module) ([#6291](https://github.com/expo/expo/pull/6291)) by [@sjchmiela](https://github.com/sjchmiela)
+- Fixed presentation style of `WebBrowser` modal on iOS 13+ (it is now presented fullscreen instead of a modal). ([#6345](https://github.com/expo/expo/pull/6345)) by [@roothybrid7](https://github.com/roothybrid7)
+- Fixed memory leaks caused by `ImagePicker` module. ([#6303](https://github.com/expo/expo/pull/6303) by [@lukmccall](https://github.com/lukmccall))
 
 ## 35.0.0
 
@@ -27,6 +80,8 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - `react-native-webview` updated from `5.12.0` to `7.0.5`
 
 ### 🛠 Breaking changes
+
+- `FileSystem.documentDirectory` is under a new directory. If upgrading from SDK 32 or below, you must upgrade your app to SDK 33 or 34 first, before upgrading to SDK 35 and above in order to migrate app files. ([#5381](https://github.com/expo/expo/pull/5381) by [@Szymon20000](https://github.com/Szymon20000))
 - `Google.logInAsync()` now accepts a `redirectUrl` value for apps running in the Expo Client. Previously, it would ignore this, so if you are passing a value, make sure to [follow the guidelines](https://docs.expo.io/versions/latest/sdk/google/#loginasync). ([#4904](https://github.com/expo/expo/pull/4904) by [@cruzach](https://github.com/cruzach))
 - Google Mobile Ads now require `expo.[platform].config.googleMobileAdsAppId` configuration value present in `app.json`. The value can be found by following the guide in [this Google Support answer](https://support.google.com/admob/answer/7356431). ([#5447](https://github.com/expo/expo/pull/5447) by [@sjchmiela](https://github.com/sjchmiela))
 - Replace `Localization.country` constants with `Localization.region` and make it only available on iOS and Web ([#4921](https://github.com/expo/expo/pull/4921) by [@lukmccall](https://github.com/lukmccall))
@@ -290,6 +345,7 @@ This is the log of notable changes to the Expo client that are developer-facing.
 - Several Haptic enum types have been renamed: NotificationTypes → NotificationFeedbackType, ImpactStyles → ImpactFeedbackStyle
 - Several AR enum types have been renamed: BlendShapes → BlendShape, FaceAnchorProps → FaceAnchorProp, PlaneDetectionTypes → PlaneDetection, WorldAlignmentTypes → WorldAlignment, EventTypes → EventType, AnchorTypes → AnchorType, AnchorEventTypes → AnchorEventType, FrameAttributes → FrameAttribute, TrackingStates → TrackingState, TrackingStateReasons → TrackingStateReason, TrackingConfigurations → TrackingConfiguration
 - `Audio.Sound.create` has been renamed to `createAsync`
+- Upgrade Babel to `7.0.0` by [@ide](https://github.com/ide) ([#2373](https://github.com/expo/expo/pull/2373))
 
 ### 🎉 New features
 

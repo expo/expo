@@ -124,7 +124,7 @@
   return @{
        @"id": source.sourceIdentifier,
        @"type": [EXCalendarConverter _sourceType:source.sourceType],
-       @"name": source.title
+       @"name": UMNullIfNil(source.title)
        };
 }
 
@@ -204,6 +204,36 @@
 
     if ([[rule recurrenceEnd] occurrenceCount]) {
       recurrenceRule[@"occurrence"] = @([[rule recurrenceEnd] occurrenceCount]);
+    }
+
+    if ([rule daysOfTheWeek]) {
+      NSMutableArray *daysOfTheWeek = [[NSMutableArray alloc] init];
+
+      for (EKRecurrenceDayOfWeek *dayOfTheWeek in [rule daysOfTheWeek]) {
+        [daysOfTheWeek addObject:@{@"dayOfTheWeek":@([dayOfTheWeek dayOfTheWeek]),
+                   @"weekNumber":@([dayOfTheWeek weekNumber])}];
+      }
+      recurrenceRule[@"daysOfTheWeek"] = daysOfTheWeek;
+    }
+
+    if ([rule daysOfTheMonth]) {
+      recurrenceRule[@"daysOfTheMonth"] = [rule daysOfTheMonth];
+    }
+
+    if ([rule daysOfTheYear]) {
+      recurrenceRule[@"daysOfTheYear"] = [rule daysOfTheYear];
+    }
+
+    if ([rule weeksOfTheYear]) {
+      recurrenceRule[@"weeksOfTheYear"] = [rule weeksOfTheYear];
+    }
+
+    if ([rule monthsOfTheYear]) {
+      recurrenceRule[@"monthsOfTheYear"] = [rule monthsOfTheYear];
+    }
+
+    if ([rule setPositions]) {
+      recurrenceRule[@"setPositions"] = [rule setPositions];
     }
 
     serializedItem[@"recurrenceRule"] = recurrenceRule;

@@ -1,12 +1,13 @@
 ---
 title: Application
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-application"
 ---
 
 This module provides useful information about the native application, such as the its ID, app name, and build version.
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-application).
+For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-application`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-application).
 
 ## API
 

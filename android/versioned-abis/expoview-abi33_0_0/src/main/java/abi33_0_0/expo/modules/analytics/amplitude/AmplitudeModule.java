@@ -3,6 +3,7 @@ package abi33_0_0.expo.modules.analytics.amplitude;
 import android.content.Context;
 import android.util.Log;
 
+import com.amplitude.api.Amplitude;
 import com.amplitude.api.AmplitudeClient;
 
 import org.json.JSONArray;
@@ -28,10 +29,13 @@ public class AmplitudeModule extends ExportedModule {
     return "ExpoAmplitude";
   }
 
+  protected AmplitudeClient getClient(String apiKey) {
+    return Amplitude.getInstance();
+  }
+
   @ExpoMethod
   public void initialize(final String apiKey, Promise promise) {
-    resetAmplitudeDatabaseHelper();
-    mClient = new AmplitudeClient();
+    mClient = getClient(apiKey);
     mClient.initialize(getContext(), apiKey);
     promise.resolve(null);
   }
@@ -96,15 +100,5 @@ public class AmplitudeModule extends ExportedModule {
       return true;
     }
     return false;
-  }
-
-  private void resetAmplitudeDatabaseHelper() {
-    try {
-      Field field = Class.forName("com.amplitude.api.DatabaseHelper").getDeclaredField("instance");
-      field.setAccessible(true);
-      field.set(null, null);
-    } catch (Throwable e) {
-      Log.e(getName(), e.toString());
-    }
   }
 }

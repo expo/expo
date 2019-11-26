@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/react-native-safe-area-context)](https://www.npmjs.com/package/react-native-safe-area-context) [![Actions Status](https://6t2fa745na.execute-api.us-west-2.amazonaws.com/production/badge/th3rdwave/react-native-safe-area-context)](https://6t2fa745na.execute-api.us-west-2.amazonaws.com/production/results/th3rdwave/react-native-safe-area-context) ![Supports Android, iOS and web](https://img.shields.io/badge/platforms-android%20%7C%20ios%20%7C%20web-lightgrey.svg) ![MIT License](https://img.shields.io/npm/l/react-native-safe-area-context.svg)
 
-A flexible way to handle safe area, also works on Android!
+A flexible way to handle safe area, also works on Android and Web!
 
 ## Getting started
 
@@ -120,6 +120,24 @@ class ClassComponent extends React.Component {
 }
 ```
 
+Usage with `SafeAreaView`:
+
+```js
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+function SomeComponent() {
+  return (
+    <SafeAreaView>
+      <View />
+    </SafeAreaView>
+  );
+}
+```
+
+### Web SSR
+
+If you are doing server side rendering on the web you can use `initialSafeAreaInsets` to inject insets value based on the device the user has, or simply pass zero values. Since insets measurement is async it will break rendering your page content otherwise.
+
 ## Resources
 
-- Great article about how this libary can be used: https://dev.to/brunolemos/adding-notch-support-to-your-react-native-android-app-3ci3
+- Great article about how this library can be used: https://dev.to/brunolemos/adding-notch-support-to-your-react-native-android-app-3ci3

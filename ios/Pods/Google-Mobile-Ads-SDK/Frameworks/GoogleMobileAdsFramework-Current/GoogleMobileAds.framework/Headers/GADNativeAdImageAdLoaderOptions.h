@@ -8,8 +8,6 @@
 #import <GoogleMobileAds/GADAdLoader.h>
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Native ad image orientation preference.
 typedef NS_ENUM(NSInteger, GADNativeAdImageAdLoaderOptionsOrientation) {
   GADNativeAdImageAdLoaderOptionsOrientationAny = 1,       ///< No orientation preference.
@@ -37,5 +35,3 @@ typedef NS_ENUM(NSInteger, GADNativeAdImageAdLoaderOptionsOrientation) {
         "Use the mediaAspectRatio property from GADNativeAdMediaAdLoaderOptions instead.");
 
 @end
-
-NS_ASSUME_NONNULL_END

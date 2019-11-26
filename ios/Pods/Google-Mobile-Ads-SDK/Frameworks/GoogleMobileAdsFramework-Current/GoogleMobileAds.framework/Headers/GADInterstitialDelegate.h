@@ -11,8 +11,6 @@
 
 @class GADInterstitial;
 
-NS_ASSUME_NONNULL_BEGIN
-
 /// Delegate for receiving state change messages from a GADInterstitial such as interstitial ad
 /// requests succeeding/failing.
 @protocol GADInterstitialDelegate <NSObject>
@@ -23,11 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Called when an interstitial ad request succeeded. Show it at the next transition point in your
 /// application such as when transitioning between view controllers.
-- (void)interstitialDidReceiveAd:(GADInterstitial *)ad;
+- (void)interstitialDidReceiveAd:(nonnull GADInterstitial *)ad;
 
 /// Called when an interstitial ad request completed without an interstitial to
 /// show. This is common since interstitials are shown sparingly to users.
-- (void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error;
+- (void)interstitial:(nonnull GADInterstitial *)ad
+    didFailToReceiveAdWithError:(nonnull GADRequestError *)error;
 
 #pragma mark Display-Time Lifecycle Notifications
 
@@ -35,23 +34,21 @@ NS_ASSUME_NONNULL_BEGIN
 /// animate onto the screen. Use this opportunity to stop animations and save the state of your
 /// application in case the user leaves while the interstitial is on screen (e.g. to visit the App
 /// Store from a link on the interstitial).
-- (void)interstitialWillPresentScreen:(GADInterstitial *)ad;
+- (void)interstitialWillPresentScreen:(nonnull GADInterstitial *)ad;
 
 /// Called when |ad| fails to present.
-- (void)interstitialDidFailToPresentScreen:(GADInterstitial *)ad;
+- (void)interstitialDidFailToPresentScreen:(nonnull GADInterstitial *)ad;
 
 /// Called before the interstitial is to be animated off the screen.
-- (void)interstitialWillDismissScreen:(GADInterstitial *)ad;
+- (void)interstitialWillDismissScreen:(nonnull GADInterstitial *)ad;
 
 /// Called just after dismissing an interstitial and it has animated off the screen.
-- (void)interstitialDidDismissScreen:(GADInterstitial *)ad;
+- (void)interstitialDidDismissScreen:(nonnull GADInterstitial *)ad;
 
 /// Called just before the application will background or terminate because the user clicked on an
 /// ad that will launch another application (such as the App Store). The normal
 /// UIApplicationDelegate methods, like applicationDidEnterBackground:, will be called immediately
 /// before this.
-- (void)interstitialWillLeaveApplication:(GADInterstitial *)ad;
+- (void)interstitialWillLeaveApplication:(nonnull GADInterstitial *)ad;
 
 @end
-
-NS_ASSUME_NONNULL_END

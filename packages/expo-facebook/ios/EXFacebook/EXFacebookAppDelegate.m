@@ -42,12 +42,10 @@ UM_REGISTER_SINGLETON_MODULE(EXFacebookAppDelegate)
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-  if ([EXFacebook facebookAppIdFromNSBundle]) {
-    if ([[FBSDKApplicationDelegate sharedInstance] application:app
-                                                       openURL:url
-                                                       options:options]) {
-      return YES;
-    }
+  if ([[FBSDKApplicationDelegate sharedInstance] application:app
+                                                     openURL:url
+                                                     options:options]) {
+    return YES;
   }
 
   return NO;

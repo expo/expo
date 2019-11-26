@@ -3,12 +3,12 @@ import spawnAsync from '@expo/spawn-async';
 import { Command } from '@expo/commander';
 
 import * as Directories from '../Directories';
-import { getTemplateSubstitutions } from '../dynamic-macros/generateDynamicMacros';
+import { getTemplateSubstitutionsAsync } from '../dynamic-macros/generateDynamicMacros';
 
 async function action(options) {
   const iosDir = Directories.getIosDir();
   const fabricPath = options.fabricPath || path.join(iosDir, 'Pods', 'Fabric', 'run');
-  const templateSubstitutions = await getTemplateSubstitutions();
+  const templateSubstitutions = await getTemplateSubstitutionsAsync();
 
   await spawnAsync(
     '/bin/sh',

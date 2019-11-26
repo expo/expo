@@ -63,6 +63,27 @@ GAD_EXTERN GADAdSize const kGADAdSizeFluid;
 /// Invalid ad size marker.
 GAD_EXTERN GADAdSize const kGADAdSizeInvalid;
 
+#pragma mark Adaptive Sizes
+
+/// Returns a GADAdSize with the given width and a Google-optimized height to create a banner ad.
+/// The size returned has an aspect ratio similar to that of kGADAdSizeBanner, suitable for
+/// anchoring near the top or bottom of your app. The height is never larger than 15% of the
+/// device's portrait height and is always between 50-90 points. This function always returns the
+/// same height for any width / device combination.
+GAD_EXTERN GADAdSize GADPortraitAnchoredAdaptiveBannerAdSizeWithWidth(CGFloat width);
+
+/// Returns a GADAdSize with the given width and a Google-optimized height to create a banner ad.
+/// The size returned is suitable for use in a banner ad anchored near the top or bottom of your
+/// app, similar to use of kGADAdSizeBanner. The height is never larger than 15% of the devices's
+/// landscape height and is always between 50-90 points. This function always returns the same
+/// height for any width / device combination.
+GAD_EXTERN GADAdSize GADLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(CGFloat width);
+
+/// Returns a GADAdSize with the given width and a Google-optimized height. This is a convenience
+/// function to return GADPortraitAnchoredAdaptiveBannerAdSizeWithWidth or
+/// GADLandscapeAnchoredAdaptiveBannerAdSizeWithWidth based on the current interface orientation.
+GAD_EXTERN GADAdSize GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(CGFloat width);
+
 #pragma mark Custom Sizes
 
 /// Returns a custom GADAdSize for the provided CGSize. Use this only if you require a non-standard

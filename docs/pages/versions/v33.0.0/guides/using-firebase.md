@@ -4,13 +4,17 @@ title: Using Firebase
 
 [Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users.  Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
 
+## Usage with Expo
+
+If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Firebase's Realtime Database, Firestore, Storage and Authentication (except phone auth). If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo client currently.
+
 [Firebase Realtime Database](https://firebase.google.com/docs/database) is a popular NoSQL cloud database that allows developers realtime synchronization of live data. With multi-platform support, synchronizing data between users and clients is pretty seamless, but it can also be used more generally as a generic persistent NoSQL data backing if you don't care about realtime updates. It has a very flexible rules syntax to allow minute control over data access as well.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
 
 See the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html).
 
-> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well), and will eventually cover all of the available Expo Firebase packages.  For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
+> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
 
 ##### Table of Contents
 - [Firebase SDK Setup](#firebase-sdk-setup)

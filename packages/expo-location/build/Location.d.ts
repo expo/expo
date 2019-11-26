@@ -1,4 +1,5 @@
 import { EventEmitter } from '@unimodules/core';
+import { PermissionResponse as UMPermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 declare const LocationEventEmitter: EventEmitter;
 export interface ProviderStatus {
     locationServicesEnabled: boolean;
@@ -44,6 +45,17 @@ export interface Address {
     country: string;
     postalCode: string;
     name: string;
+}
+export { PermissionStatus };
+export declare type PermissionDetailsLocationIOS = {
+    scope: 'whenInUse' | 'always';
+};
+export declare type PermissionDetailsLocationAndroid = {
+    scope: 'fine' | 'coarse' | 'none';
+};
+export interface PermissionResponse extends UMPermissionResponse {
+    ios?: PermissionDetailsLocationIOS;
+    android?: PermissionDetailsLocationAndroid;
 }
 interface LocationTaskOptions {
     accuracy?: LocationAccuracy;
@@ -100,6 +112,7 @@ declare function _getCurrentWatchId(): number;
 export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
 export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
+export declare function getLastKnownPositionAsync(): Promise<LocationData>;
 export declare function getHeadingAsync(): Promise<HeadingData>;
 export declare function watchHeadingAsync(callback: HeadingCallback): Promise<{
     remove: () => void;
@@ -113,7 +126,8 @@ export declare function setApiKey(apiKey: string): void;
 export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;
-export declare function requestPermissionsAsync(): Promise<void>;
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
 export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;

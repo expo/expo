@@ -38,7 +38,6 @@
 
 @property (atomic, copy, readonly) NSString* country;            //!< The iso2 Country name (us, in,etc).
 @property (atomic, copy, readonly) NSString* language;           //!< The iso2 language code (en, ml).
-@property (atomic, copy, readonly) NSString* browserUserAgent;   //!< Simple user agent string.
 @property (atomic, copy, readonly) NSString* localIPAddress;     //!< The current local IP address.
 @property (atomic, copy, readonly) NSArray<NSString*> *allIPAddresses; //!< All local IP addresses.
 //----------Methods----------------//

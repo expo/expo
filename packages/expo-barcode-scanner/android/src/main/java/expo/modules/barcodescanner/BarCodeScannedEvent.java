@@ -1,7 +1,7 @@
 package expo.modules.barcodescanner;
 
 import android.os.Bundle;
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 import android.util.Pair;
 
 import java.util.List;

@@ -9,8 +9,6 @@
 #import <GoogleMobileAds/GoogleMobileAdsDefines.h>
 #import <StoreKit/StoreKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @protocol GADDefaultInAppPurchaseDelegate;
 
 #pragma mark - Default Purchase Flow
@@ -30,14 +28,14 @@ GAD_DEPRECATED_ATTRIBUTE
 /// Call this method early in your application to handle unfinished transactions from previous
 /// application sessions. For example, call this method in your application delegate's
 /// application:didFinishLaunchingWithOptions: method.
-+ (void)enableDefaultPurchaseFlowWithDelegate:(id<GADDefaultInAppPurchaseDelegate>)delegate;
++ (void)enableDefaultPurchaseFlowWithDelegate:(nonnull id<GADDefaultInAppPurchaseDelegate>)delegate;
 
 /// Disables the default in-app purchase flow handled by the Google Mobile Ads SDK and releases the
 /// associated GADDefaultInAppPurchaseDelegate object.
 + (void)disableDefaultPurchaseFlow;
 
 /// The in-app purchase product ID.
-@property(nonatomic, readonly, copy) NSString *productID;
+@property(nonatomic, readonly, copy, nonnull) NSString *productID;
 
 /// The product quantity.
 @property(nonatomic, readonly, assign) NSInteger quantity;
@@ -45,7 +43,7 @@ GAD_DEPRECATED_ATTRIBUTE
 /// The purchased item's completed payment transaction. Your application can use this property's
 /// data to save a permanent record of the completed payment. The default purchase flow will finish
 /// the transaction on your behalf. Do not finish the transaction yourself.
-@property(nonatomic, readonly, strong) SKPaymentTransaction *paymentTransaction;
+@property(nonatomic, readonly, strong, nonnull) SKPaymentTransaction *paymentTransaction;
 
 /// The in-app purchase delegate object must first deliver the user's item and then call this
 /// method. Failure to call this method will result in duplicate purchase notifications.
@@ -73,7 +71,7 @@ GAD_DEPRECATED_ATTRIBUTE
 @interface GADInAppPurchase : NSObject
 
 /// The in-app purchase product ID.
-@property(nonatomic, readonly, copy) NSString *productID;
+@property(nonatomic, readonly, copy, nonnull) NSString *productID;
 
 /// The product quantity.
 @property(nonatomic, readonly, assign) NSInteger quantity;
@@ -84,5 +82,3 @@ GAD_DEPRECATED_ATTRIBUTE
 - (void)reportPurchaseStatus:(GADInAppPurchaseStatus)purchaseStatus;
 
 @end
-
-NS_ASSUME_NONNULL_END

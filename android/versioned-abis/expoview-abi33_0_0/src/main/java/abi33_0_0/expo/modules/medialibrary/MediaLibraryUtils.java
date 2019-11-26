@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
-import android.support.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.text.TextUtils;
 
 import java.io.File;

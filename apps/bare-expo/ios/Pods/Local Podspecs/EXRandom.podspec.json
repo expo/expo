@@ -1,6 +1,6 @@
 {
   "name": "EXRandom",
-  "version": "7.0.0-rc.0",
+  "version": "7.0.0",
   "summary": "Expo universal module for random bytes",
   "description": "Expo universal module for random bytes",
   "license": "MIT",

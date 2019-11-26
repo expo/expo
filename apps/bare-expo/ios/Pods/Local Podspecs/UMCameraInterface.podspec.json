@@ -1,6 +1,6 @@
 {
   "name": "UMCameraInterface",
-  "version": "4.0.0-rc.0",
+  "version": "4.0.0",
   "summary": "An interface package for camera",
   "description": "An interface package for camera",
   "license": "MIT",

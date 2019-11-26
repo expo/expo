@@ -135,9 +135,11 @@ ABI35_0_0UM_EXPORT_METHOD_AS(dismissBrowser,
     resolve(nil);
     __strong typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      strongSelf.redirectResolve(@{
-                                   @"type": @"dismiss",
-                                   });
+      if (strongSelf.redirectResolve) {
+        strongSelf.redirectResolve(@{
+          @"type": @"dismiss",
+        });
+      }
       [strongSelf flowDidFinish];
     }
   }];

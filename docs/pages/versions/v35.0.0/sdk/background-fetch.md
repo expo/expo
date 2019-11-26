@@ -1,5 +1,6 @@
 ---
 title: BackgroundFetch
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-background-fetch"
 ---
 
 Provides API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks. This module uses [TaskManager](../task-manager) Native API under the hood.
