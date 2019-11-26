@@ -23,31 +23,32 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 ## 🏁 Setup
 
-- Create a new Expo project - `expo init --template blank`
-- Install - `yarn add -D @expo/electron-adapter @expo/webpack-config`
-- Create a new [`electron-webpack`][electron-webpack] config file
+- Create a new Expo project - `expo init`
+- Install - `yarn add -D @expo/electron-adapter`
+- Bootstrap Electron - `yarn expo-electron`
 
-  - `touch ./electron-webpack.js`
-  - Add the following to it:
+  - Append electron generated files to the `.gitignore`
+  - Install the required dependencies: `electron`, `@expo/webpack-config`, `react-native-web`, etc...
+  - Create a new [`electron-webpack`][electron-webpack] config file
+    `electron-webpack.js`
 
-  `electron-webpack.js`
+    ```js
+    const { withExpoAdapter } = require('@expo/electron-adapter');
 
-  ```js
-  const { withExpoAdapter } = require('@expo/electron-adapter');
-
-  module.exports = withExpoAdapter({
-    projectRoot: __dirname,
-    // Provide any overrides for electron-webpack: https://github.com/electron-userland/electron-webpack/blob/master/docs/en/configuration.md
-  });
-  ```
+    module.exports = withExpoAdapter({
+      projectRoot: __dirname,
+      // Provide any overrides for electron-webpack: https://github.com/electron-userland/electron-webpack/blob/master/docs/en/configuration.md
+    });
+    ```
 
 ## ⚽️ Usage
 
 ### Starting a project
 
-- Start the project with `yarn expo-electron start`
-  - Currently this is an alias for the following script: `ELECTRON_DISABLE_SECURITY_WARNINGS=1 electron-webpack dev`
-  - `ELECTRON_DISABLE_SECURITY_WARNINGS=1` disables the unused security warnings in your project.
+- Start the project with `yarn expo-electron start`, this will do the following:
+  - Ensure that you have an `electron-webpack.js` file created in your root directory.
+  - Disable security warnings (`ELECTRON_DISABLE_SECURITY_WARNINGS=1`)
+  - Start two webpack processes, one for the main process, and one for the render process.
 
 ### Customizing the main process
 
