@@ -7,92 +7,14 @@
 Add `expo-notifications` to your project:
 <mark>yarn add expo-notifications</mark>.
 
-### Android
+### Android only
 
-#### 1. Modify AndroidManifest
+#### Notification Icon 
 
-`AndroidManifest.xml` is a place where you can configure `expo-notifications` module. For Instance, you can choose there
-if you want to use Expo's servers as a middleman or choose that you don't want to use push notifications at all.
+> If you don't provide notification icon and try to display notification then app will crash!.
 
-##### Case I: Use only local notifications 
-
-Almost always you don't need to change anything in your `AndroidManifest.xml` in this scenario.
-However, if you want to choose which Activity should be launched after notification is tapped you need to inform us about it by adding `intent-filter` to your Activity in `AndroidManifest.xml`.
-If you don't do so then starting Activity will be chosen.
-
-What the `intent-filter` should look like:
-
-```xml
-...
- <activity
-    android:name=".ActivityName"
-    android:label="@string/app_name"
-    android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-    android:windowSoftInputMode="adjustResize">
-    <!--  start -->
-    <intent-filter>
-        <action android:name="expo.modules.notifications.ACTION_RECEIVE_NOTIFICATION" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter> 
-    <!-- end -->
-</activity>
-...
-```
-
-##### Case II: Use Firebase without Expo servers 
-
-Do the same configuration as in the case I but additionally add Firebase service declaration to your `AndroidManifest.xml`. Of course, you also need to go through [Firebase installation process](https://firebase.google.com/docs/android/setup).
-
-```xml
-<application
-    android:name=".MainApplication"
-    android:label="@string/app_name"
-    android:icon="@mipmap/ic_launcher"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:allowBackup="false"
-    android:theme="@style/AppTheme">
-    
-    <!-- turn on push notifications START -->
-        <service
-            android:name="expo.modules.notifications.push.fcm.ExpoFcmMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service> 
-
-        <!-- choose if you want to use expo servers START -->
-        <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@username/slug" /> 
-        <!-- choose if you want to use expo servers END -->
-    <!-- turn on push notifications END -->
-    
-</application>
-```
-
-##### Case III: Use Expo servers 
-
-Do the same as in the case I and II but additionally: 
- 1. create Expo account 
- 2. create `app.json` file with `slug` property 
- 3. use Expo credential manager to upload your Firebase key [link](https://docs.expo.io/versions/v35.0.0/workflow/expo-cli/) 
-
-Add the following snippet to your `AndroidManifest.xml`: 
-
-```xml
-<application
-    android:name=".MainApplication"
-    android:label="@string/app_name"
-    android:icon="@mipmap/ic_launcher"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:allowBackup="false"
-    android:theme="@style/AppTheme">
-    <!-- choose if you want to use expo servers START -->
-        <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@username/slug" /> 
-    <!-- choose if you want to use expo servers END -->
-</application>
-```
-
-Remember to replace `username` and `slug` with your values.
+All you need to do is add notification icon as drawable resource under the name of `notification_icon`.
+More about it [here](https://developer.android.com/studio/write/image-asset-studio).
 
 #### Init DBFlow in Application.onCreate()
 
@@ -110,75 +32,9 @@ public void onCreate() {
 
 ```
 
-### iOS
-
-#### Modify Info.plist
-
-Similarly to `AndroidManifets.xml` on Android `Info.plist` allows you to configure the behavior of `expo-notifications` on the iOS platform.
-
-Unlike on Android, you need to modify `Info.plist` only if you want to use Expo servers.
-If that is the case, then for key `EXNotificationsAppId`  add value "@username/slug" just like on Android.
-More about `info.plist` [here](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html).
-
 ## Example
 
-```ts
-export default class App extends React.Component {
-
-  constructor(props) {
-    super(props);
-
-    Notifications.addOnForegroundNotificationListener(
-      async (foregroundNotification: Notifications.ForegroundNotification) => {
-        console.log(foregroundNotification);
-      }
-    );
-    Notifications.addOnUserInteractionListener(
-      async (userInteraction: Notifications.UserInteraction) => {
-        console.log(userInteraction);
-      }
-    );
-  }
-
-  componentDidMount() {
-    this._obtainUserFacingNotifPermissionsAsync();
-  }
-
-  render() {
-    return (
-        <TouchableOpacity onPress={this._presentNotification}>
-            present notification
-        </TouchableOpacity> 
-    );
-  }
-
-  _presentNotification = async () => {
-        Notifications.presentLocalNotificationAsync(
-            {
-                title: "title",
-                body: "the best body for notification",
-                sound: true,
-            }
-        );
-  };
-
-  _obtainUserFacingNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(
-      Permissions.USER_FACING_NOTIFICATIONS
-    );
-    if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(
-        Permissions.USER_FACING_NOTIFICATIONS
-      );
-      if (permission.status !== 'granted') {
-        alert(`We don't have permission to present notifications.`);
-      }
-    }
-    return permission;
-  };
-
-}
-```
+See out example app: TBA
 
 ## Glossary
 
@@ -332,6 +188,41 @@ If sticky notification is diplayed you can dismissed it with this method.
 #### `Notifications.dismissAllNotificationsAsync(): Promise<void>`
 Dismiss All notifications.
 
+## Sending a push notification (TODO!!!!!)
+
+### Expo as a middleman
+
+[How to send Expo push notification](https://docs.expo.io/versions/v35.0.0/guides/push-notifications/#sending-notifications).
+
+### Firebase Push Notifications
+
+Firebase message format suitable for `expo-notifications`.
+
+```json
+{ 
+    "message":{
+        "token":"your_token",
+        "data": {
+            "title": "title",
+            "message": "example content",
+            "channelId": "channelId",
+            "categoryId": "category",
+            "icon": "icon URI",
+            "body": "additional data",
+            "sound": true/false
+        }
+    }
+}
+```
+
+Note that Firebase message cannot contain "notification" property because it makes `expo-notifications` unable to display notification.
+
+TODO: improve format description
+
+### APNS
+
+TBA
+
 ## Types
 
 ### Notification
@@ -467,38 +358,97 @@ type Subscription = {
 }
 ```
 
-## Push Notifications
+## Push Notifications (TODO!!!!!)
 
-### Expo as a middleman
+Currently, there are two ways of sending push notifications (with or without Expo servers). 
+Expo simplifies the process of sending and testing notifications. You can send one notification and access the multiple platforms at once.
+However, if you don't want to use Expo as a middleman you can use `Firebase Cloud Messaging` on Android and `Apple Push Notification service` on iOS. Expo uses those services under the hood so regardless of choosing Expo you need to go through following configuration steps:
 
-[How to send Expo push notification](https://docs.expo.io/versions/v35.0.0/guides/push-notifications/#sending-notifications).
+### Android
 
-### Firebase Push Notifications
+Add Firebase service declaration to your `AndroidManifest.xml`. Of course, you also need to go through [Firebase installation process](https://firebase.google.com/docs/android/setup).
 
-Firebase message format suitable for `expo-notifications`.
-
-```json
-{ 
-    "message":{
-        "token":"your_token",
-        "data": {
-            "title": "title",
-            "message": "example content",
-            "channelId": "channelId",
-            "categoryId": "category",
-            "icon": "icon URI",
-            "body": "additional data",
-            "sound": true/false
-        }
-    }
-}
+```xml
+<application
+    android:name=".MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme">
+    ...
+    <!-- turn on push notifications START -->
+        <service
+            android:name="expo.modules.notifications.push.fcm.ExpoFcmMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> 
+    <!-- turn on push notifications END -->
+    ...
+</application>
 ```
 
-Note that Firebase message cannot contain "notification" property because it makes `expo-notifications` unable to display notification.
+### iOS
+Enable the Push Notifications Capability.   
+More about it [here](https://developer.apple.com/documentation/usernotifications/registering_your_app_with_apns).
 
-## Notification Icon (Android only)
+### Use Expo as a middleman
 
-> If you don't provide notification icon and try to display notification then app will crash!.
+ 1. create Expo account 
+ 2. create `app.json` file with `slug` property 
+ 3. use Expo credential manager to upload your Firebase key [link](https://docs.expo.io/versions/v35.0.0/workflow/expo-cli/) 
+ 4. use Expo crednetial manager to upload your APNS push notification key.
 
-All you need to do is add notification icon as drawable resource under the name of `notification_icon`.
-More about it [here](https://developer.android.com/studio/write/image-asset-studio).
+#### Android
+
+Add `meta-data` to your `AndroidManifest.xml`: 
+
+```xml
+<application
+    android:name=".MainApplication"
+    android:label="@string/app_name"
+    android:icon="@mipmap/ic_launcher"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:allowBackup="false"
+    android:theme="@style/AppTheme">
+    ...
+    <!-- start -->
+        <meta-data android:name="expo.modules.notifications.configuration.APP_ID" android:value="@username/slug" /> 
+    <!-- end -->
+    ...
+</application>
+```
+Remember to replace `username` and `slug` with your values.
+
+#### iOS
+
+Add value "@username/slug" for key `EXNotificationsAppId` in your `info.plist`.
+More about `info.plist` [here](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html).
+
+## Advanced Topics
+
+### Choose which activity should be oped by notification (Android only)
+
+If you want to choose which Activity should be launched after notification is tapped you need to inform us about it by adding `intent-filter` to your Activity in `AndroidManifest.xml`.
+If you don't do so then starting Activity will be chosen.
+
+What the `intent-filter` should look like:
+
+```xml
+...
+ <activity
+    android:name=".ActivityName"
+    android:label="@string/app_name"
+    android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+    android:windowSoftInputMode="adjustResize">
+    <!--  start -->
+    <intent-filter>
+        <action android:name="expo.modules.notifications.ACTION_RECEIVE_NOTIFICATION" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter> 
+    <!-- end -->
+</activity>
+...
+```

@@ -2,6 +2,7 @@
 
 #import <EXNotifications/EXNotificationConverter.h>
 #import <UserNotifications/UNNotificationSound.h>
+#import <EXNotifications/EXBareAppIdProvider.h>
 
 @implementation EXNotificationConverter
 
@@ -17,6 +18,10 @@
       notificationContent.userInfo[@"appId"] ?: notificationContent.userInfo[@"experienceId"];
   notification[@"id"] = notificationContent.userInfo[@"id"];
 
+  if (!notification[@"appId"]) {
+    notification[@"appId"] = [EXBareAppIdProvider defaultId];
+  }
+  
   return notification;
 }
 

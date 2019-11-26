@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXBareAppIdProvider : NSObject <EXAppIdProvider, UMInternalModule>
 
++ (NSString *)defaultId;
+
 @end
 
 NS_ASSUME_NONNULL_END

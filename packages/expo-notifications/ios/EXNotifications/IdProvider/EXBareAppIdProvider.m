@@ -11,11 +11,15 @@ UM_REGISTER_MODULE()
   if (appIdFromInfoPList != nil) {
     return appIdFromInfoPList;
   }
-  return @"defaultId";
+  return [EXBareAppIdProvider defaultId];
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
   return @[ @protocol(EXAppIdProvider) ];
+}
+
++ (NSString *)defaultId {
+  return @"defaultId";
 }
 
 @end
