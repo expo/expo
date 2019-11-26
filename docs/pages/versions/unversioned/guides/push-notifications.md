@@ -91,7 +91,7 @@ Check out the source if you would like to implement it in another language.
 >
 > For [Next.js with Expo for Web](../../guides/using-nextjs), you might need [additional configuration](../../guides/using-nextjs#web-push-notifications-support) in order for push notifications to work.
 
-The [Expo push notification tool](https://expo.io/dashboard/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
+The [Expo push notification tool](https://expo.io/notifications) is also useful for testing push notifications during development. It lets you easily send test notifications to your device.
 
 ## 3. Handle receiving and/or selecting the notification
 
