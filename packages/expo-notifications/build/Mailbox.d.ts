@@ -1,13 +1,14 @@
-import { OnUserInteractionListener, OnForegroundNotificationListener, OnTokenChangeListener } from './Notifications.types';
+import { OnUserInteractionListener, OnForegroundNotificationListener, OnTokenChangeListener, Subscription } from './Notifications.types';
 export declare class Mailbox {
     private onUserInteractionListeners;
     private onForegroundNotificationListeners;
     private onTokenChangeListener;
+    private lastId;
     constructor();
-    addOnUserInteractionListener(listenerName: string, listener: OnUserInteractionListener): void;
-    addOnForegroundNotificationListener(listenerName: string, listener: OnForegroundNotificationListener): void;
-    removeOnUserInteractionListener(listenerName: string): void;
-    removeOnForegroundNotificationListener(listenerName: string): void;
+    getNextId(): number;
+    createSubscription<T>(id: number, map: Map<number, T>): Subscription;
+    addOnUserInteractionListener(listener: OnUserInteractionListener): Subscription;
+    addOnForegroundNotificationListener(listener: OnForegroundNotificationListener): Subscription;
     setOnTokenChangeListener(onTokenChangeListner: OnTokenChangeListener): void;
     private onForegroundNotification;
     private onUserInteraction;

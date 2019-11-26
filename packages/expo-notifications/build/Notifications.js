@@ -136,23 +136,18 @@ export async function setOnTokenChangeListenerAsync(listener) {
     _mailbox.setOnTokenChangeListener(listener);
     await ExpoNotifications.registerForPushNotificationsAsync();
 }
-export function addOnUserInteractionListener(listenerName, listener) {
-    _mailbox.addOnUserInteractionListener(listenerName, listener);
+export function addOnUserInteractionListener(listener) {
+    const subscription = _mailbox.addOnUserInteractionListener(listener);
     if (isItFirstListener) {
         isItFirstListener = true;
         setTimeout(async () => {
             ExpoNotifications.flushPendingUserInteractionsAsync();
         }, 0);
     }
+    return subscription;
 }
-export function addOnForegroundNotificationListener(listenerName, listener) {
-    _mailbox.addOnForegroundNotificationListener(listenerName, listener);
-}
-export function removeOnUserInteractionListener(listenerName) {
-    _mailbox.removeOnUserInteractionListener(listenerName);
-}
-export function removeOnForegroundNotificationListener(listenerName) {
-    _mailbox.removeOnForegroundNotificationListener(listenerName);
+export function addOnForegroundNotificationListener(listener) {
+    return _mailbox.addOnForegroundNotificationListener(listener);
 }
 export async function scheduleNotificationWithCalendarAsync(notification, options = {}) {
     const areOptionsValid = (options.month == null || isInRangeInclusive(options.month, 1, 12)) &&

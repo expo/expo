@@ -128,12 +128,12 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    Notifications.addOnForegroundNotificationListener('main',
+    Notifications.addOnForegroundNotificationListener(
       async (foregroundNotification: Notifications.ForegroundNotification) => {
         console.log(foregroundNotification);
       }
     );
-    Notifications.addOnUserInteractionListener('main',
+    Notifications.addOnUserInteractionListener(
       async (userInteraction: Notifications.UserInteraction) => {
         console.log(userInteraction);
       }
@@ -206,9 +206,8 @@ Object representing the way user interacted with notification. It contains infor
 ##### Signature
 ```ts
 function addOnUserInteractionListener(
-  listenerName: string,
   listener: OnUserInteractionListener
-): void
+): Subscription
 ```
 ##### Description
 Registers for UserInteraction objects which will be delivered each time user interact with notification.
@@ -220,26 +219,20 @@ for different types of notifications.
 ##### Signature
 ```ts
 function addOnForegroundNotificationListener(
-  listenerName: string,
   listener: OnForegroundNotificationListener
-): void
+): Subscription
 ```
-#### `Notifications.removeOnUserInteractionListener(listenerName: string): void`
-Unregisters `OnUserInteractionListener` listener.
-
-#### `Notifications.removeOnForegroundNotificationListener(listenerName: string): void`
-Unregisters `OnForegroundNotificationListener` listener.
 
 ##### Description
 Registers for ForegroundNotification objects which will be delivered each time notification is about to display but app is foreground state.
 Just like with `OnUserInteractionListener` you can register multiple listeners each responsible 
 for different types of notifications. 
 
-If you don't want to inform user of messge included in notification by yourself and don't want to drop notification
+If you don't want to inform user of message included in notification by yourself and don't want to drop notification
 then you can still present notifiation:
 
 ```ts
-Notifications.addOnForegroundNotificationListener('testScreen',
+Notifications.addOnForegroundNotificationListener(
     async (foregroundNotification: Notifications.ForegroundNotification) => {
         Notifications.presentLocalNotificationAsync(foregroundNotification);
     }
@@ -464,6 +457,13 @@ type OnForegroundNotificationListener = (notification: ForegroundNotification) =
 
 ```ts
 type OnTokenChangeListener = (token: string) => Promise<void>;
+```
+
+### Subscription
+```ts
+type Subscription = {
+  remove: () => void;
+}
 ```
 
 ## Push Notifications

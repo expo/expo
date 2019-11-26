@@ -1,4 +1,4 @@
-import { Notification, Channel, ActionType, OnUserInteractionListener, OnForegroundNotificationListener, OnTokenChangeListener } from './Notifications.types';
+import { Notification, Channel, ActionType, OnUserInteractionListener, OnForegroundNotificationListener, OnTokenChangeListener, Subscription } from './Notifications.types';
 export declare function createCategoryAsync(categoryId: string, actions: ActionType[]): Promise<void>;
 export declare function deleteCategoryAsync(categoryId: string): Promise<void>;
 export declare function createChannelAsync(id: string, channel: Channel): Promise<void>;
@@ -32,10 +32,8 @@ export declare function cancelScheduledNotificationAsync(notificationId: string)
 export declare function cancelAllScheduledNotificationsAsync(): Promise<void>;
 export declare function setBadgeNumberAsync(number: number): Promise<void>;
 export declare function setOnTokenChangeListenerAsync(listener: OnTokenChangeListener): Promise<void>;
-export declare function addOnUserInteractionListener(listenerName: string, listener: OnUserInteractionListener): void;
-export declare function addOnForegroundNotificationListener(listenerName: string, listener: OnForegroundNotificationListener): void;
-export declare function removeOnUserInteractionListener(listenerName: string): void;
-export declare function removeOnForegroundNotificationListener(listenerName: string): void;
+export declare function addOnUserInteractionListener(listener: OnUserInteractionListener): Subscription;
+export declare function addOnForegroundNotificationListener(listener: OnForegroundNotificationListener): Subscription;
 export declare function scheduleNotificationWithCalendarAsync(notification: Notification, options?: {
     year?: number;
     month?: number;

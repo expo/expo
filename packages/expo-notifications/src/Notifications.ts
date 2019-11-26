@@ -14,6 +14,7 @@ import {
   OnUserInteractionListener,
   OnForegroundNotificationListener,
   OnTokenChangeListener,
+  Subscription,
 } from './Notifications.types';
 
 const _mailbox: Mailbox = new Mailbox();
@@ -178,32 +179,19 @@ export async function setOnTokenChangeListenerAsync(listener: OnTokenChangeListe
   await ExpoNotifications.registerForPushNotificationsAsync();
 }
 
-export function addOnUserInteractionListener(
-  listenerName: string,
-  listener: OnUserInteractionListener
-): void {
-  _mailbox.addOnUserInteractionListener(listenerName, listener);
+export function addOnUserInteractionListener(listener: OnUserInteractionListener): Subscription {
+  const subscription: Subscription = _mailbox.addOnUserInteractionListener(listener);
   if (isItFirstListener) {
     isItFirstListener = true;
     setTimeout( async () => {
         ExpoNotifications.flushPendingUserInteractionsAsync();
     }, 0);
   }
+  return subscription;
 }
 
-export function addOnForegroundNotificationListener(
-  listenerName: string,
-  listener: OnForegroundNotificationListener
-): void {
-  _mailbox.addOnForegroundNotificationListener(listenerName, listener);
-}
-
-export function removeOnUserInteractionListener(listenerName: string): void {
-  _mailbox.removeOnUserInteractionListener(listenerName);
-}
-
-export function removeOnForegroundNotificationListener(listenerName: string): void {
-  _mailbox.removeOnForegroundNotificationListener(listenerName);
+export function addOnForegroundNotificationListener(listener: OnForegroundNotificationListener): Subscription {
+  return _mailbox.addOnForegroundNotificationListener(listener);
 }
 
 export async function scheduleNotificationWithCalendarAsync(

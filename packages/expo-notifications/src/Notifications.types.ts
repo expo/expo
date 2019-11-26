@@ -52,6 +52,10 @@ export type TokenMessage = {
   token: string;
 }
 
+export type Subscription = {
+  remove: () => void;
+}
+
 export type OnUserInteractionListener = (userInteraction: UserInteraction) => Promise<void>;
 
 export type OnForegroundNotificationListener = (notification: ForegroundNotification) => Promise<void>;

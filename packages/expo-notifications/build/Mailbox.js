@@ -3,6 +3,7 @@ const { ExpoNotifications } = NativeModulesProxy;
 const DeviceEventEmitter = new NativeEventEmitter(ExpoNotifications);
 export class Mailbox {
     constructor() {
+        this.lastId = 0;
         this.onUserInteractionListeners = new Map();
         this.onForegroundNotificationListeners = new Map();
         this.onTokenChangeListener = null;
@@ -10,17 +11,25 @@ export class Mailbox {
         DeviceEventEmitter.addListener('Expo.onForegroundNotification', this.onForegroundNotification.bind(this));
         DeviceEventEmitter.addListener('Expo.onTokenChange', this.onTokenChange.bind(this));
     }
-    addOnUserInteractionListener(listenerName, listener) {
-        this.onUserInteractionListeners.set(listenerName, listener);
+    getNextId() {
+        return this.lastId++;
     }
-    addOnForegroundNotificationListener(listenerName, listener) {
-        this.onForegroundNotificationListeners.set(listenerName, listener);
+    createSubscription(id, map) {
+        return {
+            remove() {
+                map.delete(id);
+            }
+        };
     }
-    removeOnUserInteractionListener(listenerName) {
-        this.onUserInteractionListeners.delete(listenerName);
+    addOnUserInteractionListener(listener) {
+        const id = this.lastId;
+        this.onUserInteractionListeners.set(id, listener);
+        return this.createSubscription(id, this.onUserInteractionListeners);
     }
-    removeOnForegroundNotificationListener(listenerName) {
-        this.onForegroundNotificationListeners.delete(listenerName);
+    addOnForegroundNotificationListener(listener) {
+        const id = this.lastId;
+        this.onForegroundNotificationListeners.set(id, listener);
+        return this.createSubscription(id, this.onForegroundNotificationListeners);
     }
     setOnTokenChangeListener(onTokenChangeListner) {
         this.onTokenChangeListener = onTokenChangeListner;

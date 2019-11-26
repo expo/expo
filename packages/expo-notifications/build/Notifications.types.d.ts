@@ -46,6 +46,9 @@ export declare type UserInteraction = Notification & {
 export declare type TokenMessage = {
     token: string;
 };
+export declare type Subscription = {
+    remove: () => void;
+};
 export declare type OnUserInteractionListener = (userInteraction: UserInteraction) => Promise<void>;
 export declare type OnForegroundNotificationListener = (notification: ForegroundNotification) => Promise<void>;
 export declare type OnTokenChangeListener = (token: string) => Promise<void>;
