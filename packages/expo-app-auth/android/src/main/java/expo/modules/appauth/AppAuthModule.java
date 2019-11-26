@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.annotation.Nullable;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthorizationException;
@@ -35,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
 import de.greenrobot.event.EventBus;
 
 public class AppAuthModule extends ExportedModule implements ActivityEventListener {
@@ -71,15 +71,22 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
   }
 
   private Activity getCurrentActivity() throws CurrentActivityNotFoundException {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    if (activityProvider == null || activityProvider.getCurrentActivity() == null) {
+    Activity currentActivity = null;
+    if (mModuleRegistry != null) {
+      ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+      if (activityProvider != null) {
+        currentActivity = activityProvider.getCurrentActivity();
+      }
+    }
+    if (currentActivity == null) {
       throw new CurrentActivityNotFoundException();
     }
-    return activityProvider.getCurrentActivity();
+    return currentActivity;
   }
 
   private AuthorizationServiceConfiguration createOAuthServiceConfiguration(Map<String, String> config) {
-    return new AuthorizationServiceConfiguration(Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
+    return new AuthorizationServiceConfiguration(
+        Uri.parse(config.get(AppAuthConstants.Props.AUTHORIZATION_ENDPOINT)),
         Uri.parse(config.get(AppAuthConstants.Props.TOKEN_ENDPOINT)),
         config.containsKey(AppAuthConstants.Props.REGISTRATION_ENDPOINT)
             ? Uri.parse(config.get(AppAuthConstants.Props.REGISTRATION_ENDPOINT))
@@ -96,19 +103,28 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       Map<String, String> serviceConfig
   ) {
 
-    final ConnectionBuilder builder = mShouldMakeHTTPCalls.equals(true) ? UnsafeConnectionBuilder.INSTANCE
-        : DefaultConnectionBuilder.INSTANCE;
+    final ConnectionBuilder builder = mShouldMakeHTTPCalls.equals(true) ? UnsafeConnectionBuilder.INSTANCE : DefaultConnectionBuilder.INSTANCE;
 
-    final AppAuthConfiguration authConfig = new AppAuthConfiguration.Builder().setConnectionBuilder(builder).build();
+    final AppAuthConfiguration authConfig = new AppAuthConfiguration
+        .Builder()
+        .setConnectionBuilder(builder)
+        .build();
     final Map<String, String> finalAdditionalParametersMap = mAdditionalParametersMap;
 
     if (serviceConfig != null) {
-      refreshWithConfig(createOAuthServiceConfiguration(serviceConfig), authConfig, refreshToken, clientId, scopes,
-          redirectUrl, finalAdditionalParametersMap, clientSecret);
+      refreshWithConfig(
+          createOAuthServiceConfiguration(serviceConfig),
+          authConfig,
+          refreshToken,
+          clientId,
+          scopes,
+          redirectUrl,
+          finalAdditionalParametersMap,
+          clientSecret
+      );
     } else {
       AuthorizationServiceConfiguration.fetchFromUrl(
-          Uri.parse(issuer).buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH)
-              .appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build(),
+          Uri.parse(issuer).buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH).appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build(),
           new AuthorizationServiceConfiguration.RetrieveConfigurationCallback() {
             public void onFetchConfigurationCompleted(
                 @Nullable AuthorizationServiceConfiguration authorizationServiceConfiguration,
@@ -129,24 +145,33 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
                   clientSecret
               );
             }
-          }, builder);
+          },
+          builder
+      );
 
     }
   }
 
-  private void authAsync(final Map<String, String> params, String issuer, String clientSecret, final String redirectUrl,
-                         final ArrayList scopes, final String clientId, Map<String, String> serviceConfig) {
-    if (getAppOwnership().equals("expo")) {
-      if (EventBus.getDefault().isRegistered(this)) {
-        mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
-            "Cannot start a new task while another task is currently in progress");
-        return;
-      }
+  private void authAsync(
+      final Map<String, String> params,
+      String issuer,
+      String clientSecret,
+      final String redirectUrl,
+      final ArrayList scopes,
+      final String clientId,
+      Map<String, String> serviceConfig
+  ) {
+    if (EventBus.getDefault().isRegistered(this) && getAppOwnership().equals("expo")) {
+      mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
+          "Cannot start a new task while another task is currently in progress");
+      return;
     }
 
-    final ConnectionBuilder builder = mShouldMakeHTTPCalls.equals(true) ? UnsafeConnectionBuilder.INSTANCE
-        : DefaultConnectionBuilder.INSTANCE;
-    final AppAuthConfiguration authConfig = new AppAuthConfiguration.Builder().setConnectionBuilder(builder).build();
+    final ConnectionBuilder builder = mShouldMakeHTTPCalls.equals(true) ? UnsafeConnectionBuilder.INSTANCE : DefaultConnectionBuilder.INSTANCE;
+    final AppAuthConfiguration authConfig = new AppAuthConfiguration
+        .Builder()
+        .setConnectionBuilder(builder)
+        .build();
     mClientSecret = clientSecret;
 
     if (serviceConfig != null) {
@@ -160,8 +185,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       );
     } else {
       AuthorizationServiceConfiguration.fetchFromUrl(
-          Uri.parse(issuer).buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH)
-              .appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build(),
+          Uri.parse(issuer).buildUpon().appendPath(AuthorizationServiceConfiguration.WELL_KNOWN_PATH).appendPath(AuthorizationServiceConfiguration.OPENID_CONFIGURATION_RESOURCE).build(),
           new AuthorizationServiceConfiguration.RetrieveConfigurationCallback() {
             public void onFetchConfigurationCompleted(
                 @Nullable AuthorizationServiceConfiguration authorizationServiceConfiguration,
@@ -172,23 +196,31 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
                 return;
               }
 
-              if (getAppOwnership().equals("expo")) {
-                if (EventBus.getDefault().isRegistered(this)) {
-                  mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
-                      "Cannot start a new task while another task is currently in progress");
-                  return;
-                }
+              if (EventBus.getDefault().isRegistered(this) && getAppOwnership().equals("expo")) {
+                mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
+                    "Cannot start a new task while another task is currently in progress");
+                return;
               }
 
-              authWithConfiguration(authConfig, clientId, redirectUrl, scopes, authorizationServiceConfiguration,
+              authWithConfiguration(
+                  authConfig,
+                  clientId,
+                  redirectUrl,
+                  scopes,
+                  authorizationServiceConfiguration,
                   params);
             }
-          }, builder);
+          },
+          builder
+      );
     }
   }
 
   @ExpoMethod
-  public void executeAsync(final Map<String, Object> options, final Promise promise) {
+  public void executeAsync(
+      final Map<String, Object> options,
+      final Promise promise
+  ) {
 
     // mUIManger nullability suggests there's no listener registered for Activity result
     if (mUIManager == null) {
@@ -206,27 +238,20 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
         final String clientSecret = (String) options.get(AppAuthConstants.Props.CLIENT_SECRET);
         final String refreshToken = (String) options.get(AppAuthConstants.Props.REFRESH_TOKEN);
 
-        final Boolean shouldMakeHTTPCalls = options.containsKey(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS)
-            ? (Boolean) options.get(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS)
-            : false;
-        final Boolean isRefresh = options.containsKey(AppAuthConstants.Props.IS_REFRESH)
-            ? (Boolean) options.get(AppAuthConstants.Props.IS_REFRESH)
-            : false;
+        final Boolean shouldMakeHTTPCalls = options.containsKey(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS) ? (Boolean) options.get(AppAuthConstants.Props.CAN_MAKE_INSECURE_REQUESTS) : false;
+        final Boolean isRefresh = options.containsKey(AppAuthConstants.Props.IS_REFRESH) ? (Boolean) options.get(AppAuthConstants.Props.IS_REFRESH) : false;
 
         final ArrayList<String> scopes = (ArrayList) options.get(AppAuthConstants.Props.SCOPES);
 
         Map<String, String> params = new HashMap<>();
-        if (options.containsKey(AppAuthConstants.Props.ADDITIONAL_PARAMETERS)
-            && options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) instanceof Map) {
+        if (options.containsKey(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) && options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS) instanceof Map) {
           params = Serialization
               .jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.ADDITIONAL_PARAMETERS));
         }
 
         Map<String, String> serviceConfig = null;
-        if (options.containsKey(AppAuthConstants.Props.SERVICE_CONFIGURATION)
-            && options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION) instanceof Map) {
-          serviceConfig = Serialization
-              .jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION));
+        if (options.containsKey(AppAuthConstants.Props.SERVICE_CONFIGURATION) && options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION) instanceof Map) {
+          serviceConfig = Serialization.jsonToStrings((Map<String, Object>) options.get(AppAuthConstants.Props.SERVICE_CONFIGURATION));
         }
 
         mAdditionalParametersMap = params;
@@ -254,7 +279,8 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
     return new AuthorizationService.TokenResponseCallback() {
 
       @Override
-      public void onTokenRequestCompleted(TokenResponse resp, AuthorizationException authorizationException) {
+      public void onTokenRequestCompleted(
+          TokenResponse resp, AuthorizationException authorizationException) {
         if (resp == null) {
           mAuthTask.reject(authorizationException);
           return;
@@ -264,9 +290,14 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
     };
   }
 
-  private void authWithConfiguration(final AppAuthConfiguration authConfig, final String clientId,
-                                     final String redirectUrl, final ArrayList<String> scopes, final AuthorizationServiceConfiguration serviceConfig,
-                                     final Map<String, String> parameters) {
+  private void authWithConfiguration(
+      final AppAuthConfiguration authConfig,
+      final String clientId,
+      final String redirectUrl,
+      final ArrayList<String> scopes,
+      final AuthorizationServiceConfiguration serviceConfig,
+      final Map<String, String> parameters
+  ) {
 
     Activity activity;
 
@@ -277,8 +308,7 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       return;
     }
 
-    AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId,
-        ResponseTypeValues.CODE, Uri.parse(redirectUrl));
+    AuthorizationRequest.Builder authReqBuilder = new AuthorizationRequest.Builder(serviceConfig, clientId, ResponseTypeValues.CODE, Uri.parse(redirectUrl));
 
     if (scopes != null) {
       String scopesString = Serialization.scopesToString(scopes);
@@ -307,14 +337,13 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       Intent postAuthIntent = new Intent(activity, AppAuthBrowserActivity.class)
           .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-      ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
-
       // TODO: Bacon: Prevent double register - this is fatal
       EventBus.getDefault().register(this);
 
+      ConstantsInterface constantsService = mModuleRegistry.getModule(ConstantsInterface.class);
+
       if (!constantsService.getConstants().containsKey(AppAuthConstants.MANIFEST_URL)) {
-        mAuthTask.reject(AppAuthConstants.Error.DEFAULT,
-            "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
+        mAuthTask.reject(AppAuthConstants.Error.DEFAULT, "Missing " + AppAuthConstants.MANIFEST_URL + " in the experience Constants");
         return;
       } else {
         String experienceUrl = (String) constantsService.getConstants().get(AppAuthConstants.MANIFEST_URL);
@@ -329,9 +358,9 @@ public class AppAuthModule extends ExportedModule implements ActivityEventListen
       return;
     }
     // For standalone and bare-workflow
-    AuthorizationRequest authRequest = authReqBuilder.build();
+    AuthorizationRequest authorizationRequest = authReqBuilder.build();
     AuthorizationService authService = new AuthorizationService(getContext());
-    Intent authIntent = authService.getAuthorizationRequestIntent(authRequest);
+    Intent authIntent = authService.getAuthorizationRequestIntent(authorizationRequest);
     activity.startActivityForResult(authIntent, RC_EXPO_APP_AUTH);
   }
 
