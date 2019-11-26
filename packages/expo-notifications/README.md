@@ -282,20 +282,21 @@ Deletes channel group.
 async function scheduleNotificationWithCalendarAsync(
   notification: ForegroundNotification,
   options: {
-    year?: number;
-    month?: number;
-    hour?: number;
-    day?: number;
-    minute?: number;
+    year?: number; 
+    month?: number; // range [1, 12]
+    hour?: number; 
+    day?: number; //  day in month starts from 1
+    minute?: number; 
     second?: number;
-    weekDay?: number;
-    repeat?: boolean;
+    weekDay?: number; // day in a week from 0 to 7 (where 0 and 7 means Sunday)
+    repeat?: boolean; 
   } = {}
 ): Promise<string>
 ```
 ##### Description
 Schedules notification in cronlike style. 
 Returns notification id which later can be used to cancel or dismiss notification.
+> Do not use `day` and `weekDay` properties together.
 
 #### `Notifications.scheduleNotificationWithTimerAsync()`
 ##### Signature
@@ -303,8 +304,8 @@ Returns notification id which later can be used to cancel or dismiss notificatio
 async function scheduleNotificationWithTimerAsync(
   notification: Notification,
   options: {
-    interval: number;
-    repeat?: boolean;
+    interval: number; // number of miliseconds (on iOS it must be at least 60000 if repeating)
+    repeat?: boolean; 
   }
 ): Promise<string>
 ```
