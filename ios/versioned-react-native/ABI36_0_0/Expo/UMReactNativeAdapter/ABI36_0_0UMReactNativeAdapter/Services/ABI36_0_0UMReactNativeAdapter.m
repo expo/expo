@@ -185,10 +185,10 @@ ABI36_0_0UM_REGISTER_MODULE();
 - (void)loadImageForURL:(NSURL *)imageURL
       completionHandler:(ABI36_0_0UMImageLoaderCompletionBlock)completionHandler
 {
-   [_bridge.imageLoader loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
-                                       callback:^(NSError *error, UIImage *loadedImage) {
-                                         completionHandler(error, loadedImage);
-                                       }];
+   [[_bridge moduleForClass:[ABI36_0_0RCTImageLoader class]] loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
+                                                                   callback:^(NSError *error, UIImage *loadedImage) {
+       completionHandler(error, loadedImage);
+   }];
 }
 
 # pragma mark - App state observing
