@@ -6,6 +6,7 @@ labels: 'bug'
 assignees: ''
 
 ---
+<!-- IMPORTANT: Due to the holiday (US Thanksgiving) this week, your issue may not be triaged/answered until Tuesday December 3rd. -->
 
 ## 🐛 Bug Report
 
