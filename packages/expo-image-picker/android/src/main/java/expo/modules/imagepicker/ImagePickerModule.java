@@ -622,13 +622,19 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
       height = result.getCropRect().width();
     }
 
-    try (ByteArrayOutputStream out = base64 ? new ByteArrayOutputStream() : null;
-         InputStream in = new FileInputStream(result.getUri().getPath())) {
-      IOUtils.copy(in, out);
-      returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
+    try (InputStream in = new FileInputStream(result.getUri().getPath())) {
+      if (base64) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()){
+          // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
+          // we have to read back..
+          IOUtils.copy(in, out);
+          returnImageResult(exifData, result.getUri().toString(), width, height, out, promise);
+        }
+      } else {
+        returnImageResult(exifData, result.getUri().toString(), width, height, null, promise);
+      }
     } catch (IOException e) {
       promise.reject(e);
-
     }
   }
 
