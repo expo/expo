@@ -329,11 +329,6 @@ async function addVersionedActivitesToManifests(version: string) {
   const abiName = `abi${abiVersion}`;
   const majorVersion = semver.major(version);
 
-  const versionedAndroidManifestPath = path.join(
-    versionedExpoviewAbiPath(abiName),
-    'src/main/AndroidManifest.xml'
-  );
-
   await transformFileAsync(
     templateManifestPath,
     new RegExp('<!-- ADD DEV SETTINGS HERE -->'),
