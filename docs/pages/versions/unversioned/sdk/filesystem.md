@@ -115,6 +115,16 @@ Delete a file or directory. If the URI points to a directory, the directory and 
 
   - **idempotent (_boolean_)** -- If `true`, don't throw an error if there is no file or directory at this URI. `false` by default.
 
+### `FileSystem.deleteLegacyDocumentDirectoryAndroid(fileUri, options)`
+
+Delete the legacy document directory used in Android standalone apps built with SDK 32 and below.
+
+In standalone apps built with this SDK version, files in the legacy document directory are automatically copied to the current (new) document directory upon first launch. Any files already in the current (new) document directory will not be overwritten. This allows seamless transitions without your application code needing to be aware of the legacy document directory subfolder.
+
+The legacy document directory is NOT deleted on launch in case your application code depends on it, meaning any legacy files may be duplicated. If you have a large files stored in the FileSystem, you may want to call this method soon after launching your app in order to free up storage on the user's device.
+
+If the legacy document directory does not exist, this method is a noop and is therefore safe to call repeatedly.
+
 ### `FileSystem.moveAsync(options)`
 
 Move a file or directory to a new location.
