@@ -18,7 +18,7 @@ buildscript {
     maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.1'
+    classpath 'com.android.tools.build:gradle:3.5.2'
     classpath 'com.google.gms:google-services:3.2.1'
     classpath 'de.undercouch:gradle-download-task:3.4.3'
 
