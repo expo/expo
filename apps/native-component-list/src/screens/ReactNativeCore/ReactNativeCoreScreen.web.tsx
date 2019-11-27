@@ -55,7 +55,6 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
           { title: 'ActivityIndicator', data: [this._renderActivityIndicator] },
           { title: 'Alert', data: [this._renderAlert] },
           { title: 'Horizontal ScrollView', data: [this._renderHorizontalScrollView] },
-          { title: 'MaskView', data: [this._renderMaskView] },
           { title: 'Picker', data: [this._renderPicker] },
           { title: 'Slider', data: [this._renderSlider] },
           { title: 'StatusBar', data: [this._renderStatusBar] },
@@ -78,25 +77,12 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
     setTimeout(() => {
       this.setState({ isRefreshing: false });
     }, 3000);
-  }
+  };
 
   _scrollToTop = () => {
     // @ts-ignore
     this._listView!.scrollTo({ x: 0, y: 0 });
-  }
-
-  _renderMaskView = () => {
-    return (
-      <View style={{ padding: 10, flexDirection: 'row' }}>
-        <Button onPress={() => this.props.navigation.navigate('BasicMaskExample')}>
-          Basic Mask
-        </Button>
-        <Button onPress={() => this.props.navigation.navigate('GLMaskExample')}>
-          Mask on top of GL
-        </Button>
-      </View>
-    );
-  }
+  };
 
   _renderRefreshControl = () => (
     <View style={{ padding: 10 }}>
@@ -105,7 +91,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         RefreshControl.
       </Text>
     </View>
-  )
+  );
 
   _renderActivityIndicator = () => {
     const Spacer = () => <View style={{ marginRight: 10 }} />;
@@ -124,7 +110,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <ActivityIndicator size="large" animating={false} hidesWhenStopped={false} />
       </View>
     );
-  }
+  };
 
   _renderAlert = () => {
     const showPrompt = () => {};
@@ -149,8 +135,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         style={{
           flexDirection: Layout.isSmallDevice ? 'column' : 'row',
           padding: 10,
-        }}
-      >
+        }}>
         <Button onPress={showPrompt}>Prompt for a value</Button>
 
         {Layout.isSmallDevice && <View style={{ marginBottom: 10 }} />}
@@ -158,7 +143,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={showAlert}>Give me some options</Button>
       </View>
     );
-  }
+  };
 
   _renderHorizontalScrollView = () => {
     const imageStyle = {
@@ -185,11 +170,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         />
       </ScrollView>
     );
-  }
+  };
 
   _renderPicker = () => {
     return <PickerExample />;
-  }
+  };
 
   _renderSlider = () => {
     return (
@@ -197,7 +182,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <SliderExample />
       </View>
     );
-  }
+  };
 
   _renderStatusBar = () => {
     const randomAnimation = () => {
@@ -219,11 +204,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <Button onPress={show}>Show</Button>
       </View>
     );
-  }
+  };
 
   _renderSwitch = () => {
     return <SwitchExample />;
-  }
+  };
 
   _renderText = () => {
     const linkStyle = { color: Colors.tintColor, marginVertical: 3 };
@@ -242,11 +227,11 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </Text>
       </View>
     );
-  }
+  };
 
   _renderTextInput = () => {
     return <TextInputExample />;
-  }
+  };
 
   _renderTouchables = () => {
     const buttonStyle = {
@@ -266,8 +251,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         <TouchableHighlight
           underlayColor="rgba(1, 1, 255, 0.9)"
           style={buttonStyle}
-          onPress={() => {}}
-        >
+          onPress={() => {}}>
           <Text style={buttonText}>Highlight!</Text>
         </TouchableHighlight>
 
@@ -276,7 +260,7 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         </TouchableOpacity>
       </View>
     );
-  }
+  };
 
   _renderWebView = () => {
     return (
@@ -297,13 +281,13 @@ export default class ReactNativeCoreScreen extends React.Component<NavigationScr
         }}
       />
     );
-  }
+  };
 
   _renderSectionHeader = ({ section }: any) => (
     <View style={styles.sectionHeader}>
       <Text>{section.title}</Text>
     </View>
-  )
+  );
 }
 
 class PickerExample extends React.Component {
@@ -315,8 +299,7 @@ class PickerExample extends React.Component {
     return (
       <Picker
         selectedValue={this.state.language}
-        onValueChange={lang => this.setState({ language: lang })}
-      >
+        onValueChange={lang => this.setState({ language: lang })}>
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />

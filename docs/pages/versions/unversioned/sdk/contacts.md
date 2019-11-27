@@ -74,7 +74,7 @@ import * as Contacts from 'expo-contacts';
 - [`Contacts.removeContactAsync(contactId)`](#contactsremovecontactasynccontactid)
 - [`Contacts.writeContactToFileAsync(contactQuery)`](#contactswritecontacttofileasynccontactquery)
 
-**[iOS-only Methods](#iosonly-methods)**
+**[iOS-only Methods](#ios-only-methods)**
 
 - [`Contacts.addExistingGroupToContainerAsync(groupId, containerId)`](#contactsaddexistinggrouptocontainerasyncgroupid-containerid)
 - [`Contacts.createGroupAsync(groupName, containerId?)`](#contactscreategroupasyncgroupname-containerid)
