@@ -1,5 +1,6 @@
 ---
 title: Audio
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-av"
 ---
 
 Provides basic sample playback and recording.

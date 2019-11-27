@@ -54,6 +54,7 @@
 {
   subview.reactSuperview = self;
   [_reactSubviews insertObject:subview atIndex:atIndex];
+  subview.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
 }
 
 - (void)removeReactSubview:(RNSScreenView *)subview
@@ -159,6 +160,10 @@
   [super layoutSubviews];
   [self reactAddControllerToClosestParent:_controller];
   _controller.view.frame = self.bounds;
+  for (RNSScreenView *subview in _reactSubviews) {
+    subview.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    [subview setNeedsLayout];
+  }
 }
 
 @end

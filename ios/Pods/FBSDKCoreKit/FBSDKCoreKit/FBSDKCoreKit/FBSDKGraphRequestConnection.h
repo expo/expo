@@ -184,7 +184,7 @@ NS_SWIFT_NAME(GraphRequestConnection)
  The property is nil until the request completes.  If there was a response
  then this property will be non-nil during the FBSDKGraphRequestBlock callback.
  */
-@property (nonatomic, retain, readonly) NSHTTPURLResponse *urlResponse;
+@property (nonatomic, retain, readonly, nullable) NSHTTPURLResponse *urlResponse;
 
 /**
  Determines the operation queue that is used to call methods on the connection's delegate.
@@ -257,7 +257,7 @@ NS_SWIFT_NAME(GraphRequestConnection)
  to allow for using the request's response in a subsequent request.
  */
 - (void)addRequest:(FBSDKGraphRequest *)request
-   batchParameters:(NSDictionary<NSString *, id> *)batchParameters
+   batchParameters:(nullable NSDictionary<NSString *, id> *)batchParameters
  completionHandler:(FBSDKGraphRequestBlock)handler;
 
 /**

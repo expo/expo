@@ -1,5 +1,6 @@
 ---
 title: MapView
+sourceCodeUrl: "https://github.com/react-native-community/react-native-maps"
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
@@ -12,7 +13,7 @@ To install this API in a [managed](../../introduction/managed-vs-bare/#managed-w
 
 ## Usage
 
-See full documentation at [react-community/react-native-maps](https://github.com/react-community/react-native-maps).
+See full documentation at [react-native-community/react-native-maps](https://github.com/react-native-community/react-native-maps).
 
 <SnackEmbed snackId="@charliecruzan/basicmapviewexample" />
 

@@ -10,7 +10,7 @@
 #include "ABI35_0_0NativeModule.h"
 #include "ABI35_0_0SystraceSection.h"
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 namespace {

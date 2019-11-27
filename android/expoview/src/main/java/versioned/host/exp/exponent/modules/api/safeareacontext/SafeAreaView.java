@@ -1,8 +1,6 @@
 package versioned.host.exp.exponent.modules.api.safeareacontext;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.os.Build;
 import android.view.Surface;
 import android.view.View;
@@ -28,17 +26,6 @@ public class SafeAreaView extends ReactViewGroup implements ViewTreeObserver.OnG
     super(context);
 
     mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-  }
-
-  private Activity getActivity() {
-    Context context = getContext();
-    while (context instanceof ContextWrapper) {
-      if (context instanceof Activity) {
-        return (Activity)context;
-      }
-      context = ((ContextWrapper)context).getBaseContext();
-    }
-    return null;
   }
 
   private EdgeInsets getSafeAreaInsets() {

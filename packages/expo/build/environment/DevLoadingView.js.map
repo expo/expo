@@ -1,0 +1,1 @@
+{"version":3,"file":"DevLoadingView.js","sourceRoot":"","sources":["../../src/environment/DevLoadingView.ts"],"names":[],"mappings":"AAAA,mDAAmD;AACnD,eAAe,GAAG,EAAE,CAAC,IAAI,CAAC","sourcesContent":["// DevLoadingView exists on the JS-side only on iOS\nexport default () => null;\n"]}

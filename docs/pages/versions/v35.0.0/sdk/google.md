@@ -1,5 +1,6 @@
 ---
 title: Google
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-google-app-auth"
 ---
 
 Provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device.

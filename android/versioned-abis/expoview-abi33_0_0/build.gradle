@@ -17,7 +17,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:9.0.0'
+    classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.0'
   }
 }
 
@@ -90,7 +90,7 @@ dependencies {
   api 'de.greenrobot:eventbus:2.4.0'
 
   // Be careful when upgrading! Upgrading might break experience scoping. Check with Jesse. See Analytics.resetAmplitudeDatabaseHelper
-  compileOnly 'com.amplitude:android-sdk:2.9.2'
+  compileOnly 'com.amplitude:android-sdk:2.23.2'
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-gcm:16.1.0'
@@ -111,7 +111,7 @@ dependencies {
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:2.5.6'
-  compileOnly 'io.branch.sdk.android:library:2.17.1'
+  compileOnly 'io.branch.sdk.android:library:4.1.0'
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
@@ -119,8 +119,8 @@ dependencies {
   api 'com.google.firebase:firebase-core:16.0.7'
   api 'com.google.firebase:firebase-messaging:17.4.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:9.0.0'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0'
+  api 'com.jakewharton:butterknife:10.2.0'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // expo-file-system

@@ -1071,6 +1071,12 @@ static NSString *g_overrideAppID = nil;
         [self enableCodelessEvents];
       }
     }];
+    [FBSDKFeatureManager checkFeature:FBSDKFeatureAAM completionBlock:^(BOOL enabled) {
+      if (enabled) {
+        // Enable AAM
+        [FBSDKMetadataIndexer enable];
+      }
+    }];
 #endif
     if (callback) {
       callback();

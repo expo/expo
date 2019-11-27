@@ -13,9 +13,9 @@
 
 @protocol RNCWebViewDelegate <NSObject>
 
-- (BOOL)webView:(RNCWebView *)webView
-   shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
-   withCallback:(RCTDirectEventBlock)callback;
+- (BOOL)webView:(RNCWebView *_Nonnull)webView
+   shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *_Nonnull)request
+   withCallback:(RCTDirectEventBlock _Nonnull)callback;
 
 @end
 
@@ -23,10 +23,10 @@
 
 @property (nonatomic, strong) NSString *experienceId;
 
-@property (nonatomic, weak) id<RNCWebViewDelegate> delegate;
-@property (nonatomic, copy) NSDictionary *source;
+@property (nonatomic, weak) id<RNCWebViewDelegate> _Nullable delegate;
+@property (nonatomic, copy) NSDictionary * _Nullable source;
 @property (nonatomic, assign) BOOL messagingEnabled;
-@property (nonatomic, copy) NSString *injectedJavaScript;
+@property (nonatomic, copy) NSString * _Nullable injectedJavaScript;
 @property (nonatomic, assign) BOOL scrollEnabled;
 @property (nonatomic, assign) BOOL sharedCookiesEnabled;
 @property (nonatomic, assign) BOOL pagingEnabled;
@@ -44,19 +44,20 @@
 @property (nonatomic, assign) BOOL allowsBackForwardNavigationGestures;
 @property (nonatomic, assign) BOOL incognito;
 @property (nonatomic, assign) BOOL useSharedProcessPool;
-@property (nonatomic, copy) NSString *userAgent;
-@property (nonatomic, copy) NSString *applicationNameForUserAgent;
+@property (nonatomic, copy) NSString * _Nullable userAgent;
+@property (nonatomic, copy) NSString * _Nullable applicationNameForUserAgent;
 @property (nonatomic, assign) BOOL cacheEnabled;
 @property (nonatomic, assign) BOOL javaScriptEnabled;
 @property (nonatomic, assign) BOOL allowsLinkPreview;
 @property (nonatomic, assign) BOOL showsHorizontalScrollIndicator;
 @property (nonatomic, assign) BOOL showsVerticalScrollIndicator;
 @property (nonatomic, assign) BOOL directionalLockEnabled;
-@property (nonatomic, copy) NSString *allowingReadAccessToURL;
+@property (nonatomic, copy) NSString * _Nullable allowingReadAccessToURL;
 
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential;
-- (void)postMessage:(NSString *)message;
-- (void)injectJavaScript:(NSString *)script;
++ (void)setCustomCertificatesForHost:(nullable NSDictionary *)certificates;
+- (void)postMessage:(NSString *_Nullable)message;
+- (void)injectJavaScript:(NSString *_Nullable)script;
 - (void)goForward;
 - (void)goBack;
 - (void)reload;

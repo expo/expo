@@ -139,12 +139,12 @@ async function _commentWhenDistributing(filenames: string[]): Promise<void> {
   for (const filename of filenames) {
     await _regexFileAsync(
       filename,
-      `// WHEN_DISTRIBUTING_REMOVE_FROM_HERE`,
+      /\/\/ WHEN_DISTRIBUTING_REMOVE_FROM_HERE/g,
       '/* WHEN_DISTRIBUTING_REMOVE_FROM_HERE'
     );
     await _regexFileAsync(
       filename,
-      `// WHEN_DISTRIBUTING_REMOVE_TO_HERE`,
+      /\/\ WHEN_DISTRIBUTING_REMOVE_TO_HERE/g,
       'WHEN_DISTRIBUTING_REMOVE_TO_HERE */'
     );
   }

@@ -478,7 +478,7 @@ public class ViewShot implements UIBlock {
     private static Bitmap getBitmapForScreenshot(final int width, final int height) {
         synchronized (guardBitmaps) {
             for (final Bitmap bmp : weakBitmaps) {
-                if (bmp.getWidth() >= width && bmp.getHeight() >= height) {
+                if (bmp.getWidth() == width && bmp.getHeight() == height) {
                     weakBitmaps.remove(bmp);
                     bmp.eraseColor(Color.TRANSPARENT);
                     return bmp;

@@ -9,13 +9,28 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := jsi
 
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/jsi/*.cpp)
 
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/..
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS := -fexceptions -frtti -O3
-LOCAL_SHARED_LIBRARIES := libfolly_json_abi35_0_0 libjsc glog_abi35_0_0
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi36_0_0 glog_abi36_0_0
+
+include $(BUILD_STATIC_LIBRARY)
+
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := jscruntime
+
+LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
+
+LOCAL_CFLAGS := -fexceptions -frtti -O3
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi36_0_0 libjsc glog_abi36_0_0
 
 include $(BUILD_STATIC_LIBRARY)
 

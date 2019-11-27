@@ -2,7 +2,7 @@ export default {
     get name() {
         return 'ExpoStoreReview';
     },
-    get isSupported() {
+    async isAvailableAsync() {
         return false;
     },
 };

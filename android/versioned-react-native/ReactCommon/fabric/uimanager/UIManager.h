@@ -7,8 +7,9 @@
 #include <jsi/jsi.h>
 
 #include <react/core/ShadowNode.h>
+#include <react/core/StateData.h>
+#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {
@@ -31,10 +32,11 @@ class UIManager {
 
  private:
   friend class UIManagerBinding;
+  friend class Scheduler;
 
   SharedShadowNode createNode(
       Tag tag,
-      const std::string &name,
+      std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
       SharedEventTarget eventTarget) const;
@@ -56,6 +58,12 @@ class UIManager {
       const SharedShadowNode &shadowNode,
       const RawProps &rawProps) const;
 
+  void setJSResponder(
+      const SharedShadowNode &shadowNode,
+      const bool blockNativeResponder) const;
+
+  void clearJSResponder() const;
+
   /*
    * Returns layout metrics of given `shadowNode` relative to
    * `ancestorShadowNode` (relative to the root node in case if provided
@@ -64,6 +72,19 @@ class UIManager {
   LayoutMetrics getRelativeLayoutMetrics(
       const ShadowNode &shadowNode,
       const ShadowNode *ancestorShadowNode) const;
+
+  /*
+   * Creates a new shadow node with given state data, clones what's necessary
+   * and performs a commit.
+   */
+  void updateState(
+      const SharedShadowNode &shadowNode,
+      const StateData::Shared &rawStateData) const;
+
+  void dispatchCommand(
+      const SharedShadowNode &shadowNode,
+      std::string const &commandName,
+      folly::dynamic const args) const;
 
   ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;

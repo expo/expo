@@ -1,5 +1,6 @@
 ---
 title: StoreReview
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo/src/StoreReview"
 ---
 
 Provides access to the `SKStoreReviewController` API in iOS 10.3+ devices.

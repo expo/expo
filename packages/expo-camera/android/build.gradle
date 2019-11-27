@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.5.0'
+    classpath 'com.android.tools.build:gradle:3.5.1'
   }
 }
 
@@ -79,7 +79,6 @@ dependencies {
   unimodule 'unimodules-file-system-interface'
   unimodule 'unimodules-image-loader-interface'
   unimodule 'unimodules-camera-interface'
-  api 'com.google.android.gms:play-services-vision:15.0.2'
   api "androidx.exifinterface:exifinterface:1.0.0"
   api 'com.google.android:cameraview:1.0.0'
 }

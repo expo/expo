@@ -1,5 +1,6 @@
 ---
 title: Device
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-device"
 ---
 
 Provides access to system information about the physical device, such as its manufacturer and model.

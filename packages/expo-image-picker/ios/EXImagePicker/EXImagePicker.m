@@ -1,10 +1,13 @@
 #import <EXImagePicker/EXImagePicker.h>
+#import <EXImagePicker/EXImagePickerCameraPermissionRequester.h>
+#import <EXImagePicker/EXImagePickerCameraRollPermissionRequester.h>
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMUtilitiesInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
 @import MobileCoreServices;
 @import Photos;
@@ -23,7 +26,7 @@ const CGFloat EXDefaultImageQuality = 0.2;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsModule;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, assign) BOOL shouldRestoreStatusBarVisibility;
 @property (nonatomic, weak) UIScrollView *imageScrollView;
 
@@ -37,7 +40,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 {
   if (self = [super init]) {
     self.defaultOptions = @{
-                            @"allowsEditing" : @NO,
+                            @"allowsEditing": @NO,
                             @"base64": @NO,
                             };
     self.shouldRestoreStatusBarVisibility = NO;
@@ -53,16 +56,63 @@ UM_EXPORT_MODULE(ExponentImagePicker);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _permissionsModule = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  _permissionsManager = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+  [UMPermissionsMethodsDelegate registerRequesters:@[
+                                                    [EXImagePickerCameraPermissionRequester new],
+                                                    [EXImagePickerCameraRollPermissionRequester new]
+                                                    ]
+                           withPermissionsManager:_permissionsManager];
+}
+
+UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
+                    getCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXImagePickerCameraPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(getCameraRollPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXImagePickerCameraRollPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
+                    requestCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXImagePickerCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestCameraRollPermissionsAsync,
+                    requestCameraRollPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXImagePickerCameraRollPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
-
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
   BOOL permissionsAreGranted = [self hasCameraRollPermission] &&
-                               [self.permissionsModule hasGrantedPermission:@"camera"];
+                               [self.permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraPermissionRequester class]];
 
   if (!permissionsAreGranted) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera or camera roll permission.", nil);
@@ -77,6 +127,9 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
                   resolver:(UMPromiseResolveBlock)resolve
                   rejecter:(UMPromiseRejectBlock)reject)
 {
+  if (!_permissionsManager) {
+    return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
+  }
   if (![self hasCameraRollPermission]) {
     reject(@"E_MISSING_PERMISSION", @"Missing camera roll permission.", nil);
     return;
@@ -117,7 +170,11 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     }
 
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
-
+    
+    if (@available(iOS 11.0, *)) {
+      self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
+    }
+    
     if ([[self.options objectForKey:@"allowsEditing"] boolValue]) {
       self.picker.allowsEditing = true;
     }
@@ -187,10 +244,10 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
         self.resolve(response);
       }];
     } else if ([mediaType isEqualToString:(NSString *)kUTTypeMovie]) {
-      [self handleVideoWithInfo:info saveAt:directory updateResponse:response];
-      self.resolve(response);
+      [self handleVideoWithInfo:info saveAt:directory updateResponse:response completionHandler:^{
+        self.resolve(response);
+      }];
     }
-
   };
   dispatch_async(dispatch_get_main_queue(), ^{
     [picker dismissViewControllerAnimated:YES completion:dismissCompletionBlock];
@@ -336,9 +393,17 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   return false;
 }
 
-- (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info saveAt:(NSString *)directory updateResponse:(NSMutableDictionary *)response
+- (void)handleVideoWithInfo:(NSDictionary * _Nonnull)info
+                     saveAt:(NSString *)directory
+             updateResponse:(NSMutableDictionary *)response
+          completionHandler:(void (^)(void))completionHandler
 {
-  NSURL *videoURL = info[UIImagePickerControllerMediaURL];
+  NSURL *videoURL = info[UIImagePickerControllerMediaURL] ?: info[UIImagePickerControllerReferenceURL];
+  if (videoURL == nil) {
+    // not calling completionHandler here, as it's only purpose is to resolve the promise and we rejected it right here
+    self.reject(@"E_COULDNT_OPEN_FILE", @"Couldn't open video", nil);
+    return;
+  }
   if (([[self.options objectForKey:@"allowsEditing"] boolValue])) {
     AVURLAsset *editedAsset = [AVURLAsset assetWithURL:videoURL];
     CMTime duration = [editedAsset duration];
@@ -377,6 +442,8 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   }
 
   response[@"uri"] = filePath;
+  
+  completionHandler();
 }
 
 - (void)updateResponse:(NSMutableDictionary *)response withMetadata:(NSDictionary *)metadata
@@ -536,7 +603,30 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   if (@available(iOS 11, *)) {
     return true;
   }
-  return [self.permissionsModule hasGrantedPermission:@"cameraRoll"];
+  return [_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXImagePickerCameraRollPermissionRequester class]];
+}
+
+
+- (NSString *)importVideoExportPreset:(NSNumber *)preset API_AVAILABLE(ios(11));
+{
+  static NSDictionary* presetsMap = nil;
+  if (!presetsMap) {
+    presetsMap = @{
+        @0: AVAssetExportPresetPassthrough,
+        @1: AVAssetExportPresetLowQuality,
+        @2: AVAssetExportPresetMediumQuality,
+        @3: AVAssetExportPresetHighestQuality,
+        @4: AVAssetExportPreset640x480,
+        @5: AVAssetExportPreset960x540,
+        @6: AVAssetExportPreset1280x720,
+        @7: AVAssetExportPreset1920x1080,
+        @8: AVAssetExportPreset3840x2160,
+        @9: AVAssetExportPresetHEVC1920x1080,
+        @10: AVAssetExportPresetHEVC3840x2160
+    };
+  }
+  
+  return presetsMap[preset] ?: AVAssetExportPresetPassthrough;
 }
 
 + (void)foreachSubviewIn:(UIView *)view call:(void (^)(UIView *subview))function 

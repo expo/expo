@@ -17,6 +17,35 @@ export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
+  const testShapeOrUnauthorized = testFunction => async () => {
+    const providerStatus = await Location.getProviderStatusAsync();
+    if (providerStatus.locationServicesEnabled) {
+      const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+        return Permissions.askAsync(Permissions.LOCATION);
+      });
+      if (status === 'granted') {
+        const location = await testFunction();
+        testLocationShape(location);
+      } else {
+        let error;
+        try {
+          await testFunction();
+        } catch (e) {
+          error = e;
+        }
+        t.expect(error.message).toMatch(/Not authorized/);
+      }
+    } else {
+      let error;
+      try {
+        await testFunction();
+      } catch (e) {
+        error = e;
+      }
+      t.expect(error.message).toMatch(/Location services are disabled/);
+    }
+  };
+
   function testLocationShape(location) {
     t.expect(typeof location === 'object').toBe(true);
 
@@ -95,6 +124,39 @@ export async function test(t) {
       );
     });
 
+    describeWithPermissions('Location.getLastKnownPositionAsync()', () => {
+      const second = 1000;
+      const timeout = 20 * second; // Allow manual touch on permissions dialog
+
+      t.it(
+        'gets a result of the correct shape, or throws error if no permission or disabled',
+        testShapeOrUnauthorized(() =>
+          Location.getLastKnownPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          })
+        ),
+        timeout
+      );
+
+      t.it(
+        'resolves when called simultaneously',
+        async () => {
+          await Promise.all([
+            Location.getLastKnownPositionAsync(),
+            Location.getLastKnownPositionAsync(),
+            Location.getLastKnownPositionAsync(),
+          ]);
+        },
+        timeout
+      );
+
+      t.it('resolves when watchPositionAsync is running', async () => {
+        const subscriber = await Location.watchPositionAsync({}, () => {});
+        await Location.getLastKnownPositionAsync();
+        subscriber.remove();
+      });
+    });
+
     describeWithPermissions('Location.getCurrentPositionAsync()', () => {
       // Manual interaction:
       //   1. Just try
@@ -106,55 +168,37 @@ export async function test(t) {
       //      try gain and "Don't Allow"
       //   6. Retry from experience restart.
       //   7. Retry from app restart.
-
-      const testShapeOrUnauthorized = options => async () => {
-        const providerStatus = await Location.getProviderStatusAsync();
-        if (providerStatus.locationServicesEnabled) {
-          const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.LOCATION);
-          });
-          if (status === 'granted') {
-            const location = await Location.getCurrentPositionAsync(options);
-            testLocationShape(location);
-          } else {
-            let error;
-            try {
-              await Location.getCurrentPositionAsync(options);
-            } catch (e) {
-              error = e;
-            }
-            t.expect(error.message).toMatch(/Not authorized/);
-          }
-        } else {
-          let error;
-          try {
-            await Location.getCurrentPositionAsync(options);
-          } catch (e) {
-            error = e;
-          }
-          t.expect(error.message).toMatch(/Location services are disabled/);
-        }
-      };
-
       const second = 1000;
       const timeout = 20 * second; // Allow manual touch on permissions dialog
 
       t.it(
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled',
-        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced }),
+        testShapeOrUnauthorized(() =>
+          Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          })
+        ),
         timeout
       );
       t.it(
         'gets a result of the correct shape (without high accuracy), or ' +
           'throws error if no permission or disabled (when trying again immediately)',
-        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced }),
+        testShapeOrUnauthorized(() =>
+          Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          })
+        ),
         timeout
       );
       t.it(
         'gets a result of the correct shape (with high accuracy), or ' +
           'throws error if no permission or disabled (when trying again immediately)',
-        testShapeOrUnauthorized({ accuracy: Location.Accuracy.Highest }),
+        testShapeOrUnauthorized(() =>
+          Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Highest,
+          })
+        ),
         timeout
       );
 
@@ -163,7 +207,11 @@ export async function test(t) {
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await testShapeOrUnauthorized({ accuracy: Location.Accuracy.Balanced })();
+          await testShapeOrUnauthorized(() =>
+            Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.Balanced,
+            })
+          )();
         },
         timeout + second
       );
@@ -173,7 +221,11 @@ export async function test(t) {
           'throws error if no permission or disabled (when trying again after 1 second)',
         async () => {
           await new Promise(resolve => setTimeout(resolve, 1000));
-          await testShapeOrUnauthorized({ accuracy: Location.Accuracy.Highest })();
+          await testShapeOrUnauthorized(() =>
+            Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.Highest,
+            })
+          )();
         },
         timeout + second
       );
@@ -301,9 +353,9 @@ export async function test(t) {
           t.expect(typeof result[0]).toBe('object');
           const fields = ['city', 'street', 'region', 'country', 'postalCode', 'name'];
           fields.forEach(field => {
-            t
-              .expect(typeof result[field] === 'string' || typeof result[field] === 'undefined')
-              .toBe(true);
+            t.expect(
+              typeof result[field] === 'string' || typeof result[field] === 'undefined'
+            ).toBe(true);
           });
         },
         timeout

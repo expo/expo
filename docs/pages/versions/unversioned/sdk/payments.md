@@ -1,5 +1,6 @@
 ---
 title: Payments
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe"
 ---
 
 Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
@@ -141,7 +142,7 @@ Stripe.setOptionsAsync({
 
 First, initialize the Payments module with your credentials:
 
-This `setOptionsAsync` method must put under the componentWillMount in android's production mode, unlike iOS that it works outside any component.
+This `setOptionsAsync` method must put under the componentDidMount in android's production mode, unlike iOS that it works outside any component.
 
 ```javascript
 Stripe.setOptionsAsync({

@@ -61,6 +61,8 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Add SpongyCastle integration
     moduleRegistry.registerExportedModule(new SecureStoreModuleBinding(scopedContext));
 
+    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
+
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {

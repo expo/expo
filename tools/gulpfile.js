@@ -2,12 +2,10 @@
 
 const gulp = require('gulp');
 const { resolve } = require('path');
-const shell = require('gulp-shell');
 const argv = require('minimist')(process.argv.slice(2));
 const fs = require('fs-extra');
 
 const outdatedVendoredNativeModules = require('./outdated-vendored-native-modules');
-const AndroidExpolib = require('./android-versioning/android-expolib');
 const androidVersionLibraries = require('./android-versioning/android-version-libraries');
 
 gulp.task('assert-abi-argument', function(done) {
@@ -17,17 +15,6 @@ gulp.task('assert-abi-argument', function(done) {
 
   done();
 });
-
-gulp.task(
-  'android-update-rn',
-  gulp.series(
-    shell.task([`pushd ../android; ./gradlew :tools:execute --args='${argv.abi}'; popd`]),
-    gulp.parallel(
-      AndroidExpolib.namespaceExpolibImportsAsync,
-      AndroidExpolib.namespaceExpolibGradleDependenciesAsync
-    )
-  )
-);
 
 // Update external dependencies
 gulp.task('outdated-native-dependencies', async () => {

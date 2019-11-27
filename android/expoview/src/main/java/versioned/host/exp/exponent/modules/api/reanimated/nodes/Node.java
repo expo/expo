@@ -32,7 +32,7 @@ public abstract class Node {
   private @Nullable List<Node> mChildren; /* lazy-initialized when a child is added */
 
   public Node(int nodeID, @Nullable ReadableMap config, NodesManager nodesManager) {
-    mLastLoopID.put("", 1L);
+    mLastLoopID.put("", -1L);
     mNodeID = nodeID;
     mNodesManager = nodesManager;
     mUpdateContext = nodesManager.updateContext;
@@ -75,7 +75,7 @@ public abstract class Node {
       mChildren = new ArrayList<>();
     }
     mChildren.add(child);
-    dangerouslyRescheduleEvaluate();
+    child.dangerouslyRescheduleEvaluate();
   }
 
   public void removeChild(Node child) {

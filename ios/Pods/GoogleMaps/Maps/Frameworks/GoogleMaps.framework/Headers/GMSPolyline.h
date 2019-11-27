@@ -31,15 +31,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The width of the line in screen points. Defaults to 1.
  */
-@property(nonatomic, assign) CGFloat strokeWidth;
+@property(nonatomic) CGFloat strokeWidth;
 
 /**
  * The UIColor used to render the polyline. Defaults to [UIColor blueColor].
  */
-@property(nonatomic, strong) UIColor *strokeColor;
+@property(nonatomic) UIColor *strokeColor;
 
 /** Whether this line should be rendered with geodesic correction. */
-@property(nonatomic, assign) BOOL geodesic;
+@property(nonatomic) BOOL geodesic;
 
 /**
  * Convenience constructor for GMSPolyline for a particular path. Other properties will have

@@ -18,7 +18,7 @@ import { StyledText, SectionLabelText } from './Text';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
-  Get out of the subway tunnel or connect to a better Wi-Fi network and check back.
+  Check back when you have a better connection.
 `;
 
 const SERVER_ERROR_TEXT = dedent`

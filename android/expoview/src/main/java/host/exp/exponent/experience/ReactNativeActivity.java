@@ -4,11 +4,17 @@ package host.exp.exponent.experience;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Process;
 import android.provider.Settings;
-import androidx.fragment.app.FragmentActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
@@ -19,6 +25,8 @@ import android.widget.FrameLayout;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.modules.core.PermissionAwareActivity;
+import com.facebook.react.modules.core.PermissionListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +42,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.LoadingView;
@@ -52,6 +61,7 @@ import host.exp.exponent.kernel.services.SplashScreenKernelService;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.JSONBundleConverter;
+import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
 import versioned.host.exp.exponent.ExponentPackage;
@@ -60,8 +70,9 @@ import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.MANIFEST_URL_KEY;
+import static host.exp.exponent.utils.ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST;
 
-public abstract class ReactNativeActivity extends FragmentActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler {
+public abstract class ReactNativeActivity extends AppCompatActivity implements com.facebook.react.modules.core.DefaultHardwareBackBtnHandler, PermissionAwareActivity  {
 
   public static class ExperienceDoneLoadingEvent {
   }
@@ -88,7 +99,6 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
 
   protected RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   protected boolean mIsCrashed = false;
-  protected boolean mShouldDestroyRNInstanceOnExit = true;
 
   protected String mManifestUrl;
   protected String mExperienceIdString;
@@ -114,11 +124,16 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected boolean mIsInForeground = false;
   protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
+  private ScopedPermissionsRequester mScopedPermissionsRequester;
+
   @Inject
   protected ExponentSharedPreferences mExponentSharedPreferences;
 
   @Inject
   ExpoKernelServiceRegistry mExpoKernelServiceRegistry;
+
+  @Inject
+  protected ExpoKernelServiceRegistry mKernelServiceRegistry;
 
   public boolean isLoading() {
     return mIsLoading;
@@ -279,11 +294,17 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       if (devSupportManager != null && (boolean) devSupportManager.call("getDevSupportEnabled")) {
         boolean didDoubleTapR = Assertions.assertNotNull(mDoubleTapReloadRecognizer)
             .didDoubleTapR(keyCode, getCurrentFocus());
-        if (didDoubleTapR) {
+
+        // TODO: remove the path where we don't reload from manifest once SDK 35 is deprecated
+        boolean shouldReloadFromManifest = Exponent.getInstance().shouldAlwaysReloadFromManifest(mSDKVersion);
+        if (didDoubleTapR && !shouldReloadFromManifest) {
           // The loading screen is hidden by versioned code when reloading JS so we can't show it
           // on older sdks.
           showLoadingScreen(mManifest);
           devSupportManager.call("handleReloadJS");
+          return true;
+        } else if (didDoubleTapR && shouldReloadFromManifest) {
+          devSupportManager.call("reloadExpoApp");
           return true;
         }
       }
@@ -328,7 +349,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void onDestroy() {
     super.onDestroy();
 
-    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed && mShouldDestroyRNInstanceOnExit) {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
       mReactInstanceManager.call("destroy");
     }
 
@@ -358,7 +379,8 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
   protected void waitForDrawOverOtherAppPermission(String jsBundlePath) {
     mJSBundlePath = jsBundlePath;
 
-    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission()) {
+    // TODO: remove once SDK 35 is deprecated
+    if (isDebugModeEnabled() && Exponent.getInstance().shouldRequestDrawOverOtherAppsPermission(mSDKVersion)) {
       new AlertDialog.Builder(this)
           .setTitle("Please enable \"Permit drawing over other apps\"")
           .setMessage("Click \"ok\" to open settings. Press the back button once you've enabled the setting.")
@@ -427,8 +449,9 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
-    // LAUNCHBLOCKING: Look at mSDKVersion or test for existence of the method to gate this to RN 0.61+
-    builder.call("setCurrentActivity", this);
+    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
+      builder.call("setCurrentActivity", this);
+    }
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -520,8 +543,7 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       }
     }
 
-    // LAUNCHBLOCKING: Call this only for RN <0.61
-    // mReactInstanceManager.onHostResume(this, this);
+    mReactInstanceManager.onHostResume(this, this);
     mReactRootView.call("startReactApplication",
         mReactInstanceManager.get(),
         mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
@@ -594,6 +616,81 @@ public abstract class ReactNativeActivity extends FragmentActivity implements co
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);
+    }
+  }
+
+  // for getting global permission
+  @Override
+  public int checkSelfPermission(String permission) {
+    return super.checkPermission(permission, Process.myPid(), Process.myUid());
+  }
+
+  @Override
+  public boolean shouldShowRequestPermissionRationale(@NonNull String permission) {
+    // in scoped application we don't have `don't ask again` button
+    if (!Constants.isStandaloneApp() && checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+      return true;
+    }
+    return super.shouldShowRequestPermissionRationale(permission);
+  }
+
+  @Override
+  public void requestPermissions(final String[] permissions, final int requestCode, final PermissionListener listener) {
+    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
+      mScopedPermissionsRequester = new ScopedPermissionsRequester(mExperienceId);
+      mScopedPermissionsRequester.requestPermissions(this, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY), permissions, listener);
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      super.requestPermissions(permissions, requestCode);
+    }
+  }
+
+
+  @Override
+  public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
+    if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
+      // TODO: remove once SDK 35 is deprecated
+      String sdkVersion = "0.0.0";
+      try {
+        sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+      if (ABIVersion.toNumber(sdkVersion) < ABIVersion.toNumber("36.0.0")) {
+        Exponent.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
+      } else {
+        if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
+          mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
+          mScopedPermissionsRequester = null;
+        }
+      }
+    } else {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+  }
+
+  // for getting scoped permission
+  @Override
+  public int checkPermission(final String permission, final int pid, final int uid) {
+    int globalResult = super.checkPermission(permission, pid, uid);
+
+    // only these permissions, which show a dialog to the user should be scoped.
+    boolean isDangerousPermission;
+    try {
+      PermissionInfo permissionInfo = getPackageManager().getPermissionInfo(permission, PackageManager.GET_META_DATA);
+      isDangerousPermission = (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_DANGEROUS) != 0;
+    } catch (PackageManager.NameNotFoundException e) {
+      return PackageManager.PERMISSION_DENIED;
+    }
+
+    if (Constants.isStandaloneApp() || !isDangerousPermission) {
+      return globalResult;
+    }
+
+    if (globalResult == PackageManager.PERMISSION_GRANTED &&
+        mKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
+      return PackageManager.PERMISSION_GRANTED;
+    } else {
+      return PackageManager.PERMISSION_DENIED;
     }
   }
 

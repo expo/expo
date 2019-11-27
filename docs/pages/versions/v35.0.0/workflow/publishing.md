@@ -43,6 +43,18 @@ Any time you want to deploy an update, hit publish again and a new
 version will be available immediately to your users the next time they
 open it.
 
+## What version of the app will my users get?
+
+Your users will get the most recent compatible release that was pushed to a [release channel](../../distribution/release-channels/). Factors that affect compatibility:
+
+- sdkVersion (standalone apps are built to support only a single SDK version)
+- platform
+- releaseChannel
+
+The following flowchart shows how we determine which release to return to a user:
+
+![Serving Flowchart](/static/images/release-channels-flowchart.png)
+
 ## Deploying to the App Store and Play Store
 
 When you're ready to distribute your app to end-users, you can create a
@@ -70,7 +82,7 @@ If you make any of the following changes in `app.json`, you will need to
 re-build the binaries for your app for the change to take effect:
 
 - Increment the Expo SDK Version
-- Change anything under the `ios` or `android` keys
+- Change anything under the `ios`, `android`, or `notification` keys
 - Change your app `splash`
 - Change your app `icon`
 - Change your app `name`

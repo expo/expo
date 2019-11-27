@@ -24,10 +24,6 @@ declare type PropsType = React.ComponentProps<typeof View> & {
      */
     adUnitID?: string;
     /**
-     * Test device ID
-     */
-    testDeviceID?: string;
-    /**
      * Additional request params added to underlying request for the ad.
      */
     additionalRequestParams?: {
@@ -105,9 +101,7 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
         accessibilityStates?: PropTypes.Validator<import("react-native").AccessibilityStates[] | undefined> | undefined;
         accessibilityState?: PropTypes.Validator<import("react-native").AccessibilityState | undefined> | undefined;
         accessibilityHint?: PropTypes.Validator<string | undefined> | undefined;
-        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").NativeSyntheticEvent<Readonly<{
-            actionName: string;
-        }>>) => void) | undefined> | undefined;
+        onAccessibilityAction?: PropTypes.Validator<((event: import("react-native").AccessibilityActionEvent) => void) | undefined> | undefined;
         accessibilityComponentType?: PropTypes.Validator<"button" | "none" | "radiobutton_checked" | "radiobutton_unchecked" | undefined> | undefined;
         accessibilityLiveRegion?: PropTypes.Validator<"none" | "polite" | "assertive" | undefined> | undefined;
         importantForAccessibility?: PropTypes.Validator<"auto" | "yes" | "no" | "no-hide-descendants" | undefined> | undefined;
@@ -119,7 +113,6 @@ export default class PublisherBanner extends React.Component<PropsType, StateTyp
         accessibilityIgnoresInvertColors?: PropTypes.Validator<boolean | undefined> | undefined;
         bannerSize: PropTypes.Requireable<string>;
         adUnitID: PropTypes.Requireable<string>;
-        testDeviceID: PropTypes.Requireable<string>;
         servePersonalizedAds: PropTypes.Requireable<boolean>;
         onAdViewDidReceiveAd: PropTypes.Requireable<(...args: any[]) => any>;
         additionalRequestParams: PropTypes.Requireable<object>;

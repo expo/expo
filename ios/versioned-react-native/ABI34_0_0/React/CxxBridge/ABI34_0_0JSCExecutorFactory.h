@@ -9,7 +9,7 @@
 
 #include <jsiReactABI34_0_0/ABI34_0_0JSIExecutor.h>
 
-namespace facebook {
+namespace ABI34_0_0facebook {
 namespace ReactABI34_0_0 {
 
 class JSCExecutorFactory : public JSExecutorFactory {
@@ -27,4 +27,4 @@ private:
 };
 
 } // namespace ReactABI34_0_0
-} // namespace facebook
+} // namespace ABI34_0_0facebook

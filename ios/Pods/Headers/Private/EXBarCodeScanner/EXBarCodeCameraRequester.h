@@ -1,0 +1,1 @@
+../../../../../packages/expo-barcode-scanner/ios/EXBarCodeScanner/EXBarCodeCameraRequester.h

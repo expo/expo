@@ -32,7 +32,7 @@ const MAX_SNACKS_TO_DISPLAY = 3;
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
-  Get out of the subway tunnel or connect to a better Wi-Fi network and check back.
+  Check back when you have a better connection.
 `;
 
 const SERVER_ERROR_TEXT = dedent`
@@ -55,11 +55,11 @@ export default class Profile extends React.Component {
     this._isMounted = false;
   }
 
-  componentWillReceiveProps(nextProps: any) {
+  componentDidUpdate(prevProps: any) {
     const SkipConnectionNotification = true;
-    if (!SkipConnectionNotification && !this.props.data.error && nextProps.data.error) {
+    if (!SkipConnectionNotification && !prevProps.data.error && this.props.data.error) {
       // NOTE(brentvatne): sorry for this
-      let isConnectionError = nextProps.data.error.message.includes('No connection available');
+      let isConnectionError = this.props.data.error.message.includes('No connection available');
 
       if (isConnectionError) {
         // Should have some integrated alert banner

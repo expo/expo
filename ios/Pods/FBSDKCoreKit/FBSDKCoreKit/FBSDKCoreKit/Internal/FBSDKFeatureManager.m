@@ -48,9 +48,11 @@
 + (FBSDKFeature)getParentFeature:(FBSDKFeature)feature
 {
   if ((feature & 0xFF) > 0) {
-    return feature & 0xFFFF00;
+    return feature & 0xFFFFFF00;
   } else if ((feature & 0xFF00) > 0) {
-    return feature & 0xFF0000;
+    return feature & 0xFFFF0000;
+  } else if ((feature & 0xFF0000) > 0) {
+    return feature & 0xFF000000;
   } else return 0;
 }
 
@@ -71,6 +73,7 @@
     case FBSDKFeatureAppEvents: featureName = @"AppEvents"; break;
     case FBSDKFeatureCodelessEvents: featureName = @"CodelessEvents"; break;
     case FBSDKFeatureRestrictiveDataFiltering: featureName = @"RestrictiveDataFiltering"; break;
+    case FBSDKFeatureAAM: featureName = @"AAM"; break;
     case FBSDKFeatureInstrument: featureName = @"Instrument"; break;
     case FBSDKFeatureCrashReport: featureName = @"CrashReport"; break;
     case FBSDKFeatureErrorReport: featureName = @"ErrorReport"; break;
@@ -92,6 +95,7 @@
     case FBSDKFeatureInstrument:
     case FBSDKFeatureCrashReport:
     case FBSDKFeatureErrorReport:
+    case FBSDKFeatureAAM:
       return NO;
     default: return YES;
   }

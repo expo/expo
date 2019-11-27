@@ -40,6 +40,7 @@ sed -i '' "/ADD_NEW_SUPPORTED_ABIS_HERE/$SED_APPEND_COMMAND\ \ \ \ \"$ABI_VERSIO
 
 # Copy all the versioned code
 cp -r expoview/src/main/java/versioned/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
+cp -r expoview/src/main/java/com/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/com
 
 # Rename references to other packages previously under versioned.host.exp.exponent
 find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/import versioned\.host\.exp\.exponent/import $ABI_VERSION\.host\.exp\.exponent/g"

@@ -153,6 +153,12 @@ Object.defineProperties(module.exports, {
             removedModule(`import { DocumentPicker } from 'expo' -> import * as DocumentPicker from 'expo-document-picker'`, 'DocumentPicker', 'expo-document-picker');
         },
     },
+    ErrorRecovery: {
+        enumerable: true,
+        get() {
+            removedModule(`import { ErrorRecovery } from 'expo' -> import * as ErrorRecovery from 'expo-error-recovery'`, 'ErrorRecovery', 'expo-error-recovery');
+        },
+    },
     FaceDetector: {
         enumerable: true,
         get() {

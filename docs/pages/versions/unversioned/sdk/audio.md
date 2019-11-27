@@ -1,5 +1,6 @@
 ---
 title: Audio
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-av"
 ---
 
 Provides basic sample playback and recording.
@@ -17,6 +18,24 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 ```js
 import { Audio } from 'expo-av';
 ```
+
+## Request recording permissions
+
+### `Audio.requestPermissionsAsync()`
+
+Asks the user to grant permissions for audio recording. Alias for `Permissions.askAsync(Permissions.AUDIO_RECORDING)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
+
+### `Audio.getPermissionsAsync()`
+
+Checks user's permissions for audio recording. Alias for `Permissions.getAsync(Permissions.AUDIO_RECORDING)`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#PermissionResponse).
 
 ## Enabling Audio and customizing Audio Mode
 

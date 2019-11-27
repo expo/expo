@@ -13,7 +13,7 @@
 @class ABI35_0_0RCTBridge;
 @class ABI35_0_0RCTModuleData;
 
-namespace facebook {
+namespace ABI35_0_0facebook {
 namespace ReactABI35_0_0 {
 
 class Instance;

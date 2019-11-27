@@ -1,6 +1,5 @@
 <resources>
   <string name="app_name">Exponent</string>
-  <string name="dev_activity_name">Exponent Dev</string>
   <string name="info_activity_name">Info</string>
   <string name="info_app_name_placeholder">App Name</string>
   <string name="info_sdk_version">SDK Version: %s</string>
@@ -31,7 +30,8 @@
   <string name="perm_camera">accessing camera</string>
   <string name="perm_camera_roll_read">reading camera roll</string>
   <string name="perm_camera_roll_write">modifying camera roll</string>
-  <string name="perm_contacts">reading contacts</string>
+  <string name="perm_contacts_read">reading contacts</string>
+  <string name="perm_contacts_write">modifying contacts</string>
   <string name="perm_fine_location">fine location</string>
   <string name="perm_coarse_location">coarse location</string>
   <string name="perm_system_brightness">system brightness</string>

@@ -18,10 +18,17 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-image-picker
+expo install expo-image-picker
 ```
 
 ### Configure for iOS
+
+Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to save photos</string>
+```
 
 Run `pod install` in the ios directory after installing the npm package.
 
@@ -34,6 +41,13 @@ In `AndroidManifest.xml` add the following `activity` within `application`:
   android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
   android:theme="@style/Base.Theme.AppCompat">
 </activity>
+```
+
+and add following permissions:
+
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
 # Contributing

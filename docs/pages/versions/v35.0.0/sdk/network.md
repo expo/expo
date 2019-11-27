@@ -1,5 +1,6 @@
 ---
 title: Network
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-network"
 ---
 
 This module provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.

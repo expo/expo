@@ -113,7 +113,7 @@ public class ImageManipulatorModule extends ExportedModule {
 
   private Bitmap cropBitmap(Bitmap bitmap, ActionCrop crop) throws IllegalArgumentException {
     if (crop.getOriginX() > bitmap.getWidth()
-        || crop.getOriginX() > bitmap.getHeight()
+        || crop.getOriginY() > bitmap.getHeight()
         || crop.getOriginX() + crop.getWidth() > bitmap.getWidth()
         || crop.getOriginY() + crop.getHeight() > bitmap.getHeight()
     ) {

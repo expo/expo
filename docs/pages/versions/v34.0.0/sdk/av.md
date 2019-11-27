@@ -1,5 +1,6 @@
 ---
 title: AV
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-34/packages/expo-av"
 ---
 
 The [`Audio.Sound`](../audio/) objects and [`Video`](../video/) components share a unified imperative API for media playback.

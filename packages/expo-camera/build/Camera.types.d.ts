@@ -1,4 +1,5 @@
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type PictureOptions = {
     quality?: number;
     base64?: boolean;
@@ -12,6 +13,7 @@ export declare type RecordingOptions = {
     maxDuration?: number;
     maxFileSize?: number;
     quality?: number | string;
+    mute?: boolean;
 };
 export declare type CapturedPicture = {
     width: number;
@@ -30,7 +32,7 @@ export declare type BarCodeScanningResult = {
 export declare type FaceDetectionResult = {
     faces: any[];
 };
-export declare type Props = React.ComponentProps<typeof View> & {
+export declare type Props = ViewProps & {
     zoom?: number;
     ratio?: string;
     focusDepth?: number;
@@ -49,6 +51,7 @@ export declare type Props = React.ComponentProps<typeof View> & {
     onFacesDetected?: (faces: FaceDetectionResult) => void;
 };
 export declare type NativeProps = {
+    pointerEvents?: any;
     style?: any;
     ref?: Function;
     onCameraReady?: Function;
@@ -77,3 +80,4 @@ export declare type NativeProps = {
     ratio?: string;
     useCamera2Api?: boolean;
 };
+export { PermissionResponse, PermissionStatus };

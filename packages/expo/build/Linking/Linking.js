@@ -1,5 +1,6 @@
 import Constants from 'expo-constants';
 import qs from 'qs';
+import URL from 'url-parse';
 import Linking from './LinkingModule';
 const { manifest } = Constants;
 const USES_CUSTOM_SCHEME = Constants.appOwnership === 'standalone' && manifest.scheme;
@@ -29,11 +30,15 @@ function _removeTrailingSlashAndQueryString(url) {
 }
 function makeUrl(path = '', queryParams = {}) {
     let scheme = 'exp';
-    if (Constants.appOwnership === 'standalone') {
-        scheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+    let manifestScheme = manifest.scheme || (manifest.detach && manifest.detach.scheme);
+    if (Constants.appOwnership === 'standalone' && manifestScheme) {
+        scheme = manifestScheme;
     }
-    if (!scheme) {
+    else if (Constants.appOwnership === 'standalone' && !manifestScheme) {
         throw new Error('Cannot make a deep link into a standalone app with no custom scheme defined');
+    }
+    else if (Constants.appOwnership === 'expo' && !manifestScheme) {
+        console.warn('Linking requires that you provide a `scheme` in app.json for standalone apps - if it is left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Add a `scheme` to silence this warning. Learn more about Linking at https://docs.expo.io/versions/latest/workflow/linking/');
     }
     let hostUri = HOST_URI || '';
     if (USES_CUSTOM_SCHEME && IS_EXPO_HOSTED) {
@@ -84,40 +89,45 @@ function parse(url) {
     if (!url) {
         throw new Error('parse cannot be called with a null value');
     }
-    // iOS client sometimes strips out the port from the initial URL
-    // even when it's included in the hostUri.
-    // This function should be able to handle both cases, so we strip off the port
-    // both here and from the hostUri.
-    let decodedUrl = _removePort(decodeURI(url));
-    let path;
-    let queryParams = {};
-    let queryStringMatchResult = decodedUrl.match(/(.*)\?(.+)/);
-    if (queryStringMatchResult) {
-        decodedUrl = queryStringMatchResult[1];
-        queryParams = qs.parse(queryStringMatchResult[2]);
-    }
-    // strip off the hostUri from the host and path
+    const parsed = URL(url, /* parseQueryString */ true);
+    let queryParams = parsed.query;
     let hostUri = HOST_URI || '';
     let hostUriStripped = _removePort(_removeTrailingSlashAndQueryString(hostUri));
-    if (hostUriStripped && decodedUrl.indexOf(hostUriStripped) > -1) {
-        path = decodedUrl.substr(decodedUrl.indexOf(hostUriStripped) + hostUriStripped.length);
+    let path = parsed.pathname || null;
+    let hostname = parsed.hostname || null;
+    let scheme = parsed.protocol || null;
+    if (scheme) {
+        // Remove colon at end
+        scheme = scheme.substring(0, scheme.length - 1);
     }
-    else {
-        path = _removeScheme(decodedUrl);
+    if (path) {
+        path = _removeLeadingSlash(path);
+        let expoPrefix = null;
+        if (hostUriStripped) {
+            const parts = hostUriStripped.split('/');
+            expoPrefix = `${parts.slice(1).join('/')}/--/`;
+        }
+        if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && expoPrefix && path.startsWith(expoPrefix)) {
+            path = path.substring(expoPrefix.length);
+            hostname = null;
+        }
+        else if (path.indexOf('+') > -1) {
+            path = path.substring(path.indexOf('+') + 1);
+        }
     }
-    path = _removeLeadingSlash(path);
-    if (IS_EXPO_HOSTED && !USES_CUSTOM_SCHEME && path.startsWith('--/')) {
-        path = path.substr(3);
-    }
-    else if (path.indexOf('+') > -1) {
-        path = path.substr(path.indexOf('+') + 1);
-    }
-    return { path, queryParams };
+    return {
+        hostname,
+        path,
+        queryParams,
+        scheme,
+    };
 }
 async function parseInitialURLAsync() {
     const initialUrl = await Linking.getInitialURL();
     if (!initialUrl) {
         return {
+            scheme: null,
+            hostname: null,
             path: null,
             queryParams: null,
         };

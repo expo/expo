@@ -1,11 +1,9 @@
 import './Expo.fx';
 import * as AR from './AR';
-import * as ErrorRecovery from './ErrorRecovery/ErrorRecovery';
 import * as Logs from './logs/Logs';
 import * as ScreenOrientation from './ScreenOrientation/ScreenOrientation';
 import * as Updates from './Updates/Updates';
 import * as SplashScreen from './launch/SplashScreen';
-export { ErrorRecovery };
 export { Logs };
 export { default as apisAreAvailable } from './apisAreAvailable';
 export { default as registerRootComponent } from './launch/registerRootComponent';
@@ -159,15 +157,4 @@ Video,
 WebBrowser, 
 // @ts-ignore
 WebView, } from './removed';
-if (module && module.exports) {
-    if (global) {
-        const globals = require('./globals');
-        // @ts-ignore
-        global.__exponent = globals;
-        // @ts-ignore
-        global.__expo = globals;
-        // @ts-ignore
-        global.Expo = globals;
-    }
-}
 //# sourceMappingURL=Expo.js.map

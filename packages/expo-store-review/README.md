@@ -14,7 +14,7 @@ You must ensure that you have [installed and configured the `react-native-unimod
 ### Add the package to your dependencies
 
 ```
-npm install expo-store-review
+expo install expo-store-review
 ```
 
 ### Configure for iOS

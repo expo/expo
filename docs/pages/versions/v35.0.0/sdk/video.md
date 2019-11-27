@@ -1,5 +1,6 @@
 ---
 title: Video
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo-av"
 ---
 
 A component that displays a video inline with the other React Native UI elements in your app. The display dimensions and position of the video on screen can be set using usual React Native styling.

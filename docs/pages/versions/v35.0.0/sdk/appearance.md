@@ -1,5 +1,6 @@
 ---
 title: Appearance
+sourceCodeUrl: "https://github.com/expo/react-native-appearance"
 ---
 
 Detect preferred color scheme (light, dark, or no preference) on iOS 13+.

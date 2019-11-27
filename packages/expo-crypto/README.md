@@ -13,7 +13,7 @@ Not yet available in managed projects. For bare React Native projects, you must 
 ### Add the package to your npm dependencies
 
 ```
-npm install expo-crypto
+expo install expo-crypto
 ```
 
 ### Configure for iOS

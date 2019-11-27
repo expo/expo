@@ -1,5 +1,6 @@
 ---
 title: ScreenOrientation
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-35/packages/expo/src/ScreenOrientation"
 ---
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](../devicemotion/).
