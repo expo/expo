@@ -132,9 +132,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Inject
   ExpoKernelServiceRegistry mExpoKernelServiceRegistry;
 
-  @Inject
-  protected ExpoKernelServiceRegistry mKernelServiceRegistry;
-
   public boolean isLoading() {
     return mIsLoading;
   }
@@ -687,7 +684,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     if (globalResult == PackageManager.PERMISSION_GRANTED &&
-        mKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
+        mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
       return PackageManager.PERMISSION_GRANTED;
     } else {
       return PackageManager.PERMISSION_DENIED;
