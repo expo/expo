@@ -5,22 +5,21 @@ import { ScrollView } from 'react-native';
 import MonoText from '../components/MonoText';
 
 export default function BatteryScreen() {
-  if (!Battery.isSupported) {
-    return <MonoText>Battery API is not supported on this device</MonoText>;
-  }
-
+  const [isAvailable, setIsAvailable] = React.useState<boolean | null>(null);
   const [batteryLevel, setBatteryLevel] = React.useState(-1);
   const [batteryState, setBatteryState] = React.useState(Battery.BatteryState.UNKNOWN);
   const [lowPowerMode, setLowPowerMode] = React.useState(false);
 
   React.useEffect(() => {
     (async () => {
-      const [batteryLevel, batteryState, lowPowerMode] = await Promise.all([
+      const [isAvailable, batteryLevel, batteryState, lowPowerMode] = await Promise.all([
+        Battery.isAvailableAsync(),
         Battery.getBatteryLevelAsync(),
         Battery.getBatteryStateAsync(),
         Battery.isLowPowerModeEnabledAsync(),
       ]);
 
+      setIsAvailable(isAvailable && false);
       setBatteryLevel(batteryLevel);
       setBatteryState(batteryState);
       setLowPowerMode(lowPowerMode);
@@ -44,15 +43,17 @@ export default function BatteryScreen() {
   return (
     <ScrollView style={{ padding: 10 }}>
       <MonoText>
-        {JSON.stringify(
-          {
-            batteryLevel,
-            batteryState: getBatteryStateString(batteryState),
-            lowPowerMode,
-          },
-          null,
-          2
-        )}
+        {isAvailable
+          ? JSON.stringify(
+              {
+                batteryLevel,
+                batteryState: getBatteryStateString(batteryState),
+                lowPowerMode,
+              },
+              null,
+              2
+            )
+          : 'Battery API is not supported on this device'}
       </MonoText>
     </ScrollView>
   );
