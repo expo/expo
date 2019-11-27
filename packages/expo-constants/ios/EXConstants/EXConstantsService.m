@@ -189,6 +189,9 @@ UM_REGISTER_MODULE();
                             @"iPhone11,4": @"iPhone Xs Max", // A1921, A2103
                             @"iPhone11,6": @"iPhone Xs Max", // A2104
                             @"iPhone11,8": @"iPhone Xr", // A1882, A1719, A2105
+                            @"iPhone12,1": @"iPhone 11",
+                            @"iPhone12,3": @"iPhone 11 Pro",
+                            @"iPhone12,5": @"iPhone 11 Pro Max",
 
                             // iPod
                             @"iPod1,1": @"iPod Touch",
@@ -268,115 +271,120 @@ UM_REGISTER_MODULE();
 
   // TODO: apple TV and apple watch
   NSDictionary *mapping = @{
-                            // iPhone 1
-                            @"iPhone1,1": @2007,
-
-                            // iPhone 3G
-                            @"iPhone1,2": @2008,
-
-                            // iPhone 3GS
-                            @"iPhone2,1": @2009,
-
-                            // iPhone 4
-                            @"iPhone3,1": @2010,
-                            @"iPhone3,2": @2010,
-                            @"iPhone3,3": @2010,
-
-                            // iPhone 4S
-                            @"iPhone4,1": @2011,
-
-                            // iPhone 5
-                            @"iPhone5,1": @2012,
-                            @"iPhone5,2": @2012,
-
-                            // iPhone 5S and 5C
-                            @"iPhone5,3": @2013,
-                            @"iPhone5,4": @2013,
-                            @"iPhone6,1": @2013,
-                            @"iPhone6,2": @2013,
-
-                            // iPhone 6 and 6 Plus
-                            @"iPhone7,1": @2014,
-                            @"iPhone7,2": @2014,
-
-                            // iPhone 6S and 6S Plus
-                            @"iPhone8,1": @2015,
-                            @"iPhone8,2": @2015,
-
-                            // iPhone SE
-                            @"iPhone8,4": @2016,
-
-                            // iPhone 7 and 7 Plus
-                            @"iPhone9,1": @2016,
-                            @"iPhone9,3": @2016,
-                            @"iPhone9,2": @2016,
-                            @"iPhone9,4": @2016,
-
-                            // iPhone 8, 8 Plus, X
-                            @"iPhone10,1": @2017,
-                            @"iPhone10,2": @2017,
-                            @"iPhone10,3": @2017,
-                            @"iPhone10,4": @2017,
-                            @"iPhone10,5": @2017,
-                            @"iPhone10,6": @2017,
-
-                            // iPhone Xs, Xs Max, Xr
-                            @"iPhone11,2": @2018,
-                            @"iPhone11,4": @2018,
-                            @"iPhone11,6": @2018,
-                            @"iPhone11,8": @2018,
-
-                            // iPod
-                            @"iPod1,1": @2007,
-                            @"iPod2,1": @2008,
-                            @"iPod3,1": @2009,
-                            @"iPod4,1": @2010,
-                            @"iPod5,1": @2012,
-                            @"iPod7,1": @2015,
-
-                            // iPad
-                            @"iPad1,1": @2010,
-                            @"iPad2,1": @2011,
-                            @"iPad2,2": @2011,
-                            @"iPad2,3": @2011,
-                            @"iPad2,4": @2011,
-                            @"iPad3,1": @2012,
-                            @"iPad3,2": @2012,
-                            @"iPad3,3": @2012,
-                            @"iPad3,4": @2013,
-                            @"iPad3,5": @2013,
-                            @"iPad3,6": @2013,
-                            @"iPad4,1": @2013,
-                            @"iPad4,2": @2013,
-                            @"iPad4,3": @2013,
-                            @"iPad5,3": @2014,
-                            @"iPad5,4": @2014,
-                            @"iPad6,7": @2015,
-                            @"iPad6,8": @2015,
-                            @"iPad6,3": @2016,
-                            @"iPad6,4": @2016,
-                            @"iPad6,11": @2017,
-                            @"iPad6,12": @2017,
-                            @"iPad7,1": @2017,
-                            @"iPad7,2": @2017,
-                            @"iPad7,3": @2017,
-                            @"iPad7,4": @2017,
-                            @"iPad7,5": @2018,
-                            @"iPad7,6": @2018,
-
-                            // iPad Mini
-                            @"iPad2,5": @2012,
-                            @"iPad2,6": @2012,
-                            @"iPad2,7": @2012,
-                            @"iPad4,4": @2013,
-                            @"iPad4,5": @2013,
-                            @"iPad4,6": @2013,
-                            @"iPad4,7": @2014,
-                            @"iPad4,8": @2014,
-                            @"iPad4,9": @2014,
-                            @"iPad5,1": @2015,
-                            @"iPad5,2": @2015,
-                            };
+    // iPhone 1
+    @"iPhone1,1": @2007,
+    
+    // iPhone 3G
+    @"iPhone1,2": @2008,
+    
+    // iPhone 3GS
+    @"iPhone2,1": @2009,
+    
+    // iPhone 4
+    @"iPhone3,1": @2010,
+    @"iPhone3,2": @2010,
+    @"iPhone3,3": @2010,
+    
+    // iPhone 4S
+    @"iPhone4,1": @2011,
+    
+    // iPhone 5
+    @"iPhone5,1": @2012,
+    @"iPhone5,2": @2012,
+    
+    // iPhone 5S and 5C
+    @"iPhone5,3": @2013,
+    @"iPhone5,4": @2013,
+    @"iPhone6,1": @2013,
+    @"iPhone6,2": @2013,
+    
+    @"iPhone7,1": @2014, // iPhone 6 Plus
+    @"iPhone7,2": @2014, // iPhone 6
+    @"iPhone8,1": @2015, // iPhone 6S
+    @"iPhone8,2": @2015, // iPhone 6S Plus
+    @"iPhone8,4": @2016, // iPhone SE
+    @"iPhone9,1": @2016, // iPhone 7
+    @"iPhone9,3": @2016, // iPhone 7 Plus
+    @"iPhone9,2": @2016, // iPhone 7
+    @"iPhone9,4": @2016, // iPhone 7 Plus
+    @"iPhone10,1": @2017, // iPhone 8
+    @"iPhone10,2": @2017, // iPhone 8 Plus
+    @"iPhone10,3": @2017, // iPhone X Global
+    @"iPhone10,4": @2017, // iPhone 8
+    @"iPhone10,5": @2017, // iPhone 8 Plus
+    @"iPhone10,6": @2017, // iPhone X GSM
+    @"iPhone11,2": @2018, // iPhone Xs
+    @"iPhone11,4": @2018, // iPhone Xs Max
+    @"iPhone11,6": @2018, // iPhone Xs Max Global
+    @"iPhone11,8": @2018, // iPhone Xr
+    @"iPhone12,1": @2019, // iPhone 11
+    @"iPhone12,3": @2019, // iPhone 11 Pro
+    @"iPhone12,5": @2019, // iPhone 11 Pro Max
+    
+    // iPod
+    @"iPod1,1": @2007,
+    @"iPod2,1": @2008,
+    @"iPod3,1": @2009,
+    @"iPod4,1": @2010,
+    @"iPod5,1": @2012,
+    @"iPod7,1": @2015, // iPod 6th Gen
+    @"iPod9,1": @2019, // iPod 7th Gen
+    
+    // iPad
+    @"iPad1,1": @2010,
+    @"iPad2,1": @2011,
+    @"iPad2,2": @2011,
+    @"iPad2,3": @2011,
+    @"iPad2,4": @2011,
+    @"iPad2,5": @2012, // iPad Mini (WiFi)
+    @"iPad2,6": @2012, // iPad Mini (GSM+LTE)
+    @"iPad2,7": @2012, // iPad Mini (CDMA+LTE)
+    @"iPad3,1": @2012,
+    @"iPad3,2": @2012,
+    @"iPad3,3": @2012,
+    @"iPad3,4": @2013,
+    @"iPad3,5": @2013,
+    @"iPad3,6": @2013,
+    @"iPad4,1": @2013,
+    @"iPad4,2": @2013,
+    @"iPad4,3": @2013,
+    @"iPad4,4": @2013, // iPad Mini Retina (WiFi)
+    @"iPad4,5": @2013, // iPad Mini Retina (GSM+CDMA)
+    @"iPad4,6": @2013, // iPad Mini Retina (China)
+    @"iPad4,7": @2014, // iPad Mini 3 (WiFi)
+    @"iPad4,8": @2014, // iPad Mini 3 (GSM+CDMA)
+    @"iPad4,9": @2014, // iPad Mini 3 (China)
+    @"iPad5,1": @2015, // iPad Mini 4 (WiFi)
+    @"iPad5,2": @2015, // iPad Mini 4 (WiFi+Cellular)
+    @"iPad5,3": @2014,
+    @"iPad5,4": @2014,
+    @"iPad6,7": @2015,
+    @"iPad6,8": @2015,
+    @"iPad6,3": @2016,
+    @"iPad6,4": @2016,
+    @"iPad6,11": @2017, // iPad 5th Gen (WiFi)
+    @"iPad6,12": @2017, // iPad 5th Gen (WiFi+Cellular)
+    @"iPad7,1": @2017,  // iPad Pro 2nd Gen (WiFi)
+    @"iPad7,2": @2017,  // iPad Pro 2nd Gen (WiFi+Cellular)
+    @"iPad7,3": @2017,  // iPad Pro 10.5-inch
+    @"iPad7,4": @2017,  // iPad Pro 10.5-inch
+    @"iPad7,5": @2018,  // iPad 6th Gen (WiFi)
+    @"iPad7,6": @2018,  // iPad 6th Gen (WiFi+Cellular)
+    @"iPad7,11": @2019, // iPad 7th Gen 10.2-inch (WiFi)
+    @"iPad7,12": @2019, // iPad 7th Gen 10.2-inch (WiFi+Cellular)
+    @"iPad8,1": @2018,  // iPad Pro 3rd Gen (11 inch, WiFi)
+    @"iPad8,2": @2018,  // iPad Pro 3rd Gen (11 inch, 1TB, WiFi)
+    @"iPad8,3": @2018,  // iPad Pro 3rd Gen (11 inch, WiFi+Cellular)
+    @"iPad8,4": @2018,  // iPad Pro 3rd Gen (11 inch, 1TB, WiFi+Cellular)
+    @"iPad8,5": @2018,  // iPad Pro 3rd Gen (12.9 inch, WiFi)
+    @"iPad8,6": @2018,  // iPad Pro 3rd Gen (12.9 inch, 1TB, WiFi)
+    @"iPad8,7": @2018,  // iPad Pro 3rd Gen (12.9 inch, WiFi+Cellular)
+    @"iPad8,8": @2018,  // iPad Pro 3rd Gen (12.9 inch, 1TB, WiFi+Cellular)
+    @"iPad11,1": @2019, // iPad Mini 5th Gen (WiFi)
+    @"iPad11,2": @2019, // iPad Mini 5th Gen
+    @"iPad11,3": @2019, // iPad Air 3rd Gen (WiFi)
+    @"iPad11,4": @2019, // iPad Air 3rd Gen
+  };
 
   NSNumber *deviceYear = mapping[platform];
 
