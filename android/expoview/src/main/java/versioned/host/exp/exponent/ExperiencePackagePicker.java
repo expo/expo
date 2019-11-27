@@ -23,6 +23,7 @@ import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
 import expo.modules.errorrecovery.ErrorRecoveryPackage;
 import expo.modules.screenorientation.ScreenOrientationPackage;
+import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
@@ -88,6 +89,7 @@ public class ExperiencePackagePicker {
       new GLPackage(),
       new GoogleSignInPackage(),
       new HapticsPackage(),
+      new ImageLoaderPackage(),
       new ImageManipulatorPackage(),
       new ImagePickerPackage(),
       new IntentLauncherPackage(),

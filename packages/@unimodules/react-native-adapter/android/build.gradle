@@ -67,5 +67,4 @@ dependencies {
   unimodule 'unimodules-image-loader-interface'
 
   implementation 'com.facebook.react:react-native:+'
-  api 'com.github.bumptech.glide:glide:4.9.0'
 }
