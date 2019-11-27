@@ -15,6 +15,15 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import { DeviceMotion } from 'expo-sensors';
 ```
 
+**[Methods](#methods)**
+
+- [`DeviceMotion.isAvailableAsync()`](#devicemotionisavailableasync)
+- [`DeviceMotion.addListener(listener)`](#devicemotionaddlistenerlistener)
+- [`DeviceMotion.removeAllListeners()`](#devicemotionremovealllisteners)
+- [`DeviceMotion.setUpdateInterval(intervalMs)`](#devicemotionsetupdateintervalintervalms)
+
+## Methods
+
 ### `DeviceMotion.isAvailableAsync()`
 
 > You should always check the sensor availability before attempting to use it.
