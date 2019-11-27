@@ -10,7 +10,7 @@
     <dependency>
       <groupId>com.google.android.gms</groupId>
       <artifactId>play-services-vision</artifactId>
-      <version>18.0.0</version>
+      <version>15.0.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
