@@ -184,7 +184,7 @@ This dismisses the fullscreen video view.
 
 A `Promise` that is fulfilled with the `PlaybackStatus` of the video once the fullscreen player has finished dismissing, or rejects if there was an error, or if this was called on an Android device.
 
-The rest of the API on the `Video` component ref is almost the same as the API for `Audio.Sound`. Only exception is - `setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)` method, which is not available for `videoRef` -- see the [AV documentation](../av/) for further information:
+The rest of the API on the `Video` component ref is almost the same as the API for `Audio.Sound`. The only exception is the `setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)` method, which is not available for `videoRef` -- see the [AV documentation](../av/) for further information:
 
 - `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 

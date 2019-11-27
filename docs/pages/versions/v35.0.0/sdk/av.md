@@ -64,7 +64,7 @@ render() {
 
 ## Playback API
 
-On the `playbackObject` reference, the following API is provided for both Audio and Video:
+On the `playbackObject` reference, the following API is provided for both `Audio` and `Video`:
 
 - `playbackObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
 
@@ -354,12 +354,12 @@ _onPlaybackStatusUpdate = playbackStatus => {
   }
 };
 
-... // Load the playbackObject and obtain the reference.
+... // Load the sound and obtain the reference.
 sound.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 ...
 ```
 
-#### Example: Loop media exactly 20 times for Sound
+#### Example: Loop sound exactly 20 times
 
 ```javascript
 const N = 20;

@@ -155,7 +155,6 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     setIsMutedAsync: (isMuted: boolean) => Promise<PlaybackStatus>;
     setIsLoopingAsync: (isLooping: boolean) => Promise<PlaybackStatus>;
     setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<PlaybackStatus>;
-    setOnPlaybackUpdateStatus: (progressUpdateIntervalMillis: number) => Promise<PlaybackStatus>;
     _nativeOnPlaybackStatusUpdate: (event: {
         nativeEvent: PlaybackStatus;
     }) => void;
