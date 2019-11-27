@@ -16,7 +16,7 @@ title: Publishing Websites
 
 The AWS Amplify Console provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
 
-1. Add the [amplify.yml](https://github.com/expo/amplify-demo/blob/master/amplify.yml) file to the root of your repo.
+1. Add the [amplify.yml](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
 
 2. Push your local Expo project to your GitHub repository. If you haven't pushed to GitHub yet, follow [GitHub's guide to add an existing project to GitHub](https://help.github.com/en/articles/adding-an-existing-project-to-github-using-the-command-line).
 

@@ -17,6 +17,18 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 import * as Amplitude from 'expo-analytics-amplitude';
 ```
 
+**[Methods](#methods)**
+
+- [`Amplitude.initialize(apiKey)`](#amplitudeinitializeapikey)
+- [`Amplitude.setUserId(userId)`](#amplitudesetuseriduserid)
+- [`Amplitude.setUserProperties(userProperties)`](#amplitudesetuserpropertiesuserproperties)
+- [`Amplitude.clearUserProperties()`](#amplitudeclearuserproperties)
+- [`Amplitude.logEvent(eventName)`](#amplitudelogeventeventname)
+- [`Amplitude.logEventWithProperties(eventName, properties)`](#amplitudelogeventwithpropertieseventname-properties)
+- [`Amplitude.setGroup(groupType, groupNames)`](#amplitudesetgroupgrouptype-groupnames)
+
+## Methods
+
 ### `Amplitude.initialize(apiKey)`
 
 Initializes Amplitude with your Amplitude API key. If you're having trouble finding your API key, see [step 4 of these instructions](https://amplitude.zendesk.com/hc/en-us/articles/207108137-Introduction-Getting-Started#getting-started).

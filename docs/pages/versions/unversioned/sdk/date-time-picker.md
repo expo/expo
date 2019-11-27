@@ -1,5 +1,6 @@
 ---
 title: DateTimePicker
+sourceCodeUrl: "https://github.com/react-native-community/react-native-datetimepicker"
 ---
 
 A component that provides access to the system UI for date and time selection.

@@ -1,5 +1,6 @@
 ---
 title: AppleAuthentication
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication"
 ---
 
 This library provides Apple authentication for iOS standalone apps in the managed and bare workflows. Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
@@ -10,7 +11,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 > **Note**: This module is not implemented on web.
 
-## Setup
+## Configuration
 
 1. Enable the "Sign In with Apple" capability in your app. For bare projects, enable the capability in Xcode under "Signing & Capabilities" -- you'll need to be on Xcode 11 or later. For managed projects, set `ios.usesAppleSignIn` to `true` in app.json.
 2. Log into the Apple Developer Console, go to "Certificates, Identifiers, & Profiles" and then "Identifiers".
@@ -19,6 +20,40 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 5. If you chose a different app to be the primary, you'll also need to open up the configuration page for your current app, enable the "Sign In with Apple" capability, click "Edit" and choose the "Group with an existing primary App ID" option. Save this configuration as well.
 6. Next, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
 7. Finally, when you want to make a standalone build to test with, run `expo build:ios --clear-provisioning-profile --revoke-credentials` so that your provisioning profile is regenerated with the new entitlement.
+
+## Usage
+
+```js
+import * as AppleAuthentication from 'expo-apple-authentication';
+
+function YourComponent() {
+  return (
+    <AppleAuthentication.AppleAuthenticationButton
+      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+      cornerRadius={5}
+      style={{ width: 200, height: 44 }}
+      onPress={async () => {
+        try {
+          const credential = await AppleAuthentication.signInAsync({
+            requestedScopes: [
+              AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+              AppleAuthentication.AppleAuthenticationScope.EMAIL,
+            ],
+          });
+          // signed in
+        } catch (e) {
+          if (e.code === 'ERR_CANCELED') {
+            // handle that the user canceled the sign-in flow
+          } else {
+            // handle other errors
+          }
+        }
+      }}
+    />
+  );
+}
+```
 
 ## Development and Testing
 
@@ -36,21 +71,21 @@ Apple's response includes a signed JWT with information about the user. To ensur
 import * as AppleAuthentication from 'expo-apple-authentication';
 ```
 
-### Methods
+**[Methods](#methods)**
 
 - [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
 - [`AppleAuthentication.signInAsync(options)`](#appleauthenticationsigninasyncoptions)
 - [`AppleAuthentication.getCredentialStateAsync(user)`](#appleauthenticationgetcredentialstateasyncuser)
 
-### Components
+**[Components](#components)**
 
 - [`AppleAuthentication.AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton)
 
-### Prop Types
+**[Prop Types](#prop-types)**
 
 - [`AppleAuthentication.AppleAuthenticationButtonProps`](#appleauthenticationappleauthenticationbuttonprops)
 
-### Enum Types
+**[Enum Types](#enum-types)**
 
 - [`AppleAuthentication.AppleAuthenticationButtonStyle`](#appleauthenticationappleauthenticationbuttonstyle)
 - [`AppleAuthentication.AppleAuthenticationButtonType`](#appleauthenticationappleauthenticationbuttontype)
@@ -58,15 +93,13 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 - [`AppleAuthentication.AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope)
 - [`AppleAuthentication.AppleAuthenticationUserDetectionStatus`](#appleauthenticationappleauthenticationuserdetectionstatus)
 
-### Object Types
+**[Object Types](#object-types)**
 
 - [`AppleAuthentication.AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential)
 - [`AppleAuthentication.AppleAuthenticationFullName`](#appleauthenticationappleauthenticationfullname)
 - [`AppleAuthentication.AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions)
 
-### Errors
-
-- [Error Codes](#error-codes)
+**[Error Codes](#error-codes)**
 
 ## Methods
 
@@ -127,40 +160,6 @@ Make sure to attach height and width via the style props as without these styles
 - **buttonType (_[AppleAuthenticationButtonType](#appleauthenticationappleauthenticationbuttontype)_)** - The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
 - **buttonStyle (_[AppleAuthenticationButtonStyle](#appleauthenticationappleauthenticationbuttonstyle)_)** - The Apple-defined color scheme to use to display the button.
 - **cornerRadius (_number_)** - The border radius to use when rendering the button. This works similarly to `style.borderRadius` in other Views.
-
-#### Example
-
-```js
-import * as AppleAuthentication from 'expo-apple-authentication';
-
-function YourComponent() {
-  return (
-    <AppleAuthentication.AppleAuthenticationButton
-      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-      cornerRadius={5}
-      style={{ width: 200, height: 44 }}
-      onPress={async () => {
-        try {
-          const credential = await AppleAuthentication.signInAsync({
-            requestedScopes: [
-              AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-              AppleAuthentication.AppleAuthenticationScope.EMAIL,
-            ],
-          });
-          // signed in
-        } catch (e) {
-          if (e.code === 'ERR_CANCELED') {
-            // handle that the user canceled the sign-in flow
-          } else {
-            // handle other errors
-          }
-        }
-      }}
-    />
-  );
-}
-```
 
 ## Enum Types
 

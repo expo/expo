@@ -66,13 +66,36 @@
   return _ABI36_0_0ReactSubviews;
 }
 
-- (UIViewController*)screen
+- (UIView *)ABI36_0_0ReactSuperview
 {
-  UIView *superview = self.superview;
-  if ([superview isKindOfClass:[ABI36_0_0RNSScreenView class]]) {
-    return ((ABI36_0_0RNSScreenView *)superview).controller;
+  return _screenView;
+}
+
+- (void)removeFromSuperview
+{
+  [super removeFromSuperview];
+  _screenView = nil;
+}
+
+- (void)updateViewControllerIfNeeded
+{
+  UIViewController *vc = _screenView.controller;
+  UINavigationController *nav = (UINavigationController*) vc.parentViewController;
+  if (vc != nil && nav.visibleViewController == vc) {
+    [ABI36_0_0RNSScreenStackHeaderConfig updateViewController:self.screenView.controller withConfig:self];
   }
-  return nil;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+  [self updateViewControllerIfNeeded];
+}
+
+- (void)didUpdateABI36_0_0ReactSubviews
+{
+  [super didUpdateABI36_0_0ReactSubviews];
+  [self updateViewControllerIfNeeded];
 }
 
 + (void)setAnimatedConfig:(UIViewController *)vc withConfig:(ABI36_0_0RNSScreenStackHeaderConfig *)config
@@ -142,6 +165,11 @@
 }
 
 + (void)willShowViewController:(UIViewController *)vc withConfig:(ABI36_0_0RNSScreenStackHeaderConfig *)config
+{
+  [self updateViewController:vc withConfig:config];
+}
+
++ (void)updateViewController:(UIViewController *)vc withConfig:(ABI36_0_0RNSScreenStackHeaderConfig *)config
 {
   UINavigationItem *navitem = vc.navigationItem;
   UINavigationController *navctr = (UINavigationController *)vc.parentViewController;

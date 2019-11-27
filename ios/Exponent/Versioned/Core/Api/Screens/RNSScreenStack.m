@@ -79,7 +79,7 @@
   } else if (operation == UINavigationControllerOperationPop) {
    screen = (RNSScreenView *) fromVC.view;
   }
-  if (screen != nil && screen.stackAnimation != RNSScreenStackAnimationDefault) {
+  if (screen != nil && (screen.stackAnimation == RNSScreenStackAnimationFade || screen.stackAnimation == RNSScreenStackAnimationNone)) {
     return  [[RNSScreenStackAnimator alloc] initWithOperation:operation];
   }
   return nil;

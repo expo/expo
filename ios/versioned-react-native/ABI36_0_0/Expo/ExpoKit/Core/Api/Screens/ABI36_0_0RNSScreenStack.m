@@ -79,7 +79,7 @@
   } else if (operation == UINavigationControllerOperationPop) {
    screen = (ABI36_0_0RNSScreenView *) fromVC.view;
   }
-  if (screen != nil && screen.stackAnimation != ABI36_0_0RNSScreenStackAnimationDefault) {
+  if (screen != nil && (screen.stackAnimation == ABI36_0_0RNSScreenStackAnimationFade || screen.stackAnimation == ABI36_0_0RNSScreenStackAnimationNone)) {
     return  [[ABI36_0_0RNSScreenStackAnimator alloc] initWithOperation:operation];
   }
   return nil;

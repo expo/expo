@@ -335,16 +335,6 @@ async function addVersionedActivitesToManifests(version: string) {
   );
 
   await transformFileAsync(
-    versionedAndroidManifestPath,
-    new RegExp('<!-- ADD_VERSIONED_APP_AUTH_ACTIVITY_HERE -->'),
-    `<activity
-      android:name="${abiName}.expo.modules.appauth.AppAuthBrowserActivity"
-      android:exported="false"
-      android:launchMode="singleTask"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>`
-  );
-
-  await transformFileAsync(
     templateManifestPath,
     new RegExp('<!-- ADD DEV SETTINGS HERE -->'),
     `<!-- ADD DEV SETTINGS HERE -->

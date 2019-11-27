@@ -1,7 +1,11 @@
 #import <ABI36_0_0React/ABI36_0_0RCTViewManager.h>
 #import <ABI36_0_0React/ABI36_0_0RCTConvert.h>
 
+#import "ABI36_0_0RNSScreen.h"
+
 @interface ABI36_0_0RNSScreenStackHeaderConfig : UIView
+
+@property (nonatomic, weak) ABI36_0_0RNSScreenView *screenView;
 
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *titleFontFamily;

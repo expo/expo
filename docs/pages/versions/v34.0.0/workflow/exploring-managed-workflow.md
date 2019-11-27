@@ -133,7 +133,7 @@ We frequently release updates to the [Expo SDK](../../sdk/overview/). If you dec
 
 ## Sending notifications
 
-An [in-depth guide](../../guides/push-notifications/) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.io/dashboard/notifications).
+An [in-depth guide](../../guides/push-notifications/) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.io/notifications).
 
 <Video file="exploring-managed/notify.mp4" />
 

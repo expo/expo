@@ -4,15 +4,13 @@ import * as Brightness from 'expo-brightness';
 
 export default function App() {
   useEffect(() => {
-    checkPermissions();
+    (async () => {
+      const { status } = await Brightness.requestPermissionsAsync();
+      if (status === 'granted') {
+        Brightness.setSystemBrightnessAsync(1);
+      }
+    })();
   }, []);
-
-  const checkPermissions = async () => {
-    const { status } = await Brightness.requestPermissionsAsync();
-    if (status === 'granted') {
-      Brightness.setSystemBrightnessAsync(1);
-    }
-  };
 
   return (
     <View

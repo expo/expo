@@ -13,12 +13,6 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-brightness`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-brightness).
 
-## API
-
-```js
-import * as Brightness from 'expo-brightness';
-```
-
 ## Usage
 
 <SnackInline label='Basic Brightness Usage' templateId='brightness' dependencies={['expo-brightness', 'expo-permissions']}>
@@ -54,7 +48,14 @@ export default class App extends React.Component {
 ```
 </SnackInline>
 
-### Methods
+## API
+
+```js
+import * as Brightness from 'expo-brightness';
+``` 
+
+**[Methods](#methods)**
+
 - [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
 - [`Brightness.setBrightnessAsync(brightnessValue)`](#brightnesssetbrightnessasyncbrightnessvalue)
 - [`Brightness.useSystemBrightnessAsync()`](#brightnessusesystembrightnessasync)
@@ -64,11 +65,11 @@ export default class App extends React.Component {
 - [`Brightness.getSystemBrightnessModeAsync()`](#brightnessgetsystembrightnessmodeasync)
 - [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#brightnesssetsystembrightnessmodeasyncbrightnessmode)
 
-### Enum Types
+**[Enum Types](#enum-types)**
+
 - [`Brightness.BrightnessMode`](#brightnessbrightnessmode)
 
-### Errors
-- [Error Codes](#error-codes)
+**[Error Codes](#error-codes-6)**
 
 ## Methods
 

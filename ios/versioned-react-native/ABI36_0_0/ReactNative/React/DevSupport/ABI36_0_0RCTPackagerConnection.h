@@ -69,6 +69,8 @@ typedef void (^ABI36_0_0RCTConnectedHandler)(void);
 - (void)addHandler:(id<ABI36_0_0RCTPackagerClientMethod>)handler
          forMethod:(NSString *)method __deprecated_msg("Use addRequestHandler or addNotificationHandler instead");
 
+- (void)setBundleURL:(NSURL *)bundleURL;
+
 @end
 
 NS_ASSUME_NONNULL_END

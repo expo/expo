@@ -1,5 +1,6 @@
 ---
 title: MaskedView
+sourceCodeUrl: "https://github.com/react-native-community/react-native-masked-view"
 ---
 
 A masked view only displays the pixels that overlap with the view rendered in its mask element.

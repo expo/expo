@@ -92,33 +92,6 @@ function round(n) {
 
   return Math.floor(n * 100) / 100;
 }
-
-const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginTop: 15,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-  },
-  middleButton: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: '#ccc',
-  },
-  sensor: {
-    marginTop: 45,
-    paddingHorizontal: 10,
-  },
-  text:{
-    textAlign: 'center'
-  }
-});
 ``` 
 </SnackInline>
 
@@ -127,6 +100,15 @@ const styles = StyleSheet.create({
 ```js
 import { Accelerometer } from 'expo-sensors';
 ```
+
+**[Methods](#methods)**
+
+- [`Accelerometer.isAvailableAsync()`](#accelerometerisavailableasync)
+- [`Accelerometer.addListener(listener)`](#accelerometeraddlistener)
+- [`Accelerometer.removeAllListeners()`](#accelerometerremovealllisteners)
+- [`Accelerometer.setUpdateInterval(intervalMs)`](#accelerometersetupdateintervalintervalms)
+
+## Methods
 
 ### `Accelerometer.isAvailableAsync()`
 

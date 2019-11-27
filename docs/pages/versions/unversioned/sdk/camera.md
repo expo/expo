@@ -1,6 +1,9 @@
 ---
 title: Camera
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-camera"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With use of `Camera` one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
@@ -20,67 +23,63 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
-## Usage
+## Example Usage
 
-### Basic Example
+<SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-camera']}>
 
-```javascript
-import React from 'react';
+```js
+import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import { Camera } from 'expo-camera';
+import { Camera } from 'expo-camera'; 
 
-export default class CameraExample extends React.Component {
-  state = {
-    hasCameraPermission: null,
-    type: Camera.Constants.Type.back,
-  };
+export default function App() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
 
-  async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
   }
-
-  render() {
-    const { hasCameraPermission } = this.state;
-    if (hasCameraPermission === null) {
-      return <View />;
-    } else if (hasCameraPermission === false) {
-      return <Text>No access to camera</Text>;
-    } else {
-      return (
-        <View style={{ flex: 1 }}>
-          <Camera style={{ flex: 1 }} type={this.state.type}>
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: 'transparent',
-                flexDirection: 'row',
-              }}>
-              <TouchableOpacity
-                style={{
-                  flex: 0.1,
-                  alignSelf: 'flex-end',
-                  alignItems: 'center',
-                }}
-                onPress={() => {
-                  this.setState({
-                    type:
-                      this.state.type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back,
-                  });
-                }}>
-                <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
-              </TouchableOpacity>
-            </View>
-          </Camera>
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+  return (
+    <View style={{ flex: 1 }}>
+      <Camera style={{ flex: 1 }} type={type}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'transparent',
+            flexDirection: 'row',
+          }}>
+          <TouchableOpacity
+            style={{
+              flex: 0.1,
+              alignSelf: 'flex-end',
+              alignItems: 'center',
+            }}
+            onPress={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}>
+            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+          </TouchableOpacity>
         </View>
-      );
-    }
-  }
+      </Camera>
+    </View>
+  );
 }
 ```
+</SnackInline>
 
 ### Comprehensive Example
 
@@ -92,9 +91,45 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 import { Camera } from 'expo-camera';
 ```
 
-## static methods
+**[Static Methods](#static-methods)**
 
-- **Camera.isAvailableAsync(): boolean**
+- [`Camera.isAvailableAsync()`](#cameraisavailableasync-boolean)
+- [`Camera.getAvailableCameraTypesAsync()`](#cameragetavailablecameratypesasync-string)
+
+**[Props](#props)**
+
+- [`type`](#type)
+- [`flashMode`](#flashmode)
+- [`autoFocus`](#autofocus)
+- [`zoom`](#zoom-float)
+- [`whiteBalance`](#whitebalance)
+- [`focusDepth`](#focusdepth-float)
+- [`ratio`](#ratio-string)
+- [`pictureSize`](#picturesize-string)
+- [`onCameraReady`](#oncameraready-function)
+- [`onFacesDetected`](#onfacesdetected-function)
+- [`faceDetectorSettings`](#facedetectorsettings-object)
+- [`onMountError`](#onmounterror)
+- [`onBarCodeScanned`](#onbarcodescanned-function)
+- [`barCodeScannerSettings`](#barcodescannersettings-object)
+- [`useCamera2Api`](#usecamera2api-boolean)
+- [`videoStabilizationMode`](#videostabilzationmode-cameraconstantsvideostabilization)
+
+**[Methods](#methods)**
+
+- [`takePictureAsync()`](#takepictureasync)
+- [`recordAsync()`](#recordAsync)
+- [`stopRecording()`](#stoprecording)
+- [`getSupportedRatiosAsync()`](#getsupportedratiosasync)
+- [`getAvailablePictureSizesAsync()`](#getavailablepicturesizesasync)
+- [`pausePreview()`](#pausepreview)
+- [`resumePreview()`](#resumepreview)
+- [`requestPermissionsAsync()`](#requestPermissionsAsync)
+- [`getPermissionsAsync()`](#getPermissionsAsync)
+
+## Static Methods
+
+### `Camera.isAvailableAsync(): boolean`
 
 Check whether the current device has a camera. This is useful for web and simulators cases. This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser). You will still need to check if the native permission has been accepted.
 
@@ -105,7 +140,7 @@ if (await Camera.isAvailableAsync()) {
 }
 ```
 
-- **Camera.getAvailableCameraTypesAsync(): string[]**
+### `Camera.getAvailableCameraTypesAsync(): string[]`
 
 Returns a list of camera types `['front', 'back']`. This is useful for desktop browsers which only have front-facing cameras.
 
@@ -115,69 +150,69 @@ import { Camera } from 'expo-camera';
 const types = await Camera.getAvailableCameraTypesAsync();
 ```
 
-### props
+## Props
 
-- **type**
+### `type`
 
 Camera facing. Use one of `Camera.Constants.Type`. When `Type.front`, use the front-facing camera. When `Type.back`, use the back-facing camera. Default: `Type.back`.
 
-- **flashMode**
+### `flashMode`
 
 Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash on your device will turn on when taking a picture, when `off`, it won't. Setting to `auto` will fire flash if required, `torch` turns on flash during the preview. Default: `off`.
 
-- **autoFocus**
+### `autoFocus`
 
 State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it wont't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
 
-- **zoom** (_float_)
+### `zoom` (_float_)
 
 A value between 0 and 1 being a percentage of device's max zoom. 0 - not zoomed, 1 - maximum zoom. Default: 0.
 
-- **whiteBalance**
+### `whiteBalance`
 
 Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny`, `cloudy`, `shadow`, `fluorescent`, `incandescent`. If a device does not support any of these values previous one is used.
 
-- **focusDepth** (_float_)
+### `focusDepth` (_float_)
 
 Distance to plane of sharpest focus. A value between 0 and 1: 0 - infinity focus, 1 - focus as close as possible. Default: 0. For Android this is available only for some devices and when `useCamera2Api` is set to true.
 
-- **ratio** (_string_)
+### `ratio` (_string_)
 
 Android only. A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported by the device use `getSupportedRatiosAsync`. Default: `4:3`.
 
-- **pictureSize** (_string_)
+### `pictureSize` (_string_)
 
 A string representing the size of pictures `takePictureAsync` will take. Available sizes can be fetched with `getAvailablePictureSizesAsync`.
 
-- **onCameraReady** (_function_)
+### `onCameraReady` (_function_)
 
 Callback invoked when camera preview has been set.
 
-- **onFacesDetected** (_function_)
+### `onFacesDetected` (_function_)
 
 Callback invoked with results of face detection on the preview. See [FaceDetector documentation](../facedetector/#event-shape) for details.
 
-- **faceDetectorSettings** (_Object_)
+### `faceDetectorSettings` (_Object_)
 
 A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](../facedetector/#settings) for details.
 
-- **onMountError** (_function_)
+### `onMountError` (_function_)
 
 Callback invoked when camera preview could not been started. It is provided with an error object that contains a `message`.
 
-- **onBarCodeRead (_function_)**
+### `onBarCodeRead` (_function_)
 
 **Deprecated**. Use **onBarCodeScanned** instead.
 
-- **onBarCodeScanned (_function_)**
+### `onBarCodeScanned` (_function_)
 
 Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](../bar-code-scanner/#supported-formats) for supported values.
 
-- **barCodeTypes (_Array\<string\>_)**
+### `barCodeTypes`
 
 **Deprecated**. Use **barCodeScannerSettings** instead.
 
-- **barCodeScannerSettings (_object_)**
+### `barCodeScannerSettings` (_object_)
 
 Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported settings: [**barCodeTypes**].
 
@@ -189,11 +224,11 @@ Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported s
 />
 ```
 
-- **useCamera2Api** (_boolean_)
+### `useCamera2Api` (_boolean_)
 
 **Android only**. Whether to use Android's Camera2 API. See `Note` at the top of this page.
 
-- **videoStabilizationMode** (_Camera.Constants.VideoStabilization_)
+### `videoStabilizationMode` (_Camera.Constants.VideoStabilization_)
 
 **iOS only**. The video stabilization mode used for a video recording. Use one of `Camera.Constants.VideoStabilization.{off, standard, cinematic, auto}`.
 
@@ -218,7 +253,7 @@ snap = async () => {
 };
 ```
 
-### `takePictureAsync`
+### `takePictureAsync()`
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
@@ -241,7 +276,7 @@ Returns a Promise that resolves to an object: `{ uri, width, height, exif, base6
 
 The local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
 
-### `recordAsync`
+### `recordAsync()`
 
 Starts recording a video that will be saved to cache directory. Videos are rotated to match device's orientation. Flipping camera during a recording results in stopping it.
 
@@ -260,11 +295,11 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
 
 Returns a Promise that resolves to an object containing video file `uri` property. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
 
-### `stopRecording`
+### `stopRecording()`
 
 Stops recording if any is in progress.
 
-### `getSupportedRatiosAsync`
+### `getSupportedRatiosAsync()`
 
 Android only. Get aspect ratios that are supported by the device and can be passed via `ratio` prop.
 
@@ -272,7 +307,7 @@ Android only. Get aspect ratios that are supported by the device and can be pass
 
 Returns a Promise that resolves to an array of strings representing ratios, eg. `['4:3', '1:1']`.
 
-### `getAvailablePictureSizesAsync`
+### `getAvailablePictureSizesAsync()`
 
 Get picture sizes that are supported by the device for given `ratio`.
 
@@ -284,11 +319,11 @@ Get picture sizes that are supported by the device for given `ratio`.
 
 Returns a Promise that resolves to an array of strings representing picture sizes that can be passed to `pictureSize` prop. The list varies across Android devices but is the same for every iOS.
 
-### `pausePreview`
+### `pausePreview()`
 
 Pauses the camera preview. It is not recommended to use `takePictureAsync` when preview is paused.
 
-### `resumePreview`
+### `resumePreview()`
 
 Resumes the camera preview.
 

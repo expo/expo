@@ -1,6 +1,9 @@
 ---
 title: Brightness
+sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness"
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 An API to get and set screen brightness.
 
@@ -10,16 +13,47 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-brightness`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-brightness).
 
+## Usage
+
+<SnackInline label='Basic Brightness Usage' templateId='brightness' dependencies={['expo-brightness']}>
+
+```js
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
+import * as Brightness from 'expo-brightness';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Brightness.requestPermissionsAsync();
+      if (status === 'granted') {
+        Brightness.setSystemBrightnessAsync(1);
+      }
+    })();
+  }, []);
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+      <Text>Brightness Module Example</Text>
+    </View>
+  );
+}
+```
+</SnackInline>
+
 ## API
 
 ```js
 import * as Brightness from 'expo-brightness';
 ```
+**[Methods](#methods)**
 
-### Methods
-
-- [`Brightness.requestPermissionsAsync()`](#brightnessrequestpermissionsasync)
-- [`Brightness.getPermissionsAsync()`](#brightnessgetpermissionsasync)
 - [`Brightness.getBrightnessAsync()`](#brightnessgetbrightnessasync)
 - [`Brightness.setBrightnessAsync(brightnessValue)`](#brightnesssetbrightnessasyncbrightnessvalue)
 - [`Brightness.useSystemBrightnessAsync()`](#brightnessusesystembrightnessasync)
@@ -29,13 +63,11 @@ import * as Brightness from 'expo-brightness';
 - [`Brightness.getSystemBrightnessModeAsync()`](#brightnessgetsystembrightnessmodeasync)
 - [`Brightness.setSystemBrightnessModeAsync(brightnessMode)`](#brightnesssetsystembrightnessmodeasyncbrightnessmode)
 
-### Enum Types
+**[Enum Types](#enum-types)**
 
 - [`Brightness.BrightnessMode`](#brightnessbrightnessmode)
 
-### Errors
-
-- [Error Codes](#error-codes)
+**[Error Codes](#error-codes-6)**
 
 ## Methods
 
