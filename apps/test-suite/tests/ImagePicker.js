@@ -83,6 +83,29 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
         testMediaObjectShape(video, 'video');
       });
 
+      it('allows editing', async () => {
+        const image = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+        });
+
+        testMediaObjectShape(image, 'image');
+      });
+
+      it('allows editing and returns base64', async () => {
+        const image = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          base64: true,
+        });
+
+        testMediaObjectShape(image, 'image');
+        if (!image.cancelled) {
+          expect(typeof image.base64).toBe('string');
+          expect(image.base64).not.toBe('');
+        }
+      });
+
       if (Platform.OS === 'ios' && parseInt(Platform.Version, 10) > 10) {
         it('exporPreset should affect video dimensions', async () => {
           const video = await ImagePicker.launchImageLibraryAsync({
