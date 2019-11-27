@@ -254,7 +254,7 @@ Creates a new event on the specified calendar.
 
   - **title (_string_)**
   - **startDate (_Date_)** -- Required.
-  - **endDate (_Date_)** -- Required on Android.
+  - **endDate (_Date_)** -- Required.
   - **allDay (_boolean_)**
   - **location (_string_)**
   - **notes (_string_)**
