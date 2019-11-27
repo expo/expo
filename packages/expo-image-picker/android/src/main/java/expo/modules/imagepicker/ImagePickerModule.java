@@ -624,7 +624,7 @@ public class ImagePickerModule extends ExportedModule implements ActivityEventLi
 
     try (InputStream in = new FileInputStream(result.getUri().getPath())) {
       if (base64) {
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()){
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
           // `CropImage` nullifies the `result.getBitmap()` after it writes out to a file, so
           // we have to read back..
           IOUtils.copy(in, out);

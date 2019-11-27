@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
-
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,6 +90,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   // Override
   // Will be called after waitForDrawOverOtherAppPermission
   protected void startReactInstance() {
+
   }
 
   private static final String TAG = ReactNativeActivity.class.getSimpleName();
