@@ -23,12 +23,8 @@ export async function fetchUpdateAsync({ eventListener, } = {}) {
     if (eventListener && typeof eventListener === 'function') {
         subscription = addListener(eventListener);
     }
-    try {
-        result = await OTA.fetchUpdateAsync();
-    }
-    finally {
-        subscription && subscription.remove();
-    }
+    result = await OTA.fetchUpdateAsync();
+    subscription && subscription.remove();
     if (!result) {
         return { isNew: false };
     }
@@ -39,19 +35,23 @@ export async function fetchUpdateAsync({ eventListener, } = {}) {
 }
 export async function reload() {
     if (!OTA.reload) {
-        throw new UnavailabilityError('WebBrowser', 'reload');
+        throw new UnavailabilityError('Updates', 'reload');
     }
     return OTA.reload();
 }
+export async function reloadFromCache() {
+    console.warn('reloadFromCache is deprecated! Please use reload method instead!');
+    return reload();
+}
 export async function clearUpdateCacheAsync() {
     if (!OTA.clearUpdateCacheAsync) {
-        throw new UnavailabilityError('WebBrowser', 'clearUpdateCacheAsync');
+        throw new UnavailabilityError('Updates', 'clearUpdateCacheAsync');
     }
     return OTA.clearUpdateCacheAsync();
 }
 export async function readCurrentManifestAsync() {
     if (!OTA.readCurrentManifestAsync) {
-        throw new UnavailabilityError('WebBrowser', 'getCustomTabsSupportingBrowsersAsync');
+        throw new UnavailabilityError('Updates', 'getCustomTabsSupportingBrowsersAsync');
     }
     return OTA.readCurrentManifestAsync().then(result => typeof result === 'string' ? JSON.parse(result) : result);
 }

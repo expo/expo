@@ -16,7 +16,7 @@ declare type UpdateCheckResult = {
     manifest: Manifest;
 };
 declare type UpdateEventListener = (event: UpdateEvent) => void;
-export interface PedometerEventSubscribtion {
+export interface UpdatesEventSubscribtion {
     remove: () => void;
 }
 declare type UpdateFetchResult = {
@@ -30,9 +30,10 @@ export declare function fetchUpdateAsync({ eventListener, }?: {
     eventListener?: UpdateEventListener;
 }): Promise<UpdateFetchResult>;
 export declare function reload(): Promise<any>;
+export declare function reloadFromCache(): Promise<any>;
 export declare function clearUpdateCacheAsync(): Promise<any>;
 export declare function readCurrentManifestAsync(): Promise<any>;
-export declare function addListener(listener: UpdateEventListener): PedometerEventSubscribtion;
+export declare function addListener(listener: UpdateEventListener): UpdatesEventSubscribtion;
 export declare const EventType: {
     DOWNLOAD_STARTED: string;
     DOWNLOAD_PROGRESS: string;
