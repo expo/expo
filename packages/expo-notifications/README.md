@@ -188,7 +188,7 @@ If sticky notification is diplayed you can dismissed it with this method.
 #### `Notifications.dismissAllNotificationsAsync(): Promise<void>`
 Dismiss All notifications.
 
-## Sending a push notification (TODO!!!!!)
+## Sending a push notification
 
 ### Expo as a middleman
 
@@ -201,15 +201,15 @@ Firebase message format suitable for `expo-notifications`.
 ```json
 { 
     "message":{
-        "token":"your_token",
+        "token":"your_token",                
         "data": {
-            "title": "title",
-            "message": "example content",
-            "channelId": "channelId",
-            "categoryId": "category",
-            "icon": "icon URI",
-            "body": "additional data",
-            "sound": true/false
+            "title": "title",                   //1
+            "body": "example content",          //2    
+            "channelId": "channelId",           //3
+            "categoryId": "category",           //4
+            "icon": "icon URI",                 //5
+            "data": "additional data",          //6
+            "sound": true/false                 //7
         }
     }
 }
@@ -217,11 +217,18 @@ Firebase message format suitable for `expo-notifications`.
 
 Note that Firebase message cannot contain "notification" property because it makes `expo-notifications` unable to display notification.
 
-TODO: improve format description
+1. Notification title.
+2. Notification body text. 
+3. Id of channel. Channel must be already created. If you don't provide channel then default one will be choosed.
+4. Id of category. Category must be already created. 
+5. URI of large notification icon. There is no way to change small notification icon.
+6. Your additional data. (JSON format)
+7. True if sound should be played and False if not. (False by default).
 
 ### APNS
 
-TBA
+On iOS Push notifications are presented by system so there is no need to follow any special message format.
+More about it [here](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification).
 
 ## Types
 
@@ -358,7 +365,7 @@ type Subscription = {
 }
 ```
 
-## Push Notifications (TODO!!!!!)
+## Push Notifications
 
 Currently, there are two ways of sending push notifications (with or without Expo servers). 
 Expo simplifies the process of sending and testing notifications. You can send one notification and access the multiple platforms at once.
@@ -399,7 +406,7 @@ More about it [here](https://developer.apple.com/documentation/usernotifications
  1. create Expo account 
  2. create `app.json` file with `slug` property 
  3. use Expo credential manager to upload your Firebase key [link](https://docs.expo.io/versions/v35.0.0/workflow/expo-cli/) 
- 4. use Expo crednetial manager to upload your APNS push notification key.
+ 4. use Expo credential manager to upload your APNS push notification key.
 
 #### Android
 
