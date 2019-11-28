@@ -23,6 +23,7 @@ Using Expo with Next.js means you can share all of your existing components and 
   - [Next.js projects with Expo](#nextjs-projects-with-expo)
   - [Manual setup](#manual-setup)
 - [Guides](#guides)
+  - [Deploy to Now](#deploy-to-now)
   - [Image support](#image-support)
   - [Font support](#font-support)
   - [Offline support](#offline-support)
@@ -132,6 +133,21 @@ Optionally you can set the project up manually (not recommended).
 </details>
 
 ## Guides
+
+### Deploy to Now
+
+This is Zeit's preferred method for deploying Next.js projects to production.
+
+- Add a **build** script to your `package.json`
+  ```json5
+  {
+    "scripts": {
+      "build": "next build"
+    }
+  }
+  ```
+- Install the Now CLI: `npm i -g now` 
+- Deploy to Now: `now`
 
 ### Image support
 
