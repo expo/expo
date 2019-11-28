@@ -3,7 +3,7 @@ title: AppleAuthentication
 sourceCodeUrl: "https://github.com/expo/expo/tree/sdk-36/packages/expo-apple-authentication"
 ---
 
-This library provides Apple authentication for iOS. It does not yet support Android or web.
+This library provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or web.
 
 Beginning with iOS 13, any app that includes third-party authentication options **must** provide Apple authentication as an option in order to comply with App Store Review guidelines. Learn more about Apple authentication on the ["Sign In with Apple" website](https://developer.apple.com/sign-in-with-apple/).
 
