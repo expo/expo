@@ -32,7 +32,7 @@ export type AppleAuthenticationSignInOptions = {
   state?: string;
 
   /**
-   * Data that is used to verify and prevent replay attacks.
+   * Data that is used to verify the uniqueness of a response and prevent replay attacks.
    */
   nonce?: string;
 };
