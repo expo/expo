@@ -10,10 +10,19 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 > 💡 Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
+## TL;DR:
+
+- Init: `expo init` (or `npx create-next-app`)
+- Install: `yarn add @expo/next-adapter`
+- Configure: `yarn next-expo`
+- Start: `yarn next dev`
+- Open: `http://localhost:3000/`
+
 - [🏁 Setup](#-setup)
   - [Expo projects with Next.js](#expo-projects-with-nextjs)
   - [Next.js projects with Expo](#nextjs-projects-with-expo)
   - [Manual setup](#manual-setup)
+- [Guides](#guides)
   - [Image support](#image-support)
   - [Font support](#font-support)
   - [Offline support](#offline-support)
@@ -121,6 +130,8 @@ Optionally you can set the project up manually (not recommended).
 
 </p>
 </details>
+
+## Guides
 
 ### Image support
 
