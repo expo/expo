@@ -1,0 +1,26 @@
+{
+  "name": "EXNotifications",
+  "version": "0.1.0",
+  "summary": "Expo notification unimodule",
+  "description": "Expo notification unimodule",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-notifications",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "EXNotifications/**/*.{h,m}",
+  "preserve_paths": "EXNotifications/**/*.{h,m}",
+  "requires_arc": true,
+  "dependencies": {
+    "UMCore": [
+
+    ],
+    "TCMobileProvision": [
+
+    ]
+  }
+}

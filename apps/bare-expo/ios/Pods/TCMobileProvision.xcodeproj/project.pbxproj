@@ -1,0 +1,381 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		18990611899F8CEFDB55789B23DC9B0E /* TCMobileProvision.h in Headers */ = {isa = PBXBuildFile; fileRef = 88E58FC5D5879FE3A3489E02178D7A9A /* TCMobileProvision.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		4940552573F7DC07A14BAB4C699B17F1 /* TCMobileProvision-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F5902F636D543EA57C2B373614C5DCCB /* TCMobileProvision-dummy.m */; };
+		6A05E51567DEB566210FF9550F123E31 /* TCMobileProvision.m in Sources */ = {isa = PBXBuildFile; fileRef = BD48A7BD00BF1462E93F1F78126BFDA4 /* TCMobileProvision.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7F025FB6B639EB4DAAA1A44193222A9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0EBFB693D7D92CC7D716D6887C67BCCE /* DTFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9F03C29D7FA4029DF24B80327A613330;
+			remoteInfo = DTFoundation;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0EBFB693D7D92CC7D716D6887C67BCCE /* DTFoundation */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTFoundation; path = DTFoundation.xcodeproj; sourceTree = "<group>"; };
+		142F28EDFFBCF2FAD86A642B54E86C38 /* TCMobileProvision.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = TCMobileProvision.xcconfig; sourceTree = "<group>"; };
+		88E58FC5D5879FE3A3489E02178D7A9A /* TCMobileProvision.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = TCMobileProvision.h; path = Sources/iOS/TCMobileProvision.h; sourceTree = "<group>"; };
+		94E1B87DCDF0F82F08F4642DEC85C77D /* libTCMobileProvision.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libTCMobileProvision.a; path = libTCMobileProvision.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		99636AC2557B8CDFAD071AF48FADFE5E /* TCMobileProvision-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "TCMobileProvision-prefix.pch"; sourceTree = "<group>"; };
+		BD48A7BD00BF1462E93F1F78126BFDA4 /* TCMobileProvision.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = TCMobileProvision.m; path = Sources/iOS/TCMobileProvision.m; sourceTree = "<group>"; };
+		F5902F636D543EA57C2B373614C5DCCB /* TCMobileProvision-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "TCMobileProvision-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B8AD6B36455E37ABF3D6F92D503FE325 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B1D6C388DF891B3C32FE1F01C46B679 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				0EBFB693D7D92CC7D716D6887C67BCCE /* DTFoundation */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		582AD483497BDD84CD022BE606CB13DD = {
+			isa = PBXGroup;
+			children = (
+				3B1D6C388DF891B3C32FE1F01C46B679 /* Dependencies */,
+				B565BBACF31374BD92D3D6741487B690 /* Frameworks */,
+				FD2858011BF5BC427EBC084B93B43823 /* Products */,
+				EE21C1DEEDFF42A27F5DE6341B9F69DC /* TCMobileProvision */,
+			);
+			sourceTree = "<group>";
+		};
+		B565BBACF31374BD92D3D6741487B690 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E0C62809AEAD5790146147D305AA8E6D /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				142F28EDFFBCF2FAD86A642B54E86C38 /* TCMobileProvision.xcconfig */,
+				F5902F636D543EA57C2B373614C5DCCB /* TCMobileProvision-dummy.m */,
+				99636AC2557B8CDFAD071AF48FADFE5E /* TCMobileProvision-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/TCMobileProvision";
+			sourceTree = "<group>";
+		};
+		EE21C1DEEDFF42A27F5DE6341B9F69DC /* TCMobileProvision */ = {
+			isa = PBXGroup;
+			children = (
+				88E58FC5D5879FE3A3489E02178D7A9A /* TCMobileProvision.h */,
+				BD48A7BD00BF1462E93F1F78126BFDA4 /* TCMobileProvision.m */,
+				E0C62809AEAD5790146147D305AA8E6D /* Support Files */,
+			);
+			name = TCMobileProvision;
+			path = TCMobileProvision;
+			sourceTree = "<group>";
+		};
+		FD2858011BF5BC427EBC084B93B43823 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				94E1B87DCDF0F82F08F4642DEC85C77D /* libTCMobileProvision.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		50220DE2F793E0A13B7DB7B8A257E37A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18990611899F8CEFDB55789B23DC9B0E /* TCMobileProvision.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		842A818A6887F13466E4B00ACCFA868F /* TCMobileProvision */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FB3EA891901AB5188886C08DFA48A612 /* Build configuration list for PBXNativeTarget "TCMobileProvision" */;
+			buildPhases = (
+				50220DE2F793E0A13B7DB7B8A257E37A /* Headers */,
+				FEDBFE780A385F903605D552A1327746 /* Sources */,
+				B8AD6B36455E37ABF3D6F92D503FE325 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				53367F5F2A725F13DCC703B4C225098E /* PBXTargetDependency */,
+			);
+			name = TCMobileProvision;
+			productName = TCMobileProvision;
+			productReference = 94E1B87DCDF0F82F08F4642DEC85C77D /* libTCMobileProvision.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5848D4CBD6F649AB1C65435A418D5916 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1100;
+				LastUpgradeCheck = 1100;
+			};
+			buildConfigurationList = 881DD17D507E7B6B1503C510A71CEC6A /* Build configuration list for PBXProject "TCMobileProvision" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 582AD483497BDD84CD022BE606CB13DD;
+			productRefGroup = FD2858011BF5BC427EBC084B93B43823 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProjectRef = 0EBFB693D7D92CC7D716D6887C67BCCE /* DTFoundation */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				842A818A6887F13466E4B00ACCFA868F /* TCMobileProvision */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FEDBFE780A385F903605D552A1327746 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4940552573F7DC07A14BAB4C699B17F1 /* TCMobileProvision-dummy.m in Sources */,
+				6A05E51567DEB566210FF9550F123E31 /* TCMobileProvision.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		53367F5F2A725F13DCC703B4C225098E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DTFoundation;
+			targetProxy = 7F025FB6B639EB4DAAA1A44193222A9E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		9812766CE7D03AD1F5D915187169AE3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 142F28EDFFBCF2FAD86A642B54E86C38 /* TCMobileProvision.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/TCMobileProvision/TCMobileProvision-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = TCMobileProvision;
+				PRODUCT_NAME = TCMobileProvision;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B51FF2663485A990BCB2FF9B8EA6F41A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		D430B10E483E1B202A0C84CB044EBE26 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 142F28EDFFBCF2FAD86A642B54E86C38 /* TCMobileProvision.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/TCMobileProvision/TCMobileProvision-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PRODUCT_MODULE_NAME = TCMobileProvision;
+				PRODUCT_NAME = TCMobileProvision;
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E7B5899694CB50AC3FE33742088486B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		881DD17D507E7B6B1503C510A71CEC6A /* Build configuration list for PBXProject "TCMobileProvision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B51FF2663485A990BCB2FF9B8EA6F41A /* Debug */,
+				E7B5899694CB50AC3FE33742088486B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FB3EA891901AB5188886C08DFA48A612 /* Build configuration list for PBXNativeTarget "TCMobileProvision" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D430B10E483E1B202A0C84CB044EBE26 /* Debug */,
+				9812766CE7D03AD1F5D915187169AE3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5848D4CBD6F649AB1C65435A418D5916 /* Project object */;
+}

@@ -39,6 +39,14 @@ CACHE_KEYS:
     PROJECT_NAME: DoubleConversion
     SPECS:
       - DoubleConversion (1.1.6)
+  DTFoundation:
+    BUILD_SETTINGS_CHECKSUM:
+      DTFoundation: a00054b6f4ad8b71511bd9f6c32d3d1b
+    CHECKSUM: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
+    PROJECT_NAME: DTFoundation
+    SPECS:
+      - DTFoundation/Core (1.7.14)
+      - DTFoundation/DTASN1 (1.7.14)
   EXAmplitude:
     BUILD_SETTINGS_CHECKSUM:
       EXAmplitude: 61eb4bcce3e82c9da4c0d6ef87815f8c
@@ -477,10 +485,67 @@ CACHE_KEYS:
     PROJECT_NAME: EXNetwork
     SPECS:
       - EXNetwork (1.0.0)
+  EXNotifications:
+    BUILD_SETTINGS_CHECKSUM:
+      EXNotifications: 4ce1dde2d79e1687c834227ca94b6dd5
+    CHECKSUM: bb3fd6d3b6ec3e58d2ff34073f9eec05870f569c
+    FILES:
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client+EXRemoteNotifications.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client+EXRemoteNotifications.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Client.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Result.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Api/EXApiV2Result.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/AppDelegate/EXNotificationsAppDelegate.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/AppDelegate/EXNotificationsAppDelegate.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationConverter/EXNotificationConverter.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXNotificationConverter/EXNotificationConverter.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXUserNotificationCenter.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/EXUserNotificationCenter.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/IdProvider/EXAppIdProvider.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/IdProvider/EXBareAppIdProvider.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/IdProvider/EXBareAppIdProvider.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/JSApi/EXNotifications.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/JSApi/EXNotifications.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/NSData+EXRemoteNotifications.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/NSData+EXRemoteNotifications.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXMailbox.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXPostOffice.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXSimplePostOffice.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXSimplePostOffice.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXThreadSafePostOffice.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/EXThreadSafePostOffice.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXNotificationRepository.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXSimpleNotificationRepository.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/PostOffice/Repository/EXSimpleNotificationRepository.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXSimpleTokenDispatcher.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXSimpleTokenDispatcher.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXThreadSafeTokenDispatcher.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXThreadSafeTokenDispatcher.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Dispatcher/EXTokenDispatcher.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXBareEngine.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXBareEngine.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXEngine.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXExpoEngine.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXExpoEngine.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/Engines/EXOnTokenChangeListener.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/EXPushEngineProvider.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/EXSimplePushEngineProvider.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Push/EXSimplePushEngineProvider.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Receiver/EXUserNotificationManager.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Receiver/EXUserNotificationManager.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Scoper/EXBareScoper.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Scoper/EXBareScoper.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Scoper/EXMessageUnscoper.h"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Scoper/EXMessageUnscoper.m"
+      - "../../../../packages/expo-notifications/ios/EXNotifications/Scoper/EXScoper.h"
+    PROJECT_NAME: EXNotifications
+    SPECS:
+      - EXNotifications (0.1.0)
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
-    CHECKSUM: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
+    CHECKSUM: a8da2bebf970af22e4714cc24fc5fab124ee315c
     FILES:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
@@ -673,10 +738,10 @@ CACHE_KEYS:
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: a0153e525df9a663a947ee922d9629b2
-    CHECKSUM: 7137d297ddc022a7e0aa4619c86d72c909fa7213
+    CHECKSUM: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
     PROJECT_NAME: GoogleSignIn
     SPECS:
-      - GoogleSignIn (5.0.2)
+      - GoogleSignIn (5.0.1)
   GTMAppAuth:
     BUILD_SETTINGS_CHECKSUM:
       GTMAppAuth: 4318abd6a13d458bbfc857da0ff65b96
@@ -695,12 +760,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1c5cce5602d7a1ca50a162ce84f41cc2
-      Release: 1c5cce5602d7a1ca50a162ce84f41cc2
+      Debug: 500f2e8d101e9f7577c2127e2a440fd9
+      Release: 500f2e8d101e9f7577c2127e2a440fd9
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: db80c27826ef9e2e5e761094f6109afd
-      Release: db80c27826ef9e2e5e761094f6109afd
+      Debug: e87b87d61b91e66b70961401c9419347
+      Release: e87b87d61b91e66b70961401c9419347
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
@@ -1447,6 +1512,13 @@ CACHE_KEYS:
     PROJECT_NAME: RNReanimated
     SPECS:
       - RNReanimated (1.4.0)
+  TCMobileProvision:
+    BUILD_SETTINGS_CHECKSUM:
+      TCMobileProvision: 5c0687d873d2df45535bd39a5e982130
+    CHECKSUM: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
+    PROJECT_NAME: TCMobileProvision
+    SPECS:
+      - TCMobileProvision (1.0.0)
   UMBarCodeScannerInterface:
     BUILD_SETTINGS_CHECKSUM:
       UMBarCodeScannerInterface: 74cd9571c892f4fe55699a83cb16a492

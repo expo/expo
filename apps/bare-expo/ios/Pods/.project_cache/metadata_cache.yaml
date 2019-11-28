@@ -18,6 +18,10 @@ DoubleConversion:
   LABEL: DoubleConversion
   PROJECT_PATH: DoubleConversion.xcodeproj
   UUID: 725D0E8C1060F8939288E8C91236BA4F
+DTFoundation:
+  LABEL: DTFoundation
+  PROJECT_PATH: DTFoundation.xcodeproj
+  UUID: 9F03C29D7FA4029DF24B80327A613330
 EXAmplitude:
   LABEL: EXAmplitude
   PROJECT_PATH: EXAmplitude.xcodeproj
@@ -150,6 +154,10 @@ EXNetwork:
   LABEL: EXNetwork
   PROJECT_PATH: EXNetwork.xcodeproj
   UUID: 71F2A4AC24C8FBC0E24B6A613BB4F7BC
+EXNotifications:
+  LABEL: EXNotifications
+  PROJECT_PATH: EXNotifications.xcodeproj
+  UUID: 6C660F81CE4F0EC96D208B20C3E8B154
 EXPermissions:
   LABEL: EXPermissions
   PROJECT_PATH: EXPermissions.xcodeproj
@@ -326,6 +334,10 @@ RNReanimated:
   LABEL: RNReanimated
   PROJECT_PATH: RNReanimated.xcodeproj
   UUID: E9E22639328ACC061EB56756AD5B4F57
+TCMobileProvision:
+  LABEL: TCMobileProvision
+  PROJECT_PATH: TCMobileProvision.xcodeproj
+  UUID: 842A818A6887F13466E4B00ACCFA868F
 UMBarCodeScannerInterface:
   LABEL: UMBarCodeScannerInterface
   PROJECT_PATH: UMBarCodeScannerInterface.xcodeproj

@@ -8,6 +8,9 @@ PODS:
   - AppAuth/ExternalUserAgent (1.2.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
+  - DTFoundation/Core (1.7.14)
+  - DTFoundation/DTASN1 (1.7.14):
+    - DTFoundation/Core
   - EXAmplitude (7.0.0):
     - Amplitude-iOS (~> 4.7.1)
     - UMConstantsInterface
@@ -100,6 +103,9 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (1.0.0):
     - UMCore
+  - EXNotifications (0.1.0):
+    - TCMobileProvision
+    - UMCore
   - EXPermissions (8.0.0-rc.0):
     - UMCore
     - UMPermissionsInterface
@@ -152,7 +158,7 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - GoogleSignIn (5.0.2):
+  - GoogleSignIn (5.0.1):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
@@ -368,6 +374,8 @@ PODS:
     - React
   - RNReanimated (1.4.0):
     - React
+  - TCMobileProvision (1.0.0):
+    - DTFoundation/DTASN1 (~> 1.6)
   - UMBarCodeScannerInterface (4.0.0)
   - UMCameraInterface (4.0.0)
   - UMConstantsInterface (4.0.0)
@@ -423,6 +431,7 @@ DEPENDENCIES:
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNetwork (from `../../../packages/expo-network/ios`)
+  - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
@@ -483,9 +492,11 @@ SPEC REPOS:
     - Analytics
     - AppAuth
     - boost-for-react-native
+    - DTFoundation
     - GoogleSignIn
     - GTMAppAuth
     - GTMSessionFetcher
+    - TCMobileProvision
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -590,6 +601,9 @@ EXTERNAL SOURCES:
   EXNetwork:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-network/ios"
+  EXNotifications:
+    :path: !ruby/object:Pathname
+    path: "../../../packages/expo-notifications/ios"
   EXPermissions:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-permissions/ios"
@@ -720,6 +734,7 @@ SPEC CHECKSUMS:
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  DTFoundation: 25aa19bb7c6e225b1dfae195604fb8cf1da0ab4c
   EXAmplitude: 69201cb81956823fd24697fe077f51fc5f10a88b
   EXAppAuth: f133ab0dea7aa4504fd3ab1f37625e902f9d990f
   EXApplication: af8850de5a2f8df18e94d05281a628e823699485
@@ -753,7 +768,8 @@ SPEC CHECKSUMS:
   EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
   EXMediaLibrary: afa771d4df578966a65a3cd05c0a2f0f3b17441f
   EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXPermissions: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
+  EXNotifications: bb3fd6d3b6ec3e58d2ff34073f9eec05870f569c
+  EXPermissions: a8da2bebf970af22e4714cc24fc5fab124ee315c
   EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
   EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
   EXSecureStore: bf94958c936b2b9e3813509d2e7e6b8a263d40df
@@ -770,7 +786,7 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 51477b84b1bf7ab6f9ef307c24e3dd675391be44
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
+  GoogleSignIn: 3a51b9bb8e48b635fd7f4272cee06ca260345b86
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 43b8b64263023d4f32caa0b40f4c8bfa3c5f36d8
   RCTRequired: f3b3fb6f4723e8e52facb229d0c75fdc76773849
@@ -795,6 +811,7 @@ SPEC CHECKSUMS:
   ReactCommon: a6a294e7028ed67b926d29551aa9394fd989c24c
   RNGestureHandler: a4ddde1ffc6e590c8127b8b7eabfdade45475c74
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
+  TCMobileProvision: 2a8962b38821a20fad53b9d7851bbc9ae8c52995
   UMBarCodeScannerInterface: d5a6fdc98ed6241225b0a8432a7f4e2b397668bc
   UMCameraInterface: 68870a3197fee85bd5afca5609ba4a5b7257d19d
   UMConstantsInterface: d25b8e8887ca7aaf568c06caf08f4d40734ee4ef
