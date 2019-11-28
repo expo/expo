@@ -123,7 +123,7 @@ An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationappleauthen
 
 - **requestedScopes (_[AppleAuthenticationScope](#appleauthenticationappleauthenticationscope)[]_)** (optional) - Array of user information scopes to which your app is requesting access. Note that the user can choose to deny your app access to any scope at the time of logging in. You will still need to handle `null` values for any scopes you request. Additionally, note that the requested scopes will only be provided to you **the first time each user signs into your app**; in subsequent requests they will be `null`.
 - **state (_string_)** (optional) - An arbitrary string that is returned unmodified in the corresponding credential after a successful authentication. This can be used to verify that the response was from the request you made and avoid replay attacks. More information on this property is available in the OAuth 2.0 protocol [RFC6749](https://tools.ietf.org/html/rfc6749#section-10.12).
-- **nonce (_string_)** (optional) - An arbitrary string that is used to prevent replay attacks. More information on this in the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps).
+- **nonce (_string_)** (optional) - An arbitrary string that is used to prevent replay attacks. See more information on this in the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps).
 
 #### Returns
 
