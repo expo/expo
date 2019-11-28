@@ -22,7 +22,7 @@ Using Expo with Next.js means you can share all of your existing components and 
   - [Web push notifications support](#web-push-notifications-support)
 - [API](#api)
   - [CLI](#cli)
-    - [`⚙️ CLI Options`](#-cli-options)
+    - [⚙️ CLI Options](#️-cli-options)
   - [Babel](#babel)
   - [Config](#config)
     - [`withExpo`](#withexpo)
