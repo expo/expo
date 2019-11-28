@@ -29,7 +29,7 @@
   userInteractionBundle[@"actionId"] =
       ![response.actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier]? response.actionIdentifier
                                                                          : nil;
-  userInteractionBundle[@"userTest"] =
+  userInteractionBundle[@"userText"] =
       [response isKindOfClass:[UNTextInputNotificationResponse class]]
           ? ((UNTextInputNotificationResponse *)response).userText
           : nil;

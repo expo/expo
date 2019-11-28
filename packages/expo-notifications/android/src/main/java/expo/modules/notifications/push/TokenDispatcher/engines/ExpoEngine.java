@@ -2,6 +2,9 @@ package expo.modules.notifications.push.TokenDispatcher.engines;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,11 +12,22 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.UUID;
 
+import expo.modules.notifications.configuration.Configuration;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_APP_ID_KEY;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_BODY;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CATEGORY;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_CHANNEL_ID;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_DATA;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_ICON;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_REMOTE;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_SOUND;
+import static expo.modules.notifications.NotificationConstants.NOTIFICATION_TITLE;
 
 public class ExpoEngine implements Engine {
 
@@ -43,6 +57,28 @@ public class ExpoEngine implements Engine {
   @Override
   public String generateToken(String appId, String token, Context context) {
     return getTokenFromExpoServer(appId, token, context);
+  }
+
+  @Override
+  public Bundle convertRemoteMessageToBundle(RemoteMessage remoteMessage) {
+    Bundle bundle = new Bundle();
+    String appId = remoteMessage.getData().get("experienceId");
+
+    /*
+      We do not scope here!!!
+      Data have to be scoped on Expo sever or by user!
+    */
+
+    bundle.putString(NOTIFICATION_APP_ID_KEY, appId);
+    bundle.putString(NOTIFICATION_CHANNEL_ID, remoteMessage.getData().get(NOTIFICATION_CHANNEL_ID));
+    bundle.putString(NOTIFICATION_BODY, remoteMessage.getData().get("message"));
+    bundle.putString(NOTIFICATION_TITLE, remoteMessage.getData().get(NOTIFICATION_TITLE));
+    bundle.putString(NOTIFICATION_CATEGORY, remoteMessage.getData().get(NOTIFICATION_CATEGORY));
+    bundle.putString(NOTIFICATION_ICON, remoteMessage.getData().get(NOTIFICATION_ICON));
+    bundle.putString(NOTIFICATION_DATA, remoteMessage.getData().get("body"));
+    bundle.putString(NOTIFICATION_SOUND, remoteMessage.getData().get(NOTIFICATION_SOUND));
+    bundle.putBoolean(NOTIFICATION_REMOTE, true);
+    return bundle;
   }
 
   private Request createRequest(RequestBody body) {

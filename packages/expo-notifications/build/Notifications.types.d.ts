@@ -1,7 +1,7 @@
 export declare type Notification = {
     title: string;
     body?: string;
-    data?: any;
+    data?: string;
     categoryId?: string;
     ios?: {
         sound?: boolean;

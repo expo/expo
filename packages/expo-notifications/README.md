@@ -222,7 +222,7 @@ Note that Firebase message cannot contain "notification" property because it mak
 3. Id of channel. Channel must be already created. If you don't provide channel then default one will be choosed.
 4. Id of category. Category must be already created. 
 5. URI of large notification icon. There is no way to change small notification icon.
-6. Your additional data. (JSON format)
+6. Your additional string. (e.g. stringified object).
 7. True if sound should be played and False if not. (False by default).
 
 ### APNS
@@ -238,7 +238,7 @@ More about it [here](https://developer.apple.com/documentation/usernotifications
 type Notification = {
   title: string;                            //1
   body?: string;                            //2
-  data?: any;                               //3
+  data?: string;                            //3
   categoryId?: string;                      //4    
   ios?: {                   
     sound?: boolean;                        //5    
@@ -257,7 +257,7 @@ type Notification = {
 
 1. Title of notification.
 2. Notification message.
-3. Addition object for your data which you will receive later.
+3. Addition string which you will receive later. You can use it to send your additional data.
 4. Id of category.
 5. Should sound be played when notification is displayed (false by default).
 6. Currently noop.

@@ -58,11 +58,6 @@ UM_EXPORT_METHOD_AS(presentLocalNotificationAsync,
                     presentLocalNotificationAsync:(NSDictionary *)payload
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
-  if (!payload[@"data"]) {
-    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.",
-           nil);
-    return;
-  }
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
 
   NSMutableDictionary *userInfo = [content.userInfo mutableCopy];
@@ -93,11 +88,6 @@ UM_EXPORT_METHOD_AS(scheduleNotificationWithTimerAsync,
                     withOptions:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
-  if (!payload[@"data"]) {
-    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.",
-           nil);
-    return;
-  }
   BOOL repeats = [options[@"repeat"] boolValue];
   int seconds = [options[@"interval"] intValue] / 1000;
   UNTimeIntervalNotificationTrigger *notificationTrigger =
@@ -122,11 +112,6 @@ UM_EXPORT_METHOD_AS(scheduleNotificationWithCalendarAsync,
                     withOptions:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject) {
-  if (!payload[@"data"]) {
-    reject(@"E_NOTIF_NO_DATA", @"Attempted to send a local notification with no `data` property.",
-           nil);
-    return;
-  }
   UNCalendarNotificationTrigger *notificationTrigger = [self calendarTriggerFrom:options];
   UNMutableNotificationContent *content = [self _localNotificationFromPayload:payload];
   UNNotificationRequest *request =
