@@ -107,7 +107,7 @@ export async function test({ it, xit, beforeAll, expect, jasmine, xdescribe, des
       });
 
       if (Platform.OS === 'ios' && parseInt(Platform.Version, 10) > 10) {
-        it('exporPreset should affect video dimensions', async () => {
+        it('videoExportPreset should affect video dimensions', async () => {
           const video = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
             videoExportPreset: ImagePicker.VideoExportPreset.H264_640x480,
