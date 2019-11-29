@@ -4237,7 +4237,7 @@ CACHE_KEYS:
   ABI36_0_0EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       ABI36_0_0EXGoogleSignIn: 5124123910aa4a3321fb14d297d424ae
-    CHECKSUM: c6f1d8628b7d7079f1a7d49ff72ff7128635356f
+    CHECKSUM: afd4c7954deb2b4475056514c598ac9790989ede
     FILES:
       - "../versioned-react-native/ABI36_0_0/Expo/EXGoogleSignIn/ABI36_0_0EXGoogleSignIn/ABI36_0_0EXAuthTask.h"
       - "../versioned-react-native/ABI36_0_0/Expo/EXGoogleSignIn/ABI36_0_0EXGoogleSignIn/ABI36_0_0EXAuthTask.m"
@@ -6555,7 +6555,7 @@ CACHE_KEYS:
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn: 30e34240c7bb5878127e7c1aaca288a9
-    CHECKSUM: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
+    CHECKSUM: ea2e12a0ca2ff277d6f7a116a6c5ab72619e1184
     FILES:
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
       - "../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.m"
@@ -7073,10 +7073,10 @@ CACHE_KEYS:
   GoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       GoogleSignIn: a0153e525df9a663a947ee922d9629b2
-    CHECKSUM: a62edd0516721d2a3db1259a5681b91f9b41c06a
+    CHECKSUM: 7137d297ddc022a7e0aa4619c86d72c909fa7213
     PROJECT_NAME: GoogleSignIn
     SPECS:
-      - GoogleSignIn (5.0.0)
+      - GoogleSignIn (5.0.2)
   GoogleToolboxForMac:
     BUILD_SETTINGS_CHECKSUM:
       GoogleToolboxForMac: 404b86b785e416b5ee61d89aa5db74a4
