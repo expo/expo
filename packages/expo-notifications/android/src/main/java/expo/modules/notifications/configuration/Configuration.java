@@ -36,7 +36,11 @@ public class Configuration {
     }
 
     public static String getAppId(Context context) {
-        return getValueFor(APP_ID_KEY, context);
+        String appId = getValueFor(APP_ID_KEY, context);
+        if (appId == null) {
+            return DEFAULT_APP_ID;
+        }
+        return appId;
     }
 
     public static String getPushEngine(Context context) {
