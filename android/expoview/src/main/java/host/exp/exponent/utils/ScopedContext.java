@@ -32,6 +32,7 @@ import android.view.Display;
 
 import com.facebook.react.bridge.Arguments;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -59,12 +60,51 @@ public class ScopedContext extends ContextWrapper {
     super(context);
     mScope = scope + '-';
 
-    mFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);
+    File scopedFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);
+    mFilesDir = scopedFilesDir;
     mCacheDir = new File(getBaseContext().getCacheDir() + "/ExperienceData/" + scope);
 
     if (Constants.isStandaloneApp()) {
+      File scopedFilesMigrationMarker = new File(scopedFilesDir, ".expo-migration");
+      if (scopedFilesDir.exists() && !scopedFilesMigrationMarker.exists()) {
+        migrateAllFiles(scopedFilesDir, getBaseContext().getFilesDir());
+      }
       mFilesDir = getBaseContext().getFilesDir();
       mCacheDir = getBaseContext().getCacheDir();
+    }
+  }
+
+  private void migrateAllFiles(File legacyDir, File newDir) {
+    try {
+      migrateFilesRecursively(legacyDir, newDir);
+      File scopedFilesMigrationMarker = new File(legacyDir, ".expo-migration");
+      scopedFilesMigrationMarker.createNewFile();
+    } catch (Exception e) {
+      EXL.e(TAG, e);
+    }
+  }
+
+  private void migrateFilesRecursively(File legacyDir, File newDir) {
+    File[] files = legacyDir.listFiles();
+
+    for (File file : files) {
+      String fileName = file.getName();
+      File newLocation = new File(newDir, fileName);
+
+      if (file.isDirectory()) {
+        if (!newLocation.exists()) {
+          newLocation.mkdirs();
+        }
+        migrateFilesRecursively(file, newLocation);
+      } else if (!newLocation.exists()) {
+        // if a file with the same name already exists in the new location, ignore
+        // we don't want to overwrite potentially newer files
+        try {
+          FileUtils.copyFile(file, newLocation);
+        } catch (Exception e) {
+          EXL.e(TAG, e);
+        }
+      }
     }
   }
 

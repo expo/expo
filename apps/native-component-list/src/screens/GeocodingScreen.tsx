@@ -14,8 +14,10 @@ import Touchable from 'react-native-platform-touchable';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
+import MonoText from '../components/MonoText';
+
 const EXAMPLES = [
-  '1 Hacker Way',
+  '1 Hacker Way, CA',
   { latitude: 49.28, longitude: -123.12 },
   'Palo Alto Caltrain Station (this one will error)',
   'Rogers Arena, Vancouver',
@@ -84,17 +86,19 @@ export default class GeocodingScreen extends React.Component<{}, State> {
   _attemptReverseGeocodeAsync = async () => {
     this.setState({ inProgress: true });
     try {
-      const result = await Location.reverseGeocodeAsync(this.state.selectedExample as {
-        latitude: number;
-        longitude: number;
-      });
+      const result = await Location.reverseGeocodeAsync(
+        this.state.selectedExample as {
+          latitude: number;
+          longitude: number;
+        }
+      );
       this.setState({ result });
     } catch (e) {
       this.setState({ error: e });
     } finally {
       this.setState({ inProgress: false });
     }
-  }
+  };
 
   _attemptGeocodeAsync = async () => {
     this.setState({ inProgress: true, error: null });
@@ -106,7 +110,7 @@ export default class GeocodingScreen extends React.Component<{}, State> {
     } finally {
       this.setState({ inProgress: false });
     }
-  }
+  };
 
   _maybeRenderResult = () => {
     const { selectedExample } = this.state;
@@ -120,9 +124,10 @@ export default class GeocodingScreen extends React.Component<{}, State> {
       return <ActivityIndicator style={{ marginTop: 10 }} />;
     } else if (this.state.result) {
       return (
-        <Text style={styles.resultText}>
-          {text} resolves to {JSON.stringify(this.state.result)}
-        </Text>
+        <View style={{ padding: 10 }}>
+          <Text style={styles.resultText}>{text} resolves to</Text>
+          <MonoText>{JSON.stringify(this.state.result, null, 2)}</MonoText>
+        </View>
       );
     } else if (this.state.error) {
       return (
@@ -132,7 +137,7 @@ export default class GeocodingScreen extends React.Component<{}, State> {
       );
     }
     return null;
-  }
+  };
 
   _renderExample = (example: ExampleType, i: number) => {
     const { selectedExample } = this.state;
@@ -143,12 +148,11 @@ export default class GeocodingScreen extends React.Component<{}, State> {
       <Touchable
         key={i}
         hitSlop={{ top: 10, bottom: 10, left: 20, right: 20 }}
-        onPress={() => this._selectExample(example)}
-      >
+        onPress={() => this._selectExample(example)}>
         <Text style={[styles.exampleText, isSelected && styles.selectedExampleText]}>{text}</Text>
       </Touchable>
     );
-  }
+  };
 
   _selectExample = (example: ExampleType) => {
     if (this.state.inProgress) {
@@ -156,7 +160,7 @@ export default class GeocodingScreen extends React.Component<{}, State> {
     }
 
     this.setState({ selectedExample: example, result: undefined, error: undefined });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

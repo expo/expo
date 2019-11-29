@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, View } from 'react-native';
-import * as Google from 'expo-google-app-auth'
+import * as Google from 'expo-google-app-auth';
 
 import Button from '../components/Button';
 
@@ -24,7 +24,7 @@ export default class GoogleLoginScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button onPress={() => this._testGoogleLogin()} title="Authenticate with Google" />
+        <Button onPress={this._testGoogleLogin} title="Authenticate with Google" />
       </View>
     );
   }
@@ -57,5 +57,5 @@ export default class GoogleLoginScreen extends React.Component {
     } catch (e) {
       Alert.alert('Error!', e.message, [{ text: 'OK :(', onPress: () => {} }]);
     }
-  }
+  };
 }

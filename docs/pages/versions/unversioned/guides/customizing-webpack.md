@@ -2,7 +2,7 @@
 title: Customizing Webpack
 ---
 
-When you run `expo start --web` or `expo build:web` the CLI will check to see if your project has a `webpack.config.js` in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
+When you run `expo start:web` or `expo build:web` the CLI will check to see if your project has a `webpack.config.js` in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
 
 > This is akin to `react-scripts` & `create-react-app`.
 
@@ -11,7 +11,7 @@ This will install `@expo/webpack-config` as a devDependency and create a templat
 You can now make changes to a config object based on the default config and return it for Expo CLI to use.
 Deleting the config will cause Expo to fall back to the default again.
 
-If you create a new Webpack config or make any changes to it you'll need to restart your Webpack dev server with `expo start --web`.
+If you create a new Webpack config or make any changes to it you'll need to restart your Webpack dev server with `expo start:web`.
 
 ## Example
 
@@ -40,6 +40,40 @@ module.exports = async function(env, argv) {
   return config;
 };
 ```
+
+# Polyfills
+
+React Native for web uses [some advanced browser features](https://github.com/necolas/react-native-web/blob/e4ed0fd3c863e6c61aa3ea8afeff79b7fa74b461/packages/docs/src/introduction.stories.mdx#install) that might not be available in every browser. Expo web tries to make including these features as simple and efficient as possible with `@expo/webpack-config`.
+
+## ResizeObserver
+
+👉 [Browser support](https://caniuse.com/#feat=resizeobserver)
+
+**TL;DR:** To fully support `onLayout` install `resize-observer-polyfill`.
+
+The `onLayout` prop that's used in all of the core primitives like View, Image, Text, ScrollView, etc. requires an API called [`ResizeObserver`](https://drafts.csswg.org/resize-observer-1/). This API isn't fully supported across all browsers, iOS Safari (in iOS 13) is a good example. If the device doesn't support `ResizeObserver` then `react-native-web` will fallback on `window.onresize` and you'll see a warning in the logs:
+
+```
+onLayout relies on ResizeObserver which is not supported by your browser.
+Please include a polyfill, e.g., https://github.com/que-etc/resize-observer-polyfill.
+Falling back to window.onresize.
+```
+
+To get everything working properly, you'll want to install and include a global polyfill for `ResizeObserver`.
+
+### Adding ResizeObserver
+
+- Install the polyfill: `yarn add resize-observer-polyfill`
+- Restart the project and `@expo/webpack-config` will automatically include the polyfill.
+
+The reason it automatically includes the polyfill is because `react-native-web` needs it included immedietly. Webpack is able to inject the polyfill before any of the application code has been executed. Alternatively you can customize the webpack config and include the polyfill in the `entry` field yourself.
+
+### Testing the ResizeObserver polyfill
+
+- Open the running Expo project in iOS Safari
+- Connect the device to an Apple computer
+- Open Safari on the computer in go to `Develop > [YOUR DEVICE] > [YOUR HOST]`
+- Ensure the logs don't have the `onLayout relies on ResizeObserver...` warning.
 
 # Editing static files
 

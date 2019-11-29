@@ -275,9 +275,12 @@ RCT_REMAP_METHOD(getOrientationAsync,
                                                        @"iPhone10,3", // iPhoneX
                                                        @"iPhone10,6", // iPhoneX
                                                        @"iPhone11,2", // iPhoneXs
-                                                       @"iPhone11,6", // iPhoneXsMax
                                                        @"iPhone11,4", // iPhoneXsMax
+                                                       @"iPhone11,6", // iPhoneXsMax
                                                        @"iPhone11,8", // iPhoneXr
+                                                       @"iPhone12,1", // iPhone 11
+                                                       @"iPhone12,3", // iPhone 11 Pro
+                                                       @"iPhone12,5", // iPhone 11 Pro Max
                                                        ];
   NSArray<NSString *> *simulatorsIdentifiers = @[
                                                  @"i386",

@@ -28,14 +28,13 @@ We put all of the features for Expo web in the plugin [`gatsby-plugin-react-nati
 ### Expo projects with Gatsby
 
 For using the Gatsby tools in a universal app with the Expo SDK.
-
-<details><summary>Instructions</summary>
-<p>
   
-- Create a new project - `expo init --template blank`
-- Install the plugin
-  - **using yarn** - `yarn add gatsby-plugin-react-native-web`
-  - using npm - `npm install --save gatsby-plugin-react-native-web`
+- Create a new Expo project
+  - Install the CLI - `npm install -g expo-cli`
+  - Bootstrap - `expo init --template blank`
+- Install Gatsby and the plugin
+  - **using yarn** - `yarn add gatsby gatsby-plugin-react-native-web`
+  - using npm - `npm install --save gatsby gatsby-plugin-react-native-web`
 - Create a `gatsby-config.js` and use the plugin - `touch gatsby-config.js`
 
   `gatsby-config.js`
@@ -49,30 +48,13 @@ For using the Gatsby tools in a universal app with the Expo SDK.
   };
   ```
 
-- Install the babel preset: `yarn add -D babel-preset-expo`
-
-- Create a `babel.config.js` and use the Babel preset - `touch babel.config.js`
-
-  `babel.config.js`
-
-  ```js
-  module.exports = {
-    presets: ['babel-preset-expo'],
-  };
-  ```
-
 - Add `/.cache` and `/public` to your `.gitignore`
 - Run `yarn gatsby develop` to try it out!
-
-</p>
-</details>
+  - Open the project in the browser `http://localhost:8000/`
 
 ### Gatsby projects with Expo
 
 For using the Expo SDK in a web-only Gatsby project.
-
-<details><summary>Instructions</summary>
-<p>
 
 - Create a new Gatsby project
   - Install the CLI - `npm install -g gatsby-cli`
@@ -106,15 +88,12 @@ For using the Expo SDK in a web-only Gatsby project.
   };
   ```
 
-- Add `/.cache` and `/public` to your `.gitignore`
+- Add `/.expo` and `/web-build` to your `.gitignore`
 - Run `yarn gatsby develop` to try it out!
 - [optional] You can now install other Expo modules:
   - Core packages: `yarn add expo`
   - Gestures: `yarn add react-native-gesture-handler`
   - hooks: `yarn add react-native-web-hooks`
-
-</p>
-</details>
 
 ## ⌨️ New Commands
 
@@ -133,6 +112,24 @@ You'll want to use the Gatsby CLI to develop the web part of your app now. You s
 - **Serving your static project**
   - 🚫 `serve web-build`
   - ✅ `yarn gatsby serve`
+  
+## 📁 File Structure
+
+Here is the recommended file structure for a Expo project with Gatsby support.
+
+```
+Expo Gatsby
+├── src
+│   └── pages ➡️ Routes
+│       └── index.tsx ➡️ Entry Point for Gatsby
+├── .cache ➡️ Generated Gatsby files (should be ignored)
+├── public ➡️ Generated Gatsby files (should be ignored)
+├── assets ➡️ All static assets for your project
+├── App.tsx ➡️ Entry Point for Mobile apps
+├── app.json ➡️ Expo config file
+├── gatsby-config.js ➡️ Gatsby config file
+└── babel.config.js ➡️ Babel config (should be using `babel-preset-expo`)
+```
 
 ## Contributing
 
