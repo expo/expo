@@ -22,6 +22,10 @@
     notification[@"appId"] = [EXBareAppIdProvider defaultId];
   }
   
+  if (!notification[@"data"]) {
+    notification[@"data"] = notificationContent.userInfo[@"data"];
+  }
+  
   return notification;
 }
 
