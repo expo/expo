@@ -804,7 +804,7 @@ PODS:
     - EXGL-CPP
   - ABI36_0_0EXGoogleSignIn (7.0.0):
     - ABI36_0_0UMCore
-    - GoogleSignIn (~> 5.0)
+    - GoogleSignIn (~> 5.0.2)
   - ABI36_0_0EXHaptics (8.0.0-rc.0):
     - ABI36_0_0UMCore
   - ABI36_0_0EXImageManipulator (8.0.0-rc.0):
@@ -1303,7 +1303,7 @@ PODS:
     - EXGL-CPP/UEXGL (= 7.0.0)
   - EXGL-CPP/UEXGL (7.0.0)
   - EXGoogleSignIn (7.0.0):
-    - GoogleSignIn (~> 5.0)
+    - GoogleSignIn (~> 5.0.2)
     - UMCore
   - EXHaptics (8.0.0-rc.0):
     - UMCore
@@ -1499,8 +1499,8 @@ PODS:
     - Protobuf (~> 3.1)
   - GoogleMobileVision/FaceDetector (1.6.0):
     - GoogleMobileVision/Detector (~> 1.6)
-  - GoogleSignIn (5.0.0):
-    - AppAuth (~> 1.1)
+  - GoogleSignIn (5.0.2):
+    - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
   - GoogleToolboxForMac/Defines (2.2.1)
@@ -3420,7 +3420,7 @@ SPEC CHECKSUMS:
   ABI36_0_0EXFileSystem: e70160bed834e5b693b70839e7e497c52b19ede4
   ABI36_0_0EXFont: 82b60dab83d5610e00e34fa42eabca61387b8139
   ABI36_0_0EXGL: 5b0c6be5b10b098bb067be0dedf4a5d0bc41a97d
-  ABI36_0_0EXGoogleSignIn: c6f1d8628b7d7079f1a7d49ff72ff7128635356f
+  ABI36_0_0EXGoogleSignIn: afd4c7954deb2b4475056514c598ac9790989ede
   ABI36_0_0EXHaptics: cd1c188e30bf362321d9a21862b5e221a3148462
   ABI36_0_0EXImageManipulator: 69b9aa62bc06dcca4cba3faba3cfcee81fbca059
   ABI36_0_0EXImagePicker: 9704b4d4fbf4fbf962c682c084e9ca661d1945fa
@@ -3521,7 +3521,7 @@ SPEC CHECKSUMS:
   EXFont: 71d07dc5d2153db7d1a23f1e0cc1b6341d55c432
   EXGL: 4b21885aee37fb5f5230e05a62bba480fa886a3d
   EXGL-CPP: da3c4f31ff50a34bd8184fadbf409806281b103d
-  EXGoogleSignIn: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
+  EXGoogleSignIn: ea2e12a0ca2ff277d6f7a116a6c5ab72619e1184
   EXHaptics: 51c25ffefdda66b15feb0b0ac6b1615e2f401f16
   EXImageManipulator: 78bfe480fdf7a7bb37913a387caef360e31a86dd
   EXImagePicker: 63549baa9487f4b99c03163c5639ddede4c7be4e
@@ -3572,7 +3572,7 @@ SPEC CHECKSUMS:
   GoogleDataTransportCCTSupport: 9f352523e8785a71f6754f51eeff09f49ec19268
   GoogleMaps: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
   GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
-  GoogleSignIn: a62edd0516721d2a3db1259a5681b91f9b41c06a
+  GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GoogleUtilities: f895fde57977df4e0233edda0dbeac490e3703b6
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
