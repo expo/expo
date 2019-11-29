@@ -34,7 +34,7 @@ public void onCreate() {
 
 ## Example
 
-See out example app: TBA
+See our [example](https://github.com/expo/expo/tree/master/apps/examples/notifications) on github. 
 
 ## Glossary
 
@@ -80,7 +80,7 @@ function addOnForegroundNotificationListener(
 ```
 
 ##### Description
-Registers for ForegroundNotification objects which will be delivered each time notification is about to display but app is foreground state.
+Registers for ForegroundNotification objects which will be delivered each time notification is about to display but app is in foreground state.
 Just like with `OnUserInteractionListener` you can register multiple listeners each responsible 
 for different types of notifications. 
 
@@ -370,7 +370,7 @@ type Subscription = {
 ## Push Notifications
 
 Currently, there are two ways of sending push notifications (with or without Expo servers). 
-Expo simplifies the process of sending and testing notifications. You can send one notification and access the multiple platforms at once.
+Expo simplifies the process of sending and testing notifications. You can send one notification and access multiple platforms at once.
 However, if you don't want to use Expo as a middleman you can use `Firebase Cloud Messaging` on Android and `Apple Push Notification service` on iOS. Expo uses those services under the hood so regardless of choosing Expo you need to go through following configuration steps:
 
 ### Android
