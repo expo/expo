@@ -10,25 +10,38 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 > 💡 Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
+## TL;DR:
+
+- Init: `expo init` (or `npx create-next-app`)
+- Install: `yarn add @expo/next-adapter`
+- Configure: `yarn next-expo`
+- Start: `yarn next dev`
+- Open: `http://localhost:3000/`
+
 - [🏁 Setup](#-setup)
-  * [Expo projects with Next.js](#expo-projects-with-nextjs)
-  * [Next.js projects with Expo](#nextjs-projects-with-expo)
-  * [Shared steps](#shared-steps)
-  * [Image support](#image-support)
-  * [Font support](#font-support)
-  * [Offline support](#offline-support)
-  * [Using a custom server](#using-a-custom-server)
-  * [Handle server requests](#handle-server-requests)
-  * [Web push notifications support](#web-push-notifications-support)
+  - [Expo projects with Next.js](#expo-projects-with-nextjs)
+  - [Next.js projects with Expo](#nextjs-projects-with-expo)
+  - [Manual setup](#manual-setup)
+- [Guides](#guides)
+  - [Deploy to Now](#deploy-to-now)
+  - [Image support](#image-support)
+  - [Font support](#font-support)
+  - [Offline support](#offline-support)
+  - [Using a custom server](#using-a-custom-server)
+  - [Handle server requests](#handle-server-requests)
+  - [Web push notifications support](#web-push-notifications-support)
 - [API](#api)
-  * [Config](#config)
-    + [`withExpo`](#withexpo)
-  * [Document](#document)
-    + [Customizing the Document](#customizing-the-document)
-  * [Server](#server)
-    + [`startServerAsync`](#startserverasync)
-    + [`createServerAsync`](#createserverasync)
-    + [`handleRequest`](#handlerequest)
+  - [CLI](#cli)
+    - [⚙️ CLI Options](#️-cli-options)
+  - [Babel](#babel)
+  - [Config](#config)
+    - [`withExpo`](#withexpo)
+  - [Document](#document)
+    - [Customizing the Document](#customizing-the-document)
+  - [Server](#server)
+    - [`startServerAsync`](#startserverasync)
+    - [`createServerAsync`](#createserverasync)
+    - [`handleRequest`](#handlerequest)
 - [Limitations](#limitations-or-differences-comparing-to-the-default-expo-for-web)
 - [Contributing](#contributing)
 
@@ -38,31 +51,48 @@ Using Expo with Next.js means you can share all of your existing components and 
 
 In this approach you would be using SSR for web in your universal project. This is the recommended path because it gives you full access to the features of Expo and Next.js.
 
-- Bootstrap your project with Expo - `expo init --template blank`
-  - cd into the project
-- Install - `yarn add next @expo/next-adapter`
-- Create a front page for your Next project with `mkdir pages; cp App.js pages/index.js`
-- Add `/.next` to your `.gitignore`
-- Follow the [shared steps](#shared-steps)
+- Bootstrap your project with Expo
+  - Install the CLI: `npm i -g expo-cli`
+  - Create a project: `expo init --template blank`
+  - `cd` into the project
+- Install the adapter:
+  - **yarn:** `yarn add @expo/next-adapter`
+  - npm: `npm i --save @expo/next-adapter`
+- Add Next.js support: `yarn next-expo`
+  - Always commit your changes first!
+  - You can optionally choose which customizations you want to do with `--customize or -c`
+  - Force reload changes with `--force or -f`
+- Start the project with `yarn next dev`
+  - Go to `http://localhost:3000/` to see your project!
 
 ### Next.js projects with Expo
 
-This approach is useful if you want to use Expo components in your web-only project.
+This approach is useful if you only want to use Expo components in your web-only project.
 
-- Bootstrap your project with Next.js - `npx create-next-app`
-- Install - `yarn add react-native-web @expo/next-adapter && yarn add -D babel-preset-expo`
-- Add `/.expo` to your `.gitignore`
-- Follow the [shared steps](#shared-steps)
+- Bootstrap your project with Next.js
+  - Create a project: `npx create-next-app`
+- Install the adapter:
+  - **yarn:** `yarn add @expo/next-adapter`
+  - npm: `npm i --save @expo/next-adapter`
+- Add Next.js support: `yarn next-expo`
+  - Always commit your changes first!
+  - You can optionally choose which customizations you want to do with `--customize or -c`
+  - Force reload changes with `--force or -f`
+- Start the project with `yarn next dev`
+  - Go to `http://localhost:3000/` to see your project!
 
-### Shared steps
+### Manual setup
 
-After following the project specific setup do these:
+Optionally you can set the project up manually (not recommended).
 
 <details><summary>Instructions</summary>
 <p>
 
-- Re-export the custom `Document` component in the `pages/_document.js` file of your Next.js project. This will ensure `react-native-web` styling works.
-  - Create file - `mkdir pages; touch pages/_document.js` 
+- Re-export the custom `Document` component in the `pages/_document.js` file of your Next.js project.
+
+  - This will ensure `react-native-web` styling works.
+  - You can run `yarn next-expo -c` then select `pages/_document.js`
+  - Or you can create the file - `mkdir pages; touch pages/_document.js`
 
   `pages/_document.js`
 
@@ -71,28 +101,22 @@ After following the project specific setup do these:
   ```
 
 - Create a `babel.config.js` and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
-  - You may have installed this earlier with `yarn add -D babel-preset-expo`
+
+  - You can run `yarn next-expo -c` then select `babel.config.js`
+  - Or you can You may have installed this earlier with `yarn add -D babel-preset-expo`
 
   `babel.config.js`
 
   ```js
-  module.exports = function(api) {
-    // Detect web usage (this may change in the future if Next.js changes the loader to `next-babel-loader`)
-    const isWeb = api.caller(caller => caller && caller.name === 'babel-loader');
-
-    return {
-      presets: [
-        'babel-preset-expo',
-        // Only use next in the browser, it'll break your native project/
-        isWeb && 'next/babel',
-      ].filter(Boolean),
-    };
+  module.exports = {
+    presets: ['@expo/next-adapter/babel'],
   };
   ```
 
 - Update the Next.js `next.config.js` file to support loading React Native and Expo packages:
+
   - `touch next.config.js`
-  
+
   `next.config.js`
 
   ```js
@@ -108,22 +132,41 @@ After following the project specific setup do these:
 </p>
 </details>
 
+## Guides
+
+### Deploy to Now
+
+This is Zeit's preferred method for deploying Next.js projects to production.
+
+- Add a **build** script to your `package.json`
+  ```json5
+  {
+    "scripts": {
+      "build": "next build"
+    }
+  }
+  ```
+- Install the Now CLI: `npm i -g now` 
+- Deploy to Now: `now`
+
 ### Image support
 
-By default Next.js won't load your static images like an Expo project will. If you want to load static images into your `<Image />` components or use `react-native-svg` then you can do the following:
+By default Next.js won't load your statically imported images (images that you include in your project with `require('./path/to/image.png')`) like an Expo project will. If you want to load static images into your `<Image />` components or use `react-native-svg` then you can do the following:
 
 - Install the plugin - `yarn add next-images`
   - [`next-images`][next-images] injects a Webpack loader to handle fonts.
   - [`next-optimized-images`][next-optimized-images] is another good solution that you could check out.
-- Wrap your Next.js configuration object with the the image method and the Expo method in your `next.config.js`:  
-  
+- Wrap your Next.js configuration object with the the image method and the Expo method in your `next.config.js`:
+
   ```js
   const { withExpo } = require('@expo/next-adapter');
-  const withImages = require('next-images')
+  const withImages = require('next-images');
 
-  module.exports = withExpo(withImages({
-    projectRoot: __dirname,
-  }));
+  module.exports = withExpo(
+    withImages({
+      projectRoot: __dirname,
+    })
+  );
   ```
 
 - Now restart your project and you should be able to load images!
@@ -133,15 +176,12 @@ You can test your config with the following example:
 <details><summary>Show Example</summary>
 <p>
 
-
 ```js
 import React from 'react';
 import { Image } from 'react-native';
 
 export default function ImageDemo() {
-  return (
-    <Image source={require('./assets/image.png')} style={{ flex: 1 }} />
-  )
+  return <Image source={require('./assets/image.png')} style={{ flex: 1 }} />;
 }
 ```
 
@@ -158,15 +198,18 @@ By default Next.js doesn't support static assets like an Expo project. Because t
 - Install the plugin - `yarn add next-fonts`
   - [`next-fonts`][next-fonts] injects a Webpack loader to handle fonts.
 - Wrap the font method with the Expo method in your `next.config.js`:
+
   - The order is important because Expo can mix in the location of vector icons to the existing font loader.
-  
+
   ```js
   const { withExpo } = require('@expo/next-adapter');
   const withFonts = require('next-fonts');
 
-  module.exports = withExpo(withFonts({
-    projectRoot: __dirname,
-  }));
+  module.exports = withExpo(
+    withFonts({
+      projectRoot: __dirname,
+    })
+  );
   ```
 
 - Now restart your project and you should be able to load fonts!
@@ -190,21 +233,19 @@ export default function FontDemo() {
         await Font.loadAsync({
           // You can get this font on Github: https://shorturl.at/chEHS
           'space-mono': require('./assets/SpaceMono-Regular.ttf'),
-        })
+        });
       } catch ({ message }) {
         // This will be called if something is broken
         console.log(`Error loading font: ${message}`);
       } finally {
-        setLoaded(true)
+        setLoaded(true);
       }
-    })()
+    })();
   }, []);
 
-  if (!loaded) return (<Text>Loading fonts...</Text>);
+  if (!loaded) return <Text>Loading fonts...</Text>;
 
-  return (
-    <Text style={{ fontFamily: 'space-mono' }}>Hello from Space Mono</Text>
-  )
+  return <Text style={{ fontFamily: 'space-mono' }}>Hello from Space Mono</Text>;
 }
 ```
 
@@ -222,41 +263,43 @@ Unlike the default Expo for web workflow, Workbox and PWA are not supported out 
 
 - Install `next-offline` to emulate Expo PWA features: `yarn add next-offline`
 - Configure your Next.js project to use `expo-notifications` in the browser:
+
   - We inject a custom service worker so we'll need to change what Workbox names their service worker (it must be `workbox-service-worker.js`).
-  
-   `next.config.js`
 
-   ```js
-   const withOffline = require('next-offline');
-   const { withExpo } = require('@expo/next-adapter');
+  `next.config.js`
 
-   // If you didn't install next-offline, then simply delete this method and the import.
-   module.exports = withOffline({
-     workboxOpts: {
-       swDest: 'workbox-service-worker.js',
+  ```js
+  const withOffline = require('next-offline');
+  const { withExpo } = require('@expo/next-adapter');
 
-       /* changing any value means you'll have to copy over all the defaults  */
-       /* next-offline */
-       globPatterns: ['static/**/*'],
-       globDirectory: '.',
-       runtimeCaching: [
-         {
-           urlPattern: /^https?.*/,
-           handler: 'NetworkFirst',
-           options: {
-             cacheName: 'offlineCache',
-             expiration: {
-               maxEntries: 200,
-             },
-           },
-         },
-       ],
-     },
-     ...withExpo({
-       projectRoot: __dirname,
-     }),
-   });
-   ```
+  // If you didn't install next-offline, then simply delete this method and the import.
+  module.exports = withOffline({
+    workboxOpts: {
+      swDest: 'workbox-service-worker.js',
+
+      /* changing any value means you'll have to copy over all the defaults  */
+      /* next-offline */
+      globPatterns: ['static/**/*'],
+      globDirectory: '.',
+      runtimeCaching: [
+        {
+          urlPattern: /^https?.*/,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'offlineCache',
+            expiration: {
+              maxEntries: 200,
+            },
+          },
+        },
+      ],
+    },
+    ...withExpo({
+      projectRoot: __dirname,
+    }),
+  });
+  ```
+
 - Copy the Expo service worker into your project's public folder: `mkdir public; cp node_modules/\@expo/next-adapter/service-worker.js public/service-worker.js`
 - You can now test your project in production mode using the following: `yarn next build && yarn next export && serve -p 3000 ./out`
 
@@ -271,15 +314,15 @@ If you have a complex project that requires custom server control then you can e
 <p>
 
 - Create a custom server to host your service worker:
-   `server.js`
+  `server.js`
 
-   ```js
-   const { startServerAsync } = require('@expo/next-adapter');
+  ```js
+  const { startServerAsync } = require('@expo/next-adapter');
 
-   startServerAsync(__dirname, {
-     /* port: 3000 */
-   });
-   ```
+  startServerAsync(__dirname, {
+    /* port: 3000 */
+  });
+  ```
 
 - Start your project with `node server.js`
 
@@ -364,7 +407,29 @@ Here is an example `now.json` configuration file:
 </details>
 
 ## API
-  
+
+### CLI
+
+Generate static Next.js files into your project.
+
+#### ⚙️ CLI Options
+
+For more information run `yarn next-expo --help` (or `-h`)
+
+| Shortcut | Flag          | Description                                           |
+| -------- | ------------- | ----------------------------------------------------- |
+| `-f`     | `--force`     | Allows replacing existing files                       |
+| `-c`     | `--customize` | Select template files you want to add to your project |
+| `-V`     | `--version`   | output the version number                             |
+
+### Babel
+
+The adapter provides a Babel config [`@expo/next-adapter/babel`](https://github.com/expo/expo-cli/blob/master/packages/next-adapter/src/babel.ts) to simplify setup.
+
+- Always use the universal [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo)
+  - Provides React Native support for all platforms that Expo supports (web, iOS, Android)
+- When running in the browser, also use `next/babel` preset.
+
 ### Config
 
 #### `withExpo`
@@ -380,14 +445,16 @@ Wraps your [`next.config.js`](https://nextjs.org/docs#custom-configuration) and 
 ```js
 const { withExpo } = require('@expo/next-adapter');
 
-module.exports = withExpo({ /* next.config.js code */ })
+module.exports = withExpo({
+  /* next.config.js code */
+});
 ```
 
 ### Document
 
-Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document). 
+Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
 
-This adapter provides a default `Document` (extended from Next.js's Document) that you can use to skip all of the React Native setup. 
+This adapter provides a default `Document` (extended from Next.js's Document) that you can use to skip all of the React Native setup.
 
 - Registers your app with `AppRegistry` from `react-native-web` to start your project.
 - Implements the `react-native-web` CSS reset.
@@ -452,10 +519,13 @@ import { createServerAsync, startServerAsync, handleRequest } from '@expo/next-a
 
 ```ts
 function startServerAsync(
-  projectRoot: string, 
-  { port }?: {
+  projectRoot: string,
+  {
+    port,
+  }?: {
     port?: number;
-}): Promise<{
+  }
+): Promise<{
   app: App;
   handle: Function;
   server: Server;
@@ -470,8 +540,11 @@ function startServerAsync(
 
 ```ts
 function createServerAsync(
-  projectRoot: string, 
-  { app, handleRequest }: { 
+  projectRoot: string,
+  {
+    app,
+    handleRequest,
+  }: {
     app?: App;
     handleRequest?: (req: IncomingMessage, res: ServerResponse) => Promise<void> | void;
   }
@@ -479,7 +552,7 @@ function createServerAsync(
   app: App;
   handle: Function;
   server: Server;
-}>
+}>;
 ```
 
 #### `handleRequest`
@@ -508,9 +581,11 @@ If you would like to help make Next.js support in Expo better, please feel free 
 - [@expo/next-adapter][next-adapter]
 
 If you have any problems rendering a certain component with SSR then you can submit fixes to the expo/expo repo:
+
 - [Expo SDK packages][expo-packages]
 
 Thanks so much 👋
+
 <!-- Footer -->
 
 ## Learn more about Next.js
