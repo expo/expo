@@ -18,7 +18,7 @@ export default function getPushButtonList() {
             title: "register for push notifications",
             onPush:
                 async function () {
-                    Notifications.setOnTokenChangeListener(
+                    Notifications.setOnTokenChangeListenerAsync(
                         (token: string) => {
                             console.log("your new token: ", token);
                             pushToken = token;

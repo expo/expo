@@ -33,6 +33,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* BareExpoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BareExpoTests.m; sourceTree = "<group>"; };
 		028439B18A901F7A2CF09BB9 /* libPods-BareExpoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C701CB42391452100BE5219 /* Bare Expo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "Bare Expo.entitlements"; path = "BareExpo/Bare Expo.entitlements"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Bare Expo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bare Expo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BareExpo/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BareExpo/AppDelegate.m; sourceTree = "<group>"; };
@@ -92,6 +93,7 @@
 		13B07FAE1A68108700A75B9A /* BareExpo */ = {
 			isa = PBXGroup;
 			children = (
+				0C701CB42391452100BE5219 /* Bare Expo.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -271,7 +273,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		4B0225741A3EE6614741CF8A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -453,6 +455,7 @@
 			baseConfigurationReference = 4ADC22B6EC034901305B8CDC /* Pods-BareExpo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "BareExpo/Bare Expo.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = C8D8QTF339;
@@ -474,6 +477,7 @@
 			baseConfigurationReference = 70419E2A27811C660476A295 /* Pods-BareExpo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "BareExpo/Bare Expo.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = C8D8QTF339;

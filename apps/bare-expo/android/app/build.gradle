@@ -231,3 +231,4 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 }
 
 apply plugin: ExecuteSetupAndroidProject
+apply plugin: 'com.google.gms.google-services'
