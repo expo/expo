@@ -230,6 +230,8 @@ Note that Firebase message cannot contain "notification" property because it mak
 On iOS Push notifications are presented by system so there is no need to follow any special message format.
 More about it [here](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification).
 
+> If you want to send additional data then add it under key "data" in APNs message.
+
 ## Types
 
 ### Notification
