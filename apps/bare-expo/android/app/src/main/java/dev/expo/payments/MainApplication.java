@@ -3,6 +3,9 @@ package dev.expo.payments;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.raizlabs.android.dbflow.config.ExpoNotificationsGeneratedDatabaseHolder;
+import com.raizlabs.android.dbflow.config.FlowConfig;
+import com.raizlabs.android.dbflow.config.FlowManager;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -57,5 +60,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    FlowManager.init(FlowConfig.builder(getApplicationContext())
+            .addDatabaseHolder(ExpoNotificationsGeneratedDatabaseHolder.class)
+            .build()
+    );
   }
 }
