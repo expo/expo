@@ -17,8 +17,8 @@
  */
 
 #import "OIDAuthorizationService+IOS.h"
-
 #import "OIDExternalUserAgentIOS.h"
+#import "OIDExternalUserAgentCatalyst.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,8 +27,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (id<OIDExternalUserAgentSession>) presentAuthorizationRequest:(OIDAuthorizationRequest *)request
     presentingViewController:(UIViewController *)presentingViewController
                     callback:(OIDAuthorizationCallback)callback {
-  OIDExternalUserAgentIOS *externalUserAgent = [[OIDExternalUserAgentIOS alloc]
+  id<OIDExternalUserAgent> externalUserAgent;
+#if TARGET_OS_MACCATALYST
+  externalUserAgent = [[OIDExternalUserAgentCatalyst alloc]
       initWithPresentingViewController:presentingViewController];
+#else // TARGET_OS_MACCATALYST
+  externalUserAgent = [[OIDExternalUserAgentIOS alloc] initWithPresentingViewController:presentingViewController];
+#endif // TARGET_OS_MACCATALYST
   return [self presentAuthorizationRequest:request externalUserAgent:externalUserAgent callback:callback];
 }
 

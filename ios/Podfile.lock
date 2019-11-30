@@ -69,7 +69,7 @@ PODS:
     - ABI33_0_0UMCameraInterface
     - ABI33_0_0UMCore
     - ABI33_0_0UMFileSystemInterface
-    - EXGL-CPP
+    - EXGL_CPP
   - ABI33_0_0EXGoogleSignIn (5.0.0-rc.0):
     - ABI33_0_0UMCore
     - GoogleSignIn
@@ -166,7 +166,7 @@ PODS:
     - Analytics
     - AppAuth
     - Branch
-    - EXGL-CPP
+    - EXGL_CPP
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -299,7 +299,7 @@ PODS:
     - ABI34_0_0UMCameraInterface
     - ABI34_0_0UMCore
     - ABI34_0_0UMFileSystemInterface
-    - EXGL-CPP
+    - EXGL_CPP
   - ABI34_0_0EXGoogleSignIn (5.0.0):
     - ABI34_0_0UMCore
     - GoogleSignIn
@@ -396,7 +396,7 @@ PODS:
     - Analytics
     - AppAuth
     - Branch
-    - EXGL-CPP
+    - EXGL_CPP
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -539,7 +539,7 @@ PODS:
     - ABI35_0_0UMCameraInterface
     - ABI35_0_0UMCore
     - ABI35_0_0UMFileSystemInterface
-    - EXGL-CPP
+    - EXGL_CPP
   - ABI35_0_0EXGoogleSignIn (6.0.0):
     - ABI35_0_0UMCore
     - GoogleSignIn
@@ -646,7 +646,7 @@ PODS:
     - AppAuth
     - Branch
     - EXBranch
-    - EXGL-CPP
+    - EXGL_CPP
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -801,7 +801,7 @@ PODS:
     - ABI36_0_0UMCameraInterface
     - ABI36_0_0UMCore
     - ABI36_0_0UMFileSystemInterface
-    - EXGL-CPP
+    - EXGL_CPP
   - ABI36_0_0EXGoogleSignIn (7.0.0):
     - ABI36_0_0UMCore
     - GoogleSignIn (~> 5.0.2)
@@ -913,7 +913,7 @@ PODS:
     - AppAuth
     - Branch
     - EXBranch
-    - EXGL-CPP
+    - EXGL_CPP
     - FBAudienceNetwork
     - FBSDKCoreKit
     - FBSDKLoginKit
@@ -1295,13 +1295,13 @@ PODS:
     - UMCore
     - UMFontInterface
   - EXGL (7.0.0):
-    - EXGL-CPP
+    - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL-CPP (7.0.0):
-    - EXGL-CPP/UEXGL (= 7.0.0)
-  - EXGL-CPP/UEXGL (7.0.0)
+  - EXGL_CPP (7.0.0):
+    - EXGL_CPP/UEXGL (= 7.0.0)
+  - EXGL_CPP/UEXGL (7.0.0)
   - EXGoogleSignIn (7.0.0):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -2244,7 +2244,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../packages/expo-file-system/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
-  - EXGL-CPP (from `../packages/expo-gl-cpp/cpp`)
+  - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
@@ -3032,7 +3032,7 @@ EXTERNAL SOURCES:
   EXGL:
     :path: !ruby/object:Pathname
     path: "../packages/expo-gl/ios"
-  EXGL-CPP:
+  EXGL_CPP:
     :path: !ruby/object:Pathname
     path: "../packages/expo-gl-cpp/cpp"
   EXGoogleSignIn:
@@ -3231,7 +3231,7 @@ SPEC CHECKSUMS:
   ABI33_0_0EXFaceDetector: 160ae1b1f9a3121649c2e72ad059a345c26ab2d0
   ABI33_0_0EXFileSystem: 6f8e931d4d281fac1fb04897552ebb4361147536
   ABI33_0_0EXFont: 853a0d33e3d3658e41eb704184302bf230f0ed18
-  ABI33_0_0EXGL: 3011993b8fe7360f494a35a272059e31cff18692
+  ABI33_0_0EXGL: 8d9456ccda65aae84c0251ec4aee145d66b1c44b
   ABI33_0_0EXGoogleSignIn: b4b7e127f2b10a30660004a9a8998f11fb708530
   ABI33_0_0EXHaptics: 6abebc012a48d4b78baeb8bc659b18022f1f95ea
   ABI33_0_0EXImageManipulator: 2d3a60ee978960c96b99ac896108c87fab7a3520
@@ -3244,7 +3244,7 @@ SPEC CHECKSUMS:
   ABI33_0_0EXMailComposer: 937b1ab34f061f79d887d64fd6c2b31fe74f0a48
   ABI33_0_0EXMediaLibrary: 42d7070d4794efd0b3a8cf18bedcdefc7807530c
   ABI33_0_0EXPermissions: 28fb68981d3a8db01b299af12679044fa380be89
-  ABI33_0_0ExpoKit: 1afc847b076900220fc7fe09047fe8358f2e5115
+  ABI33_0_0ExpoKit: d909a1239b12bdfb006d6334baac77d2a98c3577
   ABI33_0_0EXPrint: 4275c1611643bb94e6c396c2dd72aa0ed229e2b0
   ABI33_0_0EXRandom: 55a8b35a322c3aaddba19af6a71fa1da01cf3a1e
   ABI33_0_0EXSecureStore: c167803c7595b4780fd10b669040e1291f6e4a46
@@ -3289,7 +3289,7 @@ SPEC CHECKSUMS:
   ABI34_0_0EXFaceDetector: b28b7c629e41bde97595bd138af95ac2a84da54b
   ABI34_0_0EXFileSystem: f8e8400ec240af7e25694a409fc2056d05ac650d
   ABI34_0_0EXFont: c9d3ddb8d85f8b71c57770870797170b27fae03e
-  ABI34_0_0EXGL: c98e3397a3f5cd1e42a1d211b61bdcc7df0ab26d
+  ABI34_0_0EXGL: 0bbc40546bc2920eb80f75681d3555649b2cad8c
   ABI34_0_0EXGoogleSignIn: 568eef0bd21e38d8eb91baf9886e7755eca7b0c0
   ABI34_0_0EXHaptics: c8b80cf86f94206cdc2b00eff925acf64c2abfbc
   ABI34_0_0EXImageManipulator: 87d493124a91430724611c8229522cac3a386238
@@ -3302,7 +3302,7 @@ SPEC CHECKSUMS:
   ABI34_0_0EXMailComposer: a8296f1b55249c26c5053774b962501cf16e2f41
   ABI34_0_0EXMediaLibrary: dc262dfacc8776e1bf89b0241515a5513c4cc9b4
   ABI34_0_0EXPermissions: e6a6030db471480d4a1198be8aa30a41462d8343
-  ABI34_0_0ExpoKit: b40978b82b5abf30a2f9d5015d6dfffc58781f08
+  ABI34_0_0ExpoKit: 91daa5ea7dfcad85f3c2e42db3710533d14f9808
   ABI34_0_0EXPrint: a3ab6e308cbede1e5d67b8b64ff3d67a40e5bcb9
   ABI34_0_0EXRandom: 4891bdcedd662609132be562846a2a69566a261c
   ABI34_0_0EXSecureStore: b9250153b70ec6742ef0f90326268365eeae278e
@@ -3352,7 +3352,7 @@ SPEC CHECKSUMS:
   ABI35_0_0EXFaceDetector: d309d0d01bfa4aa078ec3bf5a2f5bbe5c08d90a2
   ABI35_0_0EXFileSystem: 024a8182e92bccfee3129fb8614fcb9416ff54b2
   ABI35_0_0EXFont: 93d0c858473e8407cb44bba89c327664bbec287f
-  ABI35_0_0EXGL: 317aa8206e647b46d701c40cbd5c3e1dde547d2b
+  ABI35_0_0EXGL: f4ed70897ec10a2fa64591ae25cd6c1a50d7e024
   ABI35_0_0EXGoogleSignIn: d25b80ec26f399b881f394f8d6ef62218f89fc7e
   ABI35_0_0EXHaptics: 7a9f659ae9862a5a433e3263c968b384694672bf
   ABI35_0_0EXImageManipulator: f4b4ff56f6942cabecc3c07c92d59ab3d0805e63
@@ -3366,7 +3366,7 @@ SPEC CHECKSUMS:
   ABI35_0_0EXMediaLibrary: 397872062a01ce639309510709b03843a5a1be0d
   ABI35_0_0EXNetwork: b7bed2a22371ea68f1b619dbcfefeec82181890c
   ABI35_0_0EXPermissions: 7bf182aa42ce57e094a33dbdb72d07c9caf15b7d
-  ABI35_0_0ExpoKit: 2a06d7e85eaed3d9b5a2afc2afc478635f335112
+  ABI35_0_0ExpoKit: 2ac94e456ff8b6bfa6ff295d809a3bfdd7105811
   ABI35_0_0EXPrint: e26eef76629439758b0b84aeca28479d11266caf
   ABI35_0_0EXRandom: 95cc027414d78d0ac041ebdad969e89beb54e56a
   ABI35_0_0EXSecureStore: 5159c0dd31775726fbbd35d69708427c690970f1
@@ -3419,7 +3419,7 @@ SPEC CHECKSUMS:
   ABI36_0_0EXFaceDetector: 0d6a972782ac51141e8cec1fe10a72b77d614f5d
   ABI36_0_0EXFileSystem: e70160bed834e5b693b70839e7e497c52b19ede4
   ABI36_0_0EXFont: 82b60dab83d5610e00e34fa42eabca61387b8139
-  ABI36_0_0EXGL: 5b0c6be5b10b098bb067be0dedf4a5d0bc41a97d
+  ABI36_0_0EXGL: 71f2b05f8e48945b776455cbd18deeb6bb390c6c
   ABI36_0_0EXGoogleSignIn: afd4c7954deb2b4475056514c598ac9790989ede
   ABI36_0_0EXHaptics: cd1c188e30bf362321d9a21862b5e221a3148462
   ABI36_0_0EXImageManipulator: 69b9aa62bc06dcca4cba3faba3cfcee81fbca059
@@ -3434,7 +3434,7 @@ SPEC CHECKSUMS:
   ABI36_0_0EXMediaLibrary: 01e603a68a28ed1f93015fec078985efda618e2f
   ABI36_0_0EXNetwork: 7a4a42d6ce730271bdcb74e64bea3e875713de9b
   ABI36_0_0EXPermissions: c9038e520aadea3fdf58a345537906eca18553be
-  ABI36_0_0ExpoKit: 9e08430c37a7e0b16204b768f4ff406d806c40e8
+  ABI36_0_0ExpoKit: f344371316472b028b0d11c6c60f0741d95a9da1
   ABI36_0_0EXPrint: df3e520026b059e3d85e01bb3c970dfc5c44e467
   ABI36_0_0EXRandom: e6d60a4f2bbda8c195e5be722c208bfef6c6f5be
   ABI36_0_0EXSecureStore: b5d6aea3dc7958a5fb720571ad02899436523e28
@@ -3519,8 +3519,8 @@ SPEC CHECKSUMS:
   EXFaceDetector: c436467d9f3f892fbffa6f471d46431bcbae2788
   EXFileSystem: 6ecb14b5c5557a5208d4474487d2eb1edef6892c
   EXFont: 71d07dc5d2153db7d1a23f1e0cc1b6341d55c432
-  EXGL: 4b21885aee37fb5f5230e05a62bba480fa886a3d
-  EXGL-CPP: da3c4f31ff50a34bd8184fadbf409806281b103d
+  EXGL: 2dfa1ab0d51d6c68856f3c7cc2cba8c8b462d994
+  EXGL_CPP: da6c5d7cb8ced0aab45f2bbcb884523a14536f27
   EXGoogleSignIn: ea2e12a0ca2ff277d6f7a116a6c5ab72619e1184
   EXHaptics: 51c25ffefdda66b15feb0b0ac6b1615e2f401f16
   EXImageManipulator: 78bfe480fdf7a7bb37913a387caef360e31a86dd

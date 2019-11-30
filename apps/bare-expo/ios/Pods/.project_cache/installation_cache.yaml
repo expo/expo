@@ -19,12 +19,12 @@ CACHE_KEYS:
   AppAuth:
     BUILD_SETTINGS_CHECKSUM:
       AppAuth: 645fdba9fe912c64b27cf67add67debb
-    CHECKSUM: bce82c76043657c99d91e7882e8a9e1a93650cd4
+    CHECKSUM: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
     PROJECT_NAME: AppAuth
     SPECS:
-      - AppAuth (1.2.0)
-      - AppAuth/Core (1.2.0)
-      - AppAuth/ExternalUserAgent (1.2.0)
+      - AppAuth (1.3.0)
+      - AppAuth/Core (1.3.0)
+      - AppAuth/ExternalUserAgent (1.3.0)
   boost-for-react-native:
     BUILD_SETTINGS_CHECKSUM:
       boost-for-react-native: e9824834bb3842483c6a4142ac76bb2d
@@ -313,8 +313,8 @@ CACHE_KEYS:
       - EXFont (7.0.0)
   EXGL:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL: a60a719df07040f18991371801b5e9ae
-    CHECKSUM: 4b21885aee37fb5f5230e05a62bba480fa886a3d
+      EXGL: b21ff559aacb62ac621d51e446f9cbce
+    CHECKSUM: 2dfa1ab0d51d6c68856f3c7cc2cba8c8b462d994
     FILES:
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.h"
       - "../../../../packages/expo-gl/ios/EXGL/EXGLCameraObject.m"
@@ -331,10 +331,10 @@ CACHE_KEYS:
     PROJECT_NAME: EXGL
     SPECS:
       - EXGL (7.0.0)
-  EXGL-CPP:
+  EXGL_CPP:
     BUILD_SETTINGS_CHECKSUM:
-      EXGL-CPP: 7098653024dc7410e476c9b3a44fc2e5
-    CHECKSUM: da3c4f31ff50a34bd8184fadbf409806281b103d
+      EXGL_CPP: e5c21be87c49c4ea22fb524158d76c6f
+    CHECKSUM: da6c5d7cb8ced0aab45f2bbcb884523a14536f27
     FILES:
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.h"
       - "../../../../packages/expo-gl-cpp/cpp/EXiOSUtils.mm"
@@ -345,14 +345,14 @@ CACHE_KEYS:
       - "../../../../packages/expo-gl-cpp/cpp/stb_image.h"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.cpp"
       - "../../../../packages/expo-gl-cpp/cpp/UEXGL.h"
-    PROJECT_NAME: EXGL-CPP
+    PROJECT_NAME: EXGL_CPP
     SPECS:
-      - EXGL-CPP (7.0.0)
-      - EXGL-CPP/UEXGL (7.0.0)
+      - EXGL_CPP (7.0.0)
+      - EXGL_CPP/UEXGL (7.0.0)
   EXGoogleSignIn:
     BUILD_SETTINGS_CHECKSUM:
       EXGoogleSignIn: f09b309f99f7a0147df78dd155d49661
-    CHECKSUM: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
+    CHECKSUM: ea2e12a0ca2ff277d6f7a116a6c5ab72619e1184
     FILES:
       - "../../../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.h"
       - "../../../../packages/expo-google-sign-in/ios/EXGoogleSignIn/EXAuthTask.m"
@@ -480,7 +480,7 @@ CACHE_KEYS:
   EXPermissions:
     BUILD_SETTINGS_CHECKSUM:
       EXPermissions: 042b0d307d74f9ba36a7183b44cd74a0
-    CHECKSUM: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
+    CHECKSUM: a8da2bebf970af22e4714cc24fc5fab124ee315c
     FILES:
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.h"
       - "../../../../packages/expo-permissions/ios/EXPermissions/EXPermissions.m"
@@ -695,12 +695,12 @@ CACHE_KEYS:
       - GTMSessionFetcher/Full (1.3.0)
   Pods-BareExpo:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: 1c5cce5602d7a1ca50a162ce84f41cc2
-      Release: 1c5cce5602d7a1ca50a162ce84f41cc2
+      Debug: 9fa395d50ce617a2a71ed32b1caae8ef
+      Release: 9fa395d50ce617a2a71ed32b1caae8ef
   Pods-BareExpoTests:
     BUILD_SETTINGS_CHECKSUM:
-      Debug: db80c27826ef9e2e5e761094f6109afd
-      Release: db80c27826ef9e2e5e761094f6109afd
+      Debug: b61a68dc0ecf8315379a8243485d7899
+      Release: b61a68dc0ecf8315379a8243485d7899
   RCTRequired:
     BUILD_SETTINGS_CHECKSUM:
       RCTRequired: 4dfdb65505e509cfb5f433fb54943666
