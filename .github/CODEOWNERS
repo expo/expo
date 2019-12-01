@@ -1,21 +1,24 @@
-/packages/@unimodules                           @sjchmiela
+/packages/@unimodules/core                      @sjchmiela @tsapeta
+/packages/@unimodules/react-native-adapter      @sjchmiela @tsapeta
 /packages/babel-preset-expo                     @brentvatne
-/packages/expo                                  @ide @tsapeta
 /packages/expo-ads-admob                        @sjchmiela
-/packages/expo-ads-facebook                     @Szymon20000
+/packages/expo-ads-facebook                     -
 /packages/expo-analytics-amplitude              @sjchmiela
 /packages/expo-analytics-segment                @sjchmiela
 /packages/expo-app-auth                         @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
+/packages/expo-apple-authentication             @esamelson @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta
 /packages/expo-av                               @sjchmiela @mczernek
 /packages/expo-background-fetch                 @tsapeta
 /packages/expo-barcode-scanner                  @bbarthec
+/packages/expo-battery                          -
+/packages/expo-bluetooth                        @EvanBacon
 /packages/expo-blur                             @sjchmiela
 /packages/expo-branch                           @sjchmiela
 /packages/expo-brightness                       @sjchmiela
-/packages/expo-calendar                         @tsapeta
+/packages/expo-calendar                         @tsapeta @lukmccall
 /packages/expo-camera                           @bbarthec
 /packages/expo-cellular                         @ide
 /packages/expo-constants                        @tsapeta
@@ -23,13 +26,13 @@
 /packages/expo-crypto                           @EvanBacon
 /packages/expo-device                           @ide
 /packages/expo-document-picker                  @bbarthec
+/packages/expo-error-recovery                   @lukmccall
 /packages/expo-face-detector                    @sjchmiela @mczernek
 /packages/expo-facebook                         @sjchmiela
 /packages/expo-file-system                      @sjchmiela
 /packages/expo-font                             @sjchmiela
-/packages/expo-font-interface                   @sjchmiela
-/packages/expo-gl                               @tsapeta
 /packages/expo-gl-cpp                           @tsapeta
+/packages/expo-gl                               @tsapeta
 /packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @tsapeta
@@ -41,14 +44,14 @@
 /packages/expo-linear-gradient                  @brentvatne
 /packages/expo-local-authentication             @tsapeta
 /packages/expo-localization                     @EvanBacon
-/packages/expo-location                         @tsapeta
+/packages/expo-location                         @tsapeta @lukmccall
 /packages/expo-mail-composer                    @sjchmiela
-/packages/expo-media-library                    @tsapeta
+/packages/expo-media-library                    @tsapeta @lukmccall
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @bbarthec
 /packages/expo-network                          @ide
-/packages/expo-payments-stripe                  @Szymon20000
-/packages/expo-permissions                      @bbarthec
+/packages/expo-payments-stripe                  -
+/packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @tsapeta
 /packages/expo-processing                       @EvanBacon
 /packages/expo-random                           @EvanBacon
@@ -56,14 +59,19 @@
 /packages/expo-sensors                          @sjchmiela
 /packages/expo-sharing                          @sjchmiela
 /packages/expo-sms                              @bbarthec
-/packages/expo-speech                           @Szymon20000
-/packages/expo-sqlite                           @Szymon20000
+/packages/expo-speech                           -
+/packages/expo-sqlite                           -
+/packages/expo-store-review                     @EvanBacon
 /packages/expo-task-manager                     @tsapeta
-/packages/expo-updates                          @mczernek
+/packages/expo-updates                          @esamelson @mczernek
 /packages/expo-video-thumbnails                 @sjchmiela
 /packages/expo-web-browser                      @sjchmiela @mczernek
 /packages/expo-yarn-workspaces                  @ide
+/packages/expo                                  @ide @tsapeta
+/packages/jest-expo-enzyme                      @ide @EvanBacon
+/packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
+/packages/react-native-unimodules               @tsapeta
 /packages/unimodules-barcode-scanner-interface  @bbarthec
 /packages/unimodules-camera-interface           @bbarthec
 /packages/unimodules-constants-interface        @tsapeta
@@ -71,7 +79,7 @@
 /packages/unimodules-file-system-interface      @sjchmiela
 /packages/unimodules-font-interface             @sjchmiela
 /packages/unimodules-image-loader-interface     @bbarthec
-/packages/unimodules-permissions-interface      @bbarthec
+/packages/unimodules-permissions-interface      @bbarthec @lukmccall
 /packages/unimodules-sensors-interface          @sjchmiela
 /packages/unimodules-task-manager-interface     @tsapeta
 /tools                                          @tsapeta
