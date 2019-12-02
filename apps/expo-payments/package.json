@@ -13,7 +13,7 @@
   "dependencies": {
     "expo": "~35.0.0",
     "expokit": "^34.0.1",
-    "expo-in-app-purchases": "~7.0.0",
+    "expo-in-app-purchases": "~8.0.0",
     "react": "16.9.0",
     "react-dom": "16.9.0",
     "react-native": "0.61.4",
