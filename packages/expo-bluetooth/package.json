@@ -4,6 +4,7 @@
   "description": "Expo Module Template standalone module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "private": true,
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
