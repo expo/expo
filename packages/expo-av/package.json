@@ -35,7 +35,7 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "babel-preset-expo": "~7.1.0",
+    "babel-preset-expo": "~8.0.0",
     "expo-module-scripts": "~1.1.1"
   },
   "gitHead": "c93271fac3b0e9e8874be0f7a2cfc8f5a47562b9",

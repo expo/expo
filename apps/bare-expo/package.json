@@ -100,7 +100,7 @@
     "@babel/core": "^7.0.0",
     "@types/react": "~16.9.0",
     "@types/react-native": "^0.60.15",
-    "babel-preset-expo": "^7.1.0",
+    "babel-preset-expo": "~8.0.0",
     "detox": "^14.4.1",
     "expo-module-scripts": "^1.1.1",
     "expo-yarn-workspaces": "^1.2.1",
