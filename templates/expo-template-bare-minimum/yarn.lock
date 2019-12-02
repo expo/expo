@@ -1091,9 +1091,9 @@
     "@types/yargs" "^13.0.0"
 
 "@react-native-community/cli@^1.2.1":
-  version "1.11.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.11.2.tgz#b14967f24a389f5a16889a747345cf0e5757a2f1"
-  integrity sha512-5NuYd30f5PCTrGUbZLnusZKv5nfTWvTDTRa/3Q4vwdMnUQrhm9sZXWGQ5CnFoQ7cE58EAqhj6/ShXeJF3DZ9uQ==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.12.0.tgz#f4cbc2204af63a87d5736d2fa6a018c1fd5efd44"
+  integrity sha512-GAs4JgVP8QkEYeZks/T7cCrBuwFJKxd9ksBLRdQ058uvLGkOEeS4g3y4GsVM/9C1zat5h6Z6QwU0h/hj7G3tzg==
   dependencies:
     chalk "^1.1.1"
     commander "^2.19.0"
@@ -1622,7 +1622,40 @@ babel-preset-expo@~7.0.0:
     babel-plugin-react-native-web "^0.11.2"
     metro-react-native-babel-preset "^0.54.1"
 
-babel-preset-fbjs@^3.0.1, babel-preset-fbjs@^3.2.0:
+babel-preset-fbjs@^3.0.1:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.3.0.tgz#a6024764ea86c8e06a22d794ca8b69534d263541"
+  integrity sha512-7QTLTCd2gwB2qGoi5epSULMHugSVgpcVt5YAeiFO9ABLrutDQzKfGwzxgZHLpugq8qMdg/DhRZDZ5CLKxBkEbw==
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "^7.0.0"
+    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
+    "@babel/plugin-syntax-class-properties" "^7.0.0"
+    "@babel/plugin-syntax-flow" "^7.0.0"
+    "@babel/plugin-syntax-jsx" "^7.0.0"
+    "@babel/plugin-syntax-object-rest-spread" "^7.0.0"
+    "@babel/plugin-transform-arrow-functions" "^7.0.0"
+    "@babel/plugin-transform-block-scoped-functions" "^7.0.0"
+    "@babel/plugin-transform-block-scoping" "^7.0.0"
+    "@babel/plugin-transform-classes" "^7.0.0"
+    "@babel/plugin-transform-computed-properties" "^7.0.0"
+    "@babel/plugin-transform-destructuring" "^7.0.0"
+    "@babel/plugin-transform-flow-strip-types" "^7.0.0"
+    "@babel/plugin-transform-for-of" "^7.0.0"
+    "@babel/plugin-transform-function-name" "^7.0.0"
+    "@babel/plugin-transform-literals" "^7.0.0"
+    "@babel/plugin-transform-member-expression-literals" "^7.0.0"
+    "@babel/plugin-transform-modules-commonjs" "^7.0.0"
+    "@babel/plugin-transform-object-super" "^7.0.0"
+    "@babel/plugin-transform-parameters" "^7.0.0"
+    "@babel/plugin-transform-property-literals" "^7.0.0"
+    "@babel/plugin-transform-react-display-name" "^7.0.0"
+    "@babel/plugin-transform-react-jsx" "^7.0.0"
+    "@babel/plugin-transform-shorthand-properties" "^7.0.0"
+    "@babel/plugin-transform-spread" "^7.0.0"
+    "@babel/plugin-transform-template-literals" "^7.0.0"
+    babel-plugin-syntax-trailing-function-commas "^7.0.0-beta.0"
+
+babel-preset-fbjs@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/babel-preset-fbjs/-/babel-preset-fbjs-3.2.0.tgz#c0e6347d3e0379ed84b3c2434d3467567aa05297"
   integrity sha512-5Jo+JeWiVz2wHUUyAlvb/sSYnXNig9r+HqGAOSfh5Fzxp7SnAaR/tEGRJ1ZX7C77kfk82658w6R5Z+uPATTD9g==
@@ -2008,10 +2041,15 @@ combined-stream@^1.0.6, combined-stream@~1.0.6:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@^2.19.0, commander@^2.9.0, commander@~2.20.0:
+commander@^2.19.0, commander@~2.20.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
+
+commander@^2.9.0:
+  version "2.20.3"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
+  integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
 commander@~2.13.0:
   version "2.13.0"
@@ -5632,10 +5670,10 @@ react-native-reanimated@~1.4.0:
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.4.0.tgz#7f1acbf9be08492d834f512700570978052be2f9"
   integrity sha512-tO7nSNNP+iRLVbkcSS5GXyDBb7tSI02+XuRL3/S39EAr35rnvUy2JfeLUQG+fWSObJjnMVhasUDEUwlENk8IXw==
 
-react-native-screens@2.0.0-alpha.11:
-  version "2.0.0-alpha.11"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.0.0-alpha.11.tgz#077674284e0f80130cf971ba8eacc4f969724eea"
-  integrity sha512-Sw01mMTvqMgNl4stk7rdcE8LRiISTx7DhXMeBgvmlI4uF1rIZBFcTV5tH/wZ8ld6Pa/H5ASKWAiaaMMxgv1fBw==
+react-native-screens@2.0.0-alpha.12:
+  version "2.0.0-alpha.12"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.0.0-alpha.12.tgz#35a6ef3b472958e9d35f0ca9e582d0d158f8e379"
+  integrity sha512-x9M7FEdcm97bVDp3pi//nhduJHLFMrmDQs0fq299yx3kHdgHbrmhsa8jgW4HvDQhjyPE0FWADY/GrXFuPRj80w==
   dependencies:
     debounce "^1.2.0"
 
