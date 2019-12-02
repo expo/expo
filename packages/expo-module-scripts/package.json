@@ -3,6 +3,7 @@
   "version": "1.1.1",
   "description": "A private package for various tasks for Expo module packages like compiling and testing",
   "main": "index.js",
+  "private": true,
   "bin": {
     "expo-module": "bin/expo-module.js"
   },
