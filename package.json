@@ -23,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "react-native-unimodules": "~0.7.0-rc.2"
+    "react-native-unimodules": "~0.7.0"
   },
   "devDependencies": {
     "babel-core": "^7.0.0-bridge.0",
