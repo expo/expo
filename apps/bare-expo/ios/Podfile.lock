@@ -1,11 +1,11 @@
 PODS:
   - Amplitude-iOS (4.7.1)
   - Analytics (3.7.0)
-  - AppAuth (1.2.0):
-    - AppAuth/Core (= 1.2.0)
-    - AppAuth/ExternalUserAgent (= 1.2.0)
-  - AppAuth/Core (1.2.0)
-  - AppAuth/ExternalUserAgent (1.2.0)
+  - AppAuth (1.3.0):
+    - AppAuth/Core (= 1.3.0)
+    - AppAuth/ExternalUserAgent (= 1.3.0)
+  - AppAuth/Core (1.3.0)
+  - AppAuth/ExternalUserAgent (1.3.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
   - EXAmplitude (7.0.0):
@@ -64,15 +64,15 @@ PODS:
     - UMCore
     - UMFontInterface
   - EXGL (7.0.0):
-    - EXGL-CPP
+    - EXGL_CPP
     - UMCameraInterface
     - UMCore
     - UMFileSystemInterface
-  - EXGL-CPP (7.0.0):
-    - EXGL-CPP/UEXGL (= 7.0.0)
-  - EXGL-CPP/UEXGL (7.0.0)
+  - EXGL_CPP (7.0.0):
+    - EXGL_CPP/UEXGL (= 7.0.0)
+  - EXGL_CPP/UEXGL (7.0.0)
   - EXGoogleSignIn (7.0.0):
-    - GoogleSignIn (~> 5.0)
+    - GoogleSignIn (~> 5.0.2)
     - UMCore
   - EXHaptics (8.0.0-rc.0):
     - UMCore
@@ -411,7 +411,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXGL (from `../../../packages/expo-gl/ios`)
-  - EXGL-CPP (from `../../../packages/expo-gl-cpp/cpp`)
+  - EXGL_CPP (from `../../../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../../../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../../../packages/expo-haptics/ios`)
   - EXImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
@@ -554,7 +554,7 @@ EXTERNAL SOURCES:
   EXGL:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-gl/ios"
-  EXGL-CPP:
+  EXGL_CPP:
     :path: !ruby/object:Pathname
     path: "../../../packages/expo-gl-cpp/cpp"
   EXGoogleSignIn:
@@ -717,7 +717,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Amplitude-iOS: a0347ab05f2d196e6bbb22cc6f62eea33b5a035b
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
-  AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
+  AppAuth: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAmplitude: 69201cb81956823fd24697fe077f51fc5f10a88b
@@ -740,9 +740,9 @@ SPEC CHECKSUMS:
   EXErrorRecovery: d36db99ec6a3808f313f01b0890eb443796dd1c2
   EXFileSystem: 6ecb14b5c5557a5208d4474487d2eb1edef6892c
   EXFont: 71d07dc5d2153db7d1a23f1e0cc1b6341d55c432
-  EXGL: 4b21885aee37fb5f5230e05a62bba480fa886a3d
-  EXGL-CPP: da3c4f31ff50a34bd8184fadbf409806281b103d
-  EXGoogleSignIn: 1872ebe5b7f4b97d31567558c7a7d24bbfcf3abd
+  EXGL: 2dfa1ab0d51d6c68856f3c7cc2cba8c8b462d994
+  EXGL_CPP: da6c5d7cb8ced0aab45f2bbcb884523a14536f27
+  EXGoogleSignIn: ea2e12a0ca2ff277d6f7a116a6c5ab72619e1184
   EXHaptics: 51c25ffefdda66b15feb0b0ac6b1615e2f401f16
   EXImageManipulator: 78bfe480fdf7a7bb37913a387caef360e31a86dd
   EXImagePicker: 63549baa9487f4b99c03163c5639ddede4c7be4e
@@ -753,7 +753,7 @@ SPEC CHECKSUMS:
   EXMailComposer: b6d374488db559e4e5a84e5a96b17c0cb246cb89
   EXMediaLibrary: afa771d4df578966a65a3cd05c0a2f0f3b17441f
   EXNetwork: efc09454cad81a30874fd9cff381deedfe38ca57
-  EXPermissions: 372a5e0aa3608a0f406091aa9fb6be426fc33bf8
+  EXPermissions: a8da2bebf970af22e4714cc24fc5fab124ee315c
   EXPrint: 0b053010f2b8ac431cb6685e8764e1bcb242054e
   EXRandom: 573a6b84af755c0fffc0dd744e25aa73f69680fb
   EXSecureStore: bf94958c936b2b9e3813509d2e7e6b8a263d40df
