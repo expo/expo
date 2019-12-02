@@ -73,6 +73,7 @@ public class ExponentManifest {
   public static final String MANIFEST_SDK_VERSION_KEY = "sdkVersion";
   public static final String MANIFEST_IS_VERIFIED_KEY = "isVerified";
   public static final String MANIFEST_ICON_URL_KEY = "iconUrl";
+  public static final String MANIFEST_BACKGROUND_COLOR_KEY = "backgroundColor";
   public static final String MANIFEST_PRIMARY_COLOR_KEY = "primaryColor";
   public static final String MANIFEST_ORIENTATION_KEY = "orientation";
   public static final String MANIFEST_DEVELOPER_KEY = "developer";
@@ -85,6 +86,7 @@ public class ExponentManifest {
   public static final String MANIFEST_COMMIT_TIME_KEY = "commitTime";
   public static final String MANIFEST_LOADED_FROM_CACHE_KEY = "loadedFromCache";
   public static final String MANIFEST_SLUG = "slug";
+  public static final String MANIFEST_ANDROID_INFO_KEY = "android";
 
   // Statusbar
   public static final String MANIFEST_STATUS_BAR_KEY = "androidStatusBar";
