@@ -83,6 +83,20 @@
   }
 }
 
++ (int)exportImageOrientation:(UIImageOrientation)orientation
+{
+   switch (orientation) {
+     case UIImageOrientationLeft:
+       return 90;
+     case UIImageOrientationRight:
+       return -90;
+     case UIImageOrientationDown:
+       return 180;
+     default:
+       return 0;
+   }
+}
+
 # pragma mark - Image utilities
 
 + (UIImage *)generatePhotoOfSize:(CGSize)size
@@ -121,19 +135,41 @@
   return [fileURL absoluteString];
 }
 
-+ (void)updateImageSampleMetadata:(CMSampleBufferRef)imageSampleBuffer withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response
++ (NSData *)writeImageToData:(UIImage *)image withExifData:(NSDictionary *)exif imageQuality:(float)quality
 {
-  CFDictionaryRef exifAttachments = CMGetAttachment(imageSampleBuffer, kCGImagePropertyExifDictionary, NULL);
-  NSDictionary *metadata = (__bridge NSDictionary *)exifAttachments;
-  [self updateExifMetadata:metadata withAdditionalData:additionalData inResponse:response];
+  // Get metadata (includes the EXIF data)
+  CGImageSourceRef sourceCGIImageRef = CGImageSourceCreateWithData((CFDataRef) UIImageJPEGRepresentation(image, 1.0f), NULL);
+  NSDictionary *sourceMetadata = (__bridge NSDictionary *) CGImageSourceCopyPropertiesAtIndex(sourceCGIImageRef, 0, NULL);
+  
+  NSMutableDictionary *updatedMetadata = [sourceMetadata mutableCopy];
+  
+  // Add camera exif data
+  [updatedMetadata setObject:exif forKey:(__bridge NSString *)kCGImagePropertyExifDictionary];
+
+  // Set compression quality
+  [updatedMetadata setObject:@(quality) forKey:(__bridge NSString *)kCGImageDestinationLossyCompressionQuality];
+
+  // Create an image destination
+  NSMutableData *processedImageData = [NSMutableData data];
+  CGImageDestinationRef destinationCGImageRef = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)processedImageData, CGImageSourceGetType(sourceCGIImageRef), 1, NULL);
+
+  // Add image to the destination
+  // Note: it'll save only these value which are under the kCGImagePropertyExif* key.
+  CGImageDestinationAddImage(destinationCGImageRef, image.CGImage, (__bridge CFDictionaryRef) updatedMetadata);
+
+  // Finalize the destination
+  if (CGImageDestinationFinalize(destinationCGImageRef)) {
+    CFRelease(sourceCGIImageRef);
+    CFRelease(destinationCGImageRef);
+  
+    return processedImageData;
+  }
+  return nil;
 }
 
-+ (void)updateExifMetadata:(NSDictionary *)metadata withAdditionalData:(NSDictionary *)additionalData inResponse:(NSMutableDictionary *)response
++ (NSMutableDictionary *)updateExifMetadata:(NSDictionary *)metadata withAdditionalData:(NSDictionary *)additionalData
 {
   NSMutableDictionary *mutableMetadata = [[NSMutableDictionary alloc] initWithDictionary:metadata];
-  mutableMetadata[(NSString *)kCGImagePropertyExifPixelYDimension] = response[@"width"];
-  mutableMetadata[(NSString *)kCGImagePropertyExifPixelXDimension] = response[@"height"];
-
   for (id key in additionalData) {
     mutableMetadata[key] = additionalData[key];
   }
@@ -146,7 +182,7 @@
     }
   }
 
-  response[@"exif"] = mutableMetadata;
+  return mutableMetadata;
 }
 
 @end
